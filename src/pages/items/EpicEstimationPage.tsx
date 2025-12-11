@@ -23,18 +23,18 @@ import {
 import { toast } from 'sonner';
 import { useNavigate, useParams } from 'react-router-dom';
 
-// Fibonacci sequence columns for WSJF board
-const WSJF_COLUMNS = ['1', '2', '3', '5', '8', '13', '20'];
+// Fibonacci sequence columns for Technical Scoring board
+const SCORING_COLUMNS = ['1', '2', '3', '5', '8', '13', '20'];
 
-type WSJFField = 'business_value' | 'time_value' | 'rroe_value' | 'job_size';
+type ScoringField = 'business_value' | 'time_value' | 'rroe_value' | 'job_size';
 
-interface EpicWithWSJF {
+interface EpicWithScoring {
   id: string;
   name: string;
   epic_key: string | null;
   mvp: boolean | null;
   global_rank: number | null;
-  wsjf?: {
+  scoring?: {
     business_value: number | null;
     time_value: number | null;
     rroe_value: number | null;
@@ -49,13 +49,12 @@ export default function EpicEstimationPage() {
   const queryClient = useQueryClient();
   
   const [viewMode, setViewMode] = useState<'list' | 'column'>('list');
-  const [activeWSJFField, setActiveWSJFField] = useState<WSJFField>('business_value');
-  const [selectedPI, setSelectedPI] = useState<string>('all');
+  const [activeScoringField, setActiveScoringField] = useState<ScoringField>('business_value');
   const [selectedProgram, setSelectedProgram] = useState<string>('all');
 
-  // Fetch epics with WSJF data
+  // Fetch epics with Technical Scoring data
   const { data: epics, isLoading } = useQuery({
-    queryKey: ['epics-estimation', portfolioId, selectedPI, selectedProgram],
+    queryKey: ['epics-estimation', portfolioId, selectedProgram],
     queryFn: async () => {
       let query = supabase
         .from('epics')
@@ -77,23 +76,11 @@ export default function EpicEstimationPage() {
       const { data, error } = await query;
       if (error) throw error;
       
-      // Transform data to include WSJF fields at top level
+      // Transform data to include scoring fields at top level
       return (data || []).map(epic => ({
         ...epic,
-        wsjf: Array.isArray(epic.epic_wsjf) ? epic.epic_wsjf[0] : epic.epic_wsjf
-      })) as EpicWithWSJF[];
-    },
-  });
-
-  // Fetch program increments for filter
-  const { data: programIncrements } = useQuery({
-    queryKey: ['program-increments'],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('program_increments')
-        .select('id, name')
-        .order('start_date', { ascending: false });
-      return data || [];
+        scoring: Array.isArray(epic.epic_wsjf) ? epic.epic_wsjf[0] : epic.epic_wsjf
+      })) as EpicWithScoring[];
     },
   });
 
@@ -109,10 +96,9 @@ export default function EpicEstimationPage() {
     },
   });
 
-  // Update WSJF field mutation
-  const updateWSJFMutation = useMutation({
-    mutationFn: async ({ epicId, field, value }: { epicId: string; field: WSJFField; value: number }) => {
-      // Check if WSJF record exists
+  // Update Technical Scoring field mutation
+  const updateScoringMutation = useMutation({
+    mutationFn: async ({ epicId, field, value }: { epicId: string; field: ScoringField; value: number }) => {
       const { data: existing } = await supabase
         .from('epic_wsjf')
         .select('id, business_value, time_value, rroe_value, job_size')
@@ -127,28 +113,20 @@ export default function EpicEstimationPage() {
         [field]: value
       };
 
-      // Calculate new WSJF score
-      const wsjfScore = updatedValues.job_size && updatedValues.job_size > 0
+      const techScore = updatedValues.job_size && updatedValues.job_size > 0
         ? Math.round(((updatedValues.business_value || 0) + (updatedValues.time_value || 0) + (updatedValues.rroe_value || 0)) / updatedValues.job_size * 100) / 100
         : null;
 
       if (existing) {
         const { error } = await supabase
           .from('epic_wsjf')
-          .update({ 
-            [field]: value,
-            wsjf_score: wsjfScore
-          })
+          .update({ [field]: value, wsjf_score: techScore })
           .eq('id', existing.id);
         if (error) throw error;
       } else {
         const { error } = await supabase
           .from('epic_wsjf')
-          .insert({
-            epic_id: epicId,
-            [field]: value,
-            wsjf_score: wsjfScore
-          });
+          .insert({ epic_id: epicId, [field]: value, wsjf_score: techScore });
         if (error) throw error;
       }
     },
@@ -156,17 +134,14 @@ export default function EpicEstimationPage() {
       queryClient.invalidateQueries({ queryKey: ['epics-estimation'] });
     },
     onError: () => {
-      toast.error('Failed to update WSJF value');
+      toast.error('Failed to update technical scoring value');
     }
   });
 
   // Update MVP mutation
   const updateMVPMutation = useMutation({
     mutationFn: async ({ epicId, mvp }: { epicId: string; mvp: boolean }) => {
-      const { error } = await supabase
-        .from('epics')
-        .update({ mvp })
-        .eq('id', epicId);
+      const { error } = await supabase.from('epics').update({ mvp }).eq('id', epicId);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -174,53 +149,38 @@ export default function EpicEstimationPage() {
     }
   });
 
-  // Handle drag end for column view
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
-
     const epicId = result.draggableId;
     const newValue = parseInt(result.destination.droppableId);
-
-    if (isNaN(newValue)) return; // Dropped in unscored
-
-    updateWSJFMutation.mutate({ 
-      epicId, 
-      field: activeWSJFField, 
-      value: newValue 
-    });
+    if (isNaN(newValue)) return;
+    updateScoringMutation.mutate({ epicId, field: activeScoringField, value: newValue });
   };
 
-  // Get WSJF field value from epic
-  const getWSJFValue = (epic: EpicWithWSJF, field: WSJFField): number | null => {
-    return epic.wsjf?.[field] ?? null;
+  const getScoringValue = (epic: EpicWithScoring, field: ScoringField): number | null => {
+    return epic.scoring?.[field] ?? null;
   };
 
-  // Group epics by WSJF value for column view
   const getEpicsByColumn = () => {
-    const grouped: Record<string, EpicWithWSJF[]> = {
-      'unscored': [],
-      '1': [], '2': [], '3': [], '5': [], '8': [], '13': [], '20': []
+    const grouped: Record<string, EpicWithScoring[]> = {
+      'unscored': [], '1': [], '2': [], '3': [], '5': [], '8': [], '13': [], '20': []
     };
-
     epics?.forEach(epic => {
-      const value = getWSJFValue(epic, activeWSJFField);
-      if (!value || !WSJF_COLUMNS.includes(String(value))) {
+      const value = getScoringValue(epic, activeScoringField);
+      if (!value || !SCORING_COLUMNS.includes(String(value))) {
         grouped['unscored'].push(epic);
       } else {
         grouped[String(value)]?.push(epic);
       }
     });
-
     return grouped;
   };
 
-  // Calculate WSJF score preview
-  const getWSJFScore = (epic: EpicWithWSJF): number | null => {
-    if (!epic.wsjf) return null;
-    const { business_value, time_value, rroe_value, job_size } = epic.wsjf;
+  const getTechScore = (epic: EpicWithScoring): number | null => {
+    if (!epic.scoring) return null;
+    const { business_value, time_value, rroe_value, job_size } = epic.scoring;
     if (!job_size || job_size === 0) return null;
-    const score = ((business_value || 0) + (time_value || 0) + (rroe_value || 0)) / job_size;
-    return Math.round(score * 100) / 100;
+    return Math.round(((business_value || 0) + (time_value || 0) + (rroe_value || 0)) / job_size * 100) / 100;
   };
 
   const handleManageBacklog = () => {
@@ -231,10 +191,10 @@ export default function EpicEstimationPage() {
     }
   };
 
-  const wsjfFieldLabels: Record<WSJFField, string> = {
-    'business_value': 'Business Value',
-    'time_value': 'Time Value',
-    'rroe_value': 'RR/OE Value',
+  const scoringFieldLabels: Record<ScoringField, string> = {
+    'business_value': 'Technical Value',
+    'time_value': 'Time Criticality',
+    'rroe_value': 'Risk Reduction',
     'job_size': 'Job Size'
   };
 
@@ -250,7 +210,7 @@ export default function EpicEstimationPage() {
             <div>
               <h1 className="text-2xl font-bold">Epic Estimation</h1>
               <p className="text-sm text-muted-foreground">
-                WSJF Prioritization for Epics
+                Technical Scoring for Epics
               </p>
             </div>
           </div>
@@ -264,21 +224,6 @@ export default function EpicEstimationPage() {
       <div className="border-b bg-card px-6 py-3">
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-4">
-            {/* PI Filter */}
-            <Select value={selectedPI} onValueChange={setSelectedPI}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="All PIs" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All PIs</SelectItem>
-                {programIncrements?.map(pi => (
-                  <SelectItem key={pi.id} value={pi.id}>
-                    {pi.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
             {/* Program Filter */}
             <Select value={selectedProgram} onValueChange={setSelectedProgram}>
               <SelectTrigger className="w-[180px]">
@@ -288,6 +233,11 @@ export default function EpicEstimationPage() {
                 <SelectItem value="all">All Programs</SelectItem>
                 {programs?.map(program => (
                   <SelectItem key={program.id} value={program.id}>
+                    {program.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
                     {program.name}
                   </SelectItem>
                 ))}

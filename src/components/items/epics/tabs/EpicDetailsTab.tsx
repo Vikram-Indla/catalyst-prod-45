@@ -21,8 +21,6 @@ import { CustomFieldsSection } from '@/components/work-items/CustomFieldsSection
 import { WorkItemLabelSelector } from '@/components/work-items/WorkItemLabelSelector';
 import { WorkItemLinksSection } from '@/components/work-items/WorkItemLinksSection';
 import { WorkItemCommentsSection } from '@/components/work-items/WorkItemCommentsSection';
-import { WSJFInlineScores } from '@/components/wsjf';
-import { AddPIDialog } from '../dialogs/AddPIDialog';
 import { AddProgramDialog } from '../dialogs/AddProgramDialog';
 import { RiskDialog } from '@/components/forms/RiskDialog';
 import { toast } from 'sonner';
@@ -32,7 +30,6 @@ interface EpicDetailsTabProps {
 }
 
 export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
-  const [addPIOpen, setAddPIOpen] = useState(false);
   const [addProgramOpen, setAddProgramOpen] = useState(false);
   const [hideDetails, setHideDetails] = useState(false);
   const [acceptanceCriteriaOpen, setAcceptanceCriteriaOpen] = useState(false);
@@ -131,17 +128,7 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
     },
   });
 
-  // Fetch assigned PIs for this epic
-  const { data: epicPIs } = useQuery({
-    queryKey: ['epic-pis', epic.id],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('epic_program_increments')
-        .select('pi_id, program_increments(id, name)')
-        .eq('epic_id', epic.id);
-      return data || [];
-    },
-  });
+  // PI-related query removed - Epics no longer use Program Increments
 
   // Fetch additional programs for this epic
   const { data: additionalPrograms } = useQuery({
@@ -594,42 +581,7 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
           </div>
         </div>
 
-        <div>
-          <Label>Program Increments</Label>
-          <div className="flex flex-wrap gap-2 mt-2">
-            {epicPIs && epicPIs.length > 0 ? (
-              epicPIs.map((epi: any) => (
-                <Badge key={epi.pi_id} variant="outline" className="bg-white">
-                  {epi.program_increments?.name || epi.pi_id}
-                </Badge>
-              ))
-            ) : (
-              <span className="text-sm text-muted-foreground">No PIs assigned</span>
-            )}
-          </div>
-          <Button 
-            size="sm" 
-            className="mt-2 bg-brand-gold hover:bg-brand-gold-hover text-white"
-            onClick={() => setAddPIOpen(true)}
-          >
-            <Plus className="h-3 w-3 mr-1" />
-            Add PI
-          </Button>
-        </div>
-
-        {/* PI-WSJF Prioritization Scores - per Jira Align EpicWSJFFields-2.png */}
-        {epicPIs && epicPIs.length > 0 && (
-          <div>
-            <Label>WSJF Prioritization</Label>
-            <div className="mt-2">
-              <WSJFInlineScores 
-                epicId={epic.id} 
-                epicTitle={epic.name}
-                epicKey={epic.epic_key}
-              />
-            </div>
-          </div>
-        )}
+        {/* Technical Scoring is now managed in the Technical Scoring tab */}
 
         <div>
           <Label>Owner</Label>
@@ -688,13 +640,13 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
           />
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label>Portfolio Ask Date</Label>
+            <Label>Initiation Date</Label>
             <Input 
               type="date" 
-              value={formData.portfolio_ask_date} 
-              onChange={(e) => handleFieldChange('portfolio_ask_date', e.target.value)}
+              value={formData.initiation_date}
+              onChange={(e) => handleFieldChange('initiation_date', e.target.value)}
             />
           </div>
           <div>
@@ -1204,13 +1156,6 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
       <CustomFieldsSection 
         entityType="epic" 
         entityId={epic.id}
-      />
-
-      <AddPIDialog
-        epicId={epic.id}
-        currentPIs={epicPIs?.map((epi: any) => epi.pi_id) || []}
-        open={addPIOpen}
-        onOpenChange={setAddPIOpen}
       />
 
       <AddProgramDialog

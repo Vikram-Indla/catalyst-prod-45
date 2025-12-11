@@ -219,26 +219,20 @@ export function EpicBacklogListView({
                                       {epic.name}
                                     </span>
                                   </div>
-                                  <div className="flex gap-2 flex-wrap">
-                                    <Badge className="bg-warning/10 hover:bg-warning/20 text-warning border-0 text-xs px-2 py-0.5">
-                                      Opportunity
-                                    </Badge>
-                                    <Badge className="bg-accent hover:bg-accent/80 text-foreground border-0 text-xs px-2 py-0.5">
-                                      Sales O...
-                                    </Badge>
-                                    <Badge className="bg-destructive/10 hover:bg-destructive/20 text-destructive border-0 text-xs px-2 py-0.5">
-                                      e2e
-                                    </Badge>
-                                    <Badge className="bg-success/10 hover:bg-success/20 text-success border-0 text-xs px-2 py-0.5">
-                                      PI7
-                                    </Badge>
-                                    <Badge className="bg-muted hover:bg-muted/80 text-muted-foreground border-0 text-xs px-2 py-0.5">
-                                      PI6
-                                    </Badge>
-                                    <Badge className="bg-brand-gold hover:bg-brand-gold-hover text-primary-foreground border-0 text-xs px-2 py-0.5">
-                                      PI5
-                                    </Badge>
-                                  </div>
+                                  {/* Labels for the epic - populated dynamically from labelsMap */}
+                                  {labelsMap?.[epic.id] && labelsMap[epic.id].length > 0 && (
+                                    <div className="flex gap-2 flex-wrap">
+                                      {labelsMap[epic.id].map((label: any) => (
+                                        <Badge 
+                                          key={label.id} 
+                                          style={{ backgroundColor: label.color }} 
+                                          className="text-white border-0 text-xs px-2 py-0.5"
+                                        >
+                                          {label.name}
+                                        </Badge>
+                                      ))}
+                                    </div>
+                                  )}
                                 </div>
                               </TableCell>
                             )}

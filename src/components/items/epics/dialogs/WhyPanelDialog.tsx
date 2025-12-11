@@ -30,9 +30,9 @@ export function WhyPanelDialog({ open, onOpenChange, epic }: WhyPanelDialogProps
     enabled: !!epic?.theme_id && open,
   });
 
-  // Fetch WSJF scores
-  const { data: wsjfScores } = useQuery({
-    queryKey: ['wsjf-for-why', epic?.id],
+  // Fetch Technical Scoring data
+  const { data: technicalScores } = useQuery({
+    queryKey: ['technical-scoring-for-why', epic?.id],
     queryFn: async () => {
       if (!epic?.id) return null;
       const { data, error } = await supabase
@@ -146,10 +146,10 @@ export function WhyPanelDialog({ open, onOpenChange, epic }: WhyPanelDialogProps
                   </div>
                   <div className="text-sm font-medium text-[#1a1a1a]">{theme.name}</div>
                   
-                  {wsjfScores?.global_rank && wsjfScores.global_rank <= 10 && (
+                  {technicalScores?.global_rank && technicalScores.global_rank <= 10 && (
                     <Alert className="bg-primary/10 border-primary/20">
                       <AlertDescription className="text-sm">
-                        <span className="font-semibold text-primary">IS A TOP 10 RANKED</span> item (rank {wsjfScores.global_rank})
+                        <span className="font-semibold text-primary">IS A TOP 10 RANKED</span> item (rank {technicalScores.global_rank})
                       </AlertDescription>
                     </Alert>
                   )}
@@ -166,24 +166,24 @@ export function WhyPanelDialog({ open, onOpenChange, epic }: WhyPanelDialogProps
             </CardContent>
           </Card>
 
-          {/* WSJF Scoring Section */}
+          {/* Technical Scoring Section */}
           <Card className="border border-border/60 bg-card">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium flex items-center gap-2 text-primary">
                 <TrendingUp className="h-4 w-4" />
-                WSJF Scoring
+                Technical Scoring
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {wsjfScores ? (
+              {technicalScores ? (
                 <div className="space-y-3">
                   <div className="grid grid-cols-2 gap-3">
                     <div className="p-3 bg-muted/30 rounded-lg">
-                      <div className="text-2xl font-bold text-primary">{wsjfScores.wsjf_score?.toFixed(1) || '0.0'}</div>
-                      <div className="text-xs text-muted-foreground">WSJF Score</div>
+                      <div className="text-2xl font-bold text-primary">{technicalScores.wsjf_score?.toFixed(1) || '0.0'}</div>
+                      <div className="text-xs text-muted-foreground">Tech Score</div>
                     </div>
                     <div className="p-3 bg-muted/30 rounded-lg">
-                      <div className="text-2xl font-bold text-[#1a1a1a]">#{wsjfScores.global_rank || '-'}</div>
+                      <div className="text-2xl font-bold text-[#1a1a1a]">#{technicalScores.global_rank || '-'}</div>
                       <div className="text-xs text-muted-foreground">Global Rank</div>
                     </div>
                   </div>
@@ -192,25 +192,25 @@ export function WhyPanelDialog({ open, onOpenChange, epic }: WhyPanelDialogProps
                   
                   <div className="grid grid-cols-4 gap-2 text-center">
                     <div>
-                      <div className="text-lg font-semibold">{wsjfScores.business_value || 0}</div>
-                      <div className="text-[10px] text-muted-foreground">Business Value</div>
+                      <div className="text-lg font-semibold">{technicalScores.business_value || 0}</div>
+                      <div className="text-[10px] text-muted-foreground">Technical Value</div>
                     </div>
                     <div>
-                      <div className="text-lg font-semibold">{wsjfScores.time_value || 0}</div>
+                      <div className="text-lg font-semibold">{technicalScores.time_value || 0}</div>
                       <div className="text-[10px] text-muted-foreground">Time Criticality</div>
                     </div>
                     <div>
-                      <div className="text-lg font-semibold">{wsjfScores.rroe_value || 0}</div>
-                      <div className="text-[10px] text-muted-foreground">RR/OE</div>
+                      <div className="text-lg font-semibold">{technicalScores.rroe_value || 0}</div>
+                      <div className="text-[10px] text-muted-foreground">Risk Reduction</div>
                     </div>
                     <div>
-                      <div className="text-lg font-semibold">{wsjfScores.job_size || 0}</div>
+                      <div className="text-lg font-semibold">{technicalScores.job_size || 0}</div>
                       <div className="text-[10px] text-muted-foreground">Job Size</div>
                     </div>
                   </div>
                 </div>
               ) : (
-                <p className="text-sm text-muted-foreground italic">No WSJF scoring currently linked to this epic.</p>
+                <p className="text-sm text-muted-foreground italic">No technical scoring currently configured for this epic.</p>
               )}
             </CardContent>
           </Card>
