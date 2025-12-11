@@ -93,40 +93,32 @@ export const ProjectSelectorDropdown = React.memo(function ProjectSelectorDropdo
   }, [setProgramId, setProgramName]);
 
   return (
-    <div className="w-80 bg-popover rounded shadow-lg overflow-hidden border border-border">
-      {/* HEADER */}
-      <div className="px-4 py-3 border-b border-border">
-        <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground m-0">
-          PROJECTS
-        </h3>
-      </div>
-
-      {/* FILTER CHIP (if program selected) */}
-      {programId && programName && (
-        <div className="px-4 py-2 border-b border-border bg-muted">
-          <div className="inline-flex items-center gap-1 px-2 py-1 bg-muted/80 rounded text-xs text-foreground">
-            <span className="font-medium text-muted-foreground">Filtered by:</span>
-            <span className="font-medium">{programName}</span>
+    <div className="w-80 bg-popover border border-border rounded-md shadow-lg overflow-hidden z-[60]">
+      <div className="p-3 border-b border-border">
+        <p className="text-xs font-semibold text-muted-foreground mb-2">PROJECTS</p>
+        
+        {/* FILTER CHIP (if program selected) */}
+        {programId && programName && (
+          <div className="mb-2 flex items-center gap-2 text-sm">
+            <span className="text-muted-foreground">Filtered by:</span>
+            <span className="font-medium text-foreground">{programName}</span>
             <button
               onClick={handleClearFilter}
-              className="bg-transparent border-none cursor-pointer p-0.5 flex items-center ml-1 hover:text-foreground"
+              className="p-0.5 hover:bg-accent rounded"
             >
               <X className="w-3 h-3 text-muted-foreground" />
             </button>
           </div>
-        </div>
-      )}
-
-      {/* SEARCH */}
-      <div className="p-3 border-b border-border">
+        )}
+        
         <div className="relative">
-          <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             placeholder="Search projects..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-8"
+            className="pr-8 h-9"
           />
+          <Search className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         </div>
       </div>
 
