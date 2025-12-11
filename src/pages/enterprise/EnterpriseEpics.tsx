@@ -178,7 +178,6 @@ export default function EnterpriseEpics() {
                 <TableHead className="w-32">State</TableHead>
                 <TableHead className="w-32">Health</TableHead>
                 <TableHead className="w-40">Theme</TableHead>
-                <TableHead className="w-40">Portfolio</TableHead>
                 <TableHead className="w-40">Program</TableHead>
               </TableRow>
             </TableHeader>
@@ -191,7 +190,7 @@ export default function EnterpriseEpics() {
                 </TableRow>
               ) : epics?.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                     No epics found
                   </TableCell>
                 </TableRow>
@@ -210,9 +209,6 @@ export default function EnterpriseEpics() {
                     <TableCell><HealthBadge health={epic.health} /></TableCell>
                     <TableCell className="text-muted-foreground">
                       {epic.strategic_themes?.name || '-'}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {epic.portfolios?.name || '-'}
                     </TableCell>
                     <TableCell className="text-muted-foreground">
                       {epic.programs?.name || '-'}
