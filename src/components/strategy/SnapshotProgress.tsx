@@ -1,78 +1,290 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Info } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useOKRv2StrategyMetrics } from '@/hooks/useOKRv2StrategyMetrics';
+import { useNavigate } from 'react-router-dom';
 
 interface SnapshotProgressProps {
   snapshotId?: string;
 }
 
-interface StatusRecord {
-  status: string | null;
+interface StatusCounts {
+  total: number;
+  notStarted: number;
+  inProgress: number;
+  completed: number;
 }
 
+interface ProgressData {
+  themes: StatusCounts;
+  epics: StatusCounts;
+  features: StatusCounts;
+  stories: StatusCounts;
+  dependencies: { total: number; resolved: number };
+}
+
+// Status mapping helpers
+const isNotStarted = (status: string | null) => {
+  const s = (status || '').toLowerCase();
+  return ['not_started', 'proposed', 'funnel', 'backlog', 'new', ''].includes(s) || !status;
+};
+
+const isCompleted = (status: string | null) => {
+  const s = (status || '').toLowerCase();
+  return ['done', 'completed', 'accepted', 'closed', 'released'].includes(s);
+};
+
+const isInProgress = (status: string | null) => {
+  return !isNotStarted(status) && !isCompleted(status);
+};
+
 export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
-  // Fetch themes, epics, features progress
+  const navigate = useNavigate();
+
   const { data: progressData, isLoading } = useQuery({
-    queryKey: ['snapshot-progress', snapshotId],
-    queryFn: async () => {
+    queryKey: ['snapshot-progress-jiraalign', snapshotId],
+    queryFn: async (): Promise<ProgressData | null> => {
       if (!snapshotId) return null;
 
-      // Fetch all data - using @ts-ignore to bypass deep type inference issues
-      // @ts-ignore
-      const themesQuery = await supabase.from('strategic_themes').select('status').eq('snapshot_id', snapshotId);
-      // @ts-ignore
-      const epicsQuery = await supabase.from('epics').select('status').is('deleted_at', null);
-      // @ts-ignore
-      const featuresQuery = await supabase.from('features').select('status').is('deleted_at', null);
+      // Fetch themes tied to this snapshot
+      const { data: themes } = await supabase
+        .from('strategic_themes')
+        .select('status')
+        .eq('snapshot_id', snapshotId);
 
-      const themes = (themesQuery.data as StatusRecord[]) || [];
-      const epics = (epicsQuery.data as StatusRecord[]) || [];
-      const features = (featuresQuery.data as StatusRecord[]) || [];
+      // Fetch epics (all active)
+      const { data: epics } = await supabase
+        .from('epics')
+        .select('status, state')
+        .is('deleted_at', null);
 
-      // Calculate stats
-      const totalThemes = themes.length;
-      const acceptedThemes = themes.filter(t => t.status === 'done').length;
-      const totalEpics = epics.length;
-      const acceptedEpics = epics.filter(e => e.status === 'done').length;
-      const totalFeatures = features.length;
-      const acceptedFeatures = features.filter(f => f.status === 'done').length;
+      // Fetch features (all active)
+      const { data: features } = await supabase
+        .from('features')
+        .select('status')
+        .is('deleted_at', null);
+
+      // Fetch stories (all active)
+      const { data: stories } = await supabase
+        .from('stories')
+        .select('status, state')
+        .is('deleted_at', null);
+
+      // Fetch dependencies
+      const { data: dependencies } = await supabase
+        .from('dependencies')
+        .select('status, delivered_at');
+
+      // Calculate status counts for each type
+      const calcCounts = (items: { status?: string | null; state?: string | null }[] | null): StatusCounts => {
+        const list = items || [];
+        return {
+          total: list.length,
+          notStarted: list.filter(i => isNotStarted(i.status || i.state)).length,
+          inProgress: list.filter(i => isInProgress(i.status || i.state)).length,
+          completed: list.filter(i => isCompleted(i.status || i.state)).length,
+        };
+      };
+
+      const depList = dependencies || [];
+      const resolvedDeps = depList.filter(d => 
+        d.delivered_at || ['delivered', 'resolved', 'done', 'completed'].includes((d.status || '').toLowerCase())
+      ).length;
 
       return {
-        themes: { total: totalThemes, accepted: acceptedThemes },
-        epics: { total: totalEpics, accepted: acceptedEpics },
-        features: { total: totalFeatures, accepted: acceptedFeatures },
+        themes: calcCounts(themes),
+        epics: calcCounts(epics),
+        features: calcCounts(features),
+        stories: calcCounts(stories),
+        dependencies: { total: depList.length, resolved: resolvedDeps },
       };
     },
     enabled: !!snapshotId,
   });
 
-  // Fetch OKR v2 objectives metrics
-  const { data: okrMetrics, isLoading: okrLoading } = useOKRv2StrategyMetrics(snapshotId);
+  // Donut chart component matching Jira Align style
+  const DonutDial = ({ 
+    label, 
+    data, 
+    onClick 
+  }: { 
+    label: string; 
+    data: StatusCounts; 
+    onClick?: () => void;
+  }) => {
+    const { total, notStarted, inProgress, completed } = data;
+    const completedPercent = total > 0 ? Math.round((completed / total) * 100) : 0;
+    
+    // Calculate segment percentages for the ring
+    const notStartedPct = total > 0 ? (notStarted / total) * 100 : 100;
+    const inProgressPct = total > 0 ? (inProgress / total) * 100 : 0;
+    const completedPct = total > 0 ? (completed / total) * 100 : 0;
 
-  const getDonutColor = (percent: number) => {
-    if (percent >= 70) return 'hsl(var(--success))';
-    if (percent >= 40) return 'hsl(var(--warning))';
-    return 'hsl(var(--destructive))';
+    // SVG parameters
+    const size = 100;
+    const strokeWidth = 8;
+    const radius = (size - strokeWidth) / 2;
+    const circumference = 2 * Math.PI * radius;
+
+    // Calculate stroke offsets for each segment
+    const completedOffset = 0;
+    const inProgressOffset = (completedPct / 100) * circumference;
+    const notStartedOffset = ((completedPct + inProgressPct) / 100) * circumference;
+
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div 
+              className="flex flex-col items-center cursor-pointer group"
+              onClick={onClick}
+            >
+              <span className="text-sm font-medium text-muted-foreground mb-2 group-hover:text-foreground transition-colors">
+                {label}
+              </span>
+              <div className="relative" style={{ width: size, height: size }}>
+                <svg 
+                  width={size} 
+                  height={size} 
+                  className="transform -rotate-90"
+                >
+                  {/* Background ring (gray for empty/no data) */}
+                  <circle
+                    cx={size / 2}
+                    cy={size / 2}
+                    r={radius}
+                    fill="none"
+                    stroke="hsl(var(--muted))"
+                    strokeWidth={strokeWidth}
+                  />
+                  
+                  {total > 0 && (
+                    <>
+                      {/* Not Started segment (gray) */}
+                      {notStartedPct > 0 && (
+                        <circle
+                          cx={size / 2}
+                          cy={size / 2}
+                          r={radius}
+                          fill="none"
+                          stroke="#94a3b8" // Gray
+                          strokeWidth={strokeWidth}
+                          strokeDasharray={circumference}
+                          strokeDashoffset={circumference - (notStartedPct / 100) * circumference}
+                          style={{ transform: `rotate(${(completedPct + inProgressPct) * 3.6}deg)`, transformOrigin: 'center' }}
+                        />
+                      )}
+                      
+                      {/* In Progress segment (orange/yellow) */}
+                      {inProgressPct > 0 && (
+                        <circle
+                          cx={size / 2}
+                          cy={size / 2}
+                          r={radius}
+                          fill="none"
+                          stroke="#f97316" // Orange
+                          strokeWidth={strokeWidth}
+                          strokeDasharray={circumference}
+                          strokeDashoffset={circumference - (inProgressPct / 100) * circumference}
+                          style={{ transform: `rotate(${completedPct * 3.6}deg)`, transformOrigin: 'center' }}
+                        />
+                      )}
+                      
+                      {/* Completed segment (dark blue/green) */}
+                      {completedPct > 0 && (
+                        <circle
+                          cx={size / 2}
+                          cy={size / 2}
+                          r={radius}
+                          fill="none"
+                          stroke="#1e3a5f" // Dark blue matching screenshot
+                          strokeWidth={strokeWidth}
+                          strokeDasharray={circumference}
+                          strokeDashoffset={circumference - (completedPct / 100) * circumference}
+                        />
+                      )}
+                    </>
+                  )}
+                </svg>
+                
+                {/* Center percentage */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-xl font-semibold text-muted-foreground">
+                    {completedPercent}%
+                  </span>
+                </div>
+              </div>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" className="text-xs">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-[#1e3a5f]" />
+                <span>Completed: {completed} ({completedPct.toFixed(0)}%)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-[#f97316]" />
+                <span>In Progress: {inProgress} ({inProgressPct.toFixed(0)}%)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-[#94a3b8]" />
+                <span>Not Started: {notStarted} ({notStartedPct.toFixed(0)}%)</span>
+              </div>
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
   };
 
-  // Calculate accepted objectives (completed/accepted status)
-  const acceptedObjectives = okrMetrics?.objectives.filter(obj => 
-    ['completed', 'accepted', 'done', 'closed'].includes(obj.status?.toLowerCase() || '')
-  ).length || 0;
-  const totalObjectives = okrMetrics?.count || 0;
-  const objectivesAcceptedPercent = totalObjectives > 0 
-    ? Math.round((acceptedObjectives / totalObjectives) * 100) 
-    : 0;
+  // Progress bar row matching Jira Align style
+  const ProgressRow = ({ 
+    label, 
+    accepted, 
+    total, 
+    onClick 
+  }: { 
+    label: string; 
+    accepted: number; 
+    total: number; 
+    onClick?: () => void;
+  }) => {
+    const percent = total > 0 ? (accepted / total) * 100 : 0;
+    
+    return (
+      <div 
+        className="flex items-center gap-4 py-3 cursor-pointer hover:bg-muted/30 px-2 -mx-2 rounded transition-colors"
+        onClick={onClick}
+      >
+        <span className="text-sm text-muted-foreground min-w-[100px] hover:text-foreground hover:underline">
+          {label}
+        </span>
+        <span className="text-sm text-muted-foreground min-w-[60px] text-right font-medium">
+          {accepted}/{total}
+        </span>
+        <div className="flex-1 h-2.5 bg-muted rounded-full overflow-hidden">
+          <div 
+            className="h-full bg-[#1e3a5f] rounded-full transition-all duration-300"
+            style={{ width: `${percent}%` }}
+          />
+        </div>
+      </div>
+    );
+  };
+
+  // Navigation handlers
+  const handleThemesClick = () => navigate('/enterprise/strategic-backlog?tab=themes');
+  const handleEpicsClick = () => navigate('/items/epics');
+  const handleFeaturesClick = () => navigate('/items/features');
+  const handleStoriesClick = () => navigate('/items/stories');
+  const handleDependenciesClick = () => navigate('/dependencies');
 
   return (
     <Card className="border-l-4 border-l-brand-gold">
-      <CardHeader>
+      <CardHeader className="pb-4">
         <div className="flex items-center gap-2">
-          <CardTitle className="text-lg">Snapshot Progress</CardTitle>
+          <CardTitle className="text-xl font-semibold">Progress</CardTitle>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -80,8 +292,9 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
               </TooltipTrigger>
               <TooltipContent side="right" className="max-w-xs">
                 <p className="text-sm">
-                  Shows counts of work items (Themes, Epics, Features) assigned to the Program Increments in this snapshot. 
-                  <span className="block mt-1 text-muted-foreground">* Values differ from Strategy Pyramid which only counts items linked to Objectives.</span>
+                  Shows progress of work items tied to the strategic snapshot. 
+                  Dials show completion status breakdown. 
+                  Click any item type to manage in its grid.
                 </p>
               </TooltipContent>
             </Tooltip>
@@ -89,134 +302,67 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
-        {isLoading || okrLoading ? (
-          <div className="text-center py-6 text-sm text-muted-foreground">Loading progress data...</div>
+        {isLoading ? (
+          <div className="text-center py-12 text-sm text-muted-foreground">
+            Loading progress data...
+          </div>
         ) : !progressData ? (
-          <div className="text-center py-6 text-sm text-muted-foreground">No progress data available</div>
+          <div className="text-center py-12 text-sm text-muted-foreground">
+            Select a snapshot to view progress
+          </div>
         ) : (
           <>
-            {/* Category Table - Atlaskit/Jira style */}
-            <div className="border border-border rounded-lg overflow-hidden">
-              <table className="w-full border-collapse table-fixed">
-                <colgroup>
-                  <col style={{ width: '30%' }} />
-                  <col style={{ width: '5%' }} />
-                  <col style={{ width: '13.33%' }} />
-                  <col style={{ width: '5%' }} />
-                  <col style={{ width: '5%' }} />
-                  <col style={{ width: '13.33%' }} />
-                  <col style={{ width: '5%' }} />
-                  <col style={{ width: '5%' }} />
-                  <col style={{ width: '13.33%' }} />
-                  <col style={{ width: '5%' }} />
-                </colgroup>
-                <thead>
-                  <tr className="border-b border-border bg-muted/30">
-                    <th className="text-left px-4 py-4 text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-                      Category
-                    </th>
-                    <th></th>
-                    <th className="text-center py-4 text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-                      Themes
-                    </th>
-                    <th></th>
-                    <th></th>
-                    <th className="text-center py-4 text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-                      Epics*
-                    </th>
-                    <th></th>
-                    <th></th>
-                    <th className="text-center py-4 text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-                      Features*
-                    </th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody className="text-sm leading-5">
-                  <tr className="border-b border-border">
-                    <td className="text-left px-4 py-4 font-medium">Total Count</td>
-                    <td></td>
-                    <td className="text-center py-4">{progressData.themes.total}</td>
-                    <td></td>
-                    <td></td>
-                    <td className="text-center py-4">{progressData.epics.total}</td>
-                    <td></td>
-                    <td></td>
-                    <td className="text-center py-4">{progressData.features.total}</td>
-                    <td></td>
-                  </tr>
-                  <tr className="border-b border-border">
-                    <td className="text-left px-4 py-4 font-medium">Accepted</td>
-                    <td></td>
-                    <td className="text-center py-4">—</td>
-                    <td></td>
-                    <td></td>
-                    <td className="text-center py-4">{progressData.epics.accepted}/{progressData.epics.total}</td>
-                    <td></td>
-                    <td></td>
-                    <td className="text-center py-4">{progressData.features.accepted}/{progressData.features.total}</td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td className="text-left px-4 py-4 font-medium">Acceptance %</td>
-                    <td></td>
-                    <td className="text-center py-4">—</td>
-                    <td></td>
-                    <td></td>
-                    <td className="text-center py-4">
-                      <span className="font-semibold" style={{ color: progressData.epics.total > 0 ? getDonutColor(Math.round((progressData.epics.accepted / progressData.epics.total) * 100)) : 'hsl(var(--muted-foreground))' }}>
-                        {progressData.epics.total > 0 ? Math.round((progressData.epics.accepted / progressData.epics.total) * 100) : 0}%
-                      </span>
-                    </td>
-                    <td></td>
-                    <td></td>
-                    <td className="text-center py-4">
-                      <span className="font-semibold" style={{ color: progressData.features.total > 0 ? getDonutColor(Math.round((progressData.features.accepted / progressData.features.total) * 100)) : 'hsl(var(--muted-foreground))' }}>
-                        {progressData.features.total > 0 ? Math.round((progressData.features.accepted / progressData.features.total) * 100) : 0}%
-                      </span>
-                    </td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
+            {/* Four Donut Dials - Themes, Epics, Features (no Capabilities) */}
+            <div className="grid grid-cols-3 gap-4 justify-items-center pb-4 border-b">
+              <DonutDial 
+                label="Themes" 
+                data={progressData.themes} 
+                onClick={handleThemesClick}
+              />
+              <DonutDial 
+                label="Epics" 
+                data={progressData.epics} 
+                onClick={handleEpicsClick}
+              />
+              <DonutDial 
+                label="Features" 
+                data={progressData.features} 
+                onClick={handleFeaturesClick}
+              />
             </div>
 
-            {/* Single Objectives KPI Circle */}
-            <div className="flex justify-center">
-              <div className="flex flex-col items-center">
-                <div className="text-xs font-medium text-muted-foreground mb-2">Objectives</div>
-                <div className="relative w-24 h-24">
-                  <svg className="transform -rotate-90 w-24 h-24">
-                    <circle cx="48" cy="48" r="40" stroke="hsl(var(--muted))" strokeWidth="8" fill="none" />
-                    <circle 
-                      cx="48" 
-                      cy="48" 
-                      r="40" 
-                      stroke={getDonutColor(objectivesAcceptedPercent)} 
-                      strokeWidth="8" 
-                      fill="none" 
-                      strokeDasharray={2 * Math.PI * 40} 
-                      strokeDashoffset={(2 * Math.PI * 40) - ((objectivesAcceptedPercent / 100) * (2 * Math.PI * 40))} 
-                      strokeLinecap="round" 
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-xl font-bold">{objectivesAcceptedPercent}%</span>
-                    <span className="text-xs text-muted-foreground">Accepted</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Single Objectives Progress Bar */}
-            <div className="space-y-3">
-              <div className="space-y-1">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Objectives</span>
-                  <span className="font-medium">{acceptedObjectives} / {totalObjectives}</span>
-                </div>
-                <Progress value={objectivesAcceptedPercent} className="h-2" />
-              </div>
+            {/* Progress Bars - Themes, Epics, Features, Stories, Dependencies */}
+            <div className="space-y-1">
+              <ProgressRow 
+                label="Themes" 
+                accepted={progressData.themes.completed} 
+                total={progressData.themes.total}
+                onClick={handleThemesClick}
+              />
+              <ProgressRow 
+                label="Epics" 
+                accepted={progressData.epics.completed} 
+                total={progressData.epics.total}
+                onClick={handleEpicsClick}
+              />
+              <ProgressRow 
+                label="Features" 
+                accepted={progressData.features.completed} 
+                total={progressData.features.total}
+                onClick={handleFeaturesClick}
+              />
+              <ProgressRow 
+                label="Stories" 
+                accepted={progressData.stories.completed} 
+                total={progressData.stories.total}
+                onClick={handleStoriesClick}
+              />
+              <ProgressRow 
+                label="Dependencies" 
+                accepted={progressData.dependencies.resolved} 
+                total={progressData.dependencies.total}
+                onClick={handleDependenciesClick}
+              />
             </div>
           </>
         )}
