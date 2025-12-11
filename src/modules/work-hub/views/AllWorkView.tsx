@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { Search, ChevronDown, ChevronRight, MoreHorizontal, Download, Columns, Sparkles, LayoutGrid, List } from 'lucide-react';
+import { Search, ChevronDown, ChevronRight, MoreHorizontal, Download, LayoutGrid, List, User, Zap, AlertCircle, CheckSquare, FileText } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Textarea } from '@/components/ui/textarea';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,9 +11,12 @@ import {
   DropdownMenuTrigger,
   DropdownMenuCheckboxItem,
 } from '@/components/ui/dropdown-menu';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
-
-type ViewMode = 'basic' | 'jql';
 
 interface WorkItem {
   id: string;
@@ -76,6 +78,37 @@ const typeColors: Record<string, string> = {
   Subtask: 'bg-cyan-500',
 };
 
+// Mock data for filters
+const mockAssignees = [
+  { id: 'current', name: 'Current User', avatar: '👤' },
+  { id: 'unassigned', name: 'Unassigned', avatar: '○' },
+  { id: '1', name: 'Faisal Javed Paracha', avatar: '👨' },
+  { id: '2', name: 'Hassan Raza Hasrat', avatar: '👨' },
+  { id: '3', name: 'Adnan Ali', avatar: '👨' },
+  { id: '4', name: 'Imran Aslam', avatar: '👨' },
+  { id: '5', name: 'Muhammad Raza Bangi', avatar: '👨' },
+];
+
+const mockTypes = [
+  { id: 'epic', name: 'Epic', icon: Zap, color: 'text-purple-500' },
+  { id: 'business-gap', name: 'Business Gap', icon: AlertCircle, color: 'text-orange-500' },
+  { id: 'change-request', name: 'Change Request', icon: CheckSquare, color: 'text-blue-500' },
+  { id: 'production-incident', name: 'Production Incident', icon: AlertCircle, color: 'text-red-500' },
+  { id: 'backend', name: 'Backend', icon: FileText, color: 'text-cyan-500' },
+];
+
+const mockStatuses = [
+  { id: 'analysis', name: 'ANALYSIS', category: 'todo' },
+  { id: 'awaiting-info', name: 'AWAITING INFO', category: 'todo' },
+  { id: 'backlog', name: 'BACKLOG', category: 'todo' },
+  { id: 'beta-ready', name: 'BETA READY', category: 'in_progress' },
+  { id: 'blocked', name: 'BLOCKED', category: 'todo' },
+  { id: 'closed', name: 'CLOSED', category: 'done' },
+  { id: 'deferred', name: 'DEFERRED FOR INT', category: 'todo' },
+  { id: 'done', name: 'DONE', category: 'done' },
+  { id: 'hold', name: 'HOLD', category: 'todo' },
+];
+
 // Jira-style status lozenge component
 function StatusLozenge({ status, category }: { status: string; category: 'todo' | 'in_progress' | 'done' }) {
   const categoryStyles = {
@@ -94,16 +127,32 @@ function StatusLozenge({ status, category }: { status: string; category: 'todo' 
   );
 }
 
-// Filter chip component matching Jira's style
-function FilterChip({ 
+// Status badge for filter dropdown
+function StatusBadge({ name, category }: { name: string; category: string }) {
+  const categoryStyles: Record<string, string> = {
+    todo: 'bg-slate-100 text-slate-700',
+    in_progress: 'bg-yellow-100 text-yellow-800',
+    done: 'bg-green-100 text-green-700',
+  };
+
+  return (
+    <span className={cn(
+      'inline-flex items-center px-2 py-0.5 rounded text-[10px] leading-[14px] font-semibold uppercase',
+      categoryStyles[category] || 'bg-slate-100 text-slate-700'
+    )}>
+      {name}
+    </span>
+  );
+}
+
+// Filter button component
+function FilterButton({ 
   label, 
-  value, 
-  hasValue = false,
+  isActive,
   onClick 
 }: { 
   label: string; 
-  value?: string; 
-  hasValue?: boolean;
+  isActive?: boolean;
   onClick?: () => void;
 }) {
   return (
@@ -111,26 +160,34 @@ function FilterChip({
       onClick={onClick}
       className={cn(
         'inline-flex items-center gap-1 h-8 px-3 rounded-md border text-[13px] leading-[20px] transition-colors',
-        hasValue 
-          ? 'bg-white border-slate-300 text-slate-900' 
-          : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+        isActive 
+          ? 'bg-blue-600 border-blue-600 text-white' 
+          : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
       )}
     >
       {label}
-      {value && <span className="text-blue-600 font-medium">{value}</span>}
+      <ChevronDown className="h-3.5 w-3.5" />
       <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
     </button>
   );
 }
 
 export function AllWorkView() {
-  const [viewMode, setViewMode] = useState<ViewMode>('basic');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [jqlQuery, setJqlQuery] = useState('project = PROJ ORDER BY created DESC');
   const [showHierarchy, setShowHierarchy] = useState(true);
   const [hideDone, setHideDone] = useState(false);
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set(['1', '2']));
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
+  
+  // Filter states
+  const [assigneeOpen, setAssigneeOpen] = useState(false);
+  const [typeOpen, setTypeOpen] = useState(false);
+  const [statusOpen, setStatusOpen] = useState(false);
+  const [assigneeSearch, setAssigneeSearch] = useState('');
+  const [typeSearch, setTypeSearch] = useState('');
+  const [statusSearch, setStatusSearch] = useState('');
+  const [selectedAssignees, setSelectedAssignees] = useState<Set<string>>(new Set());
+  const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
+  const [selectedStatuses, setSelectedStatuses] = useState<Set<string>>(new Set());
 
   const toggleExpand = (id: string) => {
     const newExpanded = new Set(expandedItems);
@@ -229,12 +286,151 @@ export function AllWorkView() {
         {/* Filter Chips + Right Controls */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <FilterChip label="All..." />
-            <FilterChip label="All..." />
-            <FilterChip label="All..." />
-            <FilterChip label="All..." />
-            <button className="text-[13px] text-slate-600 hover:text-slate-900 px-2">
+            {/* Assignee Filter */}
+            <Popover open={assigneeOpen} onOpenChange={setAssigneeOpen}>
+              <PopoverTrigger asChild>
+                <FilterButton 
+                  label="Assignee" 
+                  isActive={assigneeOpen || selectedAssignees.size > 0} 
+                />
+              </PopoverTrigger>
+              <PopoverContent className="w-72 p-0 bg-white border-slate-200 shadow-lg" align="start">
+                <div className="p-3 border-b border-slate-100">
+                  <div className="text-[13px] text-slate-500 mb-2">Assignee = (equals)</div>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <Input
+                      placeholder="Search Assignee"
+                      value={assigneeSearch}
+                      onChange={(e) => setAssigneeSearch(e.target.value)}
+                      className="pl-9 h-9 text-[14px] border-blue-400 focus:border-blue-500"
+                    />
+                  </div>
+                </div>
+                <div className="max-h-64 overflow-y-auto">
+                  {mockAssignees
+                    .filter(a => a.name.toLowerCase().includes(assigneeSearch.toLowerCase()))
+                    .map((assignee) => (
+                      <label key={assignee.id} className="flex items-center gap-3 px-3 py-2 hover:bg-slate-50 cursor-pointer">
+                        <Checkbox
+                          checked={selectedAssignees.has(assignee.id)}
+                          onCheckedChange={(checked) => {
+                            const newSet = new Set(selectedAssignees);
+                            if (checked) newSet.add(assignee.id);
+                            else newSet.delete(assignee.id);
+                            setSelectedAssignees(newSet);
+                          }}
+                        />
+                        <span className="text-lg">{assignee.avatar}</span>
+                        <span className="text-[14px] text-slate-900">{assignee.name}</span>
+                      </label>
+                    ))}
+                </div>
+                <div className="p-3 border-t border-slate-100">
+                  <button className="text-[13px] text-blue-600 hover:underline">Show full list</button>
+                </div>
+              </PopoverContent>
+            </Popover>
+
+            {/* Type Filter */}
+            <Popover open={typeOpen} onOpenChange={setTypeOpen}>
+              <PopoverTrigger asChild>
+                <FilterButton 
+                  label="Type" 
+                  isActive={typeOpen || selectedTypes.size > 0} 
+                />
+              </PopoverTrigger>
+              <PopoverContent className="w-72 p-0 bg-white border-slate-200 shadow-lg" align="start">
+                <div className="p-3 border-b border-slate-100">
+                  <div className="text-[13px] text-slate-500 mb-2">Type = (equals)</div>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <Input
+                      placeholder="Search Type"
+                      value={typeSearch}
+                      onChange={(e) => setTypeSearch(e.target.value)}
+                      className="pl-9 h-9 text-[14px] border-blue-400 focus:border-blue-500"
+                    />
+                  </div>
+                </div>
+                <div className="max-h-64 overflow-y-auto">
+                  <div className="px-3 py-2 text-[11px] font-semibold text-slate-500 uppercase">Standard work types</div>
+                  {mockTypes
+                    .filter(t => t.name.toLowerCase().includes(typeSearch.toLowerCase()))
+                    .map((type) => {
+                      const Icon = type.icon;
+                      return (
+                        <label key={type.id} className="flex items-center gap-3 px-3 py-2 hover:bg-slate-50 cursor-pointer">
+                          <Checkbox
+                            checked={selectedTypes.has(type.id)}
+                            onCheckedChange={(checked) => {
+                              const newSet = new Set(selectedTypes);
+                              if (checked) newSet.add(type.id);
+                              else newSet.delete(type.id);
+                              setSelectedTypes(newSet);
+                            }}
+                          />
+                          <Icon className={cn('h-4 w-4', type.color)} />
+                          <span className="text-[14px] text-slate-900">{type.name}</span>
+                        </label>
+                      );
+                    })}
+                </div>
+                <div className="p-3 border-t border-slate-100">
+                  <button className="text-[13px] text-blue-600 hover:underline">Show full list</button>
+                </div>
+              </PopoverContent>
+            </Popover>
+
+            {/* Status Filter */}
+            <Popover open={statusOpen} onOpenChange={setStatusOpen}>
+              <PopoverTrigger asChild>
+                <FilterButton 
+                  label="Status" 
+                  isActive={statusOpen || selectedStatuses.size > 0} 
+                />
+              </PopoverTrigger>
+              <PopoverContent className="w-72 p-0 bg-white border-slate-200 shadow-lg" align="start">
+                <div className="p-3 border-b border-slate-100">
+                  <div className="text-[13px] text-slate-500 mb-2">Status = (equals)</div>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <Input
+                      placeholder="Search Status"
+                      value={statusSearch}
+                      onChange={(e) => setStatusSearch(e.target.value)}
+                      className="pl-9 h-9 text-[14px] border-blue-400 focus:border-blue-500"
+                    />
+                  </div>
+                </div>
+                <div className="max-h-64 overflow-y-auto">
+                  {mockStatuses
+                    .filter(s => s.name.toLowerCase().includes(statusSearch.toLowerCase()))
+                    .map((status) => (
+                      <label key={status.id} className="flex items-center gap-3 px-3 py-2 hover:bg-slate-50 cursor-pointer">
+                        <Checkbox
+                          checked={selectedStatuses.has(status.id)}
+                          onCheckedChange={(checked) => {
+                            const newSet = new Set(selectedStatuses);
+                            if (checked) newSet.add(status.id);
+                            else newSet.delete(status.id);
+                            setSelectedStatuses(newSet);
+                          }}
+                        />
+                        <StatusBadge name={status.name} category={status.category} />
+                      </label>
+                    ))}
+                </div>
+                <div className="p-3 border-t border-slate-100 flex justify-between">
+                  <button className="text-[13px] text-blue-600 hover:underline">Show full list</button>
+                  <span className="text-[12px] text-slate-500">{mockStatuses.length} of 32</span>
+                </div>
+              </PopoverContent>
+            </Popover>
+
+            <button className="text-[13px] text-slate-600 hover:text-slate-900 px-2 flex items-center gap-1">
               More filters
+              <ChevronDown className="h-3.5 w-3.5" />
             </button>
           </div>
 
