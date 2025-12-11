@@ -96,9 +96,6 @@ function CustomTooltip({ active, payload }: any) {
         
         <div className="text-muted-foreground">Priority to Execute:</div>
         <div className="font-medium">{PRIORITY_TO_EXECUTE_LABELS[epic.priorityToExecute]}</div>
-        
-        <div className="text-muted-foreground">Ability to Execute:</div>
-        <div className="font-medium">{epic.abilityToExecute}</div>
       </div>
     </div>
   );

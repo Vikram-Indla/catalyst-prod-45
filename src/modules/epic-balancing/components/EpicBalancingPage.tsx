@@ -63,14 +63,6 @@ export function EpicBalancingPage() {
             <p className="text-xs text-muted-foreground">Visual balancing of epics using Technical Score (WSJF)</p>
           </div>
         </div>
-        <Button 
-          variant="ghost" 
-          size="sm"
-          onClick={() => navigate(`/program/${programId}/room`)}
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Program
-        </Button>
       </div>
 
       {/* Content */}
