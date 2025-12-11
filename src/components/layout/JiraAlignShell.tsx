@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation, useParams, Outlet } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { CatalystHeaderAtlaskit } from '@/components/atlaskit/CatalystHeaderAtlaskit';
+import { CatalystHeader } from '@/components/ja/CatalystHeader';
 import { PortfolioRoomSidebar } from './PortfolioRoomSidebar';
 import { ProgramRoomSidebar } from './ProgramRoomSidebar';
 import { TeamRoomSidebar } from '@/components/teams/TeamRoomSidebar';
@@ -117,13 +117,13 @@ function CatalystShellContent() {
 
   return (
     <div className="h-screen flex flex-col bg-background">
-      {/* Global Header - Atlaskit Style */}
+      {/* Global Header - Catalyst Native */}
       <div className="flex items-center">
         {location.pathname !== '/home' && (
           <MobileMenuButton onClick={() => setMobileMenuOpen(true)} />
         )}
         <div className="flex-1">
-          <CatalystHeaderAtlaskit />
+          <CatalystHeader />
         </div>
       </div>
 
