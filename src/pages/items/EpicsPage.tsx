@@ -1,6 +1,11 @@
+/**
+ * Canonical global Epics list view for Catalyst Epics vNext.
+ * All navigation entry points for "Items → Epics" must route here.
+ * Uses canonical EpicDetailsPanel for details drawer.
+ */
 import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
