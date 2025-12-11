@@ -257,7 +257,7 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
         className="flex items-center gap-4 py-3 cursor-pointer hover:bg-muted/30 px-2 -mx-2 rounded transition-colors"
         onClick={onClick}
       >
-        <span className="text-sm text-muted-foreground min-w-[100px] hover:text-foreground hover:underline">
+        <span className="text-sm text-secondary-green min-w-[100px] hover:text-foreground hover:underline">
           {label}
         </span>
         <span className="text-sm text-muted-foreground min-w-[60px] text-right font-medium">
