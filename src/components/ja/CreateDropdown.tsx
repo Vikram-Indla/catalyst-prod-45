@@ -1,6 +1,6 @@
 import { useState, useMemo, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Siren } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useEnabledModules } from "@/hooks/useModules";
 import {
   DropdownMenu,
@@ -11,36 +11,53 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Circle, Square, Box, FileText, Bug, CheckSquare, Target, GitBranch, Lightbulb, AlertTriangle, AlertCircle, FileCheck, Calendar, Package, Flag, Briefcase } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import type { IncidentFormData } from "@/components/incidents/CreateIncidentModal";
+import { workItemConfig, getWorkItemsByCategory } from "@/config/workItemConfig";
 
 // Lazy load the heavy modal component
 const CreateIncidentModal = lazy(() => import("@/components/incidents/CreateIncidentModal").then(m => ({ default: m.CreateIncidentModal })));
 
-// Module mapping for each item - null means always visible
-const workItems = [
-  { label: "Themes", icon: Circle, color: "text-workitem-theme", type: "theme", moduleCode: "PORTFOLIO" },
-  { label: "Business Request", icon: Briefcase, color: "text-brand-gold", type: "business-request", moduleCode: "PRODUCT" },
-  { label: "Epics", icon: Square, color: "text-workitem-epic", type: "epic", moduleCode: "PORTFOLIO" },
-  { label: "Features", icon: Box, color: "text-workitem-feature", type: "feature", moduleCode: "PROGRAM" },
-  { label: "Stories", icon: FileText, color: "text-workitem-story", type: "story", moduleCode: "TEAMS" },
-  { label: "Defects", icon: Bug, color: "text-workitem-defect", type: "defect", moduleCode: "TEAMS" },
-  { label: "Tasks", icon: CheckSquare, color: "text-workitem-subtask", type: "task", moduleCode: "TEAMS" },
-];
+// Get items organized by category from centralized config
+const enterpriseItems = getWorkItemsByCategory('enterprise').map(item => ({
+  label: item.label,
+  icon: item.icon,
+  color: item.color,
+  type: item.key,
+  moduleCode: item.moduleCode,
+}));
 
-const otherItems = [
-  { label: "Objectives", icon: Target, color: "text-brand-gold", type: "objective", moduleCode: "ENTERPRISE" },
-  { label: "Dependencies", icon: GitBranch, color: "text-warning", type: "dependency", moduleCode: "PROGRAM" },
-  { label: "Ideation", icon: Lightbulb, color: "text-warning-600", type: "ideation", moduleCode: "PRODUCT" },
-  { label: "Risks", icon: AlertTriangle, color: "text-destructive", type: "risk", moduleCode: "ENTERPRISE" },
-  { label: "Impediments", icon: AlertCircle, color: "text-warning", type: "impediment", moduleCode: "TEAMS" },
-  { label: "Specifications", icon: FileCheck, color: "text-success", type: "specification", moduleCode: null },
-  { label: "Sprints", icon: Calendar, color: "text-info", type: "sprint", moduleCode: "PROGRAM" },
-  { label: "Program Increments", icon: Package, color: "text-workitem-theme", type: "pi", moduleCode: "PROGRAM" },
-  { label: "Release Vehicles", icon: Flag, color: "text-success-600", type: "release-vehicle", moduleCode: "PROGRAM" },
-  { label: "Incidents", icon: Siren, color: "text-red-600", type: "incident", moduleCode: null },
-];
+const productItems = getWorkItemsByCategory('product').map(item => ({
+  label: item.label,
+  icon: item.icon,
+  color: item.color,
+  type: item.key,
+  moduleCode: item.moduleCode,
+}));
+
+const programItems = getWorkItemsByCategory('program').map(item => ({
+  label: item.label,
+  icon: item.icon,
+  color: item.color,
+  type: item.key,
+  moduleCode: item.moduleCode,
+}));
+
+const projectItems = getWorkItemsByCategory('project').map(item => ({
+  label: item.label,
+  icon: item.icon,
+  color: item.color,
+  type: item.key,
+  moduleCode: item.moduleCode,
+}));
+
+const otherItems = getWorkItemsByCategory('other').map(item => ({
+  label: item.label,
+  icon: item.icon,
+  color: item.color,
+  type: item.key,
+  moduleCode: item.moduleCode,
+}));
 
 export function CreateDropdown() {
   const navigate = useNavigate();
@@ -49,8 +66,23 @@ export function CreateDropdown() {
   const { isModuleEnabled } = useEnabledModules();
 
   // Filter items based on enabled modules
-  const filteredWorkItems = useMemo(() => 
-    workItems.filter(item => item.moduleCode === null || isModuleEnabled(item.moduleCode)),
+  const filteredEnterpriseItems = useMemo(() => 
+    enterpriseItems.filter(item => item.moduleCode === null || isModuleEnabled(item.moduleCode)),
+    [isModuleEnabled]
+  );
+
+  const filteredProductItems = useMemo(() => 
+    productItems.filter(item => item.moduleCode === null || isModuleEnabled(item.moduleCode)),
+    [isModuleEnabled]
+  );
+
+  const filteredProgramItems = useMemo(() => 
+    programItems.filter(item => item.moduleCode === null || isModuleEnabled(item.moduleCode)),
+    [isModuleEnabled]
+  );
+
+  const filteredProjectItems = useMemo(() => 
+    projectItems.filter(item => item.moduleCode === null || isModuleEnabled(item.moduleCode)),
     [isModuleEnabled]
   );
 
@@ -76,16 +108,10 @@ export function CreateDropdown() {
       'feature': '/features?create=true',
       'story': '/stories?create=true',
       'defect': '/items/defects?create=true',
-      'task': '/items/tasks?create=true',
       'objective': '/enterprise/okr-hub?create=true',
       'dependency': '/dependencies?create=true',
-      'ideation': '/items/ideation?create=true',
       'risk': '/enterprise/risks?create=true',
-      'impediment': '/items/impediments?create=true',
-      'specification': '/items/success-criteria?create=true',
-      'sprint': '/sprints?create=true',
-      'pi': '/pis?create=true',
-      'release-vehicle': '/items/release-vehicles?create=true',
+      'incident': '/release/incidents?create=true',
     };
 
     const route = routeMap[type];
@@ -109,6 +135,27 @@ export function CreateDropdown() {
     navigate('/release/incidents');
   };
 
+  const renderSection = (label: string, items: typeof enterpriseItems) => {
+    if (items.length === 0) return null;
+    return (
+      <>
+        <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground uppercase">
+          {label}
+        </DropdownMenuLabel>
+        {items.map((item) => (
+          <DropdownMenuItem
+            key={item.type}
+            onClick={() => handleItemClick(item.type)}
+            className="flex items-center gap-3 py-2 cursor-pointer hover:bg-accent"
+          >
+            <item.icon className={`h-5 w-5 ${item.color}`} />
+            <span className="text-sm">{item.label}</span>
+          </DropdownMenuItem>
+        ))}
+      </>
+    );
+  };
+
   return (
     <>
       <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -125,45 +172,27 @@ export function CreateDropdown() {
           align="end"
           className="w-64 max-h-[600px] overflow-y-auto bg-popover z-50"
         >
-          {filteredWorkItems.length > 0 && (
-            <>
-              <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground uppercase">
-                Work Items
-              </DropdownMenuLabel>
-              {filteredWorkItems.map((item) => (
-                <DropdownMenuItem
-                  key={item.label}
-                  onClick={() => handleItemClick(item.type)}
-                  className="flex items-center gap-3 py-2 cursor-pointer hover:bg-accent"
-                >
-                  <item.icon className={`h-5 w-5 ${item.color}`} />
-                  <span className="text-sm">{item.label}</span>
-                </DropdownMenuItem>
-              ))}
-            </>
-          )}
-
-          {filteredWorkItems.length > 0 && filteredOtherItems.length > 0 && (
+          {renderSection('Enterprise', filteredEnterpriseItems)}
+          
+          {filteredEnterpriseItems.length > 0 && filteredProductItems.length > 0 && (
             <DropdownMenuSeparator className="my-2" />
           )}
-
-          {filteredOtherItems.length > 0 && (
-            <>
-              <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground uppercase">
-                Other
-              </DropdownMenuLabel>
-              {filteredOtherItems.map((item) => (
-                <DropdownMenuItem
-                  key={item.label}
-                  onClick={() => handleItemClick(item.type)}
-                  className="flex items-center gap-3 py-2 cursor-pointer hover:bg-accent"
-                >
-                  <item.icon className={`h-5 w-5 ${item.color}`} />
-                  <span className="text-sm">{item.label}</span>
-                </DropdownMenuItem>
-              ))}
-            </>
+          {renderSection('Product', filteredProductItems)}
+          
+          {filteredProductItems.length > 0 && filteredProgramItems.length > 0 && (
+            <DropdownMenuSeparator className="my-2" />
           )}
+          {renderSection('Program', filteredProgramItems)}
+          
+          {filteredProgramItems.length > 0 && filteredProjectItems.length > 0 && (
+            <DropdownMenuSeparator className="my-2" />
+          )}
+          {renderSection('Project', filteredProjectItems)}
+          
+          {filteredProjectItems.length > 0 && filteredOtherItems.length > 0 && (
+            <DropdownMenuSeparator className="my-2" />
+          )}
+          {renderSection('Other', filteredOtherItems)}
         </DropdownMenuContent>
       </DropdownMenu>
 
