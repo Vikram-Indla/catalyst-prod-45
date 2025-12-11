@@ -126,6 +126,8 @@ export function EpicBalancingPage() {
             onToggleDriver={toggleDriver}
             onReset={resetFilters}
             scoringStats={scoringStats}
+            epics={allEpics}
+            onEpicClick={handleEpicClick}
           />
         </div>
       </div>
