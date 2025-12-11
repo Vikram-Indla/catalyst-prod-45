@@ -238,11 +238,6 @@ export default function EpicEstimationPage() {
                 ))}
               </SelectContent>
             </Select>
-                    {program.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
 
             <Button variant="outline" size="sm">
               <Filter className="h-4 w-4 mr-2" />
@@ -279,11 +274,11 @@ export default function EpicEstimationPage() {
                   <TableHead className="w-16">Rank</TableHead>
                   <TableHead className="w-24">ID</TableHead>
                   <TableHead>Name</TableHead>
-                  <TableHead className="w-32 text-center">Business Value</TableHead>
-                  <TableHead className="w-32 text-center">Time Value</TableHead>
-                  <TableHead className="w-32 text-center">RR/OE Value</TableHead>
+                  <TableHead className="w-32 text-center">Technical Value</TableHead>
+                  <TableHead className="w-32 text-center">Time Criticality</TableHead>
+                  <TableHead className="w-32 text-center">Risk Reduction</TableHead>
                   <TableHead className="w-32 text-center">Job Size</TableHead>
-                  <TableHead className="w-24 text-center">WSJF Score</TableHead>
+                  <TableHead className="w-24 text-center">Tech Score</TableHead>
                   <TableHead className="w-20 text-center">MVP</TableHead>
                 </TableRow>
               </TableHeader>
@@ -299,8 +294,8 @@ export default function EpicEstimationPage() {
                     </TableCell>
                     <TableCell>
                       <Select
-                        value={String(getWSJFValue(epic, 'business_value') || '')}
-                        onValueChange={(v) => updateWSJFMutation.mutate({ 
+                        value={String(getScoringValue(epic, 'business_value') || '')}
+                        onValueChange={(v) => updateScoringMutation.mutate({ 
                           epicId: epic.id, 
                           field: 'business_value', 
                           value: parseInt(v) 
@@ -318,8 +313,8 @@ export default function EpicEstimationPage() {
                     </TableCell>
                     <TableCell>
                       <Select
-                        value={String(getWSJFValue(epic, 'time_value') || '')}
-                        onValueChange={(v) => updateWSJFMutation.mutate({ 
+                        value={String(getScoringValue(epic, 'time_value') || '')}
+                        onValueChange={(v) => updateScoringMutation.mutate({ 
                           epicId: epic.id, 
                           field: 'time_value', 
                           value: parseInt(v) 
@@ -337,8 +332,8 @@ export default function EpicEstimationPage() {
                     </TableCell>
                     <TableCell>
                       <Select
-                        value={String(getWSJFValue(epic, 'rroe_value') || '')}
-                        onValueChange={(v) => updateWSJFMutation.mutate({ 
+                        value={String(getScoringValue(epic, 'rroe_value') || '')}
+                        onValueChange={(v) => updateScoringMutation.mutate({ 
                           epicId: epic.id, 
                           field: 'rroe_value', 
                           value: parseInt(v) 
@@ -356,8 +351,8 @@ export default function EpicEstimationPage() {
                     </TableCell>
                     <TableCell>
                       <Select
-                        value={String(getWSJFValue(epic, 'job_size') || '')}
-                        onValueChange={(v) => updateWSJFMutation.mutate({ 
+                        value={String(getScoringValue(epic, 'job_size') || '')}
+                        onValueChange={(v) => updateScoringMutation.mutate({ 
                           epicId: epic.id, 
                           field: 'job_size', 
                           value: parseInt(v) 
@@ -374,9 +369,9 @@ export default function EpicEstimationPage() {
                       </Select>
                     </TableCell>
                     <TableCell className="text-center">
-                      {getWSJFScore(epic) !== null ? (
+                      {getTechScore(epic) !== null ? (
                         <Badge variant="secondary" className="font-mono">
-                          {getWSJFScore(epic)}
+                          {getTechScore(epic)}
                         </Badge>
                       ) : (
                         <span className="text-muted-foreground">-</span>
@@ -405,21 +400,21 @@ export default function EpicEstimationPage() {
             </Table>
           </Card>
         ) : (
-          /* Column View (WSJF Board) */
+          /* Column View (Technical Scoring Board) */
           <div className="space-y-4">
-            {/* WSJF Field Tabs */}
+            {/* Scoring Field Tabs */}
             <div className="flex items-center gap-4">
-              <Tabs value={activeWSJFField} onValueChange={(v) => setActiveWSJFField(v as WSJFField)}>
+              <Tabs value={activeScoringField} onValueChange={(v) => setActiveScoringField(v as ScoringField)}>
                 <TabsList>
-                  <TabsTrigger value="business_value">Business Value</TabsTrigger>
-                  <TabsTrigger value="time_value">Time Value</TabsTrigger>
-                  <TabsTrigger value="rroe_value">RR/OE Value</TabsTrigger>
+                  <TabsTrigger value="business_value">Technical Value</TabsTrigger>
+                  <TabsTrigger value="time_value">Time Criticality</TabsTrigger>
+                  <TabsTrigger value="rroe_value">Risk Reduction</TabsTrigger>
                   <TabsTrigger value="job_size">Job Size</TabsTrigger>
                 </TabsList>
               </Tabs>
               <Button variant="outline" size="sm">
                 <Eye className="h-4 w-4 mr-2" />
-                WSJF Score Preview
+                Tech Score Preview
               </Button>
             </div>
 
@@ -471,7 +466,7 @@ export default function EpicEstimationPage() {
                 </Droppable>
 
                 {/* Fibonacci Columns */}
-                {WSJF_COLUMNS.map(col => (
+                {SCORING_COLUMNS.map(col => (
                   <Droppable key={col} droppableId={col}>
                     {(provided, snapshot) => (
                       <div
@@ -505,9 +500,9 @@ export default function EpicEstimationPage() {
                                   <div className="text-sm font-medium truncate mt-1">
                                     {epic.name}
                                   </div>
-                                  {getWSJFScore(epic) !== null && (
+                                  {getTechScore(epic) !== null && (
                                     <Badge variant="outline" className="mt-2 text-xs">
-                                      WSJF: {getWSJFScore(epic)}
+                                      Tech Score: {getTechScore(epic)}
                                     </Badge>
                                   )}
                                 </Card>
@@ -524,7 +519,7 @@ export default function EpicEstimationPage() {
             </DragDropContext>
 
             <p className="text-sm text-muted-foreground text-center">
-              Drag epic cards to columns to set {wsjfFieldLabels[activeWSJFField]} values
+              Drag epic cards to columns to set {scoringFieldLabels[activeScoringField]} values
             </p>
           </div>
         )}
