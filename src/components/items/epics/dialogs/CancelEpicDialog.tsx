@@ -60,7 +60,8 @@ export function CancelEpicDialog({
         <AlertDialogHeader>
           <AlertDialogTitle>Cancel Epic</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to cancel "{epicName}"? This will set the epic state to "Cancelled".
+            Are you sure you want to cancel "{epicName}"? 
+            All linked Features will be disassociated from this Epic but will remain in the backlog.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

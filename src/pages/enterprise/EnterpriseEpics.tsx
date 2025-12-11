@@ -142,7 +142,7 @@ export default function EnterpriseEpics() {
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => navigate('/items/epics/estimation')}>
                 <Calculator className="h-4 w-4 mr-2" />
-                WSJF Estimation
+                Technical Scoring
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>

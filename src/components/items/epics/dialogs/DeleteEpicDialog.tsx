@@ -58,6 +58,7 @@ export function DeleteEpicDialog({
           <AlertDialogTitle>Delete Epic</AlertDialogTitle>
           <AlertDialogDescription>
             Are you sure you want to delete "{epicName}"? This will move the epic to the recycle bin.
+            All linked Features will be disassociated from this Epic but will remain in the backlog.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

@@ -154,7 +154,7 @@ export function EpicBacklogListView({
               {visibleColumns.includes('epic_key') && <TableHead className="w-32">Epic Key</TableHead>}
               <TableHead className="w-12"></TableHead>
               {visibleColumns.includes('name') && <TableHead className="min-w-[400px]">Epic</TableHead>}
-              {visibleColumns.includes('wsjf') && <TableHead className="w-32 text-right">WSJF<br/>Prioritization</TableHead>}
+              {visibleColumns.includes('wsjf') && <TableHead className="w-32 text-right">Tech Score</TableHead>}
             </TableRow>
           </TableHeader>
           <Droppable droppableId="epics-list">
