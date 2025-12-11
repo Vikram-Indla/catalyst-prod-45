@@ -58,6 +58,7 @@ import Roadmaps from "./pages/Roadmaps";
 import DependenciesPage from "./pages/work/Dependencies";
 import PortfolioInsights from "./pages/PortfolioInsights";
 import ProgramRoom from "./pages/ProgramRoom";
+import ProgramEpicsPage from "./pages/ProgramEpicsPage";
 import ProgramBoardNew from "./pages/ProgramBoardNew";
 import ProgramBoardWithSidebar from "./pages/ProgramBoardWithSidebar";
 import ProgramBoardOld from "./pages/ProgramBoard";
@@ -296,6 +297,7 @@ const App = () => (
               <Route path="/program/:programId/okr-hub" element={<OKRHub />} />
               <Route path="/program/:programId/work-tree" element={<WorkTreePage />} />
               <Route path="/program/:programId/room" element={<ProgramRoom />} />
+              <Route path="/program/:programId/epics" element={<ProgramEpicsPage />} />
               <Route path="/program/:programId/epic-backlog" element={<EpicBacklogWithSidebar />} />
               <Route path="/program/:programId/features" element={<FeaturesWithSidebar />} />
               <Route path="/program/:programId/program-board" element={<ProgramBoardWithSidebar />} />
