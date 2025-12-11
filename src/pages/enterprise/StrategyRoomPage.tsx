@@ -12,7 +12,7 @@ import { StrategicGoalsWidget } from '@/components/strategy/StrategicGoalsWidget
 import { StrategyPyramid } from '@/components/strategy/StrategyPyramid';
 import { SnapshotProgress } from '@/components/strategy/SnapshotProgress';
 import { MisalignedWorkItems } from '@/components/strategy/MisalignedWorkItems';
-import { OkrHeatmap } from '@/components/strategy/OkrHeatmap';
+
 import { OkrTree } from '@/components/strategy/OkrTree';
 import { ObjectiveDrawerV2 } from '@/modules/okr-v2';
 import { CreateStrategyItemDropdown } from '@/components/strategy/CreateStrategyItemDropdown';
@@ -272,16 +272,6 @@ export default function StrategyRoomPage() {
             />
           </div>
 
-          {/* OKR Heatmap - Scrollable on mobile */}
-          <div className="overflow-x-auto -mx-3 sm:mx-0">
-            <div className="min-w-[400px] px-3 sm:px-0">
-              <OkrHeatmap
-                selectedSnapshot={effectiveSelectedSnapshotId}
-                programIncrements={selectedPIs}
-                onCellClick={handleHeatmapCellClick}
-              />
-            </div>
-          </div>
 
           {/* OKR Tree */}
           <OkrTree
