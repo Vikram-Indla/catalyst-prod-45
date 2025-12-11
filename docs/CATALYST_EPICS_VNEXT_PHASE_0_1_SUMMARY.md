@@ -488,3 +488,63 @@ Added to `BacklogColumnsDialog` for Epic Backlog mode:
 | Feature Counts column renders when enabled | ✅ |
 | Strategy Context shows "No linkage" message when empty | ✅ |
 | Strategy Context would show Theme/Objectives when linked | ⏳ (needs test data) |
+
+---
+
+## Epic vNext Hardening Round 2 (Critical Blocking Defects)
+
+### Issues Fixed
+
+#### 1. Duplicate Date Fields in Epic Details - FIXED
+- **Problem**: Two "Initiation Date" fields were shown in EpicDetailsTab.tsx
+- **Solution**: Corrected to show one "Initiation Date" and one "Target Completion Date"
+- **Location**: `src/components/items/epics/tabs/EpicDetailsTab.tsx` lines 643-669
+- **Canonical fields**: `initiation_date`, `target_completion_date` from epics table
+
+#### 2. WSJF Fully Removed from Epic UI - FIXED
+- **Estimation Dropdown**: `wsjf` option replaced with `technical_scoring`
+- **Tab Value**: Changed from `value="wsjf"` to `value="technical-scoring"`
+- **PanelTabs**: `id: 'wsjf'` changed to `id: 'technical-scoring'`
+- **All references now use "Technical Scoring" terminology**
+
+Files updated:
+| File | Change |
+|------|--------|
+| `src/components/items/epics/tabs/EpicDetailsTab.tsx` | Estimation dropdown: `wsjf` → `technical_scoring` |
+| `src/components/items/epics/EpicDetailsPanel.tsx` | Tab trigger/content: `wsjf` → `technical-scoring` |
+| `src/components/backlog/DetailPanel/PanelTabs.tsx` | Tab id: `wsjf` → `technical-scoring` |
+
+#### 3. Column Configuration - VERIFIED WORKING
+- `BacklogStateProvider` correctly manages `columnsShown` state
+- URL sync preserves column preferences via `columns` query param
+- `BacklogSection` passes `columnsShown` to `BacklogItemRow`
+- Row component conditionally renders columns based on `showColumn(key)`
+- Epic Backlog defaults: `id, name, state, owner, progress, featureCounts, totalEstimate, technicalScore, businessScore`
+
+#### 4. Strategy Context - ENHANCED with Key Results
+- **Previous**: Only showed Theme name
+- **Now**: Shows Theme + Objectives + Key Results with progress bars
+- Query fetches `objectives` and joins `key_results` table
+- Each Objective card shows:
+  - Name, tier badge, health badge, overall progress
+  - Nested Key Results with individual progress bars
+- "Open in Strategy Room" deep-links to OKR Hub with correct filters
+
+Files updated:
+| File | Change |
+|------|--------|
+| `src/components/items/epics/EpicStrategyContext.tsx` | Added KR fetching and rendering |
+
+### Validation Checklist (Round 2)
+
+| Item | Status |
+|------|--------|
+| Only ONE set of date fields (Initiation + Target Completion) | ✅ |
+| No "WSJF" text in any Epic UI | ✅ |
+| Estimation dropdown shows "Technical Scoring" not "WSJF" | ✅ |
+| Tab trigger shows "Technical Scoring" | ✅ |
+| Column config updates table when toggled | ✅ |
+| Strategy Context shows Theme | ✅ |
+| Strategy Context shows Objectives | ✅ |
+| Strategy Context shows Key Results with progress | ✅ |
+| "Open in Strategy Room" links correctly | ✅ |

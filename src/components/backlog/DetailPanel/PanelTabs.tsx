@@ -15,7 +15,7 @@ const TABS: TabConfig[] = [
   { id: 'milestones', label: 'Milestones', icon: <Target className="w-4 h-4" /> },
   { id: 'spend', label: 'Spend', icon: <DollarSign className="w-4 h-4" /> },
   { id: 'forecast', label: 'Forecast', icon: <BarChart3 className="w-4 h-4" /> },
-  { id: 'wsjf', label: 'WSJF', icon: <Zap className="w-4 h-4" /> },
+  { id: 'technical-scoring', label: 'Technical Scoring', icon: <Zap className="w-4 h-4" /> },
   { id: 'links', label: 'Links', icon: <LinkIcon className="w-4 h-4" /> },
 ];
 

@@ -4,12 +4,13 @@
  * =====================================================
  * Catalyst Epics vNext Phase II - Step 2
  * 
- * Displays linked Theme and Objectives for an Epic.
+ * Displays linked Theme, Objectives, and Key Results for an Epic.
  * Read-only summary with deep link to Strategy Room.
  * 
  * Linkage model:
  * - Direct: epic.theme_id → strategic_themes
  * - Link tables: objective_epic_links, theme_epic_links
+ * - OKR v2: objectives → key_results
  */
 
 import { useQuery } from '@tanstack/react-query';
@@ -17,12 +18,14 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 import { 
   Target, 
   Palette, 
   ExternalLink, 
   Info,
-  TrendingUp
+  TrendingUp,
+  BarChart3
 } from 'lucide-react';
 
 interface EpicStrategyContextProps {
@@ -38,12 +41,20 @@ interface ThemeData {
   color_tag?: string;
 }
 
+interface KeyResultData {
+  id: string;
+  name: string;
+  current_value?: number | null;
+  target_value?: number | null;
+}
+
 interface ObjectiveData {
   id: string;
   name: string;
   health?: string;
   key_result_progress?: number;
   tier?: string;
+  key_results?: KeyResultData[];
 }
 
 export function EpicStrategyContext({ epicId, themeId, compact = false }: EpicStrategyContextProps) {
@@ -84,9 +95,9 @@ export function EpicStrategyContext({ epicId, themeId, compact = false }: EpicSt
     enabled: !!epicId,
   });
 
-  // Fetch linked objectives via objective_epic_links with separate query for objectives
+  // Fetch linked objectives via objective_epic_links with key results
   const { data: objectives = [] } = useQuery({
-    queryKey: ['epic-strategy-objectives', epicId],
+    queryKey: ['epic-strategy-objectives-with-krs', epicId],
     queryFn: async (): Promise<ObjectiveData[]> => {
       // First get the links
       const { data: links } = await supabase
@@ -103,7 +114,24 @@ export function EpicStrategyContext({ epicId, themeId, compact = false }: EpicSt
         .select('id, name, health, key_result_progress, tier')
         .in('id', objectiveIds);
 
-      return (objectivesData || []) as ObjectiveData[];
+      if (!objectivesData || objectivesData.length === 0) return [];
+
+      // Fetch key results for each objective
+      const { data: keyResults } = await supabase
+        .from('key_results')
+        .select('id, name, current_value, target_value, objective_id')
+        .in('objective_id', objectiveIds);
+
+      // Map key results to their objectives
+      return objectivesData.map(obj => ({
+        ...obj,
+        key_results: (keyResults || []).filter(kr => kr.objective_id === obj.id).map(kr => ({
+          id: kr.id,
+          name: kr.name,
+          current_value: kr.current_value,
+          target_value: kr.target_value,
+        }))
+      })) as ObjectiveData[];
     },
     enabled: !!epicId,
   });
@@ -138,6 +166,12 @@ export function EpicStrategyContext({ epicId, themeId, compact = false }: EpicSt
       case 'red': return 'destructive';
       default: return 'outline';
     }
+  };
+
+  // Calculate KR progress
+  const getKRProgress = (kr: KeyResultData): number => {
+    if (!kr.target_value || kr.target_value === 0) return 0;
+    return Math.round(((kr.current_value || 0) / kr.target_value) * 100);
   };
 
   // Compact version for backlog columns
@@ -189,7 +223,7 @@ export function EpicStrategyContext({ epicId, themeId, compact = false }: EpicSt
           No Strategy / OKR linkage defined for this Epic.
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {/* Theme section */}
           {theme && (
             <div className="space-y-1.5">
@@ -200,7 +234,7 @@ export function EpicStrategyContext({ epicId, themeId, compact = false }: EpicSt
               <div className="flex items-center gap-2">
                 <div 
                   className="w-2.5 h-2.5 rounded-full" 
-                  style={{ backgroundColor: theme.color_tag || '#c69c6d' }}
+                  style={{ backgroundColor: theme.color_tag || 'hsl(var(--primary))' }}
                 />
                 <span className="text-sm font-medium">{theme.name}</span>
                 {theme.status && (
@@ -212,43 +246,65 @@ export function EpicStrategyContext({ epicId, themeId, compact = false }: EpicSt
             </div>
           )}
 
-          {/* Objectives section */}
+          {/* Objectives section with Key Results */}
           {objectives.length > 0 && (
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <div className="text-xs text-muted-foreground flex items-center gap-1.5">
                 <Target className="h-3 w-3" />
                 Linked Objectives ({objectives.length})
               </div>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {objectives.map(obj => (
-                  <button
-                    key={obj.id}
-                    onClick={() => handleOpenObjective(obj.id)}
-                    className="w-full flex items-center justify-between p-2 rounded-md hover:bg-muted/50 transition-colors text-left group"
-                  >
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <span className="text-sm truncate">{obj.name}</span>
-                      {obj.tier && (
-                        <Badge variant="outline" className="text-xs h-5 capitalize shrink-0">
-                          {obj.tier}
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      {obj.health && (
-                        <Badge variant={getHealthVariant(obj.health)} className="text-xs h-5 capitalize">
-                          {obj.health.replace('_', ' ')}
-                        </Badge>
-                      )}
-                      {typeof obj.key_result_progress === 'number' && (
-                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                          <TrendingUp className="h-3 w-3" />
-                          {Math.round(obj.key_result_progress)}%
+                  <div key={obj.id} className="bg-background/50 rounded-md border border-border/30 overflow-hidden">
+                    <button
+                      onClick={() => handleOpenObjective(obj.id)}
+                      className="w-full flex items-center justify-between p-2.5 hover:bg-muted/30 transition-colors text-left group"
+                    >
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        <span className="text-sm font-medium truncate">{obj.name}</span>
+                        {obj.tier && (
+                          <Badge variant="outline" className="text-xs h-5 capitalize shrink-0">
+                            {obj.tier}
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        {obj.health && (
+                          <Badge variant={getHealthVariant(obj.health)} className="text-xs h-5 capitalize">
+                            {obj.health.replace('_', ' ')}
+                          </Badge>
+                        )}
+                        {typeof obj.key_result_progress === 'number' && (
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <TrendingUp className="h-3 w-3" />
+                            {Math.round(obj.key_result_progress)}%
+                          </div>
+                        )}
+                        <ExternalLink className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                    </button>
+                    
+                    {/* Key Results */}
+                    {obj.key_results && obj.key_results.length > 0 && (
+                      <div className="border-t border-border/30 px-2.5 py-2 space-y-1.5">
+                        <div className="text-xs text-muted-foreground flex items-center gap-1">
+                          <BarChart3 className="h-3 w-3" />
+                          Key Results ({obj.key_results.length})
                         </div>
-                      )}
-                      <ExternalLink className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </div>
-                  </button>
+                        {obj.key_results.map(kr => (
+                          <div key={kr.id} className="flex items-center gap-2 text-xs">
+                            <span className="truncate flex-1 text-muted-foreground">{kr.name}</span>
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              <Progress value={getKRProgress(kr)} className="h-1.5 w-12" />
+                              <span className="text-muted-foreground w-8 text-right">
+                                {getKRProgress(kr)}%
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 ))}
               </div>
             </div>
