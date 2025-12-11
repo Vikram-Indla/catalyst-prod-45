@@ -1,11 +1,10 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 
 // Catalyst/shadcn imports
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   DropdownMenu,
@@ -35,15 +34,15 @@ import {
   Plus, 
   MoreHorizontal,
   AlertTriangle,
-  Settings,
-  Bookmark,
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
-  X
+  Bookmark,
+  ChevronsLeft,
+  ChevronsRight
 } from 'lucide-react';
 
-// Catalyst Demand-specific modals (new)
+// Catalyst Demand-specific modals
 import { DemandBulkStatusModal } from '@/components/demand/DemandBulkStatusModal';
 import { DemandBulkAssignModal } from '@/components/demand/DemandBulkAssignModal';
 import { DemandBulkDeleteModal } from '@/components/demand/DemandBulkDeleteModal';
@@ -65,29 +64,31 @@ import { cn } from '@/lib/utils';
 type ViewMode = 'list' | 'kanban';
 type SortOrder = 'ASC' | 'DESC';
 
-// Status badge variant mapping
-const getStatusVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
-  const statusUpper = status?.toUpperCase() || '';
-  if (['IMPLEMENT', 'READY_TO_IMPLEMENT', 'CLOSED'].includes(statusUpper)) return 'default';
-  if (['NEW REQUEST', 'NEW_REQUEST'].includes(statusUpper)) return 'secondary';
-  if (['REJECTED'].includes(statusUpper)) return 'destructive';
-  return 'outline';
-};
-
-const getStatusColor = (status: string): string => {
-  const statusUpper = status?.toUpperCase() || '';
-  const mapping: Record<string, string> = {
-    'IMPLEMENT': 'bg-emerald-500 text-white',
-    'READY_TO_IMPLEMENT': 'bg-blue-500 text-white',
-    'NEW REQUEST': 'bg-sky-500 text-white',
-    'NEW_REQUEST': 'bg-sky-500 text-white',
-    'ANALYSE': 'bg-amber-500 text-white',
-    'APPROVED': 'bg-violet-500 text-white',
-    'CLOSED': 'bg-neutral-500 text-white',
-    'ON_HOLD': 'bg-amber-400 text-black',
-    'REJECTED': 'bg-red-500 text-white',
-  };
-  return mapping[statusUpper] || 'bg-muted text-muted-foreground';
+// Process Step lozenge styles matching production
+const getProcessStepStyle = (status: string): string => {
+  const statusLower = status?.toLowerCase() || '';
+  if (statusLower === 'implement' || statusLower === 'ready_to_implement') {
+    return 'bg-[#e8f5e9] text-[#2e7d32] border border-[#c8e6c9]';
+  }
+  if (statusLower === 'new_request' || statusLower === 'new request') {
+    return 'bg-[#fff3e0] text-[#e65100] border border-[#ffe0b2]';
+  }
+  if (statusLower === 'closed') {
+    return 'bg-[#e3f2fd] text-[#1565c0] border border-[#bbdefb]';
+  }
+  if (statusLower === 'analyse' || statusLower === 'in_review') {
+    return 'bg-[#fce4ec] text-[#c2185b] border border-[#f8bbd9]';
+  }
+  if (statusLower === 'approved') {
+    return 'bg-[#e8eaf6] text-[#3949ab] border border-[#c5cae9]';
+  }
+  if (statusLower === 'on_hold') {
+    return 'bg-[#fff8e1] text-[#f9a825] border border-[#ffecb3]';
+  }
+  if (statusLower === 'rejected') {
+    return 'bg-[#ffebee] text-[#c62828] border border-[#ffcdd2]';
+  }
+  return 'bg-muted text-muted-foreground';
 };
 
 const formatDate = (dateStr: string | null) => {
@@ -107,22 +108,21 @@ const calculateAgeing = (createdAt: string | null): number => {
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 };
 
-const ITEMS_PER_PAGE = 20;
-
-// Responsive hook
-const useResponsive = () => {
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-  return isMobile;
+// Get health dot color based on target date
+const getHealthDotColor = (endDate: string | null): string => {
+  if (!endDate) return 'bg-amber-500';
+  const target = new Date(endDate);
+  const now = new Date();
+  const daysUntil = Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+  
+  if (daysUntil < 0) return 'bg-red-500'; // Overdue
+  if (daysUntil <= 7) return 'bg-amber-500'; // At risk
+  return 'bg-emerald-500'; // On track
 };
 
+const ITEMS_PER_PAGE = 20;
+
 export default function DemandIntakeCatalyst() {
-  const isMobile = useResponsive();
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
@@ -134,7 +134,6 @@ export default function DemandIntakeCatalyst() {
   const [filters, setFilters] = useState<SmartFilters>({});
   const [sortKey, setSortKey] = useState<string>('rank');
   const [sortOrder, setSortOrder] = useState<SortOrder>('ASC');
-  const [quickFilter, setQuickFilter] = useState<string | null>(null);
   
   // Modal states
   const [bulkStatusModalOpen, setBulkStatusModalOpen] = useState(false);
@@ -142,21 +141,6 @@ export default function DemandIntakeCatalyst() {
   const [bulkDeleteModalOpen, setBulkDeleteModalOpen] = useState(false);
   const [columnsModalOpen, setColumnsModalOpen] = useState(false);
   const [exportModalOpen, setExportModalOpen] = useState(false);
-  
-  // Column configuration
-  const [columnConfig, setColumnConfig] = useState<{ key: string; label: string; visible: boolean; required?: boolean }[]>([
-    { key: 'checkbox', label: 'Select', visible: true, required: true },
-    { key: 'request_key', label: 'Request ID', visible: true, required: true },
-    { key: 'title', label: 'Summary', visible: true, required: true },
-    { key: 'process_step', label: 'Process Step', visible: true },
-    { key: 'rank', label: 'Rank', visible: true },
-    { key: 'delivery_platform', label: 'Delivery Platform', visible: true },
-    { key: 'business_owner', label: 'Business Owner', visible: true },
-    { key: 'planned_quarter', label: 'Quarter', visible: true },
-    { key: 'end_date', label: 'Target Date', visible: true },
-    { key: 'department', label: 'Department', visible: true },
-    { key: 'actions', label: 'Actions', visible: true, required: true },
-  ]);
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -198,38 +182,11 @@ export default function DemandIntakeCatalyst() {
     return value !== undefined && value !== '' && value !== null;
   }).length;
 
-  // Quick filters data
-  const quickFilters = useMemo(() => {
-    if (!requests) return [];
-    const newCount = requests.filter((r: any) => r.process_step === 'new_request').length;
-    const inProgressCount = requests.filter((r: any) => ['analyse', 'approved', 'ready_to_implement', 'implement'].includes(r.process_step)).length;
-    const closedCount = requests.filter((r: any) => r.process_step === 'closed').length;
-    const myRequests = requests.filter((r: any) => r.assignee).length;
-    
-    return [
-      { key: 'new', label: 'New', count: newCount },
-      { key: 'in-progress', label: 'In Progress', count: inProgressCount },
-      { key: 'closed', label: 'Closed', count: closedCount },
-      { key: 'my-requests', label: 'My Requests', count: myRequests },
-    ];
-  }, [requests]);
-
   // Process and sort data
   const sortedRequests = useMemo(() => {
     if (!requests || requests.length === 0) return [];
     
     let filtered = [...requests];
-
-    // Apply quick filter
-    if (quickFilter === 'new') {
-      filtered = filtered.filter((r: any) => r.process_step === 'new_request');
-    } else if (quickFilter === 'in-progress') {
-      filtered = filtered.filter((r: any) => ['analyse', 'approved', 'ready_to_implement', 'implement'].includes(r.process_step));
-    } else if (quickFilter === 'closed') {
-      filtered = filtered.filter((r: any) => r.process_step === 'closed');
-    } else if (quickFilter === 'my-requests') {
-      filtered = filtered.filter((r: any) => r.assignee);
-    }
 
     // Apply filters
     if (filters.processStep && filters.processStep.length > 0) {
@@ -260,7 +217,7 @@ export default function DemandIntakeCatalyst() {
       ...req,
       displayRank: idx + 1
     }));
-  }, [requests, filters, sortKey, sortOrder, quickFilter]);
+  }, [requests, filters, sortKey, sortOrder]);
 
   const totalPages = Math.ceil(sortedRequests.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -290,6 +247,7 @@ export default function DemandIntakeCatalyst() {
         'Ageing': req.created_at ? calculateAgeing(req.created_at) : '',
         'Quarter': req.planned_quarter || '',
         'Target Date': req.end_date ? formatDate(req.end_date) : '',
+        'Department': req.department || '',
       }));
       
       const headers = Object.keys(exportData[0]);
@@ -372,89 +330,94 @@ export default function DemandIntakeCatalyst() {
   };
 
   const isAllSelected = selectedRows.length === paginatedRequests.length && paginatedRequests.length > 0;
-  const isIndeterminate = selectedRows.length > 0 && selectedRows.length < paginatedRequests.length;
-
-  // Visible columns based on config
-  const visibleColumnKeys = columnConfig.filter(c => c.visible).map(c => c.key);
 
   const SortIcon = ({ columnKey }: { columnKey: string }) => {
-    if (sortKey !== columnKey) return <ArrowUpDown className="ml-1 h-3 w-3 opacity-50" />;
+    if (sortKey !== columnKey) return <ArrowUpDown className="ml-1 h-3 w-3 opacity-40" />;
     return sortOrder === 'ASC' 
-      ? <ArrowUp className="ml-1 h-3 w-3" /> 
-      : <ArrowDown className="ml-1 h-3 w-3" />;
+      ? <ArrowUp className="ml-1 h-3 w-3 text-brand-gold" /> 
+      : <ArrowDown className="ml-1 h-3 w-3 text-brand-gold" />;
   };
 
   return (
-    <div className="flex flex-col h-full bg-muted/30">
+    <div className="flex flex-col h-full bg-[#faf9f7]">
       {/* Main Content Area */}
-      <main className="flex-1 overflow-auto p-4 md:p-8">
+      <main className="flex-1 overflow-auto px-6 py-4">
         {/* Page Header */}
-        <div className="mb-6">
-          <h1 className="text-2xl font-semibold text-foreground">
-            Demand Intake
-          </h1>
-          <p className="text-xs text-muted-foreground mt-1">
-            Industry-specific demand requests
-          </p>
+        <div className="mb-5">
+          <h1 className="text-xl font-semibold text-foreground">Demand Intake</h1>
+          <p className="text-xs text-muted-foreground mt-0.5">Industry-specific demand requests</p>
         </div>
 
-        {/* Search & Controls Bar */}
-        <div className="bg-card border rounded-lg p-4 mb-6 flex flex-wrap justify-between items-center gap-4 shadow-sm">
-          {/* Left side - Search */}
-          <div className="w-full md:w-96 relative">
+        {/* Search Bar */}
+        <div className="mb-4">
+          <div className="relative w-full max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search industry requests..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9"
+              className="pl-9 h-9 bg-white border-border"
             />
           </div>
+        </div>
 
-          {/* Right side - Controls */}
-          <div className="flex items-center gap-2 flex-wrap">
-            {/* View Toggle */}
-            <div className="flex border rounded-md overflow-hidden">
-              <Button 
-                variant={viewMode === 'list' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('list')}
-                className="rounded-none"
-              >
-                <List className="h-4 w-4" />
-                {!isMobile && <span className="ml-1">List</span>}
-              </Button>
-              <Button 
-                variant={viewMode === 'kanban' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('kanban')}
-                className="rounded-none"
-              >
-                <LayoutGrid className="h-4 w-4" />
-                {!isMobile && <span className="ml-1">Kanban</span>}
-              </Button>
-            </div>
+        {/* Controls Bar */}
+        <div className="flex items-center justify-between mb-4">
+          {/* Left - View Toggle */}
+          <div className="flex items-center border border-border rounded-md overflow-hidden bg-white">
+            <button
+              onClick={() => setViewMode('list')}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium transition-colors",
+                viewMode === 'list' 
+                  ? "bg-brand-gold text-white" 
+                  : "text-muted-foreground hover:bg-muted"
+              )}
+            >
+              <List className="h-4 w-4" />
+              List
+            </button>
+            <button
+              onClick={() => setViewMode('kanban')}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium transition-colors",
+                viewMode === 'kanban' 
+                  ? "bg-brand-gold text-white" 
+                  : "text-muted-foreground hover:bg-muted"
+              )}
+            >
+              <LayoutGrid className="h-4 w-4" />
+              Kanban
+            </button>
+          </div>
 
+          {/* Right - Action Buttons */}
+          <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
               onClick={() => toast({ title: 'Saved Filters coming soon' })}
+              className="h-8 text-sm border-border bg-white"
             >
-              <Bookmark className="h-4 w-4" />
-              {!isMobile && <span className="ml-1">Saved Filters</span>}
+              <Bookmark className="h-4 w-4 mr-1.5" />
+              Saved Filters
             </Button>
 
             <Button
-              variant={activeFilterCount > 0 ? 'default' : 'outline'}
+              variant="outline"
               size="sm"
               onClick={() => setFiltersDialogOpen(true)}
+              className={cn(
+                "h-8 text-sm border-border bg-white",
+                activeFilterCount > 0 && "border-brand-gold text-brand-gold"
+              )}
             >
-              <Filter className="h-4 w-4" />
-              {!isMobile && <span className="ml-1">Filters</span>}
+              <Filter className="h-4 w-4 mr-1.5" />
+              Filters
               {activeFilterCount > 0 && (
-                <Badge variant="secondary" className="ml-1 h-5 px-1.5">
+                <span className="ml-1.5 bg-brand-gold text-white text-xs px-1.5 py-0.5 rounded-full">
                   {activeFilterCount}
-                </Badge>
+                </span>
               )}
             </Button>
 
@@ -462,60 +425,25 @@ export default function DemandIntakeCatalyst() {
               variant="outline"
               size="sm"
               onClick={handleExport}
+              className="h-8 text-sm border-border bg-white"
             >
-              <Download className="h-4 w-4" />
-              {!isMobile && <span className="ml-1">Export</span>}
-            </Button>
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setColumnsModalOpen(true)}
-            >
-              <Settings className="h-4 w-4" />
-              {!isMobile && <span className="ml-1">Columns</span>}
+              <Download className="h-4 w-4 mr-1.5" />
+              Export
             </Button>
 
             <Button
               onClick={() => setCreateModalOpen(true)}
               size="sm"
-              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="h-8 text-sm bg-brand-gold hover:bg-brand-gold-hover text-white"
             >
-              <Plus className="h-4 w-4" />
-              {!isMobile && <span className="ml-1">Create</span>}
+              <Plus className="h-4 w-4 mr-1" />
+              Create
             </Button>
           </div>
         </div>
 
-        {/* Quick Filters */}
-        <div className="flex items-center gap-2 mb-4 overflow-x-auto pb-2">
-          <span className="text-xs text-muted-foreground whitespace-nowrap">Quick filters:</span>
-          <Button
-            variant={quickFilter === null ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setQuickFilter(null)}
-            className="h-7 text-xs"
-          >
-            All
-          </Button>
-          {quickFilters.map((filter) => (
-            <Button
-              key={filter.key}
-              variant={quickFilter === filter.key ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setQuickFilter(filter.key)}
-              className="h-7 text-xs"
-            >
-              {filter.label}
-              <Badge variant="secondary" className="ml-1 h-4 px-1 text-[10px]">
-                {filter.count}
-              </Badge>
-            </Button>
-          ))}
-        </div>
-
         {/* Table Content */}
-        <div className="bg-card border rounded-lg shadow-sm overflow-hidden">
+        <div className="bg-white border border-border overflow-hidden">
           {isLoading ? (
             <div className="p-8 space-y-4">
               {Array.from({ length: 5 }).map((_, i) => (
@@ -531,209 +459,223 @@ export default function DemandIntakeCatalyst() {
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-muted/50 hover:bg-muted/50">
-                    {visibleColumnKeys.includes('checkbox') && (
-                      <TableHead className="w-10">
-                        <Checkbox
-                          checked={isAllSelected}
-                          onCheckedChange={handleSelectAll}
-                          aria-label="Select all"
-                        />
-                      </TableHead>
-                    )}
-                    {visibleColumnKeys.includes('request_key') && (
-                      <TableHead 
-                        className="cursor-pointer hover:text-foreground"
-                        onClick={() => handleSort('request_key')}
-                      >
-                        <div className="flex items-center">
-                          Request ID
-                          <SortIcon columnKey="request_key" />
-                        </div>
-                      </TableHead>
-                    )}
-                    {visibleColumnKeys.includes('title') && (
-                      <TableHead 
-                        className="cursor-pointer hover:text-foreground min-w-[200px]"
-                        onClick={() => handleSort('title')}
-                      >
-                        <div className="flex items-center">
-                          Summary
-                          <SortIcon columnKey="title" />
-                        </div>
-                      </TableHead>
-                    )}
-                    {visibleColumnKeys.includes('process_step') && (
-                      <TableHead 
-                        className="cursor-pointer hover:text-foreground"
-                        onClick={() => handleSort('process_step')}
-                      >
-                        <div className="flex items-center">
-                          Process Step
-                          <SortIcon columnKey="process_step" />
-                        </div>
-                      </TableHead>
-                    )}
-                    {visibleColumnKeys.includes('rank') && (
-                      <TableHead 
-                        className="cursor-pointer hover:text-foreground"
-                        onClick={() => handleSort('rank')}
-                      >
-                        <div className="flex items-center">
-                          Rank
-                          <SortIcon columnKey="rank" />
-                        </div>
-                      </TableHead>
-                    )}
-                    {visibleColumnKeys.includes('delivery_platform') && (
-                      <TableHead 
-                        className="cursor-pointer hover:text-foreground"
-                        onClick={() => handleSort('delivery_platform')}
-                      >
-                        <div className="flex items-center">
-                          Delivery Platform
-                          <SortIcon columnKey="delivery_platform" />
-                        </div>
-                      </TableHead>
-                    )}
-                    {visibleColumnKeys.includes('business_owner') && (
-                      <TableHead 
-                        className="cursor-pointer hover:text-foreground"
-                        onClick={() => handleSort('business_owner')}
-                      >
-                        <div className="flex items-center">
-                          Business Owner
-                          <SortIcon columnKey="business_owner" />
-                        </div>
-                      </TableHead>
-                    )}
-                    {visibleColumnKeys.includes('planned_quarter') && (
-                      <TableHead 
-                        className="cursor-pointer hover:text-foreground"
-                        onClick={() => handleSort('planned_quarter')}
-                      >
-                        <div className="flex items-center">
-                          Quarter
-                          <SortIcon columnKey="planned_quarter" />
-                        </div>
-                      </TableHead>
-                    )}
-                    {visibleColumnKeys.includes('end_date') && (
-                      <TableHead 
-                        className="cursor-pointer hover:text-foreground"
-                        onClick={() => handleSort('end_date')}
-                      >
-                        <div className="flex items-center">
-                          Target Date
-                          <SortIcon columnKey="end_date" />
-                        </div>
-                      </TableHead>
-                    )}
-                    {visibleColumnKeys.includes('department') && (
-                      <TableHead 
-                        className="cursor-pointer hover:text-foreground"
-                        onClick={() => handleSort('department')}
-                      >
-                        <div className="flex items-center">
-                          Department
-                          <SortIcon columnKey="department" />
-                        </div>
-                      </TableHead>
-                    )}
-                    {visibleColumnKeys.includes('actions') && (
-                      <TableHead className="w-10"></TableHead>
-                    )}
+                  <TableRow className="bg-white hover:bg-white border-b border-border">
+                    <TableHead className="w-10 px-3">
+                      <Checkbox
+                        checked={isAllSelected}
+                        onCheckedChange={handleSelectAll}
+                        aria-label="Select all"
+                      />
+                    </TableHead>
+                    <TableHead 
+                      className="cursor-pointer hover:text-foreground text-xs font-medium text-muted-foreground uppercase tracking-wide px-3"
+                      onClick={() => handleSort('request_key')}
+                    >
+                      <div className="flex items-center">
+                        Request...
+                        <SortIcon columnKey="request_key" />
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="cursor-pointer hover:text-foreground text-xs font-medium text-muted-foreground uppercase tracking-wide min-w-[200px] px-3"
+                      onClick={() => handleSort('title')}
+                    >
+                      <div className="flex items-center">
+                        Summary
+                        <SortIcon columnKey="title" />
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="cursor-pointer hover:text-foreground text-xs font-medium text-muted-foreground uppercase tracking-wide px-3"
+                      onClick={() => handleSort('process_step')}
+                    >
+                      <div className="flex items-center">
+                        Process Step
+                        <SortIcon columnKey="process_step" />
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="cursor-pointer hover:text-foreground text-xs font-medium text-muted-foreground uppercase tracking-wide px-3"
+                      onClick={() => handleSort('business_score')}
+                    >
+                      <div className="flex items-center">
+                        Sc...
+                        <SortIcon columnKey="business_score" />
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="cursor-pointer hover:text-foreground text-xs font-medium text-muted-foreground uppercase tracking-wide px-3"
+                      onClick={() => handleSort('rank')}
+                    >
+                      <div className="flex items-center">
+                        Rank
+                        <SortIcon columnKey="rank" />
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="cursor-pointer hover:text-foreground text-xs font-medium text-muted-foreground uppercase tracking-wide px-3"
+                      onClick={() => handleSort('delivery_platform')}
+                    >
+                      <div className="flex items-center">
+                        Delivery Platfo...
+                        <SortIcon columnKey="delivery_platform" />
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="cursor-pointer hover:text-foreground text-xs font-medium text-muted-foreground uppercase tracking-wide px-3"
+                      onClick={() => handleSort('business_owner')}
+                    >
+                      <div className="flex items-center">
+                        Business Owner
+                        <SortIcon columnKey="business_owner" />
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="cursor-pointer hover:text-foreground text-xs font-medium text-muted-foreground uppercase tracking-wide px-3"
+                      onClick={() => handleSort('created_at')}
+                    >
+                      <div className="flex items-center">
+                        Submitted Date
+                        <SortIcon columnKey="created_at" />
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="cursor-pointer hover:text-foreground text-xs font-medium text-muted-foreground uppercase tracking-wide px-3"
+                      onClick={() => handleSort('created_at')}
+                    >
+                      <div className="flex items-center">
+                        Ageing
+                        <SortIcon columnKey="created_at" />
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="cursor-pointer hover:text-foreground text-xs font-medium text-muted-foreground uppercase tracking-wide px-3"
+                      onClick={() => handleSort('planned_quarter')}
+                    >
+                      <div className="flex items-center">
+                        Quart...
+                        <SortIcon columnKey="planned_quarter" />
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="cursor-pointer hover:text-foreground text-xs font-medium text-muted-foreground uppercase tracking-wide px-3"
+                      onClick={() => handleSort('end_date')}
+                    >
+                      <div className="flex items-center">
+                        Target Da...
+                        <SortIcon columnKey="end_date" />
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="cursor-pointer hover:text-foreground text-xs font-medium text-muted-foreground uppercase tracking-wide px-3"
+                      onClick={() => handleSort('department')}
+                    >
+                      <div className="flex items-center">
+                        Department
+                        <SortIcon columnKey="department" />
+                      </div>
+                    </TableHead>
+                    <TableHead className="w-10 px-3">
+                      <button className="text-muted-foreground hover:text-foreground">
+                        <Plus className="h-4 w-4" />
+                      </button>
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {paginatedRequests.map((request: any) => (
                     <TableRow 
                       key={request.id}
-                      className="cursor-pointer hover:bg-muted/50"
+                      className="cursor-pointer hover:bg-[#f8f8f8] border-b border-border"
                       onClick={() => setSelectedRequestId(request.id)}
                     >
-                      {visibleColumnKeys.includes('checkbox') && (
-                        <TableCell onClick={(e) => e.stopPropagation()}>
-                          <Checkbox
-                            checked={selectedRows.includes(request.id)}
-                            onCheckedChange={() => {
-                              setSelectedRows(prev => 
-                                prev.includes(request.id) 
-                                  ? prev.filter(id => id !== request.id)
-                                  : [...prev, request.id]
-                              );
-                            }}
-                          />
-                        </TableCell>
-                      )}
-                      {visibleColumnKeys.includes('request_key') && (
-                        <TableCell>
-                          <button 
-                            className="text-primary hover:underline font-medium"
-                            onClick={(e) => { e.stopPropagation(); setSelectedRequestId(request.id); }}
-                          >
-                            {request.request_key?.startsWith('MIM-') ? request.request_key : `MIM-${String(request.request_key || '').padStart(3, '0')}`}
-                          </button>
-                        </TableCell>
-                      )}
-                      {visibleColumnKeys.includes('title') && (
-                        <TableCell className="max-w-[300px] truncate">
-                          {request.title || '-'}
-                        </TableCell>
-                      )}
-                      {visibleColumnKeys.includes('process_step') && (
-                        <TableCell>
-                          <Badge className={cn("text-xs", getStatusColor(request.process_step))}>
-                            {PROCESS_STEPS.find(s => s.value === request.process_step)?.label || request.process_step || '-'}
-                          </Badge>
-                        </TableCell>
-                      )}
-                      {visibleColumnKeys.includes('rank') && (
-                        <TableCell>{request.rank || '-'}</TableCell>
-                      )}
-                      {visibleColumnKeys.includes('delivery_platform') && (
-                        <TableCell>{request.delivery_platform || '-'}</TableCell>
-                      )}
-                      {visibleColumnKeys.includes('business_owner') && (
-                        <TableCell>{request.business_owner || '-'}</TableCell>
-                      )}
-                      {visibleColumnKeys.includes('planned_quarter') && (
-                        <TableCell>{request.planned_quarter || '-'}</TableCell>
-                      )}
-                      {visibleColumnKeys.includes('end_date') && (
-                        <TableCell>
-                          {request.end_date ? (
-                            <div className="flex items-center gap-1">
-                              {formatDate(request.end_date)}
-                              <span className={cn(
-                                "w-2 h-2 rounded-full flex-shrink-0",
-                                new Date(request.end_date) < new Date() ? 'bg-amber-500' : 'bg-emerald-500'
-                              )} />
-                            </div>
-                          ) : '-'}
-                        </TableCell>
-                      )}
-                      {visibleColumnKeys.includes('department') && (
-                        <TableCell>{request.department || '-'}</TableCell>
-                      )}
-                      {visibleColumnKeys.includes('actions') && (
-                        <TableCell onClick={(e) => e.stopPropagation()}>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => setSelectedRequestId(request.id)}>
-                                Edit
-                              </DropdownMenuItem>
-                              <DropdownMenuItem>Clone</DropdownMenuItem>
-                              <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      )}
+                      <TableCell className="px-3" onClick={(e) => e.stopPropagation()}>
+                        <Checkbox
+                          checked={selectedRows.includes(request.id)}
+                          onCheckedChange={() => {
+                            setSelectedRows(prev => 
+                              prev.includes(request.id) 
+                                ? prev.filter(id => id !== request.id)
+                                : [...prev, request.id]
+                            );
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell className="px-3 text-sm">
+                        <button 
+                          className="text-foreground hover:text-brand-gold font-medium"
+                          onClick={(e) => { e.stopPropagation(); setSelectedRequestId(request.id); }}
+                        >
+                          {request.request_key || `MIM-${String(request.id).slice(-3)}`}
+                        </button>
+                      </TableCell>
+                      <TableCell className="px-3 text-sm max-w-[250px] truncate">
+                        {request.title || '-'}
+                      </TableCell>
+                      <TableCell className="px-3">
+                        <span className={cn(
+                          "inline-flex items-center px-2 py-0.5 text-xs font-medium rounded uppercase",
+                          getProcessStepStyle(request.process_step)
+                        )}>
+                          {PROCESS_STEPS.find(s => s.value === request.process_step)?.label?.toUpperCase() || request.process_step?.toUpperCase() || '-'}
+                        </span>
+                      </TableCell>
+                      <TableCell className="px-3 text-sm text-center font-medium">
+                        {request.business_score || '—'}
+                      </TableCell>
+                      <TableCell className="px-3 text-sm text-center">
+                        {request.rank || '-'}
+                      </TableCell>
+                      <TableCell className="px-3 text-sm">
+                        {request.delivery_platform || '-'}
+                      </TableCell>
+                      <TableCell className="px-3 text-sm">
+                        {request.business_owner || '-'}
+                      </TableCell>
+                      <TableCell className="px-3 text-sm">
+                        {formatDate(request.created_at)}
+                      </TableCell>
+                      <TableCell className="px-3 text-sm text-center">
+                        {calculateAgeing(request.created_at)}
+                      </TableCell>
+                      <TableCell className="px-3 text-sm">
+                        {request.planned_quarter || '-'}
+                      </TableCell>
+                      <TableCell className="px-3 text-sm">
+                        {request.end_date ? (
+                          <div className="flex items-center gap-1.5">
+                            {formatDate(request.end_date)}
+                            <span className={cn(
+                              "w-2 h-2 rounded-full flex-shrink-0",
+                              getHealthDotColor(request.end_date)
+                            )} />
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1.5">
+                            -
+                            <span className="w-2 h-2 rounded-full flex-shrink-0 bg-amber-500" />
+                          </div>
+                        )}
+                      </TableCell>
+                      <TableCell className="px-3 text-sm">
+                        {request.department || '-'}
+                      </TableCell>
+                      <TableCell className="px-3" onClick={(e) => e.stopPropagation()}>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => setSelectedRequestId(request.id)}>
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>Clone</DropdownMenuItem>
+                            <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -760,19 +702,29 @@ export default function DemandIntakeCatalyst() {
           )}
         </div>
 
-        {/* Pagination */}
-        {viewMode === 'list' && sortedRequests.length > ITEMS_PER_PAGE && (
-          <div className="flex flex-col items-center gap-2 mt-6">
+        {/* Pagination - Production Style */}
+        {viewMode === 'list' && sortedRequests.length > 0 && (
+          <div className="flex items-center justify-between mt-4">
+            <p className="text-sm text-muted-foreground">
+              Showing {startIndex + 1}-{Math.min(endIndex, sortedRequests.length)} of {sortedRequests.length} requests
+            </p>
+            
             <div className="flex items-center gap-1">
-              <Button 
-                variant="outline"
-                size="sm"
+              <button
+                onClick={() => setCurrentPage(1)}
+                disabled={currentPage === 1}
+                className="p-1.5 text-muted-foreground hover:text-foreground disabled:opacity-40"
+              >
+                <ChevronsLeft className="h-4 w-4" />
+              </button>
+              <button
                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1}
+                className="p-1.5 text-muted-foreground hover:text-foreground disabled:opacity-40"
               >
                 <ChevronLeft className="h-4 w-4" />
-                {!isMobile && 'Previous'}
-              </Button>
+              </button>
+              
               {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                 let pageNum: number;
                 if (totalPages <= 5) {
@@ -785,30 +737,36 @@ export default function DemandIntakeCatalyst() {
                   pageNum = currentPage - 2 + i;
                 }
                 return (
-                  <Button 
+                  <button
                     key={pageNum}
-                    variant={currentPage === pageNum ? 'default' : 'outline'}
-                    size="sm"
                     onClick={() => setCurrentPage(pageNum)}
-                    className="w-8"
+                    className={cn(
+                      "w-8 h-8 text-sm rounded transition-colors",
+                      currentPage === pageNum 
+                        ? "bg-brand-gold text-white font-medium" 
+                        : "text-muted-foreground hover:bg-muted"
+                    )}
                   >
                     {pageNum}
-                  </Button>
+                  </button>
                 );
               })}
-              <Button 
-                variant="outline"
-                size="sm"
+              
+              <button
                 onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                 disabled={currentPage >= totalPages}
+                className="p-1.5 text-muted-foreground hover:text-foreground disabled:opacity-40"
               >
-                {!isMobile && 'Next'}
                 <ChevronRight className="h-4 w-4" />
-              </Button>
+              </button>
+              <button
+                onClick={() => setCurrentPage(totalPages)}
+                disabled={currentPage >= totalPages}
+                className="p-1.5 text-muted-foreground hover:text-foreground disabled:opacity-40"
+              >
+                <ChevronsRight className="h-4 w-4" />
+              </button>
             </div>
-            <p className="text-xs text-muted-foreground">
-              Showing {startIndex + 1}-{Math.min(endIndex, sortedRequests.length)} of {sortedRequests.length} requests
-            </p>
           </div>
         )}
       </main>
@@ -866,8 +824,8 @@ export default function DemandIntakeCatalyst() {
       <DemandColumnsConfigModal
         isOpen={columnsModalOpen}
         onClose={() => setColumnsModalOpen(false)}
-        columns={columnConfig}
-        onColumnsChange={setColumnConfig}
+        columns={[]}
+        onColumnsChange={() => {}}
       />
 
       <DemandExportModal
