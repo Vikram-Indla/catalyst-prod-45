@@ -30,11 +30,12 @@ interface EpicRoadmapData {
   epic_key: string | null;
   name: string;
   status: string | null;
+  state: string | null;
   health: string | null;
   initiation_date: string | null;
   target_completion_date: string | null;
-  tech_score: number | null;
-  business_score: number | null;
+  estimate: number | null;
+  strategic_value_score: number | null;
   owner_name: string | null;
 }
 
@@ -56,26 +57,15 @@ export function ProgramEpicRoadmap() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('epics')
-        .select(`
-          id,
-          epic_key,
-          name,
-          status,
-          health,
-          initiation_date,
-          target_completion_date,
-          tech_score,
-          business_score,
-          owner_name
-        `)
-        .eq('program_id', programId)
+        .select('id, epic_key, name, status, state, health, initiation_date, target_completion_date, estimate, strategic_value_score, owner_name')
+        .eq('primary_program_id', programId)
         .is('deleted_at', null)
         .not('initiation_date', 'is', null)
         .not('target_completion_date', 'is', null)
         .order('initiation_date', { ascending: true });
 
       if (error) throw error;
-      return data as EpicRoadmapData[];
+      return (data || []) as EpicRoadmapData[];
     },
     enabled: !!programId,
   });
@@ -305,21 +295,17 @@ export function ProgramEpicRoadmap() {
                                   targetCompletionDate={epic.target_completion_date}
                                   status={epic.status}
                                 />
-                                {/* Progress overlay */}
-                                <div 
-                                  className="absolute inset-y-0 left-0 bg-foreground/10 rounded-l"
-                                  style={{ width: `${epic.progress_pct || 0}%` }}
-                                />
+                                {/* Progress overlay - removed as progress_pct not in schema */}
                               </div>
                             </TooltipTrigger>
                             <TooltipContent side="top" className="max-w-xs">
                               <div className="space-y-2">
                                 <div className="font-semibold">{epic.epic_key || 'Epic'}: {epic.name}</div>
                                 <div className="grid grid-cols-2 gap-2 text-xs">
-                                  <span className="text-muted-foreground">Progress:</span>
-                                  <span>{epic.progress_pct || 0}%</span>
-                                  <span className="text-muted-foreground">Tech Score:</span>
-                                  <span>{epic.tech_score?.toFixed(1) || '—'}</span>
+                                  <span className="text-muted-foreground">Status:</span>
+                                  <span className="capitalize">{epic.status?.replace('_', ' ') || '—'}</span>
+                                  <span className="text-muted-foreground">Value Score:</span>
+                                  <span>{epic.strategic_value_score?.toFixed(1) || '—'}</span>
                                   <span className="text-muted-foreground">Target:</span>
                                   <span>
                                     {epic.target_completion_date 

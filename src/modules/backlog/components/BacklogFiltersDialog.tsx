@@ -249,6 +249,29 @@ export function BacklogFiltersDialog({
           <div className="space-y-2">
             <Label>Target Timeframe</Label>
             <Select
+              value={localFilters.timeframe as string || 'all'}
+              onValueChange={(value) =>
+                setLocalFilters({ ...localFilters, timeframe: value === 'all' ? undefined : value })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="All Timeframes" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Timeframes</SelectItem>
+                <SelectItem value="this_month">This Month</SelectItem>
+                <SelectItem value="next_3_months">Next 3 Months</SelectItem>
+                <SelectItem value="this_quarter">This Quarter</SelectItem>
+                <SelectItem value="next_quarter">Next Quarter</SelectItem>
+                <SelectItem value="overdue">Overdue</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Target Quarter */}
+          <div className="space-y-2">
+            <Label>Target Quarter</Label>
+            <Select
               value={localFilters.target_quarter as string || 'all'}
               onValueChange={(value) =>
                 setLocalFilters({ ...localFilters, target_quarter: value === 'all' ? undefined : value })
