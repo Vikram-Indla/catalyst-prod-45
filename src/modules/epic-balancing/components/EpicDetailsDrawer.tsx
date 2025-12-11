@@ -130,22 +130,24 @@ export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDr
 
   return (
     <Sheet open={open} onOpenChange={onClose}>
-      <SheetContent className="w-[400px] sm:w-[540px] overflow-y-auto">
-        <SheetHeader className="pb-4">
+      <SheetContent className="w-full sm:w-[540px] p-0 overflow-y-auto">
+        {/* Header with Atlassian-style padding */}
+        <SheetHeader className="px-6 py-4 border-b border-border">
           <SheetTitle className="flex items-center gap-2 pr-8">
             <span className="text-brand-gold flex-shrink-0">{epic.key}</span>
             <span className="text-foreground truncate" title={epic.name}>{epic.name}</span>
           </SheetTitle>
         </SheetHeader>
 
-        <div className="space-y-6">
+        {/* Body with consistent 24px gutters */}
+        <div className="px-6 py-6 space-y-6">
           {/* Priority to Execute - Input Fields */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-foreground">Priority to Execute</h3>
+          <section className="space-y-3">
+            <h3 className="text-sm font-medium text-foreground">Priority to Execute</h3>
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="businessAlignment">Business Alignment (1-20)</Label>
+                <Label htmlFor="businessAlignment" className="text-sm text-muted-foreground">Business Alignment (1-20)</Label>
                 <Input
                   id="businessAlignment"
                   type="number"
@@ -158,7 +160,7 @@ export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDr
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="timeCriticality">Time Criticality (1-20)</Label>
+                <Label htmlFor="timeCriticality" className="text-sm text-muted-foreground">Time Criticality (1-20)</Label>
                 <Input
                   id="timeCriticality"
                   type="number"
@@ -171,7 +173,7 @@ export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDr
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="investorEnablement">Investor Enablement (1-20)</Label>
+                <Label htmlFor="investorEnablement" className="text-sm text-muted-foreground">Investor Enablement (1-20)</Label>
                 <Input
                   id="investorEnablement"
                   type="number"
@@ -184,7 +186,7 @@ export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDr
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="jobSize">Job Size (1-20)</Label>
+                <Label htmlFor="jobSize" className="text-sm text-muted-foreground">Job Size (1-20)</Label>
                 <Input
                   id="jobSize"
                   type="number"
@@ -196,30 +198,30 @@ export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDr
                 />
               </div>
             </div>
-          </div>
+          </section>
 
           <Separator />
 
           {/* Technical Score */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-foreground">Technical Score</h3>
-            <div className="p-3 bg-brand-gold/10 rounded-lg">
+          <section className="space-y-2">
+            <h3 className="text-sm font-medium text-foreground">Technical Score</h3>
+            <div className="rounded-xl bg-brand-gold/10 px-4 py-3">
               <div className="text-lg font-semibold text-brand-gold">
                 {technicalScore !== null ? technicalScore.toFixed(2) : 'N/A'}
               </div>
             </div>
-          </div>
+          </section>
 
           <Separator />
 
           {/* Linked Items */}
-          <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-foreground">Linked Items</h3>
+          <section className="space-y-4">
+            <h3 className="text-sm font-medium text-foreground">Linked Items</h3>
             <div className="space-y-4">
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <Link2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                  <Label htmlFor="theme">Theme</Label>
+                  <Label htmlFor="theme" className="text-sm text-muted-foreground">Theme</Label>
                 </div>
                 <Select
                   value={formData.themeId}
@@ -242,7 +244,7 @@ export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDr
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <Link2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                  <Label htmlFor="businessRequest">Business Request</Label>
+                  <Label htmlFor="businessRequest" className="text-sm text-muted-foreground">Business Request</Label>
                 </div>
                 <Select
                   value={formData.businessRequestId}
@@ -262,14 +264,14 @@ export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDr
                 </Select>
               </div>
             </div>
-          </div>
+          </section>
 
           {/* Actions */}
           <div className="flex justify-end gap-3 pt-4">
             <Button variant="outline" onClick={onClose} disabled={saving}>
               Cancel
             </Button>
-            <Button onClick={handleSave} disabled={saving} className="bg-brand-gold hover:bg-brand-gold/90">
+            <Button onClick={handleSave} disabled={saving} className="bg-brand-gold hover:bg-brand-gold/90 text-white">
               {saving ? 'Saving...' : 'Save'}
             </Button>
           </div>
