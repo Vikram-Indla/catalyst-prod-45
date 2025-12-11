@@ -178,17 +178,36 @@ export function EpicBalancingChart({ epics, stats, onEpicClick }: EpicBalancingC
             onMouseEnter={(data) => setHoveredEpic(data.epic.id)}
             onMouseLeave={() => setHoveredEpic(null)}
             cursor="pointer"
+            shape={(props: any) => {
+              const { cx, cy, payload } = props;
+              const entry = payload as ChartDataPoint;
+              return (
+                <g>
+                  <circle
+                    cx={cx}
+                    cy={cy}
+                    r={entry.z}
+                    fill={STRATEGIC_DRIVER_COLORS[entry.epic.strategicDriver]}
+                    fillOpacity={hoveredEpic === entry.epic.id ? 0.9 : 0.7}
+                    stroke={STRATEGIC_DRIVER_COLORS[entry.epic.strategicDriver]}
+                    strokeWidth={ABILITY_TO_EXECUTE_STROKE[entry.epic.abilityToExecute]}
+                    aria-label={`Epic ${entry.epic.key} – ${entry.epic.name}: Job Size ${entry.epic.jobSize}, Cost of Delay ${entry.epic.costOfDelay}, Technical Score ${entry.epic.technicalScore?.toFixed(2) ?? 'N/A'}, Strategic Driver ${STRATEGIC_DRIVER_LABELS[entry.epic.strategicDriver]}, Ability to Execute ${entry.epic.abilityToExecute}.`}
+                  />
+                  <text
+                    x={cx + entry.z + 4}
+                    y={cy + 4}
+                    fill="hsl(var(--secondary-green))"
+                    fontSize={11}
+                    fontWeight={500}
+                  >
+                    {entry.epic.key}
+                  </text>
+                </g>
+              );
+            }}
           >
             {chartData.map((entry, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={STRATEGIC_DRIVER_COLORS[entry.epic.strategicDriver]}
-                fillOpacity={hoveredEpic === entry.epic.id ? 0.9 : 0.7}
-                stroke={STRATEGIC_DRIVER_COLORS[entry.epic.strategicDriver]}
-                strokeWidth={ABILITY_TO_EXECUTE_STROKE[entry.epic.abilityToExecute]}
-                r={entry.z}
-                aria-label={`Epic ${entry.epic.key} – ${entry.epic.name}: Job Size ${entry.epic.jobSize}, Cost of Delay ${entry.epic.costOfDelay}, Technical Score ${entry.epic.technicalScore?.toFixed(2) ?? 'N/A'}, Strategic Driver ${STRATEGIC_DRIVER_LABELS[entry.epic.strategicDriver]}, Ability to Execute ${entry.epic.abilityToExecute}.`}
-              />
+              <Cell key={`cell-${index}`} />
             ))}
           </Scatter>
         </ScatterChart>
