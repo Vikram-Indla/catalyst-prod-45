@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { 
   PriorityToExecute,
   PRIORITY_TO_EXECUTE_COLORS, 
@@ -62,17 +63,25 @@ export function EpicBalancingLegend({
         </Select>
         <div className="space-y-2">
           {top5Epics.length > 0 ? (
-            top5Epics.map((epic, index) => (
-              <button
-                key={epic.id}
-                onClick={() => onEpicClick?.(epic)}
-                className="flex items-center gap-2 w-full text-left px-2 py-1.5 rounded-md hover:bg-accent/50 transition-colors"
-              >
-                <span className="text-xs font-medium text-muted-foreground w-4">{index + 1}.</span>
-                <span className="text-sm text-brand-gold font-medium">{epic.key}</span>
-                <span className="text-xs text-muted-foreground truncate flex-1">{epic.name}</span>
-              </button>
-            ))
+            <TooltipProvider>
+              {top5Epics.map((epic, index) => (
+                <Tooltip key={epic.id}>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={() => onEpicClick?.(epic)}
+                      className="flex items-center gap-2 w-full text-left px-2 py-1.5 rounded-md hover:bg-accent/50 transition-colors"
+                    >
+                      <span className="text-xs font-medium text-muted-foreground w-4">{index + 1}.</span>
+                      <span className="text-sm text-brand-gold font-medium">{epic.key}</span>
+                      <span className="text-xs text-muted-foreground truncate flex-1">{epic.name}</span>
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="left" className="max-w-xs">
+                    <p>{epic.name}</p>
+                  </TooltipContent>
+                </Tooltip>
+              ))}
+            </TooltipProvider>
           ) : (
             <p className="text-xs text-muted-foreground px-2">No scored epics</p>
           )}
@@ -111,11 +120,11 @@ export function EpicBalancingLegend({
         <h3 className="text-sm font-semibold text-foreground mb-3">Scoring Summary</h3>
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
-            <span className="text-muted-foreground">Complete scoring:</span>
+            <span className="text-muted-foreground">Scored:</span>
             <span className="font-medium text-secondary-green">{scoringStats.complete}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-muted-foreground">Missing scores:</span>
+            <span className="text-muted-foreground">Unscored:</span>
             <span className="font-medium text-destructive">{scoringStats.incomplete}</span>
           </div>
         </div>
