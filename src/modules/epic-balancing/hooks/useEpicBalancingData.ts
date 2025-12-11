@@ -5,7 +5,7 @@ import {
   EpicBalancingStats, 
   EpicBalancingFilters,
   EpicBalancingResponse,
-  StrategicDriver,
+  PriorityToExecute,
   AbilityToExecute
 } from '../types';
 
@@ -17,37 +17,39 @@ const generateMockEpics = (programId: string): EpicBalancingEpic[] => {
   const mockData: Array<{
     key: string;
     name: string;
-    bv: number | null;
+    ba: number | null;
     tc: number | null;
-    opp: number | null;
+    ie: number | null;
     js: number | null;
-    driver: StrategicDriver;
+    priority: PriorityToExecute;
     ability: AbilityToExecute;
+    themeName?: string;
+    businessRequestTitle?: string;
   }> = [
-    { key: "E-101", name: "Modernize Investor Onboarding", bv: 18, tc: 12, opp: 8, js: 5, driver: "EXPAND", ability: "HIGH" },
-    { key: "E-102", name: "Mobile App Redesign", bv: 15, tc: 10, opp: 12, js: 8, driver: "INNOVATE", ability: "HIGH" },
-    { key: "E-103", name: "Legacy System Migration", bv: 8, tc: 15, opp: 5, js: 18, driver: "SUSTAIN", ability: "MEDIUM" },
-    { key: "E-104", name: "AI-Powered Analytics Dashboard", bv: 20, tc: 8, opp: 15, js: 12, driver: "EXPAND", ability: "LOW" },
-    { key: "E-105", name: "Security Compliance Update", bv: 5, tc: 18, opp: 3, js: 6, driver: "CONTAIN", ability: "HIGH" },
-    { key: "E-106", name: "Customer Portal Enhancement", bv: 12, tc: 6, opp: 10, js: 4, driver: "EXPAND", ability: "HIGH" },
-    { key: "E-107", name: "Data Warehouse Optimization", bv: 10, tc: 4, opp: 8, js: 14, driver: "SUSTAIN", ability: "MEDIUM" },
-    { key: "E-108", name: "Automated Testing Framework", bv: 6, tc: 3, opp: 12, js: 10, driver: "INNOVATE", ability: "HIGH" },
-    { key: "E-109", name: "Payment Gateway Integration", bv: 16, tc: 14, opp: 6, js: 7, driver: "EXPAND", ability: "MEDIUM" },
-    { key: "E-110", name: "Reporting Module Overhaul", bv: 9, tc: 5, opp: 4, js: 11, driver: "SUSTAIN", ability: "LOW" },
-    { key: "E-111", name: "API Gateway Modernization", bv: 14, tc: 11, opp: 9, js: 9, driver: "INNOVATE", ability: "HIGH" },
-    { key: "E-112", name: "Sunset Legacy CRM", bv: 3, tc: 2, opp: 1, js: 3, driver: "EXIT", ability: "HIGH" },
-    { key: "E-113", name: "Cloud Infrastructure Setup", bv: 17, tc: 16, opp: 14, js: 15, driver: "EXPAND", ability: "MEDIUM" },
-    { key: "E-114", name: "Performance Optimization", bv: 11, tc: 7, opp: 5, js: 5, driver: "CONTAIN", ability: "HIGH" },
-    { key: "E-115", name: "New Feature Discovery", bv: null, tc: null, opp: null, js: null, driver: "NOT_SET", ability: "LOW" },
+    { key: "E-101", name: "Modernize Investor Onboarding", ba: 18, tc: 12, ie: 8, js: 5, priority: "VERY_HIGH", ability: "HIGH", themeName: "Digital Transformation", businessRequestTitle: "BR-2024-001: Investor Experience" },
+    { key: "E-102", name: "Mobile App Redesign", ba: 15, tc: 10, ie: 12, js: 8, priority: "HIGH", ability: "HIGH", themeName: "Customer Experience", businessRequestTitle: "BR-2024-002: Mobile Strategy" },
+    { key: "E-103", name: "Legacy System Migration", ba: 8, tc: 15, ie: 5, js: 18, priority: "MEDIUM", ability: "MEDIUM", themeName: "Tech Modernization" },
+    { key: "E-104", name: "AI-Powered Analytics Dashboard", ba: 20, tc: 8, ie: 15, js: 12, priority: "VERY_HIGH", ability: "LOW", themeName: "Data & Analytics", businessRequestTitle: "BR-2024-003: Analytics Platform" },
+    { key: "E-105", name: "Security Compliance Update", ba: 5, tc: 18, ie: 3, js: 6, priority: "HIGH", ability: "HIGH", themeName: "Security & Compliance" },
+    { key: "E-106", name: "Customer Portal Enhancement", ba: 12, tc: 6, ie: 10, js: 4, priority: "VERY_HIGH", ability: "HIGH", themeName: "Customer Experience" },
+    { key: "E-107", name: "Data Warehouse Optimization", ba: 10, tc: 4, ie: 8, js: 14, priority: "MEDIUM", ability: "MEDIUM", themeName: "Data & Analytics" },
+    { key: "E-108", name: "Automated Testing Framework", ba: 6, tc: 3, ie: 12, js: 10, priority: "HIGH", ability: "HIGH", themeName: "Engineering Excellence" },
+    { key: "E-109", name: "Payment Gateway Integration", ba: 16, tc: 14, ie: 6, js: 7, priority: "VERY_HIGH", ability: "MEDIUM", themeName: "Digital Transformation", businessRequestTitle: "BR-2024-004: Payment Modernization" },
+    { key: "E-110", name: "Reporting Module Overhaul", ba: 9, tc: 5, ie: 4, js: 11, priority: "MEDIUM", ability: "LOW" },
+    { key: "E-111", name: "API Gateway Modernization", ba: 14, tc: 11, ie: 9, js: 9, priority: "HIGH", ability: "HIGH", themeName: "Tech Modernization" },
+    { key: "E-112", name: "Sunset Legacy CRM", ba: 3, tc: 2, ie: 1, js: 3, priority: "LOW", ability: "HIGH" },
+    { key: "E-113", name: "Cloud Infrastructure Setup", ba: 17, tc: 16, ie: 14, js: 15, priority: "VERY_HIGH", ability: "MEDIUM", themeName: "Tech Modernization", businessRequestTitle: "BR-2024-005: Cloud Migration" },
+    { key: "E-114", name: "Performance Optimization", ba: 11, tc: 7, ie: 5, js: 5, priority: "HIGH", ability: "HIGH", themeName: "Engineering Excellence" },
+    { key: "E-115", name: "New Feature Discovery", ba: null, tc: null, ie: null, js: null, priority: "LOW", ability: "LOW" },
   ];
 
   return mockData.map((item) => {
-    const bv = item.bv ?? 0;
+    const ba = item.ba ?? 0;
     const tc = item.tc ?? 0;
-    const opp = item.opp ?? 0;
+    const ie = item.ie ?? 0;
     const js = item.js ?? 0;
 
-    const costOfDelay = item.bv !== null ? bv + tc + opp : null;
+    const costOfDelay = item.ba !== null ? ba + tc + ie : null;
     const technicalScore = js > 0 && costOfDelay !== null ? costOfDelay / js : null;
 
     return {
@@ -55,14 +57,16 @@ const generateMockEpics = (programId: string): EpicBalancingEpic[] => {
       key: item.key,
       name: item.name,
       programId,
-      businessValue: item.bv,
+      businessAlignment: item.ba,
       timeCriticality: item.tc,
-      opportunityEnablement: item.opp,
+      investorEnablement: item.ie,
       jobSize: item.js,
       costOfDelay,
       technicalScore,
-      strategicDriver: item.driver,
+      priorityToExecute: item.priority,
       abilityToExecute: item.ability,
+      themeName: item.themeName,
+      businessRequestTitle: item.businessRequestTitle,
     };
   });
 };
@@ -75,7 +79,7 @@ function calculateMedian(values: number[]): number {
 }
 
 export function useEpicBalancingData(programId: string, filters: EpicBalancingFilters) {
-  const [hiddenDrivers, setHiddenDrivers] = useState<Set<StrategicDriver>>(new Set());
+  const [hiddenDrivers, setHiddenDrivers] = useState<Set<PriorityToExecute>>(new Set());
 
   const { data, isLoading, error, refetch } = useQuery<EpicBalancingResponse>({
     queryKey: ['epic-balancing', programId, filters],
@@ -114,10 +118,10 @@ export function useEpicBalancingData(programId: string, filters: EpicBalancingFi
 
   const filteredEpics = useMemo(() => {
     if (!data?.epics) return [];
-    return data.epics.filter(epic => !hiddenDrivers.has(epic.strategicDriver));
+    return data.epics.filter(epic => !hiddenDrivers.has(epic.priorityToExecute));
   }, [data?.epics, hiddenDrivers]);
 
-  const toggleDriver = (driver: StrategicDriver) => {
+  const toggleDriver = (driver: PriorityToExecute) => {
     setHiddenDrivers(prev => {
       const next = new Set(prev);
       if (next.has(driver)) {
@@ -137,9 +141,9 @@ export function useEpicBalancingData(programId: string, filters: EpicBalancingFi
     if (!data?.epics) return { complete: 0, incomplete: 0 };
     
     const complete = data.epics.filter(
-      e => e.businessValue !== null && 
+      e => e.businessAlignment !== null && 
            e.timeCriticality !== null && 
-           e.opportunityEnablement !== null && 
+           e.investorEnablement !== null && 
            e.jobSize !== null
     ).length;
     

@@ -3,8 +3,8 @@ import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Responsive
 import { 
   EpicBalancingEpic, 
   EpicBalancingStats, 
-  STRATEGIC_DRIVER_COLORS,
-  STRATEGIC_DRIVER_LABELS,
+  PRIORITY_TO_EXECUTE_COLORS,
+  PRIORITY_TO_EXECUTE_LABELS,
   ABILITY_TO_EXECUTE_STROKE 
 } from '../types';
 
@@ -35,14 +35,14 @@ function CustomTooltip({ active, payload }: any) {
         <div className="text-muted-foreground">Job Size:</div>
         <div className="font-medium">{epic.jobSize ?? 'N/A'}</div>
         
-        <div className="text-muted-foreground">Business Value:</div>
-        <div className="font-medium">{epic.businessValue ?? 'N/A'}</div>
+        <div className="text-muted-foreground">Business Alignment:</div>
+        <div className="font-medium">{epic.businessAlignment ?? 'N/A'}</div>
         
         <div className="text-muted-foreground">Time Criticality:</div>
         <div className="font-medium">{epic.timeCriticality ?? 'N/A'}</div>
         
-        <div className="text-muted-foreground">Opportunity:</div>
-        <div className="font-medium">{epic.opportunityEnablement ?? 'N/A'}</div>
+        <div className="text-muted-foreground">Investor Enablement:</div>
+        <div className="font-medium">{epic.investorEnablement ?? 'N/A'}</div>
         
         <div className="text-muted-foreground">Cost of Delay:</div>
         <div className="font-medium">{epic.costOfDelay ?? 'N/A'}</div>
@@ -52,8 +52,8 @@ function CustomTooltip({ active, payload }: any) {
           {epic.technicalScore !== null ? epic.technicalScore.toFixed(2) : 'N/A'}
         </div>
         
-        <div className="text-muted-foreground">Strategic Driver:</div>
-        <div className="font-medium">{STRATEGIC_DRIVER_LABELS[epic.strategicDriver]}</div>
+        <div className="text-muted-foreground">Priority to Execute:</div>
+        <div className="font-medium">{PRIORITY_TO_EXECUTE_LABELS[epic.priorityToExecute]}</div>
         
         <div className="text-muted-foreground">Ability to Execute:</div>
         <div className="font-medium">{epic.abilityToExecute}</div>
@@ -140,7 +140,7 @@ export function EpicBalancingChart({ epics, stats, onEpicClick }: EpicBalancingC
             tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
             axisLine={{ stroke: 'hsl(var(--border))' }}
             label={{ 
-              value: 'Cost of Delay (BV + TC + Opportunity)', 
+              value: 'Cost of Delay (BA + TC + IE)', 
               angle: -90, 
               position: 'left', 
               offset: 40,
@@ -182,12 +182,12 @@ export function EpicBalancingChart({ epics, stats, onEpicClick }: EpicBalancingC
             {chartData.map((entry, index) => (
               <Cell
                 key={`cell-${index}`}
-                fill={STRATEGIC_DRIVER_COLORS[entry.epic.strategicDriver]}
+                fill={PRIORITY_TO_EXECUTE_COLORS[entry.epic.priorityToExecute]}
                 fillOpacity={hoveredEpic === entry.epic.id ? 0.9 : 0.7}
-                stroke={STRATEGIC_DRIVER_COLORS[entry.epic.strategicDriver]}
+                stroke={PRIORITY_TO_EXECUTE_COLORS[entry.epic.priorityToExecute]}
                 strokeWidth={ABILITY_TO_EXECUTE_STROKE[entry.epic.abilityToExecute]}
                 r={entry.z}
-                aria-label={`Epic ${entry.epic.key} – ${entry.epic.name}: Job Size ${entry.epic.jobSize}, Cost of Delay ${entry.epic.costOfDelay}, Technical Score ${entry.epic.technicalScore?.toFixed(2) ?? 'N/A'}, Strategic Driver ${STRATEGIC_DRIVER_LABELS[entry.epic.strategicDriver]}, Ability to Execute ${entry.epic.abilityToExecute}.`}
+                aria-label={`Epic ${entry.epic.key} – ${entry.epic.name}: Job Size ${entry.epic.jobSize}, Cost of Delay ${entry.epic.costOfDelay}, Technical Score ${entry.epic.technicalScore?.toFixed(2) ?? 'N/A'}, Priority to Execute ${PRIORITY_TO_EXECUTE_LABELS[entry.epic.priorityToExecute]}, Ability to Execute ${entry.epic.abilityToExecute}.`}
               />
             ))}
           </Scatter>

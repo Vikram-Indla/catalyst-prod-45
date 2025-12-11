@@ -1,13 +1,6 @@
 // Epic Balancing Types - WSJF-style scoring renamed to "Technical Score"
 
-export type StrategicDriver =
-  | "EXPAND"
-  | "SUSTAIN"
-  | "INNOVATE"
-  | "CONTAIN"
-  | "EXIT"
-  | "UNKNOWN"
-  | "NOT_SET";
+export type PriorityToExecute = "VERY_HIGH" | "HIGH" | "MEDIUM" | "LOW";
 
 export type AbilityToExecute = "HIGH" | "MEDIUM" | "LOW";
 
@@ -17,16 +10,22 @@ export interface EpicBalancingEpic {
   name: string;
   programId: string;
 
-  businessValue: number | null;
+  businessAlignment: number | null;
   timeCriticality: number | null;
-  opportunityEnablement: number | null;
+  investorEnablement: number | null;
   jobSize: number | null;
 
   costOfDelay: number | null;
   technicalScore: number | null;
 
-  strategicDriver: StrategicDriver;
+  priorityToExecute: PriorityToExecute;
   abilityToExecute: AbilityToExecute;
+
+  // Linked items
+  themeId?: string | null;
+  themeName?: string | null;
+  businessRequestId?: string | null;
+  businessRequestTitle?: string | null;
 }
 
 export interface EpicBalancingStats {
@@ -50,25 +49,20 @@ export interface EpicBalancingResponse {
   stats: EpicBalancingStats;
 }
 
-// Strategic Driver colors matching the reference image
-export const STRATEGIC_DRIVER_COLORS: Record<StrategicDriver, string> = {
-  EXPAND: "#dc2626",      // deep red
-  SUSTAIN: "#ea580c",     // orange
-  INNOVATE: "#eab308",    // yellow
-  CONTAIN: "#fde047",     // light yellow
-  EXIT: "#9ca3af",        // grey
-  UNKNOWN: "#22c55e",     // green
-  NOT_SET: "#d1d5db",     // light grey
+// Priority to Execute labels
+export const PRIORITY_TO_EXECUTE_LABELS: Record<PriorityToExecute, string> = {
+  VERY_HIGH: "Very High",
+  HIGH: "High",
+  MEDIUM: "Medium",
+  LOW: "Low",
 };
 
-export const STRATEGIC_DRIVER_LABELS: Record<StrategicDriver, string> = {
-  EXPAND: "Expand",
-  SUSTAIN: "Sustain",
-  INNOVATE: "Innovate",
-  CONTAIN: "Contain",
-  EXIT: "Exit",
-  UNKNOWN: "Unknown",
-  NOT_SET: "Not Set",
+// Priority to Execute colors
+export const PRIORITY_TO_EXECUTE_COLORS: Record<PriorityToExecute, string> = {
+  VERY_HIGH: "#dc2626",   // red
+  HIGH: "#ea580c",        // orange
+  MEDIUM: "#eab308",      // yellow
+  LOW: "#22c55e",         // green
 };
 
 export const ABILITY_TO_EXECUTE_STROKE: Record<AbilityToExecute, number> = {

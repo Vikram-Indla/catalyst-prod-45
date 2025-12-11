@@ -6,11 +6,12 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
+import { Link2 } from 'lucide-react';
 import { 
   EpicBalancingEpic, 
-  StrategicDriver, 
+  PriorityToExecute,
   AbilityToExecute,
-  STRATEGIC_DRIVER_LABELS 
+  PRIORITY_TO_EXECUTE_LABELS 
 } from '../types';
 
 interface EpicDetailsDrawerProps {
@@ -20,19 +21,16 @@ interface EpicDetailsDrawerProps {
   onSave: (epic: EpicBalancingEpic) => void;
 }
 
-const DRIVERS: StrategicDriver[] = [
-  'EXPAND', 'SUSTAIN', 'INNOVATE', 'CONTAIN', 'EXIT', 'UNKNOWN', 'NOT_SET'
-];
-
+const PRIORITIES: PriorityToExecute[] = ['VERY_HIGH', 'HIGH', 'MEDIUM', 'LOW'];
 const ABILITIES: AbilityToExecute[] = ['HIGH', 'MEDIUM', 'LOW'];
 
 export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDrawerProps) {
   const [formData, setFormData] = useState({
-    businessValue: '',
+    businessAlignment: '',
     timeCriticality: '',
-    opportunityEnablement: '',
+    investorEnablement: '',
     jobSize: '',
-    strategicDriver: 'NOT_SET' as StrategicDriver,
+    priorityToExecute: 'MEDIUM' as PriorityToExecute,
     abilityToExecute: 'MEDIUM' as AbilityToExecute,
   });
   const [saving, setSaving] = useState(false);
@@ -40,11 +38,11 @@ export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDr
   useEffect(() => {
     if (epic) {
       setFormData({
-        businessValue: epic.businessValue?.toString() ?? '',
+        businessAlignment: epic.businessAlignment?.toString() ?? '',
         timeCriticality: epic.timeCriticality?.toString() ?? '',
-        opportunityEnablement: epic.opportunityEnablement?.toString() ?? '',
+        investorEnablement: epic.investorEnablement?.toString() ?? '',
         jobSize: epic.jobSize?.toString() ?? '',
-        strategicDriver: epic.strategicDriver,
+        priorityToExecute: epic.priorityToExecute,
         abilityToExecute: epic.abilityToExecute,
       });
     }
@@ -58,13 +56,13 @@ export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDr
   };
 
   const costOfDelay = (() => {
-    const bv = parseNumber(formData.businessValue) ?? 0;
+    const ba = parseNumber(formData.businessAlignment) ?? 0;
     const tc = parseNumber(formData.timeCriticality) ?? 0;
-    const opp = parseNumber(formData.opportunityEnablement) ?? 0;
-    if (formData.businessValue === '' && formData.timeCriticality === '' && formData.opportunityEnablement === '') {
+    const ie = parseNumber(formData.investorEnablement) ?? 0;
+    if (formData.businessAlignment === '' && formData.timeCriticality === '' && formData.investorEnablement === '') {
       return null;
     }
-    return bv + tc + opp;
+    return ba + tc + ie;
   })();
 
   const technicalScore = (() => {
@@ -78,21 +76,15 @@ export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDr
   const handleSave = async () => {
     setSaving(true);
     try {
-      // TODO: Replace with real API call
-      // await fetch(`/api/epics/${epic.id}`, {
-      //   method: 'PATCH',
-      //   body: JSON.stringify(formData),
-      // });
-
       await new Promise(resolve => setTimeout(resolve, 300)); // Simulate API
 
       const updatedEpic: EpicBalancingEpic = {
         ...epic,
-        businessValue: parseNumber(formData.businessValue),
+        businessAlignment: parseNumber(formData.businessAlignment),
         timeCriticality: parseNumber(formData.timeCriticality),
-        opportunityEnablement: parseNumber(formData.opportunityEnablement),
+        investorEnablement: parseNumber(formData.investorEnablement),
         jobSize: parseNumber(formData.jobSize),
-        strategicDriver: formData.strategicDriver,
+        priorityToExecute: formData.priorityToExecute,
         abilityToExecute: formData.abilityToExecute,
         costOfDelay,
         technicalScore,
@@ -111,28 +103,51 @@ export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDr
   return (
     <Sheet open={open} onOpenChange={onClose}>
       <SheetContent className="w-[400px] sm:w-[540px] overflow-y-auto">
-        <SheetHeader>
-          <SheetTitle className="flex items-center gap-2">
-            <span className="text-brand-gold">{epic.key}</span>
-            <span className="text-foreground">{epic.name}</span>
+        <SheetHeader className="pb-4">
+          <SheetTitle className="flex items-center gap-2 pr-8">
+            <span className="text-brand-gold flex-shrink-0">{epic.key}</span>
+            <span className="text-foreground truncate" title={epic.name}>{epic.name}</span>
           </SheetTitle>
         </SheetHeader>
 
-        <div className="mt-6 space-y-6">
+        <div className="space-y-6">
+          {/* Linked Items */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-semibold text-foreground">Linked Items</h3>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 p-2 bg-accent/30 rounded-md">
+                <Link2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                <span className="text-sm text-muted-foreground">Theme:</span>
+                <span className="text-sm font-medium text-foreground truncate">
+                  {epic.themeName || 'Not linked'}
+                </span>
+              </div>
+              <div className="flex items-center gap-2 p-2 bg-accent/30 rounded-md">
+                <Link2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                <span className="text-sm text-muted-foreground">Business Request:</span>
+                <span className="text-sm font-medium text-foreground truncate">
+                  {epic.businessRequestTitle || 'Not linked'}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
           {/* WSJF Scoring Fields */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-foreground">Technical Score (WSJF) Inputs</h3>
             
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="businessValue">Business Value (1-20)</Label>
+                <Label htmlFor="businessAlignment">Business Alignment (1-20)</Label>
                 <Input
-                  id="businessValue"
+                  id="businessAlignment"
                   type="number"
                   min={1}
                   max={20}
-                  value={formData.businessValue}
-                  onChange={e => setFormData(prev => ({ ...prev, businessValue: e.target.value }))}
+                  value={formData.businessAlignment}
+                  onChange={e => setFormData(prev => ({ ...prev, businessAlignment: e.target.value }))}
                   placeholder="1-20"
                 />
               </div>
@@ -151,14 +166,14 @@ export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDr
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="opportunityEnablement">Opportunity Enablement (1-20)</Label>
+                <Label htmlFor="investorEnablement">Investor Enablement (1-20)</Label>
                 <Input
-                  id="opportunityEnablement"
+                  id="investorEnablement"
                   type="number"
                   min={1}
                   max={20}
-                  value={formData.opportunityEnablement}
-                  onChange={e => setFormData(prev => ({ ...prev, opportunityEnablement: e.target.value }))}
+                  value={formData.investorEnablement}
+                  onChange={e => setFormData(prev => ({ ...prev, investorEnablement: e.target.value }))}
                   placeholder="1-20"
                 />
               </div>
@@ -186,18 +201,18 @@ export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDr
             
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="strategicDriver">Strategic Driver</Label>
+                <Label htmlFor="priorityToExecute">Priority to Execute</Label>
                 <Select
-                  value={formData.strategicDriver}
-                  onValueChange={(v) => setFormData(prev => ({ ...prev, strategicDriver: v as StrategicDriver }))}
+                  value={formData.priorityToExecute}
+                  onValueChange={(v) => setFormData(prev => ({ ...prev, priorityToExecute: v as PriorityToExecute }))}
                 >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-background border-border z-[100]">
-                    {DRIVERS.map(driver => (
-                      <SelectItem key={driver} value={driver}>
-                        {STRATEGIC_DRIVER_LABELS[driver]}
+                    {PRIORITIES.map(priority => (
+                      <SelectItem key={priority} value={priority}>
+                        {PRIORITY_TO_EXECUTE_LABELS[priority]}
                       </SelectItem>
                     ))}
                   </SelectContent>
