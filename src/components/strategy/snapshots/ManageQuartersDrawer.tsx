@@ -93,7 +93,7 @@ export function ManageQuartersDrawer({ open, onClose, snapshot }: ManageQuarters
 
   return (
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
-      <SheetContent side="right" width="medium" className="flex flex-col">
+      <SheetContent side="right" width="medium" className="flex flex-col" hideClose>
         <SheetHeader className="border-b pb-4">
           <div className="flex items-center justify-between">
             <div>
