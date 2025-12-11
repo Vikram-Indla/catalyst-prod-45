@@ -148,21 +148,23 @@ export function ProgramSidebar({
       </button>
 
       <div className="h-full flex flex-col overflow-hidden">
-        {/* Program Context Header - h-14 (56px) to align with main header */}
-        <div className={cn("h-14 px-4 flex items-center border-b", !expanded && "px-2")}>
-          {expanded && (
-            <div className="py-1.5 px-3 bg-accent/30 border border-border/50 rounded-lg w-full">
-              <div className="flex items-center gap-3 w-full">
-                <div className="w-8 h-8 rounded bg-brand-gold flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
-                  {program?.name?.substring(0, 2).toUpperCase() || 'PG'}
-                </div>
-                <div className="flex-1 text-left min-w-0">
-                  <div className="text-sm font-medium text-foreground truncate">
-                    {program?.name || 'Program'}
-                  </div>
-                  <div className="text-xs text-muted-foreground">Program</div>
-                </div>
+        {/* Program Context Header - h-[72px] to align with ProductRoomSidebar */}
+        <div className={cn("h-[72px] px-4 flex items-center border-b shrink-0", !expanded && "px-2")}>
+          {expanded ? (
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-brand-gold/20 flex items-center justify-center text-brand-gold font-semibold text-sm flex-shrink-0">
+                {program?.name?.substring(0, 2).toUpperCase() || 'DI'}
               </div>
+              <div className="flex flex-col min-w-0">
+                <span className="font-semibold text-foreground truncate">
+                  {program?.name || 'Program'}
+                </span>
+                <span className="text-xs text-muted-foreground">Program</span>
+              </div>
+            </div>
+          ) : (
+            <div className="w-10 h-10 rounded-lg bg-brand-gold/20 flex items-center justify-center text-brand-gold font-semibold text-sm mx-auto">
+              {program?.name?.substring(0, 2).toUpperCase() || 'DI'}
             </div>
           )}
         </div>
