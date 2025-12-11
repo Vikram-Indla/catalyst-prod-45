@@ -81,6 +81,7 @@ export interface BacklogItem {
   featureId?: string | null;
   ownerId?: string | null;
   ownerName?: string | null;
+  owner?: string;
   labels?: BacklogLabel[];
   tags?: string[];
   isParked?: boolean;
@@ -89,6 +90,15 @@ export interface BacklogItem {
   parkedAt?: string | null;
   createdAt?: string;
   updatedAt?: string;
+  // Epic-specific roll-up fields (Phase II)
+  progress?: number;
+  featureCount?: number;
+  completedFeatures?: number;
+  totalEstimate?: number;
+  technicalScore?: number;
+  businessScore?: number;
+  targetDate?: string | null;
+  // Allow additional dynamic properties
   [key: string]: any;
 }
 
