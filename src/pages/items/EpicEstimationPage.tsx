@@ -23,7 +23,7 @@ import {
 import { toast } from 'sonner';
 import { useNavigate, useParams } from 'react-router-dom';
 
-// Fibonacci sequence columns for Technical Scoring board
+// Fibonacci sequence columns for Technical Scoring board view
 const SCORING_COLUMNS = ['1', '2', '3', '5', '8', '13', '20'];
 
 type ScoringField = 'business_value' | 'time_value' | 'rroe_value' | 'job_size';
