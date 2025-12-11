@@ -19,6 +19,48 @@ interface ChartDataPoint {
   y: number;
   z: number;
   epic: EpicBalancingEpic;
+  rank: number | null;
+}
+
+// Custom shape to render dot with rank label for top 5
+function RankedDot(props: any) {
+  const { cx, cy, payload, fill, stroke, strokeWidth, fillOpacity, onClick, onMouseEnter, onMouseLeave } = props;
+  const rank = payload?.rank;
+  const r = payload?.z ?? 12;
+  const isTop5 = rank && rank <= 5;
+
+  return (
+    <g 
+      onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      style={{ cursor: 'pointer' }}
+    >
+      <circle
+        cx={cx}
+        cy={cy}
+        r={r}
+        fill={fill}
+        fillOpacity={fillOpacity}
+        stroke={stroke}
+        strokeWidth={strokeWidth}
+      />
+      {isTop5 && (
+        <text
+          x={cx}
+          y={cy}
+          textAnchor="middle"
+          dominantBaseline="central"
+          fill="white"
+          fontSize={10}
+          fontWeight="bold"
+          style={{ pointerEvents: 'none' }}
+        >
+          {rank}
+        </text>
+      )}
+    </g>
+  );
 }
 
 function CustomTooltip({ active, payload }: any) {
@@ -65,6 +107,17 @@ function CustomTooltip({ active, payload }: any) {
 export function EpicBalancingChart({ epics, stats, onEpicClick }: EpicBalancingChartProps) {
   const [hoveredEpic, setHoveredEpic] = useState<string | null>(null);
 
+  // Calculate technical rankings (1 = highest score)
+  const rankedEpics = useMemo(() => {
+    return [...epics]
+      .filter(e => e.technicalScore !== null)
+      .sort((a, b) => (b.technicalScore ?? 0) - (a.technicalScore ?? 0))
+      .reduce((acc, epic, index) => {
+        acc[epic.id] = index + 1; // Rank 1 to N
+        return acc;
+      }, {} as Record<string, number>);
+  }, [epics]);
+
   const chartData: ChartDataPoint[] = useMemo(() => {
     // Filter epics with valid data
     const validEpics = epics.filter(e => e.jobSize !== null && e.costOfDelay !== null);
@@ -88,8 +141,9 @@ export function EpicBalancingChart({ epics, stats, onEpicClick }: EpicBalancingC
         ? minRadius + ((epic.technicalScore - minScore) / scoreRange) * (maxRadius - minRadius)
         : minRadius,
       epic,
+      rank: rankedEpics[epic.id] ?? null,
     }));
-  }, [epics]);
+  }, [epics, rankedEpics]);
 
   const { maxX, maxY } = useMemo(() => {
     const xValues = chartData.map(d => d.x);
@@ -176,23 +230,19 @@ export function EpicBalancingChart({ epics, stats, onEpicClick }: EpicBalancingC
 
           <Scatter
             data={chartData}
-            onClick={(data) => onEpicClick(data.epic)}
-            onMouseEnter={(data) => setHoveredEpic(data.epic.id)}
-            onMouseLeave={() => setHoveredEpic(null)}
-            cursor="pointer"
-          >
-            {chartData.map((entry, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={PRIORITY_TO_EXECUTE_COLORS[entry.epic.priorityToExecute]}
-                fillOpacity={hoveredEpic === entry.epic.id ? 0.9 : 0.7}
-                stroke={PRIORITY_TO_EXECUTE_COLORS[entry.epic.priorityToExecute]}
-                strokeWidth={ABILITY_TO_EXECUTE_STROKE[entry.epic.abilityToExecute]}
-                r={entry.z}
-                aria-label={`Epic ${entry.epic.key} – ${entry.epic.name}: Job Size ${entry.epic.jobSize}, Cost of Delay ${entry.epic.costOfDelay}, Technical Score ${entry.epic.technicalScore?.toFixed(2) ?? 'N/A'}, Priority to Execute ${PRIORITY_TO_EXECUTE_LABELS[entry.epic.priorityToExecute]}, Ability to Execute ${entry.epic.abilityToExecute}.`}
+            shape={(props: any) => (
+              <RankedDot
+                {...props}
+                fill={PRIORITY_TO_EXECUTE_COLORS[props.payload.epic.priorityToExecute]}
+                fillOpacity={hoveredEpic === props.payload.epic.id ? 0.9 : 0.7}
+                stroke={PRIORITY_TO_EXECUTE_COLORS[props.payload.epic.priorityToExecute]}
+                strokeWidth={ABILITY_TO_EXECUTE_STROKE[props.payload.epic.abilityToExecute]}
+                onClick={() => onEpicClick(props.payload.epic)}
+                onMouseEnter={() => setHoveredEpic(props.payload.epic.id)}
+                onMouseLeave={() => setHoveredEpic(null)}
               />
-            ))}
-          </Scatter>
+            )}
+          />
         </ScatterChart>
       </ResponsiveContainer>
     </div>
