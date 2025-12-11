@@ -53,17 +53,17 @@ export function TechnicalScoringDialog({
       
       if (error) throw error;
       
-      // Also fetch existing WSJF/tech scores from epic_wsjf table
-      // TODO: Consider moving to dedicated technical_scores table
-      const { data: wsjfData } = await supabase
+      // Fetch existing technical scores from epic_wsjf table
+      // NOTE: Table named epic_wsjf for legacy reasons; UI shows "Technical Scoring"
+      const { data: techScoreData } = await supabase
         .from('epic_wsjf')
         .select('*')
         .in('epic_id', epicIds);
       
-      const wsjfMap = new Map(wsjfData?.map(w => [w.epic_id, w]) || []);
+      const techScoreMap = new Map(techScoreData?.map(w => [w.epic_id, w]) || []);
       
       return data?.map(epic => {
-        const existing = wsjfMap.get(epic.id);
+        const existing = techScoreMap.get(epic.id);
         return {
           id: epic.id,
           name: epic.name,
@@ -111,9 +111,11 @@ export function TechnicalScoringDialog({
 
   const saveMutation = useMutation({
     mutationFn: async () => {
+      // NOTE: Using epic_wsjf table for persistence (legacy naming)
+      // UI shows "Technical Scoring" - no PI dependency in Catalyst vNext
       const updates = Array.from(scores.values()).map(score => ({
         epic_id: score.id,
-        pi_id: 'default', // TODO: Remove PI dependency when migrating to technical_scores table
+        pi_id: 'default', // Required by schema constraint, not used in UI
         business_value: score.technical_value,
         time_value: score.time_criticality,
         rroe_value: score.risk_reduction,

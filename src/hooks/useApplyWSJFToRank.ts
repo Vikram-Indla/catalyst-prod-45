@@ -2,12 +2,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+// NOTE: Function names reference WSJF for legacy/internal reasons
+// UI displays "Technical Scoring" - these apply tech scores to global_rank
 export function useApplyWSJFToRankEpics(piId?: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async () => {
-      // Fetch epics with WSJF scores for the selected PI
+      // Fetch epics with technical scores (stored in epic_wsjf table)
       let query = supabase
         .from('epic_wsjf')
         .select('epic_id, wsjf_score, pi_id')
@@ -45,20 +47,22 @@ export function useApplyWSJFToRankEpics(piId?: string) {
     onSuccess: (count) => {
       queryClient.invalidateQueries({ queryKey: ['epics'] });
       queryClient.invalidateQueries({ queryKey: ['wsjf'] });
-      toast.success(`Applied WSJF ranking to ${count} epics`);
+      toast.success(`Applied Technical Scoring ranking to ${count} epics`);
     },
     onError: (error: Error) => {
-      toast.error(`Failed to apply WSJF ranking: ${error.message}`);
+      toast.error(`Failed to apply Technical Scoring ranking: ${error.message}`);
     },
   });
 }
 
+// NOTE: Function name references WSJF for legacy/internal reasons
+// UI displays "Technical Scoring" - applies tech scores to global_rank
 export function useApplyWSJFToRankFeatures(piId?: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async () => {
-      // Fetch features with WSJF scores
+      // Fetch features with technical scores
       let query = supabase
         .from('features')
         .select('id, wsjf_score, pi_id')
@@ -73,7 +77,7 @@ export function useApplyWSJFToRankFeatures(piId?: string) {
       if (fetchError) throw fetchError;
 
       if (!features || features.length === 0) {
-        throw new Error('No WSJF scores found for ranking');
+        throw new Error('No Technical Scores found for ranking');
       }
 
       // Update global_rank for each feature based on WSJF score order
@@ -96,10 +100,10 @@ export function useApplyWSJFToRankFeatures(piId?: string) {
     },
     onSuccess: (count) => {
       queryClient.invalidateQueries({ queryKey: ['features'] });
-      toast.success(`Applied WSJF ranking to ${count} features`);
+      toast.success(`Applied Technical Scoring ranking to ${count} features`);
     },
     onError: (error: Error) => {
-      toast.error(`Failed to apply WSJF ranking: ${error.message}`);
+      toast.error(`Failed to apply Technical Scoring ranking: ${error.message}`);
     },
   });
 }
