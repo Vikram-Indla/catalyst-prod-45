@@ -1,188 +1,17 @@
-/* Atlassian Design System - System Font Stack */
+/* ============================================
+   CATALYST DESIGN SYSTEM - UNIFIED CSS
+   Single source of truth for global styles
+   ============================================ */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ============================================
-   ATLASKIT TYPOGRAPHY - GLOBAL ENFORCEMENT
-   ============================================ */
-
-/* GLOBAL FONT RESET */
-* {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif !important;
-}
-
-body {
-  font-size: 14px !important;
-  line-height: 20px !important;
-  font-weight: 400 !important;
-  color: #172B4D !important;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* PROJECT HEADER - Removed !important to allow component overrides */
-h1, h2 {
-  font-size: 24px;
-  font-weight: 500;
-  line-height: 28px;
-  color: #172B4D;
-}
-
-h3 { 
-  font-size: 16px !important; 
-  font-weight: 600 !important; 
-  line-height: 1.4 !important; 
-}
-
-/* TABLE HEADERS - CRITICAL */
-table th,
-[role="columnheader"],
-.table-header {
-  font-size: 11px !important;
-  font-weight: 600 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.06em !important;
-  color: #5E6C84 !important;
-  line-height: 16px !important;
-}
-
-/* TABLE CELLS */
-table td,
-[role="cell"] {
-  font-size: 14px !important;
-  font-weight: 400 !important;
-  line-height: 20px !important;
-  color: #172B4D !important;
-}
-
-/* LINKS - Using Catalyst Secondary Green */
-a {
-  font-size: 14px !important;
-  font-weight: 500 !important;
-  color: #5c7c5c !important;
-  text-decoration: none !important;
-}
-
-/* GLOBAL FOCUS RING - Only for inputs, textareas, and interactive form elements */
-/* Exclude checkboxes and elements that need blue focus */
-input:focus-visible:not([type="checkbox"]),
-textarea:focus-visible,
-select:focus-visible,
-[role="listbox"]:focus-visible,
-[role="combobox"]:focus-visible,
-[contenteditable="true"]:focus-visible {
-  outline: 2px solid #C69C6D !important;
-  outline-offset: 2px !important;
-}
-
-/* Buttons and links - subtle focus ring (exclude list-view buttons) */
-button:focus-visible:not([data-blue-focus]),
-a:focus-visible,
-[role="button"]:focus-visible:not([data-blue-focus]) {
-  outline: 2px solid #C69C6D !important;
-  outline-offset: 2px !important;
-  box-shadow: none !important;
-}
-
-/* Blue focus for checkboxes and list view elements */
-[type="checkbox"]:focus-visible,
-[data-blue-focus]:focus-visible {
-  outline: 2px solid #2563eb !important;
-  outline-offset: 2px !important;
-}
-
-/* Remove ALL focus outlines and rings from divs, cards, and non-form elements */
-div:focus,
-div:focus-visible,
-section:focus,
-section:focus-visible,
-article:focus,
-article:focus-visible,
-[data-no-focus-ring]:focus,
-[data-no-focus-ring]:focus-visible {
-  outline: none !important;
-  box-shadow: none !important;
-  --tw-ring-shadow: none !important;
-  --tw-ring-offset-shadow: none !important;
-}
-
-/* Remove ring from badges and non-input elements when inside cards */
-.rounded-lg > div:focus,
-.rounded-lg > div:focus-visible,
-.border-l-brand-gold div:focus,
-.border-l-brand-gold div:focus-visible {
-  outline: none !important;
-  box-shadow: none !important;
-  --tw-ring-shadow: none !important;
-  --tw-ring-offset-shadow: none !important;
-}
-
-/* TABS */
-[role="tab"] {
-  font-size: 14px !important;
-  font-weight: 500 !important;
-  line-height: 20px !important;
-}
-
-/* BREADCRUMBS */
-nav a,
-.breadcrumb {
-  font-size: 14px !important;
-  font-weight: 400 !important;
-}
-
-/* SEARCH INPUT */
-input[type="text"],
-input[type="search"] {
-  font-size: 14px !important;
-  line-height: 20px !important;
-}
-
-/* INPUT & SELECT HOVER - Thin Gold Border (Global Pattern) */
-input:hover:not(:disabled),
-textarea:hover:not(:disabled),
-select:hover:not(:disabled),
-[role="combobox"]:hover,
-[role="listbox"]:hover,
-[data-radix-collection-item]:hover,
-button[data-state]:hover,
-.border:hover:not(button):not([role="button"]),
-[class*="SelectTrigger"]:hover,
-[class*="Input"]:hover:not(:disabled) {
-  border-color: #C69C6D !important;
-}
-
-/* Ensure focus also uses gold - single line only */
-input:focus,
-textarea:focus,
-select:focus,
-[role="combobox"]:focus,
-[role="combobox"][data-state="open"] {
-  border-color: #C69C6D !important;
-  box-shadow: none !important;
-  outline: none !important;
-}
-
-/* BUTTONS */
-button {
-  font-size: 14px !important;
-  font-weight: 500 !important;
-  line-height: 20px !important;
-}
-
-/* STATUS LOZENGES */
-span[class*="Lozenge"] {
-  font-size: 11px !important;
-  font-weight: 600 !important;
-  text-transform: uppercase !important;
-}
-
-/* ============================================
-   ATLASSIAN DESIGN SYSTEM TOKENS
+   CATALYST DESIGN TOKENS (:root)
    ============================================ */
 :root {
-  /* === ATLASSIAN NEUTRALS (N-scale) === */
+  /* === NEUTRAL SCALE === */
   --n0: 0 0% 100%;                             /* #FFFFFF - white */
   --n10: 210 20% 99%;                          /* #FAFBFC - background */
   --n20: 210 17% 97%;                          /* #F4F5F7 - hover */
@@ -203,7 +32,7 @@ span[class*="Lozenge"] {
   --n800: 217 33% 20%;                         /* #172B4D - heading */
   --n900: 217 48% 15%;                         /* #091E42 - heading */
   
-  /* === ATLASSIAN BLUES (B-scale) === */
+  /* === BLUES (B-scale) === */
   --b50: 216 100% 94%;                         /* #DEEBFF */
   --b75: 214 100% 85%;                         /* #B3D4FF */
   --b100: 213 100% 65%;                        /* #4C9AFF */
@@ -212,7 +41,7 @@ span[class*="Lozenge"] {
   --b400: 217 100% 40%;                        /* #0052CC - primary */
   --b500: 217 100% 33%;                        /* #0747A6 */
   
-  /* === ATLASSIAN GREENS (G-scale) === */
+  /* === GREENS (G-scale) === */
   --g50: 150 67% 94%;                          /* #E3FCEF */
   --g75: 158 78% 82%;                          /* #ABF5D1 */
   --g100: 156 84% 72%;                         /* #79F2C0 */
@@ -221,7 +50,7 @@ span[class*="Lozenge"] {
   --g400: 158 76% 38%;                         /* #00875A */
   --g500: 158 100% 20%;                        /* #006644 */
   
-  /* === ATLASSIAN REDS (R-scale) === */
+  /* === REDS (R-scale) === */
   --r50: 14 100% 95%;                          /* #FFEBE6 */
   --r75: 12 100% 84%;                          /* #FFBDAD */
   --r100: 11 100% 73%;                         /* #FF8F73 */
@@ -230,7 +59,7 @@ span[class*="Lozenge"] {
   --r400: 4 100% 50%;                          /* #DE350B */
   --r500: 11 100% 37%;                         /* #BF2600 */
   
-  /* === ATLASSIAN YELLOWS (Y-scale) === */
+  /* === YELLOWS (Y-scale) === */
   --y50: 47 100% 95%;                          /* #FFFAE6 */
   --y75: 44 100% 85%;                          /* #FFF0B3 */
   --y100: 43 100% 75%;                         /* #FFE380 */
@@ -239,7 +68,7 @@ span[class*="Lozenge"] {
   --y400: 36 100% 50%;                         /* #FF991F */
   --y500: 33 100% 50%;                         /* #FF8B00 */
   
-  /* === ATLASSIAN PURPLES (P-scale) === */
+  /* === PURPLES (P-scale) === */
   --p50: 246 100% 96%;                         /* #EAE6FF */
   --p75: 247 70% 82%;                          /* #C0B6F2 */
   --p100: 248 48% 71%;                         /* #998DD9 */
@@ -248,7 +77,7 @@ span[class*="Lozenge"] {
   --p400: 254 53% 47%;                         /* #5243AA */
   --p500: 255 65% 39%;                         /* #403294 */
   
-  /* === ATLASSIAN TEALS (T-scale) === */
+  /* === TEALS (T-scale) === */
   --t50: 186 100% 95%;                         /* #E6FCFF */
   --t75: 187 100% 85%;                         /* #B3F5FF */
   --t100: 186 91% 72%;                         /* #79E2F2 */
@@ -257,7 +86,7 @@ span[class*="Lozenge"] {
   --t400: 188 100% 37%;                        /* #00A3BF */
   --t500: 188 100% 32%;                        /* #008DA6 */
   
-  /* === ATLASSIAN SPACING (8px base) === */
+  /* === SPACING SCALE (8px base) === */
   --space-025: 2px;
   --space-050: 4px;
   --space-075: 6px;
@@ -319,7 +148,7 @@ span[class*="Lozenge"] {
   --health-red: var(--r300);
   --health-gray: var(--n200);
   
-  /* === CATALYST BRAND OVERLAY === */
+  /* === CATALYST BRAND COLORS === */
   --brand-dark: 0 0% 10%;                      /* #1A1A1A */
   --brand-gold: 35 46% 60%;                    /* #C69C6D */
   --brand-gold-hover: 35 41% 55%;              /* #B8905F */
@@ -332,7 +161,7 @@ span[class*="Lozenge"] {
   --chart-5: 27 87% 67%;
   
   /* Radius */
-  --radius: 3px;                               /* Atlassian standard */
+  --radius: 3px;
   
   /* Layout Measurements */
   --topnav-h: 56px;
@@ -393,78 +222,19 @@ span[class*="Lozenge"] {
 }
 
 /* ============================================
-   2) BASE ELEMENT STYLING - ATLASSIAN TYPOGRAPHY
+   BASE ELEMENT STYLING (Tailwind @apply)
    ============================================ */
 * {
   @apply border-border;
 }
 
 body {
-  @apply bg-background text-foreground;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  font-size: 14px;
-  line-height: 20px;
-  font-weight: 400;
-  color: hsl(var(--n800));
+  @apply bg-background text-foreground antialiased;
 }
 
-/* Atlassian Heading Styles */
-h1 {
-  font-size: 29px;
-  font-weight: 500;
-  line-height: 32px;
-  color: hsl(var(--n800));
-}
-
-h2 {
-  font-size: 24px;
-  font-weight: 500;
-  line-height: 28px;
-  color: hsl(var(--n800));
-}
-
-h3 {
-  font-size: 20px;
-  font-weight: 500;
-  line-height: 24px;
-  color: hsl(var(--n800));
-}
-
-h4 {
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 20px;
-  color: hsl(var(--n800));
-}
-
-h5 {
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 16px;
-  color: hsl(var(--n800));
-}
-
-h6 {
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 16px;
-  color: hsl(var(--n800));
-}
-
-/* Small text */
-small, .text-small {
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 16px;
-}
-
-/* Code text */
-code, .text-code {
-  font-size: 11px;
-  font-weight: 400;
-  line-height: 16px;
-  font-family: Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-}
+/* ============================================
+   CATALYST UTILITY CLASSES
+   ============================================ */
 
 /* Gradient Utilities */
 .gradient-primary {
@@ -479,36 +249,6 @@ code, .text-code {
   background: linear-gradient(135deg, hsl(var(--warning)) 0%, hsl(var(--brand-gold)) 100%);
 }
 
-/* Shadow Utilities */
-.shadow-sm {
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-}
-
-.shadow-md {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-.shadow-lg {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
-.shadow-xl {
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
-
-/* Transition Utilities */
-.transition-fast {
-  transition-duration: var(--transition-fast);
-}
-
-.transition-normal {
-  transition-duration: var(--transition-normal);
-}
-
-.transition-slow {
-  transition-duration: var(--transition-slow);
-}
-
 /* ============================================
    AUTH COMPONENT STYLES
    ============================================ */
@@ -516,37 +256,36 @@ code, .text-code {
   width: 100%;
   padding: 0.625rem 0.75rem;
   font-size: 0.875rem;
-  color: #172B4D;
+  color: hsl(var(--foreground));
   background-color: white;
-  border: 2px solid #DCDFE4;
+  border: 2px solid hsl(var(--border));
   border-radius: 4px;
   transition: all 150ms ease-out;
 }
 
 .input-atlassian::placeholder {
-  color: #8590A2;
+  color: hsl(var(--muted-foreground));
 }
 
 .input-atlassian:hover {
-  border-color: #8590A2;
+  border-color: hsl(var(--n100));
 }
 
 .input-atlassian:focus {
   outline: none;
-  border-color: #C69C6D;
-  box-shadow: 0 0 0 1px #C69C6D;
+  border-color: hsl(var(--brand-gold));
+  box-shadow: 0 0 0 1px hsl(var(--brand-gold));
 }
 
 .input-atlassian.error {
-  border-color: hsl(var(--error));
+  border-color: hsl(var(--destructive));
 }
 
 .label-atlassian {
   display: block;
-  font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
-  color: #44546F;
+  color: hsl(var(--n300));
   text-transform: uppercase;
   letter-spacing: 0.02em;
   margin-bottom: 0.375rem;
@@ -555,11 +294,10 @@ code, .text-code {
 .btn-primary {
   width: 100%;
   padding: 0.75rem 1.25rem;
-  font-family: 'Inter', sans-serif;
   font-size: 0.875rem;
   font-weight: 600;
   color: white;
-  background-color: #C69C6D;
+  background-color: hsl(var(--brand-gold));
   border-radius: 4px;
   transition: all 150ms;
   display: flex;
@@ -571,11 +309,11 @@ code, .text-code {
 }
 
 .btn-primary:hover:not(:disabled) {
-  background-color: #B8905F;
+  background-color: hsl(var(--brand-gold-hover));
 }
 
 .btn-primary:active:not(:disabled) {
-  background-color: #B8905F;
+  background-color: hsl(var(--brand-gold-hover));
 }
 
 .btn-primary:disabled {
@@ -586,12 +324,11 @@ code, .text-code {
 .btn-secondary {
   width: 100%;
   padding: 0.625rem 1rem;
-  font-family: 'Inter', sans-serif;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #172B4D;
+  color: hsl(var(--foreground));
   background-color: white;
-  border: 2px solid #DCDFE4;
+  border: 2px solid hsl(var(--border));
   border-radius: 4px;
   transition: all 150ms;
   display: flex;
@@ -602,17 +339,16 @@ code, .text-code {
 }
 
 .btn-secondary:hover {
-  background-color: #F7F8F9;
-  border-color: #8590A2;
+  background-color: hsl(var(--n10));
+  border-color: hsl(var(--n100));
 }
 
 .tab-btn {
   flex: 1;
   padding: 0.625rem 1.25rem;
-  font-family: 'Inter', sans-serif;
   font-size: 0.875rem;
   font-weight: 600;
-  color: #44546F;
+  color: hsl(var(--n300));
   background-color: transparent;
   border-radius: 0.375rem;
   transition: all 150ms;
@@ -621,18 +357,18 @@ code, .text-code {
 }
 
 .tab-btn:hover {
-  color: #172B4D;
+  color: hsl(var(--foreground));
   background-color: rgba(0, 0, 0, 0.05);
 }
 
 .tab-btn.active {
   background-color: white;
-  color: #172B4D;
+  color: hsl(var(--foreground));
   box-shadow: 0 1px 2px 0 rgba(9, 30, 66, 0.08);
 }
 
 /* ============================================
-   4) CUSTOM SCROLLBAR
+   CUSTOM SCROLLBAR
    ============================================ */
 ::-webkit-scrollbar {
   width: 6px;
@@ -654,15 +390,11 @@ code, .text-code {
 }
 
 /* ============================================
-   5) ANIMATIONS
+   ANIMATIONS
    ============================================ */
 @keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes slide-in-right {
@@ -698,7 +430,7 @@ code, .text-code {
 }
 
 /* ============================================
-   6) MOBILE RESPONSIVE UTILITIES
+   MOBILE RESPONSIVE UTILITIES
    ============================================ */
 
 /* Mobile-first container with proper padding */
@@ -846,74 +578,63 @@ code, .text-code {
 }
 
 /* ============================================
-   7) ATLASSIAN-STYLE DRAWER STYLES
+   EXECUTIVE DRAWER STYLES
    ============================================ */
 
-/* 
- * Atlassian Design System alignment:
- * - Overlay elevation: surface + shadow for floating panels
- * - 8px spacing grid (space.100=8px, space.200=16px, space.300=24px)
- * - Neutral surfaces with proper layering (N0, N10, N20)
- * - Brand gold (#c69c6d) as accent instead of Atlassian blue
- */
-
-/* Drawer Container - COMPACT FULL WHITE */
+/* Drawer Container */
 .executive-drawer {
-  background-color: #FFFFFF !important;           /* Pure white - non-negotiable */
+  background-color: hsl(var(--background));
   border-left: 1px solid hsl(var(--border));
-  box-shadow: 
-    0 0 0 1px rgba(9, 30, 66, 0.08),
-    0 2px 1px rgba(9, 30, 66, 0.08),
-    0 0 20px -6px rgba(9, 30, 66, 0.31);
+  box-shadow: var(--shadow-overlay);
 }
 
-/* Drawer Header - COMPACT white */
+/* Drawer Header */
 .executive-drawer-header {
-  background-color: #FFFFFF !important;           /* Pure white */
-  border-bottom: 1px solid hsl(var(--border));    /* Thin divider, not 2px gold */
-  padding: 0 !important;                          /* Let inner elements control */
+  background-color: hsl(var(--background));
+  border-bottom: 1px solid hsl(var(--border));
+  padding: 0;
 }
 
 .executive-drawer-title {
   font-weight: 600;
-  color: hsl(var(--text-primary));
-  font-size: 16px;                                /* Reduced from 20px */
+  color: hsl(var(--foreground));
+  font-size: 16px;
   line-height: 1.3;
   letter-spacing: -0.01em;
 }
 
 .executive-drawer-subtitle {
-  color: hsl(var(--text-secondary));
+  color: hsl(var(--muted-foreground));
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.02em;
   text-transform: uppercase;
 }
 
-/* Tab Navigation - COMPACT */
+/* Tab Navigation */
 .executive-tabs-list {
-  background-color: #FFFFFF !important;
-  padding: 0 12px !important;                     /* Reduced from 24px */
+  background-color: hsl(var(--background));
+  padding: 0 12px;
   gap: 0;
-  height: 40px !important;                        /* Fixed compact height */
-  min-height: 40px !important;
+  height: 40px;
+  min-height: 40px;
 }
 
 .executive-tab {
-  color: hsl(var(--text-tertiary));
+  color: hsl(var(--muted-foreground));
   font-weight: 500;
   font-size: 13px;
-  padding: 8px 12px !important;                   /* Reduced padding */
+  padding: 8px 12px;
   border-bottom: 2px solid transparent;
   border-radius: 0;
   background: transparent;
   transition: color 150ms ease, border-color 150ms ease, background-color 150ms ease;
   margin-bottom: -1px;
-  height: 40px !important;
+  height: 40px;
 }
 
 .executive-tab:hover {
-  color: hsl(var(--text-secondary));
+  color: hsl(var(--foreground));
   background-color: hsl(var(--secondary-champagne) / 0.3);
 }
 
@@ -924,72 +645,72 @@ code, .text-code {
   background: transparent;
 }
 
-/* Content Area - Light grey background matching production */
+/* Content Area */
 .executive-drawer-content {
-  background-color: #F8F8F8 !important;           /* Light grey like production */
-  padding: 0 !important;                          /* Padding controlled by tab content */
+  background-color: hsl(var(--n10));
+  padding: 0;
   overflow-y: auto;
 }
 
-/* Form Cards - WHITE bordered panels, not floating cards */
+/* Form Cards */
 .executive-card {
-  background-color: #FFFFFF !important;           /* Pure white */
+  background-color: hsl(var(--background));
   border-radius: 8px;
-  border: 1px solid hsl(218 14% 91%);             /* neutral-200 */
-  box-shadow: none !important;                    /* No shadow - clean bordered panels */
-  padding: 12px 16px;                             /* Compact padding */
-  margin-bottom: 12px;                            /* Reduced spacing */
+  border: 1px solid hsl(var(--border));
+  box-shadow: none;
+  padding: 12px 16px;
+  margin-bottom: 12px;
 }
 
-/* Input Fields - Atlassian form pattern */
+/* Input Fields */
 .executive-input {
-  background-color: hsl(var(--surface-gray-50)); /* N10 */
+  background-color: hsl(var(--n10));
   border: 2px solid hsl(var(--border));
-  border-radius: 4px;                            /* border-radius.050 */
-  padding: 8px 12px;                             /* space.100 x space.150 */
+  border-radius: 4px;
+  padding: 8px 12px;
   font-size: 14px;
   line-height: 1.42857;
-  color: hsl(var(--text-primary));
+  color: hsl(var(--foreground));
   transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
 }
 
 .executive-input:hover {
-  background-color: hsl(var(--surface-gray-100)); /* N20 on hover */
+  background-color: hsl(var(--n20));
 }
 
 .executive-input:focus {
-  background-color: hsl(var(--surface-white));   /* N0 on focus */
+  background-color: hsl(var(--background));
   border-color: hsl(var(--secondary-bronze));
   box-shadow: 0 0 0 2px hsl(var(--secondary-bronze) / 0.2);
   outline: none;
 }
 
-/* Primary Button - Using secondary bronze for body content */
+/* Primary Button */
 .executive-btn-primary {
   background-color: hsl(var(--secondary-bronze));
-  color: hsl(var(--surface-white));
+  color: white;
   border: none;
-  border-radius: 4px;                            /* Atlassian uses 3px, we use 4px */
+  border-radius: 4px;
   font-weight: 500;
   font-size: 14px;
-  padding: 8px 16px;                             /* space.100 x space.200 */
+  padding: 8px 16px;
   line-height: 1.42857;
   cursor: pointer;
   transition: background-color 150ms ease, box-shadow 150ms ease;
 }
 
 .executive-btn-primary:hover {
-  background-color: hsl(28 26% 38%);             /* Darker bronze on hover */
+  background-color: hsl(28 26% 38%);
 }
 
 .executive-btn-primary:active {
-  background-color: hsl(35 41% 50%);             /* Darker gold on press */
+  background-color: hsl(35 41% 50%);
 }
 
 /* Secondary Button */
 .executive-btn-secondary {
-  background-color: hsl(var(--surface-gray-100));
-  color: hsl(var(--text-primary));
+  background-color: hsl(var(--n20));
+  color: hsl(var(--foreground));
   border: none;
   border-radius: 4px;
   font-weight: 500;
@@ -1000,16 +721,16 @@ code, .text-code {
 }
 
 .executive-btn-secondary:hover {
-  background-color: hsl(var(--surface-gray-200));
+  background-color: hsl(var(--n30));
 }
 
-/* Section Headings - Atlassian heading pattern */
+/* Section Headings */
 .executive-section-heading {
   font-weight: 600;
-  color: hsl(var(--text-primary));
+  color: hsl(var(--foreground));
   font-size: 14px;
   line-height: 1.42857;
-  margin-bottom: 8px;                            /* space.100 */
+  margin-bottom: 8px;
   text-transform: uppercase;
   letter-spacing: 0.03em;
 }
@@ -1018,17 +739,17 @@ code, .text-code {
 .executive-label {
   font-weight: 600;
   font-size: 12px;
-  color: hsl(var(--text-secondary));
+  color: hsl(var(--muted-foreground));
   margin-bottom: 4px;
   display: block;
 }
 
-/* Empty State - Atlassian empty state pattern */
+/* Empty State */
 .executive-empty-state {
-  color: hsl(var(--text-tertiary));
+  color: hsl(var(--muted-foreground));
   font-size: 14px;
   text-align: center;
-  padding: 48px 24px;                            /* space.600 x space.300 */
+  padding: 48px 24px;
 }
 
 /* Divider */
@@ -1038,24 +759,24 @@ code, .text-code {
   margin: 16px 0;
 }
 
-/* Custom Scrollbar - Atlassian style */
+/* Custom Scrollbar for drawer */
 .executive-drawer-content::-webkit-scrollbar {
   width: 8px;
 }
 
 .executive-drawer-content::-webkit-scrollbar-track {
-  background: hsl(var(--surface-gray-200));
+  background: hsl(var(--n20));
   border-radius: 4px;
 }
 
 .executive-drawer-content::-webkit-scrollbar-thumb {
-  background: hsl(var(--neutral-400));           /* Subtle gray thumb */
+  background: hsl(var(--n100));
   border-radius: 4px;
   transition: background 150ms ease;
 }
 
 .executive-drawer-content::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--secondary-bronze));       /* Bronze on hover */
+  background: hsl(var(--secondary-bronze));
 }
 
 /* Badge styles for drawer */
@@ -1086,74 +807,65 @@ code, .text-code {
 }
 
 .executive-badge-neutral {
-  background-color: hsl(var(--surface-gray-200));
-  color: hsl(var(--text-secondary));
+  background-color: hsl(var(--n20));
+  color: hsl(var(--muted-foreground));
 }
 
 /* ============================================
-   8) EXECUTIVE DRAWER FORM CONTROLS
+   EXECUTIVE DRAWER FORM CONTROLS
    ============================================ */
 
-/* 
- * Form controls within executive drawer should have:
- * - White backgrounds (not gray)
- * - Visible border definition
- * - Brand gold focus states
- * - Proper contrast for readability
- */
-
-/* Select triggers within drawer - targeting shadcn SelectTrigger */
+/* Select triggers within drawer */
 .executive-drawer-content button[role="combobox"],
 .executive-drawer-content [data-radix-collection-item] {
-  background-color: hsl(var(--surface-white)) !important;
-  border: 1px solid hsl(var(--neutral-300)) !important;
-  border-radius: 6px !important;
+  background-color: hsl(var(--background));
+  border: 1px solid hsl(var(--n60));
+  border-radius: 6px;
   transition: border-color 150ms ease, box-shadow 150ms ease;
 }
 
 .executive-drawer-content button[role="combobox"]:hover {
-  border-color: hsl(var(--neutral-400)) !important;
-  background-color: hsl(var(--surface-white)) !important;
+  border-color: hsl(var(--n100));
+  background-color: hsl(var(--background));
 }
 
 .executive-drawer-content button[role="combobox"]:focus,
 .executive-drawer-content button[role="combobox"][data-state="open"] {
-  border-color: hsl(var(--secondary-bronze)) !important;
-  box-shadow: 0 0 0 3px hsl(var(--secondary-bronze) / 0.12) !important;
-  outline: none !important;
-  ring: none !important;
+  border-color: hsl(var(--secondary-bronze));
+  box-shadow: 0 0 0 3px hsl(var(--secondary-bronze) / 0.12);
+  outline: none;
 }
 
 /* Input fields within drawer */
 .executive-drawer-content input:not([type="checkbox"]):not([type="radio"]),
 .executive-drawer-content textarea {
-  background-color: hsl(var(--surface-white)) !important;
-  border: 1px solid hsl(var(--neutral-300)) !important;
-  border-radius: 6px !important;
-  color: hsl(var(--text-primary));
+  background-color: hsl(var(--background));
+  border: 1px solid hsl(var(--n60));
+  border-radius: 6px;
+  color: hsl(var(--foreground));
   transition: border-color 150ms ease, box-shadow 150ms ease;
 }
 
 .executive-drawer-content input:not([type="checkbox"]):not([type="radio"]):hover,
 .executive-drawer-content textarea:hover {
-  border-color: hsl(var(--neutral-400)) !important;
+  border-color: hsl(var(--n100));
 }
 
 .executive-drawer-content input:not([type="checkbox"]):not([type="radio"]):focus,
 .executive-drawer-content textarea:focus {
-  border-color: hsl(var(--secondary-bronze)) !important;
-  box-shadow: 0 0 0 3px hsl(var(--secondary-bronze) / 0.12) !important;
-  outline: none !important;
+  border-color: hsl(var(--secondary-bronze));
+  box-shadow: 0 0 0 3px hsl(var(--secondary-bronze) / 0.12);
+  outline: none;
 }
 
-/* Placeholder text - better contrast */
+/* Placeholder text */
 .executive-drawer-content input::placeholder,
 .executive-drawer-content textarea::placeholder {
-  color: hsl(var(--neutral-400));
+  color: hsl(var(--n100));
   opacity: 1;
 }
 
-/* Section headings in drawer tabs - Using secondary bronze */
+/* Section headings in drawer tabs */
 .executive-drawer-content h3 {
   color: hsl(var(--secondary-bronze));
   font-weight: 600;
@@ -1163,11 +875,11 @@ code, .text-code {
   margin-bottom: 16px;
 }
 
-/* Labels - stronger styling */
+/* Labels */
 .executive-drawer-content label {
   font-weight: 600;
   font-size: 13px;
-  color: hsl(var(--text-primary));
+  color: hsl(var(--foreground));
   margin-bottom: 6px;
   display: block;
 }
@@ -1175,31 +887,31 @@ code, .text-code {
 /* Cards/list items within drawer */
 .executive-drawer-content .executive-list-item,
 .executive-drawer-content > div > div[class*="border"] {
-  background-color: hsl(var(--surface-white));
+  background-color: hsl(var(--background));
   border: 1px solid hsl(var(--border));
   border-radius: 8px;
 }
 
-/* Primary buttons in drawer - Using secondary bronze */
+/* Primary buttons in drawer */
 .executive-drawer-content button[class*="bg-primary"],
 .executive-drawer-content .btn-primary {
-  background-color: hsl(var(--secondary-bronze)) !important;
-  color: white !important;
+  background-color: hsl(var(--secondary-bronze));
+  color: white;
   border: none;
   font-weight: 500;
 }
 
 .executive-drawer-content button[class*="bg-primary"]:hover,
 .executive-drawer-content .btn-primary:hover {
-  background-color: hsl(28 26% 38%) !important;
+  background-color: hsl(28 26% 38%);
 }
 
 /* Muted/secondary text */
 .executive-drawer-content .text-muted-foreground {
-  color: hsl(var(--text-tertiary));
+  color: hsl(var(--muted-foreground));
 }
 
-/* Links - Using secondary green */
+/* Links */
 .executive-drawer-content a,
 .executive-drawer-content button[class*="text-primary"] {
   color: hsl(var(--secondary-green));
@@ -1209,7 +921,7 @@ code, .text-code {
   color: hsl(var(--secondary-green-hover));
 }
 
-/* Progress bars - Using secondary bronze */
+/* Progress bars */
 .executive-drawer-content [role="progressbar"] > div {
   background-color: hsl(var(--secondary-bronze));
 }
@@ -1221,10 +933,10 @@ code, .text-code {
 }
 
 /* ============================================
-   PRINT STYLES - Executive Roadmap
+   PRINT STYLES
    ============================================ */
 @media print {
-  /* Hide Catalyst shell elements */
+  /* Hide shell elements */
   [data-sidebar],
   aside,
   nav,
