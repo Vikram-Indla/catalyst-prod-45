@@ -77,17 +77,6 @@ export function EpicBalancingPage() {
       <div className="flex-1 flex overflow-hidden">
         {/* Main Chart Area */}
         <div className="flex-1 p-6 overflow-hidden">
-          {/* Info banner for incomplete scoring */}
-          {scoringStats.incomplete > 0 && !isLoading && (
-            <Alert className="mb-4 border-brand-gold/50 bg-brand-gold/5">
-              <AlertTriangle className="h-4 w-4 text-brand-gold" />
-              <AlertDescription className="text-sm">
-                {scoringStats.incomplete} epic{scoringStats.incomplete > 1 ? 's are' : ' is'} missing WSJF scores. 
-                They appear at the bottom-left or are excluded. Use the Epic details drawer to complete scoring.
-              </AlertDescription>
-            </Alert>
-          )}
-
           <Card className="h-full">
             <CardContent className="p-4 h-full">
               {isLoading ? (
