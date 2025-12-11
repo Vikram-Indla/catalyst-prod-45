@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { 
   Search, ChevronRight, ChevronDown, 
   MessageSquare, Calendar, Minus, ArrowUp, ArrowDown, ChevronsUp, ChevronsDown,
@@ -15,6 +16,7 @@ import {
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import { toast } from 'sonner';
 import { 
   ColumnHeaderMenu, 
   FieldPicker, 
@@ -347,6 +349,23 @@ export function ListView() {
     if (selectedItem?.id === id) {
       setSelectedItem(prev => prev ? { ...prev, [field]: value } : null);
     }
+    toast.success('Changes saved');
+  };
+
+  const handleDragEnd = (result: DropResult) => {
+    if (!result.destination) return;
+    
+    const sourceIndex = result.source.index;
+    const destIndex = result.destination.index;
+    
+    if (sourceIndex === destIndex) return;
+
+    const reorderedItems = Array.from(items);
+    const [movedItem] = reorderedItems.splice(sourceIndex, 1);
+    reorderedItems.splice(destIndex, 0, movedItem);
+    
+    setItems(reorderedItems);
+    toast.success(`Moved "${movedItem.key}" to position ${destIndex + 1}`);
   };
 
   const handleRowClick = (item: WorkItem) => {
@@ -598,196 +617,218 @@ export function ListView() {
                     </th>
                   </tr>
                 </thead>
-                <tbody>
-                  {Object.entries(groupedItems).map(([groupKey, groupItems]) => (
-                    <React.Fragment key={groupKey}>
-                      {groupBy !== 'none' && (
-                        <tr className="bg-slate-50">
-                          <td colSpan={12} className="px-4 py-2 border-b border-slate-200">
-                            <div className="flex items-center gap-2">
-                              <ChevronDown className="h-4 w-4 text-slate-500" />
-                              <span className="text-[14px] font-semibold text-slate-900">{groupKey}</span>
-                              <span className="text-[12px] text-slate-500">{groupItems.length}</span>
-                            </div>
-                          </td>
-                        </tr>
-                      )}
-                      {groupItems.map((item) => {
-                        const typeInfo = typeIcons[item.type] || typeIcons['Task'];
-                        const isHovered = hoveredRow === item.id;
-                        const isSelected = selectedItems.has(item.id);
-                        const isDetailOpen = selectedItem?.id === item.id;
-                        
-                        return (
-                          <tr
-                            key={item.id}
-                            className={cn(
-                              "transition-colors cursor-pointer",
-                              isHovered && !isSelected && !isDetailOpen && "bg-slate-50",
-                              isSelected && "bg-blue-50",
-                              isDetailOpen && "bg-blue-50"
-                            )}
-                            onClick={() => handleRowClick(item)}
-                            onMouseEnter={() => setHoveredRow(item.id)}
-                            onMouseLeave={() => setHoveredRow(null)}
-                          >
-                            {/* Checkbox + drag handle - center aligned */}
-                            <TableCell className="w-10 px-2 text-center" onClick={(e) => e.stopPropagation()}>
-                              <div className="flex items-center justify-center gap-0.5">
-                                {isHovered && (
-                                  <GripVertical className="h-4 w-4 text-slate-300 cursor-grab" />
-                                )}
-                                <Checkbox
-                                  checked={isSelected}
-                                  onCheckedChange={(checked) => handleSelectItem(item.id, !!checked)}
-                                  className="rounded border-slate-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-                                />
-                              </div>
-                            </TableCell>
-                            
-                            {/* Type with expand chevron */}
-                            {isFieldVisible('type') && (
-                              <TableCell className="w-20">
-                                <div className="flex items-center gap-0.5">
-                                  {item.hasChildren ? (
-                                    <button 
-                                      onClick={(e) => handleToggleExpand(item.id, e)}
-                                      className="p-0.5 hover:bg-slate-100 rounded transition-colors"
-                                    >
-                                      <ChevronRight className={cn(
-                                        "h-4 w-4 text-slate-500 transition-transform",
-                                        expandedItems.has(item.id) && "rotate-90"
-                                      )} />
-                                    </button>
-                                  ) : (
-                                    <span className="w-5" />
-                                  )}
-                                  <span className={typeInfo.color} title={item.type}>
-                                    {typeInfo.icon}
-                                  </span>
-                                  {isHovered && item.hasChildren && (
-                                    <button 
-                                      onClick={(e) => e.stopPropagation()}
-                                      className="p-0.5 hover:bg-slate-100 rounded transition-colors ml-0.5"
-                                    >
-                                      <Plus className="h-3.5 w-3.5 text-slate-500" />
-                                    </button>
-                                  )}
-                                </div>
-                              </TableCell>
-                            )}
-                            
-                            {/* Key */}
-                            {isFieldVisible('key') && (
-                              <TableCell className="w-24">
-                                <span className="text-[14px] font-normal text-blue-600 hover:underline cursor-pointer whitespace-nowrap">
-                                  {item.key}
-                                </span>
-                              </TableCell>
-                            )}
-                            
-                            {/* Summary */}
-                            {isFieldVisible('summary') && (
-                              <TableCell className="min-w-[280px] max-w-[300px]">
-                                <InlineSummaryEdit 
-                                  value={item.summary}
-                                  onChange={(value) => handleInlineEdit(item.id, 'summary', value)}
-                                  isSelected={isSelected}
-                                />
-                              </TableCell>
-                            )}
-                            
-                            {/* Status */}
-                            {isFieldVisible('status') && (
-                              <TableCell className="w-36">
-                                <StatusLozenge 
-                                  status={item.status} 
-                                  onStatusChange={(status) => handleInlineEdit(item.id, 'status', status)}
-                                />
-                              </TableCell>
-                            )}
-                            
-                            {/* Comments */}
-                            {isFieldVisible('comments') && (
-                              <TableCell className="w-28" onClick={(e) => e.stopPropagation()}>
-                                <button className="inline-flex items-center gap-1 text-[14px] text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded px-1 py-0.5 -mx-1 transition-colors">
-                                  <MessageSquare className="h-3.5 w-3.5" />
-                                  {item.comments > 0 ? (
-                                    <span>{item.comments} comment{item.comments > 1 ? 's' : ''}</span>
-                                  ) : (
-                                    <span>Add comment</span>
-                                  )}
-                                </button>
-                              </TableCell>
-                            )}
-                            
-                            {/* Assignee */}
-                            {isFieldVisible('assignee') && (
-                              <TableCell className="w-44">
-                                <AssigneeCell 
-                                  assignee={item.assignee} 
-                                  onAssigneeChange={(assignee) => handleInlineEdit(item.id, 'assignee', assignee)}
-                                />
-                              </TableCell>
-                            )}
-                            
-                            {/* Due date */}
-                            {isFieldVisible('dueDate') && (
-                              <TableCell className="w-28">
-                                <InlineDatePicker
-                                  value={item.dueDate}
-                                  onChange={(date) => handleInlineEdit(item.id, 'dueDate', date)}
-                                />
-                              </TableCell>
-                            )}
-                            
-                            {/* Priority */}
-                            {isFieldVisible('priority') && (
-                              <TableCell className="w-28">
-                                <PriorityCell 
-                                  priority={item.priority}
-                                  onPriorityChange={(priority) => handleInlineEdit(item.id, 'priority', priority)}
-                                />
-                              </TableCell>
-                            )}
-                            
-                            {/* Labels */}
-                            {isFieldVisible('labels') && (
-                              <TableCell className="w-24">
-                                {item.labels.length > 0 ? (
-                                  <div className="flex gap-1 flex-wrap">
-                                    {item.labels.map((label) => (
-                                      <span key={label} className="text-[11px] text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded">
-                                        {label}
-                                      </span>
-                                    ))}
+                <DragDropContext onDragEnd={handleDragEnd}>
+                  <Droppable droppableId="work-items-list">
+                    {(provided) => (
+                      <tbody ref={provided.innerRef} {...provided.droppableProps}>
+                        {Object.entries(groupedItems).map(([groupKey, groupItems]) => (
+                          <React.Fragment key={groupKey}>
+                            {groupBy !== 'none' && (
+                              <tr className="bg-slate-50">
+                                <td colSpan={12} className="px-4 py-2 border-b border-slate-200">
+                                  <div className="flex items-center gap-2">
+                                    <ChevronDown className="h-4 w-4 text-slate-500" />
+                                    <span className="text-[14px] font-semibold text-slate-900">{groupKey}</span>
+                                    <span className="text-[12px] text-slate-500">{groupItems.length}</span>
                                   </div>
-                                ) : (
-                                  <button className="text-[14px] text-slate-500 hover:text-blue-600" onClick={(e) => e.stopPropagation()}>
-                                    + Add label
-                                  </button>
-                                )}
-                              </TableCell>
+                                </td>
+                              </tr>
                             )}
-                            
-                            {/* Created */}
-                            {isFieldVisible('created') && (
-                              <TableCell className="w-28">
-                                <div className="inline-flex items-center gap-1 text-[14px] text-slate-500">
-                                  <Calendar className="h-3.5 w-3.5" />
-                                  <span>{formatDate(item.created)}</span>
-                                </div>
-                              </TableCell>
-                            )}
+                            {groupItems.map((item, index) => {
+                              const typeInfo = typeIcons[item.type] || typeIcons['Task'];
+                              const isHovered = hoveredRow === item.id;
+                              const isSelected = selectedItems.has(item.id);
+                              const isDetailOpen = selectedItem?.id === item.id;
+                              
+                              // Calculate actual index across all items for drag
+                              const actualIndex = items.findIndex(i => i.id === item.id);
+                              
+                              return (
+                                <Draggable key={item.id} draggableId={item.id} index={actualIndex}>
+                                  {(provided, snapshot) => (
+                                    <tr
+                                      ref={provided.innerRef}
+                                      {...provided.draggableProps}
+                                      className={cn(
+                                        "transition-colors cursor-pointer",
+                                        isHovered && !isSelected && !isDetailOpen && "bg-slate-50",
+                                        isSelected && "bg-blue-50",
+                                        isDetailOpen && "bg-blue-50",
+                                        snapshot.isDragging && "bg-blue-100 shadow-lg"
+                                      )}
+                                      onClick={() => handleRowClick(item)}
+                                      onMouseEnter={() => setHoveredRow(item.id)}
+                                      onMouseLeave={() => setHoveredRow(null)}
+                                    >
+                                      {/* Checkbox + drag handle - center aligned */}
+                                      <TableCell className="w-10 px-2 text-center" onClick={(e) => e.stopPropagation()}>
+                                        <div className="flex items-center justify-center gap-0.5">
+                                          <div
+                                            {...provided.dragHandleProps}
+                                            className={cn(
+                                              "cursor-grab active:cursor-grabbing",
+                                              !isHovered && !snapshot.isDragging && "opacity-0"
+                                            )}
+                                          >
+                                            <GripVertical className="h-4 w-4 text-slate-400" />
+                                          </div>
+                                          <Checkbox
+                                            checked={isSelected}
+                                            onCheckedChange={(checked) => handleSelectItem(item.id, !!checked)}
+                                            className="rounded border-slate-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                                          />
+                                        </div>
+                                      </TableCell>
+                                      
+                                      {/* Type with expand chevron */}
+                                      {isFieldVisible('type') && (
+                                        <TableCell className="w-20">
+                                          <div className="flex items-center gap-0.5">
+                                            {item.hasChildren ? (
+                                              <button 
+                                                onClick={(e) => handleToggleExpand(item.id, e)}
+                                                className="p-0.5 hover:bg-slate-100 rounded transition-colors"
+                                              >
+                                                <ChevronRight className={cn(
+                                                  "h-4 w-4 text-slate-500 transition-transform",
+                                                  expandedItems.has(item.id) && "rotate-90"
+                                                )} />
+                                              </button>
+                                            ) : (
+                                              <span className="w-5" />
+                                            )}
+                                            <span className={typeInfo.color} title={item.type}>
+                                              {typeInfo.icon}
+                                            </span>
+                                            {isHovered && item.hasChildren && (
+                                              <button 
+                                                onClick={(e) => e.stopPropagation()}
+                                                className="p-0.5 hover:bg-slate-100 rounded transition-colors ml-0.5"
+                                              >
+                                                <Plus className="h-3.5 w-3.5 text-slate-500" />
+                                              </button>
+                                            )}
+                                          </div>
+                                        </TableCell>
+                                      )}
+                                      
+                                      {/* Key */}
+                                      {isFieldVisible('key') && (
+                                        <TableCell className="w-24">
+                                          <span className="text-[14px] font-normal text-blue-600 hover:underline cursor-pointer whitespace-nowrap">
+                                            {item.key}
+                                          </span>
+                                        </TableCell>
+                                      )}
+                                      
+                                      {/* Summary */}
+                                      {isFieldVisible('summary') && (
+                                        <TableCell className="min-w-[280px] max-w-[300px]">
+                                          <InlineSummaryEdit 
+                                            value={item.summary}
+                                            onChange={(value) => handleInlineEdit(item.id, 'summary', value)}
+                                            isSelected={isSelected}
+                                          />
+                                        </TableCell>
+                                      )}
+                                      
+                                      {/* Status */}
+                                      {isFieldVisible('status') && (
+                                        <TableCell className="w-36">
+                                          <StatusLozenge 
+                                            status={item.status} 
+                                            onStatusChange={(status) => handleInlineEdit(item.id, 'status', status)}
+                                          />
+                                        </TableCell>
+                                      )}
+                                      
+                                      {/* Comments */}
+                                      {isFieldVisible('comments') && (
+                                        <TableCell className="w-28" onClick={(e) => e.stopPropagation()}>
+                                          <button className="inline-flex items-center gap-1 text-[14px] text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded px-1 py-0.5 -mx-1 transition-colors">
+                                            <MessageSquare className="h-3.5 w-3.5" />
+                                            {item.comments > 0 ? (
+                                              <span>{item.comments} comment{item.comments > 1 ? 's' : ''}</span>
+                                            ) : (
+                                              <span>Add comment</span>
+                                            )}
+                                          </button>
+                                        </TableCell>
+                                      )}
+                                      
+                                      {/* Assignee */}
+                                      {isFieldVisible('assignee') && (
+                                        <TableCell className="w-44">
+                                          <AssigneeCell 
+                                            assignee={item.assignee} 
+                                            onAssigneeChange={(assignee) => handleInlineEdit(item.id, 'assignee', assignee)}
+                                          />
+                                        </TableCell>
+                                      )}
+                                      
+                                      {/* Due date */}
+                                      {isFieldVisible('dueDate') && (
+                                        <TableCell className="w-28">
+                                          <InlineDatePicker
+                                            value={item.dueDate}
+                                            onChange={(date) => handleInlineEdit(item.id, 'dueDate', date)}
+                                          />
+                                        </TableCell>
+                                      )}
+                                      
+                                      {/* Priority */}
+                                      {isFieldVisible('priority') && (
+                                        <TableCell className="w-28">
+                                          <PriorityCell 
+                                            priority={item.priority}
+                                            onPriorityChange={(priority) => handleInlineEdit(item.id, 'priority', priority)}
+                                          />
+                                        </TableCell>
+                                      )}
+                                      
+                                      {/* Labels */}
+                                      {isFieldVisible('labels') && (
+                                        <TableCell className="w-24">
+                                          {item.labels.length > 0 ? (
+                                            <div className="flex gap-1 flex-wrap">
+                                              {item.labels.map((label) => (
+                                                <span key={label} className="text-[11px] text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded">
+                                                  {label}
+                                                </span>
+                                              ))}
+                                            </div>
+                                          ) : (
+                                            <button className="text-[14px] text-slate-500 hover:text-blue-600" onClick={(e) => e.stopPropagation()}>
+                                              + Add label
+                                            </button>
+                                          )}
+                                        </TableCell>
+                                      )}
+                                      
+                                      {/* Created */}
+                                      {isFieldVisible('created') && (
+                                        <TableCell className="w-28">
+                                          <div className="inline-flex items-center gap-1 text-[14px] text-slate-500">
+                                            <Calendar className="h-3.5 w-3.5" />
+                                            <span>{formatDate(item.created)}</span>
+                                          </div>
+                                        </TableCell>
+                                      )}
 
-                            {/* Spacer for field picker */}
-                            <TableCell className="w-10" />
-                          </tr>
-                        );
-                      })}
-                    </React.Fragment>
-                  ))}
-                </tbody>
+                                      {/* Spacer for field picker */}
+                                      <TableCell className="w-10" />
+                                    </tr>
+                                  )}
+                                </Draggable>
+                              );
+                            })}
+                          </React.Fragment>
+                        ))}
+                        {provided.placeholder}
+                      </tbody>
+                    )}
+                  </Droppable>
+                </DragDropContext>
               </table>
             </div>
 
