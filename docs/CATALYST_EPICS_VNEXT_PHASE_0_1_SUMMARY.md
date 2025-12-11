@@ -548,3 +548,84 @@ Files updated:
 | Strategy Context shows Objectives | ✅ |
 | Strategy Context shows Key Results with progress | ✅ |
 | "Open in Strategy Room" links correctly | ✅ |
+
+---
+
+## Phase II – Step 3: Time & Roadmap Alignment
+
+### Implementation Summary
+
+Phase II Step 3 implements time-based Epic scheduling without PI/Portfolio dependencies.
+
+### Time Model
+
+| Field | Source | Purpose |
+|-------|--------|---------|
+| `initiation_date` | `epics.initiation_date` | Epic start date |
+| `target_completion_date` | `epics.target_completion_date` | Epic end/target date |
+| Duration (derived) | Calculated | `target_completion_date - initiation_date` in days |
+| Quarter Label (derived) | Calculated | e.g., "Q1 2025" from target_completion_date |
+
+### Files Created
+
+| File | Purpose |
+|------|---------|
+| `src/lib/epic-time-utils.ts` | Time utility functions (quarters, duration, overdue checks, filtering, sorting) |
+| `src/components/items/epics/EpicTimeBadges.tsx` | Overdue & This Quarter badge components |
+| `src/pages/program/QuartersPage.tsx` | Program Quarters view - Epics grouped by target quarter |
+| `src/components/program/ProgramEpicRoadmap.tsx` | Program Epic Roadmap timeline component |
+
+### Files Updated
+
+| File | Change |
+|------|--------|
+| `src/modules/backlog/components/BacklogFiltersDialog.tsx` | Added time-based filter options (This Month, Next 3 Months, This Quarter, Next Quarter, Overdue) |
+| `src/modules/backlog/components/BacklogSection.tsx` | Added EpicTimeBadges to show Overdue/This Quarter flags |
+| `src/App.tsx` | Added route for `/programs/:programId/quarters` |
+
+### Time-Based Filters (Epic Backlog)
+
+| Filter | Description |
+|--------|-------------|
+| This Month | target_completion_date within current calendar month |
+| Next 3 Months | target_completion_date within next 90 days |
+| This Quarter | target_completion_date within current quarter (Q1-Q4) |
+| Next Quarter | target_completion_date within the following quarter |
+| Overdue | target_completion_date < today AND status not done/cancelled |
+
+### Overdue & At-Risk Flags
+
+| Flag | Rule | Display |
+|------|------|---------|
+| **Overdue** | `target_completion_date < today AND status NOT IN (done, cancelled, accepted)` | Red chip on backlog rows, red edge on roadmap bars |
+| **This Quarter** | `target_completion_date` is within current calendar quarter | Yellow chip on backlog rows |
+
+### Quarters View
+
+- Route: `/programs/:programId/quarters`
+- Groups Epics by derived quarter from `target_completion_date`
+- Sections: Q1 2025, Q2 2025, etc. + "Unscheduled" for epics without target date
+- Displays: Epic key, name, health, strategic value score, target date, status
+- Current quarter highlighted with ring
+
+### Roadmap Timeline
+
+- Component: `ProgramEpicRoadmap`
+- Renders Epics as horizontal bars on timeline
+- Start position = `initiation_date`
+- End position = `target_completion_date`
+- Bar color indicates status/overdue state
+- Hover tooltip shows Epic details + quarter label
+
+### Validation Checklist (Phase II Step 3)
+
+| Item | Status |
+|------|--------|
+| Time model uses `initiation_date` and `target_completion_date` only | ✅ |
+| NO PI fields in time-based views | ✅ |
+| Quarters page groups Epics by target quarter | ✅ |
+| Overdue flag shows for past-due Epics | ✅ |
+| This Quarter flag shows for current quarter Epics | ✅ |
+| Backlog filter includes time-based options | ✅ |
+| Epic Roadmap renders bars based on dates | ✅ |
+| Quarter labels derived correctly (Q1-Q4) | ✅ |

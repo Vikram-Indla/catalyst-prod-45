@@ -10,6 +10,7 @@ import { BacklogContextMenu } from './BacklogContextMenu';
 import { useBacklogActions } from '../hooks/useBacklogActions';
 import { useBacklogState } from '../hooks/useBacklogState';
 import { Progress } from '@/components/ui/progress';
+import { EpicTimeBadges } from '@/components/items/epics/EpicTimeBadges';
 
 interface BacklogSectionProps {
   section: BacklogPISection;
@@ -179,7 +180,17 @@ function BacklogItemRow({
         )}
 
         {/* Name Column (always shown) */}
-        <div className="flex-1 text-sm font-medium">{item.name}</div>
+        <div className="flex-1 min-w-0">
+          <div className="text-sm font-medium truncate">{item.name}</div>
+          {/* Time badges for Epics */}
+          {isEpicBacklog && item.targetDate && (
+            <EpicTimeBadges
+              targetCompletionDate={item.targetDate}
+              status={item.state}
+              className="mt-0.5"
+            />
+          )}
+        </div>
 
         {/* State Column */}
         {showColumn('state') && item.state && (

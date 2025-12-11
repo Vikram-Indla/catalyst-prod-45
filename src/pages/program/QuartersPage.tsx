@@ -15,8 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Progress } from '@/components/ui/progress';
-import { ChevronDown, ChevronRight, Search, Filter, Calendar, Star } from 'lucide-react';
+import { ChevronDown, ChevronRight, Search, Calendar, Star } from 'lucide-react';
 import { EpicTimeBadges } from '@/components/items/epics/EpicTimeBadges';
 import { groupEpicsByQuarter, getQuarterLabel, getCurrentQuarter } from '@/lib/epic-time-utils';
 import { cn } from '@/lib/utils';
@@ -27,11 +26,12 @@ interface EpicQuarterData {
   epic_key: string | null;
   name: string;
   status: string | null;
+  state: string | null;
   health: string | null;
   target_completion_date: string | null;
   initiation_date: string | null;
-  tech_score: number | null;
-  business_score: number | null;
+  estimate: number | null;
+  strategic_value_score: number | null;
   owner_name: string | null;
 }
 
@@ -49,24 +49,13 @@ export default function QuartersPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('epics')
-        .select(`
-          id,
-          epic_key,
-          name,
-          status,
-          health,
-          target_completion_date,
-          initiation_date,
-          tech_score,
-          business_score,
-          owner_name
-        `)
-        .eq('program_id', programId)
+        .select('id, epic_key, name, status, state, health, target_completion_date, initiation_date, estimate, strategic_value_score, owner_name')
+        .eq('primary_program_id', programId)
         .is('deleted_at', null)
         .order('target_completion_date', { ascending: true, nullsFirst: false });
 
       if (error) throw error;
-      return data as EpicQuarterData[];
+      return (data || []) as EpicQuarterData[];
     },
     enabled: !!programId,
   });
@@ -206,7 +195,7 @@ export default function QuartersPage() {
                         {/* Quarter summary */}
                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
                           <span>
-                            Avg Progress: {Math.round(quarterEpics.reduce((acc, e) => acc + (e.progress_pct || 0), 0) / quarterEpics.length)}%
+                            {quarterEpics.length} Epic{quarterEpics.length !== 1 ? 's' : ''}
                           </span>
                         </div>
                       </div>
@@ -218,10 +207,9 @@ export default function QuartersPage() {
                           {/* Table Header */}
                           <div className="grid grid-cols-12 gap-4 px-4 py-2 bg-muted/50 text-xs font-medium text-muted-foreground uppercase">
                             <div className="col-span-1">ID</div>
-                            <div className="col-span-4">Name</div>
+                            <div className="col-span-5">Name</div>
                             <div className="col-span-1 text-center">Health</div>
-                            <div className="col-span-2 text-center">Progress</div>
-                            <div className="col-span-1 text-center">Tech Score</div>
+                            <div className="col-span-2 text-center">Value Score</div>
                             <div className="col-span-2">Target Date</div>
                             <div className="col-span-1">Status</div>
                           </div>
@@ -235,7 +223,7 @@ export default function QuartersPage() {
                             <div className="col-span-1 font-mono text-xs text-muted-foreground">
                                 {epic.epic_key || epic.id.slice(0, 8)}
                               </div>
-                              <div className="col-span-4">
+                              <div className="col-span-5">
                                 <div className="font-medium text-sm truncate">{epic.name}</div>
                                 <EpicTimeBadges 
                                   targetCompletionDate={epic.target_completion_date}
@@ -246,18 +234,10 @@ export default function QuartersPage() {
                               <div className="col-span-1 flex justify-center">
                                 <div className={cn('h-3 w-3 rounded-full', healthColor(epic.health))} />
                               </div>
-                              <div className="col-span-2">
-                                <div className="flex items-center gap-2">
-                                  <Progress value={epic.progress_pct || 0} className="h-2 flex-1" />
-                                  <span className="text-xs text-muted-foreground w-10 text-right">
-                                    {epic.progress_pct || 0}%
-                                  </span>
-                                </div>
-                              </div>
-                              <div className="col-span-1 text-center">
-                                {epic.tech_score !== null ? (
+                              <div className="col-span-2 text-center">
+                                {epic.strategic_value_score !== null ? (
                                   <span className="px-2 py-0.5 text-xs font-medium bg-primary/10 text-primary rounded">
-                                    {epic.tech_score.toFixed(1)}
+                                    {epic.strategic_value_score.toFixed(1)}
                                   </span>
                                 ) : (
                                   <span className="text-xs text-muted-foreground">—</span>

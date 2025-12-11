@@ -62,6 +62,7 @@ import ProgramBoardWithSidebar from "./pages/ProgramBoardWithSidebar";
 import ProgramBoardOld from "./pages/ProgramBoard";
 import ProgramBoardHistory from "./pages/ProgramBoardHistory";
 import ForecastWithSidebar from "./pages/program/ForecastWithSidebar";
+import QuartersPage from "./pages/program/QuartersPage";
 import CapacityWithSidebar from "./pages/program/CapacityWithSidebar";
 import BacklogWithSidebar from "./pages/program/BacklogWithSidebar";
 import RoadmapsWithSidebar from "./pages/program/RoadmapsWithSidebar";
@@ -411,6 +412,7 @@ const App = () => (
               <Route path="/programs/:programId/forecast" element={<ForecastWithSidebar />} />
               <Route path="/programs/:programId/capacity" element={<CapacityWithSidebar />} />
               <Route path="/programs/:programId/settings" element={<PlaceholderPage />} />
+              <Route path="/programs/:programId/quarters" element={<QuartersPage />} />
               <Route path="/program-room" element={<Navigate to="/home" replace />} />
               <Route path="/pis" element={<ProgramIncrements />} />
               <Route path="/program-board" element={<Navigate to="/home" replace />} />
