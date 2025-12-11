@@ -55,7 +55,7 @@ export function MisalignedWorkItems({ snapshotId }: MisalignedWorkItemsProps) {
           <div className="space-y-2">
             {items.map((item) => (
               <div key={item.label} className="flex items-center justify-between py-2 border-b last:border-0">
-                <span className="text-sm text-muted-foreground">{item.label}</span>
+                <span className="text-sm text-secondary-green">{item.label}</span>
                 <span className={`text-sm font-semibold ${item.color}`}>{item.count}</span>
               </div>
             ))}
