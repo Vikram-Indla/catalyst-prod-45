@@ -1,14 +1,18 @@
-import { useParams } from 'react-router-dom';
+import { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Square } from 'lucide-react';
+import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
 
 export default function ProgramRoom() {
   const { programId } = useParams<{ programId: string }>();
+  const navigate = useNavigate();
+  const [selectedEpic, setSelectedEpic] = useState<any | null>(null);
 
   const { data: program, isLoading } = useQuery({
     queryKey: ['program', programId],
@@ -52,6 +56,25 @@ export default function ProgramRoom() {
         .eq('program_id', programId)
         .order('created_at', { ascending: false })
         .limit(10);
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!programId,
+  });
+
+  // Fetch recent epics for this program
+  const { data: epics = [] } = useQuery({
+    queryKey: ['program-room-epics', programId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('epics')
+        .select('*')
+        .is('deleted_at', null)
+        .is('parked_at', null)
+        .eq('primary_program_id', programId)
+        .order('created_at', { ascending: false })
+        .limit(5);
       
       if (error) throw error;
       return data || [];
@@ -229,9 +252,59 @@ export default function ProgramRoom() {
               </Card>
             </div>
 
+            {/* Epics Section */}
+            <div className="lg:col-span-6">
+              <Card>
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                      <Square className="h-4 w-4 text-brand-gold" />
+                      Epics
+                    </CardTitle>
+                    <Button 
+                      variant="link" 
+                      size="sm" 
+                      className="text-xs"
+                      onClick={() => navigate(`/program/${programId}/epics`)}
+                    >
+                      View All
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {epics.length > 0 ? (
+                    <div className="space-y-2">
+                      {epics.map((epic) => (
+                        <div
+                          key={epic.id}
+                          className="flex items-center justify-between p-3 rounded-lg hover:bg-accent/50 cursor-pointer border"
+                          onClick={() => setSelectedEpic(epic)}
+                        >
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-mono text-brand-gold">{epic.epic_key}</span>
+                              <p className="font-medium text-sm truncate">{epic.name}</p>
+                            </div>
+                            {epic.target_completion_date && (
+                              <p className="text-xs text-muted-foreground">{epic.target_completion_date}</p>
+                            )}
+                          </div>
+                          <Badge variant="outline" className="text-xs">
+                            {epic.state || 'Draft'}
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground text-center py-4">No epics found</p>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
             {/* Recent Features */}
             {features && features.length > 0 && (
-              <div className="lg:col-span-12">
+              <div className="lg:col-span-6">
                 <Card>
                   <CardHeader className="pb-3">
                     <CardTitle className="text-sm font-semibold">Recent Features</CardTitle>
@@ -281,6 +354,13 @@ export default function ProgramRoom() {
           <p className="text-muted-foreground">Program not found</p>
         </div>
       )}
+
+      {/* Epic Details Drawer */}
+      <EpicDetailsPanel
+        epic={selectedEpic}
+        open={!!selectedEpic}
+        onClose={() => setSelectedEpic(null)}
+      />
     </div>
   );
 }
