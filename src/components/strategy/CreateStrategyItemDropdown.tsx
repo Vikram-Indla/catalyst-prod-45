@@ -27,10 +27,6 @@ export function CreateStrategyItemDropdown({ snapshotId, isArchived }: CreateStr
   }
 
   const items = [
-    { type: 'mission' as const, label: 'Mission', icon: Target },
-    { type: 'vision' as const, label: 'Vision', icon: Eye },
-    { type: 'value' as const, label: 'Value', icon: Heart },
-    { type: 'goal' as const, label: 'Strategic Goal', icon: Flag },
     { type: 'theme' as const, label: 'Theme', icon: Palette },
     { type: 'objective' as const, label: 'Objective', icon: Crosshair },
   ];
