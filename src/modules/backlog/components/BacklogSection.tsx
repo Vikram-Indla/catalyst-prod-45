@@ -65,17 +65,14 @@ export function BacklogSection({
           {/* Drag handle column - LEFTMOST */}
           <div className="w-8" />
           
+          {/* Checkbox column - BEFORE chevron */}
+          <div className="w-5" />
+          
           {/* Expand chevron column */}
           <div className="w-6" />
           
           {/* Key */}
           <div className="min-w-[100px]">Key</div>
-          
-          {/* Health dot space */}
-          <div className="w-3" />
-          
-          {/* Checkbox space */}
-          <div className="w-5" />
           
           {/* Summary */}
           <div className="flex-1 min-w-[200px]">Summary</div>
@@ -241,12 +238,6 @@ function BacklogItemRow({
     enabled: isRowExpanded && type === 'epic',
   });
 
-  const healthColor = {
-    green: 'bg-success',
-    yellow: 'bg-warning',
-    red: 'bg-destructive',
-    gray: 'bg-muted-foreground',
-  }[item.health || 'gray'];
 
   // Format quarters for display
   const formatQuarters = (quarters?: string[]) => {
@@ -300,6 +291,14 @@ function BacklogItemRow({
             <GripVertical className="h-4 w-4 text-muted-foreground" />
           </div>
 
+          {/* Checkbox - BEFORE chevron */}
+          <Checkbox
+            checked={isSelected}
+            onCheckedChange={(checked) => onItemSelect(item.id, checked as boolean)}
+            onClick={(e) => e.stopPropagation()}
+            className="h-4 w-4"
+          />
+
           {/* Expand chevron - clickable to expand features */}
           <button 
             onClick={handleExpandClick}
@@ -316,17 +315,6 @@ function BacklogItemRow({
           <div className="font-mono text-xs text-muted-foreground min-w-[100px]">
             {item.epicKey || (programKey ? `${programKey}-${String(rank).padStart(3, '0')}` : item.displayId || '—')}
           </div>
-
-          {/* Health status dot */}
-          <div className={cn('h-3 w-3 rounded-full flex-shrink-0', healthColor)} />
-
-          {/* Checkbox */}
-          <Checkbox
-            checked={isSelected}
-            onCheckedChange={(checked) => onItemSelect(item.id, checked as boolean)}
-            onClick={(e) => e.stopPropagation()}
-            className="h-4 w-4"
-          />
 
           {/* Summary (Epic Name) */}
           <div className="flex-1 min-w-[200px]">
