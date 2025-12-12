@@ -25,6 +25,28 @@ import { PermissionGuard } from '@/components/shared/PermissionGuard';
 import { STORY_STATUS_LABELS, StoryWithRelations } from '@/types/story.types';
 import { useWorkItemRanking } from '@/hooks/useWorkItemRanking';
 
+// Helper to fetch stories avoiding deep type instantiation
+async function fetchStoriesData(): Promise<any[]> {
+  const client = supabase as any;
+  const { data, error } = await client
+    .from('stories')
+    .select('*, features(name, epic_id, program_id), iterations(name), teams(name)')
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return data || [];
+}
+
+// Helper to fetch feature IDs for a program
+async function fetchFeatureIdsForProgram(programId: string): Promise<string[]> {
+  const client = supabase as any;
+  const { data, error } = await client
+    .from('features')
+    .select('id')
+    .eq('program_id', programId);
+  if (error) throw error;
+  return (data || []).map((f: any) => f.id);
+}
+
 export default function Stories() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('');
@@ -93,74 +115,58 @@ export default function Stories() {
 
   const { data: stories, refetch } = useQuery({
     queryKey: ['all-stories', searchTerm, statusFilter, programFilter, teamFilter, advancedFilters],
-    queryFn: async () => {
-      let query = supabase
-        .from('stories')
-        .select('*, features(name, epic_id, program_id), iterations(name), teams(name)');
-
-      if (searchTerm) query = query.ilike('name', `%${searchTerm}%`);
-      if (statusFilter) query = query.eq('status', statusFilter as any);
+    queryFn: async (): Promise<any[]> => {
+      // Build feature IDs filter if program filter is active
+      let featureIdsFilter: string[] | null = null;
       
-      // Team filter
-      if (teamFilter && teamFilter !== 'all') {
-        query = query.eq('team_id', teamFilter);
-      }
-      
-      // Program filter - filter stories by features that belong to the program
       if (programFilter && programFilter !== 'all') {
-        const { data: programFeatures } = await supabase
-          .from('features')
-          .select('id')
-          .eq('program_id', programFilter);
-        
-        if (programFeatures && programFeatures.length > 0) {
-          const featureIds: string[] = programFeatures.map(f => f.id);
-          query = query.in('feature_id', featureIds) as typeof query;
-        } else {
-          // No features in this program, return empty
-          return [];
-        }
+        featureIdsFilter = await fetchFeatureIdsForProgram(programFilter);
+        if (featureIdsFilter.length === 0) return [];
+      } else if (advancedFilters.programId) {
+        featureIdsFilter = await fetchFeatureIdsForProgram(advancedFilters.programId);
+        if (featureIdsFilter.length === 0) return [];
       }
-      
-      // Advanced filters
-      if (advancedFilters.programId && programFilter === 'all') {
-        // Filter stories by features that belong to the program
-        const { data: programFeatures } = await supabase
-          .from('features')
-          .select('id')
-          .eq('program_id', advancedFilters.programId);
-        
-        if (programFeatures && programFeatures.length > 0) {
-          const featureIds: string[] = programFeatures.map(f => f.id);
-          query = query.in('feature_id', featureIds) as typeof query;
-        } else {
-          // No features in this program, return empty
-          return [];
-        }
+
+      // Fetch all stories using helper
+      let filtered = await fetchStoriesData();
+
+      // Apply client-side filters
+      if (searchTerm) {
+        filtered = filtered.filter((s: any) => s.name?.toLowerCase().includes(searchTerm.toLowerCase()));
       }
-      
+      if (statusFilter) {
+        filtered = filtered.filter((s: any) => s.status === statusFilter);
+      }
+      if (teamFilter && teamFilter !== 'all') {
+        filtered = filtered.filter((s: any) => s.team_id === teamFilter);
+      }
+      if (featureIdsFilter && featureIdsFilter.length > 0) {
+        filtered = filtered.filter((s: any) => featureIdsFilter!.includes(s.feature_id));
+      }
       if (advancedFilters.featureId) {
-        query = query.eq('feature_id', advancedFilters.featureId);
+        filtered = filtered.filter((s: any) => s.feature_id === advancedFilters.featureId);
       }
       if (advancedFilters.teamId) {
-        query = query.eq('team_id', advancedFilters.teamId);
+        filtered = filtered.filter((s: any) => s.team_id === advancedFilters.teamId);
       }
       if (advancedFilters.sprintId) {
         if (advancedFilters.sprintId === 'backlog') {
-          query = query.is('sprint_id', null);
+          filtered = filtered.filter((s: any) => !s.sprint_id);
         } else {
-          query = query.eq('sprint_id', advancedFilters.sprintId);
+          filtered = filtered.filter((s: any) => s.sprint_id === advancedFilters.sprintId);
         }
       }
       if (advancedFilters.status) {
-        query = query.eq('status', advancedFilters.status as any);
+        filtered = filtered.filter((s: any) => s.status === advancedFilters.status);
       }
-      if (advancedFilters.minPoints) query = query.gte('estimate_points', parseInt(advancedFilters.minPoints));
-      if (advancedFilters.maxPoints) query = query.lte('estimate_points', parseInt(advancedFilters.maxPoints));
+      if (advancedFilters.minPoints) {
+        filtered = filtered.filter((s: any) => (s.estimate_points || 0) >= parseInt(advancedFilters.minPoints));
+      }
+      if (advancedFilters.maxPoints) {
+        filtered = filtered.filter((s: any) => (s.estimate_points || 0) <= parseInt(advancedFilters.maxPoints));
+      }
 
-      const { data, error } = await query.order('created_at', { ascending: false });
-      if (error) throw error;
-      return data as any[];
+      return filtered;
     },
   });
 
