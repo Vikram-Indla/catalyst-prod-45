@@ -28,7 +28,18 @@ export async function fetchBacklogItems(params: BacklogQueryParams): Promise<Bac
 
   // Build query based on type
   const tableName = getTableName(type);
-  let query: any = (supabase as any).from(tableName).select('*');
+  let query: any;
+  
+  // For epics, include theme and business_request relations
+  if (type === 'epic') {
+    query = (supabase as any).from(tableName).select(`
+      *,
+      strategic_themes:theme_id(id, name),
+      business_requests:business_request_id(id, request_key, title)
+    `);
+  } else {
+    query = (supabase as any).from(tableName).select('*');
+  }
 
   // CRITICAL: Filter by programId for program-scoped queries
   if (programId && type === 'epic') {
@@ -54,15 +65,25 @@ export async function fetchBacklogItems(params: BacklogQueryParams): Promise<Bac
 
   const { data, error } = await query;
   if (error) throw error;
+  
+  // Transform epic data to include theme and BR info
+  const transformedData = (data || []).map((item: any) => ({
+    ...item,
+    themeName: item.strategic_themes?.name || null,
+    themeId: item.theme_id,
+    brKey: item.business_requests?.request_key || null,
+    brTitle: item.business_requests?.title || null,
+    brId: item.business_request_id,
+  }));
 
   // Fetch metadata
   const meta = await fetchBacklogMeta(params);
 
   // Group items into PI sections
-  const sections = await groupItemsIntoPISections(data || [], type, timeboxType);
+  const sections = await groupItemsIntoPISections(transformedData || [], type, timeboxType);
 
   return {
-    items: (data || []) as BacklogItem[],
+    items: transformedData as BacklogItem[],
     meta,
     sections,
   };
