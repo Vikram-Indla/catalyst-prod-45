@@ -153,7 +153,7 @@ export function ProgramRoomSidebar({
     <aside 
       className={cn(
         "h-full border-r bg-card transition-all duration-300 flex-shrink-0 relative flex flex-col",
-        expanded ? "w-fit min-w-[140px] max-w-[200px]" : "w-14",
+        expanded ? "w-[180px]" : "w-14",
         className
       )}
     >
@@ -172,20 +172,20 @@ export function ProgramRoomSidebar({
 
       <div className="h-full flex flex-col overflow-hidden">
         {/* Program Context Header */}
-        <div className={cn("px-4 pt-4 pb-3 border-b", !expanded && "px-2")}>
+        <div className={cn("px-3 pt-3 pb-2 border-b", !expanded && "px-2")}>
           {expanded && (
             <>
-              {/* Program Display */}
-              <div className="py-2 px-3 mb-3 bg-accent/30 border border-border/50 rounded-lg">
-                <div className="flex items-center gap-3 w-full">
-                  <div className="w-8 h-8 rounded bg-brand-gold flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
+              {/* Program Display - Compact */}
+              <div className="py-1.5 px-2 mb-2 bg-accent/30 border border-border/50 rounded-lg">
+                <div className="flex items-center gap-2 w-full">
+                  <div className="w-7 h-7 rounded bg-brand-gold flex items-center justify-center text-white text-[10px] font-semibold flex-shrink-0">
                     {program?.name?.substring(0, 2).toUpperCase() || 'PR'}
                   </div>
                   <div className="flex-1 text-left min-w-0">
-                    <div className="text-sm font-medium text-foreground truncate">
+                    <div className="text-xs font-medium text-foreground truncate">
                       {program?.name || 'Project'}
                     </div>
-                    <div className="text-xs text-muted-foreground">Project</div>
+                    <div className="text-[10px] text-muted-foreground">Project</div>
                   </div>
                 </div>
               </div>
