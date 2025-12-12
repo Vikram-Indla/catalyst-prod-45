@@ -64,31 +64,43 @@ import { cn } from '@/lib/utils';
 type ViewMode = 'list' | 'kanban';
 type SortOrder = 'NONE' | 'ASC' | 'DESC';
 
-// Process Step lozenge styles matching production
+// Process Step lozenge styles using Catalyst brand colors
 const getProcessStepStyle = (status: string): string => {
   const statusLower = status?.toLowerCase() || '';
+  
+  // Implement / Ready to Implement - secondary green
   if (statusLower === 'implement' || statusLower === 'ready_to_implement') {
-    return 'bg-[#e8f5e9] text-[#2e7d32] border border-[#c8e6c9]';
+    return 'bg-secondary-green/15 text-secondary-green border border-secondary-green/30';
   }
+  // New Request - brand gold (amber/gold)
   if (statusLower === 'new_request' || statusLower === 'new request') {
-    return 'bg-[#fff3e0] text-[#e65100] border border-[#ffe0b2]';
+    return 'bg-brand-gold/15 text-brand-gold border border-brand-gold/30';
   }
+  // Closed - secondary grey
   if (statusLower === 'closed') {
-    return 'bg-[#e3f2fd] text-[#1565c0] border border-[#bbdefb]';
+    return 'bg-secondary-grey/20 text-foreground border border-secondary-grey/40';
   }
+  // Analyse - secondary bronze
   if (statusLower === 'analyse' || statusLower === 'in_review') {
-    return 'bg-[#fce4ec] text-[#c2185b] border border-[#f8bbd9]';
+    return 'bg-secondary-bronze/15 text-secondary-bronze border border-secondary-bronze/30';
   }
+  // Approved - secondary green (darker shade)
   if (statusLower === 'approved') {
-    return 'bg-[#e8eaf6] text-[#3949ab] border border-[#c5cae9]';
+    return 'bg-secondary-green/10 text-secondary-green border border-secondary-green/25';
   }
+  // On Hold - brand gold muted
   if (statusLower === 'on_hold') {
-    return 'bg-[#fff8e1] text-[#f9a825] border border-[#ffecb3]';
+    return 'bg-brand-gold/10 text-brand-gold-hover border border-brand-gold/20';
   }
+  // Rejected - destructive
   if (statusLower === 'rejected') {
-    return 'bg-[#ffebee] text-[#c62828] border border-[#ffcdd2]';
+    return 'bg-destructive/10 text-destructive border border-destructive/20';
   }
-  return 'bg-muted text-muted-foreground';
+  // New Demand - secondary champagne
+  if (statusLower === 'new_demand' || statusLower === 'new demand') {
+    return 'bg-secondary-champagne/20 text-secondary-bronze border border-secondary-champagne/40';
+  }
+  return 'bg-muted text-muted-foreground border border-border';
 };
 
 const formatDate = (dateStr: string | null) => {
