@@ -185,7 +185,8 @@ export function useRoadmapBusinessRequests() {
           });
 
           return {
-            id: r.request_key!,
+            id: r.id,
+            key: r.request_key!,
             titleEn: r.title || 'Untitled',
             titleAr: r.title || 'بدون عنوان',
             ownerEn: r.business_owner || 'Unassigned',

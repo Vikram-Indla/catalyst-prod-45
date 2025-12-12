@@ -209,6 +209,7 @@ export function useThemeRoadmapItems(filters?: ThemeRoadmapFilters): UseThemeRoa
 
     return {
       id: theme.id,
+      key: `TH-${theme.id.slice(0, 4).toUpperCase()}`,
       titleEn: theme.name,
       titleAr: theme.name, // Theme names are typically not localized
       ownerEn: snapshotName, // Using snapshot as the "owner" lane label
