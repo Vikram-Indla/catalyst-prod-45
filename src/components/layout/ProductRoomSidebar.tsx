@@ -15,7 +15,7 @@ interface ProductRoomSidebarProps {
 
 const menuItems = [
   { title: 'Product Room', path: '/product/room', icon: Box, exact: true },
-  { title: 'Demand Intake', path: '/industry', icon: ListTree, exact: true },
+  { title: 'Product Backlog', path: '/industry', icon: ListTree, exact: true },
   { title: 'Roadmap', path: '/industry/roadmaps', icon: Map, exact: false },
   { title: 'Capacity', path: '/product/capacity', icon: Users, exact: true },
 ];

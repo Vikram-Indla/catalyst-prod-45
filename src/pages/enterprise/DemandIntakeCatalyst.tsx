@@ -354,12 +354,13 @@ export default function DemandIntakeCatalyst() {
 
   return (
     <div className="flex flex-col h-full bg-white">
+      {/* Header aligned with sidebar - h-12 to match sidebar header */}
+      <header className="h-12 px-6 border-b border-border flex items-center shrink-0">
+        <h1 className="text-xl font-semibold text-foreground">Product Backlog</h1>
+      </header>
+
       {/* Main Content Area */}
       <main className="flex-1 overflow-hidden flex flex-col px-6 py-4">
-        {/* Page Header */}
-        <div className="pb-4 border-b border-border mb-4">
-          <h1 className="text-xl font-semibold text-foreground">Product Backlog</h1>
-        </div>
 
         {/* Controls Bar */}
         <div className="flex items-center justify-between mb-4">
