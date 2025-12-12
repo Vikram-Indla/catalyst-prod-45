@@ -258,7 +258,7 @@ export function BusinessScoreViewTab({ data, onChange, onDirtyChange, totalDeman
 
           {/* Locked notice when force-ranked */}
           {inputsLocked && (
-            <p className="text-xs text-amber-600 italic">
+            <p className="text-xs text-warning italic">
               Scoring inputs locked while manually ranked. You can change the rank below or switch to Auto.
             </p>
           )}
@@ -316,7 +316,7 @@ export function BusinessScoreViewTab({ data, onChange, onDirtyChange, totalDeman
             
             {/* Edit Mode Content */}
             {isEditingOverride && (
-              <div className="p-4 space-y-4 border-t border-border bg-amber-50/50">
+              <div className="p-4 space-y-4 border-t border-border bg-brand-gold/5">
                 <div className="flex items-center gap-3">
                   <Select
                     value={editRank ? String(editRank) : ''}
@@ -367,9 +367,9 @@ export function BusinessScoreViewTab({ data, onChange, onDirtyChange, totalDeman
                 
                 {/* Validation message */}
                 {(!editRank || !editJustification.trim()) && (
-                  <div className="p-3 bg-amber-100 border border-amber-300 rounded text-sm text-amber-800">
+                  <div className="p-3 bg-warning/10 border border-warning/30 rounded text-sm text-foreground">
                     <p className="font-medium">Justification Required</p>
-                    <p className="text-xs">Please provide a business justification for the rank override.</p>
+                    <p className="text-xs text-muted-foreground">Please provide a business justification for the rank override.</p>
                   </div>
                 )}
               </div>
