@@ -114,15 +114,15 @@
   --primary-foreground: var(--n0);
   
   /* Secondary */
-  --secondary: var(--n20);                     /* #F4F5F7 */
+  --secondary: var(--n0);                      /* #FFFFFF - white */
   --secondary-foreground: var(--n800);
   
   /* Muted */
-  --muted: var(--n10);                         /* #FAFBFC */
+  --muted: var(--n0);                          /* #FFFFFF - white */
   --muted-foreground: var(--n200);             /* #6B778C */
   
   /* Accent */
-  --accent: var(--n20);                        /* #F4F5F7 */
+  --accent: var(--n0);                         /* #FFFFFF - white */
   --accent-foreground: var(--n800);
   
   /* Destructive */
