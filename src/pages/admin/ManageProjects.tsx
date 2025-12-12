@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Plus, Search, MoreHorizontal, Pencil, Users, Trash2 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { ResponsivePageContainer, ResponsivePageHeader, ResponsiveGrid, ResponsiveTableWrapper } from '@/components/layout/ResponsivePageContainer';
+import { ResponsivePageContainer, ResponsivePageHeader, ResponsiveTableWrapper } from '@/components/layout/ResponsivePageContainer';
 import { CreateProjectDialog } from '@/components/projects/CreateProjectDialog';
 import { EditProjectDialog } from '@/components/projects/EditProjectDialog';
 import {
@@ -48,6 +48,7 @@ export default function ManageProjects() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [deletingProject, setDeletingProject] = useState<Project | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const { data: projects, isLoading } = useQuery({
     queryKey: ['admin-projects'],
@@ -60,6 +61,29 @@ export default function ManageProjects() {
       return data as Project[];
     }
   });
+
+  // Check if project can be deleted (no linked features or stories)
+  const checkProjectCanBeDeleted = async (projectId: string): Promise<{ canDelete: boolean; reason?: string }> => {
+    // Check for linked features
+    const { count: featureCount, error: featureError } = await supabase
+      .from('features')
+      .select('id', { count: 'exact', head: true })
+      .eq('project_id', projectId)
+      .is('deleted_at', null);
+
+    if (featureError) {
+      return { canDelete: false, reason: 'Failed to check for linked features.' };
+    }
+
+    if (featureCount && featureCount > 0) {
+      return { 
+        canDelete: false, 
+        reason: `Cannot delete project. It has ${featureCount} linked feature(s). Please remove or reassign features first.` 
+      };
+    }
+
+    return { canDelete: true };
+  };
 
   const deleteProject = useMutation({
     mutationFn: async (projectId: string) => {
@@ -74,11 +98,28 @@ export default function ManageProjects() {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
       toast.success('Project deleted successfully');
       setDeletingProject(null);
+      setDeleteError(null);
     },
     onError: (error) => {
       toast.error('Failed to delete project: ' + error.message);
     },
   });
+
+  const handleDeleteClick = async (project: Project) => {
+    setDeleteError(null);
+    const result = await checkProjectCanBeDeleted(project.id);
+    if (!result.canDelete) {
+      setDeleteError(result.reason || 'Cannot delete this project.');
+      setDeletingProject(project);
+    } else {
+      setDeletingProject(project);
+    }
+  };
+
+  const handleDelete = () => {
+    if (!deletingProject || deleteError) return;
+    deleteProject.mutate(deletingProject.id);
+  };
 
   const filteredProjects = projects?.filter(p =>
     p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -105,7 +146,7 @@ export default function ManageProjects() {
           }
         />
 
-        <ResponsiveGrid cols={3}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Projects</CardTitle>
@@ -130,9 +171,9 @@ export default function ManageProjects() {
               <div className="text-2xl font-bold">{programCount}</div>
             </CardContent>
           </Card>
-        </ResponsiveGrid>
+        </div>
 
-        <Card>
+        <Card className="mt-4">
           <CardHeader>
             <CardTitle>Project Configuration</CardTitle>
             <CardDescription>
@@ -216,7 +257,7 @@ export default function ManageProjects() {
                                 Manage Access
                               </DropdownMenuItem>
                               <DropdownMenuItem 
-                                onClick={() => setDeletingProject(project)}
+                                onClick={() => handleDeleteClick(project)}
                                 className="text-destructive"
                               >
                                 <Trash2 className="h-4 w-4 mr-2" />
@@ -248,23 +289,35 @@ export default function ManageProjects() {
         onSuccess={() => queryClient.invalidateQueries({ queryKey: ['admin-projects'] })}
       />
 
-      <AlertDialog open={!!deletingProject} onOpenChange={(open) => !open && setDeletingProject(null)}>
+      <AlertDialog open={!!deletingProject} onOpenChange={(open) => {
+        if (!open) {
+          setDeletingProject(null);
+          setDeleteError(null);
+        }
+      }}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Project</AlertDialogTitle>
+            <AlertDialogTitle>
+              {deleteError ? 'Cannot Delete Project' : 'Delete Project'}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete <strong>{deletingProject?.name}</strong>? 
-              This will remove all associated work items and cannot be undone.
+              {deleteError ? (
+                <span className="text-destructive">{deleteError}</span>
+              ) : (
+                <>Are you sure you want to delete <strong>{deletingProject?.name}</strong>? This action cannot be undone.</>
+              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => deletingProject && deleteProject.mutate(deletingProject.id)}
-              className="bg-destructive hover:bg-destructive/90"
-            >
-              Delete Project
-            </AlertDialogAction>
+            {!deleteError && (
+              <AlertDialogAction
+                onClick={handleDelete}
+                className="bg-destructive hover:bg-destructive/90"
+              >
+                Delete Project
+              </AlertDialogAction>
+            )}
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

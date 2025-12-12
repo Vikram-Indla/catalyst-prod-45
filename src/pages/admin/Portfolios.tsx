@@ -46,6 +46,7 @@ export default function Portfolios() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [formData, setFormData] = useState({ name: '', key: '' });
   const [deleteProgram, setDeleteProgram] = useState<Portfolio | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const { data: programs, isLoading } = useQuery({
     queryKey: ['admin-programs'],
@@ -73,6 +74,38 @@ export default function Portfolios() {
 
   const getProjectsForProgram = (programId: string): Project[] => {
     return projects?.filter(p => p.program_id === programId) || [];
+  };
+
+  // Check if program can be deleted (no linked projects or epics)
+  const checkProgramCanBeDeleted = async (programId: string): Promise<{ canDelete: boolean; reason?: string }> => {
+    // Check for linked projects
+    const linkedProjects = getProjectsForProgram(programId);
+    if (linkedProjects.length > 0) {
+      return { 
+        canDelete: false, 
+        reason: `Cannot delete program. It has ${linkedProjects.length} linked project(s): ${linkedProjects.map(p => p.name).join(', ')}. Please remove or reassign projects first.` 
+      };
+    }
+
+    // Check for linked epics
+    const { count: epicCount, error: epicError } = await supabase
+      .from('epics')
+      .select('id', { count: 'exact', head: true })
+      .eq('primary_program_id', programId)
+      .is('deleted_at', null);
+
+    if (epicError) {
+      return { canDelete: false, reason: 'Failed to check for linked epics.' };
+    }
+
+    if (epicCount && epicCount > 0) {
+      return { 
+        canDelete: false, 
+        reason: `Cannot delete program. It has ${epicCount} linked epic(s). Please remove or reassign epics first.` 
+      };
+    }
+
+    return { canDelete: true };
   };
 
   const createMutation = useMutation({
@@ -132,6 +165,7 @@ export default function Portfolios() {
       queryClient.invalidateQueries({ queryKey: ['portfolios'] });
       toast.success('Program deleted successfully');
       setDeleteProgram(null);
+      setDeleteError(null);
     },
     onError: (error) => {
       toast.error('Failed to delete program: ' + error.message);
@@ -160,8 +194,19 @@ export default function Portfolios() {
     createMutation.mutate({ name: formData.name, key: finalKey });
   };
 
+  const handleDeleteClick = async (program: Portfolio) => {
+    setDeleteError(null);
+    const result = await checkProgramCanBeDeleted(program.id);
+    if (!result.canDelete) {
+      setDeleteError(result.reason || 'Cannot delete this program.');
+      setDeleteProgram(program);
+    } else {
+      setDeleteProgram(program);
+    }
+  };
+
   const handleDelete = () => {
-    if (!deleteProgram) return;
+    if (!deleteProgram || deleteError) return;
     deleteMutation.mutate(deleteProgram.id);
   };
 
@@ -280,7 +325,7 @@ export default function Portfolios() {
                               <Button 
                                 variant="ghost" 
                                 size="sm" 
-                                onClick={() => setDeleteProgram(program)}
+                                onClick={() => handleDeleteClick(program)}
                                 className="text-destructive hover:text-destructive hover:bg-destructive/10"
                               >
                                 <Trash2 className="h-4 w-4" />
@@ -361,22 +406,35 @@ export default function Portfolios() {
         </Dialog>
 
         {/* Delete Confirmation Dialog */}
-        <AlertDialog open={!!deleteProgram} onOpenChange={(open) => !open && setDeleteProgram(null)}>
+        <AlertDialog open={!!deleteProgram} onOpenChange={(open) => {
+          if (!open) {
+            setDeleteProgram(null);
+            setDeleteError(null);
+          }
+        }}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Delete Program</AlertDialogTitle>
+              <AlertDialogTitle>
+                {deleteError ? 'Cannot Delete Program' : 'Delete Program'}
+              </AlertDialogTitle>
               <AlertDialogDescription>
-                Are you sure you want to delete "{deleteProgram?.name}"? This action cannot be undone.
+                {deleteError ? (
+                  <span className="text-destructive">{deleteError}</span>
+                ) : (
+                  `Are you sure you want to delete "${deleteProgram?.name}"? This action cannot be undone.`
+                )}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={handleDelete}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              >
-                {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
-              </AlertDialogAction>
+              {!deleteError && (
+                <AlertDialogAction
+                  onClick={handleDelete}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+                </AlertDialogAction>
+              )}
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
