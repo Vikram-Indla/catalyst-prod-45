@@ -9,11 +9,11 @@ export function useTeams(filters?: TeamFilters) {
     queryFn: async () => {
       let query = supabase
         .from('teams')
-        .select('*, programs!program_id(id, name), portfolios!parent_portfolio_id(id, name)')
+        .select('*, projects!project_id(id, name), programs!parent_program_id(id, name)')
         .order('name');
 
       if (filters?.programIds && filters.programIds.length > 0) {
-        query = query.in('program_id', filters.programIds);
+        query = query.in('project_id', filters.programIds);
       }
 
       if (filters?.teamTypes && filters.teamTypes.length > 0) {
@@ -52,7 +52,7 @@ export function useTeam(teamId?: string) {
 
       const { data, error } = await supabase
         .from('teams')
-        .select('*, programs!program_id(id, name), portfolios!parent_portfolio_id(id, name)')
+        .select('*, projects!project_id(id, name), programs!parent_program_id(id, name)')
         .eq('id', teamId)
         .single();
 

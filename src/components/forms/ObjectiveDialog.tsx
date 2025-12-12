@@ -186,7 +186,7 @@ export function ObjectiveDialog({ open, onClose, objectiveId, scopeType = 'portf
         description: existingObjective.description || '',
         tier: (existingObjective.tier as 'portfolio' | 'program' | 'team' | 'solution') || 'portfolio',
         portfolio_id: existingObjective.portfolio_id || '',
-        program_id: existingObjective.program_id || '',
+        program_id: existingObjective.project_id || '',
         team_id: existingObjective.team_id || '',
         parent_objective_id: existingObjective.parent_objective_id || '',
         owner_id: existingObjective.owner_id || '',

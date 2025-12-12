@@ -71,7 +71,7 @@ export function PersistentFilters() {
       const { data, error } = await supabase
         .from('program_increments')
         .select('*')
-        .eq('portfolio_id', selectedProgramId)
+        .eq('program_id', selectedProgramId)
         .order('start_date', { ascending: false });
       if (error) throw error;
       return data || [];

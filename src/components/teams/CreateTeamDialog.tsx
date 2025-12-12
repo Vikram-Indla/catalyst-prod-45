@@ -39,7 +39,7 @@ export function CreateTeamDialog({ open, onOpenChange }: CreateTeamDialogProps) 
     await createTeam.mutateAsync({
       name,
       short_name: shortName || undefined,
-      program_id: programId,
+      project_id: programId,
       team_type: teamType,
       is_active: true,
     });

@@ -27,7 +27,7 @@ export function PISelector({ portfolioId, value, onChange, multiSelect = true }:
         .order('start_date', { ascending: false });
       
       if (portfolioId) {
-        query = query.eq('portfolio_id', portfolioId);
+        query = query.eq('program_id', portfolioId);
       }
       
       const { data, error } = await query;

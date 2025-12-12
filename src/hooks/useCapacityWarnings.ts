@@ -21,7 +21,7 @@ export function useCapacityWarnings(piId: string, programId?: string) {
         .eq('pi_id', piId);
 
       if (programId) {
-        capacityQuery = capacityQuery.eq('program_id', programId);
+        capacityQuery = capacityQuery.eq('project_id', programId);
       }
 
       const { data: capacities, error: capacityError } = await capacityQuery;

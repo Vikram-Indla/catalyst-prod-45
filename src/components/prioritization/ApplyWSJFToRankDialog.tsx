@@ -57,12 +57,12 @@ export function ApplyWSJFToRankDialog({
         // For features, WSJF is directly on the table
         let featureQuery = supabase
           .from('features')
-          .select('id, wsjf_score, global_rank, program_id, pi_id')
+          .select('id, wsjf_score, global_rank, project_id, pi_id')
           .not('wsjf_score', 'is', null)
           .order('wsjf_score', { ascending: false });
 
         if (scopeType === 'program' && scopeId) {
-          featureQuery = featureQuery.eq('program_id', scopeId);
+          featureQuery = featureQuery.eq('project_id', scopeId);
         } else if (scopeType === 'pi' && scopeId) {
           featureQuery = featureQuery.eq('pi_id', scopeId);
         }

@@ -90,7 +90,7 @@ export default function Features() {
         status: row.status || 'funnel',
         health: row.health || 'green',
         epic_id: row.epic_id,
-        program_id: row.program_id,
+        project_id: row.project_id,
         estimate_points: row.estimate_points || 0,
       })));
       if (error) throw error;

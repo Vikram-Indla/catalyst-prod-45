@@ -38,12 +38,12 @@ export function ProgramRoomSidebar({ programId }: ProgramRoomSidebarProps) {
     queryKey: ['program', programId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('programs')
+        .from('projects')
         .select(`
           id,
           name,
-          portfolio_id,
-          portfolios (
+          program_id,
+          programs (
             name
           )
         `)
@@ -56,22 +56,22 @@ export function ProgramRoomSidebar({ programId }: ProgramRoomSidebarProps) {
     enabled: !!programId,
   });
 
-  // Fetch program increments for the program's portfolio
+  // Fetch program increments for the program
   const { data: programIncrements, isLoading: piLoading } = useQuery({
-    queryKey: ['program-increments', program?.portfolio_id],
+    queryKey: ['program-increments', program?.program_id],
     queryFn: async () => {
-      if (!program?.portfolio_id) return [];
+      if (!program?.program_id) return [];
       
       const { data, error } = await supabase
         .from('program_increments')
         .select('id, name, start_date, end_date')
-        .eq('portfolio_id', program.portfolio_id)
+        .eq('program_id', program.program_id)
         .order('start_date', { ascending: false });
       
       if (error) throw error;
       return data || [];
     },
-    enabled: !!program?.portfolio_id,
+    enabled: !!program?.program_id,
   });
 
   const menuItems = [

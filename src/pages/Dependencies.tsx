@@ -36,8 +36,8 @@ export default function Dependencies() {
         .from('dependencies')
         .select(`
           *,
-          from_feature:features!dependencies_from_feature_id_fkey(id, name, program_id, status, blocked, programs(name)),
-          to_feature:features!dependencies_to_feature_id_fkey(id, name, program_id, status, blocked, programs(name)),
+          from_feature:features!dependencies_from_feature_id_fkey(id, name, project_id, status, blocked, projects(name)),
+          to_feature:features!dependencies_to_feature_id_fkey(id, name, project_id, status, blocked, projects(name)),
           due_iteration:iterations!dependencies_due_iteration_id_fkey(id, name, start_date, end_date)
         `);
 
@@ -86,7 +86,7 @@ export default function Dependencies() {
     if (!dependencies) return [];
     
     return dependencies.filter(d => 
-      d.from_feature?.program_id !== d.to_feature?.program_id
+      d.from_feature?.project_id !== d.to_feature?.project_id
     );
   };
 

@@ -478,13 +478,13 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
                 
                  {/* Zone 3: Estimate inputs */}
                  {capacities.map((capacity, idx) => {
-                   const inputKey = `${item.id}-${capacity.program_id || 'null'}-${capacity.team_id || 'null'}`;
-                   const value = getForecastValue(item.id as string, capacity.program_id, capacity.team_id, inputKey);
+                   const inputKey = `${item.id}-${capacity.project_id || 'null'}-${capacity.team_id || 'null'}`;
+                   const value = getForecastValue(item.id as string, capacity.project_id, capacity.team_id, inputKey);
                    const isAssigned = workItems.some(wi => 
                      wi.id === item.id && 
                      assignments.some(a => 
                        a.work_item_id === wi.id &&
-                       ((capacity.program_id && a.program_id === capacity.program_id && !a.team_id) ||
+                       ((capacity.project_id && a.program_id === capacity.project_id && !a.team_id) ||
                         (capacity.team_id && a.team_id === capacity.team_id))
                      )
                    );
