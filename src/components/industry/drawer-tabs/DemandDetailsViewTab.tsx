@@ -36,8 +36,7 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
                 <SelectValue placeholder="Select step" />
               </SelectTrigger>
               <SelectContent>
-                {/* Filter out duplicate uppercase entries */}
-                {PROCESS_STEPS.filter(s => s.value === s.value.toLowerCase()).map((s) => (
+                {PROCESS_STEPS.map((s) => (
                   <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
                 ))}
               </SelectContent>

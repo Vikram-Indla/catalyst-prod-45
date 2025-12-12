@@ -15,7 +15,7 @@ import { useResizableColumns } from '@/components/business-requests/ResizableCol
 import { BusinessRequestsKanbanView } from '@/components/business-requests/BusinessRequestsKanbanView';
 import { ViewToggle, ViewMode } from '@/components/business-requests/ViewToggle';
 import { InlineEditableCell } from '@/components/business-requests/InlineEditableCell';
-import { PROCESS_STEPS } from '@/types/business-request';
+import { PROCESS_STEPS, getProcessStepInfo } from '@/types/business-request';
 import { useToast } from '@/hooks/use-toast';
 import { ColumnsDropdown, ColumnConfig } from '@/components/backlog/ColumnsDropdown';
 import { supabase } from '@/integrations/supabase/client';
@@ -627,22 +627,16 @@ export default function IndustryPage() {
     }
   }, [queryClient, toast]);
 
-  // Process step badge - use PROCESS_STEPS config for colors and labels
+  // Process step badge - use getProcessStepInfo for consistent labels and colors
   const getStatusBadge = (status: string) => {
-    // Find matching step (case-insensitive)
-    const step = PROCESS_STEPS.find(s => 
-      s.value.toLowerCase() === status?.toLowerCase()
-    );
-    
-    // Extract bg and text classes from color string, or use defaults
-    const colorClasses = step?.color || 'bg-slate-100 text-slate-600';
+    const stepInfo = getProcessStepInfo(status);
     
     return (
       <span className={cn(
         "inline-flex items-center px-2 py-0.5 rounded text-xs font-medium",
-        colorClasses
+        stepInfo.color
       )}>
-        {step?.label || status?.replace(/_/g, ' ').toLowerCase().replace(/^\w/, c => c.toUpperCase()) || 'Unknown'}
+        {stepInfo.label}
       </span>
     );
   };
