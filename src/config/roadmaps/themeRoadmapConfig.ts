@@ -31,6 +31,41 @@ const THEME_STATUS_COLORS: Record<string, StatusConfig> = {
   },
 };
 
+// Epic status colors for child epic markers on Theme roadmap
+// Reused from epicRoadmapConfig status colors
+export const THEME_EPIC_MARKER_STATUS_COLORS: Record<string, { border: string; background: string; text: string }> = {
+  'proposed': {
+    border: 'hsl(var(--roadmap-status-new))',
+    background: 'white',
+    text: 'hsl(var(--roadmap-status-new))',
+  },
+  'analyzing': {
+    border: 'hsl(var(--roadmap-status-analyse))',
+    background: 'white',
+    text: 'hsl(var(--roadmap-status-analyse))',
+  },
+  'approved': {
+    border: 'hsl(var(--roadmap-status-approved))',
+    background: 'white',
+    text: 'hsl(var(--roadmap-status-approved))',
+  },
+  'in_progress': {
+    border: 'hsl(var(--roadmap-status-implement))',
+    background: 'hsl(var(--roadmap-status-implement))',
+    text: 'white',
+  },
+  'done': {
+    border: 'hsl(var(--roadmap-status-closed))',
+    background: 'hsl(var(--roadmap-status-closed))',
+    text: 'white',
+  },
+  'cancelled': {
+    border: 'hsl(var(--muted))',
+    background: 'hsl(var(--muted))',
+    text: 'white',
+  },
+};
+
 // Translations for theme roadmap
 const THEME_TRANSLATIONS: RoadmapTranslations = {
   en: {
@@ -46,7 +81,7 @@ const THEME_TRANSLATIONS: RoadmapTranslations = {
     status: 'STATUS',
     owner: 'OWNER',
     sortBy: 'SORT BY',
-    milestones: 'MILESTONES',
+    milestones: 'CHILD EPICS', // Theme-specific: show Child Epics instead of Milestones
     weekly: 'Weekly',
     monthly: 'Monthly',
     quarterly: 'Quarterly',
@@ -74,7 +109,7 @@ const THEME_TRANSLATIONS: RoadmapTranslations = {
     status: 'الحالة',
     owner: 'المالك',
     sortBy: 'ترتيب حسب',
-    milestones: 'المراحل',
+    milestones: 'الملاحم الفرعية', // Theme-specific: Arabic for Child Epics
     weekly: 'أسبوعي',
     monthly: 'شهري',
     quarterly: 'ربع سنوي',
@@ -130,7 +165,7 @@ export const themeRoadmapConfig: RoadmapConfig = {
   legend: {
     showStatus: true,
     showTimeline: true,
-    showMilestones: false, // Themes do NOT show milestones
+    showMilestones: true, // Theme roadmap shows Child Epics as milestones
   },
 
   filters: THEME_FILTERS_CONFIG,
