@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
+import { useProjectKeyResolver } from '@/hooks/useKeyAliasResolver';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
@@ -729,8 +730,26 @@ function KanbanView() {
 
 export default function ProjectSummaryPage() {
   const { projectKey: routeProjectKey } = useParams();
+  const navigate = useNavigate();
   const projectKey = routeProjectKey || 'TEST';
   const projectName = 'Test Project';
+
+  // Check if this is an old key alias and redirect if needed
+  const { isAlias, currentKey, isLoading } = useProjectKeyResolver(routeProjectKey);
+
+  useEffect(() => {
+    if (isAlias && currentKey && currentKey !== routeProjectKey) {
+      navigate(`/projects/${currentKey}`, { replace: true });
+    }
+  }, [isAlias, currentKey, routeProjectKey, navigate]);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-muted/30 p-6">

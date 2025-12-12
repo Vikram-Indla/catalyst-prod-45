@@ -37,6 +37,7 @@ import { AlertTriangle, Info, Search } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useProjectKeyResolver } from '@/hooks/useKeyAliasResolver';
 
 interface Project {
   id: string;
@@ -56,6 +57,16 @@ export default function ProjectSettingsPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
+  // Check if this is an old key alias and redirect if needed
+  const { isAlias, currentKey, isLoading: isResolvingKey } = useProjectKeyResolver(projectKey);
+
+  useEffect(() => {
+    if (isAlias && currentKey && currentKey !== projectKey) {
+      // Redirect to the new key URL
+      navigate(`/projects/${currentKey}/settings`, { replace: true });
+    }
+  }, [isAlias, currentKey, projectKey, navigate]);
+
   const { data: project, isLoading } = useQuery({
     queryKey: ['project-settings', projectKey],
     queryFn: async () => {
@@ -67,10 +78,10 @@ export default function ProjectSettingsPage() {
       if (error) throw error;
       return data as Project;
     },
-    enabled: !!projectKey,
+    enabled: !!projectKey && !isAlias,
   });
 
-  if (isLoading || !project) {
+  if (isResolvingKey || isLoading || !project) {
     return (
       <div className="flex h-screen items-center justify-center">
         <p>Loading...</p>
