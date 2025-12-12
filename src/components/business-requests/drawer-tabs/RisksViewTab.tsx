@@ -423,7 +423,7 @@ export function RisksViewTab({ requestId }: RisksViewTabProps) {
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="bg-popover border shadow-lg z-50">
+                      <DropdownMenuContent align="end" className="bg-popover border shadow-lg z-[400]">
                         <DropdownMenuItem onClick={() => handleEdit(risk)}>
                           <Pencil className="h-4 w-4 mr-2" />
                           Edit
