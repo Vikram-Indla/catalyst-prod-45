@@ -193,7 +193,9 @@ export function useUpdateBusinessRequest() {
         .single();
       
       // Convert ReadinessChecklist to Json-compatible format
-      const updateData: Record<string, any> = { ...data };
+      // IMPORTANT: Remove id from update payload to prevent duplicate key errors
+      const { id: _removeId, ...dataWithoutId } = data as any;
+      const updateData: Record<string, any> = { ...dataWithoutId };
       if (data.readiness_checklist) {
         updateData.readiness_checklist = data.readiness_checklist as unknown as Json;
       }
