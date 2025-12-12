@@ -147,18 +147,13 @@ const WorkspaceListItem = React.memo(function WorkspaceListItem({
       )}
     >
       <Icon className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-1.5">
-          <span className="text-sm text-foreground truncate">{item.name}</span>
-          {!item.canAccess && (
-            <Lock className="h-3 w-3 text-muted-foreground flex-shrink-0" />
-          )}
-        </div>
-        {item.subtext && (
-          <div className="text-xs text-muted-foreground truncate">{item.subtext}</div>
+      <div className="flex-1 min-w-0 flex items-center gap-1.5">
+        <span className="text-sm text-foreground truncate">{item.name}</span>
+        {!item.canAccess && (
+          <Lock className="h-3 w-3 text-muted-foreground flex-shrink-0" />
         )}
       </div>
-      <span className="text-xs text-muted-foreground flex-shrink-0">{item.key}</span>
+      <span className="text-xs text-muted-foreground flex-shrink-0 max-w-[60px] truncate">{item.key}</span>
     </button>
   );
 });
