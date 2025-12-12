@@ -33,6 +33,8 @@ export const ProgramSelectorDropdown = React.memo(function ProgramSelectorDropdo
       key: p.key, // Already canonical 3-letter key from hook
       name: p.name,
       canAccess: p.canAccess,
+      sourceField: p.sourceField,
+      needsMigration: p.needsMigration,
     }));
 
   const handleSelect = useCallback((item: WorkspaceItem) => {
@@ -61,6 +63,7 @@ export const ProgramSelectorDropdown = React.memo(function ProgramSelectorDropdo
       items={items}
       isLoading={programsLoading}
       showActions={isAdmin}
+      isAdmin={isAdmin}
       onSelectItem={handleSelect}
       onCreate={isAdmin ? handleCreate : undefined}
       onManage={isAdmin ? handleManage : undefined}
