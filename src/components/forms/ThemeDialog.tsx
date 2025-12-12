@@ -7,6 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
+import { format } from 'date-fns';
 import { toast } from 'sonner';
 
 interface ThemeDialogProps {
@@ -125,21 +127,19 @@ export function ThemeDialog({ open, onOpenChange, theme }: ThemeDialogProps) {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="startDate">Start Date</Label>
-              <Input
-                id="startDate"
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
+              <Label htmlFor="startDate" className="mb-1.5 block">Start Date</Label>
+              <CatalystDatePicker
+                value={startDate || null}
+                onChange={(date) => setStartDate(date ? format(date, 'yyyy-MM-dd') : '')}
+                placeholder="Select start date"
               />
             </div>
             <div>
-              <Label htmlFor="endDate">End Date</Label>
-              <Input
-                id="endDate"
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
+              <Label htmlFor="endDate" className="mb-1.5 block">End Date</Label>
+              <CatalystDatePicker
+                value={endDate || null}
+                onChange={(date) => setEndDate(date ? format(date, 'yyyy-MM-dd') : '')}
+                placeholder="Select end date"
               />
             </div>
           </div>
