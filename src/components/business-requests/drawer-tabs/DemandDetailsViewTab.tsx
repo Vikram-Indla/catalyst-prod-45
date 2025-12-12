@@ -181,13 +181,10 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    disabled={!['approved', 'implement', 'closed'].includes(data.process_step || '')}
                     className={cn(
                       "w-full justify-start text-left font-normal mt-1 h-9 text-sm",
-                      !data.impl_start_date && "text-muted-foreground",
-                      !['approved', 'implement', 'closed'].includes(data.process_step || '') && "opacity-60 cursor-not-allowed"
+                      !data.impl_start_date && "text-muted-foreground"
                     )}
-                    title={!['approved', 'implement', 'closed'].includes(data.process_step || '') ? 'Available when status is Approved or later' : undefined}
                   >
                     <CalendarIcon className="mr-1.5 h-3.5 w-3.5" />
                     {data.impl_start_date ? format(new Date(data.impl_start_date), 'dd/MM/yy') : 'Select'}
@@ -269,7 +266,7 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
             </div>
             
             <div>
-              <Label className="text-xs font-medium">Platform</Label>
+              <Label className="text-xs font-medium">Delivery Platform</Label>
               <Select
                 value={data.delivery_platform || ''}
                 onValueChange={(value) => onChange('delivery_platform', value)}

@@ -7,9 +7,11 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Trash2, Palette, Unlink, Target, Layers } from 'lucide-react';
+import { Trash2, Palette, Unlink, Target, Layers, MessageSquare, History } from 'lucide-react';
 import type { StrategicTheme } from '@/types/strategicBacklog';
 import { useUpdateTheme, useDeleteTheme } from '@/hooks/useStrategicBacklog';
+import { CommentsSection } from '@/components/shared/CommentsSection';
+import { FeatureAuditTab } from '@/components/items/features/tabs/FeatureAuditTab';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -113,6 +115,20 @@ export function ThemeDrawer({ open, onOpenChange, theme, isArchived }: ThemeDraw
                 className="rounded-none border-b-2 border-transparent data-[state=active]:border-brand-gold data-[state=active]:bg-transparent px-4 pb-2"
               >
                 Alignment
+              </TabsTrigger>
+              <TabsTrigger 
+                value="discussions"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-brand-gold data-[state=active]:bg-transparent px-4 pb-2"
+              >
+                <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
+                Discussions
+              </TabsTrigger>
+              <TabsTrigger 
+                value="audit"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-brand-gold data-[state=active]:bg-transparent px-4 pb-2"
+              >
+                <History className="h-3.5 w-3.5 mr-1.5" />
+                Audit Trail
               </TabsTrigger>
             </TabsList>
 
@@ -221,6 +237,28 @@ export function ThemeDrawer({ open, onOpenChange, theme, isArchived }: ThemeDraw
                   </div>
                 </div>
               </div>
+            </TabsContent>
+
+            {/* Discussions Tab - reusing CommentsSection */}
+            <TabsContent value="discussions" className="flex-1 overflow-auto px-6 py-4 mt-0">
+              {theme?.id ? (
+                <CommentsSection entityType="themes" entityId={theme.id} />
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  Save theme to enable discussions
+                </div>
+              )}
+            </TabsContent>
+
+            {/* Audit Trail Tab - reusing FeatureAuditTab (generic activity_logs) */}
+            <TabsContent value="audit" className="flex-1 overflow-auto px-6 py-4 mt-0">
+              {theme?.id ? (
+                <FeatureAuditTab featureId={theme.id} />
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  Save theme to view audit trail
+                </div>
+              )}
             </TabsContent>
           </Tabs>
 

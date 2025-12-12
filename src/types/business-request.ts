@@ -3,15 +3,20 @@ import { z } from 'zod';
 // Process Step Options - Main workflow flow + orphan statuses
 export const PROCESS_STEPS = [
   // Main flow (in order)
-  { value: 'new_request', label: 'New Request', color: 'bg-[#4a4a4a]' },
-  { value: 'analyse', label: 'Analyse', color: 'bg-[#c4c4c4]' },
-  { value: 'approved', label: 'Approved', color: 'bg-[#5c4b8a]' },
-  { value: 'ready_to_implement', label: 'Ready to Implement', color: 'bg-[#2563eb]' },
-  { value: 'implement', label: 'Implement', color: 'bg-[#1a1a1a]' },
-  { value: 'closed', label: 'Closed', color: 'bg-[#6abf4b]' },
+  { value: 'new_request', label: 'New request', color: 'bg-amber-100 text-amber-700' },
+  { value: 'NEW_REQUEST', label: 'New request', color: 'bg-amber-100 text-amber-700' },
+  { value: 'new_demand', label: 'New demand', color: 'bg-slate-100 text-slate-600' },
+  { value: 'NEW_DEMAND', label: 'New demand', color: 'bg-slate-100 text-slate-600' },
+  { value: 'in_review', label: 'In review', color: 'bg-pink-100 text-pink-700' },
+  { value: 'IN_REVIEW', label: 'In review', color: 'bg-pink-100 text-pink-700' },
+  { value: 'analyse', label: 'Analyse', color: 'bg-violet-100 text-violet-700' },
+  { value: 'approved', label: 'Approved', color: 'bg-emerald-100 text-emerald-700' },
+  { value: 'ready_to_implement', label: 'Ready to implement', color: 'bg-blue-100 text-blue-700' },
+  { value: 'implement', label: 'Implement', color: 'bg-indigo-100 text-indigo-700' },
+  { value: 'closed', label: 'Closed', color: 'bg-emerald-100 text-emerald-700' },
   // Orphan statuses (not in main flow)
-  { value: 'rejected', label: 'Rejected', color: 'bg-[#dc2626]' },
-  { value: 'on_hold', label: 'On-Hold', color: 'bg-[#c9a0a0]' },
+  { value: 'rejected', label: 'Rejected', color: 'bg-red-100 text-red-700' },
+  { value: 'on_hold', label: 'On-hold', color: 'bg-amber-100 text-amber-700' },
 ] as const;
 
 // Health Options

@@ -627,32 +627,22 @@ export default function IndustryPage() {
     }
   }, [queryClient, toast]);
 
-  // Jira-style status badge colors
-  const STATUS_BADGE_STYLES: Record<string, { bg: string; text: string }> = {
-    'implemented': { bg: 'bg-emerald-100', text: 'text-emerald-700' },
-    'closed': { bg: 'bg-emerald-100', text: 'text-emerald-700' },
-    'in_progress': { bg: 'bg-blue-100', text: 'text-blue-700' },
-    'active': { bg: 'bg-blue-100', text: 'text-blue-700' },
-    'on_hold': { bg: 'bg-amber-100', text: 'text-amber-700' },
-    'paused': { bg: 'bg-amber-100', text: 'text-amber-700' },
-    'request_received': { bg: 'bg-slate-100', text: 'text-slate-600' },
-    'received': { bg: 'bg-slate-100', text: 'text-slate-600' },
-    'under_study': { bg: 'bg-violet-100', text: 'text-violet-700' },
-    'analysis': { bg: 'bg-violet-100', text: 'text-violet-700' },
-    'awaiting_business_response': { bg: 'bg-orange-100', text: 'text-orange-700' },
-  };
-
+  // Process step badge - use PROCESS_STEPS config for colors and labels
   const getStatusBadge = (status: string) => {
-    const step = PROCESS_STEPS.find(s => s.value === status);
-    const styles = STATUS_BADGE_STYLES[status] || { bg: 'bg-slate-100', text: 'text-slate-600' };
+    // Find matching step (case-insensitive)
+    const step = PROCESS_STEPS.find(s => 
+      s.value.toLowerCase() === status?.toLowerCase()
+    );
+    
+    // Extract bg and text classes from color string, or use defaults
+    const colorClasses = step?.color || 'bg-slate-100 text-slate-600';
     
     return (
       <span className={cn(
-        "inline-block px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide rounded",
-        styles.bg,
-        styles.text
+        "inline-flex items-center px-2 py-0.5 rounded text-xs font-medium",
+        colorClasses
       )}>
-        {step?.label || status}
+        {step?.label || status?.replace(/_/g, ' ').toLowerCase().replace(/^\w/, c => c.toUpperCase()) || 'Unknown'}
       </span>
     );
   };
