@@ -22,12 +22,11 @@ export const ProgramSelectorDropdown = React.memo(function ProgramSelectorDropdo
   const { programs, programsLoading, isAdmin } = useWorkspaceAccess();
   const { setProgramId, setProjectId, setProgramName, setProjectName } = useCatalystContext();
 
-  // Map programs to WorkspaceItem format
+  // Map programs to WorkspaceItem format - single line: Name + Key only
   const items: WorkspaceItem[] = programs.map(p => ({
     id: p.id,
     key: p.key,
     name: p.name,
-    subtext: p.description || undefined,
     canAccess: p.canAccess,
   }));
 

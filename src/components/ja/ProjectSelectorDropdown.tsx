@@ -20,17 +20,23 @@ export const ProjectSelectorDropdown = React.memo(function ProjectSelectorDropdo
   onCreateClick 
 }: ProjectSelectorDropdownProps) {
   const navigate = useNavigate();
-  const { projects, projectsLoading, isAdmin } = useWorkspaceAccess();
+  const { programs, projects, projectsLoading, isAdmin } = useWorkspaceAccess();
   const { setProgramId, setProjectId, setProgramName, setProjectName } = useCatalystContext();
 
-  // Map projects to WorkspaceItem format
-  const items: WorkspaceItem[] = projects.map(p => ({
-    id: p.id,
-    key: p.key,
-    name: p.name,
-    subtext: p.programName || undefined,
-    canAccess: p.canAccess,
-  }));
+  // Map projects to WorkspaceItem format - single line: "Project Name (PROGRAMKEY)"
+  const items: WorkspaceItem[] = projects.map(p => {
+    // Find program key from the parent program
+    const parentProgram = programs.find(prog => prog.id === p.programId);
+    const programKey = parentProgram?.key || '';
+    const displayName = programKey ? `${p.name} (${programKey})` : p.name;
+    
+    return {
+      id: p.id,
+      key: p.key,
+      name: displayName,
+      canAccess: p.canAccess,
+    };
+  });
 
   const handleSelect = useCallback((item: WorkspaceItem) => {
     // Find the full project data to get program info
