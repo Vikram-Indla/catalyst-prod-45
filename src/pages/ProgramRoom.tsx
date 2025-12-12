@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ProgramEmptyState } from '@/components/workspace/ProgramEmptyState';
 
 export default function ProgramRoom() {
   const { programId } = useParams<{ programId: string }>();
@@ -9,38 +10,47 @@ export default function ProgramRoom() {
   const { data: program, isLoading } = useQuery({
     queryKey: ['program', programId],
     queryFn: async () => {
-      // First try to find as a program
-      const { data: programData } = await supabase
-        .from('programs')
+      // First try to find as a project
+      const { data: projectData } = await supabase
+        .from('projects')
         .select(`
           id,
           name,
-          portfolio_id,
-          portfolios (
-            name
+          key,
+          program_id,
+          programs (
+            id,
+            name,
+            key
           )
         `)
         .eq('id', programId)
         .maybeSingle();
       
-      if (programData) return programData;
+      if (projectData) {
+        return { 
+          ...projectData, 
+          type: 'project' as const,
+          parentProgram: projectData.programs
+        };
+      }
 
-      // If not found, check if it's a program ID (formerly portfolio) and get first project under it
-      const { data: projectUnderProgram } = await supabase
-        .from('projects')
+      // If not found as project, try as a program
+      const { data: programData } = await supabase
+        .from('programs')
         .select(`
           id,
           name,
-          program_id,
-          programs (
-            name
-          )
+          key
         `)
-        .eq('program_id', programId)
-        .limit(1)
+        .eq('id', programId)
         .maybeSingle();
       
-      return projectUnderProgram;
+      if (programData) {
+        return { ...programData, type: 'program' as const };
+      }
+
+      return null;
     },
     enabled: !!programId,
   });
@@ -53,16 +63,22 @@ export default function ProgramRoom() {
     );
   }
 
+  const isProject = program?.type === 'project';
+  const displayName = program?.name || '';
+  const parentName = isProject ? (program as any)?.parentProgram?.name : undefined;
+
   return (
     <div className="h-full w-full flex flex-col bg-background overflow-hidden">
       {/* Header */}
       <div className="h-[72px] border-b bg-card px-3 sm:px-6 flex items-center flex-shrink-0">
         <div className="flex items-center justify-between w-full gap-3">
           <div className="min-w-0">
-            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold truncate">Program Room</h1>
+            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold truncate">
+              {isProject ? 'Project Room' : 'Program Room'}
+            </h1>
             <p className="text-xs sm:text-sm text-muted-foreground truncate">
-              For {(program as any)?.name}
-              {(program as any)?.programs && ` · ${(program as any).programs.name}`}
+              {displayName}
+              {parentName && ` · ${parentName}`}
             </p>
           </div>
         </div>
@@ -76,8 +92,8 @@ export default function ProgramRoom() {
           </div>
         </div>
       ) : program ? (
-        <div className="flex-1 overflow-auto p-3 sm:p-4 md:p-6">
-          {/* Empty content - placeholder for future implementation */}
+        <div className="flex-1 overflow-auto">
+          <ProgramEmptyState programName={displayName} />
         </div>
       ) : (
         <div className="flex items-center justify-center h-full">
