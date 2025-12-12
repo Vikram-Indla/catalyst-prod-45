@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 import { OptionValuesDrawer } from '../lookup-management/OptionValuesDrawer';
 
 interface FieldsLayoutPanelProps {
-  onChanges: () => void;
+  onChanges?: () => void;
 }
 
 // Default sections for Demand Details

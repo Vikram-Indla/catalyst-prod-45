@@ -12,10 +12,10 @@ import { Plus, GripVertical, Pencil, Trash2, Loader2 } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 
 interface BusinessLinesPanelProps {
-  onChanges: () => void;
+  onChanges?: () => void;
 }
 
-export function BusinessLinesPanel({ onChanges }: BusinessLinesPanelProps) {
+export function BusinessLinesPanel({ onChanges }: BusinessLinesPanelProps = {}) {
   const { data: businessLines = [], isLoading } = useBusinessLines();
   const createBusinessLine = useCreateBusinessLine();
   const updateBusinessLine = useUpdateBusinessLine();
