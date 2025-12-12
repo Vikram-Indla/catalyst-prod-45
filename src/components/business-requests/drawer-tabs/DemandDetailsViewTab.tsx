@@ -106,21 +106,12 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
             </div>
             <div>
               <Label className="text-xs font-medium">Department</Label>
-              <Select
-                value={data.department || ''}
-                onValueChange={(value) => onChange('department', value)}
-              >
-                <SelectTrigger className="mt-1 h-9 text-sm">
-                  <SelectValue placeholder="Select..." />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border shadow-lg z-[400]">
-                  {DEPARTMENT_OPTIONS.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      {opt.label.en}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="mt-1">
+                <DepartmentSelect
+                  value={data.department || null}
+                  onChange={(value) => onChange('department', value)}
+                />
+              </div>
             </div>
             <div>
               <Label className="text-xs font-medium">Business Owner</Label>
@@ -189,61 +180,32 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
           <div className="grid grid-cols-3 gap-3">
             <div>
               <Label className="text-xs font-medium">Delivery Track</Label>
-              <Select
-                value={data.delivery_track || data.track || ''}
-                onValueChange={(value) => onChange('delivery_track', value)}
-              >
-                <SelectTrigger className="mt-1 h-9 text-sm">
-                  <SelectValue placeholder="Select..." />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border shadow-lg z-[400]">
-                  {DELIVERY_TRACK_OPTIONS.map((opt) => (
-                    <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="mt-1">
+                <DeliveryTrackSelect
+                  value={data.delivery_track || data.track || null}
+                  onChange={(value) => onChange('delivery_track', value)}
+                />
+              </div>
             </div>
             
             <div>
               <Label className="text-xs font-medium">Delivery Platform</Label>
-              <Select
-                value={data.delivery_platform || ''}
-                onValueChange={(value) => onChange('delivery_platform', value)}
-              >
-                <SelectTrigger className="mt-1 h-9 text-sm">
-                  <SelectValue placeholder="Select..." />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border shadow-lg z-[400]">
-                  {DELIVERY_PLATFORM_OPTIONS.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      {opt.label.en}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="mt-1">
+                <DeliveryPlatformSelect
+                  value={data.delivery_platform || null}
+                  onChange={(value) => onChange('delivery_platform', value)}
+                />
+              </div>
             </div>
             
             <div>
               <Label className="text-xs font-medium">Quarter</Label>
-              <Select
-                value={data.planned_quarter || ''}
-                onValueChange={(value) => onChange('planned_quarter', value)}
-              >
-                <SelectTrigger className="mt-1 h-9 text-sm">
-                  <SelectValue placeholder="Select..." />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border shadow-lg z-[400]">
-                  <SelectItem value="Q4-2025">Q4 2025</SelectItem>
-                  <SelectItem value="Q1-2026">Q1 2026</SelectItem>
-                  <SelectItem value="Q2-2026">Q2 2026</SelectItem>
-                  <SelectItem value="Q3-2026">Q3 2026</SelectItem>
-                  <SelectItem value="Q4-2026">Q4 2026</SelectItem>
-                  <SelectItem value="Q1-2027">Q1 2027</SelectItem>
-                  <SelectItem value="Q2-2027">Q2 2027</SelectItem>
-                  <SelectItem value="Q3-2027">Q3 2027</SelectItem>
-                  <SelectItem value="Q4-2027">Q4 2027</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="mt-1">
+                <PlannedQuarterSelect
+                  value={data.planned_quarter || null}
+                  onChange={(value) => onChange('planned_quarter', value)}
+                />
+              </div>
           </div>
         </div>
       </div>
