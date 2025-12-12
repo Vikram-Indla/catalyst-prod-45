@@ -7,7 +7,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { toast } from 'sonner';
+import { parseISO, format } from 'date-fns';
 
 interface EpicDialogProps {
   open: boolean;
@@ -203,20 +205,18 @@ export function EpicDialog({ open, onOpenChange, epic }: EpicDialogProps) {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="startDate">Start Date</Label>
-              <Input
-                id="startDate"
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
+              <CatalystDatePicker
+                value={startDate ? parseISO(startDate) : undefined}
+                onChange={(date) => setStartDate(date ? format(date, 'yyyy-MM-dd') : '')}
+                placeholder="Select start date"
               />
             </div>
             <div>
               <Label htmlFor="endDate">End Date</Label>
-              <Input
-                id="endDate"
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
+              <CatalystDatePicker
+                value={endDate ? parseISO(endDate) : undefined}
+                onChange={(date) => setEndDate(date ? format(date, 'yyyy-MM-dd') : '')}
+                placeholder="Select end date"
               />
             </div>
           </div>
