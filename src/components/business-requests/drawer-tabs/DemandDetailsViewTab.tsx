@@ -121,7 +121,7 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
                 <SelectTrigger className="mt-1 h-9 text-sm">
                   <SelectValue placeholder="Select..." />
                 </SelectTrigger>
-                <SelectContent className="bg-popover border shadow-lg z-50">
+                <SelectContent className="bg-popover border shadow-lg z-[400]">
                   {DEPARTMENT_OPTIONS.map((opt) => (
                     <SelectItem key={opt.value} value={opt.value}>
                       {opt.label.en}
@@ -257,7 +257,7 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
                 <SelectTrigger className="mt-1 h-9 text-sm">
                   <SelectValue placeholder="Select..." />
                 </SelectTrigger>
-                <SelectContent className="bg-popover border shadow-lg z-50">
+                <SelectContent className="bg-popover border shadow-lg z-[400]">
                   {DELIVERY_TRACK_OPTIONS.map((opt) => (
                     <SelectItem key={opt} value={opt}>{opt}</SelectItem>
                   ))}
@@ -274,7 +274,7 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
                 <SelectTrigger className="mt-1 h-9 text-sm">
                   <SelectValue placeholder="Select..." />
                 </SelectTrigger>
-                <SelectContent className="bg-popover border shadow-lg z-50">
+                <SelectContent className="bg-popover border shadow-lg z-[400]">
                   {DELIVERY_PLATFORM_OPTIONS.map((opt) => (
                     <SelectItem key={opt.value} value={opt.value}>
                       {opt.label.en}
@@ -293,7 +293,7 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
                 <SelectTrigger className="mt-1 h-9 text-sm">
                   <SelectValue placeholder="Select..." />
                 </SelectTrigger>
-                <SelectContent className="bg-popover border shadow-lg z-50">
+                <SelectContent className="bg-popover border shadow-lg z-[400]">
                   <SelectItem value="Q4-2025">Q4 2025</SelectItem>
                   <SelectItem value="Q1-2026">Q1 2026</SelectItem>
                   <SelectItem value="Q2-2026">Q2 2026</SelectItem>

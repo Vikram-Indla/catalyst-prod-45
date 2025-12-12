@@ -310,7 +310,7 @@ export function RisksViewTab({ requestId }: RisksViewTabProps) {
             <SelectTrigger className="w-[160px] h-9 text-sm">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-popover border shadow-lg z-50">
+            <SelectContent className="bg-popover border shadow-lg z-[400]">
               {SORT_OPTIONS.map(opt => (
                 <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
               ))}
@@ -513,7 +513,7 @@ function RiskForm({
             <SelectTrigger className="mt-1 h-9 text-sm">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-popover border shadow-lg z-50">
+            <SelectContent className="bg-popover border shadow-lg z-[400]">
               {STATUS_OPTIONS.map(opt => (
                 <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
               ))}
@@ -529,7 +529,7 @@ function RiskForm({
             <SelectTrigger className="mt-1 h-9 text-sm">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-popover border shadow-lg z-50">
+            <SelectContent className="bg-popover border shadow-lg z-[400]">
               {RESOLUTION_METHOD_OPTIONS.map(opt => (
                 <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
               ))}
@@ -575,7 +575,7 @@ function RiskForm({
             <SelectTrigger className="mt-1 h-9 text-sm">
               <SelectValue placeholder="Select..." />
             </SelectTrigger>
-            <SelectContent className="bg-popover border shadow-lg z-50">
+            <SelectContent className="bg-popover border shadow-lg z-[400]">
               {SEVERITY_OPTIONS.map(opt => (
                 <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
               ))}
@@ -591,7 +591,7 @@ function RiskForm({
             <SelectTrigger className="mt-1 h-9 text-sm">
               <SelectValue placeholder="Select..." />
             </SelectTrigger>
-            <SelectContent className="bg-popover border shadow-lg z-50">
+            <SelectContent className="bg-popover border shadow-lg z-[400]">
               {SEVERITY_OPTIONS.map(opt => (
                 <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
               ))}
@@ -607,7 +607,7 @@ function RiskForm({
             <SelectTrigger className="mt-1 h-9 text-sm">
               <SelectValue placeholder="Select..." />
             </SelectTrigger>
-            <SelectContent className="bg-popover border shadow-lg z-50">
+            <SelectContent className="bg-popover border shadow-lg z-[400]">
               {CRITICAL_PATH_OPTIONS.map(opt => (
                 <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
               ))}
