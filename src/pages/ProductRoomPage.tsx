@@ -827,7 +827,7 @@ export default function ProductRoomPage() {
         {/* Header - h-12 to align with sidebar */}
         <header className="h-12 sticky top-0 bg-white/80 backdrop-blur-md border-b px-6 flex items-center z-30">
           <div className="flex items-center justify-between w-full">
-            <h1 className="text-lg font-semibold text-gray-900">Product Room</h1>
+            <h1 className="text-[22px] font-semibold text-gray-900">Product Room</h1>
             <QuarterSelector
               quarters={visibleQuarters}
               selectedIndex={selectedQuarterIndex}
