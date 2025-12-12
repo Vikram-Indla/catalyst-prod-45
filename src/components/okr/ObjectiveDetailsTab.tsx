@@ -54,12 +54,12 @@ export function ObjectiveDetailsTab({ objective }: ObjectiveDetailsTabProps) {
   const linkThemesMutation = useLinkThemesToObjective();
   const unlinkThemesMutation = useUnlinkThemesFromObjective();
 
-  // Fetch portfolios for Portfolio-tier objectives
+  // Fetch portfolios for Portfolio-tier objectives (now 'programs' table)
   const { data: portfolios = [] } = useQuery({
     queryKey: ["portfolios-list"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("portfolios")
+        .from("programs")
         .select("id, name")
         .order("name");
       if (error) throw error;
@@ -67,12 +67,12 @@ export function ObjectiveDetailsTab({ objective }: ObjectiveDetailsTabProps) {
     },
   });
 
-  // Fetch programs for Program-tier objectives
+  // Fetch programs for Program-tier objectives (now 'projects' table)
   const { data: programs = [] } = useQuery({
     queryKey: ["programs-list"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("programs")
+        .from("projects")
         .select("id, name")
         .order("name");
       if (error) throw error;

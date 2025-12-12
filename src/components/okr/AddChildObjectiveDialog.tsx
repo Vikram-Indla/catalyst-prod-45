@@ -67,21 +67,21 @@ export function AddChildObjectiveDialog({
       const portfolioIds = [...new Set(objectivesData?.map(o => o.portfolio_id).filter(Boolean))];
       const programIds = [...new Set(objectivesData?.map(o => o.program_id).filter(Boolean))];
 
-      // Fetch portfolio names
+      // Fetch portfolio names (now 'programs' table)
       let portfoliosMap: Record<string, string> = {};
       if (portfolioIds.length > 0) {
         const { data: portfolios } = await supabase
-          .from("portfolios")
+          .from("programs")
           .select("id, name")
           .in("id", portfolioIds);
         portfoliosMap = Object.fromEntries(portfolios?.map(p => [p.id, p.name]) || []);
       }
 
-      // Fetch program names
+      // Fetch program names (now 'projects' table)
       let programsMap: Record<string, string> = {};
       if (programIds.length > 0) {
         const { data: programs } = await supabase
-          .from("programs")
+          .from("projects")
           .select("id, name")
           .in("id", programIds);
         programsMap = Object.fromEntries(programs?.map(p => [p.id, p.name]) || []);

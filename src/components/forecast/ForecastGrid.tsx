@@ -84,17 +84,17 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
     }
   }, [workItems, ranks]);
 
-  // Fetch capacity plans
+  // Fetch capacity plans (now uses project_id instead of program_id)
   const { data: capacities = [] } = useQuery({
     queryKey: ['capacity-plans', piId, viewLevel],
     queryFn: async () => {
       const query = supabase
         .from('capacity_plans')
-        .select('*, programs(name), teams(name)')
+        .select('*, projects(name), teams(name)')
         .eq('pi_id', piId);
 
       if (viewLevel === 'program') {
-        query.not('program_id', 'is', null);
+        query.not('project_id', 'is', null);
       } else {
         query.not('team_id', 'is', null);
       }
@@ -243,32 +243,32 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
     return entry?.estimate || 0;
   };
 
-  const calculateTotalForContext = (programId?: string, teamId?: string) => {
+  const calculateTotalForContext = (projectId?: string, teamId?: string) => {
     // Handle null/undefined comparison correctly
     return forecasts
-      .filter(f => (f.program_id || null) === (programId || null) && (f.team_id || null) === (teamId || null))
+      .filter(f => (f.project_id || null) === (projectId || null) && (f.team_id || null) === (teamId || null))
       .reduce((sum, f) => sum + (f.estimate || 0), 0);
   };
 
-  const getAvailableCapacity = (programId?: string, teamId?: string) => {
+  const getAvailableCapacity = (projectId?: string, teamId?: string) => {
     const capacity = capacities.find(c =>
-      c.program_id === programId && c.team_id === teamId
+      c.project_id === projectId && c.team_id === teamId
     );
     return capacity?.available_capacity || 0;
   };
 
-  const isOverCapacity = (programId?: string, teamId?: string) => {
-    const total = calculateTotalForContext(programId, teamId);
-    const available = getAvailableCapacity(programId, teamId);
+  const isOverCapacity = (projectId?: string, teamId?: string) => {
+    const total = calculateTotalForContext(projectId, teamId);
+    const available = getAvailableCapacity(projectId, teamId);
     return total > available && available > 0;
   };
 
   // Check if a work item row is over capacity (any cell red)
   const isRowOverCapacity = (workItemId: string) => {
     return capacities.some(capacity => {
-      const total = calculateTotalForContext(capacity.program_id, capacity.team_id);
-      const available = getAvailableCapacity(capacity.program_id, capacity.team_id);
-      const itemValue = getForecastValue(workItemId, capacity.program_id, capacity.team_id);
+      const total = calculateTotalForContext(capacity.project_id, capacity.team_id);
+      const available = getAvailableCapacity(capacity.project_id, capacity.team_id);
+      const itemValue = getForecastValue(workItemId, capacity.project_id, capacity.team_id);
       const numValue = typeof itemValue === 'string' ? parseFloat(itemValue) || 0 : itemValue;
       return numValue > 0 && total > available && available > 0;
     });
@@ -385,18 +385,18 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
                     key={capacity.id}
                     className={cn(
                       "text-right p-3 font-medium text-sm min-w-[100px]",
-                      isOverCapacity(capacity.program_id, capacity.team_id) ? "bg-destructive text-destructive-foreground" : "bg-muted/50",
+                      isOverCapacity(capacity.project_id, capacity.team_id) ? "bg-destructive text-destructive-foreground" : "bg-muted/50",
                       idx < capacities.length - 1 && "border-r"
                     )}
                   >
                     <div className="font-semibold text-xs">
-                      {viewLevel === 'program' ? capacity.programs?.name : capacity.teams?.name}
+                      {viewLevel === 'program' ? capacity.projects?.name : capacity.teams?.name}
                     </div>
                     <div className={cn(
                       "text-xs font-normal mt-1",
-                      isOverCapacity(capacity.program_id, capacity.team_id) && "font-bold"
+                      isOverCapacity(capacity.project_id, capacity.team_id) && "font-bold"
                     )}>
-                      {calculateTotalForContext(capacity.program_id, capacity.team_id)}/{capacity.available_capacity}
+                      {calculateTotalForContext(capacity.project_id, capacity.team_id)}/{capacity.available_capacity}
                     </div>
                   </th>
                 ))}
@@ -462,7 +462,7 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
                               </td>
                               <td className="p-3 text-right text-sm font-medium">
                                 {forecasts
-                                  .filter(f => f.work_item_id === item.id && f.program_id && !f.team_id)
+                                  .filter(f => f.work_item_id === item.id && f.project_id && !f.team_id)
                                   .reduce((sum, f) => sum + (f.estimate || 0), 0) || 'No data'}
                               </td>
                               <td className="p-3 text-right text-sm font-medium">
@@ -478,13 +478,13 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
                 
                  {/* Zone 3: Estimate inputs */}
                  {capacities.map((capacity, idx) => {
-                   const inputKey = `${item.id}-${capacity.program_id || 'null'}-${capacity.team_id || 'null'}`;
-                   const value = getForecastValue(item.id as string, capacity.program_id, capacity.team_id, inputKey);
+                   const inputKey = `${item.id}-${capacity.project_id || 'null'}-${capacity.team_id || 'null'}`;
+                   const value = getForecastValue(item.id as string, capacity.project_id, capacity.team_id, inputKey);
                    const isAssigned = workItems.some(wi => 
                      wi.id === item.id && 
                      assignments.some(a => 
                        a.work_item_id === wi.id &&
-                       ((capacity.program_id && a.program_id === capacity.program_id && !a.team_id) ||
+                       ((capacity.project_id && a.project_id === capacity.project_id && !a.team_id) ||
                         (capacity.team_id && a.team_id === capacity.team_id))
                      )
                    );
@@ -502,7 +502,7 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
                          onChange={(e) => handleInputChange(inputKey, e.target.value)}
                          onBlur={() => handleInputBlur(
                            item.id as string,
-                           capacity.program_id,
+                           capacity.project_id,
                            capacity.team_id,
                            inputKey
                          )}
@@ -510,7 +510,7 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
                          className={cn(
                            "h-8 text-right text-sm",
                            !isAssigned && "bg-muted/50 cursor-not-allowed",
-                           isOverCapacity(capacity.program_id, capacity.team_id) && "bg-destructive/20 border-destructive"
+                           isOverCapacity(capacity.project_id, capacity.team_id) && "bg-destructive/20 border-destructive"
                          )}
                          placeholder={isAssigned ? "0" : "-"}
                        />

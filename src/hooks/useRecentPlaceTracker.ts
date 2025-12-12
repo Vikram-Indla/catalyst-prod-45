@@ -35,8 +35,8 @@ export function useRecentPlaceTracker() {
     queryFn: async () => {
       if (!params.programId) return null;
       const { data } = await supabase
-        .from("programs")
-        .select("id, name, portfolios(name)")
+        .from("projects")
+        .select("id, name, programs(name)")
         .eq("id", params.programId)
         .single();
       return data;
@@ -49,7 +49,7 @@ export function useRecentPlaceTracker() {
     queryFn: async () => {
       if (!params.portfolioId) return null;
       const { data } = await supabase
-        .from("portfolios")
+        .from("programs")
         .select("id, name")
         .eq("id", params.portfolioId)
         .single();
@@ -68,11 +68,11 @@ export function useRecentPlaceTracker() {
         .eq("id", params.teamId)
         .single();
       
-      if (data?.program_id) {
+      if (data?.project_id) {
         const { data: programData } = await supabase
-          .from("programs")
+          .from("projects")
           .select("name")
-          .eq("id", data.program_id)
+          .eq("id", data.project_id)
           .single();
         return { ...data, programName: programData?.name || null };
       }

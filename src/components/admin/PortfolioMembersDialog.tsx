@@ -32,26 +32,26 @@ export function PortfolioMembersDialog({ open, onOpenChange, portfolioId, portfo
     },
   });
 
-  // Fetch current portfolio members
+  // Fetch current portfolio members (now 'program_members' table)
   const { data: portfolioMembers } = useQuery({
     queryKey: ['portfolio-members', portfolioId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('portfolio_members')
+        .from('program_members')
         .select('user_id')
-        .eq('portfolio_id', portfolioId);
+        .eq('program_id', portfolioId);
       if (error) throw error;
       return data.map(m => m.user_id);
     },
     enabled: !!portfolioId,
   });
 
-  // Add members mutation
+  // Add members mutation (now 'program_members' table)
   const addMembersMutation = useMutation({
     mutationFn: async (userIds: string[]) => {
       const { error } = await supabase
-        .from('portfolio_members')
-        .insert(userIds.map(userId => ({ portfolio_id: portfolioId, user_id: userId })));
+        .from('program_members')
+        .insert(userIds.map(userId => ({ program_id: portfolioId, user_id: userId })));
       if (error) throw error;
     },
     onSuccess: () => {
@@ -64,13 +64,13 @@ export function PortfolioMembersDialog({ open, onOpenChange, portfolioId, portfo
     },
   });
 
-  // Remove members mutation
+  // Remove members mutation (now 'program_members' table)
   const removeMembersMutation = useMutation({
     mutationFn: async (userIds: string[]) => {
       const { error } = await supabase
-        .from('portfolio_members')
+        .from('program_members')
         .delete()
-        .eq('portfolio_id', portfolioId)
+        .eq('program_id', portfolioId)
         .in('user_id', userIds);
       if (error) throw error;
     },

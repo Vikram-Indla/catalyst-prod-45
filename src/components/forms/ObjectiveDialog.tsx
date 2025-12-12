@@ -70,12 +70,12 @@ export function ObjectiveDialog({ open, onClose, objectiveId, scopeType = 'portf
   const selectedTier = form.watch('tier');
   const [currentTag, setCurrentTag] = useState('');
 
-  // Fetch portfolios
+  // Fetch portfolios (now 'programs' table)
   const { data: portfolios } = useQuery({
     queryKey: ['portfolios'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('portfolios')
+        .from('programs')
         .select('id, name')
         .order('name');
       if (error) throw error;
@@ -83,14 +83,14 @@ export function ObjectiveDialog({ open, onClose, objectiveId, scopeType = 'portf
     },
   });
 
-  // Fetch programs
+  // Fetch programs (now 'projects' table)
   const { data: programs } = useQuery({
     queryKey: ['programs', form.watch('portfolio_id')],
     queryFn: async () => {
-      let query = supabase.from('programs').select('id, name, portfolio_id').order('name');
+      let query = supabase.from('projects').select('id, name, program_id').order('name');
       const portfolioId = form.watch('portfolio_id');
       if (portfolioId) {
-        query = query.eq('portfolio_id', portfolioId);
+        query = query.eq('program_id', portfolioId);
       }
       const { data, error } = await query;
       if (error) throw error;

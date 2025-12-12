@@ -848,7 +848,7 @@ export type Database = {
           created_at: string | null
           id: string
           pi_id: string
-          program_id: string | null
+          project_id: string | null
           team_id: string | null
           unit: string
           updated_at: string | null
@@ -858,7 +858,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           pi_id: string
-          program_id?: string | null
+          project_id?: string | null
           team_id?: string | null
           unit?: string
           updated_at?: string | null
@@ -868,7 +868,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           pi_id?: string
-          program_id?: string | null
+          project_id?: string | null
           team_id?: string | null
           unit?: string
           updated_at?: string | null
@@ -883,9 +883,9 @@ export type Database = {
           },
           {
             foreignKeyName: "capacity_plans_program_id_fkey"
-            columns: ["program_id"]
+            columns: ["project_id"]
             isOneToOne: false
-            referencedRelation: "programs"
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
           {
@@ -1271,7 +1271,7 @@ export type Database = {
           criticality_score: number | null
           delivered_at: string | null
           dependency_level: string | null
-          depends_on_program_id: string | null
+          depends_on_project_id: string | null
           depends_on_team_id: string | null
           description: string | null
           due_iteration_id: string | null
@@ -1288,7 +1288,7 @@ export type Database = {
           rank_order: number | null
           rejection_reason: string | null
           related_stories_count: number | null
-          requesting_program_id: string | null
+          requesting_project_id: string | null
           requesting_team_id: string | null
           resolution_plan: string | null
           risk_level: Database["public"]["Enums"]["risk_level"] | null
@@ -1310,7 +1310,7 @@ export type Database = {
           criticality_score?: number | null
           delivered_at?: string | null
           dependency_level?: string | null
-          depends_on_program_id?: string | null
+          depends_on_project_id?: string | null
           depends_on_team_id?: string | null
           description?: string | null
           due_iteration_id?: string | null
@@ -1327,7 +1327,7 @@ export type Database = {
           rank_order?: number | null
           rejection_reason?: string | null
           related_stories_count?: number | null
-          requesting_program_id?: string | null
+          requesting_project_id?: string | null
           requesting_team_id?: string | null
           resolution_plan?: string | null
           risk_level?: Database["public"]["Enums"]["risk_level"] | null
@@ -1349,7 +1349,7 @@ export type Database = {
           criticality_score?: number | null
           delivered_at?: string | null
           dependency_level?: string | null
-          depends_on_program_id?: string | null
+          depends_on_project_id?: string | null
           depends_on_team_id?: string | null
           description?: string | null
           due_iteration_id?: string | null
@@ -1366,7 +1366,7 @@ export type Database = {
           rank_order?: number | null
           rejection_reason?: string | null
           related_stories_count?: number | null
-          requesting_program_id?: string | null
+          requesting_project_id?: string | null
           requesting_team_id?: string | null
           resolution_plan?: string | null
           risk_level?: Database["public"]["Enums"]["risk_level"] | null
@@ -1386,9 +1386,9 @@ export type Database = {
           },
           {
             foreignKeyName: "dependencies_depends_on_program_id_fkey"
-            columns: ["depends_on_program_id"]
+            columns: ["depends_on_project_id"]
             isOneToOne: false
-            referencedRelation: "programs"
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
           {
@@ -1435,9 +1435,9 @@ export type Database = {
           },
           {
             foreignKeyName: "dependencies_requesting_program_id_fkey"
-            columns: ["requesting_program_id"]
+            columns: ["requesting_project_id"]
             isOneToOne: false
-            referencedRelation: "programs"
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
           {
@@ -2151,24 +2151,24 @@ export type Database = {
           },
         ]
       }
-      epic_programs: {
+      epic_projects: {
         Row: {
           created_at: string | null
           epic_id: string
           id: string
-          program_id: string
+          project_id: string
         }
         Insert: {
           created_at?: string | null
           epic_id: string
           id?: string
-          program_id: string
+          project_id: string
         }
         Update: {
           created_at?: string | null
           epic_id?: string
           id?: string
-          program_id?: string
+          project_id?: string
         }
         Relationships: [
           {
@@ -2180,9 +2180,9 @@ export type Database = {
           },
           {
             foreignKeyName: "epic_programs_program_id_fkey"
-            columns: ["program_id"]
+            columns: ["project_id"]
             isOneToOne: false
-            referencedRelation: "programs"
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
@@ -2539,12 +2539,12 @@ export type Database = {
           parked_at: string | null
           points_estimate: number | null
           portfolio_ask_date: string | null
-          portfolio_id: string | null
           portfolio_rank: number | null
           primary_program_id: string | null
           process_flow_entered_at: string | null
           process_step_entered_at: string | null
           process_step_id: string | null
+          program_id: string | null
           program_rank: number | null
           quadrant: string | null
           report_color: string | null
@@ -2591,12 +2591,12 @@ export type Database = {
           parked_at?: string | null
           points_estimate?: number | null
           portfolio_ask_date?: string | null
-          portfolio_id?: string | null
           portfolio_rank?: number | null
           primary_program_id?: string | null
           process_flow_entered_at?: string | null
           process_step_entered_at?: string | null
           process_step_id?: string | null
+          program_id?: string | null
           program_rank?: number | null
           quadrant?: string | null
           report_color?: string | null
@@ -2643,12 +2643,12 @@ export type Database = {
           parked_at?: string | null
           points_estimate?: number | null
           portfolio_ask_date?: string | null
-          portfolio_id?: string | null
           portfolio_rank?: number | null
           primary_program_id?: string | null
           process_flow_entered_at?: string | null
           process_step_entered_at?: string | null
           process_step_id?: string | null
+          program_id?: string | null
           program_rank?: number | null
           quadrant?: string | null
           report_color?: string | null
@@ -2668,7 +2668,7 @@ export type Database = {
             foreignKeyName: "epics_primary_program_id_fkey"
             columns: ["primary_program_id"]
             isOneToOne: false
-            referencedRelation: "programs"
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
           {
@@ -2680,9 +2680,9 @@ export type Database = {
           },
           {
             foreignKeyName: "fk_epics_portfolio"
-            columns: ["portfolio_id"]
+            columns: ["program_id"]
             isOneToOne: false
-            referencedRelation: "portfolios"
+            referencedRelation: "programs"
             referencedColumns: ["id"]
           },
           {
@@ -2913,8 +2913,8 @@ export type Database = {
           planned_end_date: string | null
           planned_start_date: string | null
           program_epic_inherited: boolean | null
-          program_id: string
           progress_pct: number | null
+          project_id: string
           rank_within_epic: number | null
           remaining_minutes: number | null
           risk_reduction: number | null
@@ -2961,8 +2961,8 @@ export type Database = {
           planned_end_date?: string | null
           planned_start_date?: string | null
           program_epic_inherited?: boolean | null
-          program_id: string
           progress_pct?: number | null
+          project_id: string
           rank_within_epic?: number | null
           remaining_minutes?: number | null
           risk_reduction?: number | null
@@ -3009,8 +3009,8 @@ export type Database = {
           planned_end_date?: string | null
           planned_start_date?: string | null
           program_epic_inherited?: boolean | null
-          program_id?: string
           progress_pct?: number | null
+          project_id?: string
           rank_within_epic?: number | null
           remaining_minutes?: number | null
           risk_reduction?: number | null
@@ -3047,9 +3047,9 @@ export type Database = {
           },
           {
             foreignKeyName: "features_program_id_fkey"
-            columns: ["program_id"]
+            columns: ["project_id"]
             isOneToOne: false
-            referencedRelation: "programs"
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
           {
@@ -3123,7 +3123,7 @@ export type Database = {
             foreignKeyName: "forecast_entries_program_id_fkey"
             columns: ["program_id"]
             isOneToOne: false
-            referencedRelation: "programs"
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
           {
@@ -3811,7 +3811,7 @@ export type Database = {
             foreignKeyName: "intake_sets_portfolio_id_fkey"
             columns: ["portfolio_id"]
             isOneToOne: false
-            referencedRelation: "portfolios"
+            referencedRelation: "programs"
             referencedColumns: ["id"]
           },
         ]
@@ -4147,7 +4147,7 @@ export type Database = {
             foreignKeyName: "jira_project_mappings_catalyst_program_id_fkey"
             columns: ["catalyst_program_id"]
             isOneToOne: false
-            referencedRelation: "programs"
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
           {
@@ -4351,14 +4351,14 @@ export type Database = {
             foreignKeyName: "kanban_boards_portfolio_id_fkey"
             columns: ["portfolio_id"]
             isOneToOne: false
-            referencedRelation: "portfolios"
+            referencedRelation: "programs"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "kanban_boards_program_id_fkey"
             columns: ["program_id"]
             isOneToOne: false
-            referencedRelation: "programs"
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
           {
@@ -5380,7 +5380,7 @@ export type Database = {
             foreignKeyName: "milestone_categories_portfolio_id_fkey"
             columns: ["portfolio_id"]
             isOneToOne: false
-            referencedRelation: "portfolios"
+            referencedRelation: "programs"
             referencedColumns: ["id"]
           },
         ]
@@ -6104,9 +6104,9 @@ export type Database = {
           parent_objective_id: string | null
           planned_value: number | null
           portfolio_id: string | null
-          program_id: string | null
           program_increment_ids: Json | null
           progress_pct: number | null
+          project_id: string | null
           score: number | null
           snapshot_id: string | null
           start_date: string | null
@@ -6156,9 +6156,9 @@ export type Database = {
           parent_objective_id?: string | null
           planned_value?: number | null
           portfolio_id?: string | null
-          program_id?: string | null
           program_increment_ids?: Json | null
           progress_pct?: number | null
+          project_id?: string | null
           score?: number | null
           snapshot_id?: string | null
           start_date?: string | null
@@ -6208,9 +6208,9 @@ export type Database = {
           parent_objective_id?: string | null
           planned_value?: number | null
           portfolio_id?: string | null
-          program_id?: string | null
           program_increment_ids?: Json | null
           progress_pct?: number | null
+          project_id?: string | null
           score?: number | null
           snapshot_id?: string | null
           start_date?: string | null
@@ -6274,14 +6274,14 @@ export type Database = {
             foreignKeyName: "objectives_portfolio_id_fkey"
             columns: ["portfolio_id"]
             isOneToOne: false
-            referencedRelation: "portfolios"
+            referencedRelation: "programs"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "objectives_program_id_fkey"
-            columns: ["program_id"]
+            columns: ["project_id"]
             isOneToOne: false
-            referencedRelation: "programs"
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
           {
@@ -6647,7 +6647,7 @@ export type Database = {
             foreignKeyName: "pi_objectives_program_id_fkey"
             columns: ["program_id"]
             isOneToOne: false
-            referencedRelation: "programs"
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
@@ -6685,79 +6685,10 @@ export type Database = {
             foreignKeyName: "portfolio_estimation_settings_portfolio_id_fkey"
             columns: ["portfolio_id"]
             isOneToOne: true
-            referencedRelation: "portfolios"
+            referencedRelation: "programs"
             referencedColumns: ["id"]
           },
         ]
-      }
-      portfolio_members: {
-        Row: {
-          created_at: string | null
-          id: string
-          portfolio_id: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          portfolio_id: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          portfolio_id?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "portfolio_members_portfolio_id_fkey"
-            columns: ["portfolio_id"]
-            isOneToOne: false
-            referencedRelation: "portfolios"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "portfolio_members_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      portfolios: {
-        Row: {
-          created_at: string | null
-          description: string | null
-          id: string
-          key: string
-          name: string
-          owner_id: string | null
-          status: Database["public"]["Enums"]["portfolio_status"] | null
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          key: string
-          name: string
-          owner_id?: string | null
-          status?: Database["public"]["Enums"]["portfolio_status"] | null
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          key?: string
-          name?: string
-          owner_id?: string | null
-          status?: Database["public"]["Enums"]["portfolio_status"] | null
-          updated_at?: string | null
-        }
-        Relationships: []
       }
       predictability_metrics: {
         Row: {
@@ -6811,7 +6742,7 @@ export type Database = {
             foreignKeyName: "predictability_metrics_program_id_fkey"
             columns: ["program_id"]
             isOneToOne: false
-            referencedRelation: "programs"
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
@@ -6846,7 +6777,7 @@ export type Database = {
             foreignKeyName: "process_flows_program_id_fkey"
             columns: ["program_id"]
             isOneToOne: false
-            referencedRelation: "programs"
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
@@ -7136,7 +7067,7 @@ export type Database = {
           end_date: string
           id: string
           name: string
-          portfolio_id: string
+          program_id: string
           start_date: string
           state: Database["public"]["Enums"]["pi_state"] | null
           updated_at: string | null
@@ -7146,7 +7077,7 @@ export type Database = {
           end_date: string
           id?: string
           name: string
-          portfolio_id: string
+          program_id: string
           start_date: string
           state?: Database["public"]["Enums"]["pi_state"] | null
           updated_at?: string | null
@@ -7156,7 +7087,7 @@ export type Database = {
           end_date?: string
           id?: string
           name?: string
-          portfolio_id?: string
+          program_id?: string
           start_date?: string
           state?: Database["public"]["Enums"]["pi_state"] | null
           updated_at?: string | null
@@ -7164,38 +7095,38 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "program_increments_portfolio_id_fkey"
-            columns: ["portfolio_id"]
+            columns: ["program_id"]
             isOneToOne: false
-            referencedRelation: "portfolios"
+            referencedRelation: "programs"
             referencedColumns: ["id"]
           },
         ]
       }
       program_key_aliases: {
         Row: {
-          created_at: string
+          created_at: string | null
           id: string
           old_key: string
           program_id: string
         }
         Insert: {
-          created_at?: string
+          created_at?: string | null
           id?: string
           old_key: string
           program_id: string
         }
         Update: {
-          created_at?: string
+          created_at?: string | null
           id?: string
           old_key?: string
           program_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "program_key_aliases_program_id_fkey"
+            foreignKeyName: "program_key_aliases_program_id_fkey1"
             columns: ["program_id"]
             isOneToOne: false
-            referencedRelation: "portfolios"
+            referencedRelation: "programs"
             referencedColumns: ["id"]
           },
         ]
@@ -7221,14 +7152,14 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "program_members_program_id_fkey"
+            foreignKeyName: "portfolio_members_portfolio_id_fkey"
             columns: ["program_id"]
             isOneToOne: false
             referencedRelation: "programs"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "program_members_user_id_fkey"
+            foreignKeyName: "portfolio_members_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
@@ -7269,7 +7200,7 @@ export type Database = {
             foreignKeyName: "program_spend_per_point_program_id_fkey"
             columns: ["program_id"]
             isOneToOne: false
-            referencedRelation: "programs"
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
@@ -7304,7 +7235,7 @@ export type Database = {
             foreignKeyName: "program_team_rankings_program_id_fkey"
             columns: ["program_id"]
             isOneToOne: false
-            referencedRelation: "programs"
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
           {
@@ -7323,7 +7254,105 @@ export type Database = {
           id: string
           key: string
           name: string
-          portfolio_id: string
+          owner_id: string | null
+          status: Database["public"]["Enums"]["portfolio_status"] | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          key: string
+          name: string
+          owner_id?: string | null
+          status?: Database["public"]["Enums"]["portfolio_status"] | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          key?: string
+          name?: string
+          owner_id?: string | null
+          status?: Database["public"]["Enums"]["portfolio_status"] | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      project_key_aliases: {
+        Row: {
+          created_at: string | null
+          id: string
+          old_key: string
+          project_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          old_key: string
+          project_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          old_key?: string
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_key_aliases_project_id_fkey1"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_members: {
+        Row: {
+          created_at: string | null
+          id: string
+          project_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          project_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          project_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "program_members_program_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "program_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          key: string
+          name: string
+          program_id: string
           rte_id: string | null
           status: Database["public"]["Enums"]["program_status"] | null
           updated_at: string | null
@@ -7334,7 +7363,7 @@ export type Database = {
           id?: string
           key: string
           name: string
-          portfolio_id: string
+          program_id: string
           rte_id?: string | null
           status?: Database["public"]["Enums"]["program_status"] | null
           updated_at?: string | null
@@ -7345,7 +7374,7 @@ export type Database = {
           id?: string
           key?: string
           name?: string
-          portfolio_id?: string
+          program_id?: string
           rte_id?: string | null
           status?: Database["public"]["Enums"]["program_status"] | null
           updated_at?: string | null
@@ -7353,36 +7382,7 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "programs_portfolio_id_fkey"
-            columns: ["portfolio_id"]
-            isOneToOne: false
-            referencedRelation: "portfolios"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      project_key_aliases: {
-        Row: {
-          created_at: string
-          id: string
-          old_key: string
-          project_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          old_key: string
-          project_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          old_key?: string
-          project_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "project_key_aliases_project_id_fkey"
-            columns: ["project_id"]
+            columns: ["program_id"]
             isOneToOne: false
             referencedRelation: "programs"
             referencedColumns: ["id"]
@@ -7542,14 +7542,14 @@ export type Database = {
             foreignKeyName: "release_vehicles_portfolio_id_fkey"
             columns: ["portfolio_id"]
             isOneToOne: false
-            referencedRelation: "portfolios"
+            referencedRelation: "programs"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "release_vehicles_program_id_fkey"
             columns: ["program_id"]
             isOneToOne: false
-            referencedRelation: "programs"
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
@@ -7724,7 +7724,7 @@ export type Database = {
             foreignKeyName: "fk_program"
             columns: ["program_id"]
             isOneToOne: false
-            referencedRelation: "programs"
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
           {
@@ -7978,7 +7978,7 @@ export type Database = {
             foreignKeyName: "scorecards_portfolio_id_fkey"
             columns: ["portfolio_id"]
             isOneToOne: false
-            referencedRelation: "portfolios"
+            referencedRelation: "programs"
             referencedColumns: ["id"]
           },
         ]
@@ -8068,7 +8068,7 @@ export type Database = {
             foreignKeyName: "shared_services_portfolio_id_fkey"
             columns: ["portfolio_id"]
             isOneToOne: false
-            referencedRelation: "portfolios"
+            referencedRelation: "programs"
             referencedColumns: ["id"]
           },
         ]
@@ -9232,7 +9232,7 @@ export type Database = {
           parent_portfolio_id: string | null
           parent_program_id: string | null
           parent_solution_id: string | null
-          program_id: string | null
+          project_id: string | null
           region_id: string | null
           short_name: string | null
           sprint_prefix: string | null
@@ -9257,7 +9257,7 @@ export type Database = {
           parent_portfolio_id?: string | null
           parent_program_id?: string | null
           parent_solution_id?: string | null
-          program_id?: string | null
+          project_id?: string | null
           region_id?: string | null
           short_name?: string | null
           sprint_prefix?: string | null
@@ -9282,7 +9282,7 @@ export type Database = {
           parent_portfolio_id?: string | null
           parent_program_id?: string | null
           parent_solution_id?: string | null
-          program_id?: string | null
+          project_id?: string | null
           region_id?: string | null
           short_name?: string | null
           sprint_prefix?: string | null
@@ -9297,21 +9297,21 @@ export type Database = {
             foreignKeyName: "teams_parent_portfolio_id_fkey"
             columns: ["parent_portfolio_id"]
             isOneToOne: false
-            referencedRelation: "portfolios"
+            referencedRelation: "programs"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "teams_parent_program_id_fkey"
             columns: ["parent_program_id"]
             isOneToOne: false
-            referencedRelation: "programs"
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "teams_program_id_fkey"
-            columns: ["program_id"]
+            columns: ["project_id"]
             isOneToOne: false
-            referencedRelation: "programs"
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
@@ -9355,7 +9355,7 @@ export type Database = {
             foreignKeyName: "test_activity_log_program_id_fkey"
             columns: ["program_id"]
             isOneToOne: false
-            referencedRelation: "programs"
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
           {
@@ -9515,7 +9515,7 @@ export type Database = {
             foreignKeyName: "test_case_priorities_program_id_fkey"
             columns: ["program_id"]
             isOneToOne: false
-            referencedRelation: "programs"
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
@@ -9604,7 +9604,7 @@ export type Database = {
             foreignKeyName: "test_case_statuses_program_id_fkey"
             columns: ["program_id"]
             isOneToOne: false
-            referencedRelation: "programs"
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
@@ -9972,7 +9972,7 @@ export type Database = {
             foreignKeyName: "test_cases_program_id_fkey"
             columns: ["program_id"]
             isOneToOne: false
-            referencedRelation: "programs"
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
@@ -10857,7 +10857,7 @@ export type Database = {
             foreignKeyName: "test_executions_program_id_fkey"
             columns: ["program_id"]
             isOneToOne: false
-            referencedRelation: "programs"
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
           {
@@ -10911,7 +10911,7 @@ export type Database = {
             foreignKeyName: "test_field_configurations_program_id_fkey"
             columns: ["program_id"]
             isOneToOne: false
-            referencedRelation: "programs"
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
@@ -10968,7 +10968,7 @@ export type Database = {
             foreignKeyName: "test_folders_program_id_fkey"
             columns: ["program_id"]
             isOneToOne: false
-            referencedRelation: "programs"
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
           {
@@ -11163,7 +11163,7 @@ export type Database = {
             foreignKeyName: "test_run_statuses_program_id_fkey"
             columns: ["program_id"]
             isOneToOne: false
-            referencedRelation: "programs"
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
@@ -12099,7 +12099,7 @@ export type Database = {
             foreignKeyName: "value_stream_metrics_portfolio_id_fkey"
             columns: ["portfolio_id"]
             isOneToOne: false
-            referencedRelation: "portfolios"
+            referencedRelation: "programs"
             referencedColumns: ["id"]
           },
         ]
@@ -12134,7 +12134,7 @@ export type Database = {
             foreignKeyName: "work_item_assignments_program_id_fkey"
             columns: ["program_id"]
             isOneToOne: false
-            referencedRelation: "programs"
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
           {
@@ -12334,7 +12334,7 @@ export type Database = {
             foreignKeyName: "work_item_links_program_id_fkey"
             columns: ["program_id"]
             isOneToOne: false
-            referencedRelation: "programs"
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
@@ -12643,12 +12643,12 @@ export type Database = {
         }
         Returns: undefined
       }
-      user_in_portfolio: {
-        Args: { _portfolio_id: string; _user_id: string }
-        Returns: boolean
-      }
       user_in_program: {
         Args: { _program_id: string; _user_id: string }
+        Returns: boolean
+      }
+      user_in_project: {
+        Args: { _project_id: string; _user_id: string }
         Returns: boolean
       }
       user_in_team: {
