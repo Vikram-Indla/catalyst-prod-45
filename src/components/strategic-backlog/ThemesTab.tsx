@@ -25,7 +25,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import type { StrategicTheme } from '@/types/strategicBacklog';
-import { ThemeDrawer } from './ThemeDrawer';
+import { ThemeDetailsDrawer } from '@/components/backlog/ThemeDetailsDrawer';
 import { CreateThemeDialog } from './CreateThemeDialog';
 import { LinkExistingThemesDialog } from './LinkExistingThemesDialog';
 import { ThemeAlignmentView } from './ThemeAlignmentView';
@@ -371,12 +371,11 @@ export function ThemesTab({ themes, snapshotId, isArchived, onReorder }: ThemesT
         </TabsContent>
       </Tabs>
 
-      {/* Theme Drawer */}
-      <ThemeDrawer
-        open={!!selectedTheme}
-        onOpenChange={(open) => !open && setSelectedTheme(null)}
+      {/* Theme Details Drawer - Using unified drawer */}
+      <ThemeDetailsDrawer
         theme={selectedTheme}
-        isArchived={isArchived}
+        isOpen={!!selectedTheme}
+        onClose={() => setSelectedTheme(null)}
       />
 
       {/* Create Dialog */}
