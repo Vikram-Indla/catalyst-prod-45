@@ -170,7 +170,7 @@ export function CreateDropdown() {
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="end"
-          className="w-64 max-h-[600px] overflow-y-auto bg-popover z-50"
+          className="w-64 max-h-[600px] overflow-y-auto bg-popover z-[300]"
         >
           {renderSection('Enterprise', filteredEnterpriseItems)}
           
