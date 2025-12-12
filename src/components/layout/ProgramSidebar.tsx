@@ -130,7 +130,7 @@ export function ProgramSidebar({
     <aside 
       className={cn(
         "h-full border-r bg-card transition-all duration-300 flex-shrink-0 relative flex flex-col",
-        expanded ? "w-[280px]" : "w-16",
+        expanded ? "w-44" : "w-14",
         className
       )}
     >
@@ -148,23 +148,25 @@ export function ProgramSidebar({
       </button>
 
       <div className="h-full flex flex-col overflow-hidden">
-        {/* Program Context Header - h-[72px] to align with ProductRoomSidebar */}
-        <div className={cn("h-[72px] px-4 flex items-center border-b shrink-0", !expanded && "px-2")}>
+        {/* Program Context Header - Compact */}
+        <div className={cn("px-2 py-2 border-b", !expanded && "px-1")}>
           {expanded ? (
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-brand-gold flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
-                {program?.name?.substring(0, 2).toUpperCase() || 'DI'}
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-md bg-brand-gold flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
+                {program?.name?.substring(0, 2).toUpperCase() || 'PR'}
               </div>
-              <div className="flex flex-col min-w-0">
-                <span className="font-semibold text-foreground truncate">
+              <div className="min-w-0 flex-1">
+                <div className="text-sm font-medium text-foreground truncate">
                   {program?.name || 'Program'}
-                </span>
-                <span className="text-xs text-muted-foreground">Program</span>
+                </div>
+                <div className="text-[10px] text-muted-foreground">Program</div>
               </div>
             </div>
           ) : (
-            <div className="w-10 h-10 rounded-lg bg-brand-gold flex items-center justify-center text-white font-semibold text-sm mx-auto">
-              {program?.name?.substring(0, 2).toUpperCase() || 'DI'}
+            <div className="flex justify-center">
+              <div className="w-8 h-8 rounded-md bg-brand-gold flex items-center justify-center text-white text-xs font-semibold">
+                {program?.name?.substring(0, 2).toUpperCase() || 'PR'}
+              </div>
             </div>
           )}
         </div>
