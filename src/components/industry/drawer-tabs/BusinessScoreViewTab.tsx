@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -103,14 +103,17 @@ export function BusinessScoreViewTab({ data, onChange, onDirtyChange, totalDeman
     setIsEditingOverride(false);
   };
 
-  // Save rank override
+  // Save rank override - MUST exit edit mode and clear local state
   const handleSaveRank = () => {
-    if (editRank !== null) {
+    if (editRank !== null && editJustification.trim()) {
       onChange('rank', editRank);
       onChange('is_force_ranked', true);
-      onChange('rank_override_justification', editJustification);
+      onChange('rank_override_justification', editJustification.trim());
       onDirtyChange?.(true);
     }
+    // Always reset local edit state and exit edit mode
+    setEditRank(null);
+    setEditJustification('');
     setIsEditingOverride(false);
   };
 
@@ -135,23 +138,30 @@ export function BusinessScoreViewTab({ data, onChange, onDirtyChange, totalDeman
 
   return (
     <div className="p-4 md:p-5 pb-6 space-y-6">
-      {/* Scoring Summary Widget - Top Right */}
+      {/* Scoring Summary Widget - Prominent Card ABOVE inputs */}
       {scoringStats && (
-        <div className="flex justify-end mb-2">
-          <div className="text-sm text-muted-foreground space-x-4">
-            <button
-              onClick={() => handleNavigateToFiltered('scored')}
-              className="hover:text-brand-gold hover:underline transition-colors"
-            >
-              <span className="font-semibold text-foreground">{scoringStats.scored}</span> of {scoringStats.total} demands scored
-            </button>
-            <span>•</span>
-            <button
-              onClick={() => handleNavigateToFiltered('notScored')}
-              className="hover:text-brand-gold hover:underline transition-colors"
-            >
-              <span className="font-semibold text-foreground">{scoringStats.notScored}</span> demands not scored
-            </button>
+        <div className="p-4 bg-muted/40 border border-border rounded-lg">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+              Scoring Summary
+            </h3>
+            <div className="flex items-center gap-4 text-sm">
+              <button
+                onClick={() => handleNavigateToFiltered('scored')}
+                className="hover:text-brand-gold hover:underline transition-colors"
+              >
+                <span className="font-semibold text-brand-gold">{scoringStats.scored}</span>
+                <span className="text-muted-foreground"> of {scoringStats.total} demands scored</span>
+              </button>
+              <span className="text-muted-foreground">•</span>
+              <button
+                onClick={() => handleNavigateToFiltered('notScored')}
+                className="hover:text-brand-gold hover:underline transition-colors"
+              >
+                <span className="font-semibold text-destructive">{scoringStats.notScored}</span>
+                <span className="text-muted-foreground"> demands not scored</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -281,108 +291,114 @@ export function BusinessScoreViewTab({ data, onChange, onDirtyChange, totalDeman
           </div>
 
           {/* Override Rank Section */}
-          <Collapsible open={isEditingOverride || isForceRanked}>
-            <div className="border border-border rounded-lg overflow-hidden">
-              <CollapsibleTrigger asChild>
-                <button
-                  onClick={() => !isEditingOverride && handleStartEdit()}
-                  className="w-full flex items-center justify-between p-3 hover:bg-muted/50 transition-colors"
+          <div className="border border-border rounded-lg overflow-hidden">
+            {/* Header - Always visible */}
+            <div className="flex items-center justify-between p-3 bg-muted/30">
+              <div className="flex items-center gap-2">
+                <Lock className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm font-medium uppercase tracking-wide">Override Rank</span>
+                <span className="text-xs text-muted-foreground">(Admin)</span>
+              </div>
+              {!isEditingOverride && !isForceRanked && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={handleStartEdit}
+                  className="text-brand-gold hover:text-brand-gold-hover"
                 >
-                  <div className="flex items-center gap-2">
-                    <Lock className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium uppercase tracking-wide">Override Rank</span>
-                    <span className="text-xs text-muted-foreground">(Admin)</span>
-                  </div>
-                  {isEditingOverride ? (
-                    <ChevronUp className="h-4 w-4 text-muted-foreground" />
-                  ) : (
-                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                  )}
-                </button>
-              </CollapsibleTrigger>
-              
-              <CollapsibleContent>
-                <div className="p-4 pt-0 space-y-4 border-t border-border">
-                  {isEditingOverride ? (
-                    <>
-                      {/* Edit Mode */}
-                      <div className="flex items-center gap-3">
-                        <Select
-                          value={editRank ? String(editRank) : ''}
-                          onValueChange={(v) => setEditRank(parseInt(v))}
-                        >
-                          <SelectTrigger className="flex-1">
-                            <SelectValue placeholder="Select rank" />
-                          </SelectTrigger>
-                          <SelectContent className="z-[400]">
-                            {rankOptions.map((n) => (
-                              <SelectItem key={n} value={String(n)}>#{n}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <span className="text-sm text-muted-foreground">#{editRank || '—'}</span>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label className="text-sm">
-                          Business Justification <span className="text-destructive">*</span>
-                        </Label>
-                        <Textarea
-                          value={editJustification}
-                          onChange={(e) => setEditJustification(e.target.value)}
-                          placeholder="Explain why this rank override is necessary..."
-                          className="min-h-[80px] resize-none"
-                        />
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <Button
-                          size="sm"
-                          onClick={handleSaveRank}
-                          disabled={!editRank || !editJustification.trim()}
-                          className="bg-brand-gold hover:bg-brand-gold-hover text-white"
-                        >
-                          <Save className="h-4 w-4 mr-1" />
-                          Save Rank
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={handleCancelEdit}
-                        >
-                          Cancel
-                        </Button>
-                      </div>
-                    </>
-                  ) : isForceRanked ? (
-                    <>
-                      {/* View Mode - Show saved override */}
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-muted-foreground">Current Override:</span>
-                          <span className="text-sm font-semibold">#{currentRank}</span>
-                        </div>
-                        {rankJustification && (
-                          <div className="p-3 bg-muted/50 rounded text-sm text-foreground">
-                            {rankJustification}
-                          </div>
-                        )}
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={handleStartEdit}
-                          className="w-full"
-                        >
-                          <Pencil className="h-4 w-4 mr-1" />
-                          Edit Override
-                        </Button>
-                      </div>
-                    </>
-                  ) : null}
-                </div>
-              </CollapsibleContent>
+                  Override Rank
+                </Button>
+              )}
+              {isForceRanked && !isEditingOverride && (
+                <ChevronDown className="h-4 w-4 text-muted-foreground" />
+              )}
             </div>
-          </Collapsible>
+            
+            {/* Edit Mode Content */}
+            {isEditingOverride && (
+              <div className="p-4 space-y-4 border-t border-border bg-amber-50/50">
+                <div className="flex items-center gap-3">
+                  <Select
+                    value={editRank ? String(editRank) : ''}
+                    onValueChange={(v) => setEditRank(parseInt(v))}
+                  >
+                    <SelectTrigger className="flex-1">
+                      <SelectValue placeholder="Select rank" />
+                    </SelectTrigger>
+                    <SelectContent className="z-[400]">
+                      {rankOptions.map((n) => (
+                        <SelectItem key={n} value={String(n)}>#{n}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <span className="text-sm text-muted-foreground">#{editRank || '—'}</span>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm">
+                    Business Justification <span className="text-destructive">*</span>
+                  </Label>
+                  <Textarea
+                    value={editJustification}
+                    onChange={(e) => setEditJustification(e.target.value)}
+                    placeholder="Provide business justification for overriding the auto-calculated rank..."
+                    className="min-h-[80px] resize-none border-border"
+                  />
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    onClick={handleSaveRank}
+                    disabled={!editRank || !editJustification.trim()}
+                    className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+                  >
+                    <Save className="h-4 w-4 mr-1" />
+                    Save Rank
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={handleCancelEdit}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+                
+                {/* Validation message */}
+                {(!editRank || !editJustification.trim()) && (
+                  <div className="p-3 bg-amber-100 border border-amber-300 rounded text-sm text-amber-800">
+                    <p className="font-medium">Justification Required</p>
+                    <p className="text-xs">Please provide a business justification for the rank override.</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* View Mode Content - Only when force ranked and not editing */}
+            {isForceRanked && !isEditingOverride && (
+              <div className="p-4 space-y-3 border-t border-border">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Current Override:</span>
+                  <span className="text-sm font-semibold">#{currentRank}</span>
+                </div>
+                {rankJustification && (
+                  <div className="p-3 bg-muted/50 rounded text-sm text-foreground">
+                    {rankJustification}
+                  </div>
+                )}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleStartEdit}
+                  className="w-full"
+                >
+                  <Pencil className="h-4 w-4 mr-1" />
+                  Edit Override
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
