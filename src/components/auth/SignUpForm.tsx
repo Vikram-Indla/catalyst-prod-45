@@ -5,7 +5,6 @@ import { PasswordStrength } from "./ui/PasswordStrength";
 import { CatalystButton } from "./ui/CatalystButton";
 import { CatalystCheckbox } from "./ui/CatalystCheckbox";
 import { IntegrationBadge } from "@/components/brand/IntegrationBadge";
-import { supabase } from "@/integrations/supabase/client";
 import catalystToast from "@/lib/catalystToast";
 
 interface SignUpFormProps {
@@ -72,21 +71,38 @@ export function SignUpForm({ onSubmit, loading: externalLoading }: SignUpFormPro
     setSuccessMessage(null);
 
     try {
-      // Call the signup-with-approval edge function
-      const { data, error } = await supabase.functions.invoke('signup-with-approval', {
-        body: {
+      // Use direct fetch to properly handle non-2xx responses without throwing
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+      
+      const response = await fetch(`${supabaseUrl}/functions/v1/signup-with-approval`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': supabaseAnonKey,
+          'Authorization': `Bearer ${supabaseAnonKey}`,
+        },
+        body: JSON.stringify({
           email: formData.email.toLowerCase().trim(),
           password: formData.password,
           fullName: formData.name.trim(),
           company: formData.company.trim() || undefined,
           website: formData.website, // Honeypot field
-        },
+        }),
       });
 
-      // Handle edge function errors - the response body may be in data even with error
-      if (error || data?.error) {
+      // Safely parse JSON response
+      let data: any = null;
+      try {
+        data = await response.json();
+      } catch {
+        // Response is not JSON - will be handled below
+      }
+
+      // Handle expected validation errors (409, 400, 429) - NOT runtime errors
+      if (response.status === 409 || response.status === 400 || response.status === 429) {
         const errorCode = data?.code || '';
-        const errorMessage = data?.error || error?.message || 'An error occurred';
+        const errorMessage = data?.error || 'An error occurred';
         
         // Map error codes to user-friendly messages
         const errorMessages: Record<string, string> = {
@@ -99,9 +115,26 @@ export function SignUpForm({ onSubmit, loading: externalLoading }: SignUpFormPro
         
         const userMessage = errorMessages[errorCode] || errorMessage;
         setErrors({ email: userMessage });
+        setLoading(false);
         return;
       }
 
+      // Handle server errors (5xx) - show generic message
+      if (response.status >= 500) {
+        setErrors({ email: 'Something went wrong. Please try again.' });
+        setLoading(false);
+        return;
+      }
+
+      // Handle other non-2xx responses
+      if (!response.ok) {
+        const errorMessage = data?.error || 'An error occurred';
+        setErrors({ email: errorMessage });
+        setLoading(false);
+        return;
+      }
+
+      // Success case
       if (data?.success) {
         setSuccessMessage(data.message);
         catalystToast.success("Registration submitted", "Your account is pending approval.");
@@ -117,8 +150,9 @@ export function SignUpForm({ onSubmit, loading: externalLoading }: SignUpFormPro
         });
       }
     } catch (err: any) {
-      console.error("Signup error:", err);
-      catalystToast.error("Sign up failed", err.message || "An error occurred");
+      // Only true network errors reach here
+      console.error("Signup network error:", err);
+      setErrors({ email: 'Something went wrong. Please try again.' });
     } finally {
       setLoading(false);
     }
