@@ -421,7 +421,7 @@ export default function DemandIntakeCatalyst() {
         </div>
 
         {/* Table Content - auto height to fit content */}
-        <div className="bg-white border border-border rounded-lg overflow-auto shadow-sm">
+        <div className="bg-white border border-border rounded-lg overflow-x-auto shadow-sm">
           {isLoading ? (
             <div className="p-8 space-y-4">
               {Array.from({ length: 5 }).map((_, i) => (

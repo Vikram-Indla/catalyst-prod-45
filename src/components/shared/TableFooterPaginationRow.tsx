@@ -28,19 +28,19 @@ export function TableFooterPaginationRow({
 
   return (
     <TableRow className="border-t border-border hover:bg-transparent">
-      <TableCell colSpan={columnsCount} className="py-4">
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">
+      <TableCell colSpan={columnsCount} className="py-4 px-4">
+        <div className="flex items-center justify-between gap-4 flex-wrap min-w-0">
+          <p className="text-sm text-muted-foreground whitespace-nowrap">
             Showing {startIndex + 1}-{endIndex} of {totalItems} {itemLabel}
           </p>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             {/* Previous Button */}
             <button
               onClick={() => onPageChange(Math.max(1, currentPage - 1))}
               disabled={currentPage === 1}
               className={cn(
-                "flex items-center gap-1 px-3 py-1.5 text-sm border border-border rounded-md transition-colors",
+                "flex items-center gap-1 px-3 py-1.5 text-sm border border-border rounded-md transition-colors whitespace-nowrap",
                 currentPage === 1 
                   ? "text-muted-foreground/50 cursor-not-allowed" 
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -56,7 +56,7 @@ export function TableFooterPaginationRow({
                 key={pageNum}
                 onClick={() => onPageChange(pageNum)}
                 className={cn(
-                  "w-8 h-8 text-sm rounded-md transition-colors",
+                  "w-8 h-8 text-sm rounded-md transition-colors flex-shrink-0",
                   currentPage === pageNum 
                     ? "bg-brand-gold text-white font-medium" 
                     : "text-muted-foreground hover:bg-muted border border-border"
@@ -71,7 +71,7 @@ export function TableFooterPaginationRow({
               onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
               disabled={currentPage >= totalPages}
               className={cn(
-                "flex items-center gap-1 px-3 py-1.5 text-sm border border-border rounded-md transition-colors",
+                "flex items-center gap-1 px-3 py-1.5 text-sm border border-border rounded-md transition-colors whitespace-nowrap",
                 currentPage >= totalPages 
                   ? "text-muted-foreground/50 cursor-not-allowed" 
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
