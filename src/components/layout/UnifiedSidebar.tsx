@@ -137,8 +137,8 @@ export function UnifiedSidebar({
       </button>
 
       <div className="h-full flex flex-col overflow-hidden">
-        {/* Entity Context Header */}
-        <div className={cn("px-2 py-2 border-b", !expanded && "px-1")}>
+        {/* Entity Context Header - h-12 to align with main header */}
+        <div className={cn("h-12 px-2 flex items-center border-b", !expanded && "px-1 justify-center")}>
           {expanded ? (
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-md bg-brand-gold flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
@@ -148,14 +148,11 @@ export function UnifiedSidebar({
                 <div className="text-sm font-medium text-foreground truncate">
                   {entity?.name || entityLabel}
                 </div>
-                <div className="text-[10px] text-muted-foreground">{entityLabel}</div>
               </div>
             </div>
           ) : (
-            <div className="flex justify-center">
-              <div className="w-8 h-8 rounded-md bg-brand-gold flex items-center justify-center text-white text-xs font-semibold">
-                {entity?.name?.substring(0, 2).toUpperCase() || entityLabel.substring(0, 2).toUpperCase()}
-              </div>
+            <div className="w-8 h-8 rounded-md bg-brand-gold flex items-center justify-center text-white text-xs font-semibold">
+              {entity?.name?.substring(0, 2).toUpperCase() || entityLabel.substring(0, 2).toUpperCase()}
             </div>
           )}
         </div>

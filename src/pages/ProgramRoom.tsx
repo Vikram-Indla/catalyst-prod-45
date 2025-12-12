@@ -70,17 +70,13 @@ export default function ProgramRoom() {
 
   return (
     <div className="h-full w-full flex flex-col bg-background overflow-hidden">
-      {/* Header */}
-      <div className="h-[72px] border-b bg-card px-3 sm:px-6 flex items-center flex-shrink-0">
+      {/* Header - aligned with sidebar header (h-12 = 48px) */}
+      <div className="h-12 border-b bg-card px-3 sm:px-6 flex items-center flex-shrink-0">
         <div className="flex items-center justify-between w-full gap-3">
           <div className="min-w-0">
-            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold truncate">
+            <h1 className="text-lg font-semibold truncate">
               {isProject ? 'Project Room' : 'Program Room'}
             </h1>
-            <p className="text-xs sm:text-sm text-muted-foreground truncate">
-              {displayName}
-              {parentName && ` · ${parentName}`}
-            </p>
           </div>
         </div>
       </div>
