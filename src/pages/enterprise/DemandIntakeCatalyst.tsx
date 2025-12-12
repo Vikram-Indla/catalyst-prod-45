@@ -353,13 +353,12 @@ export default function DemandIntakeCatalyst() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#faf9f7]">
+    <div className="flex flex-col h-full bg-white">
       {/* Main Content Area */}
-      <main className="flex-1 overflow-auto px-6 py-4">
+      <main className="flex-1 overflow-hidden flex flex-col px-6 py-4">
         {/* Page Header */}
-        <div className="mb-5">
-          <h1 className="text-xl font-semibold text-foreground">Demand Intake</h1>
-          <p className="text-xs text-muted-foreground mt-0.5">Industry-specific demand requests</p>
+        <div className="pb-4 border-b border-border mb-4">
+          <h1 className="text-xl font-semibold text-foreground">Product Backlog</h1>
         </div>
 
         {/* Search Bar */}
@@ -367,7 +366,7 @@ export default function DemandIntakeCatalyst() {
           <div className="relative w-full max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search industry requests..."
+              placeholder="Search requests..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-9 h-9 bg-white border-border"
@@ -409,27 +408,17 @@ export default function DemandIntakeCatalyst() {
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
-              size="sm"
-              onClick={() => toast({ title: 'Saved Filters coming soon' })}
-              className="h-8 text-sm border-border bg-white"
-            >
-              <Bookmark className="h-4 w-4 mr-1.5" />
-              Saved Filters
-            </Button>
-
-            <Button
-              variant="outline"
-              size="sm"
+              size="icon"
               onClick={() => setFiltersDialogOpen(true)}
               className={cn(
-                "h-8 text-sm border-border bg-white",
+                "h-8 w-8 border-border bg-white",
                 activeFilterCount > 0 && "border-brand-gold text-brand-gold"
               )}
+              title="Filters"
             >
-              <Filter className="h-4 w-4 mr-1.5" />
-              Filters
+              <Filter className="h-4 w-4" />
               {activeFilterCount > 0 && (
-                <span className="ml-1.5 bg-brand-gold text-white text-xs px-1.5 py-0.5 rounded-full">
+                <span className="absolute -top-1 -right-1 bg-brand-gold text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
                   {activeFilterCount}
                 </span>
               )}
@@ -437,27 +426,27 @@ export default function DemandIntakeCatalyst() {
 
             <Button
               variant="outline"
-              size="sm"
+              size="icon"
               onClick={handleExport}
-              className="h-8 text-sm border-border bg-white"
+              className="h-8 w-8 border-border bg-white"
+              title="Export"
             >
-              <Download className="h-4 w-4 mr-1.5" />
-              Export
+              <Download className="h-4 w-4" />
             </Button>
 
             <Button
               onClick={() => setCreateModalOpen(true)}
-              size="sm"
-              className="h-8 text-sm bg-brand-gold hover:bg-brand-gold-hover text-white"
+              size="icon"
+              className="h-8 w-8 bg-brand-gold hover:bg-brand-gold-hover text-white"
+              title="Create"
             >
-              <Plus className="h-4 w-4 mr-1" />
-              Create
+              <Plus className="h-4 w-4" />
             </Button>
           </div>
         </div>
 
-        {/* Table Content */}
-        <div className="bg-white border border-border rounded-lg overflow-hidden shadow-sm">
+        {/* Table Content - flex-1 to fill remaining height */}
+        <div className="flex-1 bg-white border border-border rounded-lg overflow-auto shadow-sm">
           {isLoading ? (
             <div className="p-8 space-y-4">
               {Array.from({ length: 5 }).map((_, i) => (
