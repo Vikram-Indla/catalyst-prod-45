@@ -42,6 +42,7 @@ interface Theme {
   status?: string | null;
   start_date?: string | null;
   end_date?: string | null;
+  portfolio_ask_date?: string | null;
   color_tag?: string | null;
   owner_id?: string | null;
   snapshot_id?: string | null;
@@ -260,8 +261,8 @@ function ThemeDetailsTab({
           <div>
             <Label className="text-xs font-medium mb-1.5 block">Portfolio Ask</Label>
             <CatalystDatePicker
-              value={formData.start_date || null}
-              onChange={(date) => handleFieldChange('start_date', date ? format(date, 'yyyy-MM-dd') : null)}
+              value={formData.portfolio_ask_date || null}
+              onChange={(date) => handleFieldChange('portfolio_ask_date', date ? format(date, 'yyyy-MM-dd') : null)}
               placeholder="Select date"
             />
           </div>
@@ -480,6 +481,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
         description: data.description,
         start_date: data.start_date || null,
         end_date: data.end_date || null,
+        portfolio_ask_date: data.portfolio_ask_date || null,
         color_tag: data.color_tag || null,
         owner_id: data.owner_id || null,
       };
