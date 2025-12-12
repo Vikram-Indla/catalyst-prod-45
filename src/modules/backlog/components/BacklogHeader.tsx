@@ -97,120 +97,126 @@ export function BacklogHeader({ onOpenFilters, onOpenColumns, onOpenPrioritize, 
   };
 
   return (
-    <div className="flex items-center gap-3 border-b bg-card px-4 sm:px-6 py-3">
-      {/* Left side: Title + Badge + View Selector */}
-      <div className="flex items-center gap-3">
-        {/* Scope Selector - Hidden in Epic Backlog mode */}
-        {!isEpicBacklog && (
-          <Select value={scope} onValueChange={(val) => setScope(val as BacklogScope)}>
-            <SelectTrigger className="w-[140px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-popover z-50">
-              <SelectItem value="enterprise">Enterprise</SelectItem>
-              <SelectItem value="portfolio">Portfolio</SelectItem>
-              <SelectItem value="solution">Solution</SelectItem>
-              <SelectItem value="program">Program</SelectItem>
-              <SelectItem value="team">Team</SelectItem>
-            </SelectContent>
-          </Select>
-        )}
-
-        {/* Program Backlog Title - shown only in Epic Backlog mode */}
-        {isEpicBacklog && (
-          <>
-            <span className="text-sm font-semibold text-foreground whitespace-nowrap">Program Backlog</span>
-            <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded whitespace-nowrap">
-              Epics
-            </span>
-          </>
-        )}
-
-        {/* Viewing Dropdown (Type Selector) - HIDDEN in Epic Backlog mode */}
-        {!isEpicBacklog && (
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground font-medium">Viewing:</span>
-            <Select value={type} onValueChange={(val) => setType(val as BacklogType)}>
+    <div className="flex flex-col gap-3 border-b bg-card px-4 sm:px-6 py-3">
+      {/* Top row: Title on left */}
+      <div className="flex items-center">
+        {/* Left side: Title */}
+        <div className="flex items-center gap-3">
+          {/* Scope Selector - Hidden in Epic Backlog mode */}
+          {!isEpicBacklog && (
+            <Select value={scope} onValueChange={(val) => setScope(val as BacklogScope)}>
               <SelectTrigger className="w-[140px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-popover z-50">
-                {allowedTypes.includes('theme') && (
-                  <SelectItem value="theme">Themes</SelectItem>
-                )}
-                {allowedTypes.includes('epic') && (
-                  <SelectItem value="epic">Epics</SelectItem>
-                )}
-                {allowedTypes.includes('capability') && (
-                  <SelectItem value="capability">Capabilities</SelectItem>
-                )}
-                {allowedTypes.includes('feature') && (
-                  <SelectItem value="feature">Features</SelectItem>
-                )}
-                {allowedTypes.includes('story') && (
-                  <SelectItem value="story">Stories</SelectItem>
-                )}
-                {allowedTypes.includes('defect') && (
-                  <SelectItem value="defect">Defects</SelectItem>
-                )}
-                {allowedTypes.includes('objective') && (
-                  <SelectItem value="objective">Objectives</SelectItem>
-                )}
+                <SelectItem value="enterprise">Enterprise</SelectItem>
+                <SelectItem value="portfolio">Portfolio</SelectItem>
+                <SelectItem value="solution">Solution</SelectItem>
+                <SelectItem value="program">Program</SelectItem>
+                <SelectItem value="team">Team</SelectItem>
               </SelectContent>
             </Select>
-          </div>
-        )}
+          )}
 
-        {/* Time Dropdown - HIDDEN in Epic Backlog mode (no PI terminology) */}
-        {!isEpicBacklog && (
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground font-medium">Time:</span>
-            <Select value={timeboxType} onValueChange={(val) => setTimebox(val as TimeboxType, null)}>
-              <SelectTrigger className="w-[100px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-popover z-50">
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="pi">PI</SelectItem>
-                <SelectItem value="sprint">Sprint</SelectItem>
-              </SelectContent>
-            </Select>
-            
-            {/* Specific PI/Sprint Selector */}
-            {timeboxType === 'pi' && (
-              <Select value={timeboxId || 'all-pis'} onValueChange={(val) => setTimebox('pi', val === 'all-pis' ? null : val)}>
-                <SelectTrigger className="w-[120px]">
-                  <SelectValue placeholder="Select PI" />
-                </SelectTrigger>
-                <SelectContent className="bg-popover z-50">
-                  <SelectItem value="all-pis">All PIs</SelectItem>
-                  {programIncrements?.map((pi) => (
-                    <SelectItem key={pi.id} value={pi.id}>
-                      {pi.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-            
-            {timeboxType === 'sprint' && (
-              <Select value={timeboxId || 'all-sprints'} onValueChange={(val) => setTimebox('sprint', val === 'all-sprints' ? null : val)}>
+          {/* Program Backlog Title - shown only in Epic Backlog mode with 20px font */}
+          {isEpicBacklog && (
+            <>
+              <span className="text-[20px] font-semibold text-foreground whitespace-nowrap">Program Backlog</span>
+              <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded whitespace-nowrap">
+                Epics
+              </span>
+            </>
+          )}
+
+          {/* Viewing Dropdown (Type Selector) - HIDDEN in Epic Backlog mode */}
+          {!isEpicBacklog && (
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground font-medium">Viewing:</span>
+              <Select value={type} onValueChange={(val) => setType(val as BacklogType)}>
                 <SelectTrigger className="w-[140px]">
-                  <SelectValue placeholder="Select Sprint" />
+                  <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-popover z-50">
-                  <SelectItem value="all-sprints">All Sprints</SelectItem>
-                  {sprints?.map((sprint) => (
-                    <SelectItem key={sprint.id} value={sprint.id}>
-                      {sprint.name}
-                    </SelectItem>
-                  ))}
+                  {allowedTypes.includes('theme') && (
+                    <SelectItem value="theme">Themes</SelectItem>
+                  )}
+                  {allowedTypes.includes('epic') && (
+                    <SelectItem value="epic">Epics</SelectItem>
+                  )}
+                  {allowedTypes.includes('capability') && (
+                    <SelectItem value="capability">Capabilities</SelectItem>
+                  )}
+                  {allowedTypes.includes('feature') && (
+                    <SelectItem value="feature">Features</SelectItem>
+                  )}
+                  {allowedTypes.includes('story') && (
+                    <SelectItem value="story">Stories</SelectItem>
+                  )}
+                  {allowedTypes.includes('defect') && (
+                    <SelectItem value="defect">Defects</SelectItem>
+                  )}
+                  {allowedTypes.includes('objective') && (
+                    <SelectItem value="objective">Objectives</SelectItem>
+                  )}
                 </SelectContent>
               </Select>
-            )}
-          </div>
-        )}
+            </div>
+          )}
 
+          {/* Time Dropdown - HIDDEN in Epic Backlog mode (no PI terminology) */}
+          {!isEpicBacklog && (
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground font-medium">Time:</span>
+              <Select value={timeboxType} onValueChange={(val) => setTimebox(val as TimeboxType, null)}>
+                <SelectTrigger className="w-[100px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-popover z-50">
+                  <SelectItem value="all">All</SelectItem>
+                  <SelectItem value="pi">PI</SelectItem>
+                  <SelectItem value="sprint">Sprint</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              {/* Specific PI/Sprint Selector */}
+              {timeboxType === 'pi' && (
+                <Select value={timeboxId || 'all-pis'} onValueChange={(val) => setTimebox('pi', val === 'all-pis' ? null : val)}>
+                  <SelectTrigger className="w-[120px]">
+                    <SelectValue placeholder="Select PI" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover z-50">
+                    <SelectItem value="all-pis">All PIs</SelectItem>
+                    {programIncrements?.map((pi) => (
+                      <SelectItem key={pi.id} value={pi.id}>
+                        {pi.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+              
+              {timeboxType === 'sprint' && (
+                <Select value={timeboxId || 'all-sprints'} onValueChange={(val) => setTimebox('sprint', val === 'all-sprints' ? null : val)}>
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue placeholder="Select Sprint" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover z-50">
+                    <SelectItem value="all-sprints">All Sprints</SelectItem>
+                    {sprints?.map((sprint) => (
+                      <SelectItem key={sprint.id} value={sprint.id}>
+                        {sprint.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Second row: All toolbar controls on the right */}
+      <div className="flex items-center justify-end gap-2">
         {/* View Selector */}
         <Select value={view} onValueChange={(val) => setView(val as BacklogViewType)}>
           <SelectTrigger className="w-[130px]">
@@ -225,13 +231,7 @@ export function BacklogHeader({ onOpenFilters, onOpenColumns, onOpenPrioritize, 
             {!isEpicBacklog && <SelectItem value="teamFeatures">Team Features</SelectItem>}
           </SelectContent>
         </Select>
-      </div>
 
-      {/* Spacer */}
-      <div className="flex-1" />
-
-      {/* Right side: Search + Filters + Prioritize + Export + Columns */}
-      <div className="flex items-center gap-2">
         {/* Search */}
         <div className="relative w-[200px]">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -247,13 +247,13 @@ export function BacklogHeader({ onOpenFilters, onOpenColumns, onOpenPrioritize, 
           Filters
         </Button>
 
-        {/* Prioritize Button - Moved from section header */}
+        {/* Prioritize Button */}
         <Button variant="outline" size="sm" onClick={handlePrioritize}>
           <TrendingUp className="h-4 w-4 mr-2" />
           Prioritize
         </Button>
 
-        {/* Export Button - Moved from section header */}
+        {/* Export Button */}
         <Button variant="outline" size="sm" onClick={handleExport}>
           <Download className="h-4 w-4 mr-2" />
           Export
