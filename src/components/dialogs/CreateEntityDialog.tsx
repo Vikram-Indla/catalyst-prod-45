@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Search } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
@@ -6,7 +6,9 @@ import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { 
   DEFAULT_PROGRAM_ID, 
   formatProgramLabel, 
-  getCanonicalProgramKey 
+  generateUniqueKey,
+  isThreeLetterKey,
+  logProgramKeyBinding
 } from '@/lib/programKeyUtils';
 import {
   Dialog,
@@ -78,6 +80,8 @@ export function CreateEntityDialog({
   const [programSearch, setProgramSearch] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const [keyError, setKeyError] = useState('');
+  const [keyManuallyEdited, setKeyManuallyEdited] = useState(false);
+  const [keySuggested, setKeySuggested] = useState(false);
   const queryClient = useQueryClient();
 
   const config = entityConfig[entityType];
@@ -97,7 +101,7 @@ export function CreateEntityDialog({
   });
 
   // Fetch existing project keys for uniqueness validation
-  const { data: existingKeys } = useQuery({
+  const { data: existingProjectKeys } = useQuery({
     queryKey: ['project-keys'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -109,6 +113,29 @@ export function CreateEntityDialog({
     enabled: entityType === 'project',
   });
 
+  // Fetch existing program keys for uniqueness validation
+  const { data: existingProgramKeys } = useQuery({
+    queryKey: ['program-keys'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('programs')
+        .select('key');
+      if (error) throw error;
+      return data?.map(p => p.key?.toUpperCase()) || [];
+    },
+    enabled: entityType === 'program',
+  });
+
+  // Get the appropriate existing keys based on entity type
+  const existingKeys = entityType === 'project' ? existingProjectKeys : existingProgramKeys;
+
+  // Log program key bindings for diagnostics
+  useEffect(() => {
+    if (programs && entityType === 'project') {
+      programs.forEach(p => logProgramKeyBinding(p));
+    }
+  }, [programs, entityType]);
+
   const filteredPrograms = programs?.filter(p => 
     p.name.toLowerCase().includes(programSearch.toLowerCase()) ||
     p.key?.toLowerCase().includes(programSearch.toLowerCase())
@@ -116,6 +143,7 @@ export function CreateEntityDialog({
 
   const selectedProgram = programs?.find(p => p.id === programId);
 
+  // Reset form when dialog opens
   useEffect(() => {
     if (open) {
       setName('');
@@ -123,33 +151,44 @@ export function CreateEntityDialog({
       setDescription('');
       setKeyError('');
       setProgramSearch('');
-      // Set default program for projects
+      setKeyManuallyEdited(false);
+      setKeySuggested(false);
       if (entityType === 'project') {
         setProgramId(DEFAULT_PROGRAM_ID);
       }
     }
   }, [open, entityType]);
 
-  const validateProjectKey = (value: string): string => {
-    if (!value) return 'Project key is required';
+  // Auto-suggest key when name changes (STYLE A: Initials-first)
+  useEffect(() => {
+    if (!keyManuallyEdited && name.trim().length >= 2 && existingKeys) {
+      const existingSet = new Set(existingKeys.filter(k => k) as string[]);
+      const suggestedKey = generateUniqueKey(name, existingSet);
+      setKey(suggestedKey);
+      setKeySuggested(true);
+      setKeyError('');
+    }
+  }, [name, keyManuallyEdited, existingKeys]);
+
+  const validateKey = (value: string): string => {
+    if (!value) return 'Key is required';
     if (!KEY_REGEX.test(value)) return 'Key must be exactly 3 uppercase letters (A-Z)';
     if (existingKeys?.includes(value.toUpperCase())) return 'This key is already in use';
     return '';
   };
 
   const handleKeyChange = (value: string) => {
-    if (entityType === 'project') {
-      // Project keys: exactly 3 uppercase letters
-      const upperValue = value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3);
-      setKey(upperValue);
-      if (upperValue.length === 3) {
-        setKeyError(validateProjectKey(upperValue));
-      } else {
-        setKeyError('');
-      }
+    // Mark as manually edited
+    setKeyManuallyEdited(true);
+    setKeySuggested(false);
+    
+    // Enforce 3 uppercase letters
+    const upperValue = value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3);
+    setKey(upperValue);
+    if (upperValue.length === 3) {
+      setKeyError(validateKey(upperValue));
     } else {
-      // Other entity keys: more flexible
-      setKey(value.toUpperCase().replace(/[^A-Z0-9]/g, ''));
+      setKeyError('');
     }
   };
 
@@ -167,14 +206,16 @@ export function CreateEntityDialog({
       return;
     }
 
+    // Validate key for all entity types
+    const keyValidationError = validateKey(key);
+    if (keyValidationError) {
+      setKeyError(keyValidationError);
+      catalystToast.error('Validation Error', keyValidationError);
+      return;
+    }
+
     // Additional validation for projects
     if (entityType === 'project') {
-      const keyValidationError = validateProjectKey(key);
-      if (keyValidationError) {
-        setKeyError(keyValidationError);
-        catalystToast.error('Validation Error', keyValidationError);
-        return;
-      }
       if (!programId) {
         catalystToast.error('Validation Error', 'Program is required');
         return;
@@ -248,9 +289,9 @@ export function CreateEntityDialog({
     }
   };
 
-  const isProjectKeyValid = entityType !== 'project' || (key.length === 3 && !keyError);
+  const isKeyValid = key.length === 3 && !keyError;
   const isProgramValid = entityType !== 'project' || !!programId;
-  const isFormValid = name.trim() && key.trim() && isProjectKeyValid && isProgramValid;
+  const isFormValid = name.trim() && key.trim() && isKeyValid && isProgramValid;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -281,25 +322,27 @@ export function CreateEntityDialog({
 
             {/* Key */}
             <div className="space-y-2">
-              <Label htmlFor="key">
-                Key <span className="text-destructive">*</span>
-              </Label>
+              <div className="flex items-center gap-2">
+                <Label htmlFor="key">
+                  Key <span className="text-destructive">*</span>
+                </Label>
+                {keySuggested && !keyManuallyEdited && (
+                  <span className="text-xs text-muted-foreground italic">Suggested</span>
+                )}
+              </div>
               <Input
                 id="key"
                 value={key}
                 onChange={(e) => handleKeyChange(e.target.value)}
-                placeholder={entityType === 'project' ? 'ABC' : config.keyPlaceholder}
-                maxLength={entityType === 'project' ? 3 : 10}
+                placeholder="ABC"
+                maxLength={3}
                 className={keyError ? 'border-destructive' : ''}
               />
               {keyError ? (
                 <p className="text-xs text-destructive">{keyError}</p>
               ) : (
                 <p className="text-xs text-muted-foreground">
-                  {entityType === 'project' 
-                    ? 'Exactly 3 uppercase letters (A-Z)'
-                    : `This key will be used as a prefix for work items (e.g., ${key || 'KEY'}-123)`
-                  }
+                  3 letters (A–Z). Used as prefix for items (e.g., {key || 'ABC'}-001).
                 </p>
               )}
             </div>
