@@ -361,8 +361,9 @@ export default function DemandIntakeCatalyst() {
           <h1 className="text-xl font-semibold text-foreground">Product Backlog</h1>
         </div>
 
-        {/* Search Bar */}
-        <div className="mb-4">
+        {/* Controls Bar */}
+        <div className="flex items-center justify-between mb-4">
+          {/* Left - Search */}
           <div className="relative w-full max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -372,40 +373,37 @@ export default function DemandIntakeCatalyst() {
               className="pl-9 h-9 bg-white border-border"
             />
           </div>
-        </div>
 
-        {/* Controls Bar */}
-        <div className="flex items-center justify-between mb-4">
-          {/* Left - View Toggle */}
-          <div className="flex items-center border border-border rounded-md overflow-hidden bg-white">
-            <button
-              onClick={() => setViewMode('list')}
-              className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium transition-colors",
-                viewMode === 'list' 
-                  ? "bg-brand-gold text-white" 
-                  : "text-muted-foreground hover:bg-muted"
-              )}
-            >
-              <List className="h-4 w-4" />
-              List
-            </button>
-            <button
-              onClick={() => setViewMode('kanban')}
-              className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium transition-colors",
-                viewMode === 'kanban' 
-                  ? "bg-brand-gold text-white" 
-                  : "text-muted-foreground hover:bg-muted"
-              )}
-            >
-              <LayoutGrid className="h-4 w-4" />
-              Kanban
-            </button>
-          </div>
-
-          {/* Right - Action Buttons */}
+          {/* Right - View Toggle and Action Buttons */}
           <div className="flex items-center gap-2">
+            {/* View Toggle */}
+            <div className="flex items-center border border-border rounded-md overflow-hidden bg-white">
+              <button
+                onClick={() => setViewMode('list')}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium transition-colors",
+                  viewMode === 'list' 
+                    ? "bg-brand-gold text-white" 
+                    : "text-muted-foreground hover:bg-muted"
+                )}
+              >
+                <List className="h-4 w-4" />
+                List
+              </button>
+              <button
+                onClick={() => setViewMode('kanban')}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium transition-colors",
+                  viewMode === 'kanban' 
+                    ? "bg-brand-gold text-white" 
+                    : "text-muted-foreground hover:bg-muted"
+                )}
+              >
+                <LayoutGrid className="h-4 w-4" />
+                Kanban
+              </button>
+            </div>
+
             <Button
               variant="outline"
               size="icon"
