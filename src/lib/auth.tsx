@@ -104,55 +104,65 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = async (email: string, password: string, fullName?: string) => {
     try {
-      // Use the secure signup edge function with approval workflow
-      const { data, error: invokeError } = await supabase.functions.invoke('signup-with-approval', {
-        body: { 
-          email: email.toLowerCase().trim(), 
+      // Use direct fetch to properly handle non-2xx responses without throwing
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+      
+      const response = await fetch(`${supabaseUrl}/functions/v1/signup-with-approval`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': supabaseAnonKey,
+          'Authorization': `Bearer ${supabaseAnonKey}`,
+        },
+        body: JSON.stringify({
+          email: email.toLowerCase().trim(),
           password,
           fullName: fullName || email,
-        },
+        }),
       });
 
-      // Handle Edge Function errors - parse the response for structured error codes
-      if (invokeError) {
-        console.error('Signup invoke error:', invokeError);
-        
-        // Try to extract error details from the invoke error context
-        // The error message from Edge Function is in invokeError.context or invokeError.message
-        let errorMessage = "Something went wrong. Please try again.";
-        let errorCode = "UNKNOWN";
-        
-        // Check if the error contains our structured response
-        if (invokeError.context && typeof invokeError.context === 'object') {
-          errorCode = invokeError.context.code || "UNKNOWN";
-          errorMessage = invokeError.context.error || errorMessage;
-        } else if (typeof invokeError.message === 'string') {
-          // Try to parse JSON from the message if it contains our response
-          try {
-            const parsed = JSON.parse(invokeError.message);
-            errorCode = parsed.code || "UNKNOWN";
-            errorMessage = parsed.error || errorMessage;
-          } catch {
-            // Not JSON, check for known patterns
-            if (invokeError.message.includes("already registered")) {
-              errorCode = "EMAIL_EXISTS_APPROVED";
-              errorMessage = "This email is already registered. Please sign in.";
-            } else if (invokeError.message.includes("pending approval")) {
-              errorCode = "EMAIL_EXISTS_PENDING";
-              errorMessage = "Your registration is pending approval.";
-            }
-          }
-        }
+      // Safely parse JSON response
+      let data: any = null;
+      try {
+        data = await response.json();
+      } catch {
+        // Response is not JSON
+      }
 
+      // Handle expected validation errors (409, 400, 429) - NOT runtime errors
+      if (response.status === 409 || response.status === 400 || response.status === 429) {
+        const errorCode = data?.code || 'UNKNOWN';
+        const errorMessage = data?.error || 'An error occurred';
+        
         return { 
           error: { message: errorMessage, code: errorCode },
           code: errorCode
         };
       }
 
+      // Handle server errors (5xx)
+      if (response.status >= 500) {
+        return { 
+          error: { message: 'Something went wrong. Please try again.', code: 'SERVER_ERROR' },
+          code: 'SERVER_ERROR'
+        };
+      }
+
+      // Handle other non-2xx responses
+      if (!response.ok) {
+        const errorMessage = data?.error || 'An error occurred';
+        const errorCode = data?.code || 'UNKNOWN';
+        return { 
+          error: { message: errorMessage, code: errorCode },
+          code: errorCode
+        };
+      }
+
+      // Success case
       if (!data?.success) {
-        const errorCode = data?.code || "UNKNOWN";
-        const errorMessage = data?.error || "Registration failed. Please try again.";
+        const errorCode = data?.code || 'UNKNOWN';
+        const errorMessage = data?.error || 'Registration failed. Please try again.';
         
         return { 
           error: { message: errorMessage, code: errorCode },
@@ -170,9 +180,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       return { error: null, isPending: true };
     } catch (error: any) {
+      // Only true network errors reach here
       return { 
-        error: { message: "Something went wrong. Please try again.", code: "UNKNOWN" },
-        code: "UNKNOWN"
+        error: { message: 'Something went wrong. Please try again.', code: 'NETWORK_ERROR' },
+        code: 'NETWORK_ERROR'
       };
     }
   };
