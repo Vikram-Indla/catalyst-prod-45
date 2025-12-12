@@ -235,7 +235,7 @@ export function MilestonesTab({ entityId, entityType, hideCategory = false }: Mi
             <SelectTrigger className="w-[120px] h-9 text-sm">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-popover border shadow-lg z-50">
+            <SelectContent className="bg-popover border shadow-lg z-[400]">
               {SORT_OPTIONS.map(opt => (
                 <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
               ))}
@@ -329,7 +329,7 @@ export function MilestonesTab({ entityId, entityType, hideCategory = false }: Mi
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="bg-popover border shadow-lg z-50">
+                      <DropdownMenuContent align="end" className="bg-popover border shadow-lg z-[400]">
                         <DropdownMenuItem onClick={() => handleEdit(milestone)}>
                           <Pencil className="h-4 w-4 mr-2" />
                           Edit
@@ -474,7 +474,7 @@ function MilestoneForm({
             <SelectTrigger className="mt-1 h-9 text-sm">
               <SelectValue placeholder="Select state" />
             </SelectTrigger>
-            <SelectContent className="bg-popover border shadow-lg z-50">
+            <SelectContent className="bg-popover border shadow-lg z-[400]">
               {MILESTONE_STATES.map(s => (
                 <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
               ))}
@@ -494,7 +494,7 @@ function MilestoneForm({
               <SelectTrigger className="mt-1 h-9 text-sm">
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
-              <SelectContent className="bg-popover border shadow-lg z-50">
+              <SelectContent className="bg-popover border shadow-lg z-[400]">
                 {MILESTONE_CATEGORIES.map(c => (
                   <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
                 ))}

@@ -117,7 +117,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
         )}
 
         {/* Header - Only one close button at top right */}
-        <div className="px-6 py-5 border-b border-[#e5e5e5] flex-shrink-0">
+        <div className="px-6 py-5 border-b border-border flex-shrink-0">
           <div className="flex items-start justify-between">
             <div className="flex-1 min-w-0 pr-4">
               <h2 className="text-xl font-semibold text-[#1a1a1a]">
@@ -139,8 +139,8 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-[#e5e5e5] flex justify-end gap-3 flex-shrink-0 bg-[#feffff]">
-          <Button variant="outline" onClick={handleClose} className="border-[#e5e5e5]">
+        <div className="px-6 py-4 border-t border-border flex justify-end gap-3 flex-shrink-0 bg-background">
+          <Button variant="outline" onClick={handleClose}>
             Cancel
           </Button>
           <Button 
