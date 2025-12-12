@@ -47,12 +47,9 @@ const menuConfigs: Record<WorkspaceType, Array<{ id: string; label: string; icon
     { id: 'reports', label: 'Reports', icon: FileText, pathTemplate: '/program/:id/reports' },
   ],
   project: [
-    { id: 'room', label: 'Project Room', icon: LayoutDashboard, pathTemplate: '/programs/:id/room' },
-    { id: 'work-tree', label: 'Work tree', icon: Network, pathTemplate: '/programs/:id/work-tree' },
+    { id: 'backlog', label: 'Backlog', icon: Square, pathTemplate: '/programs/:id/backlog' },
+    { id: 'roadmap', label: 'Roadmap', icon: Map, pathTemplate: '/programs/:id/roadmap' },
     { id: 'dependencies', label: 'Dependencies', icon: GitBranch, pathTemplate: '/programs/:id/dependencies' },
-    { id: 'forecast', label: 'Forecast', icon: Grid3x3, pathTemplate: '/programs/:id/forecast' },
-    { id: 'capacity', label: 'Capacity', icon: UsersIcon, pathTemplate: '/programs/:id/capacity', badge: 'NEW' },
-    { id: 'quarters', label: 'Quarters', icon: Calendar, pathTemplate: '/programs/:id/quarters' },
     { id: 'reports', label: 'Reports', icon: FileText, pathTemplate: '/programs/:id/reports' },
   ],
 };
