@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
-import { Plus, Calendar, MoreHorizontal, ArrowDownAZ, ArrowUpAZ, Pencil, Trash2, AlertCircle } from 'lucide-react';
+import { Plus, Calendar, MoreHorizontal, ArrowDownAZ, ArrowUpAZ, Pencil, Trash2, AlertCircle, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -205,6 +205,17 @@ export function MilestonesTab({ entityId, entityType, hideCategory = false }: Mi
     setShowAddForm(false);
   };
 
+  const handleCopy = (milestone: any) => {
+    const copyPayload = {
+      title: `${milestone.title} (Copy)`,
+      start_date: milestone.start_date || null,
+      due_date: milestone.due_date || null,
+      description: milestone.description || null,
+      state: 'pending', // Reset state to pending for the copy
+      category: hideCategory ? null : milestone.category || null,
+    };
+    createMutation.mutate(copyPayload);
+  };
 
   const getStateConfig = (state: string) => {
     return MILESTONE_STATES.find(s => s.value === state) || MILESTONE_STATES[0];
@@ -335,6 +346,10 @@ export function MilestonesTab({ entityId, entityType, hideCategory = false }: Mi
                         <DropdownMenuItem onClick={() => handleEdit(milestone)}>
                           <Pencil className="h-4 w-4 mr-2" />
                           Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleCopy(milestone)}>
+                          <Copy className="h-4 w-4 mr-2" />
+                          Copy
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           className="text-destructive"
