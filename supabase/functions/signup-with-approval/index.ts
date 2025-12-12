@@ -122,13 +122,12 @@ serve(async (req) => {
 
       // Already approved
       if (status === "APPROVED") {
-        // Generic message to prevent enumeration
-        return jsonError("This email is already registered. Please sign in.", 409);
+        return jsonError("This email is already registered. Please sign in.", 409, "EMAIL_EXISTS_APPROVED");
       }
 
       // Pending approval
       if (status === "PENDING_APPROVAL") {
-        return jsonError("Your registration is pending approval.", 409);
+        return jsonError("Your registration is pending approval.", 409, "EMAIL_EXISTS_PENDING");
       }
 
       // Rejected - allow resubmit after cooldown
@@ -138,7 +137,7 @@ serve(async (req) => {
         
         if (cooldownEnd && new Date() < cooldownEnd) {
           const hoursLeft = Math.ceil((cooldownEnd.getTime() - Date.now()) / (60 * 60 * 1000));
-          return jsonError(`Please wait ${hoursLeft} hours before resubmitting.`, 429);
+          return jsonError(`Your request was rejected. Please wait ${hoursLeft} hours before resubmitting.`, 429, "EMAIL_EXISTS_REJECTED_COOLDOWN");
         }
 
         // Resubmit
@@ -156,7 +155,7 @@ serve(async (req) => {
 
         if (updateError) {
           console.error("[SIGNUP] Error updating rejected profile:", updateError);
-          return jsonError("An error occurred. Please try again.", 500);
+          return jsonError("An error occurred. Please try again.", 500, "SERVER_ERROR");
         }
 
         await logAuditEvent(supabaseAdmin, existingProfile.id, email, "signup_resubmitted", { ip: clientIp });
@@ -170,7 +169,7 @@ serve(async (req) => {
 
       // Disabled
       if (status === "DISABLED") {
-        return jsonError("This account has been disabled. Please contact support.", 403);
+        return jsonError("This account has been disabled. Please contact support.", 403, "ACCOUNT_DISABLED");
       }
     }
 
@@ -188,9 +187,9 @@ serve(async (req) => {
     if (createError) {
       console.error("[SIGNUP] Error creating auth user:", createError);
       if (createError.message?.includes("already been registered")) {
-        return jsonError("This email is already registered. Please sign in.", 409);
+        return jsonError("This email is already registered. Please sign in.", 409, "EMAIL_EXISTS_APPROVED");
       }
-      return jsonError("Failed to create account. Please try again.", 500);
+      return jsonError("Failed to create account. Please try again.", 500, "SERVER_ERROR");
     }
 
     const userId = newAuthUser.user!.id;
@@ -249,8 +248,8 @@ function jsonResponse(data: any, status = 200) {
   });
 }
 
-function jsonError(message: string, status: number) {
-  return new Response(JSON.stringify({ error: message }), { 
+function jsonError(message: string, status: number, code?: string) {
+  return new Response(JSON.stringify({ error: message, code: code || "UNKNOWN" }), { 
     status, 
     headers: { ...corsHeaders, "Content-Type": "application/json" } 
   });
