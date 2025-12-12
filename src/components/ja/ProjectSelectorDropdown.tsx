@@ -35,6 +35,8 @@ export const ProjectSelectorDropdown = React.memo(function ProjectSelectorDropdo
       key: p.key,
       name: displayName,
       canAccess: p.canAccess,
+      sourceField: p.sourceField,
+      needsMigration: p.needsMigration,
     };
   });
 
@@ -71,6 +73,7 @@ export const ProjectSelectorDropdown = React.memo(function ProjectSelectorDropdo
       items={items}
       isLoading={projectsLoading}
       showActions={isAdmin}
+      isAdmin={isAdmin}
       onSelectItem={handleSelect}
       onCreate={isAdmin ? handleCreate : undefined}
       onManage={isAdmin ? handleManage : undefined}

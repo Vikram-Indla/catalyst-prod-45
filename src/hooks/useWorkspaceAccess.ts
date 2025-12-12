@@ -9,8 +9,8 @@ import { useAuth } from '@/lib/auth';
 import { useUserRole } from './useUserRole';
 import { 
   DEFAULT_PROGRAM_ID, 
-  getCanonicalProgramKey, 
-  getCanonicalProjectKey,
+  getCanonicalProgramKeyWithSource,
+  getCanonicalProjectKeyWithSource,
   isDefaultProgram,
   logProgramKeyBinding,
   logProjectKeyBinding
@@ -22,6 +22,8 @@ interface ProgramWithAccess {
   name: string;
   description: string | null;
   canAccess: boolean;
+  sourceField?: string;
+  needsMigration?: boolean;
 }
 
 interface ProjectWithAccess {
@@ -32,6 +34,8 @@ interface ProjectWithAccess {
   programId: string | null;
   programName: string | null;
   canAccess: boolean;
+  sourceField?: string;
+  needsMigration?: boolean;
 }
 
 export function useWorkspaceAccess() {
@@ -86,13 +90,15 @@ export function useWorkspaceAccess() {
         .map(p => {
           // Log key binding for diagnostics
           logProgramKeyBinding(p);
-          const canonicalKey = getCanonicalProgramKey(p);
+          const keyResult = getCanonicalProgramKeyWithSource(p);
           return {
             id: p.id,
-            key: canonicalKey || '', // Use canonical 3-letter key
+            key: keyResult.key || '', // Use canonical 3-letter key
             name: p.name,
             description: p.description,
             canAccess: isAdmin || (programMemberships?.includes(p.id) ?? false),
+            sourceField: keyResult.sourceField,
+            needsMigration: !keyResult.isValid,
           };
         }) as ProgramWithAccess[];
     },
@@ -131,16 +137,18 @@ export function useWorkspaceAccess() {
         const hasInheritedAccess = p.program_id && (programMemberships?.includes(p.program_id) ?? false);
         
         // Use canonical 3-letter keys
-        const canonicalProjectKey = getCanonicalProjectKey(p);
+        const keyResult = getCanonicalProjectKeyWithSource(p);
 
         return {
           id: p.id,
-          key: canonicalProjectKey || p.key || '',
+          key: keyResult.key || p.key || '',
           name: p.name,
           description: p.description,
           programId: p.program_id,
           programName: p.programs?.name || null,
           canAccess: isAdmin || hasDirectAccess || hasInheritedAccess,
+          sourceField: keyResult.sourceField,
+          needsMigration: !keyResult.isValid,
         };
       }) as ProjectWithAccess[];
     },
