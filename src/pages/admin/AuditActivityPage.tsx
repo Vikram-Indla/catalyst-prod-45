@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { format, subDays, subHours, isWithinInterval, parseISO } from 'date-fns';
+import { format, subDays, isWithinInterval, parseISO } from 'date-fns';
 import { Json } from '@/integrations/supabase/types';
 import { 
   Search, 
@@ -34,10 +34,9 @@ interface ActivityEvent {
 
 // Date range presets
 const datePresets = [
-  { label: 'Last 24 hours', value: '24h', getRange: () => ({ from: subHours(new Date(), 24), to: new Date() }) },
-  { label: 'Last 7 days', value: '7d', getRange: () => ({ from: subDays(new Date(), 7), to: new Date() }) },
-  { label: 'Last 30 days', value: '30d', getRange: () => ({ from: subDays(new Date(), 30), to: new Date() }) },
-  { label: 'Custom', value: 'custom', getRange: () => null },
+  { label: 'Last week', value: '7d', getRange: () => ({ from: subDays(new Date(), 7), to: new Date() }) },
+  { label: '2 weeks ago', value: '14d', getRange: () => ({ from: subDays(new Date(), 14), to: new Date() }) },
+  { label: 'All time', value: 'all', getRange: () => null },
 ];
 
 // Action types
@@ -85,7 +84,7 @@ export default function AuditActivityPage() {
     
     // Date filter
     const preset = datePresets.find(p => p.value === datePreset);
-    if (preset && preset.value !== 'custom') {
+    if (preset && preset.value !== 'all') {
       const range = preset.getRange();
       if (range) {
         filtered = filtered.filter(log => {
