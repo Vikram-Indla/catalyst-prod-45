@@ -42,12 +42,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
+      // First check approval status before attempting login
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('approval_status')
+        .eq('email', email.toLowerCase())
+        .maybeSingle();
+
+      if (profile) {
+        const status = profile.approval_status;
+        
+        if (status === 'PENDING_APPROVAL') {
+          return { 
+            error: { message: 'Your account is pending approval.' },
+            isPending: true 
+          };
+        }
+        
+        if (status === 'REJECTED' || status === 'DISABLED') {
+          return { 
+            error: { message: 'Unable to sign in.' },
+            isBlocked: true 
+          };
+        }
+      }
+
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
       
       if (error) {
+        // Generic message to prevent user enumeration
         toast({
           title: "Sign-in failed",
           description: "The email or password you entered is incorrect.",

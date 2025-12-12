@@ -2,12 +2,20 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+export type ApprovalStatus = 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED' | 'DISABLED';
+
 export interface UserProfile {
   id: string;
   email: string | null;
   full_name: string | null;
   avatar_url: string | null;
   status: 'Active' | 'Inactive' | 'Pending';
+  approval_status: ApprovalStatus | null;
+  requested_at: string | null;
+  approved_at: string | null;
+  rejected_at: string | null;
+  rejection_reason: string | null;
+  signup_attempts_count: number | null;
   last_login: string | null;
   created_at: string | null;
   updated_at: string | null;
@@ -36,10 +44,10 @@ export function useUsers() {
   return useQuery({
     queryKey: ['users-list'],
     queryFn: async () => {
-      // Fetch all profiles
+      // Fetch all profiles with approval fields
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
-        .select('*')
+        .select('*, approval_status, requested_at, approved_at, rejected_at, rejection_reason, signup_attempts_count')
         .order('full_name');
 
       if (profilesError) throw profilesError;
@@ -193,6 +201,128 @@ export function useUpdateUserStatus() {
     },
     onError: (error) => {
       toast.error('Failed to update status: ' + (error as Error).message);
+    }
+  });
+}
+
+// Approve a pending user
+export function useApproveUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (userId: string) => {
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      
+      const { error } = await supabase
+        .from('profiles')
+        .update({ 
+          approval_status: 'APPROVED',
+          approved_at: new Date().toISOString(),
+          approved_by: currentUser?.id,
+          status: 'Active',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', userId);
+
+      if (error) throw error;
+
+      // Log the approval
+      await supabase.from('auth_audit_log').insert({
+        user_id: userId,
+        event_type: 'user_approved',
+        actor_id: currentUser?.id,
+        created_at: new Date().toISOString()
+      });
+
+      return true;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users-list'] });
+      toast.success('User approved successfully');
+    },
+    onError: (error) => {
+      toast.error('Failed to approve user: ' + (error as Error).message);
+    }
+  });
+}
+
+// Reject a pending user
+export function useRejectUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ userId, reason }: { userId: string; reason?: string }) => {
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      
+      const { error } = await supabase
+        .from('profiles')
+        .update({ 
+          approval_status: 'REJECTED',
+          rejected_at: new Date().toISOString(),
+          rejected_by: currentUser?.id,
+          rejection_reason: reason || null,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', userId);
+
+      if (error) throw error;
+
+      // Log the rejection
+      await supabase.from('auth_audit_log').insert({
+        user_id: userId,
+        event_type: 'user_rejected',
+        actor_id: currentUser?.id,
+        event_details: { reason },
+        created_at: new Date().toISOString()
+      });
+
+      return true;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users-list'] });
+      toast.success('User rejected');
+    },
+    onError: (error) => {
+      toast.error('Failed to reject user: ' + (error as Error).message);
+    }
+  });
+}
+
+// Disable an approved user
+export function useDisableUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (userId: string) => {
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      
+      const { error } = await supabase
+        .from('profiles')
+        .update({ 
+          approval_status: 'DISABLED',
+          status: 'Inactive',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', userId);
+
+      if (error) throw error;
+
+      // Log the action
+      await supabase.from('auth_audit_log').insert({
+        user_id: userId,
+        event_type: 'user_disabled',
+        actor_id: currentUser?.id,
+        created_at: new Date().toISOString()
+      });
+
+      return true;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users-list'] });
+      toast.success('User disabled');
+    },
+    onError: (error) => {
+      toast.error('Failed to disable user: ' + (error as Error).message);
     }
   });
 }

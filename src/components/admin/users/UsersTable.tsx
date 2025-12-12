@@ -27,8 +27,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Search, MoreHorizontal, UserCog, Power, PowerOff, ShieldCheck, Trash2, KeyRound } from 'lucide-react';
-import { UserProfile, useUpdateUserStatus, useDeleteUser } from '@/hooks/useUsers';
+import { Search, MoreHorizontal, UserCog, Power, PowerOff, ShieldCheck, Trash2, KeyRound, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { UserProfile, useUpdateUserStatus, useDeleteUser, useApproveUser, useRejectUser, useDisableUser, ApprovalStatus } from '@/hooks/useUsers';
 import { format, formatDistanceToNow, isToday, isYesterday } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { ResponsiveTableWrapper } from '@/components/layout/ResponsivePageContainer';
@@ -46,11 +46,16 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [approvalFilter, setApprovalFilter] = useState('all');
   const [userToDelete, setUserToDelete] = useState<UserProfile | null>(null);
+  const [userToReject, setUserToReject] = useState<UserProfile | null>(null);
   const [resetPasswordUser, setResetPasswordUser] = useState<UserProfile | null>(null);
   
   const updateStatus = useUpdateUserStatus();
   const deleteUser = useDeleteUser();
+  const approveUser = useApproveUser();
+  const rejectUser = useRejectUser();
+  const disableUser = useDisableUser();
   const { data: isSuperAdmin } = useIsSuperAdmin();
 
   // Get unique roles for filter dropdown
@@ -66,7 +71,9 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
     
     const matchesStatus = statusFilter === 'all' || user.status === statusFilter;
     
-    return matchesSearch && matchesRole && matchesStatus;
+    const matchesApproval = approvalFilter === 'all' || user.approval_status === approvalFilter;
+    
+    return matchesSearch && matchesRole && matchesStatus && matchesApproval;
   });
 
   const formatLastLogin = (lastLogin: string | null) => {
@@ -101,6 +108,40 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
       default:
         return '';
     }
+  };
+
+  const getApprovalBadge = (approvalStatus: ApprovalStatus | null) => {
+    switch (approvalStatus) {
+      case 'PENDING_APPROVAL':
+        return <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200"><Clock className="h-3 w-3 mr-1" />Pending</Badge>;
+      case 'APPROVED':
+        return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200"><CheckCircle className="h-3 w-3 mr-1" />Approved</Badge>;
+      case 'REJECTED':
+        return <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200"><XCircle className="h-3 w-3 mr-1" />Rejected</Badge>;
+      case 'DISABLED':
+        return <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200"><PowerOff className="h-3 w-3 mr-1" />Disabled</Badge>;
+      default:
+        return <Badge variant="outline" className="bg-gray-50 text-gray-500 border-gray-200">Unknown</Badge>;
+    }
+  };
+
+  const handleApprove = (userId: string) => {
+    approveUser.mutate(userId);
+  };
+
+  const handleReject = (user: UserProfile) => {
+    setUserToReject(user);
+  };
+
+  const confirmReject = () => {
+    if (userToReject) {
+      rejectUser.mutate({ userId: userToReject.id });
+      setUserToReject(null);
+    }
+  };
+
+  const handleDisable = (userId: string) => {
+    disableUser.mutate(userId);
   };
 
   const handleStatusToggle = (userId: string, currentStatus: string) => {
@@ -175,6 +216,18 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
               <SelectItem value="Pending">Pending</SelectItem>
             </SelectContent>
           </Select>
+          <Select value={approvalFilter} onValueChange={setApprovalFilter}>
+            <SelectTrigger className="w-full sm:w-[180px]">
+              <SelectValue placeholder="Approval Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Approval</SelectItem>
+              <SelectItem value="PENDING_APPROVAL">Pending Approval</SelectItem>
+              <SelectItem value="APPROVED">Approved</SelectItem>
+              <SelectItem value="REJECTED">Rejected</SelectItem>
+              <SelectItem value="DISABLED">Disabled</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Table */}
@@ -184,6 +237,7 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
               <tr className="border-b bg-muted/30">
                 <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Name</th>
                 <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Role(s)</th>
+                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Approval</th>
                 <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Last Login</th>
                 <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground">Status</th>
                 <th className="text-right py-3 px-4 text-xs font-medium text-muted-foreground">Actions</th>
@@ -212,6 +266,9 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
                     </div>
                   </td>
                   <td className="py-3 px-4">
+                    {getApprovalBadge(user.approval_status)}
+                  </td>
+                  <td className="py-3 px-4">
                     <div className="text-sm text-muted-foreground">
                       {formatLastLogin(user.last_login)}
                     </div>
@@ -233,6 +290,20 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
+                          {/* Approve/Reject for pending users */}
+                          {user.approval_status === 'PENDING_APPROVAL' && (
+                            <>
+                              <DropdownMenuItem onClick={() => handleApprove(user.id)} className="text-green-600">
+                                <CheckCircle className="h-4 w-4 mr-2" />
+                                Approve
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleReject(user)} className="text-red-600">
+                                <XCircle className="h-4 w-4 mr-2" />
+                                Reject
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                            </>
+                          )}
                           {onEditRoles && (
                             <DropdownMenuItem onClick={() => onEditRoles(user.id)}>
                               <ShieldCheck className="h-4 w-4 mr-2" />
@@ -256,6 +327,13 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
                             </>
                           )}
                           <DropdownMenuSeparator />
+                          {/* Disable for approved users */}
+                          {user.approval_status === 'APPROVED' && (
+                            <DropdownMenuItem onClick={() => handleDisable(user.id)}>
+                              <PowerOff className="h-4 w-4 mr-2" />
+                              Disable User
+                            </DropdownMenuItem>
+                          )}
                           <DropdownMenuItem onClick={() => handleStatusToggle(user.id, user.status)}>
                             {user.status === 'Active' ? (
                               <>
@@ -320,6 +398,28 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Remove User
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Reject User Confirmation Dialog */}
+      <AlertDialog open={!!userToReject} onOpenChange={(open) => !open && setUserToReject(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Reject User</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to reject <strong>{userToReject?.full_name || userToReject?.email}</strong>? 
+              They will not be able to access the system.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmReject}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Reject User
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
