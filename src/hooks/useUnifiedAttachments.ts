@@ -64,8 +64,11 @@ export function useStageAttachment() {
       sourceContext?: 'external_wizard' | 'links_tab';
     }): Promise<UnifiedAttachment> => {
       // Generate unique storage key
+      // Use public-intake/ prefix for external uploads (anonymous access allowed)
+      // Use staged/ prefix for internal uploads (requires authentication)
       const timestamp = Date.now();
-      const storageKey = `staged/${uploadSessionId}/${timestamp}-${file.name}`;
+      const folderPrefix = uploadedByType === 'external' ? 'public-intake' : 'staged';
+      const storageKey = `${folderPrefix}/${uploadSessionId}/${timestamp}-${file.name}`;
       
       // Upload file to storage
       const { error: uploadError } = await supabase.storage
@@ -74,7 +77,7 @@ export function useStageAttachment() {
       
       if (uploadError) {
         console.error('Storage upload error:', uploadError);
-        throw new Error(`Failed to upload file: ${uploadError.message}`);
+        throw new Error('Upload failed. Please try again or contact support if it continues.');
       }
       
       // Calculate simple checksum (for now, use size + name hash)
