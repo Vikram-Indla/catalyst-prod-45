@@ -1,9 +1,9 @@
 /**
- * Project Sidebar
- * Sidebar for Project-level context (per spec: no Tests, no More items, no Epics)
+ * Unified Sidebar Component
+ * Single sidebar component for Program and Project workspaces
+ * Replaces ProgramSidebar and ProjectSidebar with shared structure
  */
 
-import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -13,23 +13,21 @@ import {
   LayoutDashboard,
   Network,
   GitBranch,
+  Map,
   Grid3x3,
   Users as UsersIcon,
   Calendar,
   FileText,
   Settings,
+  Square,
 } from 'lucide-react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 
-interface ProjectSidebarProps {
-  projectId: string;
+type WorkspaceType = 'program' | 'project';
+
+interface UnifiedSidebarProps {
+  workspaceType: WorkspaceType;
+  entityId: string;
   expanded: boolean;
   onToggle: () => void;
   selectedQuarter?: string | null;
@@ -37,19 +35,28 @@ interface ProjectSidebarProps {
   className?: string;
 }
 
-// Project sidebar menu items (per spec - no Tests, no More items, no Epics)
-// Uses "Project" label as this is the Project sidebar
-const menuItems = [
-  { id: 'project-room', label: 'Project Room', icon: LayoutDashboard, path: '/programs/:projectId/room' },
-  { id: 'work-tree', label: 'Work tree', icon: Network, path: '/programs/:projectId/work-tree' },
-  { id: 'dependencies', label: 'Dependencies', icon: GitBranch, path: '/programs/:projectId/dependencies' },
-  { id: 'forecast', label: 'Forecast', icon: Grid3x3, path: '/programs/:projectId/forecast' },
-  { id: 'capacity', label: 'Capacity', icon: UsersIcon, path: '/programs/:projectId/capacity', badge: 'NEW' },
-  { id: 'quarters', label: 'Quarters', icon: Calendar, path: '/programs/:projectId/quarters' },
-  { id: 'reports', label: 'Reports', icon: FileText, path: '/programs/:projectId/reports' },
-];
+// Menu items configuration per workspace type
+const menuConfigs: Record<WorkspaceType, Array<{ id: string; label: string; icon: any; pathTemplate: string; badge?: string }>> = {
+  program: [
+    { id: 'room', label: 'Program Room', icon: LayoutDashboard, pathTemplate: '/program/:id/room' },
+    { id: 'epic-backlog', label: 'Epic Backlog', icon: Square, pathTemplate: '/program/:id/epic-backlog' },
+    { id: 'work-tree', label: 'Work tree', icon: Network, pathTemplate: '/program/:id/work-tree' },
+    { id: 'dependencies', label: 'Dependencies', icon: GitBranch, pathTemplate: '/program/:id/dependencies' },
+    { id: 'roadmaps', label: 'Roadmaps', icon: Map, pathTemplate: '/program/:id/roadmaps' },
+    { id: 'epic-balancing', label: 'Epic Balancing', icon: Grid3x3, pathTemplate: '/program/:id/epic-balancing' },
+    { id: 'reports', label: 'Reports', icon: FileText, pathTemplate: '/program/:id/reports' },
+  ],
+  project: [
+    { id: 'room', label: 'Project Room', icon: LayoutDashboard, pathTemplate: '/programs/:id/room' },
+    { id: 'work-tree', label: 'Work tree', icon: Network, pathTemplate: '/programs/:id/work-tree' },
+    { id: 'dependencies', label: 'Dependencies', icon: GitBranch, pathTemplate: '/programs/:id/dependencies' },
+    { id: 'forecast', label: 'Forecast', icon: Grid3x3, pathTemplate: '/programs/:id/forecast' },
+    { id: 'capacity', label: 'Capacity', icon: UsersIcon, pathTemplate: '/programs/:id/capacity', badge: 'NEW' },
+    { id: 'quarters', label: 'Quarters', icon: Calendar, pathTemplate: '/programs/:id/quarters' },
+    { id: 'reports', label: 'Reports', icon: FileText, pathTemplate: '/programs/:id/reports' },
+  ],
+};
 
-// Get current quarter based on current date
 function getCurrentQuarter(): string {
   const now = new Date();
   const month = now.getMonth();
@@ -58,71 +65,55 @@ function getCurrentQuarter(): string {
   return `Q${quarter} ${year}`;
 }
 
-export function ProjectSidebar({ 
-  projectId, 
+export function UnifiedSidebar({ 
+  workspaceType,
+  entityId, 
   expanded, 
   onToggle,
   selectedQuarter,
   onQuarterChange,
   className
-}: ProjectSidebarProps) {
+}: UnifiedSidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Current quarter for default
-  const currentQuarter = getCurrentQuarter();
-  const effectiveQuarter = selectedQuarter || currentQuarter;
+  const menuItems = menuConfigs[workspaceType];
+  const entityLabel = workspaceType === 'program' ? 'Program' : 'Project';
+  const tableName = workspaceType === 'program' ? 'programs' : 'programs';
 
-  // Fetch project details
-  const { data: project } = useQuery({
-    queryKey: ['project-sidebar', projectId],
+  // Fetch entity details
+  const { data: entity } = useQuery({
+    queryKey: [`${workspaceType}-sidebar`, entityId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('programs')
-        .select(`
-          id, 
-          name,
-          portfolios (
-            id,
-            name
-          )
-        `)
-        .eq('id', projectId)
+        .from(tableName)
+        .select('id, name')
+        .eq('id', entityId)
         .maybeSingle();
       
       if (error) throw error;
       return data;
     },
-    enabled: !!projectId,
+    enabled: !!entityId,
   });
 
-  // Fetch available quarters (PIs)
-  const { data: quarters } = useQuery({
-    queryKey: ['quarters-sidebar'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('program_increments')
-        .select('id, name')
-        .order('name');
-      
-      if (error) throw error;
-      return data || [];
-    },
-  });
+  const currentQuarter = getCurrentQuarter();
+  const effectiveQuarter = selectedQuarter || currentQuarter;
 
-  const handleNavigation = (path: string) => {
-    const resolvedPath = path.replace(':projectId', projectId);
+  const handleNavigation = (pathTemplate: string) => {
+    const resolvedPath = pathTemplate.replace(':id', entityId);
     navigate(resolvedPath + (effectiveQuarter ? `?quarter=${effectiveQuarter}` : ''));
-    // Collapse sidebar after navigation
     if (expanded) {
       onToggle();
     }
   };
 
-  const isActive = (path: string) => {
-    const resolvedPath = path.replace(':projectId', projectId);
+  const isActive = (pathTemplate: string) => {
+    const resolvedPath = pathTemplate.replace(':id', entityId);
     return location.pathname === resolvedPath || location.pathname.startsWith(resolvedPath);
   };
+
+  const settingsPath = workspaceType === 'program' ? '/admin/portfolios' : '/admin/programs';
 
   return (
     <aside 
@@ -146,24 +137,24 @@ export function ProjectSidebar({
       </button>
 
       <div className="h-full flex flex-col overflow-hidden">
-        {/* Project Context Header - Compact */}
+        {/* Entity Context Header */}
         <div className={cn("px-2 py-2 border-b", !expanded && "px-1")}>
           {expanded ? (
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-md bg-brand-gold flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
-                {project?.name?.substring(0, 2).toUpperCase() || 'PR'}
+                {entity?.name?.substring(0, 2).toUpperCase() || entityLabel.substring(0, 2).toUpperCase()}
               </div>
               <div className="min-w-0 flex-1">
                 <div className="text-sm font-medium text-foreground truncate">
-                  {project?.name || 'Project'}
+                  {entity?.name || entityLabel}
                 </div>
-                <div className="text-[10px] text-muted-foreground">Project</div>
+                <div className="text-[10px] text-muted-foreground">{entityLabel}</div>
               </div>
             </div>
           ) : (
             <div className="flex justify-center">
               <div className="w-8 h-8 rounded-md bg-brand-gold flex items-center justify-center text-white text-xs font-semibold">
-                {project?.name?.substring(0, 2).toUpperCase() || 'PR'}
+                {entity?.name?.substring(0, 2).toUpperCase() || entityLabel.substring(0, 2).toUpperCase()}
               </div>
             </div>
           )}
@@ -173,12 +164,12 @@ export function ProjectSidebar({
         <nav className="flex-1 overflow-y-auto py-1">
           {menuItems.map((item) => {
             const Icon = item.icon;
-            const active = isActive(item.path);
+            const active = isActive(item.pathTemplate);
 
             return (
               <button
                 key={item.id}
-                onClick={() => handleNavigation(item.path)}
+                onClick={() => handleNavigation(item.pathTemplate)}
                 className={cn(
                   "w-full flex items-center gap-3 px-4 py-2.5 text-sm font-normal transition-colors",
                   "hover:bg-accent/50",
@@ -208,10 +199,13 @@ export function ProjectSidebar({
           <div className="border-t">
             <button 
               className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-normal hover:bg-accent/50 transition-colors"
-              onClick={() => navigate('/admin/programs')}
+              onClick={() => {
+                navigate(settingsPath);
+                onToggle();
+              }}
             >
               <Settings className="h-5 w-5 text-muted-foreground" />
-              <span className="text-left">Project Settings</span>
+              <span className="text-left">{entityLabel} Settings</span>
             </button>
           </div>
         )}
