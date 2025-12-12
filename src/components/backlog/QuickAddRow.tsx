@@ -27,7 +27,7 @@ export function QuickAddRow({ programs, onAdd }: QuickAddRowProps) {
         placeholder="New Epic Name..."
         value={epicName}
         onChange={(e) => setEpicName(e.target.value)}
-        className="flex-1 max-w-[400px] px-3 py-2 border border-input rounded text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring"
+        className="flex-1 max-w-[400px] px-3 py-2 border border-border rounded text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring"
         onKeyDown={(e) => {
           if (e.key === 'Enter' && epicName.trim() && selectedProgram) {
             handleAdd();
@@ -36,7 +36,7 @@ export function QuickAddRow({ programs, onAdd }: QuickAddRowProps) {
       />
       
       <Select value={selectedProgram} onValueChange={setSelectedProgram}>
-        <SelectTrigger className="w-[150px] border-input text-sm">
+        <SelectTrigger className="w-[150px] border-border text-sm">
           <SelectValue placeholder="Select Program" />
         </SelectTrigger>
         <SelectContent>
@@ -51,7 +51,7 @@ export function QuickAddRow({ programs, onAdd }: QuickAddRowProps) {
       <button
         onClick={handleAdd}
         disabled={!epicName.trim() || !selectedProgram}
-        className="flex items-center gap-1.5 px-4 py-2 border border-input rounded text-sm text-foreground bg-background hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="flex items-center gap-1.5 px-4 py-2 border border-border rounded text-sm text-foreground bg-background hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         <Plus className="w-4 h-4" />
         Add

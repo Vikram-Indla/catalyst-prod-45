@@ -89,7 +89,7 @@ function POTagsInput({
 
   return (
     <div className="space-y-2">
-      <div className="flex flex-wrap gap-1.5 min-h-[32px] p-2 border border-input rounded-md bg-background">
+      <div className="flex flex-wrap gap-1.5 min-h-[32px] p-2 border border-border rounded-md bg-background">
         {tags.map((tag, index) => (
           <Badge 
             key={index} 
@@ -147,7 +147,7 @@ function BudgetTypeChips({
             "px-3 py-1.5 rounded-full text-xs font-medium transition-all border",
             selected.includes(type)
               ? "bg-brand-gold text-white border-brand-gold"
-              : "bg-background text-muted-foreground border-input hover:border-brand-gold/50"
+              : "bg-background text-muted-foreground border-border hover:border-brand-gold/50"
           )}
         >
           {type}

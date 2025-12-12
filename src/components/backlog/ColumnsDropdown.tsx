@@ -77,7 +77,7 @@ export const ColumnsDropdown = ({ columns, onChange, trigger }: ColumnsDropdownP
         </div>
       ) : (
         <button
-          className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium h-9 px-3 py-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md transition-colors"
+          className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium h-9 px-3 py-2 border border-border bg-background hover:bg-accent hover:text-accent-foreground rounded-md transition-colors"
           onClick={() => setIsOpen(!isOpen)}
         >
           <Columns3 className="w-4 h-4" />

@@ -135,7 +135,7 @@ export function DesignTab({ epicId }: DesignTabProps) {
               id="asset-type"
               value={newAsset.type}
               onChange={(e) => setNewAsset({ ...newAsset, type: e.target.value as any })}
-              className="w-full h-10 px-3 rounded-md border border-input bg-background"
+              className="w-full h-10 px-3 rounded-md border border-border bg-background"
             >
               <option value="wireframe">Wireframe</option>
               <option value="mockup">Mockup</option>
