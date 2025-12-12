@@ -2,7 +2,9 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { DELIVERY_PLATFORM_OPTIONS, DEPARTMENT_OPTIONS } from '@/types/business-request';
+import { format } from 'date-fns';
 
 const QUARTER_OPTIONS = [
   'Q1 2024', 'Q2 2024', 'Q3 2024', 'Q4 2024',
@@ -148,12 +150,10 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
           <Label htmlFor="end_date" className="text-sm font-medium">
             Target Date
           </Label>
-          <Input
-            id="end_date"
-            type="date"
-            value={data.end_date || ''}
-            onChange={(e) => onChange('end_date', e.target.value)}
-            className="bg-background"
+          <CatalystDatePicker
+            value={data.end_date || null}
+            onChange={(date) => onChange('end_date', date ? format(date, 'yyyy-MM-dd') : '')}
+            placeholder="Select target date"
           />
         </div>
       </div>
