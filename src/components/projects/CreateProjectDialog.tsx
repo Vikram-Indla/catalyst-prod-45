@@ -30,14 +30,7 @@ interface CreateProjectDialogProps {
   onSuccess?: (project: { id: string; name: string; key: string }) => void;
 }
 
-function generateKey(name: string): string {
-  if (!name.trim()) return '';
-  const words = name.trim().split(/\s+/);
-  if (words.length === 1) {
-    return words[0].substring(0, 4).toUpperCase();
-  }
-  return words.slice(0, 4).map(w => w[0]).join('').toUpperCase();
-}
+const KEY_REGEX = /^[A-Z]{3}$/;
 
 export function CreateProjectDialog({ open, onOpenChange, onSuccess }: CreateProjectDialogProps) {
   const queryClient = useQueryClient();
@@ -47,6 +40,7 @@ export function CreateProjectDialog({ open, onOpenChange, onSuccess }: CreatePro
   const [description, setDescription] = useState('');
   const [programId, setProgramId] = useState('');
   const [projectType, setProjectType] = useState<'scrum' | 'kanban'>('scrum');
+  const [keyError, setKeyError] = useState('');
 
   // Fetch programs (portfolios in DB)
   const { data: programs } = useQuery({
@@ -54,20 +48,48 @@ export function CreateProjectDialog({ open, onOpenChange, onSuccess }: CreatePro
     queryFn: async () => {
       const { data, error } = await supabase
         .from('portfolios')
-        .select('id, name')
+        .select('id, name, key')
         .order('name');
       if (error) throw error;
       return data;
     },
   });
 
+  // Fetch existing project keys for uniqueness validation
+  const { data: existingKeys } = useQuery({
+    queryKey: ['project-keys'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('programs')
+        .select('key');
+      if (error) throw error;
+      return data?.map(p => p.key?.toUpperCase()) || [];
+    },
+  });
+
+  const validateKey = (value: string): string => {
+    if (!value) return 'Project key is required';
+    if (!KEY_REGEX.test(value)) return 'Key must be exactly 3 uppercase letters (A-Z)';
+    if (existingKeys?.includes(value.toUpperCase())) return 'This key is already in use';
+    return '';
+  };
+
+  const handleKeyChange = (value: string) => {
+    const upperValue = value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3);
+    setKey(upperValue);
+    if (upperValue.length === 3) {
+      setKeyError(validateKey(upperValue));
+    } else {
+      setKeyError('');
+    }
+  };
+
   const createProject = useMutation({
     mutationFn: async () => {
       let portfolioId = programId;
 
-      // If no program selected, create or use default
+      // If no program selected, use default
       if (!portfolioId) {
-        // Check for existing default program
         const { data: existingDefault } = await supabase
           .from('portfolios')
           .select('id')
@@ -77,31 +99,28 @@ export function CreateProjectDialog({ open, onOpenChange, onSuccess }: CreatePro
         if (existingDefault) {
           portfolioId = existingDefault.id;
         } else {
-          // Create default program
-          const { data: newDefault, error: defaultError } = await supabase
-            .from('portfolios')
-            .insert({ name: 'Default', key: 'DEFAULT', status: 'active' })
-            .select('id')
-            .single();
-          
-          if (defaultError) throw defaultError;
-          portfolioId = newDefault.id;
+          throw new Error('Please select a program');
         }
       }
 
-      const finalKey = key.trim() || generateKey(name);
-      const { data, error } = await supabase
+      const finalKey = key.trim().toUpperCase();
+      
+      // Final validation
+      const error = validateKey(finalKey);
+      if (error) throw new Error(error);
+
+      const { data, error: dbError } = await supabase
         .from('programs')
         .insert({
           name: name.trim(),
-          key: finalKey.toUpperCase(),
+          key: finalKey,
           description: description.trim() || null,
           portfolio_id: portfolioId,
         })
         .select()
         .single();
 
-      if (error) throw error;
+      if (dbError) throw dbError;
       return data;
     },
     onSuccess: (data) => {
@@ -109,6 +128,7 @@ export function CreateProjectDialog({ open, onOpenChange, onSuccess }: CreatePro
       queryClient.invalidateQueries({ queryKey: ['programs-for-project'] });
       queryClient.invalidateQueries({ queryKey: ['workspace-projects'] });
       queryClient.invalidateQueries({ queryKey: ['projects-header'] });
+      queryClient.invalidateQueries({ queryKey: ['project-keys'] });
       toast.success('Project created successfully');
       handleClose();
       
@@ -129,6 +149,7 @@ export function CreateProjectDialog({ open, onOpenChange, onSuccess }: CreatePro
     setDescription('');
     setProgramId('');
     setProjectType('scrum');
+    setKeyError('');
     onOpenChange(false);
   };
 
@@ -136,6 +157,11 @@ export function CreateProjectDialog({ open, onOpenChange, onSuccess }: CreatePro
     e.preventDefault();
     if (!name.trim()) {
       toast.error('Project name is required');
+      return;
+    }
+    const error = validateKey(key);
+    if (error) {
+      setKeyError(error);
       return;
     }
     createProject.mutate();
@@ -164,33 +190,36 @@ export function CreateProjectDialog({ open, onOpenChange, onSuccess }: CreatePro
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="program">Program</Label>
+            <Label htmlFor="key">Project Key *</Label>
+            <Input
+              id="key"
+              value={key}
+              onChange={(e) => handleKeyChange(e.target.value)}
+              placeholder="ABC"
+              maxLength={3}
+              className={keyError ? 'border-destructive' : ''}
+            />
+            {keyError ? (
+              <p className="text-xs text-destructive">{keyError}</p>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                Exactly 3 uppercase letters (A-Z)
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="program">Program *</Label>
             <Select value={programId} onValueChange={setProgramId}>
               <SelectTrigger>
-                <SelectValue placeholder="Select a program (optional)" />
+                <SelectValue placeholder="Select a program" />
               </SelectTrigger>
               <SelectContent>
                 {programs?.map((program) => (
                   <SelectItem key={program.id} value={program.id}>
-                    {program.name}
+                    {program.name} ({program.key})
                   </SelectItem>
                 ))}
-              </SelectContent>
-            </Select>
-            <p className="text-xs text-muted-foreground">
-              If no program is selected, the project will be added to the Default program.
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="type">Project type</Label>
-            <Select value={projectType} onValueChange={(v) => setProjectType(v as 'scrum' | 'kanban')}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="scrum">Scrum</SelectItem>
-                <SelectItem value="kanban">Kanban</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -212,7 +241,7 @@ export function CreateProjectDialog({ open, onOpenChange, onSuccess }: CreatePro
             </Button>
             <Button 
               type="submit" 
-              disabled={createProject.isPending}
+              disabled={!name.trim() || !key || key.length !== 3 || !!keyError || !programId || createProject.isPending}
               className="bg-brand-gold hover:bg-brand-gold-hover"
             >
               {createProject.isPending ? 'Creating...' : 'Create project'}
