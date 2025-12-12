@@ -147,7 +147,7 @@ export function ProgramRoomSidebar({
     <aside 
       className={cn(
         "h-full border-r bg-card transition-all duration-300 flex-shrink-0 relative flex flex-col",
-        expanded ? "w-[220px]" : "w-16",
+        expanded ? "w-[180px]" : "w-16",
         className
       )}
     >
