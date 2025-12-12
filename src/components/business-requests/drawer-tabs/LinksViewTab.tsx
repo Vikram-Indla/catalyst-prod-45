@@ -36,10 +36,13 @@ import {
   Clock,
   Eye,
   Filter,
-  ChevronDown
+  ChevronDown,
+  FileIcon,
+  Paperclip
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { useWorkItemAttachments, downloadAttachment, type UnifiedAttachment } from '@/hooks/useUnifiedAttachments';
 
 const FILE_UPLOAD_CONFIG = {
   MAX_FILE_SIZE_MB: 20,
@@ -308,7 +311,8 @@ export function LinksViewTab({ requestId }: LinksViewTabProps) {
     enabled: formView === 'implementation' && implSearch.trim().length >= 1
   });
 
-  const { data: links = [], isLoading: linksLoading } = useQuery({
+  // Fetch legacy links from business_request_links
+  const { data: legacyLinks = [], isLoading: linksLoading } = useQuery({
     queryKey: ['business-request-links', requestId],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -322,6 +326,35 @@ export function LinksViewTab({ requestId }: LinksViewTabProps) {
     },
     enabled: !!requestId
   });
+
+  // Fetch unified attachments (from external wizard uploads)
+  const { data: unifiedAttachments = [], isLoading: attachmentsLoading } = useWorkItemAttachments(requestId, 'business_request');
+
+  // Merge legacy links with unified attachments (convert to common shape)
+  const links = useMemo(() => {
+    // Convert unified attachments to link-like shape
+    const attachmentLinks = unifiedAttachments.map((att: UnifiedAttachment) => ({
+      id: att.id,
+      title: att.file_name,
+      url: '', // Will use storage_key for download
+      kind: 'document' as LinkKind,
+      link_type: 'document',
+      linked_item_type: null as string | null,
+      created_at: att.created_at,
+      added_by_name: att.uploaded_by_name || 'External User',
+      file_name: att.file_name,
+      file_path: att.storage_key,
+      file_size: att.file_size,
+      mime_type: att.mime_type,
+      // Mark as unified attachment for special handling
+      _isUnifiedAttachment: true,
+      _unifiedAttachment: att,
+    }));
+
+    // Combine and dedupe by id
+    const allLinks = [...legacyLinks, ...attachmentLinks];
+    return allLinks;
+  }, [legacyLinks, unifiedAttachments]);
 
   // Filter and sort links
   const filteredLinks = useMemo(() => {

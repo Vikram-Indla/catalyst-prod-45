@@ -11059,6 +11059,101 @@ export type Database = {
         }
         Relationships: []
       }
+      unified_attachments: {
+        Row: {
+          checksum_sha256: string | null
+          created_at: string
+          file_name: string
+          file_size: number | null
+          id: string
+          mime_type: string | null
+          source_context: string
+          status: string
+          storage_key: string
+          storage_provider: string
+          updated_at: string
+          upload_session_id: string | null
+          uploaded_by_name: string | null
+          uploaded_by_type: string
+          uploaded_by_user_id: string | null
+          work_item_id: string | null
+          work_item_type: string | null
+        }
+        Insert: {
+          checksum_sha256?: string | null
+          created_at?: string
+          file_name: string
+          file_size?: number | null
+          id?: string
+          mime_type?: string | null
+          source_context?: string
+          status?: string
+          storage_key: string
+          storage_provider?: string
+          updated_at?: string
+          upload_session_id?: string | null
+          uploaded_by_name?: string | null
+          uploaded_by_type?: string
+          uploaded_by_user_id?: string | null
+          work_item_id?: string | null
+          work_item_type?: string | null
+        }
+        Update: {
+          checksum_sha256?: string | null
+          created_at?: string
+          file_name?: string
+          file_size?: number | null
+          id?: string
+          mime_type?: string | null
+          source_context?: string
+          status?: string
+          storage_key?: string
+          storage_provider?: string
+          updated_at?: string
+          upload_session_id?: string | null
+          uploaded_by_name?: string | null
+          uploaded_by_type?: string
+          uploaded_by_user_id?: string | null
+          work_item_id?: string | null
+          work_item_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "unified_attachments_upload_session_id_fkey"
+            columns: ["upload_session_id"]
+            isOneToOne: false
+            referencedRelation: "upload_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      upload_sessions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          expires_at: string | null
+          id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_app_preferences: {
         Row: {
           auto_save_enabled: boolean | null
