@@ -2,11 +2,9 @@ import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { Button } from '@/components/ui/button';
-// Card/CardContent removed - using divs for compact white panels
-import { CalendarIcon, Lock, Unlock } from 'lucide-react';
+import { Lock, Unlock } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -149,87 +147,34 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
           {/* Dates - 3-column compact grid */}
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <Label className="text-xs font-medium">Business Ask</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal mt-1 h-9 text-sm",
-                      !data.start_date && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-1.5 h-3.5 w-3.5" />
-                    {data.start_date ? format(new Date(data.start_date), 'dd/MM/yy') : 'Select'}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={data.start_date ? new Date(data.start_date) : undefined}
-                    onSelect={(date) => onChange('start_date', date ? format(date, 'yyyy-MM-dd') : null)}
-                    initialFocus
-                    className="pointer-events-auto"
-                  />
-                </PopoverContent>
-              </Popover>
+              <Label className="text-xs font-medium mb-1.5 block">Business Ask</Label>
+              <CatalystDatePicker
+                value={data.start_date || null}
+                onChange={(date) => onChange('start_date', date ? format(date, 'yyyy-MM-dd') : null)}
+                placeholder="Select"
+              />
             </div>
 
             <div>
-              <Label className="text-xs font-medium">Kickoff</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal mt-1 h-9 text-sm",
-                      !data.impl_start_date && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-1.5 h-3.5 w-3.5" />
-                    {data.impl_start_date ? format(new Date(data.impl_start_date), 'dd/MM/yy') : 'Select'}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={data.impl_start_date ? new Date(data.impl_start_date) : undefined}
-                    onSelect={(date) => onChange('impl_start_date', date ? format(date, 'yyyy-MM-dd') : null)}
-                    initialFocus
-                    className="pointer-events-auto"
-                  />
-                </PopoverContent>
-              </Popover>
+              <Label className="text-xs font-medium mb-1.5 block">Kickoff</Label>
+              <CatalystDatePicker
+                value={data.impl_start_date || null}
+                onChange={(date) => onChange('impl_start_date', date ? format(date, 'yyyy-MM-dd') : null)}
+                placeholder="Select"
+              />
             </div>
 
             <div>
-              <Label className="text-xs font-medium">Target Complete</Label>
-              <div className="flex gap-1.5 mt-1">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      disabled={targetDateLocked}
-                      className={cn(
-                        "flex-1 justify-start text-left font-normal h-9 text-sm",
-                        !data.end_date && "text-muted-foreground",
-                        targetDateLocked && "opacity-60"
-                      )}
-                    >
-                      <CalendarIcon className="mr-1.5 h-3.5 w-3.5" />
-                      {data.end_date ? format(new Date(data.end_date), 'dd/MM/yy') : 'Select'}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={data.end_date ? new Date(data.end_date) : undefined}
-                      onSelect={(date) => onChange('end_date', date ? format(date, 'yyyy-MM-dd') : null)}
-                      initialFocus
-                      className="pointer-events-auto"
-                    />
-                  </PopoverContent>
-                </Popover>
+              <Label className="text-xs font-medium mb-1.5 block">Target Complete</Label>
+              <div className="flex gap-1.5">
+                <div className="flex-1">
+                  <CatalystDatePicker
+                    value={data.end_date || null}
+                    onChange={(date) => onChange('end_date', date ? format(date, 'yyyy-MM-dd') : null)}
+                    placeholder="Select"
+                    disabled={targetDateLocked}
+                  />
+                </div>
                 <Button
                   variant="outline"
                   size="icon"
