@@ -7,18 +7,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
 import { useBacklogState } from '../hooks/useBacklogState';
+import { CreateEpicDialog } from '@/modules/program-epics/components/CreateEpicDialog';
 
 interface BacklogToolbarProps {
   selectedCount: number;
@@ -41,53 +31,35 @@ export function BacklogToolbar({
   onBulkDelete,
   onBulkMove,
 }: BacklogToolbarProps) {
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [newEpicName, setNewEpicName] = useState('');
-  const queryClient = useQueryClient();
-  const { type, isEpicBacklog } = useBacklogState();
-
-  const createEpicMutation = useMutation({
-    mutationFn: async (name: string) => {
-      const { data, error } = await supabase
-        .from('epics')
-        .insert({ name })
-        .select()
-        .single();
-      
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
-      toast.success('Epic created successfully');
-      setNewEpicName('');
-      setIsAddDialogOpen(false);
-    },
-    onError: (error: any) => {
-      toast.error(`Failed to create epic: ${error.message}`);
-    },
-  });
-
-  const handleAddClick = () => {
-    setIsAddDialogOpen(true);
-  };
-
-  const handleCreateEpic = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (newEpicName.trim()) {
-      createEpicMutation.mutate(newEpicName.trim());
-    }
-  };
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const { type, isEpicBacklog, programId } = useBacklogState();
 
   // Label for add button based on type (always Epic in Epic Backlog mode)
   const itemTypeLabel = isEpicBacklog ? 'Epic' : (type === 'epic' ? 'Epic' : type.charAt(0).toUpperCase() + type.slice(1));
+
+  // HARD GUARD: Cannot create epic without programId
+  const canCreate = isEpicBacklog && type === 'epic' && !!programId;
+
+  const handleAddClick = () => {
+    if (!canCreate) {
+      console.error('[BacklogToolbar] Cannot create epic without programId');
+      return;
+    }
+    setIsCreateDialogOpen(true);
+  };
 
   return (
     <>
       <div className="flex items-center gap-2 border-b bg-card px-4 sm:px-6 py-3">
         {/* Left side: Action buttons */}
         <div className="flex items-center gap-2">
-          <Button size="sm" variant="default" onClick={handleAddClick}>
+          <Button 
+            size="sm" 
+            variant="default" 
+            onClick={handleAddClick}
+            disabled={!canCreate}
+            title={!canCreate ? 'Program context required to create epics' : undefined}
+          >
             <Plus className="h-4 w-4 mr-2" />
             Add
           </Button>
@@ -150,34 +122,14 @@ export function BacklogToolbar({
         </Button>
       </div>
 
-      {/* Add Epic Dialog */}
-      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Create New {itemTypeLabel}</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleCreateEpic} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">{itemTypeLabel} Name</Label>
-              <Input
-                id="name"
-                value={newEpicName}
-                onChange={(e) => setNewEpicName(e.target.value)}
-                placeholder={`Enter ${itemTypeLabel.toLowerCase()} name...`}
-                autoFocus
-              />
-            </div>
-            <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={() => setIsAddDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={!newEpicName.trim() || createEpicMutation.isPending}>
-                {createEpicMutation.isPending ? 'Creating...' : 'Create'}
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
+      {/* CANONICAL Create Epic Dialog - requires programId */}
+      {programId && (
+        <CreateEpicDialog
+          open={isCreateDialogOpen}
+          onOpenChange={setIsCreateDialogOpen}
+          programId={programId}
+        />
+      )}
     </>
   );
 }
