@@ -20,6 +20,15 @@ interface UseEpicRoadmapItemsResult {
   owners: Array<{ id: string; name: string }>;
 }
 
+// Feature status to milestone state mapping
+const FEATURE_STATUS_TO_MILESTONE_STATE: Record<string, 'complete' | 'current' | 'pending'> = {
+  'done': 'complete',
+  'implementing': 'current',
+  'analyzing': 'current',
+  'backlog': 'pending',
+  'funnel': 'pending',
+};
+
 export function useEpicRoadmapItems(
   programId: string | undefined,
   filters?: EpicRoadmapFilters
@@ -77,6 +86,44 @@ export function useEpicRoadmapItems(
     enabled: !!programId,
   });
 
+  // Get epic IDs for fetching features
+  const epicIds = (epicsData || []).map((e: any) => e.id);
+
+  // Fetch child features for the epics (only when we have epics)
+  const { data: featuresData } = useQuery({
+    queryKey: ['epic-roadmap-features', epicIds],
+    queryFn: async () => {
+      if (epicIds.length === 0) return [];
+
+      const { data, error } = await supabase
+        .from('features')
+        .select(`
+          id,
+          epic_id,
+          name,
+          status,
+          planned_end_date,
+          actual_end_date,
+          planned_start_date,
+          actual_start_date,
+          created_at
+        `)
+        .in('epic_id', epicIds);
+
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: epicIds.length > 0,
+  });
+
+  // Group features by epic_id
+  const featuresByEpicId = (featuresData || []).reduce((acc: Record<string, any[]>, feature: any) => {
+    if (!feature.epic_id) return acc;
+    if (!acc[feature.epic_id]) acc[feature.epic_id] = [];
+    acc[feature.epic_id].push(feature);
+    return acc;
+  }, {});
+
   // Fetch all themes for filter dropdown
   const { data: themesData } = useQuery({
     queryKey: ['epic-roadmap-themes'],
@@ -103,7 +150,7 @@ export function useEpicRoadmapItems(
     },
   });
 
-  // Transform epics into RoadmapItem format
+  // Transform epics into RoadmapItem format with Feature markers
   const items: RoadmapItem[] = (epicsData || []).map((epic: any) => {
     // Title: "EPIC_KEY – Name" or just "Name"
     const displayTitle = epic.epic_key 
@@ -124,6 +171,42 @@ export function useEpicRoadmapItems(
     const themeName = epic.strategic_themes?.name || 'No Theme';
     const themeId = epic.theme_id || 'no-theme';
 
+    // Build Feature markers (milestones) for this Epic
+    const epicFeatures = featuresByEpicId[epic.id] || [];
+    const milestones: RoadmapItem['milestones'] = epicFeatures
+      .map((feature: any) => {
+        // Determine marker date: target/end date → start date → created_at
+        const markerDate = feature.planned_end_date 
+          || feature.actual_end_date 
+          || feature.planned_start_date
+          || feature.actual_start_date
+          || feature.created_at;
+        
+        if (!markerDate) return null;
+
+        // Map Feature status to milestone state
+        const featureStatus = feature.status || 'funnel';
+        const state = FEATURE_STATUS_TO_MILESTONE_STATE[featureStatus] || 'pending';
+
+        return {
+          step: 1 as const, // Will be renumbered below
+          date: markerDate,
+          state,
+          // Epic-specific: attach feature data for tooltips/click
+          featureId: feature.id,
+          featureName: feature.name,
+          featureStatus,
+        };
+      })
+      .filter(Boolean)
+      // Sort by date chronologically
+      .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      // Renumber in order (1, 2, 3...)
+      .map((ms: any, index: number) => ({
+        ...ms,
+        step: (index + 1) as 1 | 2 | 3 | 4 | 5,
+      }));
+
     return {
       id: epic.id,
       titleEn: displayTitle,
@@ -135,7 +218,7 @@ export function useEpicRoadmapItems(
       rank: epic.program_rank,
       startDate: startDate,
       endDate: endDate,
-      milestones: [], // Epics don't show milestones in Phase 3
+      milestones, // Child Features as markers
       risks: [],
       dependencies: [],
     };
