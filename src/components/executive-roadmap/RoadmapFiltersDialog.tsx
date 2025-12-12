@@ -27,12 +27,15 @@ interface RoadmapFiltersDialogProps {
   uniqueOwners: string[];
 }
 
-// Platform-based quick filters
-const PLATFORM_QUICK_FILTERS = Object.keys(PLATFORM_INFO).map(key => ({
-  id: key,
-  label: key,
-  tooltip: `Filter by ${key}`
-}));
+// Platform-based quick filters - matching Production screenshot
+const PLATFORM_QUICK_FILTERS = [
+  { id: 'Senaei Platform', label: 'Senaei Platform' },
+  { id: 'Innovation Platform', label: 'Innovation Platform' },
+  { id: 'Compass', label: 'Compass' },
+  { id: 'Tahommena', label: 'Tahommena' },
+  { id: 'Mini Apps', label: 'Mini Apps' },
+  { id: 'Website', label: 'Website' },
+];
 
 export function RoadmapFiltersDialog({
   open,
@@ -66,7 +69,7 @@ export function RoadmapFiltersDialog({
   };
 
   const updateFilter = <K extends keyof RoadmapFilters>(key: K, value: RoadmapFilters[K]) => {
-    setLocalFilters(prev => ({ ...prev, [key]: value, activeSmartFilter: null }));
+    setLocalFilters(prev => ({ ...prev, [key]: value }));
   };
 
   const handleApply = () => {
@@ -99,8 +102,8 @@ export function RoadmapFiltersDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[480px] p-0 gap-0 bg-white [&>button]:hidden">
-        {/* Header */}
+      <DialogContent className="sm:max-w-[480px] p-0 gap-0 bg-white [&>button]:hidden rounded-xl overflow-hidden">
+        {/* Header - Matching Production */}
         <DialogHeader className="px-6 py-4 border-b border-border flex flex-row items-center justify-between">
           <DialogTitle className="text-lg font-semibold text-foreground">Filters</DialogTitle>
           <button
@@ -113,41 +116,35 @@ export function RoadmapFiltersDialog({
 
         {/* Content */}
         <div className="max-h-[60vh] overflow-y-auto">
-          {/* Quick Filters - Platform based */}
+          {/* Quick Filters - Platform pills matching Production */}
           <div className="px-6 py-4 border-b border-border">
-            <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">Quick Filters</div>
-            <TooltipProvider>
-              <div className="flex flex-wrap gap-2">
-                {PLATFORM_QUICK_FILTERS.map((pf) => (
-                  <Tooltip key={pf.id}>
-                    <TooltipTrigger asChild>
-                      <button
-                        type="button"
-                        className={cn(
-                          "px-3 py-1.5 rounded-md text-sm font-medium border transition-colors",
-                          localFilters.activePlatformFilter === pf.id
-                            ? "bg-brand-gold text-white border-brand-gold"
-                            : "bg-white text-foreground border-border hover:bg-muted/50"
-                        )}
-                        onClick={() => handlePlatformFilterClick(pf.id)}
-                      >
-                        {pf.label}
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom" className="max-w-[200px] text-xs">
-                      {pf.tooltip}
-                    </TooltipContent>
-                  </Tooltip>
-                ))}
-              </div>
-            </TooltipProvider>
+            <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+              Quick Filters
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {PLATFORM_QUICK_FILTERS.map((pf) => (
+                <button
+                  key={pf.id}
+                  type="button"
+                  className={cn(
+                    "px-3 py-1.5 rounded-full text-sm font-medium border transition-all",
+                    localFilters.activePlatformFilter === pf.id
+                      ? "bg-brand-gold text-white border-brand-gold"
+                      : "bg-white text-foreground border-border hover:bg-muted/50 hover:border-muted-foreground/30"
+                  )}
+                  onClick={() => handlePlatformFilterClick(pf.id)}
+                >
+                  {pf.label}
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* Filters Section */}
+          {/* Filters Section - Collapsible */}
           <Collapsible open={expandedSections.filters} onOpenChange={() => toggleSection('filters')}>
-            <CollapsibleTrigger className="w-full flex items-center justify-between px-6 py-3 border-b border-border hover:bg-muted/30">
+            <CollapsibleTrigger className="w-full flex items-center justify-between px-6 py-3 border-b border-border hover:bg-muted/30 transition-colors">
               <span className="text-sm font-medium text-foreground">Filters</span>
-              <ChevronUp className={cn("h-4 w-4 text-muted-foreground transition-transform", !expandedSections.filters && "rotate-180")} />
+              <ChevronUp className={cn("h-4 w-4 text-muted-foreground transition-transform duration-200", !expandedSections.filters && "rotate-180")} />
             </CollapsibleTrigger>
             <CollapsibleContent>
               <div className="px-6 py-4 space-y-4 border-b border-border">
@@ -156,8 +153,10 @@ export function RoadmapFiltersDialog({
                   <div>
                     <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Status</label>
                     <Select value={localFilters.status || 'all'} onValueChange={(v) => updateFilter('status', v)}>
-                      <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
-                      <SelectContent className="bg-white z-50">
+                      <SelectTrigger className="h-10 border-border">
+                        <SelectValue placeholder="All Statuses" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white z-[500]">
                         <SelectItem value="all">All Statuses</SelectItem>
                         {Object.entries(STAGE_NAMES).map(([key, label]) => (
                           <SelectItem key={key} value={key}>{label}</SelectItem>
@@ -170,43 +169,57 @@ export function RoadmapFiltersDialog({
                   <div>
                     <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Owner</label>
                     <Select value={localFilters.owner || 'all'} onValueChange={(v) => updateFilter('owner', v)}>
-                      <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
-                      <SelectContent className="bg-white z-50">
+                      <SelectTrigger className="h-10 border-border">
+                        <SelectValue placeholder="All Owners" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white z-[500]">
                         <SelectItem value="all">All Owners</SelectItem>
-                        {uniqueOwners.map(o => (
+                        {uniqueOwners.filter(Boolean).map(o => (
                           <SelectItem key={o} value={o}>{o}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
+                </div>
 
-                  {/* Sort By */}
-                  <div className="col-span-2">
-                    <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Sort By</label>
-                    <Select value={localFilters.sortField || 'rank'} onValueChange={(v) => updateFilter('sortField', v)}>
-                      <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
-                      <SelectContent className="bg-white z-50">
-                        <SelectItem value="rank">Rank</SelectItem>
-                        <SelectItem value="platform">Platform</SelectItem>
-                        <SelectItem value="owner">Owner</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                {/* Sort By - Full width */}
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Sort By</label>
+                  <Select value={localFilters.sortField || 'rank'} onValueChange={(v) => updateFilter('sortField', v)}>
+                    <SelectTrigger className="h-10 border-border">
+                      <SelectValue placeholder="Rank" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white z-[500]">
+                      <SelectItem value="rank">Rank</SelectItem>
+                      <SelectItem value="platform">Platform</SelectItem>
+                      <SelectItem value="owner">Owner</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </CollapsibleContent>
           </Collapsible>
-
         </div>
 
-        {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-border bg-muted/30">
+        {/* Footer - Matching Production */}
+        <div className="flex items-center justify-between px-6 py-4 border-t border-border bg-muted/20">
           <span className="text-sm text-muted-foreground">
-            <span className="text-brand-gold font-medium">{countActiveFilters()}</span> filters applied
+            <span className="text-brand-gold font-semibold">{countActiveFilters()}</span> filters applied
           </span>
           <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={handleClearAll}>Clear All</Button>
-            <Button onClick={handleApply} className="bg-brand-gold hover:bg-brand-gold-hover text-white">Apply</Button>
+            <Button 
+              variant="outline" 
+              onClick={handleClearAll}
+              className="h-9 px-4 text-sm font-medium"
+            >
+              Clear All
+            </Button>
+            <Button 
+              onClick={handleApply} 
+              className="h-9 px-5 text-sm font-medium bg-brand-gold hover:bg-brand-gold-hover text-white"
+            >
+              Apply
+            </Button>
           </div>
         </div>
       </DialogContent>

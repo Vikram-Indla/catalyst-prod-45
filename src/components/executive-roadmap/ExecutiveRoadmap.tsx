@@ -18,8 +18,7 @@ import {
   Clock,
   Calendar,
   Check,
-  Eye,
-  EyeOff,
+  Info,
   Search,
   ChevronRight,
   ChevronLeft
@@ -1077,7 +1076,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
             </Tooltip>
           </TooltipProvider>
 
-          {/* Legend Toggle */}
+          {/* Legend Toggle - Info Icon as per Production */}
           <TooltipProvider delayDuration={200}>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -1092,7 +1091,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                     border: showLegend ? 'none' : '1px solid hsl(var(--roadmap-sandstone))'
                   }}
                 >
-                  {showLegend ? <EyeOff className="w-[18px] h-[18px]" /> : <Eye className="w-[18px] h-[18px]" />}
+                  <Info className="w-[18px] h-[18px]" />
                 </button>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="text-xs">Legend</TooltipContent>
@@ -1442,34 +1441,43 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                             side="top" 
                             align="center"
                             sideOffset={12}
-                            className="max-w-[400px] px-5 py-4 rounded-xl shadow-2xl z-[9999] animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95"
+                            className="max-w-[380px] px-4 py-3.5 rounded-lg shadow-2xl z-[9999] animate-in fade-in-0 zoom-in-95"
                             style={{ 
-                              backgroundColor: 'hsl(var(--roadmap-charcoal))',
+                              backgroundColor: 'hsl(20, 8%, 20%)',
                               color: 'white',
-                              border: '1px solid hsla(35, 46%, 60%, 0.3)',
-                              boxShadow: '0 20px 40px -12px rgba(0, 0, 0, 0.35), 0 0 0 1px hsla(35, 46%, 60%, 0.15)'
+                              border: 'none',
+                              boxShadow: '0 20px 40px -12px rgba(0, 0, 0, 0.4)'
                             }}
                           >
-                            {/* Header with ID */}
-                            <div className="font-semibold mb-2 text-xs uppercase tracking-wider" style={{ color: 'hsl(35, 46%, 70%)' }}>
+                            {/* Header - ID */}
+                            <div 
+                              className="text-xs font-medium mb-1.5"
+                              style={{ color: 'hsl(35, 30%, 65%)' }}
+                            >
                               {item.id}
                             </div>
                             
                             {/* Title/Summary */}
-                            <div className="font-semibold text-sm mb-3 leading-snug" style={{ color: 'white' }}>
+                            <div 
+                              className="font-medium text-sm mb-3 leading-snug"
+                              style={{ color: 'white' }}
+                            >
                               {isRTL ? item.titleAr : item.titleEn}
                             </div>
                             
-                            {/* Status Badge */}
+                            {/* Status Row */}
                             <div className="flex items-center gap-2 mb-3">
-                              <span className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: 'hsl(35, 46%, 70%)' }}>
-                                Status:
+                              <span 
+                                className="text-[10px] font-medium uppercase tracking-wide"
+                                style={{ color: 'hsl(35, 30%, 60%)' }}
+                              >
+                                STATUS:
                               </span>
                               <span 
-                                className="text-xs font-semibold px-2 py-0.5 rounded-full"
+                                className="text-xs font-medium px-2 py-0.5 rounded"
                                 style={{ 
-                                  backgroundColor: 'hsla(35, 46%, 60%, 0.25)',
-                                  color: 'hsl(35, 46%, 80%)'
+                                  backgroundColor: 'hsla(35, 30%, 50%, 0.3)',
+                                  color: 'hsl(35, 30%, 85%)'
                                 }}
                               >
                                 {isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}
@@ -1478,62 +1486,70 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                             
                             {/* Date Range */}
                             <div 
-                              className="flex items-center gap-3 py-2 px-3 rounded-lg mb-3"
-                              style={{ backgroundColor: 'hsla(35, 46%, 60%, 0.15)' }}
+                              className="flex items-center gap-2 py-2 px-3 rounded-md mb-3"
+                              style={{ backgroundColor: 'hsla(35, 30%, 50%, 0.15)' }}
                             >
-                              <div className="flex items-center gap-1.5">
-                                <Calendar className="w-3.5 h-3.5" style={{ color: 'hsl(35, 46%, 70%)' }} />
-                                <span className="text-xs font-medium" style={{ color: 'hsl(35, 46%, 85%)' }}>
-                                  {startDate.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
-                                </span>
-                              </div>
-                              <span className="text-xs" style={{ color: 'hsl(35, 46%, 60%)' }}>→</span>
-                              <div className="flex items-center gap-1.5">
-                                <span className="text-xs font-medium" style={{ color: 'hsl(35, 46%, 85%)' }}>
-                                  {endDate.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
-                                </span>
-                              </div>
+                              <Calendar className="w-3.5 h-3.5" style={{ color: 'hsl(35, 30%, 60%)' }} />
+                              <span className="text-xs" style={{ color: 'hsl(35, 30%, 80%)' }}>
+                                {startDate.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                              </span>
+                              <span style={{ color: 'hsl(35, 30%, 50%)' }}>→</span>
+                              <span className="text-xs" style={{ color: 'hsl(35, 30%, 80%)' }}>
+                                {endDate.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                              </span>
                             </div>
                             
-                            {/* Milestones (if any) */}
-                            {item.milestones.length > 0 && (
+                            {/* Milestones Section - Only show when milestones mode is ON and item has milestones */}
+                            {showMilestones && item.milestones.length > 0 && (
                               <div>
-                                <div className="text-[10px] font-semibold uppercase tracking-wide mb-2" style={{ color: 'hsl(35, 46%, 70%)' }}>
-                                  Milestones ({item.milestones.length})
+                                <div 
+                                  className="text-[10px] font-semibold uppercase tracking-wide mb-2"
+                                  style={{ color: 'hsl(35, 30%, 60%)' }}
+                                >
+                                  MILESTONES ({item.milestones.length})
                                 </div>
                                 <div className="space-y-1.5">
-                                  {item.milestones.slice(0, 4).map((ms, idx) => (
-                                    <div 
-                                      key={idx}
-                                      className="flex items-center gap-2 text-xs"
-                                    >
+                                  {item.milestones.slice(0, 5).map((ms, idx) => (
+                                    <div key={idx} className="flex items-center gap-2 text-xs">
                                       <div 
                                         className="w-4 h-4 rounded-full border flex items-center justify-center text-[8px] font-bold shrink-0"
                                         style={{
                                           backgroundColor: ms.state === 'complete' ? 'hsl(var(--roadmap-milestone-complete))' : 'transparent',
-                                          borderColor: ms.state === 'complete' ? 'hsl(var(--roadmap-milestone-complete))' : ms.state === 'current' ? 'hsl(var(--roadmap-milestone-current))' : 'hsl(35, 46%, 50%)',
-                                          color: ms.state === 'complete' ? 'white' : 'hsl(35, 46%, 70%)'
+                                          borderColor: ms.state === 'complete' 
+                                            ? 'hsl(var(--roadmap-milestone-complete))' 
+                                            : ms.state === 'current' 
+                                              ? 'hsl(var(--roadmap-milestone-current))' 
+                                              : 'hsl(35, 30%, 45%)',
+                                          color: ms.state === 'complete' ? 'white' : 'hsl(35, 30%, 70%)'
                                         }}
                                       >
                                         {ms.state === 'complete' ? <Check className="w-2 h-2" /> : (idx + 1)}
                                       </div>
-                                      <span style={{ color: 'hsl(35, 46%, 85%)' }}>
-                                        {new Date(ms.date).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { day: 'numeric', month: 'short' })}
+                                      <span style={{ color: 'hsl(35, 30%, 80%)' }}>
+                                        {new Date(ms.date).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric' })}
                                       </span>
                                       <span 
                                         className="text-[10px] px-1.5 py-0.5 rounded capitalize"
                                         style={{ 
-                                          backgroundColor: ms.state === 'complete' ? 'hsla(142, 71%, 45%, 0.2)' : ms.state === 'current' ? 'hsla(35, 100%, 50%, 0.2)' : 'hsla(35, 46%, 60%, 0.15)',
-                                          color: ms.state === 'complete' ? 'hsl(142, 71%, 65%)' : ms.state === 'current' ? 'hsl(35, 100%, 70%)' : 'hsl(35, 46%, 70%)'
+                                          backgroundColor: ms.state === 'complete' 
+                                            ? 'hsla(142, 50%, 45%, 0.25)' 
+                                            : ms.state === 'current' 
+                                              ? 'hsla(35, 50%, 50%, 0.25)' 
+                                              : 'hsla(35, 30%, 50%, 0.2)',
+                                          color: ms.state === 'complete' 
+                                            ? 'hsl(142, 50%, 65%)' 
+                                            : ms.state === 'current' 
+                                              ? 'hsl(35, 50%, 70%)' 
+                                              : 'hsl(35, 30%, 65%)'
                                         }}
                                       >
-                                        {ms.state}
+                                        {ms.state === 'complete' ? 'Complete' : ms.state === 'current' ? 'Current' : 'Pending'}
                                       </span>
                                     </div>
                                   ))}
-                                  {item.milestones.length > 4 && (
-                                    <div className="text-[10px] italic" style={{ color: 'hsl(35, 46%, 60%)' }}>
-                                      +{item.milestones.length - 4} more milestones
+                                  {item.milestones.length > 5 && (
+                                    <div className="text-[10px] italic" style={{ color: 'hsl(35, 30%, 50%)' }}>
+                                      +{item.milestones.length - 5} more milestones
                                     </div>
                                   )}
                                 </div>
