@@ -3,6 +3,11 @@ import { Search } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
+import { 
+  DEFAULT_PROGRAM_ID, 
+  formatProgramLabel, 
+  getCanonicalProgramKey 
+} from '@/lib/programKeyUtils';
 import {
   Dialog,
   DialogContent,
@@ -59,18 +64,6 @@ const entityConfig = {
 };
 
 const KEY_REGEX = /^[A-Z]{3}$/;
-const DEFAULT_PROGRAM_ID = '00000000-0000-0000-0000-000000000001';
-
-// Format program display label: "Default" for default program, "Name (ABC)" for others
-const formatProgramLabel = (program: { id: string; name: string; key: string | null }) => {
-  // Default program shows just "Default" without key
-  if (program.id === DEFAULT_PROGRAM_ID || program.name.toLowerCase() === 'default') {
-    return 'Default';
-  }
-  // Extract first 3 letters of key for display (handles legacy long keys)
-  const shortKey = program.key ? program.key.slice(0, 3).toUpperCase() : '';
-  return shortKey ? `${program.name} (${shortKey})` : program.name;
-};
 
 export function CreateEntityDialog({
   open,

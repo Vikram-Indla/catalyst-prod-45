@@ -148,15 +148,17 @@ const WorkspaceListItem = React.memo(function WorkspaceListItem({
     >
       <Icon className="h-4 w-4 text-muted-foreground flex-shrink-0" />
       <div className="flex-1 min-w-0 flex items-center gap-1.5">
-        <span className="text-sm text-foreground truncate">{item.name}</span>
+        <span className="text-sm text-foreground truncate whitespace-nowrap overflow-hidden text-ellipsis">
+          {item.name}
+        </span>
         {!item.canAccess && (
           <Lock className="h-3 w-3 text-muted-foreground flex-shrink-0" />
         )}
       </div>
-      {/* Show 3-letter key, fixed width - hide for Default */}
-      {item.key && item.name.toLowerCase() !== 'default' && (
-        <span className="text-xs text-muted-foreground flex-shrink-0 w-[36px] text-right font-mono">
-          {item.key.slice(0, 3).toUpperCase()}
+      {/* Show canonical 3-letter key only - never long keys, never for Default */}
+      {item.key && item.key.length === 3 && (
+        <span className="text-xs text-muted-foreground flex-shrink-0 w-[40px] text-right font-mono uppercase">
+          {item.key}
         </span>
       )}
     </button>

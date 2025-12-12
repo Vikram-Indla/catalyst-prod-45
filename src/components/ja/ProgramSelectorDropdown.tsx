@@ -1,6 +1,7 @@
 /**
  * Program Selector Dropdown - Uses shared WorkspaceSwitcherMenu
  * All users see all programs, but only Admin/Members can enter
+ * Default program is hidden from the list
  */
 import React, { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +9,7 @@ import { WorkspaceSwitcherMenu, WorkspaceItem } from '@/components/workspace/Wor
 import { useWorkspaceAccess } from '@/hooks/useWorkspaceAccess';
 import { useCatalystContext } from '@/contexts/CatalystContext';
 import { getProgramLandingRoute } from '@/lib/workspaceContext';
+import { DEFAULT_PROGRAM_ID, isDefaultProgram } from '@/lib/programKeyUtils';
 
 interface ProgramSelectorDropdownProps {
   onClose: () => void;
@@ -22,15 +24,13 @@ export const ProgramSelectorDropdown = React.memo(function ProgramSelectorDropdo
   const { programs, programsLoading, isAdmin } = useWorkspaceAccess();
   const { setProgramId, setProjectId, setProgramName, setProjectName } = useCatalystContext();
 
-  const DEFAULT_PROGRAM_ID = '00000000-0000-0000-0000-000000000001';
-
   // Map programs to WorkspaceItem format, excluding Default program
-  // Key is already 3 letters from useWorkspaceAccess
+  // Keys are already canonical 3-letter from useWorkspaceAccess
   const items: WorkspaceItem[] = programs
-    .filter(p => p.id !== DEFAULT_PROGRAM_ID && p.name.toLowerCase() !== 'default')
+    .filter(p => !isDefaultProgram(p))
     .map(p => ({
       id: p.id,
-      key: p.key,
+      key: p.key, // Already canonical 3-letter key from hook
       name: p.name,
       canAccess: p.canAccess,
     }));
