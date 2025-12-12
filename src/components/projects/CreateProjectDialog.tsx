@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -23,26 +23,36 @@ import {
 } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { getProjectLandingRoute } from '@/lib/workspaceContext';
+import { Search } from 'lucide-react';
 
 interface CreateProjectDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: (project: { id: string; name: string; key: string }) => void;
+  defaultProgramId?: string;
 }
 
 const KEY_REGEX = /^[A-Z]{3}$/;
+const DEFAULT_PROGRAM_ID = '00000000-0000-0000-0000-000000000001';
 
-export function CreateProjectDialog({ open, onOpenChange, onSuccess }: CreateProjectDialogProps) {
+export function CreateProjectDialog({ open, onOpenChange, onSuccess, defaultProgramId }: CreateProjectDialogProps) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [name, setName] = useState('');
   const [key, setKey] = useState('');
   const [description, setDescription] = useState('');
   const [programId, setProgramId] = useState('');
-  const [projectType, setProjectType] = useState<'scrum' | 'kanban'>('scrum');
   const [keyError, setKeyError] = useState('');
+  const [programSearch, setProgramSearch] = useState('');
 
-  // Fetch programs (portfolios in DB)
+  // Set default program when dialog opens
+  useEffect(() => {
+    if (open) {
+      setProgramId(defaultProgramId || DEFAULT_PROGRAM_ID);
+    }
+  }, [open, defaultProgramId]);
+
+  // Fetch programs for dropdown
   const { data: programs } = useQuery({
     queryKey: ['programs-for-project'],
     queryFn: async () => {
@@ -67,6 +77,11 @@ export function CreateProjectDialog({ open, onOpenChange, onSuccess }: CreatePro
     },
   });
 
+  const filteredPrograms = programs?.filter(p => 
+    p.name.toLowerCase().includes(programSearch.toLowerCase()) ||
+    p.key?.toLowerCase().includes(programSearch.toLowerCase())
+  );
+
   const validateKey = (value: string): string => {
     if (!value) return 'Project key is required';
     if (!KEY_REGEX.test(value)) return 'Key must be exactly 3 uppercase letters (A-Z)';
@@ -86,36 +101,22 @@ export function CreateProjectDialog({ open, onOpenChange, onSuccess }: CreatePro
 
   const createProject = useMutation({
     mutationFn: async () => {
-      let portfolioId = programId;
-
-      // If no program selected, use default
-      if (!portfolioId) {
-        const { data: existingDefault } = await supabase
-          .from('programs')
-          .select('id')
-          .eq('name', 'Default')
-          .single();
-
-        if (existingDefault) {
-          portfolioId = existingDefault.id;
-        } else {
-          throw new Error('Please select a program');
-        }
-      }
-
+      // Ensure program is selected
+      const selectedProgramId = programId || DEFAULT_PROGRAM_ID;
       const finalKey = key.trim().toUpperCase();
       
       // Final validation
       const error = validateKey(finalKey);
       if (error) throw new Error(error);
 
+      // Insert into projects table (not programs!)
       const { data, error: dbError } = await supabase
-        .from('programs')
+        .from('projects')
         .insert({
           name: name.trim(),
           key: finalKey,
           description: description.trim() || null,
-          portfolio_id: portfolioId,
+          program_id: selectedProgramId,
         })
         .select()
         .single();
@@ -125,7 +126,7 @@ export function CreateProjectDialog({ open, onOpenChange, onSuccess }: CreatePro
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['projects-directory'] });
-      queryClient.invalidateQueries({ queryKey: ['programs-for-project'] });
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
       queryClient.invalidateQueries({ queryKey: ['workspace-projects'] });
       queryClient.invalidateQueries({ queryKey: ['projects-header'] });
       queryClient.invalidateQueries({ queryKey: ['project-keys'] });
@@ -147,9 +148,9 @@ export function CreateProjectDialog({ open, onOpenChange, onSuccess }: CreatePro
     setName('');
     setKey('');
     setDescription('');
-    setProgramId('');
-    setProjectType('scrum');
+    setProgramId(DEFAULT_PROGRAM_ID);
     setKeyError('');
+    setProgramSearch('');
     onOpenChange(false);
   };
 
@@ -164,8 +165,14 @@ export function CreateProjectDialog({ open, onOpenChange, onSuccess }: CreatePro
       setKeyError(error);
       return;
     }
+    if (!programId) {
+      toast.error('Program is required');
+      return;
+    }
     createProject.mutate();
   };
+
+  const selectedProgram = programs?.find(p => p.id === programId);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -178,6 +185,7 @@ export function CreateProjectDialog({ open, onOpenChange, onSuccess }: CreatePro
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Name */}
           <div className="space-y-2">
             <Label htmlFor="name">Project name *</Label>
             <Input
@@ -189,6 +197,7 @@ export function CreateProjectDialog({ open, onOpenChange, onSuccess }: CreatePro
             />
           </div>
 
+          {/* Key */}
           <div className="space-y-2">
             <Label htmlFor="key">Project Key *</Label>
             <Input
@@ -208,22 +217,40 @@ export function CreateProjectDialog({ open, onOpenChange, onSuccess }: CreatePro
             )}
           </div>
 
+          {/* Program */}
           <div className="space-y-2">
             <Label htmlFor="program">Program *</Label>
             <Select value={programId} onValueChange={setProgramId}>
               <SelectTrigger>
-                <SelectValue placeholder="Select a program" />
+                <SelectValue placeholder="Select a program">
+                  {selectedProgram ? `${selectedProgram.name} (${selectedProgram.key})` : 'Select a program'}
+                </SelectValue>
               </SelectTrigger>
-              <SelectContent>
-                {programs?.map((program) => (
+              <SelectContent className="z-[400]">
+                <div className="px-2 py-2 border-b">
+                  <div className="relative">
+                    <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search programs..."
+                      value={programSearch}
+                      onChange={(e) => setProgramSearch(e.target.value)}
+                      className="pl-8 h-8"
+                    />
+                  </div>
+                </div>
+                {filteredPrograms?.map((program) => (
                   <SelectItem key={program.id} value={program.id}>
                     {program.name} ({program.key})
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
+            <p className="text-xs text-muted-foreground">
+              Projects must be linked to a program
+            </p>
           </div>
 
+          {/* Description */}
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
             <Textarea

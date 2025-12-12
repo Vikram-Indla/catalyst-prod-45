@@ -6,8 +6,6 @@ import { Search, Plus, Star, MoreHorizontal } from 'lucide-react';
 import { CreateProjectDialog } from '@/components/projects/CreateProjectDialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Select,
   SelectContent,
@@ -27,6 +25,7 @@ interface Project {
   key: string;
   name: string;
   programName: string;
+  programKey: string;
   programId: string;
   type: string;
   category: string;
@@ -41,14 +40,28 @@ export default function ProjectDirectory() {
   const [searchQuery, setSearchQuery] = useState('');
   const [starredProjects, setStarredProjects] = useState<Set<string>>(new Set());
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [filterCategory, setFilterCategory] = useState<string>('all');
+  const [filterProgramId, setFilterProgramId] = useState<string>('all');
 
+  // Fetch projects with program data
   const { data: projectsData, isLoading, error } = useQuery({
     queryKey: ['projects-directory'],
     queryFn: async () => {
       const { data, error } = await supabase
+        .from('projects')
+        .select('id, name, key, description, program_id, created_at, programs(id, name, key)')
+        .order('name');
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Fetch programs for filter dropdown
+  const { data: programs } = useQuery({
+    queryKey: ['programs-for-filter'],
+    queryFn: async () => {
+      const { data, error } = await supabase
         .from('programs')
-        .select('*, portfolios(id, name)')
+        .select('id, name, key')
         .order('name');
       if (error) throw error;
       return data;
@@ -60,9 +73,10 @@ export default function ProjectDirectory() {
 
   const projects: Project[] = (projectsData || []).map((p: any, index) => ({
     id: p.id,
-    key: p.name?.substring(0, 4).toUpperCase() || 'DFLT',
+    key: p.key || 'N/A',
     name: p.name || 'Unnamed',
     programName: p.programs?.name || 'Default',
+    programKey: p.programs?.key || 'DFT',
     programId: p.program_id || '',
     type: 'Company-managed software',
     category: 'Software',
@@ -72,10 +86,16 @@ export default function ProjectDirectory() {
     isStarred: starredProjects.has(p.id),
   }));
 
-  const filteredProjects = projects.filter(proj =>
-    proj.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    proj.key.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Filter by search and program
+  const filteredProjects = projects.filter(proj => {
+    const matchesSearch = proj.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      proj.key.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      proj.programName.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesProgram = filterProgramId === 'all' || proj.programId === filterProgramId;
+    
+    return matchesSearch && matchesProgram;
+  });
 
   const toggleStar = (projectId: string) => {
     setStarredProjects(prev => {
@@ -100,10 +120,9 @@ export default function ProjectDirectory() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-medium text-foreground">Projects</h1>
         <div className="flex gap-2">
-          <Button onClick={() => setShowCreateDialog(true)}>
+          <Button onClick={() => setShowCreateDialog(true)} className="bg-brand-gold hover:bg-brand-gold-hover">
             <Plus className="w-4 h-4 mr-1" /> Create project
           </Button>
-          <Button variant="outline">Templates</Button>
         </div>
       </div>
 
@@ -118,13 +137,17 @@ export default function ProjectDirectory() {
             className="pl-8"
           />
         </div>
-        <Select value={filterCategory} onValueChange={setFilterCategory}>
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="All categories" />
+        <Select value={filterProgramId} onValueChange={setFilterProgramId}>
+          <SelectTrigger className="w-[220px]">
+            <SelectValue placeholder="All programs" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All categories</SelectItem>
-            <SelectItem value="software">Software</SelectItem>
+            <SelectItem value="all">All programs</SelectItem>
+            {programs?.map((program) => (
+              <SelectItem key={program.id} value={program.id}>
+                {program.name} ({program.key})
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
@@ -139,21 +162,19 @@ export default function ProjectDirectory() {
         </div>
       ) : (
         <div className="border border-border rounded overflow-hidden">
-          <div className="grid grid-cols-[40px_1fr_80px_200px_150px_120px_100px_50px] bg-muted px-3 py-2 text-[11px] font-semibold uppercase text-muted-foreground border-b border-border">
+          <div className="grid grid-cols-[40px_1fr_80px_180px_180px_50px] bg-muted px-3 py-2 text-[11px] font-semibold uppercase text-muted-foreground border-b border-border">
             <div></div>
             <div>Name</div>
             <div>Key</div>
             <div>Type</div>
             <div>Program</div>
-            <div>Lead</div>
-            <div>Category</div>
             <div></div>
           </div>
           {filteredProjects.map((project) => (
             <div
               key={project.id}
               onClick={() => navigate(`/project/${project.id}/room`)}
-              className="grid grid-cols-[40px_1fr_80px_200px_150px_120px_100px_50px] px-3 py-2.5 border-b border-border bg-card items-center cursor-pointer hover:bg-muted transition-colors"
+              className="grid grid-cols-[40px_1fr_80px_180px_180px_50px] px-3 py-2.5 border-b border-border bg-card items-center cursor-pointer hover:bg-muted transition-colors"
             >
               <button onClick={(e) => { e.stopPropagation(); toggleStar(project.id); }} className="p-1 bg-transparent border-none cursor-pointer">
                 <Star className={`w-4 h-4 ${project.isStarred ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
@@ -162,28 +183,27 @@ export default function ProjectDirectory() {
                 <div className="w-6 h-6 rounded flex items-center justify-center text-sm" style={{ background: project.iconBg }}>{project.icon}</div>
                 <span className="text-sm font-medium text-primary">{project.name}</span>
               </div>
-              <span className="text-sm">{project.key}</span>
+              <code className="text-xs bg-muted px-1.5 py-0.5 rounded">{project.key}</code>
               <span className="text-sm text-muted-foreground">{project.type}</span>
-              <span className="text-sm text-primary">{project.programName}</span>
-              <div className="flex items-center gap-2">
-                <Avatar className="w-5 h-5"><AvatarFallback className="text-[8px]">UN</AvatarFallback></Avatar>
-                <span className="text-sm">{project.lead.name}</span>
-              </div>
-              <span className="text-sm text-muted-foreground">{project.category}</span>
+              <span className="text-sm text-primary">{project.programName} ({project.programKey})</span>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                   <Button variant="ghost" size="icon" className="h-8 w-8"><MoreHorizontal className="w-4 h-4" /></Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuItem>View project</DropdownMenuItem>
-                  <DropdownMenuItem>Settings</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate(`/project/${project.id}/room`)}>View project</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate(`/projects/${project.key}/settings`)}>Settings</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
           ))}
         </div>
       )}
-      <CreateProjectDialog open={showCreateDialog} onOpenChange={setShowCreateDialog} />
+      <CreateProjectDialog 
+        open={showCreateDialog} 
+        onOpenChange={setShowCreateDialog}
+        defaultProgramId={filterProgramId !== 'all' ? filterProgramId : undefined}
+      />
     </div>
   );
 }
