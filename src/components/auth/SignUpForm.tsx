@@ -96,11 +96,21 @@ export function SignUpForm({ onSubmit, loading: externalLoading }: SignUpFormPro
       try {
         data = await response.json();
       } catch {
-        // Response is not JSON - will be handled below
+        // Response is not JSON
+        setErrors({ email: 'Something went wrong. Please try again.' });
+        setLoading(false);
+        return;
       }
 
-      // Handle expected validation errors (409, 400, 429) - NOT runtime errors
-      if (response.status === 409 || response.status === 400 || response.status === 429) {
+      // Handle server errors (5xx)
+      if (response.status >= 500) {
+        setErrors({ email: data?.error || 'Something went wrong. Please try again.' });
+        setLoading(false);
+        return;
+      }
+
+      // Check success flag in response (edge function returns 200 with success: false for validation errors)
+      if (data?.success === false) {
         const errorCode = data?.code || '';
         const errorMessage = data?.error || 'An error occurred';
         
@@ -119,23 +129,8 @@ export function SignUpForm({ onSubmit, loading: externalLoading }: SignUpFormPro
         return;
       }
 
-      // Handle server errors (5xx) - show generic message
-      if (response.status >= 500) {
-        setErrors({ email: 'Something went wrong. Please try again.' });
-        setLoading(false);
-        return;
-      }
-
-      // Handle other non-2xx responses
-      if (!response.ok) {
-        const errorMessage = data?.error || 'An error occurred';
-        setErrors({ email: errorMessage });
-        setLoading(false);
-        return;
-      }
-
       // Success case
-      if (data?.success) {
+      if (data?.success === true) {
         setSuccessMessage(data.message);
         catalystToast.success("Registration submitted", "Your account is pending approval.");
         // Clear form

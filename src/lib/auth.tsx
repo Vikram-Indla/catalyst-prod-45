@@ -104,7 +104,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = async (email: string, password: string, fullName?: string) => {
     try {
-      // Use direct fetch to properly handle non-2xx responses without throwing
+      // Use direct fetch to call edge function
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const supabaseAnonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
       
@@ -128,39 +128,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         data = await response.json();
       } catch {
         // Response is not JSON
-      }
-
-      // Handle expected validation errors (409, 400, 429) - NOT runtime errors
-      if (response.status === 409 || response.status === 400 || response.status === 429) {
-        const errorCode = data?.code || 'UNKNOWN';
-        const errorMessage = data?.error || 'An error occurred';
-        
         return { 
-          error: { message: errorMessage, code: errorCode },
-          code: errorCode
+          error: { message: 'Something went wrong. Please try again.', code: 'PARSE_ERROR' },
+          code: 'PARSE_ERROR'
         };
       }
 
       // Handle server errors (5xx)
       if (response.status >= 500) {
         return { 
-          error: { message: 'Something went wrong. Please try again.', code: 'SERVER_ERROR' },
+          error: { message: data?.error || 'Something went wrong. Please try again.', code: 'SERVER_ERROR' },
           code: 'SERVER_ERROR'
         };
       }
 
-      // Handle other non-2xx responses
-      if (!response.ok) {
-        const errorMessage = data?.error || 'An error occurred';
-        const errorCode = data?.code || 'UNKNOWN';
-        return { 
-          error: { message: errorMessage, code: errorCode },
-          code: errorCode
-        };
-      }
-
-      // Success case
-      if (!data?.success) {
+      // Check success flag in response (edge function returns 200 with success: false for validation errors)
+      if (data?.success === false) {
         const errorCode = data?.code || 'UNKNOWN';
         const errorMessage = data?.error || 'Registration failed. Please try again.';
         
@@ -170,15 +153,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         };
       }
 
-      // Sign out immediately - user must wait for approval
-      await supabase.auth.signOut();
+      // Success case
+      if (data?.success === true) {
+        // Sign out immediately - user must wait for approval
+        await supabase.auth.signOut();
 
-      toast({
-        title: "Registration submitted",
-        description: "Your account is pending approval. You can sign in once an administrator approves your request.",
-      });
-      
-      return { error: null, isPending: true };
+        toast({
+          title: "Registration submitted",
+          description: "Your account is pending approval. You can sign in once an administrator approves your request.",
+        });
+        
+        return { error: null, isPending: true };
+      }
+
+      // Unexpected response format
+      return { 
+        error: { message: 'Something went wrong. Please try again.', code: 'UNKNOWN' },
+        code: 'UNKNOWN'
+      };
     } catch (error: any) {
       // Only true network errors reach here
       return { 

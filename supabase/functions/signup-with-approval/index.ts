@@ -41,19 +41,19 @@ serve(async (req) => {
     if (website && website.trim() !== "") {
       console.log(`[SIGNUP] Honeypot triggered: ${email}, IP: ${clientIp}`);
       await logAuditEvent(supabaseAdmin, null, email, "signup_bot_detected", { ip: clientIp });
-      return jsonResponse({ success: true, message: "Thanks for registering. Your account is pending approval." });
+      return jsonSuccess("Thanks for registering. Your account is pending approval.");
     }
 
     // === Validate required fields ===
     if (!email || !password || !fullName) {
-      return jsonError("Email, password, and full name are required", 400);
+      return jsonValidationError("Email, password, and full name are required", "VALIDATION_ERROR");
     }
 
     // === Email syntax validation (RFC-compliant) ===
     const emailValidation = validateEmailSyntax(email);
     if (!emailValidation.valid) {
       await logAuditEvent(supabaseAdmin, null, email, "signup_email_invalid", { ip: clientIp, reason: "syntax" });
-      return jsonError("Please enter a valid email address.", 400);
+      return jsonValidationError("Please enter a valid email address.", "INVALID_EMAIL");
     }
 
     const normalizedEmail = email.toLowerCase().trim();
@@ -63,33 +63,33 @@ serve(async (req) => {
     const allowlistCheck = await checkDomainAllowlist(supabaseAdmin, domain);
     if (!allowlistCheck.allowed) {
       await logAuditEvent(supabaseAdmin, null, email, "signup_domain_blocked", { ip: clientIp, reason: "not_in_allowlist" });
-      return jsonError("This email domain is not allowed. Please use an approved work email.", 400);
+      return jsonValidationError("This email domain is not allowed. Please use an approved work email.", "DOMAIN_NOT_ALLOWED");
     }
 
     // === Check disposable email domains ===
     const isDisposable = await checkDisposableEmail(supabaseAdmin, domain);
     if (isDisposable) {
       await logAuditEvent(supabaseAdmin, null, email, "signup_email_invalid", { ip: clientIp, reason: "disposable" });
-      return jsonError("Temporary or disposable email addresses are not allowed.", 400);
+      return jsonValidationError("Temporary or disposable email addresses are not allowed.", "DISPOSABLE_EMAIL");
     }
 
     // === DNS domain existence validation ===
     const domainExists = await checkDomainExists(domain);
     if (!domainExists) {
       await logAuditEvent(supabaseAdmin, null, email, "signup_email_invalid", { ip: clientIp, reason: "domain_not_found" });
-      return jsonError("This email domain is not valid. Please use a different address.", 400);
+      return jsonValidationError("This email domain is not valid. Please use a different address.", "INVALID_DOMAIN");
     }
 
     // === MX record validation ===
     const hasMxRecords = await checkMxRecords(domain);
     if (!hasMxRecords) {
       await logAuditEvent(supabaseAdmin, null, email, "signup_email_invalid", { ip: clientIp, reason: "no_mx_records" });
-      return jsonError("This email domain cannot receive emails. Please use a different address.", 400);
+      return jsonValidationError("This email domain cannot receive emails. Please use a different address.", "NO_MX_RECORDS");
     }
 
     // === Password validation ===
     if (password.length < 8) {
-      return jsonError("Password must be at least 8 characters", 400);
+      return jsonValidationError("Password must be at least 8 characters", "WEAK_PASSWORD");
     }
 
     // === Rate limit by email ===
@@ -97,7 +97,7 @@ serve(async (req) => {
     if (!emailRateLimit.allowed) {
       console.log(`[SIGNUP] Email rate limit: ${email}, IP: ${clientIp}`);
       await logAuditEvent(supabaseAdmin, null, email, "signup_rate_limited", { ip: clientIp, type: "email" });
-      return jsonError("Too many signup attempts. Please try again later.", 429);
+      return jsonValidationError("Too many signup attempts. Please try again later.", "RATE_LIMITED");
     }
 
     // === Rate limit by IP ===
@@ -107,7 +107,7 @@ serve(async (req) => {
       await logAuditEvent(supabaseAdmin, null, email, "signup_rate_limited", { ip: clientIp, type: "ip" });
       // Mark IP as suspicious
       await markIpSuspicious(supabaseAdmin, clientIp);
-      return jsonError("Too many signup attempts. Please try again later.", 429);
+      return jsonValidationError("Too many signup attempts. Please try again later.", "RATE_LIMITED");
     }
 
     // === Check existing user ===
@@ -122,12 +122,12 @@ serve(async (req) => {
 
       // Already approved
       if (status === "APPROVED") {
-        return jsonError("This email is already registered. Please sign in.", 409, "EMAIL_EXISTS_APPROVED");
+        return jsonValidationError("This email is already registered. Please sign in.", "EMAIL_EXISTS_APPROVED");
       }
 
       // Pending approval
       if (status === "PENDING_APPROVAL") {
-        return jsonError("Your registration is pending approval.", 409, "EMAIL_EXISTS_PENDING");
+        return jsonValidationError("Your registration is pending approval.", "EMAIL_EXISTS_PENDING");
       }
 
       // Rejected - allow resubmit after cooldown
@@ -137,7 +137,7 @@ serve(async (req) => {
         
         if (cooldownEnd && new Date() < cooldownEnd) {
           const hoursLeft = Math.ceil((cooldownEnd.getTime() - Date.now()) / (60 * 60 * 1000));
-          return jsonError(`Your request was rejected. Please wait ${hoursLeft} hours before resubmitting.`, 429, "EMAIL_EXISTS_REJECTED_COOLDOWN");
+          return jsonValidationError(`Your request was rejected. Please wait ${hoursLeft} hours before resubmitting.`, "EMAIL_EXISTS_REJECTED_COOLDOWN");
         }
 
         // Resubmit
@@ -155,21 +155,18 @@ serve(async (req) => {
 
         if (updateError) {
           console.error("[SIGNUP] Error updating rejected profile:", updateError);
-          return jsonError("An error occurred. Please try again.", 500, "SERVER_ERROR");
+          return jsonServerError("An error occurred. Please try again.");
         }
 
         await logAuditEvent(supabaseAdmin, existingProfile.id, email, "signup_resubmitted", { ip: clientIp });
         await updateRateLimit(supabaseAdmin, normalizedEmail, clientIp);
         
-        return jsonResponse({ 
-          success: true, 
-          message: "Thanks for registering. Your account is pending approval. You can sign in once an administrator approves your request." 
-        });
+        return jsonSuccess("Thanks for registering. Your account is pending approval. You can sign in once an administrator approves your request.");
       }
 
       // Disabled
       if (status === "DISABLED") {
-        return jsonError("This account has been disabled. Please contact support.", 403, "ACCOUNT_DISABLED");
+        return jsonValidationError("This account has been disabled. Please contact support.", "ACCOUNT_DISABLED");
       }
     }
 
@@ -187,9 +184,9 @@ serve(async (req) => {
     if (createError) {
       console.error("[SIGNUP] Error creating auth user:", createError);
       if (createError.message?.includes("already been registered")) {
-        return jsonError("This email is already registered. Please sign in.", 409, "EMAIL_EXISTS_APPROVED");
+        return jsonValidationError("This email is already registered. Please sign in.", "EMAIL_EXISTS_APPROVED");
       }
-      return jsonError("Failed to create account. Please try again.", 500, "SERVER_ERROR");
+      return jsonServerError("Failed to create account. Please try again.");
     }
 
     const userId = newAuthUser.user!.id;
@@ -228,29 +225,45 @@ serve(async (req) => {
 
     console.log(`[SIGNUP] New user created: ${email} with PENDING_APPROVAL status`);
 
-    return jsonResponse({ 
-      success: true, 
-      message: "Thanks for registering. Your account is pending approval. You can sign in once an administrator approves your request." 
-    });
+    return jsonSuccess("Thanks for registering. Your account is pending approval. You can sign in once an administrator approves your request.");
 
   } catch (error) {
     console.error("[SIGNUP] Unexpected error:", error);
-    return jsonError("An unexpected error occurred", 500);
+    return jsonServerError("An unexpected error occurred");
   }
 });
 
 // === Helper Functions ===
 
-function jsonResponse(data: any, status = 200) {
-  return new Response(JSON.stringify(data), { 
-    status, 
+// Success response - always 200
+function jsonSuccess(message: string) {
+  return new Response(JSON.stringify({ success: true, message }), { 
+    status: 200, 
     headers: { ...corsHeaders, "Content-Type": "application/json" } 
   });
 }
 
-function jsonError(message: string, status: number, code?: string) {
-  return new Response(JSON.stringify({ error: message, code: code || "UNKNOWN" }), { 
-    status, 
+// Validation error - return 200 with success: false to avoid Lovable's error overlay
+// The frontend checks success flag and error code to handle appropriately
+function jsonValidationError(message: string, code: string) {
+  return new Response(JSON.stringify({ 
+    success: false, 
+    error: message, 
+    code: code 
+  }), { 
+    status: 200, 
+    headers: { ...corsHeaders, "Content-Type": "application/json" } 
+  });
+}
+
+// Server error - only use for true unexpected errors (500)
+function jsonServerError(message: string) {
+  return new Response(JSON.stringify({ 
+    success: false, 
+    error: message, 
+    code: "SERVER_ERROR" 
+  }), { 
+    status: 500, 
     headers: { ...corsHeaders, "Content-Type": "application/json" } 
   });
 }
