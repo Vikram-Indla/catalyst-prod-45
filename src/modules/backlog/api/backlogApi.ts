@@ -30,12 +30,11 @@ export async function fetchBacklogItems(params: BacklogQueryParams): Promise<Bac
   const tableName = getTableName(type);
   let query: any;
   
-  // For epics, include theme and business_request relations
+  // For epics, include theme relation (no FK for business_requests on epics table)
   if (type === 'epic') {
     query = (supabase as any).from(tableName).select(`
       *,
-      strategic_themes:theme_id(id, name),
-      business_requests:business_request_id(id, request_key, title)
+      strategic_themes:theme_id(id, name)
     `);
   } else {
     query = (supabase as any).from(tableName).select('*');
@@ -66,14 +65,14 @@ export async function fetchBacklogItems(params: BacklogQueryParams): Promise<Bac
   const { data, error } = await query;
   if (error) throw error;
   
-  // Transform epic data to include theme and BR info
+  // Transform epic data to include theme info
   const transformedData = (data || []).map((item: any) => ({
     ...item,
     themeName: item.strategic_themes?.name || null,
     themeId: item.theme_id,
-    brKey: item.business_requests?.request_key || null,
-    brTitle: item.business_requests?.title || null,
-    brId: item.business_request_id,
+    brKey: null, // No FK for business_requests on epics table
+    brTitle: null,
+    brId: null,
   }));
 
   // Fetch metadata

@@ -67,9 +67,6 @@ export function BacklogSection({
           {/* Theme */}
           <div className="min-w-[120px]">Theme</div>
           
-          {/* BR Key (Business Request) */}
-          <div className="min-w-[100px]">BR Key</div>
-          
           {/* Quarters */}
           <div className="min-w-[100px]">Quarters</div>
           
@@ -320,17 +317,6 @@ function BacklogItemRow({
           {/* Theme */}
           <div className="min-w-[120px] text-sm truncate text-muted-foreground">
             {item.themeName || '—'}
-          </div>
-
-          {/* BR Key (Business Request) */}
-          <div className="min-w-[100px]">
-            {item.brKey ? (
-              <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5 border-secondary-bronze/50 text-secondary-bronze">
-                {item.brKey}
-              </Badge>
-            ) : (
-              <span className="text-sm text-muted-foreground">—</span>
-            )}
           </div>
 
           {/* Quarters */}
