@@ -38,7 +38,7 @@ import { LinkedWorkTabV2 } from './LinkedWorkTabV2';
 // Reuse v1 tab components for Discussions, Audit Log (NO Details tab in v2)
 import { UnifiedLinksTab } from '@/components/shared/UnifiedLinksTab';
 import { DiscussionsTab } from '@/components/okr/DiscussionsTab';
-import { AuditLogTab } from '@/components/okr/AuditLogTab';
+import { UnifiedAuditHistoryTab } from '@/components/shared/UnifiedAuditHistoryTab';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { logAuditEntry, getChangedFields } from '@/lib/auditLogger';
@@ -551,8 +551,8 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
                   <TabsContent value="discussions" className="m-0 p-6">
                     <DiscussionsTab objectiveId={objective.id} />
                   </TabsContent>
-                  <TabsContent value="audit" className="m-0 p-6">
-                    <AuditLogTab objectiveId={objective.id} />
+                  <TabsContent value="audit" className="m-0 h-[500px]">
+                    <UnifiedAuditHistoryTab entityType="objective" entityId={objective.id} />
                   </TabsContent>
                 </div>
               </Tabs>
