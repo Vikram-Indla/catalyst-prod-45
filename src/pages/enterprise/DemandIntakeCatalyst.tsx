@@ -60,6 +60,7 @@ import { PROCESS_STEPS, getProcessStepInfo } from '@/types/business-request';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
+import { QuickAddRow } from '@/components/shared/QuickAddRow';
 
 type ViewMode = 'list' | 'kanban';
 type SortOrder = 'NONE' | 'ASC' | 'DESC';
@@ -604,6 +605,14 @@ export default function DemandIntakeCatalyst() {
                     </TableCell>
                   </TableRow>
                 ))}
+                {/* Quick Add Row at bottom of table, above pagination */}
+                <QuickAddRow
+                  columnsCount={11}
+                  label="Add business request"
+                  placeholder="Enter business request summary..."
+                  createType="business_request"
+                  onCreated={(id) => setSelectedRequestId(id)}
+                />
               </TableBody>
             </Table>
           ) : (
