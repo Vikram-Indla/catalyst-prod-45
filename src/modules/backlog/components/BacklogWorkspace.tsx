@@ -7,6 +7,7 @@ import { BacklogKanbanView } from './BacklogKanbanView';
 import { EpicDetailsPanel } from './EpicDetailsPanel';
 import { BacklogFiltersDialog } from './BacklogFiltersDialog';
 import { BacklogColumnsDialog } from './BacklogColumnsDialog';
+import { CreateEpicDialog } from '@/modules/program-epics/components/CreateEpicDialog';
 import { useQuery } from '@tanstack/react-query';
 import { fetchBacklogItems } from '../api/backlogApi';
 import { useEpicBacklogPreferences } from '@/hooks/useEpicBacklogPreferences';
@@ -18,7 +19,9 @@ export function BacklogWorkspace() {
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [isFiltersDialogOpen, setIsFiltersDialogOpen] = useState(false);
   const [isColumnsDialogOpen, setIsColumnsDialogOpen] = useState(false);
+  const [isCreateEpicDialogOpen, setIsCreateEpicDialogOpen] = useState(false);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Check URL for epicId param to auto-open drawer (used when navigating from Business Request links)
   const epicIdFromUrl = searchParams.get('epicId');
@@ -77,6 +80,10 @@ export function BacklogWorkspace() {
     );
   };
 
+  const handleEpicCreated = (epicId: string) => {
+    setSelectedItemId(epicId);
+  };
+
   const isListView = ['list', 'sprint'].includes(backlogState.view);
 
   return (
@@ -84,6 +91,9 @@ export function BacklogWorkspace() {
       <BacklogHeader
         onOpenFilters={() => setIsFiltersDialogOpen(true)}
         onOpenColumns={() => setIsColumnsDialogOpen(true)}
+        onCreateEpic={() => setIsCreateEpicDialogOpen(true)}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
       />
 
       <div className="flex flex-1 overflow-hidden">
@@ -134,6 +144,15 @@ export function BacklogWorkspace() {
         columnsShown={backlogState.columnsShown}
         onColumnsChange={backlogState.setColumnsShown}
       />
+
+      {backlogState.programId && (
+        <CreateEpicDialog
+          open={isCreateEpicDialogOpen}
+          onOpenChange={setIsCreateEpicDialogOpen}
+          programId={backlogState.programId}
+          onCreated={handleEpicCreated}
+        />
+      )}
     </div>
   );
 }
