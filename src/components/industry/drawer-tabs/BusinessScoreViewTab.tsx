@@ -103,9 +103,26 @@ export function BusinessScoreViewTab({ data, onChange, onDirtyChange, totalDeman
     setIsEditingOverride(false);
   };
 
-  // Save rank override - MUST exit edit mode and clear local state
-  const handleSaveRank = () => {
+  // Save justification - persists to DB, logs audit trail, exits edit mode
+  const handleSaveJustification = async () => {
     if (editRank !== null && editJustification.trim()) {
+      // Log previous justification to audit history before overwriting
+      if (rankJustification && rankJustification !== editJustification.trim()) {
+        try {
+          await supabase.from('business_request_audit_logs').insert({
+            business_request_id: data.id,
+            action: 'justification_updated',
+            field_changed: 'rank_override_justification',
+            old_value: rankJustification,
+            new_value: editJustification.trim(),
+            actor_name: 'Current User', // Would be replaced with actual user name
+          });
+        } catch (error) {
+          console.error('Failed to log justification audit:', error);
+        }
+      }
+      
+      // Update the main data
       onChange('rank', editRank);
       onChange('is_force_ranked', true);
       onChange('rank_override_justification', editJustification.trim());
@@ -299,6 +316,7 @@ export function BusinessScoreViewTab({ data, onChange, onDirtyChange, totalDeman
                 <span className="text-sm font-medium uppercase tracking-wide">Override Rank</span>
                 <span className="text-xs text-muted-foreground">(Admin)</span>
               </div>
+              {/* Show "Override Rank" button only when not editing and not already force-ranked */}
               {!isEditingOverride && !isForceRanked && (
                 <Button
                   size="sm"
@@ -309,33 +327,35 @@ export function BusinessScoreViewTab({ data, onChange, onDirtyChange, totalDeman
                   Override Rank
                 </Button>
               )}
-              {isForceRanked && !isEditingOverride && (
-                <ChevronDown className="h-4 w-4 text-muted-foreground" />
-              )}
             </div>
             
-            {/* Edit Mode Content */}
+            {/* Edit Mode Content - Show when editing */}
             {isEditingOverride && (
               <div className="p-4 space-y-4 border-t border-border bg-brand-gold/5">
-                <div className="flex items-center gap-3">
-                  <Select
-                    value={editRank ? String(editRank) : ''}
-                    onValueChange={(v) => setEditRank(parseInt(v))}
-                  >
-                    <SelectTrigger className="flex-1">
-                      <SelectValue placeholder="Select rank" />
-                    </SelectTrigger>
-                    <SelectContent className="z-[400]">
-                      {rankOptions.map((n) => (
-                        <SelectItem key={n} value={String(n)}>#{n}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <span className="text-sm text-muted-foreground">#{editRank || '—'}</span>
+                {/* Rank Selector */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Select Rank</Label>
+                  <div className="flex items-center gap-3">
+                    <Select
+                      value={editRank ? String(editRank) : ''}
+                      onValueChange={(v) => setEditRank(parseInt(v))}
+                    >
+                      <SelectTrigger className="flex-1">
+                        <SelectValue placeholder="Select rank" />
+                      </SelectTrigger>
+                      <SelectContent className="z-[400]">
+                        {rankOptions.map((n) => (
+                          <SelectItem key={n} value={String(n)}>#{n}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <span className="text-sm font-semibold text-foreground">#{editRank || '—'}</span>
+                  </div>
                 </div>
 
+                {/* Justification Textarea */}
                 <div className="space-y-2">
-                  <Label className="text-sm">
+                  <Label className="text-sm font-medium">
                     Business Justification <span className="text-destructive">*</span>
                   </Label>
                   <Textarea
@@ -346,15 +366,16 @@ export function BusinessScoreViewTab({ data, onChange, onDirtyChange, totalDeman
                   />
                 </div>
 
+                {/* Action Buttons */}
                 <div className="flex items-center gap-2">
                   <Button
                     size="sm"
-                    onClick={handleSaveRank}
+                    onClick={handleSaveJustification}
                     disabled={!editRank || !editJustification.trim()}
                     className="bg-brand-gold hover:bg-brand-gold-hover text-white"
                   >
                     <Save className="h-4 w-4 mr-1" />
-                    Save Rank
+                    Save Justification
                   </Button>
                   <Button
                     size="sm"
@@ -375,18 +396,29 @@ export function BusinessScoreViewTab({ data, onChange, onDirtyChange, totalDeman
               </div>
             )}
 
-            {/* View Mode Content - Only when force ranked and not editing */}
+            {/* View Mode Content - Show when force-ranked and NOT editing */}
             {isForceRanked && !isEditingOverride && (
-              <div className="p-4 space-y-3 border-t border-border">
+              <div className="p-4 space-y-4 border-t border-border">
+                {/* Current Override Display */}
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Current Override:</span>
                   <span className="text-sm font-semibold">#{currentRank}</span>
                 </div>
+                
+                {/* Read-only Justification */}
                 {rankJustification && (
-                  <div className="p-3 bg-muted/50 rounded text-sm text-foreground">
-                    {rankJustification}
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-muted-foreground">Business Justification</Label>
+                    <Textarea
+                      value={rankJustification}
+                      readOnly
+                      disabled
+                      className="min-h-[80px] resize-none bg-muted/50 text-muted-foreground cursor-not-allowed border-border"
+                    />
                   </div>
                 )}
+                
+                {/* Edit Justification Button */}
                 <Button
                   size="sm"
                   variant="outline"
@@ -394,7 +426,7 @@ export function BusinessScoreViewTab({ data, onChange, onDirtyChange, totalDeman
                   className="w-full"
                 >
                   <Pencil className="h-4 w-4 mr-1" />
-                  Edit Override
+                  Edit Justification
                 </Button>
               </div>
             )}
