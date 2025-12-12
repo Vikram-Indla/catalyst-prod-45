@@ -29,20 +29,13 @@ import {
   Square
 } from 'lucide-react';
 import { toast } from 'sonner';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { cn } from '@/lib/utils';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { cn } from '@/lib/utils';
 
 interface ProgramRoomSidebarProps {
   programId: string;
@@ -171,42 +164,26 @@ export function ProgramRoomSidebar({
       </button>
 
       <div className="h-full flex flex-col overflow-hidden">
-        {/* Program Context Header */}
-        <div className={cn("px-3 pt-3 pb-2 border-b", !expanded && "px-2")}>
-          {expanded && (
-            <>
-              {/* Program Display - Compact */}
-              <div className="py-1.5 px-2 mb-2 bg-accent/30 border border-border/50 rounded-lg">
-                <div className="flex items-center gap-2 w-full">
-                  <div className="w-7 h-7 rounded bg-brand-gold flex items-center justify-center text-white text-[10px] font-semibold flex-shrink-0">
-                    {program?.name?.substring(0, 2).toUpperCase() || 'PR'}
-                  </div>
-                  <div className="flex-1 text-left min-w-0">
-                    <div className="text-xs font-medium text-foreground truncate">
-                      {program?.name || 'Project'}
-                    </div>
-                    <div className="text-[10px] text-muted-foreground">Project</div>
-                  </div>
+        {/* Program Context Header - Compact inline */}
+        <div className={cn("px-2 py-2 border-b", !expanded && "px-1")}>
+          {expanded ? (
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-md bg-brand-gold flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
+                {program?.name?.substring(0, 2).toUpperCase() || 'PR'}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="text-sm font-medium text-foreground truncate">
+                  {program?.name || 'Program'}
                 </div>
+                <div className="text-[10px] text-muted-foreground">Program</div>
               </div>
-
-              {/* Program Increment Filter */}
-              <div>
-                <label className="text-[11px] font-semibold text-muted-foreground uppercase mb-2 block tracking-wider">
-                  PROJECT INCREMENT
-                </label>
-                <Select value={selectedPI || undefined} onValueChange={onPIChange}>
-                  <SelectTrigger className="h-9 text-sm w-full bg-background border-border">
-                    <SelectValue placeholder="Select PI" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-background border-border z-[100]">
-                    <SelectItem value="pi-5">PI-5</SelectItem>
-                    <SelectItem value="pi-6">PI-6</SelectItem>
-                    <SelectItem value="pi-7">PI-7</SelectItem>
-                  </SelectContent>
-                </Select>
+            </div>
+          ) : (
+            <div className="flex justify-center">
+              <div className="w-8 h-8 rounded-md bg-brand-gold flex items-center justify-center text-white text-xs font-semibold">
+                {program?.name?.substring(0, 2).toUpperCase() || 'PR'}
               </div>
-            </>
+            </div>
           )}
         </div>
 
