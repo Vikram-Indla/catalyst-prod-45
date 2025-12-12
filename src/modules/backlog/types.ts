@@ -77,6 +77,10 @@ export interface BacklogItem {
   blocked?: boolean;
   parentId?: string | null;
   themeId?: string | null;
+  themeName?: string | null;
+  brId?: string | null;
+  brKey?: string | null;
+  brTitle?: string | null;
   epicId?: string | null;
   capabilityId?: string | null;
   featureId?: string | null;
