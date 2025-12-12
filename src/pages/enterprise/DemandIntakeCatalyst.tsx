@@ -29,6 +29,8 @@ import {
   LayoutGrid, 
   Filter, 
   Download, 
+  ChevronLeft,
+  ChevronRight,
   Plus, 
   MoreHorizontal,
   AlertTriangle,
@@ -57,7 +59,6 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 import { QuickAddRow } from '@/components/shared/QuickAddRow';
-import { TableFooterPaginationRow } from '@/components/shared/TableFooterPaginationRow';
 
 type ViewMode = 'list' | 'kanban';
 type SortOrder = 'NONE' | 'ASC' | 'DESC';
@@ -421,7 +422,7 @@ export default function DemandIntakeCatalyst() {
         </div>
 
         {/* Table Content - auto height to fit content */}
-        <div className="bg-white border border-border rounded-lg overflow-x-auto shadow-sm">
+        <div className="bg-white border border-border rounded-lg shadow-sm flex flex-col">
           {isLoading ? (
             <div className="p-8 space-y-4">
               {Array.from({ length: 5 }).map((_, i) => (
@@ -434,194 +435,237 @@ export default function DemandIntakeCatalyst() {
               onRequestSelect={(id) => setSelectedRequestId(id)}
             />
           ) : sortedRequests.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-brand-gold/10 border-b-2 border-brand-gold/30">
-                  <TableHead className="w-10 font-semibold text-foreground">
-                    <Checkbox
-                      checked={isAllSelected}
-                      onCheckedChange={handleSelectAll}
-                      aria-label="Select all"
-                    />
-                  </TableHead>
-                  <TableHead 
-                    className="cursor-pointer hover:bg-muted/50 transition-colors"
-                    onClick={() => handleSort('request_key')}
-                  >
-                    <div className="flex items-center">
-                      Request ID
-                      <SortIcon columnKey="request_key" />
-                    </div>
-                  </TableHead>
-                  <TableHead 
-                    className="cursor-pointer hover:bg-muted/50 min-w-[220px] transition-colors"
-                    onClick={() => handleSort('title')}
-                  >
-                    <div className="flex items-center">
-                      Summary
-                      <SortIcon columnKey="title" />
-                    </div>
-                  </TableHead>
-                  <TableHead 
-                    className="cursor-pointer hover:bg-muted/50 transition-colors"
-                    onClick={() => handleSort('process_step')}
-                  >
-                    <div className="flex items-center">
-                      Process Step
-                      <SortIcon columnKey="process_step" />
-                    </div>
-                  </TableHead>
-                  <TableHead 
-                    className="cursor-pointer hover:bg-muted/50 text-center transition-colors"
-                    onClick={() => handleSort('business_score')}
-                  >
-                    <div className="flex items-center justify-center">
-                      Score
-                      <SortIcon columnKey="business_score" />
-                    </div>
-                  </TableHead>
-                  <TableHead 
-                    className="cursor-pointer hover:bg-muted/50 text-center transition-colors"
-                    onClick={() => handleSort('rank')}
-                  >
-                    <div className="flex items-center justify-center">
-                      Rank
-                      <SortIcon columnKey="rank" />
-                    </div>
-                  </TableHead>
-                  <TableHead 
-                    className="cursor-pointer hover:bg-muted/50 transition-colors"
-                    onClick={() => handleSort('delivery_platform')}
-                  >
-                    <div className="flex items-center">
-                      Delivery Platform
-                      <SortIcon columnKey="delivery_platform" />
-                    </div>
-                  </TableHead>
-                  <TableHead 
-                    className="cursor-pointer hover:bg-muted/50 transition-colors"
-                    onClick={() => handleSort('business_owner')}
-                  >
-                    <div className="flex items-center">
-                      Business Owner
-                      <SortIcon columnKey="business_owner" />
-                    </div>
-                  </TableHead>
-                  <TableHead 
-                    className="cursor-pointer hover:bg-muted/50 transition-colors"
-                    onClick={() => handleSort('created_at')}
-                  >
-                    <div className="flex items-center">
-                      Submitted Date
-                      <SortIcon columnKey="created_at" />
-                    </div>
-                  </TableHead>
-                  <TableHead 
-                    className="cursor-pointer hover:bg-muted/50 text-center transition-colors"
-                    onClick={() => handleSort('created_at')}
-                  >
-                    <div className="flex items-center justify-center">
-                      Age
-                      <SortIcon columnKey="created_at" />
-                    </div>
-                  </TableHead>
-                  <TableHead className="w-10"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {paginatedRequests.map((request: any) => (
-                  <TableRow 
-                    key={request.id}
-                    className="cursor-pointer hover:bg-muted/30"
-                    onClick={() => setSelectedRequestId(request.id)}
-                  >
-                    <TableCell onClick={(e) => e.stopPropagation()}>
-                      <Checkbox
-                        checked={selectedRows.includes(request.id)}
-                        onCheckedChange={() => {
-                          setSelectedRows(prev => 
-                            prev.includes(request.id) 
-                              ? prev.filter(id => id !== request.id)
-                              : [...prev, request.id]
-                          );
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <button 
-                        className="text-foreground hover:text-brand-gold font-medium text-sm"
-                        onClick={(e) => { e.stopPropagation(); setSelectedRequestId(request.id); }}
+            <>
+              {/* Scrollable table area */}
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-brand-gold/10 border-b-2 border-brand-gold/30">
+                      <TableHead className="w-10 font-semibold text-foreground">
+                        <Checkbox
+                          checked={isAllSelected}
+                          onCheckedChange={handleSelectAll}
+                          aria-label="Select all"
+                        />
+                      </TableHead>
+                      <TableHead 
+                        className="cursor-pointer hover:bg-muted/50 transition-colors"
+                        onClick={() => handleSort('request_key')}
                       >
-                        {request.request_key || `MIM-${String(request.id).slice(-3)}`}
-                      </button>
-                    </TableCell>
-                    <TableCell className="max-w-[280px] truncate">
-                      {request.title || '-'}
-                    </TableCell>
-                    <TableCell>
-                      <span className={cn(
-                        "inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded capitalize",
-                        getProcessStepInfo(request.process_step).color
-                      )}>
-                        {getProcessStepInfo(request.process_step).label}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-center font-semibold">
-                      {request.business_score || '—'}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {request.rank || '-'}
-                    </TableCell>
-                    <TableCell>
-                      {request.delivery_platform || '-'}
-                    </TableCell>
-                    <TableCell>
-                      {request.business_owner || '-'}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {formatDate(request.created_at)}
-                    </TableCell>
-                    <TableCell className="text-center text-muted-foreground">
-                      {calculateAgeing(request.created_at)}
-                    </TableCell>
-                    <TableCell onClick={(e) => e.stopPropagation()}>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="bg-white z-50">
-                          <DropdownMenuItem onClick={() => setSelectedRequestId(request.id)}>
-                            Edit
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>Clone</DropdownMenuItem>
-                          <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))}
-                {/* Quick Add Row */}
-                <QuickAddRow
-                  columnsCount={11}
-                  label="Add business request"
-                  placeholder="Enter business request summary..."
-                  createType="business_request"
-                  onCreated={(id) => setSelectedRequestId(id)}
-                />
-                {/* Pagination Row - INSIDE the table */}
-                <TableFooterPaginationRow
-                  columnsCount={11}
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  totalItems={sortedRequests.length}
-                  itemsPerPage={ITEMS_PER_PAGE}
-                  itemLabel="requests"
-                  onPageChange={setCurrentPage}
-                />
-              </TableBody>
-            </Table>
+                        <div className="flex items-center">
+                          Request ID
+                          <SortIcon columnKey="request_key" />
+                        </div>
+                      </TableHead>
+                      <TableHead 
+                        className="cursor-pointer hover:bg-muted/50 min-w-[220px] transition-colors"
+                        onClick={() => handleSort('title')}
+                      >
+                        <div className="flex items-center">
+                          Summary
+                          <SortIcon columnKey="title" />
+                        </div>
+                      </TableHead>
+                      <TableHead 
+                        className="cursor-pointer hover:bg-muted/50 transition-colors"
+                        onClick={() => handleSort('process_step')}
+                      >
+                        <div className="flex items-center">
+                          Process Step
+                          <SortIcon columnKey="process_step" />
+                        </div>
+                      </TableHead>
+                      <TableHead 
+                        className="cursor-pointer hover:bg-muted/50 text-center transition-colors"
+                        onClick={() => handleSort('business_score')}
+                      >
+                        <div className="flex items-center justify-center">
+                          Score
+                          <SortIcon columnKey="business_score" />
+                        </div>
+                      </TableHead>
+                      <TableHead 
+                        className="cursor-pointer hover:bg-muted/50 text-center transition-colors"
+                        onClick={() => handleSort('rank')}
+                      >
+                        <div className="flex items-center justify-center">
+                          Rank
+                          <SortIcon columnKey="rank" />
+                        </div>
+                      </TableHead>
+                      <TableHead 
+                        className="cursor-pointer hover:bg-muted/50 transition-colors"
+                        onClick={() => handleSort('delivery_platform')}
+                      >
+                        <div className="flex items-center">
+                          Delivery Platform
+                          <SortIcon columnKey="delivery_platform" />
+                        </div>
+                      </TableHead>
+                      <TableHead 
+                        className="cursor-pointer hover:bg-muted/50 transition-colors"
+                        onClick={() => handleSort('business_owner')}
+                      >
+                        <div className="flex items-center">
+                          Business Owner
+                          <SortIcon columnKey="business_owner" />
+                        </div>
+                      </TableHead>
+                      <TableHead 
+                        className="cursor-pointer hover:bg-muted/50 transition-colors"
+                        onClick={() => handleSort('created_at')}
+                      >
+                        <div className="flex items-center">
+                          Submitted Date
+                          <SortIcon columnKey="created_at" />
+                        </div>
+                      </TableHead>
+                      <TableHead 
+                        className="cursor-pointer hover:bg-muted/50 text-center transition-colors"
+                        onClick={() => handleSort('created_at')}
+                      >
+                        <div className="flex items-center justify-center">
+                          Age
+                          <SortIcon columnKey="created_at" />
+                        </div>
+                      </TableHead>
+                      <TableHead className="w-10"></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {paginatedRequests.map((request: any) => (
+                      <TableRow 
+                        key={request.id}
+                        className="cursor-pointer hover:bg-muted/30"
+                        onClick={() => setSelectedRequestId(request.id)}
+                      >
+                        <TableCell onClick={(e) => e.stopPropagation()}>
+                          <Checkbox
+                            checked={selectedRows.includes(request.id)}
+                            onCheckedChange={() => {
+                              setSelectedRows(prev => 
+                                prev.includes(request.id) 
+                                  ? prev.filter(id => id !== request.id)
+                                  : [...prev, request.id]
+                              );
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <button 
+                            className="text-foreground hover:text-brand-gold font-medium text-sm"
+                            onClick={(e) => { e.stopPropagation(); setSelectedRequestId(request.id); }}
+                          >
+                            {request.request_key || `MIM-${String(request.id).slice(-3)}`}
+                          </button>
+                        </TableCell>
+                        <TableCell className="max-w-[280px] truncate">
+                          {request.title || '-'}
+                        </TableCell>
+                        <TableCell>
+                          <span className={cn(
+                            "inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded capitalize",
+                            getProcessStepInfo(request.process_step).color
+                          )}>
+                            {getProcessStepInfo(request.process_step).label}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-center font-semibold">
+                          {request.business_score || '—'}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {request.rank || '-'}
+                        </TableCell>
+                        <TableCell>
+                          {request.delivery_platform || '-'}
+                        </TableCell>
+                        <TableCell>
+                          {request.business_owner || '-'}
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {formatDate(request.created_at)}
+                        </TableCell>
+                        <TableCell className="text-center text-muted-foreground">
+                          {calculateAgeing(request.created_at)}
+                        </TableCell>
+                        <TableCell onClick={(e) => e.stopPropagation()}>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="bg-white z-50">
+                              <DropdownMenuItem onClick={() => setSelectedRequestId(request.id)}>
+                                Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem>Clone</DropdownMenuItem>
+                              <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {/* Quick Add Row */}
+                    <QuickAddRow
+                      columnsCount={11}
+                      label="Add business request"
+                      placeholder="Enter business request summary..."
+                      createType="business_request"
+                      onCreated={(id) => setSelectedRequestId(id)}
+                    />
+                  </TableBody>
+                </Table>
+              </div>
+              {/* Pagination - Outside scroll area but inside card */}
+              <div className="flex items-center justify-between px-4 py-4 border-t border-border">
+                <p className="text-sm text-muted-foreground whitespace-nowrap">
+                  Showing {startIndex + 1}-{Math.min(endIndex, sortedRequests.length)} of {sortedRequests.length} requests
+                </p>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                    disabled={currentPage === 1}
+                    className={cn(
+                      "flex items-center gap-1 px-3 py-1.5 text-sm border border-border rounded-md transition-colors whitespace-nowrap",
+                      currentPage === 1 
+                        ? "text-muted-foreground/50 cursor-not-allowed" 
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    )}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Previous
+                  </button>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                    <button
+                      key={pageNum}
+                      onClick={() => setCurrentPage(pageNum)}
+                      className={cn(
+                        "w-8 h-8 text-sm rounded-md transition-colors",
+                        currentPage === pageNum 
+                          ? "bg-brand-gold text-white font-medium" 
+                          : "text-muted-foreground hover:bg-muted border border-border"
+                      )}
+                    >
+                      {pageNum}
+                    </button>
+                  ))}
+                  <button
+                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                    disabled={currentPage >= totalPages}
+                    className={cn(
+                      "flex items-center gap-1 px-3 py-1.5 text-sm border border-border rounded-md transition-colors whitespace-nowrap",
+                      currentPage >= totalPages 
+                        ? "text-muted-foreground/50 cursor-not-allowed" 
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    )}
+                  >
+                    Next
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            </>
           ) : (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <div className="rounded-full bg-muted p-4 mb-4">
