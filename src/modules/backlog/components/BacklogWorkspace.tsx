@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useBacklogState } from '../hooks/useBacklogState';
 import { BacklogHeader } from './BacklogHeader';
 import { BacklogListView } from './BacklogListView';
@@ -13,10 +14,25 @@ import { useEpicBacklogPreferences } from '@/hooks/useEpicBacklogPreferences';
 export function BacklogWorkspace() {
   const backlogState = useBacklogState();
   const { preferences, updatePreferences } = useEpicBacklogPreferences();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [isFiltersDialogOpen, setIsFiltersDialogOpen] = useState(false);
   const [isColumnsDialogOpen, setIsColumnsDialogOpen] = useState(false);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+
+  // Check URL for epicId param to auto-open drawer (used when navigating from Business Request links)
+  const epicIdFromUrl = searchParams.get('epicId');
+
+  // Auto-open epic drawer if epicId is in URL
+  useEffect(() => {
+    if (epicIdFromUrl) {
+      setSelectedItemId(epicIdFromUrl);
+      // Clear the epicId from URL to avoid re-opening on subsequent navigation
+      const newSearchParams = new URLSearchParams(searchParams);
+      newSearchParams.delete('epicId');
+      setSearchParams(newSearchParams, { replace: true });
+    }
+  }, [epicIdFromUrl, searchParams, setSearchParams]);
 
   // Sync view changes to user preferences
   useEffect(() => {
