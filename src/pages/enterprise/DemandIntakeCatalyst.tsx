@@ -12,14 +12,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
 
 // Icons
@@ -332,10 +324,12 @@ export default function DemandIntakeCatalyst() {
   const isAllSelected = selectedRows.length === paginatedRequests.length && paginatedRequests.length > 0;
 
   const SortIcon = ({ columnKey }: { columnKey: string }) => {
-    if (sortKey !== columnKey) return <ArrowUpDown className="ml-1 h-3 w-3 opacity-40" />;
+    if (sortKey !== columnKey) {
+      return <ArrowUpDown className="ml-2 h-4 w-4 text-muted-foreground/60" />;
+    }
     return sortOrder === 'ASC' 
-      ? <ArrowUp className="ml-1 h-3 w-3 text-brand-gold" /> 
-      : <ArrowDown className="ml-1 h-3 w-3 text-brand-gold" />;
+      ? <ArrowUp className="ml-2 h-4 w-4 text-brand-gold" /> 
+      : <ArrowDown className="ml-2 h-4 w-4 text-brand-gold" />;
   };
 
   return (
@@ -443,7 +437,7 @@ export default function DemandIntakeCatalyst() {
         </div>
 
         {/* Table Content */}
-        <div className="bg-white border border-border overflow-hidden">
+        <div className="bg-white border border-border rounded-lg overflow-hidden shadow-sm">
           {isLoading ? (
             <div className="p-8 space-y-4">
               {Array.from({ length: 5 }).map((_, i) => (
@@ -457,139 +451,112 @@ export default function DemandIntakeCatalyst() {
             />
           ) : sortedRequests.length > 0 ? (
             <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-white hover:bg-white border-b border-border">
-                    <TableHead className="w-10 px-3">
+              <table className="w-full text-sm border-collapse">
+                <thead>
+                  <tr className="bg-brand-gold/10 border-b-2 border-brand-gold/30">
+                    <th className="w-12 px-4 py-3 text-left border-r border-border/40">
                       <Checkbox
                         checked={isAllSelected}
                         onCheckedChange={handleSelectAll}
                         aria-label="Select all"
                       />
-                    </TableHead>
-                    <TableHead 
-                      className="cursor-pointer hover:text-foreground text-xs font-medium text-muted-foreground uppercase tracking-wide px-3"
+                    </th>
+                    <th 
+                      className="cursor-pointer hover:bg-brand-gold/20 text-xs font-semibold text-foreground uppercase tracking-wider px-4 py-3 text-left border-r border-border/40 whitespace-nowrap transition-colors"
                       onClick={() => handleSort('request_key')}
                     >
                       <div className="flex items-center">
-                        Request...
+                        Request ID
                         <SortIcon columnKey="request_key" />
                       </div>
-                    </TableHead>
-                    <TableHead 
-                      className="cursor-pointer hover:text-foreground text-xs font-medium text-muted-foreground uppercase tracking-wide min-w-[200px] px-3"
+                    </th>
+                    <th 
+                      className="cursor-pointer hover:bg-brand-gold/20 text-xs font-semibold text-foreground uppercase tracking-wider min-w-[220px] px-4 py-3 text-left border-r border-border/40 transition-colors"
                       onClick={() => handleSort('title')}
                     >
                       <div className="flex items-center">
                         Summary
                         <SortIcon columnKey="title" />
                       </div>
-                    </TableHead>
-                    <TableHead 
-                      className="cursor-pointer hover:text-foreground text-xs font-medium text-muted-foreground uppercase tracking-wide px-3"
+                    </th>
+                    <th 
+                      className="cursor-pointer hover:bg-brand-gold/20 text-xs font-semibold text-foreground uppercase tracking-wider px-4 py-3 text-left border-r border-border/40 whitespace-nowrap transition-colors"
                       onClick={() => handleSort('process_step')}
                     >
                       <div className="flex items-center">
                         Process Step
                         <SortIcon columnKey="process_step" />
                       </div>
-                    </TableHead>
-                    <TableHead 
-                      className="cursor-pointer hover:text-foreground text-xs font-medium text-muted-foreground uppercase tracking-wide px-3"
+                    </th>
+                    <th 
+                      className="cursor-pointer hover:bg-brand-gold/20 text-xs font-semibold text-foreground uppercase tracking-wider px-4 py-3 text-center border-r border-border/40 whitespace-nowrap transition-colors"
                       onClick={() => handleSort('business_score')}
                     >
-                      <div className="flex items-center">
-                        Sc...
+                      <div className="flex items-center justify-center">
+                        Score
                         <SortIcon columnKey="business_score" />
                       </div>
-                    </TableHead>
-                    <TableHead 
-                      className="cursor-pointer hover:text-foreground text-xs font-medium text-muted-foreground uppercase tracking-wide px-3"
+                    </th>
+                    <th 
+                      className="cursor-pointer hover:bg-brand-gold/20 text-xs font-semibold text-foreground uppercase tracking-wider px-4 py-3 text-center border-r border-border/40 whitespace-nowrap transition-colors"
                       onClick={() => handleSort('rank')}
                     >
-                      <div className="flex items-center">
+                      <div className="flex items-center justify-center">
                         Rank
                         <SortIcon columnKey="rank" />
                       </div>
-                    </TableHead>
-                    <TableHead 
-                      className="cursor-pointer hover:text-foreground text-xs font-medium text-muted-foreground uppercase tracking-wide px-3"
+                    </th>
+                    <th 
+                      className="cursor-pointer hover:bg-brand-gold/20 text-xs font-semibold text-foreground uppercase tracking-wider px-4 py-3 text-left border-r border-border/40 whitespace-nowrap transition-colors"
                       onClick={() => handleSort('delivery_platform')}
                     >
                       <div className="flex items-center">
-                        Delivery Platfo...
+                        Delivery Platform
                         <SortIcon columnKey="delivery_platform" />
                       </div>
-                    </TableHead>
-                    <TableHead 
-                      className="cursor-pointer hover:text-foreground text-xs font-medium text-muted-foreground uppercase tracking-wide px-3"
+                    </th>
+                    <th 
+                      className="cursor-pointer hover:bg-brand-gold/20 text-xs font-semibold text-foreground uppercase tracking-wider px-4 py-3 text-left border-r border-border/40 whitespace-nowrap transition-colors"
                       onClick={() => handleSort('business_owner')}
                     >
                       <div className="flex items-center">
                         Business Owner
                         <SortIcon columnKey="business_owner" />
                       </div>
-                    </TableHead>
-                    <TableHead 
-                      className="cursor-pointer hover:text-foreground text-xs font-medium text-muted-foreground uppercase tracking-wide px-3"
+                    </th>
+                    <th 
+                      className="cursor-pointer hover:bg-brand-gold/20 text-xs font-semibold text-foreground uppercase tracking-wider px-4 py-3 text-left border-r border-border/40 whitespace-nowrap transition-colors"
                       onClick={() => handleSort('created_at')}
                     >
                       <div className="flex items-center">
                         Submitted Date
                         <SortIcon columnKey="created_at" />
                       </div>
-                    </TableHead>
-                    <TableHead 
-                      className="cursor-pointer hover:text-foreground text-xs font-medium text-muted-foreground uppercase tracking-wide px-3"
+                    </th>
+                    <th 
+                      className="cursor-pointer hover:bg-brand-gold/20 text-xs font-semibold text-foreground uppercase tracking-wider px-4 py-3 text-center border-r border-border/40 whitespace-nowrap transition-colors"
                       onClick={() => handleSort('created_at')}
                     >
-                      <div className="flex items-center">
-                        Ageing
+                      <div className="flex items-center justify-center">
+                        Age
                         <SortIcon columnKey="created_at" />
                       </div>
-                    </TableHead>
-                    <TableHead 
-                      className="cursor-pointer hover:text-foreground text-xs font-medium text-muted-foreground uppercase tracking-wide px-3"
-                      onClick={() => handleSort('planned_quarter')}
-                    >
-                      <div className="flex items-center">
-                        Quart...
-                        <SortIcon columnKey="planned_quarter" />
-                      </div>
-                    </TableHead>
-                    <TableHead 
-                      className="cursor-pointer hover:text-foreground text-xs font-medium text-muted-foreground uppercase tracking-wide px-3"
-                      onClick={() => handleSort('end_date')}
-                    >
-                      <div className="flex items-center">
-                        Target Da...
-                        <SortIcon columnKey="end_date" />
-                      </div>
-                    </TableHead>
-                    <TableHead 
-                      className="cursor-pointer hover:text-foreground text-xs font-medium text-muted-foreground uppercase tracking-wide px-3"
-                      onClick={() => handleSort('department')}
-                    >
-                      <div className="flex items-center">
-                        Department
-                        <SortIcon columnKey="department" />
-                      </div>
-                    </TableHead>
-                    <TableHead className="w-10 px-3">
-                      <button className="text-muted-foreground hover:text-foreground">
+                    </th>
+                    <th className="w-12 px-4 py-3 text-center">
+                      <button className="text-muted-foreground hover:text-brand-gold transition-colors">
                         <Plus className="h-4 w-4" />
                       </button>
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
                   {paginatedRequests.map((request: any) => (
-                    <TableRow 
+                    <tr 
                       key={request.id}
-                      className="cursor-pointer hover:bg-[#f8f8f8] border-b border-border"
+                      className="cursor-pointer hover:bg-muted/50 border-b border-border/60 transition-colors"
                       onClick={() => setSelectedRequestId(request.id)}
                     >
-                      <TableCell className="px-3" onClick={(e) => e.stopPropagation()}>
+                      <td className="px-4 py-3 border-r border-border/40" onClick={(e) => e.stopPropagation()}>
                         <Checkbox
                           checked={selectedRows.includes(request.id)}
                           onCheckedChange={() => {
@@ -600,74 +567,52 @@ export default function DemandIntakeCatalyst() {
                             );
                           }}
                         />
-                      </TableCell>
-                      <TableCell className="px-3 text-sm">
+                      </td>
+                      <td className="px-4 py-3 border-r border-border/40">
                         <button 
-                          className="text-foreground hover:text-brand-gold font-medium"
+                          className="text-foreground hover:text-brand-gold font-medium text-sm"
                           onClick={(e) => { e.stopPropagation(); setSelectedRequestId(request.id); }}
                         >
                           {request.request_key || `MIM-${String(request.id).slice(-3)}`}
                         </button>
-                      </TableCell>
-                      <TableCell className="px-3 text-sm max-w-[250px] truncate">
+                      </td>
+                      <td className="px-4 py-3 text-sm max-w-[280px] truncate border-r border-border/40">
                         {request.title || '-'}
-                      </TableCell>
-                      <TableCell className="px-3">
+                      </td>
+                      <td className="px-4 py-3 border-r border-border/40">
                         <span className={cn(
-                          "inline-flex items-center px-2 py-0.5 text-xs font-medium rounded",
+                          "inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded uppercase",
                           getProcessStepInfo(request.process_step).color
                         )}>
                           {getProcessStepInfo(request.process_step).label}
                         </span>
-                      </TableCell>
-                      <TableCell className="px-3 text-sm text-center font-medium">
+                      </td>
+                      <td className="px-4 py-3 text-sm text-center font-semibold border-r border-border/40">
                         {request.business_score || '—'}
-                      </TableCell>
-                      <TableCell className="px-3 text-sm text-center">
+                      </td>
+                      <td className="px-4 py-3 text-sm text-center border-r border-border/40">
                         {request.rank || '-'}
-                      </TableCell>
-                      <TableCell className="px-3 text-sm">
+                      </td>
+                      <td className="px-4 py-3 text-sm border-r border-border/40">
                         {request.delivery_platform || '-'}
-                      </TableCell>
-                      <TableCell className="px-3 text-sm">
+                      </td>
+                      <td className="px-4 py-3 text-sm border-r border-border/40">
                         {request.business_owner || '-'}
-                      </TableCell>
-                      <TableCell className="px-3 text-sm">
+                      </td>
+                      <td className="px-4 py-3 text-sm border-r border-border/40">
                         {formatDate(request.created_at)}
-                      </TableCell>
-                      <TableCell className="px-3 text-sm text-center">
+                      </td>
+                      <td className="px-4 py-3 text-sm text-center border-r border-border/40">
                         {calculateAgeing(request.created_at)}
-                      </TableCell>
-                      <TableCell className="px-3 text-sm">
-                        {request.planned_quarter || '-'}
-                      </TableCell>
-                      <TableCell className="px-3 text-sm">
-                        {request.end_date ? (
-                          <div className="flex items-center gap-1.5">
-                            {formatDate(request.end_date)}
-                            <span className={cn(
-                              "w-2 h-2 rounded-full flex-shrink-0",
-                              getHealthDotColor(request.end_date)
-                            )} />
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-1.5">
-                            -
-                            <span className="w-2 h-2 rounded-full flex-shrink-0 bg-amber-500" />
-                          </div>
-                        )}
-                      </TableCell>
-                      <TableCell className="px-3 text-sm">
-                        {request.department || '-'}
-                      </TableCell>
-                      <TableCell className="px-3" onClick={(e) => e.stopPropagation()}>
+                      </td>
+                      <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
+                          <DropdownMenuContent align="end" className="bg-white z-50">
                             <DropdownMenuItem onClick={() => setSelectedRequestId(request.id)}>
                               Edit
                             </DropdownMenuItem>
@@ -675,11 +620,11 @@ export default function DemandIntakeCatalyst() {
                             <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   ))}
-                </TableBody>
-              </Table>
+                </tbody>
+              </table>
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-16 text-center">
