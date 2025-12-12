@@ -151,10 +151,7 @@ function ThemeDetailsTab({
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label className="text-xs font-medium">Programs</Label>
-            <Select 
-              value={formData.snapshot_id || ''} 
-              onValueChange={(v) => handleFieldChange('snapshot_id', v)}
-            >
+            <Select>
               <SelectTrigger className="h-9">
                 <SelectValue placeholder="Select programs..." />
               </SelectTrigger>
