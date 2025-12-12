@@ -30,9 +30,16 @@ function mapProcessStepToStatus(processStep: string | null): RoadmapStatus {
 }
 
 // Map milestone state to roadmap milestone state
+// Handles both text states ('on_track', 'pending') and numeric states ('0', '1', '2', '3')
 function mapMilestoneState(state: string | null): MilestoneState {
-  const s = (state || '').toLowerCase().replace(/[_-]/g, '');
+  const s = (state || '').toLowerCase().replace(/[_-]/g, '').trim();
   
+  // Handle numeric states (from MILESTONE_STATES: 0=Pending, 1=In Progress, 2=Complete, 3=Blocked)
+  if (s === '2') return 'complete';
+  if (s === '1') return 'current';
+  if (s === '0' || s === '3') return 'pending'; // 3=Blocked treated as pending
+  
+  // Handle text states
   switch (s) {
     case 'completed':
     case 'complete':
@@ -41,9 +48,11 @@ function mapMilestoneState(state: string | null): MilestoneState {
     case 'ontrack':
     case 'inprogress':
     case 'current':
+    case 'active':
       return 'current';
     case 'pending':
     case 'notstarted':
+    case 'blocked':
     default:
       return 'pending';
   }
