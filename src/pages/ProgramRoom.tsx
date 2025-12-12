@@ -17,7 +17,8 @@ export default function ProgramRoom() {
   const { data: program, isLoading } = useQuery({
     queryKey: ['program', programId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // First try to find as a program
+      const { data: programData } = await supabase
         .from('programs')
         .select(`
           id,
@@ -28,17 +29,36 @@ export default function ProgramRoom() {
           )
         `)
         .eq('id', programId)
-        .single();
+        .maybeSingle();
       
-      if (error) throw error;
-      return data;
+      if (programData) return programData;
+
+      // If not found, check if it's a portfolio ID and get first program under it
+      const { data: programUnderPortfolio } = await supabase
+        .from('programs')
+        .select(`
+          id,
+          name,
+          portfolio_id,
+          portfolios (
+            name
+          )
+        `)
+        .eq('portfolio_id', programId)
+        .limit(1)
+        .maybeSingle();
+      
+      return programUnderPortfolio;
     },
     enabled: !!programId,
   });
 
+  // Use the actual program ID for queries
+  const actualProgramId = program?.id || programId;
+
   // Fetch recent features for this program
   const { data: features } = useQuery({
-    queryKey: ['program-features', programId],
+    queryKey: ['program-features', actualProgramId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('features')
@@ -53,26 +73,26 @@ export default function ProgramRoom() {
             name
           )
         `)
-        .eq('program_id', programId)
+        .eq('program_id', actualProgramId)
         .order('created_at', { ascending: false })
         .limit(10);
       
       if (error) throw error;
       return data || [];
     },
-    enabled: !!programId,
+    enabled: !!actualProgramId,
   });
 
   // Fetch recent epics for this program
   const { data: epics = [] } = useQuery({
-    queryKey: ['program-room-epics', programId],
+    queryKey: ['program-room-epics', actualProgramId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('epics')
         .select('*')
         .is('deleted_at', null)
         .is('parked_at', null)
-        .eq('primary_program_id', programId)
+        .eq('primary_program_id', actualProgramId)
         .order('created_at', { ascending: false })
         .limit(5);
       
@@ -265,7 +285,7 @@ export default function ProgramRoom() {
                       variant="link" 
                       size="sm" 
                       className="text-xs"
-                      onClick={() => navigate(`/program/${programId}/epics`)}
+                      onClick={() => navigate(`/program/${actualProgramId}/epics`)}
                     >
                       View All
                     </Button>
