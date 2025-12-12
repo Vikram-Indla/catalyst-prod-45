@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useBusinessLines } from '@/hooks/useProductSettings';
 import { useDrawerTabConfigs, useBulkUpdateDrawerTabConfigs, DrawerTabConfig } from '@/hooks/useDrawerTabConfigs';
+import { useOptionSets, OptionSet } from '@/hooks/useOptionSets';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronRight, GripVertical, Settings2, Loader2 } from 'lucide-react';
+import { ChevronRight, GripVertical, Settings2, Loader2, List } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { OptionValuesDrawer } from '../lookup-management/OptionValuesDrawer';
 
 interface FieldsLayoutPanelProps {
   onChanges: () => void;
@@ -22,20 +24,39 @@ const DEFAULT_SECTIONS = [
   { key: 'stakeholders', name: 'Stakeholders', is_required: false, is_visible: true, collapsed_by_default: true },
 ];
 
-// Default fields
-const DEFAULT_FIELDS = [
-  { key: 'summary', label: 'Summary', section: 'basic-info', is_system: true, is_required: true },
-  { key: 'description', label: 'Description', section: 'basic-info', is_system: true, is_required: false },
-  { key: 'department', label: 'Department', section: 'basic-info', is_system: false, is_required: true },
-  { key: 'business_owner', label: 'Business Owner', section: 'stakeholders', is_system: false, is_required: true },
-  { key: 'requestor', label: 'Requestor', section: 'stakeholders', is_system: false, is_required: false },
-  { key: 'process_step', label: 'Process Step', section: 'workflow', is_system: true, is_required: true },
-  { key: 'delivery_platform', label: 'Delivery Platform', section: 'delivery', is_system: false, is_required: false },
-  { key: 'planned_quarter', label: 'Planned Quarter', section: 'delivery', is_system: false, is_required: false },
+// Field type definitions - identifies which fields are list-backed
+type FieldType = 'text' | 'textarea' | 'select' | 'user' | 'date';
+
+interface FieldConfig {
+  key: string;
+  label: string;
+  section: string;
+  is_system: boolean;
+  is_required: boolean;
+  fieldType: FieldType;
+  optionsSourceKey?: string; // Maps to OptionSet key for select fields
+}
+
+// Default fields with type and optionsSourceKey for list fields
+const DEFAULT_FIELDS: FieldConfig[] = [
+  { key: 'summary', label: 'Summary', section: 'basic-info', is_system: true, is_required: true, fieldType: 'text' },
+  { key: 'description', label: 'Description', section: 'basic-info', is_system: true, is_required: false, fieldType: 'textarea' },
+  { key: 'department', label: 'Department', section: 'basic-info', is_system: false, is_required: true, fieldType: 'select', optionsSourceKey: 'DEPARTMENT' },
+  { key: 'business_owner', label: 'Business Owner', section: 'stakeholders', is_system: false, is_required: true, fieldType: 'user' },
+  { key: 'requestor', label: 'Requestor', section: 'stakeholders', is_system: false, is_required: false, fieldType: 'user' },
+  { key: 'process_step', label: 'Process Step', section: 'workflow', is_system: true, is_required: true, fieldType: 'select', optionsSourceKey: 'PROCESS_STEP' },
+  { key: 'delivery_platform', label: 'Delivery Platform', section: 'delivery', is_system: false, is_required: false, fieldType: 'select', optionsSourceKey: 'DELIVERY_PLATFORM' },
+  { key: 'delivery_track', label: 'Delivery Track', section: 'delivery', is_system: false, is_required: false, fieldType: 'select', optionsSourceKey: 'DELIVERY_TRACK' },
+  { key: 'planned_quarter', label: 'Planned Quarter', section: 'delivery', is_system: false, is_required: false, fieldType: 'select', optionsSourceKey: 'PLANNED_QUARTER' },
+  { key: 'priority', label: 'Priority', section: 'workflow', is_system: false, is_required: false, fieldType: 'select', optionsSourceKey: 'PRIORITY' },
+  { key: 'complexity', label: 'Complexity', section: 'workflow', is_system: false, is_required: false, fieldType: 'select', optionsSourceKey: 'COMPLEXITY' },
+  { key: 'urgency', label: 'Urgency', section: 'workflow', is_system: false, is_required: false, fieldType: 'select', optionsSourceKey: 'URGENCY' },
+  { key: 'health', label: 'Health Status', section: 'workflow', is_system: false, is_required: false, fieldType: 'select', optionsSourceKey: 'HEALTH_STATUS' },
 ];
 
 export function FieldsLayoutPanel({ onChanges }: FieldsLayoutPanelProps) {
   const { data: businessLines = [], isLoading: linesLoading } = useBusinessLines();
+  const { data: optionSets = [], isLoading: optionSetsLoading } = useOptionSets();
   const [selectedScope, setSelectedScope] = useState<string>('global');
   
   // Fetch tab configs from database
@@ -46,9 +67,13 @@ export function FieldsLayoutPanel({ onChanges }: FieldsLayoutPanelProps) {
   // Local state for tabs (synced with DB)
   const [tabs, setTabs] = useState<DrawerTabConfig[]>([]);
   const [sections, setSections] = useState(DEFAULT_SECTIONS);
-  const [fields, setFields] = useState(DEFAULT_FIELDS);
+  const [fields, setFields] = useState<FieldConfig[]>(DEFAULT_FIELDS);
   const [sectionsOpen, setSectionsOpen] = useState(false);
   const [hasLocalChanges, setHasLocalChanges] = useState(false);
+
+  // Values drawer state
+  const [selectedOptionSet, setSelectedOptionSet] = useState<OptionSet | null>(null);
+  const [valuesDrawerOpen, setValuesDrawerOpen] = useState(false);
 
   // Sync local state when DB data changes
   useEffect(() => {
@@ -80,6 +105,19 @@ export function FieldsLayoutPanel({ onChanges }: FieldsLayoutPanelProps) {
       f.key === fieldKey ? { ...f, [field]: !f[field] } : f
     ));
     onChanges();
+  };
+
+  // Open values drawer for a specific field
+  const handleConfigureValues = (field: FieldConfig) => {
+    if (!field.optionsSourceKey) return;
+    
+    const optionSet = optionSets.find(os => os.key === field.optionsSourceKey);
+    if (optionSet) {
+      setSelectedOptionSet(optionSet);
+      setValuesDrawerOpen(true);
+    } else {
+      toast.error(`Option set "${field.optionsSourceKey}" not found`);
+    }
   };
 
   // Save tab configs to database
@@ -115,7 +153,7 @@ export function FieldsLayoutPanel({ onChanges }: FieldsLayoutPanelProps) {
     };
   }, [tabs, hasLocalChanges]);
 
-  const isLoading = linesLoading || tabsLoading;
+  const isLoading = linesLoading || tabsLoading || optionSetsLoading;
 
   if (isLoading) {
     return (
@@ -235,15 +273,17 @@ export function FieldsLayoutPanel({ onChanges }: FieldsLayoutPanelProps) {
       <div className="border rounded-lg overflow-hidden">
         <div className="bg-muted/30 px-4 py-3 border-b">
           <h3 className="font-medium">Field Configuration</h3>
-          <p className="text-xs text-muted-foreground">Configure field visibility and requirements</p>
+          <p className="text-xs text-muted-foreground">Configure field visibility, requirements, and list values</p>
         </div>
         <table className="w-full text-sm">
           <thead className="bg-muted/20">
             <tr>
               <th className="text-left px-4 py-2 font-medium text-muted-foreground">Field</th>
               <th className="text-left px-4 py-2 font-medium text-muted-foreground">Section</th>
+              <th className="text-center px-4 py-2 font-medium text-muted-foreground">Type</th>
               <th className="text-center px-4 py-2 font-medium text-muted-foreground">Active</th>
               <th className="text-center px-4 py-2 font-medium text-muted-foreground">Required</th>
+              <th className="text-center px-4 py-2 font-medium text-muted-foreground">Values</th>
               <th className="text-center px-4 py-2 font-medium text-muted-foreground">Rules</th>
             </tr>
           </thead>
@@ -262,6 +302,11 @@ export function FieldsLayoutPanel({ onChanges }: FieldsLayoutPanelProps) {
                   {sections.find(s => s.key === field.section)?.name || field.section}
                 </td>
                 <td className="px-4 py-2 text-center">
+                  <Badge variant="secondary" className="text-xs capitalize">
+                    {field.fieldType}
+                  </Badge>
+                </td>
+                <td className="px-4 py-2 text-center">
                   <Switch
                     checked={true}
                     disabled={field.is_system}
@@ -275,6 +320,21 @@ export function FieldsLayoutPanel({ onChanges }: FieldsLayoutPanelProps) {
                   />
                 </td>
                 <td className="px-4 py-2 text-center">
+                  {field.fieldType === 'select' && field.optionsSourceKey ? (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 gap-1.5 text-brand-gold hover:text-brand-gold hover:bg-brand-gold/10"
+                      onClick={() => handleConfigureValues(field)}
+                    >
+                      <List className="h-4 w-4" />
+                      <span className="text-xs">Configure</span>
+                    </Button>
+                  ) : (
+                    <span className="text-xs text-muted-foreground">—</span>
+                  )}
+                </td>
+                <td className="px-4 py-2 text-center">
                   <Button variant="ghost" size="icon" className="h-8 w-8">
                     <Settings2 className="h-4 w-4" />
                   </Button>
@@ -284,6 +344,20 @@ export function FieldsLayoutPanel({ onChanges }: FieldsLayoutPanelProps) {
           </tbody>
         </table>
       </div>
+
+      {/* Values Configuration Drawer */}
+      {selectedOptionSet && (
+        <OptionValuesDrawer
+          optionSet={selectedOptionSet}
+          open={valuesDrawerOpen}
+          onOpenChange={(open) => {
+            setValuesDrawerOpen(open);
+            if (!open) {
+              setSelectedOptionSet(null);
+            }
+          }}
+        />
+      )}
     </div>
   );
 }
