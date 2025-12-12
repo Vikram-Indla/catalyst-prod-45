@@ -1,9 +1,11 @@
 // ExecutiveRoadmap - Demand Roadmap using the generic RoadmapEngine
 // This component wraps the RoadmapEngine with demand-specific configuration
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { cn } from '@/lib/utils';
-import { BusinessRequestRoadmapItem } from '@/types/roadmapTypes';
+import { BusinessRequestRoadmapItem, RoadmapStatus, PLATFORM_INFO, STAGE_NAMES, STAGE_NAMES_AR } from '@/types/roadmapTypes';
+import { RoadmapLegend } from './RoadmapLegend';
+import { RoadmapFiltersDialog, type RoadmapFilters } from './RoadmapFiltersDialog';
 import { RoadmapEngine } from '@/components/roadmap/RoadmapEngine';
 import { demandRoadmapConfig } from '@/config/roadmaps/demandRoadmapConfig';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
@@ -11,6 +13,32 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useRoadmapBusinessRequests } from '@/hooks/useRoadmapBusinessRequests';
 import { RoadmapItem } from '@/config/roadmaps/types';
+import { Input } from '@/components/ui/input';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { 
+  Search, 
+  Clock, 
+  Filter, 
+  Calendar, 
+  Download, 
+  Info, 
+  Minimize2, 
+  Maximize2, 
+  ChevronUp, 
+  ChevronDown,
+  Lock,
+  ZoomIn,
+  ZoomOut,
+  X,
+  Check,
+  AlertTriangle,
+  Circle,
+  Milestone,
+  ChevronLeft,
+  ChevronRight,
+  Target
+} from 'lucide-react';
 
 type TimeScale = 'weekly' | 'monthly' | 'quarterly' | 'yearly';
 type Language = 'en' | 'ar';
