@@ -13,6 +13,14 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 // Icons
 import { 
@@ -462,182 +470,176 @@ export default function DemandIntakeCatalyst() {
               onRequestSelect={(id) => setSelectedRequestId(id)}
             />
           ) : sortedRequests.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm border-collapse">
-                <thead>
-                  <tr className="bg-brand-gold/10 border-b-2 border-brand-gold/30">
-                    <th className="w-12 px-4 py-3 text-left border-r border-border/40">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/30">
+                  <TableHead className="w-10">
+                    <Checkbox
+                      checked={isAllSelected}
+                      onCheckedChange={handleSelectAll}
+                      aria-label="Select all"
+                    />
+                  </TableHead>
+                  <TableHead 
+                    className="cursor-pointer hover:bg-muted/50 transition-colors"
+                    onClick={() => handleSort('request_key')}
+                  >
+                    <div className="flex items-center">
+                      Request ID
+                      <SortIcon columnKey="request_key" />
+                    </div>
+                  </TableHead>
+                  <TableHead 
+                    className="cursor-pointer hover:bg-muted/50 min-w-[220px] transition-colors"
+                    onClick={() => handleSort('title')}
+                  >
+                    <div className="flex items-center">
+                      Summary
+                      <SortIcon columnKey="title" />
+                    </div>
+                  </TableHead>
+                  <TableHead 
+                    className="cursor-pointer hover:bg-muted/50 transition-colors"
+                    onClick={() => handleSort('process_step')}
+                  >
+                    <div className="flex items-center">
+                      Process Step
+                      <SortIcon columnKey="process_step" />
+                    </div>
+                  </TableHead>
+                  <TableHead 
+                    className="cursor-pointer hover:bg-muted/50 text-center transition-colors"
+                    onClick={() => handleSort('business_score')}
+                  >
+                    <div className="flex items-center justify-center">
+                      Score
+                      <SortIcon columnKey="business_score" />
+                    </div>
+                  </TableHead>
+                  <TableHead 
+                    className="cursor-pointer hover:bg-muted/50 text-center transition-colors"
+                    onClick={() => handleSort('rank')}
+                  >
+                    <div className="flex items-center justify-center">
+                      Rank
+                      <SortIcon columnKey="rank" />
+                    </div>
+                  </TableHead>
+                  <TableHead 
+                    className="cursor-pointer hover:bg-muted/50 transition-colors"
+                    onClick={() => handleSort('delivery_platform')}
+                  >
+                    <div className="flex items-center">
+                      Delivery Platform
+                      <SortIcon columnKey="delivery_platform" />
+                    </div>
+                  </TableHead>
+                  <TableHead 
+                    className="cursor-pointer hover:bg-muted/50 transition-colors"
+                    onClick={() => handleSort('business_owner')}
+                  >
+                    <div className="flex items-center">
+                      Business Owner
+                      <SortIcon columnKey="business_owner" />
+                    </div>
+                  </TableHead>
+                  <TableHead 
+                    className="cursor-pointer hover:bg-muted/50 transition-colors"
+                    onClick={() => handleSort('created_at')}
+                  >
+                    <div className="flex items-center">
+                      Submitted Date
+                      <SortIcon columnKey="created_at" />
+                    </div>
+                  </TableHead>
+                  <TableHead 
+                    className="cursor-pointer hover:bg-muted/50 text-center transition-colors"
+                    onClick={() => handleSort('created_at')}
+                  >
+                    <div className="flex items-center justify-center">
+                      Age
+                      <SortIcon columnKey="created_at" />
+                    </div>
+                  </TableHead>
+                  <TableHead className="w-10"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {paginatedRequests.map((request: any) => (
+                  <TableRow 
+                    key={request.id}
+                    className="cursor-pointer hover:bg-muted/30"
+                    onClick={() => setSelectedRequestId(request.id)}
+                  >
+                    <TableCell onClick={(e) => e.stopPropagation()}>
                       <Checkbox
-                        checked={isAllSelected}
-                        onCheckedChange={handleSelectAll}
-                        aria-label="Select all"
+                        checked={selectedRows.includes(request.id)}
+                        onCheckedChange={() => {
+                          setSelectedRows(prev => 
+                            prev.includes(request.id) 
+                              ? prev.filter(id => id !== request.id)
+                              : [...prev, request.id]
+                          );
+                        }}
                       />
-                    </th>
-                    <th 
-                      className="cursor-pointer hover:bg-brand-gold/20 text-xs font-semibold text-foreground uppercase tracking-wider px-4 py-3 text-left border-r border-border/40 whitespace-nowrap transition-colors"
-                      onClick={() => handleSort('request_key')}
-                    >
-                      <div className="flex items-center">
-                        Request ID
-                        <SortIcon columnKey="request_key" />
-                      </div>
-                    </th>
-                    <th 
-                      className="cursor-pointer hover:bg-brand-gold/20 text-xs font-semibold text-foreground uppercase tracking-wider min-w-[220px] px-4 py-3 text-left border-r border-border/40 transition-colors"
-                      onClick={() => handleSort('title')}
-                    >
-                      <div className="flex items-center">
-                        Summary
-                        <SortIcon columnKey="title" />
-                      </div>
-                    </th>
-                    <th 
-                      className="cursor-pointer hover:bg-brand-gold/20 text-xs font-semibold text-foreground uppercase tracking-wider px-4 py-3 text-left border-r border-border/40 whitespace-nowrap transition-colors"
-                      onClick={() => handleSort('process_step')}
-                    >
-                      <div className="flex items-center">
-                        Process Step
-                        <SortIcon columnKey="process_step" />
-                      </div>
-                    </th>
-                    <th 
-                      className="cursor-pointer hover:bg-brand-gold/20 text-xs font-semibold text-foreground uppercase tracking-wider px-4 py-3 text-center border-r border-border/40 whitespace-nowrap transition-colors"
-                      onClick={() => handleSort('business_score')}
-                    >
-                      <div className="flex items-center justify-center">
-                        Score
-                        <SortIcon columnKey="business_score" />
-                      </div>
-                    </th>
-                    <th 
-                      className="cursor-pointer hover:bg-brand-gold/20 text-xs font-semibold text-foreground uppercase tracking-wider px-4 py-3 text-center border-r border-border/40 whitespace-nowrap transition-colors"
-                      onClick={() => handleSort('rank')}
-                    >
-                      <div className="flex items-center justify-center">
-                        Rank
-                        <SortIcon columnKey="rank" />
-                      </div>
-                    </th>
-                    <th 
-                      className="cursor-pointer hover:bg-brand-gold/20 text-xs font-semibold text-foreground uppercase tracking-wider px-4 py-3 text-left border-r border-border/40 whitespace-nowrap transition-colors"
-                      onClick={() => handleSort('delivery_platform')}
-                    >
-                      <div className="flex items-center">
-                        Delivery Platform
-                        <SortIcon columnKey="delivery_platform" />
-                      </div>
-                    </th>
-                    <th 
-                      className="cursor-pointer hover:bg-brand-gold/20 text-xs font-semibold text-foreground uppercase tracking-wider px-4 py-3 text-left border-r border-border/40 whitespace-nowrap transition-colors"
-                      onClick={() => handleSort('business_owner')}
-                    >
-                      <div className="flex items-center">
-                        Business Owner
-                        <SortIcon columnKey="business_owner" />
-                      </div>
-                    </th>
-                    <th 
-                      className="cursor-pointer hover:bg-brand-gold/20 text-xs font-semibold text-foreground uppercase tracking-wider px-4 py-3 text-left border-r border-border/40 whitespace-nowrap transition-colors"
-                      onClick={() => handleSort('created_at')}
-                    >
-                      <div className="flex items-center">
-                        Submitted Date
-                        <SortIcon columnKey="created_at" />
-                      </div>
-                    </th>
-                    <th 
-                      className="cursor-pointer hover:bg-brand-gold/20 text-xs font-semibold text-foreground uppercase tracking-wider px-4 py-3 text-center border-r border-border/40 whitespace-nowrap transition-colors"
-                      onClick={() => handleSort('created_at')}
-                    >
-                      <div className="flex items-center justify-center">
-                        Age
-                        <SortIcon columnKey="created_at" />
-                      </div>
-                    </th>
-                    <th className="w-12 px-4 py-3 text-center">
-                      <button className="text-muted-foreground hover:text-brand-gold transition-colors">
-                        <Plus className="h-4 w-4" />
+                    </TableCell>
+                    <TableCell>
+                      <button 
+                        className="text-foreground hover:text-brand-gold font-medium text-sm"
+                        onClick={(e) => { e.stopPropagation(); setSelectedRequestId(request.id); }}
+                      >
+                        {request.request_key || `MIM-${String(request.id).slice(-3)}`}
                       </button>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {paginatedRequests.map((request: any) => (
-                    <tr 
-                      key={request.id}
-                      className="cursor-pointer hover:bg-muted/50 border-b border-border/60 transition-colors"
-                      onClick={() => setSelectedRequestId(request.id)}
-                    >
-                      <td className="px-4 py-3 border-r border-border/40" onClick={(e) => e.stopPropagation()}>
-                        <Checkbox
-                          checked={selectedRows.includes(request.id)}
-                          onCheckedChange={() => {
-                            setSelectedRows(prev => 
-                              prev.includes(request.id) 
-                                ? prev.filter(id => id !== request.id)
-                                : [...prev, request.id]
-                            );
-                          }}
-                        />
-                      </td>
-                      <td className="px-4 py-3 border-r border-border/40">
-                        <button 
-                          className="text-foreground hover:text-brand-gold font-medium text-sm"
-                          onClick={(e) => { e.stopPropagation(); setSelectedRequestId(request.id); }}
-                        >
-                          {request.request_key || `MIM-${String(request.id).slice(-3)}`}
-                        </button>
-                      </td>
-                      <td className="px-4 py-3 text-sm max-w-[280px] truncate border-r border-border/40">
-                        {request.title || '-'}
-                      </td>
-                      <td className="px-4 py-3 border-r border-border/40">
-                        <span className={cn(
-                          "inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded capitalize",
-                          getProcessStepInfo(request.process_step).color
-                        )}>
-                          {getProcessStepInfo(request.process_step).label}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-center font-semibold border-r border-border/40">
-                        {request.business_score || '—'}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-center border-r border-border/40">
-                        {request.rank || '-'}
-                      </td>
-                      <td className="px-4 py-3 text-sm border-r border-border/40">
-                        {request.delivery_platform || '-'}
-                      </td>
-                      <td className="px-4 py-3 text-sm border-r border-border/40">
-                        {request.business_owner || '-'}
-                      </td>
-                      <td className="px-4 py-3 text-sm border-r border-border/40">
-                        {formatDate(request.created_at)}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-center border-r border-border/40">
-                        {calculateAgeing(request.created_at)}
-                      </td>
-                      <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="bg-white z-50">
-                            <DropdownMenuItem onClick={() => setSelectedRequestId(request.id)}>
-                              Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>Clone</DropdownMenuItem>
-                            <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                    </TableCell>
+                    <TableCell className="max-w-[280px] truncate">
+                      {request.title || '-'}
+                    </TableCell>
+                    <TableCell>
+                      <span className={cn(
+                        "inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded capitalize",
+                        getProcessStepInfo(request.process_step).color
+                      )}>
+                        {getProcessStepInfo(request.process_step).label}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-center font-semibold">
+                      {request.business_score || '—'}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {request.rank || '-'}
+                    </TableCell>
+                    <TableCell>
+                      {request.delivery_platform || '-'}
+                    </TableCell>
+                    <TableCell>
+                      {request.business_owner || '-'}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {formatDate(request.created_at)}
+                    </TableCell>
+                    <TableCell className="text-center text-muted-foreground">
+                      {calculateAgeing(request.created_at)}
+                    </TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="bg-white z-50">
+                          <DropdownMenuItem onClick={() => setSelectedRequestId(request.id)}>
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>Clone</DropdownMenuItem>
+                          <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           ) : (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <div className="rounded-full bg-muted p-4 mb-4">
