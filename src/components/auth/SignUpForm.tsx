@@ -83,14 +83,22 @@ export function SignUpForm({ onSubmit, loading: externalLoading }: SignUpFormPro
         },
       });
 
-      if (error) {
-        console.error("Signup error:", error);
-        catalystToast.error("Sign up failed", error.message || "An error occurred");
-        return;
-      }
-
-      if (data?.error) {
-        setErrors({ email: data.error });
+      // Handle edge function errors - the response body may be in data even with error
+      if (error || data?.error) {
+        const errorCode = data?.code || '';
+        const errorMessage = data?.error || error?.message || 'An error occurred';
+        
+        // Map error codes to user-friendly messages
+        const errorMessages: Record<string, string> = {
+          'EMAIL_EXISTS_APPROVED': 'This email is already registered. Please sign in.',
+          'EMAIL_EXISTS_PENDING': 'Your registration is pending approval.',
+          'EMAIL_EXISTS_REJECTED_COOLDOWN': 'Your request was rejected. Please try again later.',
+          'CAPTCHA_FAILED': 'CAPTCHA verification failed. Please try again.',
+          'RATE_LIMITED': 'Too many attempts. Please try again later.',
+        };
+        
+        const userMessage = errorMessages[errorCode] || errorMessage;
+        setErrors({ email: userMessage });
         return;
       }
 
