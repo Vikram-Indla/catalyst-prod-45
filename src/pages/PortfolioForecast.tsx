@@ -23,12 +23,12 @@ export default function PortfolioForecast() {
   const [expandedPIs, setExpandedPIs] = useState<Set<string>>(new Set());
   const [piSelectorOpen, setPiSelectorOpen] = useState(false);
 
-  // Fetch portfolio details
+  // Fetch portfolio details (now 'programs' table)
   const { data: portfolio } = useQuery({
     queryKey: ['portfolio', portfolioId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('portfolios')
+        .from('programs')
         .select('*')
         .eq('id', portfolioId)
         .single();

@@ -16,25 +16,16 @@ export const useEpicIntakeSet = (epicId: string) => {
       if (!epic?.primary_program_id) return null;
 
       // Get program's portfolio to find intake set
-      const { data: program, error: programError } = await supabase
-        .from('projects')
-        .select('program_id')
-        .eq('id', epic.primary_program_id)
-        .single();
-      
-      if (programError) throw programError;
-      if (!program?.program_id) return null;
-
-      // Get intake set for program
+      // Get intake set for program directly using primary_program_id
       const { data: intakeSet, error: intakeError } = await supabase
         .from('intake_sets')
         .select(`
           *,
           intake_fields(*)
         `)
-        .eq('program_id', program.program_id)
+        .eq('program_id', epic.primary_program_id)
         .order('created_at', { foreignTable: 'intake_fields', ascending: true })
-        .single();
+        .maybeSingle();
       
       if (intakeError && intakeError.code !== 'PGRST116') throw intakeError;
       return intakeSet;

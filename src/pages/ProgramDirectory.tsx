@@ -35,13 +35,13 @@ export default function ProgramDirectory() {
   const [starredPrograms, setStarredPrograms] = useState<Set<string>>(new Set());
   const [showCreateDialog, setShowCreateDialog] = useState(false);
 
-  // Fetch programs from portfolios table (Programs in UI = portfolios in DB)
+  // Fetch programs (now 'programs' table, formerly portfolios)
   const { data: programsData, isLoading, error } = useQuery({
     queryKey: ['programs-directory'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('portfolios')
-        .select('*, programs(id)')
+        .from('programs')
+        .select('*, projects(id)')
         .order('name');
       
       if (error) throw error;
@@ -50,16 +50,16 @@ export default function ProgramDirectory() {
   });
 
   // Transform data to Program interface
-  const programs: Program[] = (programsData || []).map(p => ({
+  const programs: Program[] = (programsData || []).map((p: any) => ({
     id: p.id,
-    key: p.name.substring(0, 4).toUpperCase(),
-    name: p.name,
+    key: p.name?.substring(0, 4).toUpperCase() || 'DFLT',
+    name: p.name || 'Unnamed',
     description: 'No description provided',
     lead: {
       name: 'Unassigned',
       avatar: undefined,
     },
-    projectCount: p.programs?.length || 0,
+    projectCount: p.projects?.length || 0,
     epicCount: 0,
     isDefault: p.name === 'Default',
     isStarred: starredPrograms.has(p.id),

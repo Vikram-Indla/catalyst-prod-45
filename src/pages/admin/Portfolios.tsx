@@ -43,7 +43,7 @@ export default function Portfolios() {
     queryKey: ['admin-programs'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('portfolios')
+        .from('programs')
         .select('*')
         .order('name');
       if (error) throw error;
@@ -54,7 +54,7 @@ export default function Portfolios() {
   const createMutation = useMutation({
     mutationFn: async ({ name, key }: { name: string; key: string }) => {
       const { error } = await supabase
-        .from('portfolios')
+        .from('programs')
         .insert({ name, key, status: 'active' });
       if (error) throw error;
     },
@@ -75,7 +75,7 @@ export default function Portfolios() {
   const updateMutation = useMutation({
     mutationFn: async ({ id, name }: { id: string; name: string }) => {
       const { error } = await supabase
-        .from('portfolios')
+        .from('programs')
         .update({ name })
         .eq('id', id);
       if (error) throw error;

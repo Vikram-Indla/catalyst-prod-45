@@ -143,10 +143,10 @@ export default function CapacityPlanningJiraAlign() {
     queryFn: async () => {
       let query = supabase
         .from('teams')
-        .select('*, programs!program_id(id, name, portfolio_id)');
+        .select('*, projects:projects!project_id(id, name, program_id)');
       
       if (selectedPrograms.length > 0) {
-        query = query.in('program_id', selectedPrograms);
+        query = query.in('project_id', selectedPrograms);
       }
       
       const { data, error } = await query.order('name');
@@ -658,8 +658,8 @@ export default function CapacityPlanningJiraAlign() {
                       return (
                         <tr key={team.id} className="border-b hover:bg-muted/50">
                           <td className="p-3 font-medium sticky left-0 bg-card z-10">
-                            {team.name}
-                            <div className="text-xs text-muted-foreground">{team.programs?.name}</div>
+                          {team.name}
+                            <div className="text-xs text-muted-foreground">{team.projects?.name}</div>
                           </td>
                           
                           {estimationSystem === 'points' ? (

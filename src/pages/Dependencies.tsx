@@ -257,14 +257,14 @@ export default function Dependencies() {
                   </TableCell>
                   <TableCell className="font-medium">{dependency.from_feature?.name}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">
-                    {dependency.from_feature?.programs?.name}
+                    {dependency.from_feature?.projects?.name}
                   </TableCell>
                   <TableCell className="text-center">
                     <ArrowRight className="h-4 w-4 mx-auto text-muted-foreground" />
                   </TableCell>
                   <TableCell className="font-medium">{dependency.to_feature?.name}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">
-                    {dependency.to_feature?.programs?.name}
+                    {dependency.to_feature?.projects?.name}
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className="capitalize">{dependency.type}</Badge>
@@ -342,7 +342,7 @@ export default function Dependencies() {
                   <div className="flex items-center justify-between">
                     <div className="space-y-1">
                       <div className="font-medium">
-                        {dep.from_feature?.programs?.name} → {dep.to_feature?.programs?.name}
+                        {dep.from_feature?.projects?.name} → {dep.to_feature?.projects?.name}
                       </div>
                       <div className="text-sm text-muted-foreground">
                         {dep.from_feature?.name} → {dep.to_feature?.name}

@@ -9,7 +9,7 @@ export function useTeams(filters?: TeamFilters) {
     queryFn: async () => {
       let query = supabase
         .from('teams')
-        .select('*, projects!project_id(id, name), programs!parent_program_id(id, name)')
+        .select('*, projects:projects!project_id(id, name), programs:programs!parent_program_id(id, name)')
         .order('name');
 
       if (filters?.programIds && filters.programIds.length > 0) {
@@ -39,7 +39,7 @@ export function useTeams(filters?: TeamFilters) {
         throw error;
       }
 
-      return data as Team[];
+      return data as unknown as Team[];
     },
   });
 }
@@ -52,7 +52,7 @@ export function useTeam(teamId?: string) {
 
       const { data, error } = await supabase
         .from('teams')
-        .select('*, projects!project_id(id, name), programs!parent_program_id(id, name)')
+        .select('*, projects:projects!project_id(id, name), programs:programs!parent_program_id(id, name)')
         .eq('id', teamId)
         .single();
 
@@ -61,7 +61,7 @@ export function useTeam(teamId?: string) {
         throw error;
       }
 
-      return data as Team;
+      return data as unknown as Team;
     },
     enabled: !!teamId,
   });

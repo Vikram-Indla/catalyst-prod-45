@@ -41,11 +41,11 @@ export interface Team {
   projects?: {
     id: string;
     name: string;
-  };
+  } | null;
   programs?: {
     id: string;
     name: string;
-  };
+  } | null;
 }
 
 export interface TeamMember {

@@ -163,7 +163,7 @@ export default function Features() {
                     <TableCell onClick={(e) => e.stopPropagation()}><Checkbox /></TableCell>
                     <TableCell className="font-medium">{item.name}</TableCell>
                     <TableCell className="text-sm">{item.epics?.name || '-'}</TableCell>
-                    <TableCell className="text-sm">{item.programs?.name || '-'}</TableCell>
+                    <TableCell className="text-sm">{(item as any).projects?.name || '-'}</TableCell>
                     <TableCell className="text-sm">{item.program_increments?.name || '-'}</TableCell>
                     <TableCell className="text-sm">{item.iterations?.name || '-'}</TableCell>
                     <TableCell>{getStatusBadge(item.status || 'funnel')}</TableCell>

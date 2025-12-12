@@ -27,7 +27,7 @@ export function OrphansDialog({ open, onOpenChange, programId, piId }: OrphansDi
       const { data, error } = await supabase
         .from('features')
         .select('id, display_id, name, epic_id')
-        .eq('program_id', programId)
+        .eq('project_id', programId)
         .eq('pi_id', piId)
         .is('team_id', null);
       

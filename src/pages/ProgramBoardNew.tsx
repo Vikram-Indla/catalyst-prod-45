@@ -130,7 +130,7 @@ export default function ProgramBoard() {
       const { data: allTeams, error: teamsError } = await supabase
         .from('teams')
         .select('*')
-        .eq('program_id', programId);
+        .eq('project_id', programId);
       
       if (teamsError) throw teamsError;
       
@@ -189,9 +189,9 @@ export default function ProgramBoard() {
       
       const { data, error } = await supabase
         .from('features')
-        .select('id, display_id, name, status, blocked, health, team_id, team_target_completion_sprint_id, is_orphan_on_board, epic_id, pi_id, program_id')
+        .select('id, display_id, name, status, blocked, health, team_id, team_target_completion_sprint_id, is_orphan_on_board, epic_id, pi_id, project_id')
         .eq('pi_id', piId)
-        .eq('program_id', programId);
+        .eq('project_id', programId);
       
       if (error) throw error;
       

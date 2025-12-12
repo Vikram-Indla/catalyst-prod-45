@@ -25,22 +25,22 @@ export default function ProgramRoom() {
       
       if (programData) return programData;
 
-      // If not found, check if it's a portfolio ID and get first program under it
-      const { data: programUnderPortfolio } = await supabase
-        .from('programs')
+      // If not found, check if it's a program ID (formerly portfolio) and get first project under it
+      const { data: projectUnderProgram } = await supabase
+        .from('projects')
         .select(`
           id,
           name,
-          portfolio_id,
-          portfolios (
+          program_id,
+          programs (
             name
           )
         `)
-        .eq('portfolio_id', programId)
+        .eq('program_id', programId)
         .limit(1)
         .maybeSingle();
       
-      return programUnderPortfolio;
+      return projectUnderProgram;
     },
     enabled: !!programId,
   });
@@ -61,8 +61,8 @@ export default function ProgramRoom() {
           <div className="min-w-0">
             <h1 className="text-lg sm:text-xl lg:text-2xl font-bold truncate">Program Room</h1>
             <p className="text-xs sm:text-sm text-muted-foreground truncate">
-              For {program?.name}
-              {program?.portfolios && ` · ${program.portfolios.name}`}
+              For {(program as any)?.name}
+              {(program as any)?.programs && ` · ${(program as any).programs.name}`}
             </p>
           </div>
         </div>
