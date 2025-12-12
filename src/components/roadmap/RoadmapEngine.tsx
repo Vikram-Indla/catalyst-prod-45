@@ -1146,11 +1146,12 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
                                       }}
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        // Theme-specific: call onMilestoneClick if provided and milestone has epicId
+                                        // Call onMilestoneClick if provided (for Theme epic markers or Epic feature markers)
                                         if (config.onMilestoneClick) {
                                           const milestoneData = ms as any;
                                           config.onMilestoneClick({ 
-                                            epicId: milestoneData.epicId, 
+                                            epicId: milestoneData.epicId,
+                                            featureId: milestoneData.featureId,
                                             index 
                                           });
                                         }
@@ -1185,13 +1186,16 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
                             {showMilestones && item.milestones.length > 0 && (
                               <div>
                                 <div className="text-[10px] font-semibold uppercase tracking-wide mb-2" style={{ color: 'hsl(35, 30%, 60%)' }}>
-                                  {/* Theme-specific: show "CHILD EPICS" instead of "MILESTONES" */}
-                                  {config.workItemType === 'theme' ? `CHILD EPICS (${item.milestones.length})` : `MILESTONES (${item.milestones.length})`}
+                                  {/* Show appropriate label based on roadmap type */}
+                                  {config.workItemType === 'theme' ? `CHILD EPICS (${item.milestones.length})` : 
+                                   config.workItemType === 'epic' ? `CHILD FEATURES (${item.milestones.length})` : 
+                                   `MILESTONES (${item.milestones.length})`}
                                 </div>
                                 <div className="space-y-1.5">
                                   {item.milestones.slice(0, 5).map((ms, idx) => {
                                     const milestoneData = ms as any;
                                     const isEpicMarker = config.workItemType === 'theme' && milestoneData.epicKey;
+                                    const isFeatureMarker = config.workItemType === 'epic' && milestoneData.featureId;
                                     
                                     return (
                                       <div key={idx} className="flex items-center gap-2 text-xs">
@@ -1204,17 +1208,25 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
                                             <span className="font-medium" style={{ color: 'hsl(35, 30%, 85%)' }}>{milestoneData.epicKey}</span>
                                             <span className="truncate max-w-[120px]" style={{ color: 'hsl(35, 30%, 70%)' }}>{milestoneData.epicName}</span>
                                           </>
+                                        ) : isFeatureMarker ? (
+                                          <>
+                                            <span className="font-medium truncate max-w-[180px]" style={{ color: 'hsl(35, 30%, 85%)' }}>{milestoneData.featureName}</span>
+                                          </>
                                         ) : (
                                           <span style={{ color: 'hsl(35, 30%, 80%)' }}>{new Date(ms.date).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric' })}</span>
                                         )}
                                         <span className="text-[10px] px-1.5 py-0.5 rounded capitalize" style={{ backgroundColor: ms.state === 'complete' ? 'hsla(142, 50%, 45%, 0.25)' : ms.state === 'current' ? 'hsla(35, 50%, 50%, 0.25)' : 'hsla(35, 30%, 50%, 0.2)', color: ms.state === 'complete' ? 'hsl(142, 50%, 65%)' : ms.state === 'current' ? 'hsl(35, 50%, 70%)' : 'hsl(35, 30%, 65%)' }}>
-                                          {isEpicMarker ? (milestoneData.epicStatus || 'proposed').replace('_', ' ') : (ms.state === 'complete' ? 'Complete' : ms.state === 'current' ? 'Current' : 'Pending')}
+                                          {isEpicMarker ? (milestoneData.epicStatus || 'proposed').replace('_', ' ') : 
+                                           isFeatureMarker ? (milestoneData.featureStatus || 'funnel').replace('_', ' ') : 
+                                           (ms.state === 'complete' ? 'Complete' : ms.state === 'current' ? 'Current' : 'Pending')}
                                         </span>
                                       </div>
                                     );
                                   })}
                                   {item.milestones.length > 5 && (
-                                    <div className="text-[10px] italic" style={{ color: 'hsl(35, 30%, 50%)' }}>+{item.milestones.length - 5} more {config.workItemType === 'theme' ? 'epics' : 'milestones'}</div>
+                                    <div className="text-[10px] italic" style={{ color: 'hsl(35, 30%, 50%)' }}>
+                                      +{item.milestones.length - 5} more {config.workItemType === 'theme' ? 'epics' : config.workItemType === 'epic' ? 'features' : 'milestones'}
+                                    </div>
                                   )}
                                 </div>
                               </div>

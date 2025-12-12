@@ -60,7 +60,8 @@ const EPIC_TRANSLATIONS: RoadmapTranslations = {
     status: 'STATUS',
     owner: 'OWNER',
     sortBy: 'SORT BY',
-    milestones: 'MILESTONES',
+    milestones: 'CHILD FEATURES',
+    childFeatures: 'Child Features',
     weekly: 'Weekly',
     monthly: 'Monthly',
     quarterly: 'Quarterly',
@@ -90,7 +91,8 @@ const EPIC_TRANSLATIONS: RoadmapTranslations = {
     status: 'الحالة',
     owner: 'المالك',
     sortBy: 'ترتيب حسب',
-    milestones: 'المراحل',
+    milestones: 'الميزات الفرعية',
+    childFeatures: 'الميزات الفرعية',
     weekly: 'أسبوعي',
     monthly: 'شهري',
     quarterly: 'ربع سنوي',
@@ -146,7 +148,7 @@ export const epicRoadmapConfig: RoadmapConfig = {
   legend: {
     showStatus: true,
     showTimeline: true,
-    showMilestones: false, // Epics do NOT show milestones in Phase 3
+    showMilestones: true, // Show Child Features toggle in Epic Roadmap
   },
 
   filters: EPIC_FILTERS_CONFIG,

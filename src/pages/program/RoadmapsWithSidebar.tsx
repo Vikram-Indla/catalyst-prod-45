@@ -9,11 +9,13 @@ import { RoadmapEngine } from '@/components/roadmap/RoadmapEngine';
 import { epicRoadmapConfig } from '@/config/roadmaps/epicRoadmapConfig';
 import { useEpicRoadmapItems } from '@/hooks/useEpicRoadmapItems';
 import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
+import { FeatureDetailsPanel } from '@/components/items/features/FeatureDetailsPanel';
 import { supabase } from '@/integrations/supabase/client';
 
 export default function RoadmapsWithSidebar() {
   const { programId } = useParams<{ programId: string }>();
   const [selectedEpicId, setSelectedEpicId] = useState<string | null>(null);
+  const [selectedFeatureId, setSelectedFeatureId] = useState<string | null>(null);
 
   // Fetch epics for roadmap, scoped to program
   const { items, isLoading } = useEpicRoadmapItems(programId);
@@ -34,20 +36,49 @@ export default function RoadmapsWithSidebar() {
     enabled: !!selectedEpicId,
   });
 
+  // Fetch selected feature data for drawer
+  const { data: selectedFeature } = useQuery({
+    queryKey: ['feature-detail', selectedFeatureId],
+    queryFn: async () => {
+      if (!selectedFeatureId) return null;
+      const { data, error } = await supabase
+        .from('features')
+        .select('*')
+        .eq('id', selectedFeatureId)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!selectedFeatureId,
+  });
+
   // Handle epic bar click - open drawer
   const handleEpicClick = (epicId: string) => {
     setSelectedEpicId(epicId);
   };
 
-  // Close drawer
-  const handleCloseDrawer = () => {
+  // Handle feature marker click - open feature drawer
+  const handleFeatureMarkerClick = (milestoneData: { featureId?: string; epicId?: string; index?: number }) => {
+    if (milestoneData.featureId) {
+      setSelectedFeatureId(milestoneData.featureId);
+    }
+  };
+
+  // Close epic drawer
+  const handleCloseEpicDrawer = () => {
     setSelectedEpicId(null);
   };
 
-  // Create config with openDrawer wired
+  // Close feature drawer
+  const handleCloseFeatureDrawer = () => {
+    setSelectedFeatureId(null);
+  };
+
+  // Create config with openDrawer and onMilestoneClick wired
   const configWithDrawer = {
     ...epicRoadmapConfig,
     openDrawer: handleEpicClick,
+    onMilestoneClick: handleFeatureMarkerClick,
   };
 
   return (
@@ -65,7 +96,16 @@ export default function RoadmapsWithSidebar() {
           <EpicDetailsPanel
             epic={selectedEpic}
             open={!!selectedEpicId}
-            onClose={handleCloseDrawer}
+            onClose={handleCloseEpicDrawer}
+          />
+        )}
+
+        {/* Feature Details Panel */}
+        {selectedFeature && (
+          <FeatureDetailsPanel
+            feature={selectedFeature}
+            open={!!selectedFeatureId}
+            onClose={handleCloseFeatureDrawer}
           />
         )}
       </div>

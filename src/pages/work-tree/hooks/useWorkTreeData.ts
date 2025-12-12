@@ -294,7 +294,7 @@ async function fetchBottomUpView(teamId?: string, programId?: string) {
     .from('features')
     .select('id, name, health, estimate_points, status, epic_id')
     .is('deleted_at', null)
-    .order('global_rank');
+    .order('global_rank') as any;
 
   if (programId) {
     query = query.eq('program_id', programId);
@@ -358,7 +358,7 @@ async function calculateMetrics(options: WorkTreeOptions) {
   const { data: epics } = await epicQuery;
 
   // Feature metrics
-  let featureQuery = supabase.from('features').select('id, status').is('deleted_at', null);
+  let featureQuery = supabase.from('features').select('id, status').is('deleted_at', null) as any;
   if (programId) featureQuery = featureQuery.eq('program_id', programId);
   const { data: features } = await featureQuery;
 
