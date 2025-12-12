@@ -57,6 +57,7 @@ import { EpicEstimationTab } from './tabs/EpicEstimationTab';
 import { EpicFinancialsTab } from './tabs/EpicFinancialsTab';
 import { EpicDiscussionsTab } from './tabs/EpicDiscussionsTab';
 import { UnifiedLinksTab } from '@/components/shared/UnifiedLinksTab';
+import { UnifiedAuditHistoryTab } from '@/components/shared/UnifiedAuditHistoryTab';
 // Roll-up summary (compact mode)
 import { EpicRollUpSummary } from './EpicRollUpSummary';
 // Dialogs
@@ -560,6 +561,7 @@ export function EpicDetailsPanel({ epic: initialEpic, open, onClose }: EpicDetai
               <TabsTrigger value="financials" className="executive-tab">Financials</TabsTrigger>
               <TabsTrigger value="links" className="executive-tab">Links</TabsTrigger>
               <TabsTrigger value="discussions" className="executive-tab">Discussions</TabsTrigger>
+              <TabsTrigger value="audit-history" className="executive-tab">Audit History</TabsTrigger>
             </TabsList>
 
             <div className="executive-drawer-content flex-1 overflow-y-auto">
@@ -580,6 +582,9 @@ export function EpicDetailsPanel({ epic: initialEpic, open, onClose }: EpicDetai
               </TabsContent>
               <TabsContent value="discussions" className="m-0 focus-visible:outline-none h-[500px]">
                 <EpicDiscussionsTab epic={epic} />
+              </TabsContent>
+              <TabsContent value="audit-history" className="m-0 focus-visible:outline-none h-[500px]">
+                <UnifiedAuditHistoryTab entityType="epic" entityId={epic.id} />
               </TabsContent>
             </div>
           </Tabs>

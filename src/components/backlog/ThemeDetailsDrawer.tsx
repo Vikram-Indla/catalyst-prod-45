@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { X, Edit2, Info, Save, Star, AlertCircle, TrendingUp, DollarSign, Plus, Link as LinkIcon, FileText, Target, Calendar } from 'lucide-react';
+import { X, Edit2, Info, Save, Star, AlertCircle, TrendingUp, DollarSign, Plus, Link as LinkIcon, FileText, Target, Calendar, History } from 'lucide-react';
 import { UnifiedLinksTab } from '@/components/shared/UnifiedLinksTab';
+import { UnifiedAuditHistoryTab } from '@/components/shared/UnifiedAuditHistoryTab';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -131,6 +132,13 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                   >
                     <Calendar className="h-4 w-4 mr-2" />
                     Milestones
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="audit-history"
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-3"
+                  >
+                    <History className="h-4 w-4 mr-2" />
+                    Audit History
                   </TabsTrigger>
                 </TabsList>
               </div>
@@ -410,6 +418,10 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                     <Calendar className="h-8 w-8 mx-auto mb-2 opacity-50" />
                     <p className="text-sm">Add milestones to track key dates</p>
                   </div>
+                </TabsContent>
+
+                <TabsContent value="audit-history" className="mt-0 h-[500px]">
+                  <UnifiedAuditHistoryTab entityType="theme" entityId={theme.id} />
                 </TabsContent>
               </div>
             </Tabs>
