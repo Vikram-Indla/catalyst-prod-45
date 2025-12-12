@@ -41,8 +41,8 @@ const DEFAULT_STATE: BacklogState = {
   unassignedOpen: false,
 };
 
-// Epic Backlog specific columns (no Program/Portfolio, add roll-up fields)
-const EPIC_BACKLOG_DEFAULT_COLUMNS = ['id', 'name', 'state', 'owner', 'progress', 'featureCounts', 'totalEstimate', 'technicalScore', 'businessScore'];
+// Epic Backlog specific columns matching Jira Align: Epic, Labels, Points, MVP, Process Step, Strategic Value Score
+const EPIC_BACKLOG_DEFAULT_COLUMNS = ['epic', 'labels', 'points', 'mvp', 'processStep', 'strategicValueScore'];
 
 export function BacklogStateProvider({ 
   children, 

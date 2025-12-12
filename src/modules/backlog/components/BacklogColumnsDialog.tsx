@@ -35,27 +35,25 @@ const STANDARD_COLUMNS = [
   { id: 'portfolio', label: 'Portfolio', default: false },
 ];
 
-// Epic Backlog specific columns (no Program/Portfolio, add roll-up fields)
+// Epic Backlog specific columns (matching Jira Align: Epic, Labels, Points, MVP, Process Step, Strategic Value Score)
 const EPIC_BACKLOG_COLUMNS = [
-  { id: 'id', label: 'ID', default: true },
-  { id: 'name', label: 'Name', default: true },
-  { id: 'state', label: 'State', default: true },
-  { id: 'processStep', label: 'Process Step', default: false },
-  { id: 'owner', label: 'Owner', default: true },
-  { id: 'health', label: 'Health', default: true },
-  // Roll-up columns for Epics
-  { id: 'progress', label: 'Progress %', default: true },
-  { id: 'featureCounts', label: 'Feature Counts', default: true },
-  { id: 'totalEstimate', label: 'Total Estimate', default: true },
-  // Scoring columns
-  { id: 'technicalScore', label: 'Technical Score', default: true },
-  { id: 'businessScore', label: 'Business Score', default: true },
-  // Strategy context (Phase II Step 2)
-  { id: 'linkedObjective', label: 'Linked Objective', default: false },
-  { id: 'linkedTheme', label: 'Linked Theme', default: false },
-  // Additional Epic fields
+  // Core columns - always visible
+  { id: 'epic', label: 'Epic', default: true },
+  { id: 'labels', label: 'Labels', default: true },
+  { id: 'points', label: 'Points', default: true },
+  { id: 'mvp', label: 'MVP', default: true },
+  { id: 'processStep', label: 'Process Step', default: true },
+  { id: 'strategicValueScore', label: 'Strategic Value Score', default: true },
+  // Additional columns
+  { id: 'owner', label: 'Owner', default: false },
+  { id: 'health', label: 'Health', default: false },
+  { id: 'progress', label: 'Progress %', default: false },
+  { id: 'featureCount', label: 'Feature Count', default: false },
+  { id: 'totalEstimate', label: 'Total Estimate', default: false },
   { id: 'targetDate', label: 'Target Date', default: false },
   { id: 'blocked', label: 'Blocked', default: false },
+  { id: 'linkedObjective', label: 'Linked Objective', default: false },
+  { id: 'linkedTheme', label: 'Linked Theme', default: false },
 ];
 
 export function BacklogColumnsDialog({

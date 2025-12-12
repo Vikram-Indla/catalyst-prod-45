@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Droppable, Draggable } from '@hello-pangea/dnd';
 import { BacklogPISection, BacklogItem } from '../types';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, ChevronRight, GripVertical } from 'lucide-react';
+import { ChevronDown, ChevronRight, GripVertical, Download, TrendingUp } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import { QuickAddRow } from './QuickAddRow';
@@ -10,7 +10,7 @@ import { BacklogContextMenu } from './BacklogContextMenu';
 import { useBacklogActions } from '../hooks/useBacklogActions';
 import { useBacklogState } from '../hooks/useBacklogState';
 import { Progress } from '@/components/ui/progress';
-import { EpicTimeBadges } from '@/components/items/epics/EpicTimeBadges';
+import { Badge } from '@/components/ui/badge';
 
 interface BacklogSectionProps {
   section: BacklogPISection;
@@ -29,13 +29,13 @@ export function BacklogSection({
   const { columnsShown, isEpicBacklog } = useBacklogState();
 
   return (
-    <div className="border rounded-lg bg-card">
-      {/* Section Header */}
-      <div className="flex items-center gap-2 border-b bg-muted/50 px-4 py-2">
+    <div className="border rounded-lg bg-card overflow-hidden">
+      {/* Section Header - Jira Align style */}
+      <div className="flex items-center gap-3 border-b bg-muted/30 px-4 py-2.5">
         <Button
           variant="ghost"
           size="sm"
-          className="h-6 w-6 p-0"
+          className="h-6 w-6 p-0 hover:bg-muted"
           onClick={() => setIsExpanded(!isExpanded)}
         >
           {isExpanded ? (
@@ -46,17 +46,31 @@ export function BacklogSection({
         </Button>
         
         <span className="font-medium text-sm">{section.title}</span>
-        <span className="text-xs text-muted-foreground">({section.itemCount})</span>
+        <span className="text-sm text-brand-gold font-medium">
+          Total Items: {section.itemCount}
+        </span>
+
+        <div className="flex-1" />
+
+        {/* Section Actions */}
+        <Button variant="ghost" size="sm" className="h-7 text-xs gap-1.5">
+          <TrendingUp className="h-3.5 w-3.5" />
+          Prioritize
+        </Button>
+        <Button variant="ghost" size="sm" className="h-7 text-xs gap-1.5">
+          <Download className="h-3.5 w-3.5" />
+          Export
+        </Button>
 
         {section.progress !== undefined && (
-          <div className="ml-auto flex items-center gap-2">
-            <div className="h-2 w-32 bg-muted rounded-full overflow-hidden">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">PI Progress:</span>
+            <div className="h-2 w-24 bg-muted rounded-full overflow-hidden">
               <div
-                className="h-full bg-primary"
+                className="h-full bg-success"
                 style={{ width: `${section.progress}%` }}
               />
             </div>
-            <span className="text-xs text-muted-foreground">{section.progress}%</span>
           </div>
         )}
       </div>
@@ -64,7 +78,45 @@ export function BacklogSection({
       {/* Section Content */}
       {isExpanded && (
         <div>
+          {/* Column Headers */}
+          <div className="flex items-center gap-3 px-4 py-2 bg-muted/20 border-b text-xs font-medium text-muted-foreground">
+            <div className="w-6" /> {/* Drag handle space */}
+            <div className="w-5" /> {/* Checkbox space */}
+            <div className="w-2" /> {/* Health dot space */}
+            
+            {/* Epic column - always shown */}
+            {(columnsShown.includes('epic') || columnsShown.includes('name')) && (
+              <div className="flex-1 min-w-[200px]">Epic</div>
+            )}
+            
+            {/* Labels column */}
+            {columnsShown.includes('labels') && (
+              <div className="min-w-[120px]" />
+            )}
+            
+            {/* Points column */}
+            {columnsShown.includes('points') && (
+              <div className="min-w-[60px] text-right">Points</div>
+            )}
+            
+            {/* MVP column */}
+            {columnsShown.includes('mvp') && (
+              <div className="min-w-[50px] text-center">MVP</div>
+            )}
+            
+            {/* Process Step column */}
+            {columnsShown.includes('processStep') && (
+              <div className="min-w-[100px]">Process Step</div>
+            )}
+            
+            {/* Strategic Value Score column */}
+            {columnsShown.includes('strategicValueScore') && (
+              <div className="min-w-[80px] text-right">Strategic Value Score</div>
+            )}
+          </div>
+
           <QuickAddRow itemType={isEpicBacklog ? 'epic' : 'epic'} />
+          
           <Droppable droppableId={section.id}>
             {(provided) => (
               <div 
@@ -73,8 +125,8 @@ export function BacklogSection({
                 className="divide-y"
               >
                 {section.items.length === 0 ? (
-                  <div className="px-4 py-8 text-center text-sm text-muted-foreground">
-                    No items in this section
+                  <div className="px-4 py-8 text-center text-sm text-muted-foreground border-2 border-dashed border-muted mx-4 my-4 rounded">
+                    Drag & Drop Items Here
                   </div>
                 ) : (
                   section.items.map((item, index) => (
@@ -86,6 +138,7 @@ export function BacklogSection({
                         >
                           <BacklogItemRow
                             item={item}
+                            rank={index + 1}
                             isSelected={selectedItems.includes(item.id)}
                             onItemClick={onItemClick}
                             onItemSelect={onItemSelect}
@@ -110,6 +163,7 @@ export function BacklogSection({
 
 interface BacklogItemRowProps {
   item: BacklogItem;
+  rank: number;
   isSelected: boolean;
   onItemClick: (itemId: string) => void;
   onItemSelect: (itemId: string, selected: boolean) => void;
@@ -120,6 +174,7 @@ interface BacklogItemRowProps {
 
 function BacklogItemRow({
   item,
+  rank,
   isSelected,
   onItemClick,
   onItemSelect,
@@ -140,6 +195,12 @@ function BacklogItemRow({
   // Check if column should be shown
   const showColumn = (columnKey: string) => columnsShown.includes(columnKey);
 
+  // Generate mock labels for PI tags (in real implementation, this would come from item.labels)
+  const mockLabels = item.labels || [
+    { id: '1', name: 'PI-5', color: '#8B5CF6' },
+    { id: '2', name: 'PI-6', color: '#8B5CF6' },
+  ];
+
   return (
     <BacklogContextMenu
       itemId={item.id}
@@ -154,120 +215,92 @@ function BacklogItemRow({
     >
       <div
         className={cn(
-          'flex items-center gap-3 px-4 py-3 hover:bg-muted/50 cursor-pointer transition-colors',
+          'flex items-center gap-3 px-4 py-2.5 hover:bg-muted/50 cursor-pointer transition-colors',
           isSelected && 'bg-muted',
-          isDragging && 'opacity-50'
+          isDragging && 'opacity-50 bg-muted'
         )}
         onClick={() => onItemClick(item.id)}
       >
+        {/* Expand chevron */}
+        <ChevronRight className="h-4 w-4 text-muted-foreground" />
+
+        {/* Rank number */}
+        <div className="text-xs text-muted-foreground min-w-[20px]">
+          {rank}
+        </div>
+
+        {/* Drag handle */}
         <div {...dragHandleProps} className="cursor-grab active:cursor-grabbing">
           <GripVertical className="h-4 w-4 text-muted-foreground" />
         </div>
 
+        {/* Health status dot */}
+        <div className={cn('h-3 w-3 rounded-full flex-shrink-0', healthColor)} />
+
+        {/* Epic ID */}
+        <div className="font-mono text-xs text-muted-foreground min-w-[45px]">
+          {item.displayId}
+        </div>
+
+        {/* Checkbox icon (mock - representing epic type) */}
         <Checkbox
           checked={isSelected}
           onCheckedChange={(checked) => onItemSelect(item.id, checked as boolean)}
           onClick={(e) => e.stopPropagation()}
+          className="h-4 w-4"
         />
 
-        <div className={cn('h-2 w-2 rounded-full', healthColor)} />
-
-        {/* ID Column */}
-        {showColumn('id') && (
-          <div className="font-mono text-xs text-muted-foreground min-w-[60px]">
-            {item.displayId}
+        {/* Epic Name */}
+        {(showColumn('epic') || showColumn('name')) && (
+          <div className="flex-1 min-w-[200px]">
+            <span className="text-sm font-medium truncate">{item.name}</span>
           </div>
         )}
 
-        {/* Name Column (always shown) */}
-        <div className="flex-1 min-w-0">
-          <div className="text-sm font-medium truncate">{item.name}</div>
-          {/* Time badges for Epics */}
-          {isEpicBacklog && item.targetDate && (
-            <EpicTimeBadges
-              targetCompletionDate={item.targetDate}
-              status={item.state}
-              className="mt-0.5"
-            />
-          )}
-        </div>
-
-        {/* State Column */}
-        {showColumn('state') && item.state && (
-          <div className="px-2 py-1 text-xs bg-muted rounded">
-            {item.state}
+        {/* Labels (PI tags) */}
+        {showColumn('labels') && (
+          <div className="flex items-center gap-1 min-w-[120px]">
+            {mockLabels.slice(0, 3).map((label) => (
+              <Badge 
+                key={label.id} 
+                variant="outline" 
+                className="text-[10px] px-1.5 py-0 h-5"
+                style={{ borderColor: label.color, color: label.color }}
+              >
+                {label.name}
+              </Badge>
+            ))}
+            {mockLabels.length > 3 && (
+              <span className="text-[10px] text-muted-foreground">+{mockLabels.length - 3}</span>
+            )}
           </div>
         )}
 
-        {/* Owner Column */}
-        {showColumn('owner') && item.owner && (
-          <div className="text-xs text-muted-foreground min-w-[80px]">
-            {item.owner}
+        {/* Points */}
+        {showColumn('points') && (
+          <div className="text-sm text-right min-w-[60px]">
+            {item.points ?? item.totalEstimate ?? 0}
           </div>
         )}
 
-        {/* Progress Column */}
-        {showColumn('progress') && (
-          <div className="flex items-center gap-2 min-w-[100px]">
-            <Progress value={item.progress || 0} className="h-2 w-16" />
-            <span className="text-xs text-muted-foreground">{item.progress || 0}%</span>
+        {/* MVP */}
+        {showColumn('mvp') && (
+          <div className="text-sm text-center min-w-[50px]">
+            {item.mvp ? 'Yes' : 'No'}
           </div>
         )}
 
-        {/* Feature Counts Column (Epic Backlog specific) */}
-        {showColumn('featureCounts') && (
-          <div className="text-xs text-muted-foreground min-w-[60px] text-center">
-            {item.featureCount !== undefined ? `${item.completedFeatures || 0}/${item.featureCount}` : '—'}
+        {/* Process Step */}
+        {showColumn('processStep') && (
+          <div className="text-sm min-w-[100px] truncate">
+            {item.processStep || item.state || '—'}
           </div>
         )}
 
-        {/* Total Estimate Column (Epic Backlog specific) */}
-        {showColumn('totalEstimate') && (
-          <div className="text-xs text-muted-foreground min-w-[60px] text-right">
-            {item.totalEstimate !== undefined ? `${item.totalEstimate} pts` : '—'}
-          </div>
-        )}
-
-        {/* Technical Score Column (Epic Backlog specific) */}
-        {showColumn('technicalScore') && (
-          <div className="text-xs min-w-[70px] text-center">
-            {item.technicalScore !== undefined ? (
-              <span className="px-2 py-0.5 bg-primary/10 text-primary rounded font-medium">
-                {item.technicalScore.toFixed(1)}
-              </span>
-            ) : '—'}
-          </div>
-        )}
-
-        {/* Business Score Column (Epic Backlog specific) */}
-        {showColumn('businessScore') && (
-          <div className="text-xs min-w-[70px] text-center">
-            {item.businessScore !== undefined ? (
-              <span className="px-2 py-0.5 bg-secondary text-secondary-foreground rounded font-medium">
-                {item.businessScore}
-              </span>
-            ) : '—'}
-          </div>
-        )}
-
-        {/* Points Column */}
-        {showColumn('points') && item.points !== undefined && (
-          <div className="text-sm text-muted-foreground min-w-[40px] text-right">
-            {item.points} pts
-          </div>
-        )}
-
-        {/* MVP Badge */}
-        {item.mvp && (
-          <div className="px-2 py-1 text-xs bg-primary text-primary-foreground rounded">
-            MVP
-          </div>
-        )}
-
-        {/* Blocked Badge */}
-        {item.blocked && (
-          <div className="px-2 py-1 text-xs bg-destructive text-destructive-foreground rounded">
-            Blocked
+        {/* Strategic Value Score */}
+        {showColumn('strategicValueScore') && (
+          <div className="text-sm text-right min-w-[80px] font-medium">
+            {item.technicalScore ?? item.businessScore ?? '—'}
           </div>
         )}
       </div>
