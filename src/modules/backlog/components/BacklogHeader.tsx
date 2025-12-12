@@ -9,16 +9,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Filter, Columns, Search } from 'lucide-react';
+import { Filter, Columns, Search, TrendingUp, Download } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { BacklogScope, BacklogType, BacklogViewType, TimeboxType } from '../types';
 
 interface BacklogHeaderProps {
   onOpenFilters: () => void;
   onOpenColumns: () => void;
+  onOpenPrioritize?: () => void;
+  onExport?: () => void;
 }
 
-export function BacklogHeader({ onOpenFilters, onOpenColumns }: BacklogHeaderProps) {
+export function BacklogHeader({ onOpenFilters, onOpenColumns, onOpenPrioritize, onExport }: BacklogHeaderProps) {
   const {
     scope,
     type,
@@ -76,6 +78,23 @@ export function BacklogHeader({ onOpenFilters, onOpenColumns }: BacklogHeaderPro
   };
 
   const allowedTypes = getAllowedTypes(scope);
+
+  const handleExport = () => {
+    if (onExport) {
+      onExport();
+    } else {
+      // Default export behavior - could be enhanced
+      console.log('Export triggered');
+    }
+  };
+
+  const handlePrioritize = () => {
+    if (onOpenPrioritize) {
+      onOpenPrioritize();
+    } else {
+      console.log('Prioritize triggered');
+    }
+  };
 
   return (
     <div className="flex items-center gap-3 border-b bg-card px-4 sm:px-6 py-3">
@@ -211,7 +230,7 @@ export function BacklogHeader({ onOpenFilters, onOpenColumns }: BacklogHeaderPro
       {/* Spacer */}
       <div className="flex-1" />
 
-      {/* Right side: Search + Filters + Columns */}
+      {/* Right side: Search + Filters + Prioritize + Export + Columns */}
       <div className="flex items-center gap-2">
         {/* Search */}
         <div className="relative w-[200px]">
@@ -226,6 +245,18 @@ export function BacklogHeader({ onOpenFilters, onOpenColumns }: BacklogHeaderPro
         <Button variant="outline" size="sm" onClick={onOpenFilters}>
           <Filter className="h-4 w-4 mr-2" />
           Filters
+        </Button>
+
+        {/* Prioritize Button - Moved from section header */}
+        <Button variant="outline" size="sm" onClick={handlePrioritize}>
+          <TrendingUp className="h-4 w-4 mr-2" />
+          Prioritize
+        </Button>
+
+        {/* Export Button - Moved from section header */}
+        <Button variant="outline" size="sm" onClick={handleExport}>
+          <Download className="h-4 w-4 mr-2" />
+          Export
         </Button>
 
         {/* Columns Button */}

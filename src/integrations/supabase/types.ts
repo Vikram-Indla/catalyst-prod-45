@@ -2547,6 +2547,7 @@ export type Database = {
           program_id: string | null
           program_rank: number | null
           quadrant: string | null
+          quarters: string[] | null
           report_color: string | null
           start_date: string | null
           state: Database["public"]["Enums"]["epic_state"] | null
@@ -2599,6 +2600,7 @@ export type Database = {
           program_id?: string | null
           program_rank?: number | null
           quadrant?: string | null
+          quarters?: string[] | null
           report_color?: string | null
           start_date?: string | null
           state?: Database["public"]["Enums"]["epic_state"] | null
@@ -2651,6 +2653,7 @@ export type Database = {
           program_id?: string | null
           program_rank?: number | null
           quadrant?: string | null
+          quarters?: string[] | null
           report_color?: string | null
           start_date?: string | null
           state?: Database["public"]["Enums"]["epic_state"] | null
