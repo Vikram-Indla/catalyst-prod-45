@@ -478,12 +478,15 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
       const updatePayload: Record<string, any> = {
         name: data.name,
         description: data.description,
-        start_date: data.start_date,
-        end_date: data.end_date,
-        color_tag: data.color_tag,
-        owner_id: data.owner_id,
-        snapshot_id: data.snapshot_id,
+        start_date: data.start_date || null,
+        end_date: data.end_date || null,
+        color_tag: data.color_tag || null,
+        owner_id: data.owner_id || null,
       };
+      // Only include snapshot_id if it's a valid UUID, otherwise set to null
+      if (data.snapshot_id && data.snapshot_id.length === 36) {
+        updatePayload.snapshot_id = data.snapshot_id;
+      }
       // Cast status to proper enum type if provided
       if (data.status) {
         updatePayload.status = data.status as 'proposed' | 'active' | 'done' | 'cancelled';
