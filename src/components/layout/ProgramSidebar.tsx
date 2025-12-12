@@ -46,7 +46,6 @@ interface ProgramSidebarProps {
 // Epic Backlog routes to canonical EpicBacklogWithSidebar component
 const getMenuItems = (workspaceLabel: string) => [
   { id: 'program-room', label: `${workspaceLabel} Room`, icon: LayoutDashboard, path: '/program/:programId/room' },
-  { id: 'epics', label: 'Epics', icon: Square, path: '/program/:programId/epics' },
   { id: 'epic-backlog', label: 'Epic Backlog', icon: Square, path: '/program/:programId/epic-backlog' },
   { id: 'work-tree', label: 'Work tree', icon: Network, path: '/program/:programId/work-tree' },
   { id: 'dependencies', label: 'Dependencies', icon: GitBranch, path: '/program/:programId/dependencies' },
