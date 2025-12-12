@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
 import {
   Dialog,
   DialogContent,
@@ -14,6 +14,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 export type EntityType = 'program' | 'project' | 'product';
 
@@ -30,16 +37,16 @@ const entityConfig = {
     description: 'Create a new program to organize your projects and teams.',
     namePlaceholder: 'e.g., Digital Transformation',
     keyPlaceholder: 'e.g., DT',
-    table: 'portfolios' as const,
-    queryKeys: ['admin-programs', 'programs-header'],
+    table: 'programs' as const,
+    queryKeys: ['admin-programs', 'programs-header', 'programs-for-project'],
   },
   project: {
     title: 'Create Project',
     description: 'Create a new project to manage your work items and sprints.',
     namePlaceholder: 'e.g., Mobile App Redesign',
     keyPlaceholder: 'e.g., MAR',
-    table: 'programs' as const,
-    queryKeys: ['admin-projects', 'programs-header'],
+    table: 'projects' as const,
+    queryKeys: ['admin-projects', 'programs-header', 'projects-directory', 'projects'],
   },
   product: {
     title: 'Create Product',
@@ -51,14 +58,8 @@ const entityConfig = {
   },
 };
 
-function generateKey(name: string): string {
-  if (!name.trim()) return '';
-  const words = name.trim().split(/\s+/);
-  if (words.length === 1) {
-    return words[0].substring(0, 4).toUpperCase();
-  }
-  return words.slice(0, 4).map(w => w[0]).join('').toUpperCase();
-}
+const KEY_REGEX = /^[A-Z]{3}$/;
+const DEFAULT_PROGRAM_ID = '00000000-0000-0000-0000-000000000001';
 
 export function CreateEntityDialog({
   open,
@@ -69,30 +70,83 @@ export function CreateEntityDialog({
   const [name, setName] = useState('');
   const [key, setKey] = useState('');
   const [description, setDescription] = useState('');
+  const [programId, setProgramId] = useState('');
+  const [programSearch, setProgramSearch] = useState('');
   const [isCreating, setIsCreating] = useState(false);
-  const [keyManuallyEdited, setKeyManuallyEdited] = useState(false);
+  const [keyError, setKeyError] = useState('');
   const queryClient = useQueryClient();
 
   const config = entityConfig[entityType];
 
-  useEffect(() => {
-    if (!keyManuallyEdited) {
-      setKey(generateKey(name));
-    }
-  }, [name, keyManuallyEdited]);
+  // Fetch programs for project creation
+  const { data: programs } = useQuery({
+    queryKey: ['programs-for-project'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('programs')
+        .select('id, name, key')
+        .order('name');
+      if (error) throw error;
+      return data;
+    },
+    enabled: entityType === 'project',
+  });
+
+  // Fetch existing project keys for uniqueness validation
+  const { data: existingKeys } = useQuery({
+    queryKey: ['project-keys'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('projects')
+        .select('key');
+      if (error) throw error;
+      return data?.map(p => p.key?.toUpperCase()) || [];
+    },
+    enabled: entityType === 'project',
+  });
+
+  const filteredPrograms = programs?.filter(p => 
+    p.name.toLowerCase().includes(programSearch.toLowerCase()) ||
+    p.key?.toLowerCase().includes(programSearch.toLowerCase())
+  );
+
+  const selectedProgram = programs?.find(p => p.id === programId);
 
   useEffect(() => {
     if (open) {
       setName('');
       setKey('');
       setDescription('');
-      setKeyManuallyEdited(false);
+      setKeyError('');
+      setProgramSearch('');
+      // Set default program for projects
+      if (entityType === 'project') {
+        setProgramId(DEFAULT_PROGRAM_ID);
+      }
     }
-  }, [open]);
+  }, [open, entityType]);
+
+  const validateProjectKey = (value: string): string => {
+    if (!value) return 'Project key is required';
+    if (!KEY_REGEX.test(value)) return 'Key must be exactly 3 uppercase letters (A-Z)';
+    if (existingKeys?.includes(value.toUpperCase())) return 'This key is already in use';
+    return '';
+  };
 
   const handleKeyChange = (value: string) => {
-    setKey(value.toUpperCase().replace(/[^A-Z0-9]/g, ''));
-    setKeyManuallyEdited(true);
+    if (entityType === 'project') {
+      // Project keys: exactly 3 uppercase letters
+      const upperValue = value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3);
+      setKey(upperValue);
+      if (upperValue.length === 3) {
+        setKeyError(validateProjectKey(upperValue));
+      } else {
+        setKeyError('');
+      }
+    } else {
+      // Other entity keys: more flexible
+      setKey(value.toUpperCase().replace(/[^A-Z0-9]/g, ''));
+    }
   };
 
   const handleClose = () => {
@@ -107,6 +161,20 @@ export function CreateEntityDialog({
     if (!key.trim()) {
       catalystToast.error('Validation Error', 'Please enter a key');
       return;
+    }
+
+    // Additional validation for projects
+    if (entityType === 'project') {
+      const keyValidationError = validateProjectKey(key);
+      if (keyValidationError) {
+        setKeyError(keyValidationError);
+        catalystToast.error('Validation Error', keyValidationError);
+        return;
+      }
+      if (!programId) {
+        catalystToast.error('Validation Error', 'Program is required');
+        return;
+      }
     }
 
     setIsCreating(true);
@@ -140,33 +208,16 @@ export function CreateEntityDialog({
         if (error) throw error;
         result = data;
       } else {
-        // Creating a project - need parent program
-        const { data: programs } = await supabase
-          .from('programs')
-          .select('id')
-          .limit(1);
-
-        let programId = programs?.[0]?.id;
-
-        if (!programId) {
-          const { data: newProgram, error: programError } = await supabase
-            .from('programs')
-            .insert({ name: 'Default', key: 'DEFAULT' })
-            .select()
-            .single();
-          if (programError) throw programError;
-          programId = newProgram.id;
-          queryClient.invalidateQueries({ queryKey: ['admin-programs'] });
-          queryClient.invalidateQueries({ queryKey: ['programs-header'] });
-        }
+        // Creating a project - MUST have program_id
+        const selectedProgramId = programId || DEFAULT_PROGRAM_ID;
 
         const { data, error } = await supabase
           .from('projects')
           .insert({ 
             name: name.trim(), 
-            key: key.trim(),
+            key: key.trim().toUpperCase(),
             description: description.trim() || null,
-            program_id: programId 
+            program_id: selectedProgramId 
           })
           .select()
           .single();
@@ -179,6 +230,7 @@ export function CreateEntityDialog({
       config.queryKeys.forEach(qk => {
         queryClient.invalidateQueries({ queryKey: [qk] });
       });
+      queryClient.invalidateQueries({ queryKey: ['project-keys'] });
 
       const entityLabel = entityType.charAt(0).toUpperCase() + entityType.slice(1);
       catalystToast.success('Success', `${entityLabel} created successfully`);
@@ -191,6 +243,10 @@ export function CreateEntityDialog({
       setIsCreating(false);
     }
   };
+
+  const isProjectKeyValid = entityType !== 'project' || (key.length === 3 && !keyError);
+  const isProgramValid = entityType !== 'project' || !!programId;
+  const isFormValid = name.trim() && key.trim() && isProjectKeyValid && isProgramValid;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -228,13 +284,63 @@ export function CreateEntityDialog({
                 id="key"
                 value={key}
                 onChange={(e) => handleKeyChange(e.target.value)}
-                placeholder={config.keyPlaceholder}
-                maxLength={10}
+                placeholder={entityType === 'project' ? 'ABC' : config.keyPlaceholder}
+                maxLength={entityType === 'project' ? 3 : 10}
+                className={keyError ? 'border-destructive' : ''}
               />
-              <p className="text-xs text-muted-foreground">
-                This key will be used as a prefix for work items (e.g., {key || 'KEY'}-123)
-              </p>
+              {keyError ? (
+                <p className="text-xs text-destructive">{keyError}</p>
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  {entityType === 'project' 
+                    ? 'Exactly 3 uppercase letters (A-Z)'
+                    : `This key will be used as a prefix for work items (e.g., ${key || 'KEY'}-123)`
+                  }
+                </p>
+              )}
             </div>
+
+            {/* Program - Only for projects */}
+            {entityType === 'project' && (
+              <div className="space-y-2">
+                <Label htmlFor="program">
+                  Program <span className="text-destructive">*</span>
+                </Label>
+                <Select value={programId} onValueChange={setProgramId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a program">
+                      {selectedProgram ? `${selectedProgram.name} (${selectedProgram.key})` : 'Select a program'}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent className="z-[400]">
+                    <div className="px-2 py-2 border-b">
+                      <div className="relative">
+                        <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          placeholder="Search programs..."
+                          value={programSearch}
+                          onChange={(e) => setProgramSearch(e.target.value)}
+                          className="pl-8 h-8"
+                        />
+                      </div>
+                    </div>
+                    {filteredPrograms?.map((program) => (
+                      <SelectItem key={program.id} value={program.id}>
+                        {program.name} ({program.key})
+                      </SelectItem>
+                    ))}
+                    {filteredPrograms?.length === 0 && (
+                      <div className="px-2 py-4 text-center text-sm text-muted-foreground">
+                        No programs found
+                      </div>
+                    )}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  Projects must be linked to a program
+                </p>
+              </div>
+            )}
 
             {/* Description */}
             <div className="space-y-2">
@@ -256,7 +362,8 @@ export function CreateEntityDialog({
           </Button>
           <Button
             onClick={handleCreate}
-            disabled={isCreating || !name.trim() || !key.trim()}
+            disabled={isCreating || !isFormValid}
+            className="bg-brand-gold hover:bg-brand-gold-hover"
           >
             {isCreating ? 'Creating...' : 'Create'}
           </Button>
