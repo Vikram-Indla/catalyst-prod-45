@@ -72,9 +72,10 @@ export function useRoadmapBusinessRequests() {
     queryKey: ['roadmap-business-requests'],
     queryFn: async () => {
       // Fetch business requests
+      // Use impl_start_date (Kickoff) for bar start, impl_target_end_date (Target Complete) for bar end
       const { data: requests, error: reqError } = await supabase
         .from('business_requests')
-        .select('id, request_key, title, business_owner, process_step, start_date, end_date, rank, delivery_platform, health')
+        .select('id, request_key, title, business_owner, process_step, start_date, end_date, impl_start_date, impl_target_end_date, rank, delivery_platform, health')
         .is('deleted_at', null)
         .order('rank', { ascending: true, nullsFirst: false });
 
@@ -110,9 +111,11 @@ export function useRoadmapBusinessRequests() {
         .map((r, index) => {
           const requestMilestones = milestonesByRequest[r.id] || [];
           
-          // Calculate start and end dates - use request dates or fallback
-          let startDate = r.start_date;
-          let endDate = r.end_date;
+          // Calculate start and end dates
+          // Bar Start = Kickoff date (impl_start_date), fallback to start_date (Business Ask)
+          // Bar End = Target Complete (impl_target_end_date), fallback to end_date
+          let startDate = r.impl_start_date || r.start_date;
+          let endDate = r.impl_target_end_date || r.end_date;
           
           // If no dates on request, try to derive from milestones
           if (!startDate && requestMilestones.length > 0) {
