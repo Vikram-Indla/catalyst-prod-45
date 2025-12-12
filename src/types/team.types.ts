@@ -18,9 +18,9 @@ export interface Team {
   team_type: TeamType;
   sprint_prefix?: string;
   description?: string;
-  program_id?: string;
-  parent_portfolio_id?: string;
+  project_id?: string;
   parent_program_id?: string;
+  parent_project_id?: string;
   parent_solution_id?: string;
   region_id?: string;
   track_by?: TrackByType;
@@ -38,11 +38,11 @@ export interface Team {
   created_by?: string;
   
   // Joined relations
-  programs?: {
+  projects?: {
     id: string;
     name: string;
   };
-  portfolios?: {
+  programs?: {
     id: string;
     name: string;
   };
@@ -107,9 +107,9 @@ export interface CreateTeamInput {
   team_type: TeamType;
   sprint_prefix?: string;
   description?: string;
-  program_id?: string;
-  parent_portfolio_id?: string;
+  project_id?: string;
   parent_program_id?: string;
+  parent_project_id?: string;
   parent_solution_id?: string;
   region_id?: string;
   track_by?: TrackByType;

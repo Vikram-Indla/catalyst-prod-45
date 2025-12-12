@@ -17,22 +17,22 @@ export const useEpicIntakeSet = (epicId: string) => {
 
       // Get program's portfolio to find intake set
       const { data: program, error: programError } = await supabase
-        .from('programs')
-        .select('portfolio_id')
+        .from('projects')
+        .select('program_id')
         .eq('id', epic.primary_program_id)
         .single();
       
       if (programError) throw programError;
-      if (!program?.portfolio_id) return null;
+      if (!program?.program_id) return null;
 
-      // Get intake set for portfolio
+      // Get intake set for program
       const { data: intakeSet, error: intakeError } = await supabase
         .from('intake_sets')
         .select(`
           *,
           intake_fields(*)
         `)
-        .eq('portfolio_id', program.portfolio_id)
+        .eq('program_id', program.program_id)
         .order('created_at', { foreignTable: 'intake_fields', ascending: true })
         .single();
       

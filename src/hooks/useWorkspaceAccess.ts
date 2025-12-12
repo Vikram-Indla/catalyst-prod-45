@@ -61,12 +61,12 @@ export function useWorkspaceAccess() {
     enabled: !!userId && !isAdmin,
   });
 
-  // Fetch all programs with access info
+  // Fetch all programs with access info (now 'programs' table)
   const { data: programs, isLoading: programsLoading } = useQuery({
     queryKey: ['workspace-programs', userId, isAdmin, programMemberships],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('portfolios')
+        .from('programs')
         .select('id, key, name, description')
         .order('name');
       if (error) throw error;
@@ -82,19 +82,19 @@ export function useWorkspaceAccess() {
     enabled: !!userId,
   });
 
-  // Fetch all projects with access info
+  // Fetch all projects with access info (now 'projects' table)
   const { data: projects, isLoading: projectsLoading } = useQuery({
     queryKey: ['workspace-projects', userId, isAdmin, projectMemberships, programMemberships],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('programs')
+        .from('projects')
         .select(`
           id, 
           key, 
           name, 
           description,
-          portfolio_id,
-          portfolios (id, name)
+          program_id,
+          programs (id, name)
         `)
         .order('name');
       if (error) throw error;
@@ -105,15 +105,15 @@ export function useWorkspaceAccess() {
         // 2. User is a direct project member, OR
         // 3. User is a member of the parent program (inheritance)
         const hasDirectAccess = projectMemberships?.includes(p.id) ?? false;
-        const hasInheritedAccess = p.portfolio_id && (programMemberships?.includes(p.portfolio_id) ?? false);
+        const hasInheritedAccess = p.program_id && (programMemberships?.includes(p.program_id) ?? false);
         
         return {
           id: p.id,
           key: p.key || '',
           name: p.name,
           description: p.description,
-          programId: p.portfolio_id,
-          programName: p.portfolios?.name || null,
+          programId: p.program_id,
+          programName: p.programs?.name || null,
           canAccess: isAdmin || hasDirectAccess || hasInheritedAccess,
         };
       }) as ProjectWithAccess[];

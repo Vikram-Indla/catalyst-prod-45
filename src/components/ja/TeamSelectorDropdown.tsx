@@ -95,13 +95,13 @@ export function TeamSelectorDropdown({ onClose }: TeamSelectorDropdownProps) {
                   onClick={() => handleSelect(team.id)}
                   className="w-full text-left px-3 py-2 rounded hover:bg-accent text-sm group"
                 >
-                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2">
                     <Users className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                     <div className="flex-1 min-w-0">
                       <div className="font-medium truncate">{team.name}</div>
-                      {team.programs && (
+                      {team.projects && (
                         <div className="text-xs text-muted-foreground truncate">
-                          {team.programs.name}
+                          {team.projects.name}
                         </div>
                       )}
                     </div>

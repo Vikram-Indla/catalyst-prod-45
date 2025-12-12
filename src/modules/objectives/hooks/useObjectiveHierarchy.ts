@@ -127,18 +127,18 @@ export function useObjectiveHierarchy(objectiveId: string) {
 
       if (current.portfolio_id) {
         const { data: portfolio } = await supabase
-          .from('portfolios')
+          .from('programs')
           .select('name')
           .eq('id', current.portfolio_id)
           .single();
         portfolioName = portfolio?.name;
       }
 
-      if (current.program_id) {
+      if (current.project_id) {
         const { data: program } = await supabase
-          .from('programs')
+          .from('projects')
           .select('name')
-          .eq('id', current.program_id)
+          .eq('id', current.project_id)
           .single();
         programName = program?.name;
       }
@@ -183,18 +183,18 @@ export function useObjectiveHierarchy(objectiveId: string) {
 
           if (child.portfolio_id) {
             const { data: portfolio } = await supabase
-              .from('portfolios')
+              .from('programs')
               .select('name')
               .eq('id', child.portfolio_id)
               .single();
             childPortfolioName = portfolio?.name;
           }
 
-          if (child.program_id) {
+          if (child.project_id) {
             const { data: program } = await supabase
-              .from('programs')
+              .from('projects')
               .select('name')
-              .eq('id', child.program_id)
+              .eq('id', child.project_id)
               .single();
             childProgramName = program?.name;
           }

@@ -190,14 +190,14 @@ export const useObjectives = (filters?: ObjectiveFilters) => {
         .select('id, status');
       const storiesById = new Map(allStories?.map(s => [s.id, s]) || []);
 
-      // Fetch portfolio and program names for context display
+      // Fetch portfolio and program names for context display (now 'programs' and 'projects' tables)
       const { data: portfoliosData } = await supabase
-        .from('portfolios')
+        .from('programs')
         .select('id, name');
       const portfolioMap = new Map(portfoliosData?.map(p => [p.id, p.name]) || []);
 
       const { data: programsData } = await supabase
-        .from('programs')
+        .from('projects')
         .select('id, name');
       const programMap = new Map(programsData?.map(p => [p.id, p.name]) || []);
 
@@ -210,11 +210,11 @@ export const useObjectives = (filters?: ObjectiveFilters) => {
         portfolioIdsToQuery = filters.portfolioIds;
         
         if (filters.includeAllChildren) {
-          // Fetch programs in this portfolio
+          // Fetch projects in this program
           const { data: programs } = await supabase
-            .from('programs')
+            .from('projects')
             .select('id')
-            .in('portfolio_id', filters.portfolioIds);
+            .in('program_id', filters.portfolioIds);
           
           if (programs && programs.length > 0) {
             programIdsToQuery = programs.map(p => p.id);

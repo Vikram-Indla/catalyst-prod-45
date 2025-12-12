@@ -259,7 +259,7 @@ export function ForecastTab({ workItemId, workItemType, estimationSystem = 'poin
 
   const getProgramTotal = (programId: string) => {
     // Get teams for this program
-    const programTeams = teams.filter(t => t.program_id === programId);
+    const programTeams = teams.filter(t => t.project_id === programId);
     const teamIds = programTeams.map(t => t.id);
     
     // Sum estimates for all teams in this program
@@ -526,7 +526,7 @@ export function ForecastTab({ workItemId, workItemType, estimationSystem = 'poin
           ) : (
             <div className="space-y-3">
               {programs.map(program => {
-                const programTeams = teams.filter(t => t.program_id === program.id);
+                const programTeams = teams.filter(t => t.project_id === program.id);
                 const isExpanded = expandedPrograms.has(program.id);
                 
                 return (

@@ -22,7 +22,7 @@ export function TeamRankDialog({ open, onOpenChange, programId }: TeamRankDialog
       const { data: allTeams, error: teamsError } = await supabase
         .from('teams')
         .select('*')
-        .eq('program_id', programId);
+        .eq('project_id', programId);
       
       if (teamsError) throw teamsError;
       

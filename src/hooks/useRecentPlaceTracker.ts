@@ -64,7 +64,7 @@ export function useRecentPlaceTracker() {
       if (!params.teamId) return null;
       const { data } = await supabase
         .from("teams")
-        .select("id, name, program_id")
+        .select("id, name, project_id")
         .eq("id", params.teamId)
         .single();
       
@@ -168,7 +168,7 @@ export function useRecentPlaceTracker() {
           roomType: "program" as RoomType,
           roomId: params.programId,
           roomName: program.name,
-          roomSubtitle: program.portfolios?.name || "Program Room",
+          roomSubtitle: program.programs?.name || "Program Room",
           pageKey: "room",
           targetUrl: `/programs/${params.programId}/room`,
         };
