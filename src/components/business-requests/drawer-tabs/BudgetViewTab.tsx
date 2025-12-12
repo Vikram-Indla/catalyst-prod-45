@@ -281,7 +281,7 @@ export function BudgetViewTab({ data, onChange }: BudgetViewTabProps) {
 
       {/* Section 1: Funding & Budget */}
       <Collapsible open={fundingOpen} onOpenChange={setFundingOpen}>
-        <div className="border border-neutral-200 rounded-xl bg-white overflow-hidden">
+        <div className="border border-border rounded-xl bg-white overflow-hidden shadow-sm">
           <CollapsibleTrigger className="w-full flex items-center justify-between p-4 hover:bg-muted/30 transition-colors">
             <h3 className="text-xs font-semibold uppercase tracking-wide text-brand-gold">
               Funding & Budget
@@ -423,7 +423,7 @@ export function BudgetViewTab({ data, onChange }: BudgetViewTabProps) {
 
       {/* Section 2: Contract & Commercials */}
       <Collapsible open={contractOpen} onOpenChange={setContractOpen}>
-        <div className="border border-neutral-200 rounded-xl bg-white overflow-hidden">
+        <div className="border border-border rounded-xl bg-white overflow-hidden shadow-sm">
           <CollapsibleTrigger className="w-full flex items-center justify-between p-4 hover:bg-muted/30 transition-colors">
             <h3 className="text-xs font-semibold uppercase tracking-wide text-brand-gold">
               Contract & Commercials
@@ -568,7 +568,7 @@ export function BudgetViewTab({ data, onChange }: BudgetViewTabProps) {
 
       {/* Section 3: Funding & Capacity Notes */}
       <Collapsible open={capacityOpen} onOpenChange={setCapacityOpen}>
-        <div className="border border-neutral-200 rounded-xl bg-white overflow-hidden">
+        <div className="border border-border rounded-xl bg-white overflow-hidden shadow-sm">
           <CollapsibleTrigger className="w-full flex items-center justify-between p-4 hover:bg-muted/30 transition-colors">
             <h3 className="text-xs font-semibold uppercase tracking-wide text-brand-gold">
               Funding & Capacity Notes
