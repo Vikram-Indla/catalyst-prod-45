@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
@@ -32,13 +32,17 @@ import {
   XCircle
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 export default function EnterpriseEpics() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedEpicId, setSelectedEpicId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list');
+
+  // Check URL for epicId param to auto-open drawer (used when navigating from Business Request links)
+  const epicIdFromUrl = searchParams.get('epicId');
 
   const { data: epics, isLoading } = useQuery({
     queryKey: ['enterprise-epics', searchQuery],
@@ -63,6 +67,20 @@ export default function EnterpriseEpics() {
       return data;
     },
   });
+
+  // Auto-open epic drawer if epicId is in URL (from Business Request Links navigation)
+  useEffect(() => {
+    if (epicIdFromUrl && epics && epics.length > 0) {
+      const epic = epics.find(e => e.id === epicIdFromUrl);
+      if (epic) {
+        setSelectedEpicId(epic.id);
+        // Clear the epicId from URL to avoid re-opening on navigation
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.delete('epicId');
+        setSearchParams(newSearchParams, { replace: true });
+      }
+    }
+  }, [epicIdFromUrl, epics, searchParams, setSearchParams]);
 
   const selectedEpic = epics?.find(e => e.id === selectedEpicId);
 
