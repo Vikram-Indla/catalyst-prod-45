@@ -217,7 +217,7 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
     <aside
       className={cn(
         "h-full border-r bg-card transition-all duration-300 flex-shrink-0 relative flex flex-col",
-        expanded ? "w-[180px]" : "w-14",
+        expanded ? "w-44" : "w-14",
         className
       )}
     >
