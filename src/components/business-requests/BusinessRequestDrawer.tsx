@@ -192,14 +192,15 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
   const skipNextFormResetRef = useRef(false);
 
   // Handle navigation to Epic from Links tab
-  // Closes this drawer, navigates to epics backlog with epicId param so drawer auto-opens there
+  // Closes this drawer, navigates to Program Backlog (epic-backlog) with epicId param so drawer auto-opens there
   const handleNavigateToEpic = useCallback((epicId: string, programId?: string | null) => {
     // 1. Close the business drawer
     onClose();
 
-    // 2. Build route to epics backlog with epicId query param
+    // 2. Build route to Program Backlog (epic-backlog) with epicId query param
+    // This is the canonical route shown in screenshot as "Program Backlog" with "Epics" tab
     const path = programId
-      ? `/program/${programId}/epics?epicId=${epicId}`
+      ? `/program/${programId}/epic-backlog?epicId=${epicId}`
       : `/enterprise/epics?epicId=${epicId}`;
 
     // 3. Navigate using push (not replace) to preserve browser back behaviour
