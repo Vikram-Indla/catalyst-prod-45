@@ -118,6 +118,9 @@ export interface RoadmapConfig {
   
   // Drawer opener function - injected at runtime
   openDrawer?: (id: string) => void;
+  
+  // Milestone/marker click handler - Theme-specific for Epic markers
+  onMilestoneClick?: (milestoneData: { epicId?: string; index?: number }) => void;
 }
 
 // Props for the generic RoadmapEngine
