@@ -28,7 +28,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Search, MoreHorizontal, UserCog, Power, PowerOff, ShieldCheck, Trash2, KeyRound, CheckCircle, XCircle, Clock } from 'lucide-react';
-import { UserProfile, useUpdateUserStatus, useDeleteUser, useApproveUser, useRejectUser, useDisableUser, ApprovalStatus } from '@/hooks/useUsers';
+import { UserProfile, useDeleteUser, useApproveUser, useRejectUser, useDisableUser, ApprovalStatus, getDisplayStatus } from '@/hooks/useUsers';
 import { format, formatDistanceToNow, isToday, isYesterday } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { ResponsiveTableWrapper } from '@/components/layout/ResponsivePageContainer';
@@ -45,13 +45,11 @@ interface UsersTableProps {
 export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }: UsersTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
-  const [statusFilter, setStatusFilter] = useState('all');
   const [approvalFilter, setApprovalFilter] = useState('all');
   const [userToDelete, setUserToDelete] = useState<UserProfile | null>(null);
   const [userToReject, setUserToReject] = useState<UserProfile | null>(null);
   const [resetPasswordUser, setResetPasswordUser] = useState<UserProfile | null>(null);
   
-  const updateStatus = useUpdateUserStatus();
   const deleteUser = useDeleteUser();
   const approveUser = useApproveUser();
   const rejectUser = useRejectUser();
@@ -69,11 +67,9 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
     const matchesRole = roleFilter === 'all' || 
       user.roles.some(r => r.role_name === roleFilter);
     
-    const matchesStatus = statusFilter === 'all' || user.status === statusFilter;
-    
     const matchesApproval = approvalFilter === 'all' || user.approval_status === approvalFilter;
     
-    return matchesSearch && matchesRole && matchesStatus && matchesApproval;
+    return matchesSearch && matchesRole && matchesApproval;
   });
 
   const formatLastLogin = (lastLogin: string | null) => {
@@ -144,10 +140,6 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
     disableUser.mutate(userId);
   };
 
-  const handleStatusToggle = (userId: string, currentStatus: string) => {
-    const newStatus = currentStatus === 'Active' ? 'Inactive' : 'Active';
-    updateStatus.mutate({ userId, status: newStatus });
-  };
 
   const handleDeleteUser = (user: UserProfile) => {
     setUserToDelete(user);
@@ -203,17 +195,6 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
               {allRoles.map(role => (
                 <SelectItem key={role} value={role}>{role}</SelectItem>
               ))}
-            </SelectContent>
-          </Select>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full sm:w-[150px]">
-              <SelectValue placeholder="All Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="Active">Active</SelectItem>
-              <SelectItem value="Inactive">Inactive</SelectItem>
-              <SelectItem value="Pending">Pending</SelectItem>
             </SelectContent>
           </Select>
           <Select value={approvalFilter} onValueChange={setApprovalFilter}>
@@ -276,9 +257,9 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
                   <td className="py-3 px-4">
                     <Badge 
                       variant="secondary" 
-                      className={cn("text-xs", getStatusBadgeClass(user.status))}
+                      className={cn("text-xs", getStatusBadgeClass(getDisplayStatus(user.approval_status)))}
                     >
-                      {user.status}
+                      {getDisplayStatus(user.approval_status)}
                     </Badge>
                   </td>
                   <td className="py-3 px-4">
@@ -316,8 +297,8 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
                               Edit Permissions
                             </DropdownMenuItem>
                           )}
-                          {/* Reset Password - only for Active users, only for admins */}
-                          {user.status === 'Active' && isSuperAdmin && (
+                          {/* Reset Password - only for Approved users, only for admins */}
+                          {user.approval_status === 'APPROVED' && isSuperAdmin && (
                             <>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem onClick={() => setResetPasswordUser(user)}>
@@ -334,20 +315,14 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
                               Disable User
                             </DropdownMenuItem>
                           )}
-                          <DropdownMenuItem onClick={() => handleStatusToggle(user.id, user.status)}>
-                            {user.status === 'Active' ? (
-                              <>
-                                <PowerOff className="h-4 w-4 mr-2" />
-                                Deactivate
-                              </>
-                            ) : (
-                              <>
-                                <Power className="h-4 w-4 mr-2" />
-                                Activate
-                              </>
-                            )}
-                          </DropdownMenuItem>
-                          {user.status === 'Inactive' && (
+                          {/* Re-enable for disabled users */}
+                          {user.approval_status === 'DISABLED' && (
+                            <DropdownMenuItem onClick={() => handleApprove(user.id)}>
+                              <Power className="h-4 w-4 mr-2" />
+                              Enable User
+                            </DropdownMenuItem>
+                          )}
+                          {(user.approval_status === 'REJECTED' || user.approval_status === 'DISABLED') && (
                             <>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem 

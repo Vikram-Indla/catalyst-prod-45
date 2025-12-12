@@ -9,7 +9,6 @@ export interface UserProfile {
   email: string | null;
   full_name: string | null;
   avatar_url: string | null;
-  status: 'Active' | 'Inactive' | 'Pending';
   approval_status: ApprovalStatus | null;
   requested_at: string | null;
   approved_at: string | null;
@@ -21,6 +20,20 @@ export interface UserProfile {
   updated_at: string | null;
   roles: UserRoleInfo[];
   business_lines: string[];
+}
+
+// Derive display status from approval_status
+export function getDisplayStatus(approvalStatus: ApprovalStatus | null): 'Active' | 'Inactive' | 'Pending' {
+  switch (approvalStatus) {
+    case 'APPROVED':
+      return 'Active';
+    case 'PENDING_APPROVAL':
+      return 'Pending';
+    case 'REJECTED':
+    case 'DISABLED':
+    default:
+      return 'Inactive';
+  }
 }
 
 export interface UserRoleInfo {
@@ -35,7 +48,6 @@ export interface CreateUserInput {
   firstName: string;
   lastName: string;
   email: string;
-  status: 'Active' | 'Inactive';
   roleIds: string[];
   businessLines?: string[];
 }
@@ -113,7 +125,6 @@ export function useCreateUser() {
           firstName: input.firstName,
           lastName: input.lastName,
           email: input.email.toLowerCase(),
-          status: input.status,
           roleIds: input.roleIds,
         },
       });
@@ -178,29 +189,6 @@ export function useUpdateUserRoles() {
     onError: (error) => {
       console.error('Failed to update user roles:', error);
       toast.error('Failed to update roles');
-    }
-  });
-}
-
-export function useUpdateUserStatus() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({ userId, status }: { userId: string; status: 'Active' | 'Inactive' }) => {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ status, updated_at: new Date().toISOString() })
-        .eq('id', userId);
-
-      if (error) throw error;
-      return true;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users-list'] });
-      toast.success('User status updated');
-    },
-    onError: (error) => {
-      toast.error('Failed to update status: ' + (error as Error).message);
     }
   });
 }

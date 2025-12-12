@@ -32,7 +32,6 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
-  const [status, setStatus] = useState<'Active' | 'Inactive'>('Active');
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -44,7 +43,6 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
     setFirstName('');
     setLastName('');
     setEmail('');
-    setStatus('Active');
     setSelectedRoles([]);
     setError(null);
     setFieldErrors({});
@@ -106,7 +104,6 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
       firstName: firstName.trim(),
       lastName: lastName.trim(),
       email: email.trim().toLowerCase(),
-      status,
       roleIds: selectedRoles,
     };
 
@@ -199,19 +196,6 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
             {fieldErrors.email && (
               <p className="text-xs text-destructive">{fieldErrors.email}</p>
             )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="status">Status</Label>
-            <Select value={status} onValueChange={(val) => setStatus(val as 'Active' | 'Inactive')}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Active">Active</SelectItem>
-                <SelectItem value="Inactive">Inactive</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
 
           <div className="space-y-2">
