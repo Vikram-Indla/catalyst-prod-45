@@ -136,9 +136,9 @@ export function DiscussionsViewTab({ requestId }: DiscussionsViewTabProps) {
     <div className="flex flex-col h-[500px]">
       {/* Header */}
       <div className="flex items-center gap-2 px-6 py-4 border-b border-border/40 bg-card">
-        <MessageSquare className="h-5 w-5 text-brand-gold" />
-        <h3 className="text-[15px] font-semibold text-brand-gold uppercase tracking-wide">Discussions</h3>
-        <span className="text-[13px] text-muted-foreground">
+        <MessageSquare className="h-5 w-5 text-brand-gold flex-shrink-0" />
+        <h3 className="text-[15px] font-semibold text-brand-gold uppercase tracking-wide leading-none">Discussions</h3>
+        <span className="text-[13px] text-muted-foreground leading-none">
           ({discussions.length} comments)
         </span>
       </div>
