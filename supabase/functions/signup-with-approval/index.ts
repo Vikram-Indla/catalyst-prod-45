@@ -122,7 +122,7 @@ serve(async (req) => {
 
       // Already approved
       if (status === "APPROVED") {
-        return jsonValidationError("This email is already registered. Please sign in.", "EMAIL_EXISTS_APPROVED");
+        return jsonValidationError("This email is already registered.", "EMAIL_EXISTS_APPROVED");
       }
 
       // Pending approval
@@ -184,7 +184,7 @@ serve(async (req) => {
     if (createError) {
       console.error("[SIGNUP] Error creating auth user:", createError);
       if (createError.message?.includes("already been registered")) {
-        return jsonValidationError("This email is already registered. Please sign in.", "EMAIL_EXISTS_APPROVED");
+        return jsonValidationError("This email is already registered.", "EMAIL_EXISTS_APPROVED");
       }
       return jsonServerError("Failed to create account. Please try again.");
     }
