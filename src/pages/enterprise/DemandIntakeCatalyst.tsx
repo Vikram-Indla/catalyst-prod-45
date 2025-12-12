@@ -29,8 +29,6 @@ import {
   LayoutGrid, 
   Filter, 
   Download, 
-  ChevronLeft, 
-  ChevronRight, 
   Plus, 
   MoreHorizontal,
   AlertTriangle,
@@ -59,6 +57,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 import { QuickAddRow } from '@/components/shared/QuickAddRow';
+import { TableFooterPaginationRow } from '@/components/shared/TableFooterPaginationRow';
 
 type ViewMode = 'list' | 'kanban';
 type SortOrder = 'NONE' | 'ASC' | 'DESC';
@@ -603,13 +602,23 @@ export default function DemandIntakeCatalyst() {
                     </TableCell>
                   </TableRow>
                 ))}
-                {/* Quick Add Row at bottom of table, above pagination */}
+                {/* Quick Add Row */}
                 <QuickAddRow
                   columnsCount={11}
                   label="Add business request"
                   placeholder="Enter business request summary..."
                   createType="business_request"
                   onCreated={(id) => setSelectedRequestId(id)}
+                />
+                {/* Pagination Row - INSIDE the table */}
+                <TableFooterPaginationRow
+                  columnsCount={11}
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  totalItems={sortedRequests.length}
+                  itemsPerPage={ITEMS_PER_PAGE}
+                  itemLabel="requests"
+                  onPageChange={setCurrentPage}
                 />
               </TableBody>
             </Table>
@@ -633,63 +642,6 @@ export default function DemandIntakeCatalyst() {
             </div>
           )}
         </div>
-
-        {/* Pagination - Epic Backlog Style */}
-        {viewMode === 'list' && sortedRequests.length > 0 && (
-          <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
-            <p className="text-sm text-muted-foreground">
-              Showing {startIndex + 1}-{Math.min(endIndex, sortedRequests.length)} of {sortedRequests.length} requests
-            </p>
-            
-            <div className="flex items-center gap-2">
-              {/* Previous Button */}
-              <button
-                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
-                className={cn(
-                  "flex items-center gap-1 px-3 py-1.5 text-sm border border-border rounded-md transition-colors",
-                  currentPage === 1 
-                    ? "text-muted-foreground/50 cursor-not-allowed" 
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                )}
-              >
-                <ChevronLeft className="h-4 w-4" />
-                Previous
-              </button>
-              
-              {/* Page Numbers */}
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-                <button
-                  key={pageNum}
-                  onClick={() => setCurrentPage(pageNum)}
-                  className={cn(
-                    "w-8 h-8 text-sm rounded-md transition-colors",
-                    currentPage === pageNum 
-                      ? "bg-brand-gold text-white font-medium" 
-                      : "text-muted-foreground hover:bg-muted border border-border"
-                  )}
-                >
-                  {pageNum}
-                </button>
-              ))}
-              
-              {/* Next Button */}
-              <button
-                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                disabled={currentPage >= totalPages}
-                className={cn(
-                  "flex items-center gap-1 px-3 py-1.5 text-sm border border-border rounded-md transition-colors",
-                  currentPage >= totalPages 
-                    ? "text-muted-foreground/50 cursor-not-allowed" 
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                )}
-              >
-                Next
-                <ChevronRight className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
-        )}
       </main>
 
       {/* Dialogs and Modals */}
