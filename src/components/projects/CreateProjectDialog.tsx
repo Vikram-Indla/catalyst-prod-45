@@ -218,9 +218,6 @@ export function CreateProjectDialog({ open, onOpenChange, onSuccess }: CreatePro
               {createProject.isPending ? 'Creating...' : 'Create project'}
             </Button>
           </DialogFooter>
-              {createProject.isPending ? 'Creating...' : 'Create project'}
-            </Button>
-          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
