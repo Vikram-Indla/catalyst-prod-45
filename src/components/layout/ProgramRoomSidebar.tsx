@@ -36,6 +36,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
 interface ProgramRoomSidebarProps {
@@ -147,7 +153,7 @@ export function ProgramRoomSidebar({
     <aside 
       className={cn(
         "h-full border-r bg-card transition-all duration-300 flex-shrink-0 relative flex flex-col",
-        expanded ? "w-[180px]" : "w-16",
+        expanded ? "w-[200px] min-w-[200px] max-w-[240px]" : "w-14",
         className
       )}
     >
@@ -206,15 +212,15 @@ export function ProgramRoomSidebar({
 
         {/* Navigation Menu */}
         <nav className="flex-1 overflow-y-auto py-1">
-          {menuItems.map((item) => {
-            const Icon = item.icon;
-            const active = isActive('path' in item ? item.path : undefined);
-            const isMoreItems = item.id === 'more-items';
-            const isReports = item.id === 'reports';
-            const isMorePages = item.id === 'more-pages';
+          <TooltipProvider delayDuration={0}>
+            {menuItems.map((item) => {
+              const Icon = item.icon;
+              const active = isActive('path' in item ? item.path : undefined);
+              const isMoreItems = item.id === 'more-items';
+              const isReports = item.id === 'reports';
+              const isMorePages = item.id === 'more-pages';
 
-            return (
-              <div key={item.id}>
+              const menuButton = (
                 <button
                   onClick={() => {
                     if ('expandable' in item && item.expandable) {
@@ -231,7 +237,6 @@ export function ProgramRoomSidebar({
                     active && "bg-accent text-primary font-medium",
                     !expanded && "justify-center px-2"
                   )}
-                  title={!expanded ? item.label : undefined}
                 >
                   <Icon className="h-5 w-5 flex-shrink-0 text-muted-foreground" />
                   {expanded && (
@@ -255,6 +260,22 @@ export function ProgramRoomSidebar({
                     </>
                   )}
                 </button>
+              );
+
+              return (
+                <div key={item.id}>
+                  {!expanded ? (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        {menuButton}
+                      </TooltipTrigger>
+                      <TooltipContent side="right" className="z-[100]">
+                        <p>{item.label}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    menuButton
+                  )}
 
                 {/* Submenu rendering */}
                 {isMoreItems && moreItemsExpanded && expanded && (
@@ -301,6 +322,7 @@ export function ProgramRoomSidebar({
               </div>
             );
           })}
+          </TooltipProvider>
         </nav>
 
         {/* Footer */}
