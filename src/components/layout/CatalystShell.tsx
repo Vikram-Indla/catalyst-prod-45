@@ -1,12 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useLocation, useParams, Outlet } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { CatalystHeader } from '@/components/ja/CatalystHeader';
-import { PortfolioRoomSidebar } from './PortfolioRoomSidebar';
-import { ProgramSidebar } from './ProgramSidebar';
-import { ProjectSidebar } from './ProjectSidebar';
-import { TeamRoomSidebar } from '@/components/teams/TeamRoomSidebar';
+import { UnifiedSidebar } from './UnifiedSidebar';
 import { LeftContextPanel } from './LeftContextPanel';
 import { ProductRoomSidebar } from './ProductRoomSidebar';
 import { ReleaseRoomSidebar } from './ReleaseRoomSidebar';
@@ -30,12 +25,8 @@ function CatalystShellContent() {
   
   // Extract IDs from URL params - these take precedence
   const urlProgramId = params.programId || null;
-  const urlPortfolioId = params.portfolioId || null;
-  const currentTeamId = params.teamId || null;
   
   // Determine which ID to use based on route pattern
-  // /program/:programId = Program context (use portfolios table)
-  // /programs/:programId = Project context (use programs table)
   const isProgramRoute = location.pathname.startsWith('/program/');
   const isProjectRoute = location.pathname.startsWith('/programs/') || location.pathname.startsWith('/project/');
 
@@ -81,8 +72,9 @@ function CatalystShellContent() {
       case 'program':
         if (activeProgramId) {
           return (
-            <ProgramSidebar
-              programId={activeProgramId}
+            <UnifiedSidebar
+              workspaceType="program"
+              entityId={activeProgramId}
               expanded={sidebarExpanded}
               onToggle={() => setSidebarExpanded(!sidebarExpanded)}
               selectedQuarter={selectedQuarter}
@@ -92,9 +84,9 @@ function CatalystShellContent() {
         }
         // Show empty state if no program selected
         return (
-          <div className="w-44 h-full border-r bg-card flex items-center justify-center p-4 text-center">
+          <div className="w-14 h-full border-r bg-card flex items-center justify-center p-2 text-center">
             <div className="text-muted-foreground text-xs">
-              <p className="font-medium">Select a Program</p>
+              <p className="font-medium">No Program</p>
             </div>
           </div>
         );
@@ -102,8 +94,9 @@ function CatalystShellContent() {
       case 'project':
         if (activeProjectId) {
           return (
-            <ProjectSidebar
-              projectId={activeProjectId}
+            <UnifiedSidebar
+              workspaceType="project"
+              entityId={activeProjectId}
               expanded={sidebarExpanded}
               onToggle={() => setSidebarExpanded(!sidebarExpanded)}
               selectedQuarter={selectedQuarter}
@@ -113,9 +106,9 @@ function CatalystShellContent() {
         }
         // Show empty state if no project selected
         return (
-          <div className="w-44 h-full border-r bg-card flex items-center justify-center p-4 text-center">
+          <div className="w-14 h-full border-r bg-card flex items-center justify-center p-2 text-center">
             <div className="text-muted-foreground text-xs">
-              <p className="font-medium">Select a Project</p>
+              <p className="font-medium">No Project</p>
             </div>
           </div>
         );
