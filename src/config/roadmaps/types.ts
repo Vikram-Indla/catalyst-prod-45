@@ -8,6 +8,7 @@ export type SortOrder = 'asc' | 'desc';
 // Generic roadmap item structure that all entity types must map to
 export interface RoadmapItem {
   id: string;
+  key?: string; // Display key (e.g., MIM-001, E-123, TH-001)
   titleEn: string;
   titleAr: string;
   ownerEn: string;

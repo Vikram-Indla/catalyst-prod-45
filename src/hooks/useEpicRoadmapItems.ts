@@ -209,6 +209,7 @@ export function useEpicRoadmapItems(
 
     return {
       id: epic.id,
+      key: epic.epic_key || `E-${epic.id.slice(0, 4).toUpperCase()}`,
       titleEn: displayTitle,
       titleAr: displayTitle, // Epic names are typically not localized
       ownerEn: themeName, // Using theme as the "owner" lane label

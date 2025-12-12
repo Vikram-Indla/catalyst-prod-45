@@ -981,7 +981,7 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
                       className="text-xs font-medium hover:underline cursor-pointer bg-transparent border-none p-0 shrink-0"
                       style={{ color: 'hsl(var(--roadmap-status-new))' }}
                     >
-                      {item.id}
+                      {item.key || item.id.slice(0, 8)}
                     </button>
                   </div>
                   <TooltipProvider delayDuration={300}>
@@ -1003,7 +1003,7 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
                         }}
                       >
                         <div className="font-semibold mb-1.5 text-xs uppercase tracking-wider" style={{ color: 'hsl(35, 46%, 70%)' }}>
-                          {item.id}
+                          {item.key || item.id.slice(0, 8)}
                         </div>
                         <div className="font-medium" style={{ color: 'white' }}>
                           {isRTL ? item.titleAr : item.titleEn}
