@@ -14,8 +14,19 @@ import { toast } from 'sonner';
 interface Portfolio {
   id: string;
   name: string;
+  key: string;
+  description?: string;
   status: 'active' | 'archived';
   owner_id: string;
+}
+
+function generateKey(name: string): string {
+  if (!name.trim()) return '';
+  const words = name.trim().split(/\s+/);
+  if (words.length === 1) {
+    return words[0].substring(0, 4).toUpperCase();
+  }
+  return words.slice(0, 4).map(w => w[0]).join('').toUpperCase();
 }
 
 /**
@@ -26,7 +37,7 @@ export default function Portfolios() {
   const queryClient = useQueryClient();
   const [editingProgram, setEditingProgram] = useState<Portfolio | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [formData, setFormData] = useState({ name: '' });
+  const [formData, setFormData] = useState({ name: '', key: '' });
 
   const { data: programs, isLoading } = useQuery({
     queryKey: ['admin-programs'],
@@ -41,10 +52,10 @@ export default function Portfolios() {
   });
 
   const createMutation = useMutation({
-    mutationFn: async ({ name }: { name: string }) => {
+    mutationFn: async ({ name, key }: { name: string; key: string }) => {
       const { error } = await supabase
         .from('portfolios')
-        .insert({ name, status: 'active' });
+        .insert({ name, key, status: 'active' });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -54,7 +65,7 @@ export default function Portfolios() {
       queryClient.invalidateQueries({ queryKey: ['portfolios'] });
       toast.success('Program created successfully');
       setIsAddDialogOpen(false);
-      setFormData({ name: '' });
+      setFormData({ name: '', key: '' });
     },
     onError: (error) => {
       toast.error('Failed to create program: ' + error.message);
@@ -84,7 +95,7 @@ export default function Portfolios() {
 
   const handleEdit = (program: Portfolio) => {
     setEditingProgram(program);
-    setFormData({ name: program.name });
+    setFormData({ name: program.name, key: program.key });
   };
 
   const handleSave = () => {
@@ -100,11 +111,12 @@ export default function Portfolios() {
       toast.error('Program name is required');
       return;
     }
-    createMutation.mutate({ name: formData.name });
+    const finalKey = formData.key.trim() || generateKey(formData.name);
+    createMutation.mutate({ name: formData.name, key: finalKey });
   };
 
   const openAddDialog = () => {
-    setFormData({ name: '' });
+    setFormData({ name: '', key: '' });
     setIsAddDialogOpen(true);
   };
 
