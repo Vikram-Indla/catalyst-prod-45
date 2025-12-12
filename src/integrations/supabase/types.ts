@@ -266,6 +266,30 @@ export type Database = {
         }
         Relationships: []
       }
+      auth_settings: {
+        Row: {
+          id: string
+          setting_key: string
+          setting_value: Json
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          id?: string
+          setting_key: string
+          setting_value?: Json
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          id?: string
+          setting_key?: string
+          setting_value?: Json
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       board_configs: {
         Row: {
           board_type: Database["public"]["Enums"]["board_type"]
@@ -1596,6 +1620,51 @@ export type Database = {
           message?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      disposable_email_domains: {
+        Row: {
+          created_at: string | null
+          domain: string
+          id: string
+        }
+        Insert: {
+          created_at?: string | null
+          domain: string
+          id?: string
+        }
+        Update: {
+          created_at?: string | null
+          domain?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      domain_allowlist: {
+        Row: {
+          added_by: string | null
+          created_at: string | null
+          domain: string
+          id: string
+          is_active: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          added_by?: string | null
+          created_at?: string | null
+          domain: string
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          added_by?: string | null
+          created_at?: string | null
+          domain?: string
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -5248,6 +5317,45 @@ export type Database = {
           },
         ]
       }
+      login_rate_limits: {
+        Row: {
+          attempt_count: number | null
+          blocked_until: string | null
+          created_at: string | null
+          email: string
+          failed_count: number | null
+          first_attempt_at: string | null
+          id: string
+          ip_address: string | null
+          last_attempt_at: string | null
+          lockout_count: number | null
+        }
+        Insert: {
+          attempt_count?: number | null
+          blocked_until?: string | null
+          created_at?: string | null
+          email: string
+          failed_count?: number | null
+          first_attempt_at?: string | null
+          id?: string
+          ip_address?: string | null
+          last_attempt_at?: string | null
+          lockout_count?: number | null
+        }
+        Update: {
+          attempt_count?: number | null
+          blocked_until?: string | null
+          created_at?: string | null
+          email?: string
+          failed_count?: number | null
+          first_attempt_at?: string | null
+          id?: string
+          ip_address?: string | null
+          last_attempt_at?: string | null
+          lockout_count?: number | null
+        }
+        Relationships: []
+      }
       milestone_categories: {
         Row: {
           created_at: string | null
@@ -6356,6 +6464,69 @@ export type Database = {
           },
         ]
       }
+      password_reset_rate_limits: {
+        Row: {
+          attempt_count: number | null
+          blocked_until: string | null
+          created_at: string | null
+          email: string
+          id: string
+          ip_address: string | null
+          last_attempt_at: string | null
+        }
+        Insert: {
+          attempt_count?: number | null
+          blocked_until?: string | null
+          created_at?: string | null
+          email: string
+          id?: string
+          ip_address?: string | null
+          last_attempt_at?: string | null
+        }
+        Update: {
+          attempt_count?: number | null
+          blocked_until?: string | null
+          created_at?: string | null
+          email?: string
+          id?: string
+          ip_address?: string | null
+          last_attempt_at?: string | null
+        }
+        Relationships: []
+      }
+      password_reset_tokens: {
+        Row: {
+          created_at: string | null
+          expires_at: string
+          id: string
+          ip_address: string | null
+          token_hash: string
+          used_at: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          expires_at: string
+          id?: string
+          ip_address?: string | null
+          token_hash: string
+          used_at?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          expires_at?: string
+          id?: string
+          ip_address?: string | null
+          token_hash?: string
+          used_at?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       permission_grants: {
         Row: {
           action: Database["public"]["Enums"]["permission_action"]
@@ -6882,10 +7053,13 @@ export type Database = {
           avatar_url: string | null
           created_at: string | null
           email: string | null
+          failed_login_count: number | null
           full_name: string | null
           id: string
           last_login: string | null
+          last_login_at: string | null
           last_signup_attempt_at: string | null
+          locked_until: string | null
           must_change_password: boolean
           rejected_at: string | null
           rejected_by: string | null
@@ -6905,10 +7079,13 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string | null
           email?: string | null
+          failed_login_count?: number | null
           full_name?: string | null
           id: string
           last_login?: string | null
+          last_login_at?: string | null
           last_signup_attempt_at?: string | null
+          locked_until?: string | null
           must_change_password?: boolean
           rejected_at?: string | null
           rejected_by?: string | null
@@ -6928,10 +7105,13 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string | null
           email?: string | null
+          failed_login_count?: number | null
           full_name?: string | null
           id?: string
           last_login?: string | null
+          last_login_at?: string | null
           last_signup_attempt_at?: string | null
+          locked_until?: string | null
           must_change_password?: boolean
           rejected_at?: string | null
           rejected_by?: string | null
@@ -7865,6 +8045,7 @@ export type Database = {
           first_attempt_at: string | null
           id: string
           ip_address: string | null
+          is_suspicious: boolean | null
           last_attempt_at: string | null
         }
         Insert: {
@@ -7875,6 +8056,7 @@ export type Database = {
           first_attempt_at?: string | null
           id?: string
           ip_address?: string | null
+          is_suspicious?: boolean | null
           last_attempt_at?: string | null
         }
         Update: {
@@ -7885,6 +8067,7 @@ export type Database = {
           first_attempt_at?: string | null
           id?: string
           ip_address?: string | null
+          is_suspicious?: boolean | null
           last_attempt_at?: string | null
         }
         Relationships: []
