@@ -12,7 +12,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea
 import { cn } from '@/lib/utils';
 
 interface WorkflowStatusesPanelProps {
-  onChanges: () => void;
+  onChanges?: () => void;
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
