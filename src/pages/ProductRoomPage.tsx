@@ -824,13 +824,10 @@ export default function ProductRoomPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Main Content */}
       <div className="flex flex-col min-h-screen">
-        {/* Header */}
-        <header className="sticky top-0 bg-white/80 backdrop-blur-md border-b-2 border-gray-100 px-6 py-4 z-30">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">{greeting}, Vikram</h1>
-              <p className="text-sm text-gray-500">MDT Portfolio Overview</p>
-            </div>
+        {/* Header - h-12 to align with sidebar */}
+        <header className="h-12 sticky top-0 bg-white/80 backdrop-blur-md border-b px-6 flex items-center z-30">
+          <div className="flex items-center justify-between w-full">
+            <h1 className="text-lg font-semibold text-gray-900">Product Room</h1>
             <QuarterSelector
               quarters={visibleQuarters}
               selectedIndex={selectedQuarterIndex}

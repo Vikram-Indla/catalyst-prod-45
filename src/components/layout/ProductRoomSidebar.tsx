@@ -48,20 +48,17 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
           {expanded ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
         </button>
 
-        {/* Header - fixed height to align with page header (72px = py-4 + content) */}
-        <div className="h-[72px] px-4 border-b border-border flex items-center shrink-0">
+        {/* Header - h-12 to align with main header */}
+        <div className="h-12 px-2 border-b border-border flex items-center shrink-0">
           {expanded ? (
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-brand-gold/20 flex items-center justify-center text-brand-gold font-semibold text-sm">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-md bg-brand-gold flex items-center justify-center text-white text-xs font-semibold">
                 PR
               </div>
-              <div className="flex flex-col">
-                <span className="font-semibold text-foreground">Product</span>
-                <span className="text-xs text-muted-foreground">Industry</span>
-              </div>
+              <span className="text-sm font-medium text-foreground truncate">Product</span>
             </div>
           ) : (
-            <div className="w-10 h-10 rounded-lg bg-brand-gold/20 flex items-center justify-center text-brand-gold font-semibold text-sm mx-auto">
+            <div className="w-8 h-8 rounded-md bg-brand-gold flex items-center justify-center text-white text-xs font-semibold mx-auto">
               PR
             </div>
           )}
