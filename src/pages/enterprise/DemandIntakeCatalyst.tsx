@@ -581,7 +581,7 @@ export default function DemandIntakeCatalyst() {
                       </td>
                       <td className="px-4 py-3 border-r border-border/40">
                         <span className={cn(
-                          "inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded uppercase",
+                          "inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded capitalize",
                           getProcessStepInfo(request.process_step).color
                         )}>
                           {getProcessStepInfo(request.process_step).label}
