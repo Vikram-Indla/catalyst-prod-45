@@ -1009,7 +1009,7 @@ body {
   --roadmap-driftwood: 30 20% 75%;
   --roadmap-fossil: 25 15% 55%;
   --roadmap-graphite: 20 10% 40%;
-  --roadmap-charcoal: 15 8% 25%;
+  --roadmap-charcoal: 0 0% 0%;
   
   /* Roadmap Status Colors - Production matched */
   --roadmap-status-new: 35 46% 60%;        /* Gold - New Request */
