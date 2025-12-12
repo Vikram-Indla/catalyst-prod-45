@@ -11,6 +11,8 @@ import { PasswordInput } from "@/components/auth/PasswordInput";
 // TODO: Replace this default-password + first-login-reset flow with a full email-based 
 // invitation + activation flow using the Catalyst HTML email template when we move to production.
 
+const REMEMBERED_EMAIL_KEY = 'catalyst_remembered_email';
+
 export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,6 +27,15 @@ export default function Auth() {
   const [loginError, setLoginError] = useState<string | null>(null);
   const { signIn, signUp, user, loading } = useAuth();
   const navigate = useNavigate();
+
+  // Load remembered email on mount
+  useEffect(() => {
+    const rememberedEmail = localStorage.getItem(REMEMBERED_EMAIL_KEY);
+    if (rememberedEmail) {
+      setEmail(rememberedEmail);
+      setRememberMe(true);
+    }
+  }, []);
 
   const checkMustChangePassword = async (userId: string) => {
     try {
@@ -69,12 +80,26 @@ export default function Auth() {
     setIsLoading(true);
     setLoginError(null);
     
-    const { error } = await signIn(email, password);
+    const result = await signIn(email, password);
     
-    if (error) {
-      setLoginError("The email or password you entered is incorrect.");
+    if (result.error) {
+      // Check for pending approval status
+      if ((result as any).isPending) {
+        setLoginError("Your account is pending approval.");
+      } else if ((result as any).isBlocked) {
+        setLoginError("Unable to sign in.");
+      } else {
+        setLoginError("The email or password you entered is incorrect.");
+      }
       setIsLoading(false);
       return;
+    }
+
+    // Handle Remember Me - store email only (never password)
+    if (rememberMe) {
+      localStorage.setItem(REMEMBERED_EMAIL_KEY, email);
+    } else {
+      localStorage.removeItem(REMEMBERED_EMAIL_KEY);
     }
     
     const { data: { user: currentUser } } = await supabase.auth.getUser();
