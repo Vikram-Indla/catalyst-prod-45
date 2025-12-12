@@ -45,7 +45,7 @@ export default function FeaturesBacklog() {
     queryFn: async () => {
       let query = supabase
         .from('features')
-        .select('*, epics(name), programs(name), program_increments(name), iterations!iteration_id(name)')
+        .select('*, epics(name), projects(name), program_increments(name), iterations!iteration_id(name)')
         .order('rank_within_epic');
 
       if (searchQuery) {
@@ -62,7 +62,7 @@ export default function FeaturesBacklog() {
         query = query.eq('epic_id', filters.epicId);
       }
       if (filters.programId) {
-        query = query.eq('program_id', filters.programId);
+        query = query.eq('project_id', filters.programId);
       }
       if (filters.piId) {
         query = query.eq('pi_id', filters.piId);

@@ -28,10 +28,10 @@ export default function ProgramIncrements() {
     queryFn: async () => {
       let query = supabase
         .from('program_increments')
-        .select('*, portfolios(name)');
+        .select('*, programs(name)');
 
       if (selectedPortfolioId) {
-        query = query.eq('portfolio_id', selectedPortfolioId);
+        query = query.eq('program_id', selectedPortfolioId);
       }
 
       if (searchTerm) {
@@ -137,7 +137,7 @@ export default function ProgramIncrements() {
                   />
                 </TableCell>
                 <TableCell className="font-medium">{pi.name}</TableCell>
-                <TableCell>{pi.portfolios?.name}</TableCell>
+                <TableCell>{(pi as any).programs?.name}</TableCell>
                 <TableCell>{format(new Date(pi.start_date), 'MMM d, yyyy')}</TableCell>
                 <TableCell>{format(new Date(pi.end_date), 'MMM d, yyyy')}</TableCell>
                 <TableCell>

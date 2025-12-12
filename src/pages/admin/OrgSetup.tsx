@@ -20,19 +20,22 @@ export default function OrgSetup() {
   const [portfolioMembersDialog, setPortfolioMembersDialog] = useState<{ open: boolean; id: string; name: string }>({ open: false, id: '', name: '' });
   const [programMembersDialog, setProgramMembersDialog] = useState<{ open: boolean; id: string; name: string }>({ open: false, id: '', name: '' });
   const [teamMembersDialog, setTeamMembersDialog] = useState<{ open: boolean; id: string; name: string }>({ open: false, id: '', name: '' });
+  
+  // Fetch programs (formerly portfolios)
   const { data: portfolios } = useQuery({
     queryKey: ['admin-portfolios'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('portfolios').select('*').order('name');
+      const { data, error } = await supabase.from('programs').select('*').order('name');
       if (error) throw error;
       return data;
     },
   });
 
+  // Fetch projects (formerly programs)
   const { data: programs } = useQuery({
     queryKey: ['admin-programs'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('programs').select('*, portfolios(name)').order('name');
+      const { data, error } = await supabase.from('projects').select('*, programs(name)').order('name');
       if (error) throw error;
       return data;
     },
@@ -41,7 +44,7 @@ export default function OrgSetup() {
   const { data: teams } = useQuery({
     queryKey: ['admin-teams'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('teams').select('*, programs!program_id(name)').order('name');
+      const { data, error } = await supabase.from('teams').select('*, projects:projects!project_id(name)').order('name');
       if (error) throw error;
       return data;
     },
@@ -126,7 +129,7 @@ export default function OrgSetup() {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {programs?.filter(p => p.portfolio_id === portfolio.id).length || 0}
+                    {programs?.filter((p: any) => p.program_id === portfolio.id).length || 0}
                   </TableCell>
                   <TableCell>
                     <Button
@@ -175,14 +178,14 @@ export default function OrgSetup() {
               {programs?.map((program) => (
                 <TableRow key={program.id}>
                   <TableCell className="font-medium">{program.name}</TableCell>
-                  <TableCell>{program.portfolios?.name}</TableCell>
+                  <TableCell>{(program as any).programs?.name}</TableCell>
                   <TableCell>
                     <Badge variant={program.status === 'active' ? 'default' : 'outline'} className="capitalize">
                       {program.status}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {teams?.filter(t => t.program_id === program.id).length || 0}
+                    {teams?.filter((t: any) => t.project_id === program.id).length || 0}
                   </TableCell>
                   <TableCell>
                     <Button
@@ -231,7 +234,7 @@ export default function OrgSetup() {
               {teams?.map((team) => (
                 <TableRow key={team.id}>
                   <TableCell className="font-medium">{team.name}</TableCell>
-                  <TableCell>{team.programs?.name}</TableCell>
+                  <TableCell>{(team as any).projects?.name}</TableCell>
                   <TableCell>{team.velocity_baseline || '-'}</TableCell>
                   <TableCell>
                     <Badge variant={team.status === 'active' ? 'default' : 'outline'} className="capitalize">

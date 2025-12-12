@@ -74,7 +74,7 @@ export default function ProgramBoard() {
       const { data, error } = await supabase
         .from('teams')
         .select('*')
-        .eq('program_id', selectedProgramId)
+        .eq('project_id', selectedProgramId)
         .order('name');
       if (error) throw error;
       return data;
@@ -89,7 +89,7 @@ export default function ProgramBoard() {
       const { data, error } = await supabase
         .from('features')
         .select('*, epics(name), teams(name)')
-        .eq('program_id', selectedProgramId)
+        .eq('project_id', selectedProgramId)
         .in('pi_id', selectedPIIds);
       if (error) throw error;
       return data;

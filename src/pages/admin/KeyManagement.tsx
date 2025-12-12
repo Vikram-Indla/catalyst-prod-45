@@ -29,21 +29,21 @@ export default function KeyManagement() {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [migrationType, setMigrationType] = useState<'programs' | 'projects'>('programs');
 
-  // Fetch programs (portfolios)
+  // Fetch programs (formerly portfolios)
   const { data: programs, isLoading: programsLoading } = useQuery({
     queryKey: ['admin-program-keys'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('portfolios').select('id, name, key').order('name');
+      const { data, error } = await supabase.from('programs').select('id, name, key').order('name');
       if (error) throw error;
       return data || [];
     },
   });
 
-  // Fetch projects (programs table)
+  // Fetch projects (formerly programs table)
   const { data: projects, isLoading: projectsLoading } = useQuery({
     queryKey: ['admin-project-keys'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('programs').select('id, name, key, portfolio_id').order('name');
+      const { data, error } = await supabase.from('projects').select('id, name, key, program_id').order('name');
       if (error) throw error;
       return data || [];
     },

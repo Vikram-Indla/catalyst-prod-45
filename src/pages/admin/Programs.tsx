@@ -16,8 +16,8 @@ export default function Programs() {
     queryKey: ['admin-programs'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('programs')
-        .select('*, portfolios(name)')
+        .from('projects')
+        .select('*, programs(name)')
         .order('name');
       if (error) throw error;
       return data;
@@ -61,7 +61,7 @@ export default function Programs() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {new Set(programs?.map(p => p.portfolios?.name)).size || 0}
+                {new Set(programs?.map((p: any) => p.programs?.name)).size || 0}
               </div>
             </CardContent>
           </Card>
@@ -103,7 +103,7 @@ export default function Programs() {
                     {programs?.map((program) => (
                       <tr key={program.id} className="border-t hover:bg-muted/50">
                         <td className="p-3 text-sm">{program.name}</td>
-                        <td className="p-3 text-sm">{program.portfolios?.name || 'N/A'}</td>
+                        <td className="p-3 text-sm">{(program as any).programs?.name || 'N/A'}</td>
                         <td className="p-3 text-sm">-</td>
                         <td className="p-3 text-sm">
                           <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-800">

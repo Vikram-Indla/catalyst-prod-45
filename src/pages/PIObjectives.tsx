@@ -148,7 +148,7 @@ export default function PIObjectives() {
           <div className="min-w-0">
             <h1 className="text-2xl font-bold truncate">PI Objectives</h1>
             <p className="text-sm text-muted-foreground truncate">
-              {pi?.name} • {pi?.portfolios?.name}
+              {pi?.name} • {(pi as any)?.programs?.name}
             </p>
           </div>
           <PermissionGuard requiredRole="program_manager" showMessage={false}>

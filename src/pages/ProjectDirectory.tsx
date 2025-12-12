@@ -58,12 +58,12 @@ export default function ProjectDirectory() {
   const iconColors = ['#4C9AFF', '#FF5630', '#00B8D9', '#FFC400', '#36B37E', '#6554C0'];
   const icons = ['🧭', '💼', '🏢', '🔧', '📊', '📱', '⚙️', '🚀'];
 
-  const projects: Project[] = (projectsData || []).map((p, index) => ({
+  const projects: Project[] = (projectsData || []).map((p: any, index) => ({
     id: p.id,
-    key: p.name.substring(0, 4).toUpperCase(),
-    name: p.name,
-    programName: p.portfolios?.name || 'Default',
-    programId: p.portfolio_id || '',
+    key: p.name?.substring(0, 4).toUpperCase() || 'DFLT',
+    name: p.name || 'Unnamed',
+    programName: p.programs?.name || 'Default',
+    programId: p.program_id || '',
     type: 'Company-managed software',
     category: 'Software',
     lead: { name: 'Unassigned' },

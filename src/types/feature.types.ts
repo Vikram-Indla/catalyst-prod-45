@@ -14,7 +14,7 @@ export interface Feature {
   // Hierarchy relationships
   epic_id: string;
   capability_id?: string | null;
-  program_id: string;
+  project_id: string; // Renamed from program_id
   team_id?: string | null;
   program_epic_inherited?: boolean | null; // When true, inherits program from parent epic
 

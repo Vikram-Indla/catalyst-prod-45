@@ -143,7 +143,7 @@ export function FeaturePlanningTab({ feature }: FeaturePlanningTabProps) {
       {!programEpicInherited && (
         <div className="space-y-2">
           <Label>Program (Manual Override)</Label>
-          <Select defaultValue={feature?.program_id || undefined}>
+          <Select defaultValue={feature?.project_id || undefined}>
             <SelectTrigger>
               <SelectValue placeholder="Select program..." />
             </SelectTrigger>

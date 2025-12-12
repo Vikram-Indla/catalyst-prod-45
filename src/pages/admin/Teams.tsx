@@ -17,7 +17,7 @@ export default function Teams() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('teams')
-        .select('*, programs!teams_program_id_fkey(name)')
+        .select('*, projects:projects!project_id(name)')
         .order('name');
       if (error) throw error;
       return data;
@@ -61,7 +61,7 @@ export default function Teams() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {new Set(teams?.map(t => t.programs?.name)).size || 0}
+                {new Set(teams?.map((t: any) => t.projects?.name)).size || 0}
               </div>
             </CardContent>
           </Card>
@@ -103,7 +103,7 @@ export default function Teams() {
                     {teams?.map((team) => (
                       <tr key={team.id} className="border-t hover:bg-muted/50">
                         <td className="p-3 text-sm">{team.name}</td>
-                        <td className="p-3 text-sm">{team.programs?.name || 'N/A'}</td>
+                        <td className="p-3 text-sm">{(team as any).projects?.name || 'N/A'}</td>
                         <td className="p-3 text-sm">-</td>
                         <td className="p-3 text-sm">
                           <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-success/20 text-success-600">
