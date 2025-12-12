@@ -39,7 +39,7 @@ export function EpicForecastTab({ epicId }: EpicForecastTabProps) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('work_item_assignments')
-        .select('*, programs(name), teams(name, program_id)')
+        .select('*, projects(name), teams(name, project_id)')
         .eq('work_item_id', epicId)
         .eq('work_item_type', 'epic');
       
@@ -370,7 +370,7 @@ export function EpicForecastTab({ epicId }: EpicForecastTabProps) {
                       )}
                     </Button>
                     <span className="flex-1 text-sm font-medium">
-                      {programAssignment.programs?.name}
+                      {programAssignment.projects?.name}
                     </span>
                     <div className="flex items-center gap-2">
                       <Input
@@ -395,7 +395,7 @@ export function EpicForecastTab({ epicId }: EpicForecastTabProps) {
                         return (
                           <div key={teamId} className="flex items-center gap-2 py-2 hover:bg-muted/50 rounded px-2">
                             <span className="flex-1 text-sm">
-                              {teamAssignment.teams?.name}
+                              {(teamAssignment as any).teams?.name}
                             </span>
                             <div className="flex items-center gap-2">
                               <Input

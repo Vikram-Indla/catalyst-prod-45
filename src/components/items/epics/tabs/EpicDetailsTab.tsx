@@ -137,8 +137,8 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
     queryKey: ['epic-additional-programs', epic.id],
     queryFn: async () => {
       const { data } = await supabase
-        .from('epic_programs')
-        .select('program_id, programs(id, name)')
+        .from('epic_projects')
+        .select('project_id, projects(id, name)')
         .eq('epic_id', epic.id);
       return data || [];
     },

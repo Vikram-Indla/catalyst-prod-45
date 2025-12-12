@@ -35,7 +35,7 @@ export function CreateProgramDialog({ open, onOpenChange, onSuccess }: CreatePro
     queryKey: ['program-keys'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('portfolios')
+        .from('programs')
         .select('key');
       if (error) throw error;
       return data?.map(p => p.key?.toUpperCase()) || [];
@@ -60,7 +60,7 @@ export function CreateProgramDialog({ open, onOpenChange, onSuccess }: CreatePro
       if (error) throw new Error(error);
 
       const { data, error: dbError } = await supabase
-        .from('portfolios')
+        .from('programs')
         .insert({
           name: name.trim(),
           key: finalKey,

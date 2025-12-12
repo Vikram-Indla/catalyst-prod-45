@@ -43,7 +43,7 @@ export function ReleaseVehicleDialog({ open, onClose, vehicleId }: ReleaseVehicl
   const { data: portfolios } = useQuery({
     queryKey: ['portfolios'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('portfolios').select('*').order('name');
+      const { data, error } = await supabase.from('programs').select('*').order('name');
       if (error) throw error;
       return data;
     },
@@ -52,7 +52,7 @@ export function ReleaseVehicleDialog({ open, onClose, vehicleId }: ReleaseVehicl
   const { data: programs } = useQuery({
     queryKey: ['programs'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('programs').select('*').order('name');
+      const { data, error } = await supabase.from('projects').select('*').order('name');
       if (error) throw error;
       return data;
     },

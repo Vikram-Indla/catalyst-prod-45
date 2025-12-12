@@ -37,11 +37,11 @@ export function useWorkspaceAccess() {
     queryFn: async () => {
       if (!userId) return [];
       const { data, error } = await supabase
-        .from('portfolio_members')
-        .select('portfolio_id')
+        .from('program_members')
+        .select('program_id')
         .eq('user_id', userId);
       if (error) throw error;
-      return data?.map(m => m.portfolio_id) || [];
+      return data?.map(m => m.program_id) || [];
     },
     enabled: !!userId && !isAdmin,
   });

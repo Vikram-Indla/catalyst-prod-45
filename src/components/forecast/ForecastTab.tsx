@@ -134,7 +134,7 @@ export function ForecastTab({ workItemId, workItemType, estimationSystem = 'poin
     queryFn: async () => {
       const { data, error } = await supabase
         .from('teams')
-        .select('*, program_id')
+        .select('*, project_id')
         .order('name');
       
       if (error) throw error;

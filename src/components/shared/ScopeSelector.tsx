@@ -13,7 +13,7 @@ export function ScopeSelector({ value, onChange, placeholder = "Select Portfolio
     queryKey: ['portfolios'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('portfolios')
+        .from('programs')
         .select('*')
         .order('name');
       if (error) throw error;

@@ -60,9 +60,9 @@ export function EpicChildrenTab({ epic }: EpicChildrenTabProps) {
       const { data, error } = await supabase
         .from('features')
         .select(`
-          id, name, display_id, status, estimate_points, team_id, description,
+          id, name, display_id, status, estimate_points, team_id, description, project_id,
           teams(name), 
-          programs(name)
+          projects(name)
         `)
         .eq('epic_id', epic.id)
         .order('global_rank');

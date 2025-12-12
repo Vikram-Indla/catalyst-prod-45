@@ -32,7 +32,7 @@ export function SpendDrilldownModal({ epicId, spendType, open, onOpenChange }: S
     queryFn: async () => {
       let query = supabase
         .from('features')
-        .select('*, programs(name), teams(name)')
+        .select('*, projects(name), teams(name)')
         .eq('epic_id', epicId);
       
       if (selectedPIId && selectedPIId !== 'all') {
@@ -184,7 +184,7 @@ export function SpendDrilldownModal({ epicId, spendType, open, onOpenChange }: S
                         <TableCell className="text-sm font-mono">{feature.display_id || '-'}</TableCell>
                         <TableCell className="text-sm font-medium">{feature.name}</TableCell>
                         <TableCell className="text-sm">{feature.status || '-'}</TableCell>
-                        <TableCell className="text-sm">{feature.programs?.name || '-'}</TableCell>
+                        <TableCell className="text-sm">{feature.projects?.name || '-'}</TableCell>
                         <TableCell className="text-right text-sm font-semibold">
                           {feature.estimate_points || 0}
                         </TableCell>

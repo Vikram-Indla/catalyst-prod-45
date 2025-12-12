@@ -83,7 +83,7 @@ export function ProgramSidebar({
     queryKey: ['program-sidebar', programId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('portfolios')
+        .from('programs')
         .select('id, name')
         .eq('id', programId)
         .maybeSingle();
