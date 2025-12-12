@@ -83,7 +83,17 @@ export function AuditHistoryTab({ requestId }: AuditHistoryTabProps) {
 
   const formatValue = (value: string | null) => {
     if (value === null || value === 'null' || value === '') return 'None';
-    if (value.length > 60) return value.slice(0, 60) + '...';
+    
+    // Check if value looks like an ISO date string and format it
+    if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(value)) {
+      try {
+        return format(new Date(value), 'MMM d, yyyy h:mm a');
+      } catch {
+        // If parsing fails, return original value
+      }
+    }
+    
+    // Don't truncate text - show full value
     return value;
   };
 
