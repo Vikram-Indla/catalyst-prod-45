@@ -26,17 +26,17 @@ export default function DependencyRisk() {
         .from('dependencies')
         .select(`
           *,
-          from_feature:features!dependencies_from_feature_id_fkey(name, program_id),
-          to_feature:features!dependencies_to_feature_id_fkey(name, program_id)
+          from_feature:features!dependencies_from_feature_id_fkey(name, project_id),
+          to_feature:features!dependencies_to_feature_id_fkey(name, project_id)
         `);
       
       if (error) throw error;
       
-      // Filter by program if selected
+      // Filter by project if selected (projects used to be called programs)
       if (selectedProgramId) {
         return data?.filter(d => 
-          d.from_feature?.program_id === selectedProgramId || 
-          d.to_feature?.program_id === selectedProgramId
+          d.from_feature?.project_id === selectedProgramId || 
+          d.to_feature?.project_id === selectedProgramId
         );
       }
       

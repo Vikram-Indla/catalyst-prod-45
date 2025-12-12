@@ -10,22 +10,22 @@ export default function EpicBacklogTests() {
     queryFn: async () => {
       const results = [];
 
-      // Test 1: Seed data exists
-      const { data: portfolios } = await supabase.from('portfolios').select('count');
-      results.push({
-        name: 'Portfolios exist',
-        passed: (portfolios as any)?.[0]?.count > 0,
-        expected: '1+',
-        actual: (portfolios as any)?.[0]?.count || 0,
-      });
-
-      // Test 2: Programs exist
+      // Test 1: Seed data exists - Programs (formerly portfolios)
       const { data: programs } = await supabase.from('programs').select('count');
       results.push({
         name: 'Programs exist',
-        passed: (programs as any)?.[0]?.count >= 2,
-        expected: '2+',
+        passed: (programs as any)?.[0]?.count > 0,
+        expected: '1+',
         actual: (programs as any)?.[0]?.count || 0,
+      });
+
+      // Test 2: Projects exist (formerly programs)
+      const { data: projects } = await supabase.from('projects').select('count');
+      results.push({
+        name: 'Projects exist',
+        passed: (projects as any)?.[0]?.count >= 2,
+        expected: '2+',
+        actual: (projects as any)?.[0]?.count || 0,
       });
 
       // Test 3: PIs exist

@@ -23,12 +23,12 @@ export default function PortfolioThemeSelfTest() {
     },
   });
 
-  // Test 2: Check if portfolios table has seed data
-  const { data: portfolios, isLoading: portfoliosLoading } = useQuery({
-    queryKey: ['portfolios-self-test'],
+  // Test 2: Check if programs table has seed data (formerly portfolios)
+  const { data: programsData, isLoading: programsDataLoading } = useQuery({
+    queryKey: ['programs-self-test'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('portfolios')
+        .from('programs')
         .select('*')
         .limit(5);
       if (error) throw error;
@@ -36,12 +36,12 @@ export default function PortfolioThemeSelfTest() {
     },
   });
 
-  // Test 3: Check if programs table has seed data
-  const { data: programs, isLoading: programsLoading } = useQuery({
-    queryKey: ['programs-self-test'],
+  // Test 3: Check if projects table has seed data (formerly programs)
+  const { data: projects, isLoading: projectsLoading } = useQuery({
+    queryKey: ['projects-self-test'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('programs')
+        .from('projects')
         .select('*')
         .limit(5);
       if (error) throw error;
@@ -90,30 +90,30 @@ export default function PortfolioThemeSelfTest() {
         : 'No themes found in database - seed data missing',
     },
     {
-      name: 'Portfolios table seed data exists',
-      status: portfoliosLoading 
+      name: 'Programs table seed data exists',
+      status: programsDataLoading 
         ? 'loading' 
-        : portfolios && portfolios.length > 0 
+        : programsData && programsData.length > 0 
         ? 'pass' 
         : 'fail',
-      message: portfoliosLoading 
+      message: programsDataLoading 
         ? 'Checking database...' 
-        : portfolios && portfolios.length > 0
-        ? `Found ${portfolios.length} portfolios in database`
-        : 'No portfolios found - seed data missing',
+        : programsData && programsData.length > 0
+        ? `Found ${programsData.length} programs in database`
+        : 'No programs found - seed data missing',
     },
     {
-      name: 'Programs table seed data exists',
-      status: programsLoading 
+      name: 'Projects table seed data exists',
+      status: projectsLoading 
         ? 'loading' 
-        : programs && programs.length > 0 
+        : projects && projects.length > 0 
         ? 'pass' 
         : 'fail',
-      message: programsLoading 
+      message: projectsLoading 
         ? 'Checking database...' 
-        : programs && programs.length > 0
-        ? `Found ${programs.length} programs in database`
-        : 'No programs found - seed data missing',
+        : projects && projects.length > 0
+        ? `Found ${projects.length} projects in database`
+        : 'No projects found - seed data missing',
     },
     {
       name: 'Epics table seed data exists',

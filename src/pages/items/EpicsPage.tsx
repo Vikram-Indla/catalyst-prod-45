@@ -129,7 +129,7 @@ export default function EpicsPage() {
       }
 
       if (portfolioId) {
-        query = query.eq('portfolio_id', portfolioId);
+        query = query.eq('program_id', portfolioId);
       }
 
       if (searchQuery) {

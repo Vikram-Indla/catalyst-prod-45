@@ -28,7 +28,7 @@ export default function ProgramInsights() {
       const { data, error } = await supabase
         .from('features')
         .select('*')
-        .eq('program_id', selectedProgramId)
+        .eq('project_id', selectedProgramId)
         .in('pi_id', selectedPIId);
       if (error) throw error;
       return data;
@@ -43,7 +43,7 @@ export default function ProgramInsights() {
       const { data, error } = await supabase
         .from('teams')
         .select('*')
-        .eq('program_id', selectedProgramId);
+        .eq('project_id', selectedProgramId);
       if (error) throw error;
       return data;
     },

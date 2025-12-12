@@ -108,7 +108,7 @@ export default function EpicPlanningPage() {
           epic_id: epicId,
           pi_id: selectedPI || null,
           status: 'funnel',
-          program_id: epic?.primary_program_id || '00000000-0000-0000-0000-000000000000'
+          project_id: epic?.primary_program_id || '00000000-0000-0000-0000-000000000000'
         }])
         .select()
         .single();

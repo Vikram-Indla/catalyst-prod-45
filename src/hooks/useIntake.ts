@@ -6,28 +6,32 @@ export const useEpicIntakeSet = (epicId: string) => {
     queryKey: ['intake-set', epicId],
     queryFn: async () => {
       // Get epic's primary program's intake set
-      const { data: epic, error: epicError } = await supabase
+      const epicResult = await supabase
         .from('epics')
         .select('primary_program_id')
         .eq('id', epicId)
         .single();
       
-      if (epicError) throw epicError;
-      if (!epic?.primary_program_id) return null;
+      if (epicResult.error) throw epicResult.error;
+      if (!epicResult.data?.primary_program_id) return null;
 
-      // Get program's portfolio to find intake set
-      // Get intake set for program directly using primary_program_id
-      const { data: intakeSet, error: intakeError } = await supabase
+      // Get intake set for portfolio directly using primary_program_id
+      // Note: intake_sets table still uses portfolio_id column
+      const intakeResult = await supabase
         .from('intake_sets')
-        .select(`
-          *,
-          intake_fields(*)
-        `)
-        .eq('program_id', epic.primary_program_id)
-        .order('created_at', { foreignTable: 'intake_fields', ascending: true })
-        .maybeSingle();
+        .select('*, intake_fields(*)')
+        .eq('portfolio_id', epicResult.data.primary_program_id);
       
-      if (intakeError && intakeError.code !== 'PGRST116') throw intakeError;
+      if (intakeResult.error && intakeResult.error.code !== 'PGRST116') throw intakeResult.error;
+      
+      // Get first one if exists, sort intake_fields by created_at
+      if (!intakeResult.data || intakeResult.data.length === 0) return null;
+      const intakeSet = intakeResult.data[0];
+      if (intakeSet.intake_fields) {
+        (intakeSet.intake_fields as any[]).sort((a, b) => 
+          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        );
+      }
       return intakeSet;
     },
   });

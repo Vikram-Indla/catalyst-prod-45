@@ -70,7 +70,7 @@ export default function EpicEstimationPage() {
         .order('global_rank', { ascending: true, nullsFirst: false });
 
       if (portfolioId) {
-        query = query.eq('portfolio_id', portfolioId);
+        query = query.eq('program_id', portfolioId);
       }
 
       const { data, error } = await query;
