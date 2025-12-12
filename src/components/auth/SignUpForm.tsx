@@ -116,7 +116,7 @@ export function SignUpForm({ onSubmit, loading: externalLoading }: SignUpFormPro
         
         // Map error codes to user-friendly messages
         const errorMessages: Record<string, string> = {
-          'EMAIL_EXISTS_APPROVED': 'This email is already registered. Please sign in.',
+          'EMAIL_EXISTS_APPROVED': 'This email is already registered.',
           'EMAIL_EXISTS_PENDING': 'Your registration is pending approval.',
           'EMAIL_EXISTS_REJECTED_COOLDOWN': 'Your request was rejected. Please try again later.',
           'CAPTCHA_FAILED': 'CAPTCHA verification failed. Please try again.',
