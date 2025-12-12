@@ -303,7 +303,7 @@ export function MilestonesTab({ entityId, entityType, hideCategory = false }: Mi
           return (
             <div
               key={milestone.id}
-              className="border border-neutral-200 rounded-xl bg-white overflow-hidden shadow-none"
+              className="border border-border rounded-xl bg-white overflow-hidden shadow-sm"
             >
               <div className="p-4 hover:bg-muted/30 transition-colors">
                 <div className="flex items-start justify-between gap-3">
@@ -402,7 +402,7 @@ function MilestoneForm({
   hideCategory?: boolean;
 }) {
   return (
-    <div className="border border-neutral-200 rounded-xl bg-white p-4 space-y-4 shadow-none">
+    <div className="border border-border rounded-xl bg-white p-5 space-y-5 shadow-sm">
       {/* Name Field */}
       <div>
         <label className="text-xs font-medium">

@@ -377,7 +377,7 @@ export function RisksViewTab({ requestId }: RisksViewTabProps) {
           return (
             <div
               key={risk.id}
-              className="border border-neutral-200 rounded-xl bg-white overflow-hidden shadow-none"
+              className="border border-border rounded-xl bg-white overflow-hidden shadow-sm"
             >
               <div className="p-4 hover:bg-muted/30 transition-colors">
                 <div className="flex items-start justify-between gap-3">
@@ -498,196 +498,192 @@ function RiskForm({
   const showMitigationError = formError === 'mitigation_required';
   
   return (
-    <div className="border border-neutral-200 rounded-xl bg-white p-4 space-y-4 shadow-none">
-      {/* Section: Risk Details */}
-      <div className="space-y-4">
-        <h4 className="text-xs font-semibold uppercase tracking-wide text-brand-gold">Risk Details</h4>
-        
-        {/* Status and Resolution Method */}
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="text-xs font-medium">Status</label>
-            <Select 
-              value={formData.status} 
-              onValueChange={v => setFormData({ ...formData, status: v })}
-            >
-              <SelectTrigger className="mt-1 h-9 text-sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-popover border shadow-lg z-50">
-                {STATUS_OPTIONS.map(opt => (
-                  <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <label className="text-xs font-medium">Resolution Method</label>
-            <Select 
-              value={formData.resolution_method} 
-              onValueChange={v => setFormData({ ...formData, resolution_method: v })}
-            >
-              <SelectTrigger className="mt-1 h-9 text-sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-popover border shadow-lg z-50">
-                {RESOLUTION_METHOD_OPTIONS.map(opt => (
-                  <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        {/* Title */}
+    <div className="border border-border rounded-xl bg-white p-5 space-y-5 shadow-sm">
+      {/* Risk Details Section */}
+      <h4 className="text-xs font-semibold uppercase tracking-wider text-brand-gold">Risk Details</h4>
+      
+      {/* Status and Resolution Method */}
+      <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="text-xs font-medium">
-            Title<span className="text-destructive">*</span>
-          </label>
-          <Input
-            value={formData.title}
-            onChange={e => setFormData({ ...formData, title: e.target.value })}
-            placeholder="Risk title"
-            className="mt-1 h-9 text-sm"
-          />
+          <label className="text-xs font-medium">Status</label>
+          <Select 
+            value={formData.status} 
+            onValueChange={v => setFormData({ ...formData, status: v })}
+          >
+            <SelectTrigger className="mt-1 h-9 text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-popover border shadow-lg z-50">
+              {STATUS_OPTIONS.map(opt => (
+                <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-
-        {/* Description */}
         <div>
-          <label className="text-xs font-medium">
-            Description<span className="text-destructive">*</span>
-          </label>
-          <Textarea
-            value={formData.description}
-            onChange={e => setFormData({ ...formData, description: e.target.value })}
-            placeholder="Describe the risk..."
-            className="mt-1 min-h-[80px] text-sm"
-          />
-        </div>
-
-        {/* Occurrence, Impact, Critical Path */}
-        <div className="grid grid-cols-3 gap-3">
-          <div>
-            <label className="text-xs font-medium">Occurrence</label>
-            <Select 
-              value={formData.occurrence} 
-              onValueChange={v => setFormData({ ...formData, occurrence: v })}
-            >
-              <SelectTrigger className="mt-1 h-9 text-sm">
-                <SelectValue placeholder="Select..." />
-              </SelectTrigger>
-              <SelectContent className="bg-popover border shadow-lg z-50">
-                {SEVERITY_OPTIONS.map(opt => (
-                  <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <label className="text-xs font-medium">Impact</label>
-            <Select 
-              value={formData.impact} 
-              onValueChange={v => setFormData({ ...formData, impact: v })}
-            >
-              <SelectTrigger className="mt-1 h-9 text-sm">
-                <SelectValue placeholder="Select..." />
-              </SelectTrigger>
-              <SelectContent className="bg-popover border shadow-lg z-50">
-                {SEVERITY_OPTIONS.map(opt => (
-                  <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <label className="text-xs font-medium">Critical Path</label>
-            <Select 
-              value={formData.critical_path} 
-              onValueChange={v => setFormData({ ...formData, critical_path: v })}
-            >
-              <SelectTrigger className="mt-1 h-9 text-sm">
-                <SelectValue placeholder="Select..." />
-              </SelectTrigger>
-              <SelectContent className="bg-popover border shadow-lg z-50">
-                {CRITICAL_PATH_OPTIONS.map(opt => (
-                  <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        {/* Target Resolution Date */}
-        <div>
-          <label className="text-xs font-medium">Target Resolution Date</label>
-          <Input
-            type="date"
-            value={formData.target_resolution_date}
-            onChange={e => setFormData({ ...formData, target_resolution_date: e.target.value })}
-            className="mt-1 h-9 text-sm"
-          />
-        </div>
-
-        {/* Consequence */}
-        <div>
-          <label className="text-xs font-medium">Consequence</label>
-          <Textarea
-            value={formData.consequence}
-            onChange={e => setFormData({ ...formData, consequence: e.target.value })}
-            placeholder="What are the consequences if this risk occurs?"
-            className="mt-1 min-h-[60px] text-sm"
-          />
+          <label className="text-xs font-medium">Resolution Method</label>
+          <Select 
+            value={formData.resolution_method} 
+            onValueChange={v => setFormData({ ...formData, resolution_method: v })}
+          >
+            <SelectTrigger className="mt-1 h-9 text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-popover border shadow-lg z-50">
+              {RESOLUTION_METHOD_OPTIONS.map(opt => (
+                <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
-      {/* Section: Mitigation */}
-      <div className="space-y-4 pt-2">
-        <h4 className="text-xs font-semibold uppercase tracking-wide text-brand-gold">Mitigation</h4>
-        
-        {/* Mitigation Plan */}
+      {/* Title */}
+      <div>
+        <label className="text-xs font-medium">
+          Title<span className="text-destructive">*</span>
+        </label>
+        <Input
+          value={formData.title}
+          onChange={e => setFormData({ ...formData, title: e.target.value })}
+          placeholder="Risk title"
+          className="mt-1 h-9 text-sm"
+        />
+      </div>
+
+      {/* Description */}
+      <div>
+        <label className="text-xs font-medium">
+          Description<span className="text-destructive">*</span>
+        </label>
+        <Textarea
+          value={formData.description}
+          onChange={e => setFormData({ ...formData, description: e.target.value })}
+          placeholder="Describe the risk..."
+          className="mt-1 min-h-[80px] text-sm"
+        />
+      </div>
+
+      {/* Occurrence, Impact, Critical Path */}
+      <div className="grid grid-cols-3 gap-3">
         <div>
-          <label className="text-xs font-medium">
-            Mitigation Plan
-            {isMitigationRequired && <span className="text-destructive">*</span>}
-          </label>
-          <Textarea
-            value={formData.mitigation}
-            onChange={e => setFormData({ ...formData, mitigation: e.target.value })}
-            placeholder="How will this risk be mitigated?"
-            className={cn(
-              "mt-1 min-h-[60px] text-sm",
-              showMitigationError && "border-destructive focus-visible:ring-destructive"
-            )}
-          />
-          {showMitigationError && (
-            <div className="flex items-center gap-1 text-destructive text-xs mt-1">
-              <AlertCircle className="h-3.5 w-3.5" />
-              <span>Mitigation Plan is required for this risk configuration. Please provide a mitigation plan.</span>
-            </div>
+          <label className="text-xs font-medium">Occurrence</label>
+          <Select 
+            value={formData.occurrence} 
+            onValueChange={v => setFormData({ ...formData, occurrence: v })}
+          >
+            <SelectTrigger className="mt-1 h-9 text-sm">
+              <SelectValue placeholder="Select..." />
+            </SelectTrigger>
+            <SelectContent className="bg-popover border shadow-lg z-50">
+              {SEVERITY_OPTIONS.map(opt => (
+                <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <label className="text-xs font-medium">Impact</label>
+          <Select 
+            value={formData.impact} 
+            onValueChange={v => setFormData({ ...formData, impact: v })}
+          >
+            <SelectTrigger className="mt-1 h-9 text-sm">
+              <SelectValue placeholder="Select..." />
+            </SelectTrigger>
+            <SelectContent className="bg-popover border shadow-lg z-50">
+              {SEVERITY_OPTIONS.map(opt => (
+                <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <label className="text-xs font-medium">Critical Path</label>
+          <Select 
+            value={formData.critical_path} 
+            onValueChange={v => setFormData({ ...formData, critical_path: v })}
+          >
+            <SelectTrigger className="mt-1 h-9 text-sm">
+              <SelectValue placeholder="Select..." />
+            </SelectTrigger>
+            <SelectContent className="bg-popover border shadow-lg z-50">
+              {CRITICAL_PATH_OPTIONS.map(opt => (
+                <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      {/* Target Resolution Date */}
+      <div>
+        <label className="text-xs font-medium">Target Resolution Date</label>
+        <Input
+          type="date"
+          value={formData.target_resolution_date}
+          onChange={e => setFormData({ ...formData, target_resolution_date: e.target.value })}
+          className="mt-1 h-9 text-sm"
+        />
+      </div>
+
+      {/* Consequence */}
+      <div>
+        <label className="text-xs font-medium">Consequence</label>
+        <Textarea
+          value={formData.consequence}
+          onChange={e => setFormData({ ...formData, consequence: e.target.value })}
+          placeholder="What are the consequences if this risk occurs?"
+          className="mt-1 min-h-[60px] text-sm"
+        />
+      </div>
+
+      {/* Mitigation Section */}
+      <h4 className="text-xs font-semibold uppercase tracking-wider text-brand-gold pt-2">Mitigation</h4>
+
+      {/* Mitigation Plan */}
+      <div>
+        <label className="text-xs font-medium">
+          Mitigation Plan
+          {isMitigationRequired && <span className="text-destructive">*</span>}
+        </label>
+        <Textarea
+          value={formData.mitigation}
+          onChange={e => setFormData({ ...formData, mitigation: e.target.value })}
+          placeholder="How will this risk be mitigated?"
+          className={cn(
+            "mt-1 min-h-[60px] text-sm",
+            showMitigationError && "border-destructive focus-visible:ring-destructive"
           )}
-        </div>
+        />
+        {showMitigationError && (
+          <div className="flex items-center gap-1 text-destructive text-xs mt-1">
+            <AlertCircle className="h-3.5 w-3.5" />
+            <span>Mitigation Plan is required for this risk configuration. Please provide a mitigation plan.</span>
+          </div>
+        )}
+      </div>
 
-        {/* Contingency Plan */}
-        <div>
-          <label className="text-xs font-medium">Contingency Plan</label>
-          <Textarea
-            value={formData.contingency}
-            onChange={e => setFormData({ ...formData, contingency: e.target.value })}
-            placeholder="What is the backup plan if mitigation fails?"
-            className="mt-1 min-h-[60px] text-sm"
-          />
-        </div>
+      {/* Contingency Plan */}
+      <div>
+        <label className="text-xs font-medium">Contingency Plan</label>
+        <Textarea
+          value={formData.contingency}
+          onChange={e => setFormData({ ...formData, contingency: e.target.value })}
+          placeholder="What is the backup plan if mitigation fails?"
+          className="mt-1 min-h-[60px] text-sm"
+        />
+      </div>
 
-        {/* Resolution Status */}
-        <div>
-          <label className="text-xs font-medium">Resolution Status</label>
-          <Textarea
-            value={formData.resolution_status}
-            onChange={e => setFormData({ ...formData, resolution_status: e.target.value })}
-            placeholder="Current resolution status..."
-            className="mt-1 min-h-[60px] text-sm"
-          />
-        </div>
+      {/* Resolution Status */}
+      <div>
+        <label className="text-xs font-medium">Resolution Status</label>
+        <Textarea
+          value={formData.resolution_status}
+          onChange={e => setFormData({ ...formData, resolution_status: e.target.value })}
+          placeholder="Current resolution status..."
+          className="mt-1 min-h-[60px] text-sm"
+        />
       </div>
 
       {/* Error message - show general errors but not mitigation_required (shown inline) */}
