@@ -64,43 +64,9 @@ import { cn } from '@/lib/utils';
 type ViewMode = 'list' | 'kanban';
 type SortOrder = 'NONE' | 'ASC' | 'DESC';
 
-// Process Step lozenge styles using Catalyst brand colors
-const getProcessStepStyle = (status: string): string => {
-  const statusLower = status?.toLowerCase() || '';
-  
-  // Implement / Ready to Implement - secondary green
-  if (statusLower === 'implement' || statusLower === 'ready_to_implement') {
-    return 'bg-secondary-green/15 text-secondary-green border border-secondary-green/30';
-  }
-  // New Request - brand gold (amber/gold)
-  if (statusLower === 'new_request' || statusLower === 'new request') {
-    return 'bg-brand-gold/15 text-brand-gold border border-brand-gold/30';
-  }
-  // Closed - secondary grey
-  if (statusLower === 'closed') {
-    return 'bg-secondary-grey/20 text-foreground border border-secondary-grey/40';
-  }
-  // Analyse - secondary bronze
-  if (statusLower === 'analyse' || statusLower === 'in_review') {
-    return 'bg-secondary-bronze/15 text-secondary-bronze border border-secondary-bronze/30';
-  }
-  // Approved - secondary green (darker shade)
-  if (statusLower === 'approved') {
-    return 'bg-secondary-green/10 text-secondary-green border border-secondary-green/25';
-  }
-  // On Hold - brand gold muted
-  if (statusLower === 'on_hold') {
-    return 'bg-brand-gold/10 text-brand-gold-hover border border-brand-gold/20';
-  }
-  // Rejected - destructive
-  if (statusLower === 'rejected') {
-    return 'bg-destructive/10 text-destructive border border-destructive/20';
-  }
-  // New Demand - secondary champagne
-  if (statusLower === 'new_demand' || statusLower === 'new demand') {
-    return 'bg-secondary-champagne/20 text-secondary-bronze border border-secondary-champagne/40';
-  }
-  return 'bg-muted text-muted-foreground border border-border';
+// Process Step lozenge styles - neutral/plain styling
+const getProcessStepStyle = (): string => {
+  return 'bg-muted/50 text-foreground border border-border';
 };
 
 const formatDate = (dateStr: string | null) => {
