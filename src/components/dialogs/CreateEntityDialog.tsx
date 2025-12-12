@@ -61,6 +61,17 @@ const entityConfig = {
 const KEY_REGEX = /^[A-Z]{3}$/;
 const DEFAULT_PROGRAM_ID = '00000000-0000-0000-0000-000000000001';
 
+// Format program display label: "Default" for default program, "Name (ABC)" for others
+const formatProgramLabel = (program: { id: string; name: string; key: string | null }) => {
+  // Default program shows just "Default" without key
+  if (program.id === DEFAULT_PROGRAM_ID || program.name.toLowerCase() === 'default') {
+    return 'Default';
+  }
+  // Extract first 3 letters of key for display (handles legacy long keys)
+  const shortKey = program.key ? program.key.slice(0, 3).toUpperCase() : '';
+  return shortKey ? `${program.name} (${shortKey})` : program.name;
+};
+
 export function CreateEntityDialog({
   open,
   onOpenChange,
@@ -309,7 +320,7 @@ export function CreateEntityDialog({
                 <Select value={programId} onValueChange={setProgramId}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select a program">
-                      {selectedProgram ? `${selectedProgram.name} (${selectedProgram.key})` : 'Select a program'}
+                      {selectedProgram ? formatProgramLabel(selectedProgram) : 'Select a program'}
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent className="z-[400]">
@@ -326,7 +337,7 @@ export function CreateEntityDialog({
                     </div>
                     {filteredPrograms?.map((program) => (
                       <SelectItem key={program.id} value={program.id}>
-                        {program.name} ({program.key})
+                        {formatProgramLabel(program)}
                       </SelectItem>
                     ))}
                     {filteredPrograms?.length === 0 && (
