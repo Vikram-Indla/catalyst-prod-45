@@ -256,16 +256,7 @@ function ThemeDetailsTab({
       <div className="border border-border rounded-xl bg-white p-5 space-y-5 shadow-sm">
         <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-gold">Dates</h3>
         
-        <div className="grid grid-cols-3 gap-3">
-          {/* Portfolio Ask */}
-          <div>
-            <Label className="text-xs font-medium mb-1.5 block">Portfolio Ask</Label>
-            <CatalystDatePicker
-              value={formData.portfolio_ask_date || null}
-              onChange={(date) => handleFieldChange('portfolio_ask_date', date ? format(date, 'yyyy-MM-dd') : null)}
-              placeholder="Select date"
-            />
-          </div>
+        <div className="grid grid-cols-2 gap-3">
 
           {/* Start / Initiation */}
           <div>
