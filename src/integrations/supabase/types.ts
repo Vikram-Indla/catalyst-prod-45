@@ -230,6 +230,42 @@ export type Database = {
         }
         Relationships: []
       }
+      auth_audit_log: {
+        Row: {
+          actor_id: string | null
+          created_at: string | null
+          event_details: Json | null
+          event_type: string
+          id: string
+          ip_address: string | null
+          user_agent: string | null
+          user_email: string | null
+          user_id: string | null
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string | null
+          event_details?: Json | null
+          event_type: string
+          id?: string
+          ip_address?: string | null
+          user_agent?: string | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string | null
+          event_details?: Json | null
+          event_type?: string
+          id?: string
+          ip_address?: string | null
+          user_agent?: string | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       board_configs: {
         Row: {
           board_type: Database["public"]["Enums"]["board_type"]
@@ -6838,38 +6874,71 @@ export type Database = {
       }
       profiles: {
         Row: {
+          approval_status:
+            | Database["public"]["Enums"]["user_approval_status"]
+            | null
+          approved_at: string | null
+          approved_by: string | null
           avatar_url: string | null
           created_at: string | null
           email: string | null
           full_name: string | null
           id: string
           last_login: string | null
+          last_signup_attempt_at: string | null
           must_change_password: boolean
+          rejected_at: string | null
+          rejected_by: string | null
+          rejection_reason: string | null
+          requested_at: string | null
           role: string | null
+          signup_attempts_count: number | null
           status: string
           updated_at: string | null
         }
         Insert: {
+          approval_status?:
+            | Database["public"]["Enums"]["user_approval_status"]
+            | null
+          approved_at?: string | null
+          approved_by?: string | null
           avatar_url?: string | null
           created_at?: string | null
           email?: string | null
           full_name?: string | null
           id: string
           last_login?: string | null
+          last_signup_attempt_at?: string | null
           must_change_password?: boolean
+          rejected_at?: string | null
+          rejected_by?: string | null
+          rejection_reason?: string | null
+          requested_at?: string | null
           role?: string | null
+          signup_attempts_count?: number | null
           status?: string
           updated_at?: string | null
         }
         Update: {
+          approval_status?:
+            | Database["public"]["Enums"]["user_approval_status"]
+            | null
+          approved_at?: string | null
+          approved_by?: string | null
           avatar_url?: string | null
           created_at?: string | null
           email?: string | null
           full_name?: string | null
           id?: string
           last_login?: string | null
+          last_signup_attempt_at?: string | null
           must_change_password?: boolean
+          rejected_at?: string | null
+          rejected_by?: string | null
+          rejection_reason?: string | null
+          requested_at?: string | null
           role?: string | null
+          signup_attempts_count?: number | null
           status?: string
           updated_at?: string | null
         }
@@ -7784,6 +7853,39 @@ export type Database = {
           title?: string
           updated_at?: string | null
           usage_count?: number | null
+        }
+        Relationships: []
+      }
+      signup_rate_limits: {
+        Row: {
+          attempt_count: number | null
+          blocked_until: string | null
+          created_at: string | null
+          email: string
+          first_attempt_at: string | null
+          id: string
+          ip_address: string | null
+          last_attempt_at: string | null
+        }
+        Insert: {
+          attempt_count?: number | null
+          blocked_until?: string | null
+          created_at?: string | null
+          email: string
+          first_attempt_at?: string | null
+          id?: string
+          ip_address?: string | null
+          last_attempt_at?: string | null
+        }
+        Update: {
+          attempt_count?: number | null
+          blocked_until?: string | null
+          created_at?: string | null
+          email?: string
+          first_attempt_at?: string | null
+          id?: string
+          ip_address?: string | null
+          last_attempt_at?: string | null
         }
         Relationships: []
       }
@@ -12441,6 +12543,11 @@ export type Database = {
       test_type: "manual" | "automated" | "bdd"
       theme_status: "proposed" | "active" | "done" | "cancelled"
       track_by_type: "POINTS" | "HOURS"
+      user_approval_status:
+        | "PENDING_APPROVAL"
+        | "APPROVED"
+        | "REJECTED"
+        | "DISABLED"
       work_item_type_enum: "epic" | "feature" | "story" | "task" | "defect"
     }
     CompositeTypes: {
@@ -12729,6 +12836,12 @@ export const Constants = {
       test_type: ["manual", "automated", "bdd"],
       theme_status: ["proposed", "active", "done", "cancelled"],
       track_by_type: ["POINTS", "HOURS"],
+      user_approval_status: [
+        "PENDING_APPROVAL",
+        "APPROVED",
+        "REJECTED",
+        "DISABLED",
+      ],
       work_item_type_enum: ["epic", "feature", "story", "task", "defect"],
     },
   },
