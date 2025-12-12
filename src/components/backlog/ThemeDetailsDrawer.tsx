@@ -15,6 +15,7 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { ThemeChildrenTab } from './tabs/ThemeChildrenTab';
+import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 
 // Citation: (Screenshot: image-194.png, image-195.png)
 
@@ -255,17 +256,31 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                     <Label className="text-sm text-muted-foreground">Dates:</Label>
                     <div className="grid grid-cols-3 gap-4">
                       <div className="space-y-2">
-                        <Label className="text-xs text-muted-foreground">Portfolio Ask</Label>
-                        <Input type="date" className="bg-muted/50 text-sm" />
+                        <Label className="text-xs text-muted-foreground mb-1.5 block">Portfolio Ask</Label>
+                        <CatalystDatePicker
+                          value={null}
+                          onChange={() => {}}
+                          placeholder="Select date"
+                        />
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-xs text-muted-foreground">Start / Initiation</Label>
-                        <Input type="date" className="bg-muted/50 text-sm" />
+                        <Label className="text-xs text-muted-foreground mb-1.5 block">Start / Initiation</Label>
+                        <CatalystDatePicker
+                          value={null}
+                          onChange={() => {}}
+                          placeholder="Select date"
+                        />
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-xs text-muted-foreground">Target Completion</Label>
+                        <Label className="text-xs text-muted-foreground mb-1.5 block">Target Completion</Label>
                         <div className="flex gap-2">
-                          <Input type="date" className="bg-muted/50 text-sm flex-1" />
+                          <div className="flex-1">
+                            <CatalystDatePicker
+                              value={null}
+                              onChange={() => {}}
+                              placeholder="Select date"
+                            />
+                          </div>
                           <div className="flex flex-col gap-1">
                             <button className="text-xs text-primary hover:underline flex items-center gap-1">
                               <Info className="h-3 w-3" />

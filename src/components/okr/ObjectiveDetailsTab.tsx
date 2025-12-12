@@ -8,11 +8,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
+import { CatalystDatePicker } from "@/components/ui/catalyst-date-picker";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CalendarIcon, X, Link2 } from "lucide-react";
+import { X, Link2 } from "lucide-react";
 import { format } from "date-fns";
 import { useState } from "react";
 import { useUpdateObjective } from "@/hooks/useObjectives";
@@ -277,49 +277,21 @@ export function ObjectiveDetailsTab({ objective }: ObjectiveDetailsTabProps) {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Start Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {startDate ? format(startDate, "PPP") : "Pick a date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={startDate}
-                    onSelect={(date) => handleDateUpdate("start_date", date)}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <Label className="mb-1.5 block">Start Date</Label>
+              <CatalystDatePicker
+                value={startDate ? format(startDate, "yyyy-MM-dd") : null}
+                onChange={(date) => handleDateUpdate("start_date", date)}
+                placeholder="Pick a date"
+              />
             </div>
 
             <div className="space-y-2">
-              <Label>Due Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dueDate ? format(dueDate, "PPP") : "Pick a date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={dueDate}
-                    onSelect={(date) => handleDateUpdate("due_date", date)}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <Label className="mb-1.5 block">Due Date</Label>
+              <CatalystDatePicker
+                value={dueDate ? format(dueDate, "yyyy-MM-dd") : null}
+                onChange={(date) => handleDateUpdate("due_date", date)}
+                placeholder="Pick a date"
+              />
             </div>
           </div>
         </div>
