@@ -176,14 +176,16 @@ export function ThemeChildrenTab({ themeId }: ThemeChildrenTabProps) {
         </div>
       )}
 
-      <EpicDetailsPanel
-        epic={selectedEpic}
-        open={!!selectedEpicId}
-        onClose={() => {
-          setSelectedEpicId(null);
-          setSelectedEpic(null);
-        }}
-      />
+      {selectedEpic && (
+        <EpicDetailsPanel
+          epic={selectedEpic}
+          open={!!selectedEpicId}
+          onClose={() => {
+            setSelectedEpicId(null);
+            setSelectedEpic(null);
+          }}
+        />
+      )}
     </>
   );
 }
