@@ -356,6 +356,17 @@ export default function IndustryPage() {
     }
   }, [searchParams, setSearchParams]);
 
+  // Handle scoringFilter URL param (from Business Score tab widget)
+  useEffect(() => {
+    const scoringFilter = searchParams.get('scoringFilter');
+    if (scoringFilter === 'scored' || scoringFilter === 'notScored') {
+      setFilters(prev => ({ ...prev, scoringStatus: scoringFilter }));
+      // Remove the scoringFilter param from URL to keep it clean
+      searchParams.delete('scoringFilter');
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
+
   const {
     columnOrder, 
     columnVisibility, 
@@ -563,6 +574,17 @@ export default function IndustryPage() {
     // Quarter filter (multi-select)
     if (filters.quarter && filters.quarter.length > 0) {
       filtered = filtered.filter((r: any) => filters.quarter!.includes(r.planned_quarter));
+    }
+    
+    // Scoring status filter
+    if (filters.scoringStatus) {
+      filtered = filtered.filter((r: any) => {
+        const isScored = r.executive_urgency != null && 
+                         r.business_value != null && 
+                         r.complexity_score != null && 
+                         r.business_score != null;
+        return filters.scoringStatus === 'scored' ? isScored : !isScored;
+      });
     }
 
     // Apply sorting based on selected column

@@ -35,6 +35,7 @@ export interface SmartFilters {
   targetDateFrom?: Date;
   targetDateTo?: Date;
   quarter?: string[];
+  scoringStatus?: 'scored' | 'notScored' | null;
 }
 
 interface FilterDemandsDialogProps {
