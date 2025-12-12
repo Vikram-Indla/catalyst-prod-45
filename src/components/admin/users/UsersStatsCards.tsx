@@ -8,8 +8,8 @@ interface UsersStatsCardsProps {
 
 export function UsersStatsCards({ users }: UsersStatsCardsProps) {
   const totalUsers = users.length;
-  const activeUsers = users.filter(u => u.status === 'Active').length;
-  const pendingUsers = users.filter(u => u.status === 'Pending').length;
+  const activeUsers = users.filter(u => u.approval_status === 'APPROVED').length;
+  const pendingUsers = users.filter(u => u.approval_status === 'PENDING_APPROVAL').length;
   const adminUsers = users.filter(u => 
     u.roles.some(r => r.role_code === 'super_admin' || r.role_code === 'product_admin')
   ).length;
