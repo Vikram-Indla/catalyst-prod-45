@@ -25,6 +25,8 @@ export default function Auth() {
   const [mustChangePassword, setMustChangePassword] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [loginError, setLoginError] = useState<string | null>(null);
+  const [showPendingMessage, setShowPendingMessage] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const { signIn, signUp, user, loading } = useAuth();
   const navigate = useNavigate();
   
@@ -65,8 +67,6 @@ export default function Auth() {
     }
   }, []);
 
-  // State to show transitioning screen while checking auth
-  const [isTransitioning, setIsTransitioning] = useState(false);
 
   useEffect(() => {
     // Skip if still loading or no user
@@ -185,7 +185,6 @@ export default function Auth() {
     navigate(lastRoute);
   };
 
-  const [showPendingMessage, setShowPendingMessage] = useState(false);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
