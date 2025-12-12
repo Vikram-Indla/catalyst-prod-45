@@ -1054,8 +1054,8 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
             className="h-9 px-2 flex items-center gap-1 rounded-[10px] cursor-pointer transition-all bg-white shadow-sm hover:shadow-md"
             style={{ border: '1px solid hsl(var(--roadmap-sandstone))' }}
           >
-            <span className={cn("text-xs font-semibold px-1 py-0.5 rounded", language === 'en' ? "text-white" : "")} style={{ backgroundColor: language === 'en' ? 'hsl(var(--roadmap-status-new))' : 'transparent', color: language === 'en' ? 'white' : 'hsl(var(--roadmap-fossil))' }}>EN</span>
-            <span className={cn("text-xs font-semibold px-1 py-0.5 rounded", language === 'ar' ? "text-white" : "")} style={{ backgroundColor: language === 'ar' ? 'hsl(var(--roadmap-status-new))' : 'transparent', color: language === 'ar' ? 'white' : 'hsl(var(--roadmap-fossil))' }}>ع</span>
+            <span className={cn("text-xs font-semibold px-1 py-0.5 rounded", language === 'en' ? "text-white" : "")} style={{ backgroundColor: language === 'en' ? 'hsl(var(--roadmap-status-new))' : 'transparent', color: language === 'en' ? 'white' : 'hsl(var(--roadmap-charcoal))' }}>EN</span>
+            <span className={cn("text-xs font-semibold px-1 py-0.5 rounded", language === 'ar' ? "text-white" : "")} style={{ backgroundColor: language === 'ar' ? 'hsl(var(--roadmap-status-new))' : 'transparent', color: language === 'ar' ? 'white' : 'hsl(var(--roadmap-charcoal))' }}>ع</span>
           </button>
 
           <div className="w-px h-6 mx-1" style={{ backgroundColor: 'hsl(var(--roadmap-driftwood))' }} />
