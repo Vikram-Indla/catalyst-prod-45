@@ -135,12 +135,10 @@ export function DiscussionsViewTab({ requestId }: DiscussionsViewTabProps) {
   return (
     <div className="flex flex-col h-[500px]">
       {/* Header */}
-      <div className="flex flex-row flex-nowrap items-center gap-3 px-6 py-4 border-b border-border/40 bg-card">
-        <div className="flex items-center gap-1.5">
-          <MessageSquare className="h-5 w-5 text-brand-gold flex-shrink-0" />
-          <h3 className="text-[15px] font-semibold text-brand-gold uppercase tracking-wide whitespace-nowrap">Discussions</h3>
-        </div>
-        <span className="text-[13px] text-muted-foreground whitespace-nowrap">({discussions.length} comments)</span>
+      <div className="flex items-center gap-2 px-6 py-4 border-b border-border/40 bg-card">
+        <MessageSquare className="h-5 w-5 text-brand-gold flex-shrink-0" />
+        <h3 className="text-[15px] font-semibold text-brand-gold uppercase tracking-wide">Discussions</h3>
+        <span className="text-[13px] text-muted-foreground">({discussions.length} comments)</span>
       </div>
 
       {/* Comments List */}
