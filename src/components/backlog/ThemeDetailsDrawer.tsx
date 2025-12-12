@@ -511,15 +511,10 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
     }
   }, [theme]);
 
-  if (!theme) return null;
-
-  const handleFieldChange = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  // Save mutation
+  // Save mutation - must be called unconditionally (before early return)
   const saveMutation = useMutation({
     mutationFn: async (data: Partial<Theme>) => {
+      if (!theme) throw new Error('No theme selected');
       const updatePayload: Record<string, any> = {
         name: data.name,
         description: data.description,
@@ -529,11 +524,9 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
         color_tag: data.color_tag || null,
         owner_id: data.owner_id || null,
       };
-      // Only include snapshot_id if it's a valid UUID, otherwise set to null
       if (data.snapshot_id && data.snapshot_id.length === 36) {
         updatePayload.snapshot_id = data.snapshot_id;
       }
-      // Cast status to proper enum type if provided
       if (data.status) {
         updatePayload.status = data.status as 'proposed' | 'active' | 'done' | 'cancelled';
       }
@@ -558,6 +551,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
   // Save name mutation
   const saveNameMutation = useMutation({
     mutationFn: async (newName: string) => {
+      if (!theme) throw new Error('No theme selected');
       const { error } = await supabase
         .from('strategic_themes')
         .update({ name: newName })
@@ -577,6 +571,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
   // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: async () => {
+      if (!theme) throw new Error('No theme selected');
       const { error } = await supabase
         .from('strategic_themes')
         .delete()
@@ -597,6 +592,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
   // Duplicate mutation
   const duplicateMutation = useMutation({
     mutationFn: async () => {
+      if (!theme) throw new Error('No theme selected');
       const { data, error } = await supabase
         .from('strategic_themes')
         .insert({
@@ -623,6 +619,13 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
       toast.error('Failed to duplicate theme');
     }
   });
+
+  // Early return AFTER all hooks are defined (React rules of hooks)
+  if (!theme) return null;
+
+  const handleFieldChange = (field: string, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
 
   const handleTitleChange = (newName: string) => {
     setFormData(prev => ({ ...prev, name: newName }));
