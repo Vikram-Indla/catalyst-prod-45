@@ -4,11 +4,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search, Trash2 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { ResponsivePageContainer, ResponsivePageHeader, ResponsiveGrid, ResponsiveTableWrapper } from '@/components/layout/ResponsivePageContainer';
+import { ResponsivePageContainer, ResponsivePageHeader, ResponsiveTableWrapper } from '@/components/layout/ResponsivePageContainer';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
 
 interface Portfolio {
@@ -18,6 +19,12 @@ interface Portfolio {
   description?: string;
   status: 'active' | 'archived';
   owner_id: string;
+}
+
+interface Project {
+  id: string;
+  name: string;
+  program_id: string;
 }
 
 function generateKey(name: string): string {
@@ -38,6 +45,7 @@ export default function Portfolios() {
   const [editingProgram, setEditingProgram] = useState<Portfolio | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [formData, setFormData] = useState({ name: '', key: '' });
+  const [deleteProgram, setDeleteProgram] = useState<Portfolio | null>(null);
 
   const { data: programs, isLoading } = useQuery({
     queryKey: ['admin-programs'],
@@ -50,6 +58,22 @@ export default function Portfolios() {
       return data as Portfolio[];
     }
   });
+
+  const { data: projects } = useQuery({
+    queryKey: ['admin-projects'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('projects')
+        .select('id, name, program_id')
+        .order('name');
+      if (error) throw error;
+      return data as Project[];
+    }
+  });
+
+  const getProjectsForProgram = (programId: string): Project[] => {
+    return projects?.filter(p => p.program_id === programId) || [];
+  };
 
   const createMutation = useMutation({
     mutationFn: async ({ name, key }: { name: string; key: string }) => {
@@ -93,6 +117,27 @@ export default function Portfolios() {
     }
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('programs')
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-programs'] });
+      queryClient.invalidateQueries({ queryKey: ['programs'] });
+      queryClient.invalidateQueries({ queryKey: ['programs-directory'] });
+      queryClient.invalidateQueries({ queryKey: ['portfolios'] });
+      toast.success('Program deleted successfully');
+      setDeleteProgram(null);
+    },
+    onError: (error) => {
+      toast.error('Failed to delete program: ' + error.message);
+    }
+  });
+
   const handleEdit = (program: Portfolio) => {
     setEditingProgram(program);
     setFormData({ name: program.name, key: program.key });
@@ -115,10 +160,17 @@ export default function Portfolios() {
     createMutation.mutate({ name: formData.name, key: finalKey });
   };
 
+  const handleDelete = () => {
+    if (!deleteProgram) return;
+    deleteMutation.mutate(deleteProgram.id);
+  };
+
   const openAddDialog = () => {
     setFormData({ name: '', key: '' });
     setIsAddDialogOpen(true);
   };
+
+  const totalProjects = projects?.length || 0;
 
   return (
     <AdminGuard>
@@ -134,7 +186,7 @@ export default function Portfolios() {
           }
         />
 
-        <ResponsiveGrid cols={3}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Programs</CardTitle>
@@ -156,12 +208,12 @@ export default function Portfolios() {
               <CardTitle className="text-sm font-medium">Total Projects</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">-</div>
+              <div className="text-2xl font-bold">{totalProjects}</div>
             </CardContent>
           </Card>
-        </ResponsiveGrid>
+        </div>
 
-        <Card>
+        <Card className="mt-4">
           <CardHeader>
             <CardTitle>Program Configuration</CardTitle>
             <CardDescription>
@@ -169,9 +221,9 @@ export default function Portfolios() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-[var(--s4)] mb-[var(--s4)]">
+            <div className="flex items-center gap-4 mb-4">
               <div className="relative flex-1">
-                <Search className="absolute left-[var(--s3)] top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Search programs..."
                   className="pl-10"
@@ -180,45 +232,64 @@ export default function Portfolios() {
             </div>
 
             {isLoading ? (
-              <div className="text-center py-[var(--s8)] text-muted-foreground">Loading programs...</div>
+              <div className="text-center py-8 text-muted-foreground">Loading programs...</div>
             ) : programs?.length === 0 ? (
-              <div className="text-center py-[var(--s8)] text-muted-foreground">
+              <div className="text-center py-8 text-muted-foreground">
                 No programs found. Click "Add Program" to create one.
               </div>
             ) : (
-              <ResponsiveTableWrapper minWidth={600}>
+              <ResponsiveTableWrapper minWidth={500}>
                 <table className="w-full">
                   <thead className="bg-muted/50">
                     <tr>
                       <th className="text-left p-3 text-sm font-medium">Program Name</th>
                       <th className="text-left p-3 text-sm font-medium">Projects</th>
-                      <th className="text-left p-3 text-sm font-medium">Themes</th>
                       <th className="text-left p-3 text-sm font-medium">Status</th>
                       <th className="text-right p-3 text-sm font-medium">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {programs?.map((program) => (
-                      <tr key={program.id} className="border-t hover:bg-muted/50">
-                        <td className="p-3 text-sm">{program.name}</td>
-                        <td className="p-3 text-sm">-</td>
-                        <td className="p-3 text-sm">-</td>
-                        <td className="p-3 text-sm">
-                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${
-                            program.status === 'active' 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-gray-100 text-gray-800'
-                          }`}>
-                            {program.status === 'active' ? 'Active' : 'Archived'}
-                          </span>
-                        </td>
-                        <td className="p-3 text-sm text-right">
-                          <Button variant="ghost" size="sm" onClick={() => handleEdit(program)}>
-                            Edit
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
+                    {programs?.map((program) => {
+                      const programProjects = getProjectsForProgram(program.id);
+                      return (
+                        <tr key={program.id} className="border-t hover:bg-muted/50">
+                          <td className="p-3 text-sm font-medium">{program.name}</td>
+                          <td className="p-3 text-sm">
+                            {programProjects.length === 0 ? (
+                              <span className="text-muted-foreground">-</span>
+                            ) : (
+                              <span className="text-foreground">
+                                {programProjects.map(p => p.name).join(', ')}
+                              </span>
+                            )}
+                          </td>
+                          <td className="p-3 text-sm">
+                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${
+                              program.status === 'active' 
+                                ? 'bg-green-100 text-green-800' 
+                                : 'bg-gray-100 text-gray-800'
+                            }`}>
+                              {program.status === 'active' ? 'Active' : 'Archived'}
+                            </span>
+                          </td>
+                          <td className="p-3 text-sm text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              <Button variant="ghost" size="sm" onClick={() => handleEdit(program)}>
+                                Edit
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={() => setDeleteProgram(program)}
+                                className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </ResponsiveTableWrapper>
@@ -288,6 +359,27 @@ export default function Portfolios() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={!!deleteProgram} onOpenChange={(open) => !open && setDeleteProgram(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Program</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete "{deleteProgram?.name}"? This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDelete}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </ResponsivePageContainer>
     </AdminGuard>
   );
