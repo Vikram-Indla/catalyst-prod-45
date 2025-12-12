@@ -831,7 +831,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
             </TooltipProvider>
             <PopoverContent 
               align="end" 
-              className="w-[360px] p-0 bg-white shadow-xl rounded-xl z-50"
+              className="w-[360px] p-0 bg-white shadow-xl rounded-xl z-[400]"
               style={{ border: '1px solid hsl(var(--roadmap-sandstone))' }}
             >
               {/* View Scale Section */}
