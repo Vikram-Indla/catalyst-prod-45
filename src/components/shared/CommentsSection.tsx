@@ -28,15 +28,30 @@ export function CommentsSection({ entityId, entityType }: CommentsSectionProps) 
   const { data: comments, isLoading } = useQuery({
     queryKey: ['comments', entityId, entityType],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Fetch comments without join (no FK relationship to profiles)
+      const { data: commentsData, error } = await supabase
         .from('comments')
-        .select('*, profiles(full_name, email)')
+        .select('*')
         .eq('entity_id', entityId)
         .eq('entity_type', entityType)
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return data;
+      if (!commentsData || commentsData.length === 0) return [];
+
+      // Fetch profiles for comment authors
+      const userIds = [...new Set(commentsData.map(c => c.user_id))];
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, full_name, email')
+        .in('id', userIds);
+
+      // Map profiles to comments
+      const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+      return commentsData.map(comment => ({
+        ...comment,
+        profiles: profileMap.get(comment.user_id) || null,
+      }));
     },
   });
 
