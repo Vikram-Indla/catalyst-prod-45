@@ -553,7 +553,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
 
           {/* Tabs with horizontal scroll */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
-            <TabsList className="executive-tabs-list w-full justify-start rounded-none border-b border-neutral-200 h-10 shrink-0 overflow-x-auto flex-nowrap bg-white px-4 md:px-5">
+            <TabsList className="executive-tabs-list w-full justify-start rounded-none border-b border-border h-10 shrink-0 overflow-x-auto flex-nowrap bg-white px-4 md:px-5">
               {VIEW_TABS.map((tab) => (
                 <TabsTrigger
                   key={tab.value}

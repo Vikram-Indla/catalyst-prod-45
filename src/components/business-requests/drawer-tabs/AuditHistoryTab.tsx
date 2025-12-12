@@ -90,7 +90,7 @@ export function AuditHistoryTab({ requestId }: AuditHistoryTabProps) {
   return (
     <div className="flex flex-col flex-1 min-h-0 bg-white rounded-lg overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4 border-b border-[#E5E7EB] shrink-0">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-border shrink-0">
         <div className="flex items-center gap-2">
           <History className="h-4 w-4 text-brand-gold" />
           <span className="text-[13px] font-semibold text-brand-gold uppercase tracking-[0.5px]">
@@ -123,7 +123,7 @@ export function AuditHistoryTab({ requestId }: AuditHistoryTabProps) {
             {allLogs.map((log: any) => (
               <div 
                 key={log.id} 
-                className="flex gap-3 px-5 py-4 hover:bg-[#F9FAFB] transition-colors duration-150 border-b border-[#F3F4F6] last:border-b-0"
+                className="flex gap-3 px-5 py-4 hover:bg-muted/30 transition-colors duration-150 border-b border-border/50 last:border-b-0"
                 style={{ animation: 'fadeIn 0.3s ease' }}
               >
                 {/* Gold Avatar */}
@@ -177,7 +177,7 @@ export function AuditHistoryTab({ requestId }: AuditHistoryTabProps) {
 
       {/* Footer with Load More button */}
       {hasNextPage && !isFetchingNextPage && allLogs.length > 0 && (
-        <div className="shrink-0 border-t border-[#E5E7EB] px-5 py-3 bg-[#FAFAFA]">
+        <div className="shrink-0 border-t border-border px-5 py-3 bg-muted/30">
           <Button
             variant="outline"
             size="sm"
