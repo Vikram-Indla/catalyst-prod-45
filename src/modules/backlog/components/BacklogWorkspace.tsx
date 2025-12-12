@@ -4,7 +4,7 @@ import { useBacklogState } from '../hooks/useBacklogState';
 import { BacklogHeader } from './BacklogHeader';
 import { BacklogListView } from './BacklogListView';
 import { BacklogKanbanView } from './BacklogKanbanView';
-import { EpicDetailsPanel } from './EpicDetailsPanel';
+import { EpicDrawer } from '@/components/items/epics/EpicDrawer';
 import { BacklogFiltersDialog } from './BacklogFiltersDialog';
 import { BacklogColumnsDialog } from './BacklogColumnsDialog';
 import { CreateEpicDialog } from '@/modules/program-epics/components/CreateEpicDialog';
@@ -122,13 +122,11 @@ export function BacklogWorkspace() {
           )}
         </div>
 
-        {selectedItemId && (
-          <EpicDetailsPanel
-            itemId={selectedItemId}
-            itemType={backlogState.type}
-            onClose={() => setSelectedItemId(null)}
-          />
-        )}
+        <EpicDrawer
+          epicId={selectedItemId}
+          isOpen={!!selectedItemId}
+          onClose={() => setSelectedItemId(null)}
+        />
       </div>
 
       <BacklogFiltersDialog
