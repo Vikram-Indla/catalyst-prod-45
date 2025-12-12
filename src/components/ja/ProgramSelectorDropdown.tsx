@@ -22,13 +22,18 @@ export const ProgramSelectorDropdown = React.memo(function ProgramSelectorDropdo
   const { programs, programsLoading, isAdmin } = useWorkspaceAccess();
   const { setProgramId, setProjectId, setProgramName, setProjectName } = useCatalystContext();
 
-  // Map programs to WorkspaceItem format - single line: Name + Key only
-  const items: WorkspaceItem[] = programs.map(p => ({
-    id: p.id,
-    key: p.key,
-    name: p.name,
-    canAccess: p.canAccess,
-  }));
+  const DEFAULT_PROGRAM_ID = '00000000-0000-0000-0000-000000000001';
+
+  // Map programs to WorkspaceItem format, excluding Default program
+  // Key is already 3 letters from useWorkspaceAccess
+  const items: WorkspaceItem[] = programs
+    .filter(p => p.id !== DEFAULT_PROGRAM_ID && p.name.toLowerCase() !== 'default')
+    .map(p => ({
+      id: p.id,
+      key: p.key,
+      name: p.name,
+      canAccess: p.canAccess,
+    }));
 
   const handleSelect = useCallback((item: WorkspaceItem) => {
     setProgramId(item.id);
