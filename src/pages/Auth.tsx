@@ -65,10 +65,14 @@ export default function Auth() {
     }
   }, []);
 
+  // State to show transitioning screen while checking auth
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
   useEffect(() => {
     // Skip if still loading or no user
     if (loading || !user) {
       checkedUserRef.current = null;
+      setIsTransitioning(false);
       return;
     }
     
@@ -84,10 +88,12 @@ export default function Auth() {
 
     const handleAuthRedirect = async () => {
       checkedUserRef.current = user.id;
+      setIsTransitioning(true);
       
       const needsPasswordChange = await checkMustChangePassword(user.id);
       
       if (needsPasswordChange) {
+        setIsTransitioning(false);
         setMustChangePassword(true);
         setCurrentUserId(user.id);
       } else {
@@ -99,15 +105,30 @@ export default function Auth() {
           .maybeSingle();
         
         if (profile?.approval_status === 'APPROVED') {
+          // Keep transitioning state while navigating - ProtectedRoute will show its own loader
           const lastRoute = getLastRoute();
           navigate(lastRoute, { replace: true });
+        } else {
+          // Not approved - stay on auth page
+          setIsTransitioning(false);
         }
-        // If not approved, stay on auth page (don't redirect)
       }
     };
 
     handleAuthRedirect();
   }, [user, loading, mustChangePassword, navigate, checkMustChangePassword]);
+
+  // Show a smooth transition screen while checking auth status
+  if (isTransitioning || (user && loading)) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-brand-dark">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 border-3 border-brand-gold border-t-transparent rounded-full animate-spin" />
+          <span className="text-brand-gold text-sm font-medium">Signing you in...</span>
+        </div>
+      </div>
+    );
+  }
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
