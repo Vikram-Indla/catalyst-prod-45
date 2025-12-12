@@ -46,9 +46,9 @@ export function BacklogWorkspace() {
     }
   }, [backlogState.columnsShown, preferences]);
 
-  // Fetch backlog items
+  // CRITICAL: Include programId in query key to prevent stale data across programs
   const { data: backlogData, isLoading } = useQuery({
-    queryKey: ['backlog-items', backlogState],
+    queryKey: ['backlog-items', backlogState.programId, backlogState.scope, backlogState.type, backlogState.timeboxType, backlogState.timeboxId, backlogState.view, backlogState.sort, backlogState.filters],
     queryFn: () => fetchBacklogItems({
       scope: backlogState.scope,
       type: backlogState.type,
@@ -57,19 +57,23 @@ export function BacklogWorkspace() {
       view: backlogState.view,
       sort: backlogState.sort,
       filters: backlogState.filters,
+      programId: backlogState.programId || undefined, // CRITICAL: Pass programId for scoping
     }),
+    // Refetch when programId changes
+    enabled: !backlogState.isEpicBacklog || !!backlogState.programId,
   });
 
   // Fetch unassigned items for panel
   const { data: unassignedData } = useQuery({
-    queryKey: ['unassigned-items', backlogState.type],
+    queryKey: ['unassigned-items', backlogState.programId, backlogState.type],
     queryFn: () => fetchUnassignedItems({
       scope: backlogState.scope,
       type: backlogState.type,
       timeboxType: backlogState.timeboxType,
       view: backlogState.view,
+      programId: backlogState.programId || undefined,
     }),
-    enabled: isUnassignedOpen,
+    enabled: isUnassignedOpen && (!backlogState.isEpicBacklog || !!backlogState.programId),
   });
 
   const handleItemClick = (itemId: string) => {

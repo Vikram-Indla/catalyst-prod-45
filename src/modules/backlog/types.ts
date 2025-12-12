@@ -159,6 +159,8 @@ export interface BacklogQueryParams {
   sort?: { field: string; direction: 'asc' | 'desc' };
   filters?: Record<string, unknown>;
   search?: string;
+  /** Program ID for scoping epics/features - REQUIRED for program-level backlog */
+  programId?: string;
 }
 
 export interface BacklogResponse {
