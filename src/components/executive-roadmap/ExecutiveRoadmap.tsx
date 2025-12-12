@@ -757,7 +757,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                     }}
                     className={cn(
                       "w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md",
-                      isSearchExpanded ? "text-white" : "bg-white text-[hsl(var(--roadmap-fossil))]"
+                      isSearchExpanded ? "text-white" : "bg-white text-[hsl(var(--roadmap-charcoal))]"
                     )}
                     style={{ 
                       backgroundColor: isSearchExpanded ? 'hsl(var(--roadmap-status-new))' : undefined,
@@ -780,7 +780,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                   onClick={() => setShowMilestones(!showMilestones)}
                   className={cn(
                     "w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all shadow-sm hover:shadow-md",
-                    showMilestones ? "text-white" : "bg-white text-[hsl(var(--roadmap-fossil))]"
+                    showMilestones ? "text-white" : "bg-white text-[hsl(var(--roadmap-charcoal))]"
                   )}
                   style={{ 
                     backgroundColor: showMilestones ? 'hsl(var(--roadmap-status-new))' : undefined,
@@ -803,7 +803,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                 <button
                   onClick={() => setFiltersDialogOpen(true)}
                   className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white shadow-sm hover:shadow-md"
-                  style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-fossil))' }}
+                  style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-charcoal))' }}
                 >
                   <Filter className="w-[18px] h-[18px]" />
                 </button>
@@ -820,7 +820,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                   <PopoverTrigger asChild>
                     <button
                       className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white shadow-sm hover:shadow-md"
-                      style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-fossil))' }}
+                      style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-charcoal))' }}
                     >
                       <Calendar className="w-[18px] h-[18px]" />
                     </button>
@@ -1067,7 +1067,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                 <button
                   onClick={handleExport}
                   className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white shadow-sm hover:shadow-md"
-                  style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-fossil))' }}
+                  style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-charcoal))' }}
                 >
                   <Download className="w-[18px] h-[18px]" />
                 </button>
@@ -1084,7 +1084,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                   onClick={() => setShowLegend(!showLegend)}
                   className={cn(
                     "w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all shadow-sm hover:shadow-md",
-                    showLegend ? "text-white" : "bg-white text-[hsl(var(--roadmap-fossil))]"
+                    showLegend ? "text-white" : "bg-white text-[hsl(var(--roadmap-charcoal))]"
                   )}
                   style={{ 
                     backgroundColor: showLegend ? 'hsl(var(--roadmap-status-new))' : undefined,
@@ -1105,7 +1105,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                 <button
                   onClick={toggleFullscreen}
                   className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white shadow-sm hover:shadow-md"
-                  style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-fossil))' }}
+                  style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-charcoal))' }}
                 >
                   {isFullscreen ? <Minimize2 className="w-[18px] h-[18px]" /> : <Maximize2 className="w-[18px] h-[18px]" />}
                 </button>
