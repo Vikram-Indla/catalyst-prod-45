@@ -207,7 +207,31 @@ export default function Auth() {
     const result = await signUp(email, password, fullName);
 
     if (result.error) {
-      setLoginError(result.error.message || "Failed to create account");
+      // Map error codes to user-friendly messages
+      const code = (result as any).code || result.error.code;
+      let userMessage: string;
+      
+      switch (code) {
+        case "EMAIL_EXISTS_APPROVED":
+          userMessage = "This email is already registered. Please sign in.";
+          break;
+        case "EMAIL_EXISTS_PENDING":
+          userMessage = "Your registration is pending approval.";
+          break;
+        case "EMAIL_EXISTS_REJECTED_COOLDOWN":
+          userMessage = result.error.message || "Your request was rejected. Please try again later.";
+          break;
+        case "ACCOUNT_DISABLED":
+          userMessage = "This account has been disabled. Please contact support.";
+          break;
+        case "RATE_LIMITED":
+          userMessage = "Too many attempts. Please try again later.";
+          break;
+        default:
+          userMessage = result.error.message || "Something went wrong. Please try again.";
+      }
+      
+      setLoginError(userMessage);
       setIsLoading(false);
       return;
     }

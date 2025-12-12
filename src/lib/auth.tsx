@@ -113,23 +113,51 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         },
       });
 
+      // Handle Edge Function errors - parse the response for structured error codes
       if (invokeError) {
         console.error('Signup invoke error:', invokeError);
-        toast({
-          title: "Sign up failed",
-          description: "An error occurred during registration. Please try again.",
-          variant: "destructive",
-        });
-        return { error: invokeError };
+        
+        // Try to extract error details from the invoke error context
+        // The error message from Edge Function is in invokeError.context or invokeError.message
+        let errorMessage = "Something went wrong. Please try again.";
+        let errorCode = "UNKNOWN";
+        
+        // Check if the error contains our structured response
+        if (invokeError.context && typeof invokeError.context === 'object') {
+          errorCode = invokeError.context.code || "UNKNOWN";
+          errorMessage = invokeError.context.error || errorMessage;
+        } else if (typeof invokeError.message === 'string') {
+          // Try to parse JSON from the message if it contains our response
+          try {
+            const parsed = JSON.parse(invokeError.message);
+            errorCode = parsed.code || "UNKNOWN";
+            errorMessage = parsed.error || errorMessage;
+          } catch {
+            // Not JSON, check for known patterns
+            if (invokeError.message.includes("already registered")) {
+              errorCode = "EMAIL_EXISTS_APPROVED";
+              errorMessage = "This email is already registered. Please sign in.";
+            } else if (invokeError.message.includes("pending approval")) {
+              errorCode = "EMAIL_EXISTS_PENDING";
+              errorMessage = "Your registration is pending approval.";
+            }
+          }
+        }
+
+        return { 
+          error: { message: errorMessage, code: errorCode },
+          code: errorCode
+        };
       }
 
       if (!data?.success) {
-        toast({
-          title: "Sign up failed",
-          description: data?.error || "Registration failed. Please try again.",
-          variant: "destructive",
-        });
-        return { error: { message: data?.error || "Registration failed" } };
+        const errorCode = data?.code || "UNKNOWN";
+        const errorMessage = data?.error || "Registration failed. Please try again.";
+        
+        return { 
+          error: { message: errorMessage, code: errorCode },
+          code: errorCode
+        };
       }
 
       // Sign out immediately - user must wait for approval
@@ -142,12 +170,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       return { error: null, isPending: true };
     } catch (error: any) {
-      toast({
-        title: "Sign up failed",
-        description: error.message || "An unexpected error occurred.",
-        variant: "destructive",
-      });
-      return { error };
+      return { 
+        error: { message: "Something went wrong. Please try again.", code: "UNKNOWN" },
+        code: "UNKNOWN"
+      };
     }
   };
 
