@@ -997,3 +997,32 @@ body {
     box-shadow: none !important;
   }
 }
+
+/* ============================================
+   EXECUTIVE ROADMAP CSS VARIABLES
+   ============================================ */
+:root {
+  /* Roadmap Color Palette */
+  --roadmap-ivory: 45 30% 98%;
+  --roadmap-parchment: 40 28% 95%;
+  --roadmap-sandstone: 35 25% 85%;
+  --roadmap-driftwood: 30 20% 75%;
+  --roadmap-fossil: 25 15% 55%;
+  --roadmap-graphite: 20 10% 40%;
+  --roadmap-charcoal: 15 8% 25%;
+  
+  /* Roadmap Status Colors - Production matched */
+  --roadmap-status-new: 35 46% 60%;        /* Gold - New Request */
+  --roadmap-status-analyse: 210 40% 50%;   /* Blue - Analyse */
+  --roadmap-status-approved: 28 26% 44%;   /* Bronze - Approved */
+  --roadmap-status-implement: 142 40% 45%; /* Green - Implement */
+  --roadmap-status-closed: 0 0% 30%;       /* Dark Grey - Closed */
+  
+  /* Roadmap Today Line */
+  --roadmap-today: 15 70% 50%;
+  
+  /* Roadmap Milestone Colors */
+  --roadmap-milestone-complete: 142 50% 45%;
+  --roadmap-milestone-current: 35 46% 60%;
+  --roadmap-milestone-pending: 0 0% 70%;
+}
