@@ -3,10 +3,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { Plus, Calendar, MoreHorizontal, ArrowDownAZ, ArrowUpAZ, Pencil, Trash2, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -425,30 +427,30 @@ function MilestoneForm({
       {/* Date Fields */}
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="text-xs font-medium flex items-center gap-1">
+          <Label className="text-xs font-medium flex items-center gap-1">
             Start date
             <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
-          </label>
-          <Input
-            type="date"
-            value={formData.start_date}
-            onChange={e => setFormData({ ...formData, start_date: e.target.value })}
-            className="mt-1 h-9 text-sm"
-            placeholder="mm/dd/yyyy"
-          />
+          </Label>
+          <div className="mt-1">
+            <CatalystDatePicker
+              value={formData.start_date || null}
+              onChange={(date) => setFormData({ ...formData, start_date: date ? format(date, 'yyyy-MM-dd') : '' })}
+              placeholder="Select start date"
+            />
+          </div>
         </div>
         <div>
-          <label className="text-xs font-medium flex items-center gap-1">
+          <Label className="text-xs font-medium flex items-center gap-1">
             Due date
             <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
-          </label>
-          <Input
-            type="date"
-            value={formData.due_date}
-            onChange={e => setFormData({ ...formData, due_date: e.target.value })}
-            className="mt-1 h-9 text-sm"
-            placeholder="mm/dd/yyyy"
-          />
+          </Label>
+          <div className="mt-1">
+            <CatalystDatePicker
+              value={formData.due_date || null}
+              onChange={(date) => setFormData({ ...formData, due_date: date ? format(date, 'yyyy-MM-dd') : '' })}
+              placeholder="Select due date"
+            />
+          </div>
         </div>
       </div>
 

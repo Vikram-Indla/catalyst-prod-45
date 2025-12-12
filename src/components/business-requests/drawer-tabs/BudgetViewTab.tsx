@@ -3,12 +3,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Button } from '@/components/ui/button';
+import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { CalendarIcon, ChevronDown, Wallet, TrendingUp, Users, X } from 'lucide-react';
+import { ChevronDown, Wallet, TrendingUp, Users, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { UserPicker } from '@/components/ui/user-picker';
@@ -479,61 +477,25 @@ export function BudgetViewTab({ data, onChange }: BudgetViewTabProps) {
                 {/* Contract Start Date */}
                 <div>
                   <Label className="text-xs font-medium">Contract Start Date</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full mt-1 h-9 justify-start text-left font-normal text-sm",
-                          !data.contract_start_date && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {data.contract_start_date
-                          ? format(new Date(data.contract_start_date), "PPP")
-                          : "Pick a date"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={data.contract_start_date ? new Date(data.contract_start_date) : undefined}
-                        onSelect={(date) => onChange('contract_start_date', date ? format(date, 'yyyy-MM-dd') : null)}
-                        initialFocus
-                        className="pointer-events-auto"
-                      />
-                    </PopoverContent>
-                  </Popover>
+                  <div className="mt-1">
+                    <CatalystDatePicker
+                      value={data.contract_start_date || null}
+                      onChange={(date) => onChange('contract_start_date', date ? format(date, 'yyyy-MM-dd') : null)}
+                      placeholder="Pick a date"
+                    />
+                  </div>
                 </div>
 
                 {/* Contract End Date */}
                 <div>
                   <Label className="text-xs font-medium">Contract End Date</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full mt-1 h-9 justify-start text-left font-normal text-sm",
-                          !data.contract_end_date && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {data.contract_end_date
-                          ? format(new Date(data.contract_end_date), "PPP")
-                          : "Pick a date"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={data.contract_end_date ? new Date(data.contract_end_date) : undefined}
-                        onSelect={(date) => onChange('contract_end_date', date ? format(date, 'yyyy-MM-dd') : null)}
-                        initialFocus
-                        className="pointer-events-auto"
-                      />
-                    </PopoverContent>
-                  </Popover>
+                  <div className="mt-1">
+                    <CatalystDatePicker
+                      value={data.contract_end_date || null}
+                      onChange={(date) => onChange('contract_end_date', date ? format(date, 'yyyy-MM-dd') : null)}
+                      placeholder="Pick a date"
+                    />
+                  </div>
                   {/* Date validation */}
                   {data.contract_start_date && data.contract_end_date && 
                    new Date(data.contract_end_date) < new Date(data.contract_start_date) && (

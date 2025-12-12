@@ -4,9 +4,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { Plus, MoreHorizontal, ArrowDownAZ, ArrowUpAZ, Pencil, Trash2, AlertCircle, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -618,13 +620,14 @@ function RiskForm({
 
       {/* Target Resolution Date */}
       <div>
-        <label className="text-xs font-medium">Target Resolution Date</label>
-        <Input
-          type="date"
-          value={formData.target_resolution_date}
-          onChange={e => setFormData({ ...formData, target_resolution_date: e.target.value })}
-          className="mt-1 h-9 text-sm"
-        />
+        <Label className="text-xs font-medium">Target Resolution Date</Label>
+        <div className="mt-1">
+          <CatalystDatePicker
+            value={formData.target_resolution_date || null}
+            onChange={(date) => setFormData({ ...formData, target_resolution_date: date ? format(date, 'yyyy-MM-dd') : '' })}
+            placeholder="Select date"
+          />
+        </div>
       </div>
 
       {/* Consequence */}
