@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { X, Edit2, Info, Save, Star, AlertCircle, TrendingUp, DollarSign, Plus, Link as LinkIcon, FileText, Target, Calendar } from 'lucide-react';
+import { UnifiedLinksTab } from '@/components/shared/UnifiedLinksTab';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -374,10 +375,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                 </TabsContent>
 
                 <TabsContent value="links" className="mt-0">
-                  <div className="text-center py-12 text-muted-foreground">
-                    <LinkIcon className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                    <p>No links added yet</p>
-                  </div>
+                  <UnifiedLinksTab entityType="theme" entityId={theme.id} />
                 </TabsContent>
 
                 <TabsContent value="milestones" className="mt-0 space-y-4">

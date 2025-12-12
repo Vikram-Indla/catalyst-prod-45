@@ -1857,28 +1857,52 @@ export type Database = {
       }
       epic_links: {
         Row: {
+          added_by_name: string | null
           created_at: string
           epic_id: string
+          file_name: string | null
+          file_path: string | null
+          file_size: number | null
           id: string
+          kind: string | null
           link_type: string
+          linked_item_id: string | null
+          linked_item_type: string | null
+          mime_type: string | null
           title: string
           updated_at: string
           url: string
         }
         Insert: {
+          added_by_name?: string | null
           created_at?: string
           epic_id: string
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
           id?: string
+          kind?: string | null
           link_type?: string
+          linked_item_id?: string | null
+          linked_item_type?: string | null
+          mime_type?: string | null
           title: string
           updated_at?: string
           url: string
         }
         Update: {
+          added_by_name?: string | null
           created_at?: string
           epic_id?: string
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
           id?: string
+          kind?: string | null
           link_type?: string
+          linked_item_id?: string | null
+          linked_item_type?: string | null
+          mime_type?: string | null
           title?: string
           updated_at?: string
           url?: string
@@ -5664,28 +5688,52 @@ export type Database = {
       }
       objective_linked_items: {
         Row: {
+          added_by_name: string | null
           created_at: string | null
           created_by: string | null
+          file_name: string | null
+          file_path: string | null
+          file_size: number | null
           id: string
+          kind: string | null
           link_type: string | null
+          linked_item_id: string | null
+          linked_item_type: string | null
+          mime_type: string | null
           objective_id: string
           title: string
           url: string
         }
         Insert: {
+          added_by_name?: string | null
           created_at?: string | null
           created_by?: string | null
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
           id?: string
+          kind?: string | null
           link_type?: string | null
+          linked_item_id?: string | null
+          linked_item_type?: string | null
+          mime_type?: string | null
           objective_id: string
           title: string
           url: string
         }
         Update: {
+          added_by_name?: string | null
           created_at?: string | null
           created_by?: string | null
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
           id?: string
+          kind?: string | null
           link_type?: string | null
+          linked_item_id?: string | null
+          linked_item_type?: string | null
+          mime_type?: string | null
           objective_id?: string
           title?: string
           url?: string
@@ -10873,6 +10921,60 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      theme_links: {
+        Row: {
+          added_by_name: string | null
+          created_at: string
+          file_name: string | null
+          file_path: string | null
+          file_size: number | null
+          id: string
+          kind: string | null
+          link_type: string | null
+          linked_item_id: string | null
+          linked_item_type: string | null
+          mime_type: string | null
+          theme_id: string
+          title: string
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          added_by_name?: string | null
+          created_at?: string
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          id?: string
+          kind?: string | null
+          link_type?: string | null
+          linked_item_id?: string | null
+          linked_item_type?: string | null
+          mime_type?: string | null
+          theme_id: string
+          title: string
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          added_by_name?: string | null
+          created_at?: string
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          id?: string
+          kind?: string | null
+          link_type?: string | null
+          linked_item_id?: string | null
+          linked_item_type?: string | null
+          mime_type?: string | null
+          theme_id?: string
+          title?: string
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
       }
       user_app_preferences: {
         Row: {
