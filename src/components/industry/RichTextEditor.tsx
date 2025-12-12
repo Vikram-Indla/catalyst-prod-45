@@ -154,7 +154,7 @@ export function RichTextEditor({ value, onChange, placeholder, className, minHei
   };
 
   return (
-    <div className={cn("border border-input rounded-md bg-background", className)}>
+    <div className={cn("border border-border rounded-md bg-background", className)}>
       {/* Hidden file input for image upload */}
       <input
         ref={fileInputRef}
