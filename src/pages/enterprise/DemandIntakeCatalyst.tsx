@@ -56,7 +56,7 @@ import { useBusinessRequests } from '@/hooks/useBusinessRequests';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import { StatusSummaryKanbanView } from '@/components/business-requests/StatusSummaryKanbanView';
-import { PROCESS_STEPS } from '@/types/business-request';
+import { PROCESS_STEPS, getProcessStepInfo } from '@/types/business-request';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
@@ -614,10 +614,10 @@ export default function DemandIntakeCatalyst() {
                       </TableCell>
                       <TableCell className="px-3">
                         <span className={cn(
-                          "inline-flex items-center px-2 py-0.5 text-xs font-medium rounded uppercase",
-                          getProcessStepStyle(request.process_step)
+                          "inline-flex items-center px-2 py-0.5 text-xs font-medium rounded",
+                          getProcessStepInfo(request.process_step).color
                         )}>
-                          {PROCESS_STEPS.find(s => s.value === request.process_step)?.label?.toUpperCase() || request.process_step?.toUpperCase() || '-'}
+                          {getProcessStepInfo(request.process_step).label}
                         </span>
                       </TableCell>
                       <TableCell className="px-3 text-sm text-center font-medium">
