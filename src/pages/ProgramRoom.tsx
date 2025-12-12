@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ProgramEmptyState } from '@/components/workspace/ProgramEmptyState';
+import { ProjectEmptyState } from '@/components/workspace/ProjectEmptyState';
 
 export default function ProgramRoom() {
   const { programId } = useParams<{ programId: string }>();
@@ -93,7 +94,17 @@ export default function ProgramRoom() {
         </div>
       ) : program ? (
         <div className="flex-1 overflow-auto">
-          <ProgramEmptyState programName={displayName} />
+          {isProject ? (
+            <ProjectEmptyState 
+              projectId={program.id} 
+              projectName={displayName} 
+            />
+          ) : (
+            <ProgramEmptyState 
+              programId={program.id} 
+              programName={displayName} 
+            />
+          )}
         </div>
       ) : (
         <div className="flex items-center justify-center h-full">
