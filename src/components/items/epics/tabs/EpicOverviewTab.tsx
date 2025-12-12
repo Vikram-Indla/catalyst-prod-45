@@ -26,6 +26,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { HealthBadge } from '@/components/shared/HealthBadge';
 import { TechnicalScoreBadge } from '@/components/shared/TechnicalScoreBadge';
 import { EpicStrategyContext } from '../EpicStrategyContext';
+import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { ChevronDown, ChevronRight, Target, BarChart3, CheckCircle2, Calendar, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -366,20 +367,20 @@ export function EpicOverviewTab({ epic }: EpicOverviewTabProps) {
           
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label className="text-sm font-medium">Initiation Date</Label>
-              <Input
-                type="date"
-                value={formData.initiation_date || ''}
-                onChange={(e) => handleFieldChange('initiation_date', e.target.value)}
+              <Label className="text-sm font-medium mb-1.5 block">Initiation Date</Label>
+              <CatalystDatePicker
+                value={formData.initiation_date || null}
+                onChange={(date) => handleFieldChange('initiation_date', date ? format(date, 'yyyy-MM-dd') : null)}
+                placeholder="Select date"
               />
             </div>
 
             <div>
-              <Label className="text-sm font-medium">Target Completion Date</Label>
-              <Input
-                type="date"
-                value={formData.target_completion_date || ''}
-                onChange={(e) => handleFieldChange('target_completion_date', e.target.value)}
+              <Label className="text-sm font-medium mb-1.5 block">Target Completion Date</Label>
+              <CatalystDatePicker
+                value={formData.target_completion_date || null}
+                onChange={(date) => handleFieldChange('target_completion_date', date ? format(date, 'yyyy-MM-dd') : null)}
+                placeholder="Select date"
               />
             </div>
           </div>
