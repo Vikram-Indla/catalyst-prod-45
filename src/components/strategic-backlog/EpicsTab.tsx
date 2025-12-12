@@ -79,7 +79,7 @@ export function EpicsTab({ snapshotId, links, themes, isArchived }: EpicsTabProp
           owner_id,
           primary_program_id,
           updated_at,
-          programs:primary_program_id(id, name)
+          programs!primary_program_id(id, name)
         `)
         .in('id', linkedEpicIds)
         .is('deleted_at', null)

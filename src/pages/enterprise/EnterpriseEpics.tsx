@@ -48,7 +48,7 @@ export default function EnterpriseEpics() {
         .select(`
           *,
           strategic_themes(name),
-          programs(name),
+          programs!primary_program_id(name),
           portfolios(name)
         `)
         .is('deleted_at', null)

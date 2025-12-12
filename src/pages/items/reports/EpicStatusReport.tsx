@@ -23,7 +23,7 @@ export default function EpicStatusReport() {
         .select(`
           *,
           strategic_themes(name),
-          programs(name),
+          programs!primary_program_id(name),
           features(
             id,
             name,

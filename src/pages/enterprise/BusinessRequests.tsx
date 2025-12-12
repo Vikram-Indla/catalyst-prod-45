@@ -32,7 +32,7 @@ export default function BusinessRequests() {
     queryFn: async () => {
       let query = supabase
         .from('epics')
-        .select('*, strategic_themes(name), programs(name)')
+        .select('*, strategic_themes(name), programs!primary_program_id(name)')
         .order('name');
 
       if (searchQuery) {

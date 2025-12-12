@@ -25,7 +25,7 @@ export function ThemeChildrenTab({ themeId }: ThemeChildrenTabProps) {
       
       const { data, error } = await supabase
         .from('epics')
-        .select('*, programs(name)')
+        .select('*, programs!primary_program_id(name)')
         .eq('theme_id', themeId)
         .order('global_rank');
 

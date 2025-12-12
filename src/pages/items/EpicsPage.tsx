@@ -117,7 +117,7 @@ export default function EpicsPage() {
         .select(`
           *,
           strategic_themes(name),
-          programs(name)
+          programs!primary_program_id(name)
         `)
         .is('deleted_at', null);
 

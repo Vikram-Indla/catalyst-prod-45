@@ -47,7 +47,7 @@ export function EpicLinkDialog({ open, onOpenChange, snapshotId, linkedEpicIds }
           name,
           epic_key,
           primary_program_id,
-          programs:primary_program_id(id, name)
+          programs!primary_program_id(id, name)
         `)
         .is('deleted_at', null)
         .order('name');

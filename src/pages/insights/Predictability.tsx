@@ -24,13 +24,13 @@ export default function Predictability() {
     queryKey: ['predictability-features', selectedProgramId, selectedPIId],
     queryFn: async () => {
       if (!selectedProgramId || !selectedPIId.length) return [];
-      const { data, error } = await supabase
-        .from('features')
+      // Cast to break type recursion
+      const result = await (supabase.from('features') as any)
         .select('*')
         .eq('program_id', selectedProgramId)
         .in('pi_id', selectedPIId);
-      if (error) throw error;
-      return data;
+      if (result.error) throw result.error;
+      return result.data || [];
     },
     enabled: !!selectedProgramId && selectedPIId.length > 0,
   });
