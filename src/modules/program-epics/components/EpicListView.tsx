@@ -340,7 +340,7 @@ export function EpicListView({ programId }: EpicListViewProps) {
                         />
                       </div>
                     </th>
-                    <TableHeader className="w-24">Key</TableHeader>
+                    <TableHeader className="w-24">Epic Number</TableHeader>
                     <TableHeader className="min-w-[280px]">Name</TableHeader>
                     <TableHeader className="w-36">State</TableHeader>
                     <TableHeader className="w-20">Health</TableHeader>
@@ -396,12 +396,12 @@ export function EpicListView({ programId }: EpicListViewProps) {
                                     </div>
                                   </TableCell>
                                   
-                                  {/* Key */}
+                                  {/* Epic Number */}
                                   <TableCell className="w-24">
                                     <div className="flex items-center gap-1.5">
                                       <Square className="h-4 w-4 text-brand-gold" />
-                                      <span className="text-brand-gold font-medium text-[13px]">
-                                        {epic.epic_key || epic.id.slice(0, 8)}
+                                      <span className="text-brand-gold font-medium font-mono text-[13px]">
+                                        {epic.epic_key || '—'}
                                       </span>
                                     </div>
                                   </TableCell>
