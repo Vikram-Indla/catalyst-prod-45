@@ -32,11 +32,8 @@ const typeIcons: Record<string, { icon: React.ReactNode; bgColor: string }> = {
   Subtask: { icon: <CircleDot className="h-3 w-3 text-white" />, bgColor: 'bg-cyan-500' },
 };
 
-const statusStyles: Record<string, { bg: string; text: string }> = {
-  todo: { bg: 'bg-slate-100', text: 'text-slate-600' },
-  in_progress: { bg: 'bg-blue-50', text: 'text-blue-700' },
-  done: { bg: 'bg-green-50', text: 'text-green-700' },
-};
+// Status - NEUTRAL STYLING (no colors per status)
+const neutralStatusStyle = 'bg-muted/50 text-foreground border border-border';
 
 export function AllWorkTicketList({ 
   items, 
@@ -74,7 +71,6 @@ export function AllWorkTicketList({
       <div className="flex-1 overflow-y-auto">
         {flatItems.map((item) => {
           const typeInfo = typeIcons[item.type] || typeIcons['Task'];
-          const statusStyle = statusStyles[item.statusCategory];
           const isSelected = item.id === selectedItemId;
 
           return (
@@ -98,10 +94,7 @@ export function AllWorkTicketList({
                 {/* Key */}
                 <div className="flex items-center gap-2 mb-0.5">
                   <span className="text-[12px] font-medium text-blue-600">{item.key}</span>
-                  <span className={cn(
-                    'text-[9px] font-semibold uppercase px-1.5 py-0.5 rounded',
-                    statusStyle.bg, statusStyle.text
-                  )}>
+                  <span className="catalyst-status text-[9px] font-medium uppercase px-1.5 py-0.5 rounded bg-muted/50 text-foreground border border-border">
                     {item.status}
                   </span>
                 </div>

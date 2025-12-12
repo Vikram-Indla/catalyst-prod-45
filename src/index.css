@@ -1026,3 +1026,27 @@ body {
   --roadmap-milestone-current: 35 46% 60%;
   --roadmap-milestone-pending: 0 0% 70%;
 }
+
+/* ============================================
+   NEUTRAL STATUS STYLING - GLOBAL ENFORCEMENT
+   ============================================
+   HARD RULE: Status must be neutral (no color) across the entire app.
+   This CSS enforces neutral styling globally for all status badges/pills.
+   ============================================ */
+
+/* Catalyst Status - Neutral styling enforced globally */
+.catalyst-status {
+  background: hsl(var(--muted) / 0.5) !important;
+  color: hsl(var(--foreground)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  box-shadow: none !important;
+}
+
+/* Override any dynamic status color classes */
+[class*="status"][class*="bg-"] {
+  background: hsl(var(--muted) / 0.5) !important;
+}
+
+[class*="status"][class*="text-"] {
+  color: hsl(var(--foreground)) !important;
+}

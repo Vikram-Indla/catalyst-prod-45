@@ -649,15 +649,12 @@ export default function IndustryPage() {
     }
   }, [queryClient, toast]);
 
-  // Process step badge - use getProcessStepInfo for consistent labels and colors
+  // Process step badge - neutral styling (no colors)
   const getStatusBadge = (status: string) => {
     const stepInfo = getProcessStepInfo(status);
     
     return (
-      <span className={cn(
-        "inline-flex items-center px-2 py-0.5 rounded text-xs font-medium",
-        stepInfo.color
-      )}>
+      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-muted/50 text-foreground border border-border">
         {stepInfo.label}
       </span>
     );

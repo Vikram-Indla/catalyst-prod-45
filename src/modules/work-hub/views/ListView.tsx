@@ -77,19 +77,12 @@ const typeIcons: Record<string, { icon: React.ReactNode; color: string }> = {
   Incident: { icon: <Settings2 className="h-4 w-4" />, color: 'text-orange-500' },
 };
 
-// Jira-semantic status lozenge styles
-const statusStyles: Record<string, { bg: string; text: string; label: string }> = {
-  'Backlog': { bg: 'bg-slate-100', text: 'text-slate-700', label: 'BACKLOG' },
-  'To Do': { bg: 'bg-slate-100', text: 'text-slate-700', label: 'TO DO' },
-  'In Progress': { bg: 'bg-blue-100', text: 'text-blue-800', label: 'IN PROGRESS' },
-  'In Requirement': { bg: 'bg-blue-100', text: 'text-blue-800', label: 'IN REQUIREMENTS' },
-  'In Production': { bg: 'bg-green-100', text: 'text-green-800', label: 'IN PRODUCTION' },
-  'Done': { bg: 'bg-green-100', text: 'text-green-800', label: 'DONE' },
-  'Closed': { bg: 'bg-slate-100', text: 'text-slate-700', label: 'CLOSED' },
-  'Blocked': { bg: 'bg-red-100', text: 'text-red-700', label: 'BLOCKED' },
-};
-
+// Status lozenge - NEUTRAL STYLING (no colors per status)
 const statusOptions = ['Backlog', 'To Do', 'In Progress', 'In Requirement', 'In Production', 'Done', 'Closed', 'Blocked'];
+
+const formatStatusLabel = (status: string): string => {
+  return status.toUpperCase();
+};
 
 const assigneeOptions = [
   { name: 'Amal Alghofaily' },
@@ -115,26 +108,20 @@ const priorityIcons: Record<string, { icon: React.ReactNode; color: string }> = 
 type SortField = string;
 type SortDirection = 'asc' | 'desc';
 
-// Jira-style status lozenge
+// Status lozenge - NEUTRAL STYLING (no colors per status)
 function StatusLozenge({ status, onStatusChange }: { status: string; onStatusChange: (status: string) => void }) {
-  const style = statusStyles[status] || statusStyles['Backlog'];
-  
   return (
     <Popover>
       <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
         <button className="focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 rounded">
-          <span className={cn(
-            "inline-flex items-center px-3 py-0.5 rounded-full text-[11px] leading-4 font-semibold uppercase cursor-pointer whitespace-nowrap",
-            style.bg, style.text
-          )}>
-            {style.label}
+          <span className="catalyst-status inline-flex items-center px-3 py-0.5 rounded-full text-[11px] leading-4 font-medium uppercase cursor-pointer whitespace-nowrap bg-muted/50 text-foreground border border-border">
+            {formatStatusLabel(status)}
           </span>
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-44 p-1 bg-white border border-slate-200 shadow-lg" align="start">
         <div className="flex flex-col">
           {statusOptions.map((opt) => {
-            const optStyle = statusStyles[opt] || statusStyles['Backlog'];
             return (
               <button
                 key={opt}
@@ -144,11 +131,8 @@ function StatusLozenge({ status, onStatusChange }: { status: string; onStatusCha
                 )}
                 onClick={() => onStatusChange(opt)}
               >
-                <span className={cn(
-                  "inline-flex items-center px-3 py-0.5 rounded-full text-[11px] leading-4 font-semibold uppercase",
-                  optStyle.bg, optStyle.text
-                )}>
-                  {optStyle.label}
+                <span className="catalyst-status inline-flex items-center px-3 py-0.5 rounded-full text-[11px] leading-4 font-medium uppercase bg-muted/50 text-foreground border border-border">
+                  {formatStatusLabel(opt)}
                 </span>
               </button>
             );

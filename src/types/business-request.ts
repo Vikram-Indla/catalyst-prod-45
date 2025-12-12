@@ -2,34 +2,35 @@ import { z } from 'zod';
 
 // Process Step config as a lookup map for O(1) access
 // Key is lowercase, used for case-insensitive matching
-export const PROCESS_STEP_CONFIG: Record<string, { label: string; color: string }> = {
-  'new_request': { label: 'New request', color: 'bg-amber-100 text-amber-700' },
-  'new_demand': { label: 'New demand', color: 'bg-slate-100 text-slate-600' },
-  'in_review': { label: 'In review', color: 'bg-pink-100 text-pink-700' },
-  'analyse': { label: 'Analyse', color: 'bg-violet-100 text-violet-700' },
-  'approved': { label: 'Approved', color: 'bg-emerald-100 text-emerald-700' },
-  'ready_to_implement': { label: 'Ready to implement', color: 'bg-blue-100 text-blue-700' },
-  'implement': { label: 'Implement', color: 'bg-indigo-100 text-indigo-700' },
-  'closed': { label: 'Closed', color: 'bg-emerald-100 text-emerald-700' },
-  'rejected': { label: 'Rejected', color: 'bg-red-100 text-red-700' },
-  'on_hold': { label: 'On-hold', color: 'bg-amber-100 text-amber-700' },
+// NOTE: Colors removed globally - all statuses now use neutral styling via StatusPill component
+export const PROCESS_STEP_CONFIG: Record<string, { label: string }> = {
+  'new_request': { label: 'New request' },
+  'new_demand': { label: 'New demand' },
+  'in_review': { label: 'In review' },
+  'analyse': { label: 'Analyse' },
+  'approved': { label: 'Approved' },
+  'ready_to_implement': { label: 'Ready to implement' },
+  'implement': { label: 'Implement' },
+  'closed': { label: 'Closed' },
+  'rejected': { label: 'Rejected' },
+  'on_hold': { label: 'On-hold' },
 };
 
 // Helper to get process step info (case-insensitive lookup)
+// Returns only label - colors removed globally
 export const getProcessStepInfo = (value: string | null | undefined) => {
-  if (!value) return { label: 'Unknown', color: 'bg-slate-100 text-slate-600' };
+  if (!value) return { label: 'Unknown' };
   const normalized = value.toLowerCase();
   return PROCESS_STEP_CONFIG[normalized] || { 
-    label: value.replace(/_/g, ' ').replace(/^\w/, c => c.toUpperCase()), 
-    color: 'bg-slate-100 text-slate-600' 
+    label: value.replace(/_/g, ' ').replace(/^\w/, c => c.toUpperCase())
   };
 };
 
 // Process Step Options as array for dropdowns - only lowercase values
-export const PROCESS_STEPS = Object.entries(PROCESS_STEP_CONFIG).map(([value, { label, color }]) => ({
+// NOTE: Colors removed globally
+export const PROCESS_STEPS = Object.entries(PROCESS_STEP_CONFIG).map(([value, { label }]) => ({
   value,
   label,
-  color,
 }));
 
 // Health Options

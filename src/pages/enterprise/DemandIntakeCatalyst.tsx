@@ -563,10 +563,7 @@ export default function DemandIntakeCatalyst() {
                           {request.title || '-'}
                         </TableCell>
                         <TableCell>
-                          <span className={cn(
-                            "inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded capitalize",
-                            getProcessStepInfo(request.process_step).color
-                          )}>
+                          <span className="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded bg-muted/50 text-foreground border border-border">
                             {getProcessStepInfo(request.process_step).label}
                           </span>
                         </TableCell>
