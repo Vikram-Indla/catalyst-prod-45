@@ -7171,6 +7171,35 @@ export type Database = {
           },
         ]
       }
+      program_key_aliases: {
+        Row: {
+          created_at: string
+          id: string
+          old_key: string
+          program_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          old_key: string
+          program_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          old_key?: string
+          program_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "program_key_aliases_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "portfolios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       program_members: {
         Row: {
           created_at: string | null
@@ -7327,6 +7356,35 @@ export type Database = {
             columns: ["portfolio_id"]
             isOneToOne: false
             referencedRelation: "portfolios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_key_aliases: {
+        Row: {
+          created_at: string
+          id: string
+          old_key: string
+          project_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          old_key: string
+          project_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          old_key?: string
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_key_aliases_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
             referencedColumns: ["id"]
           },
         ]

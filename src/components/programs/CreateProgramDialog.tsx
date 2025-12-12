@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -28,36 +28,62 @@ export function CreateProgramDialog({ open, onOpenChange, onSuccess }: CreatePro
   const [name, setName] = useState('');
   const [key, setKey] = useState('');
   const [description, setDescription] = useState('');
+  const [keyError, setKeyError] = useState('');
+
+  // Fetch existing program keys for uniqueness validation
+  const { data: existingKeys } = useQuery({
+    queryKey: ['program-keys'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('portfolios')
+        .select('key');
+      if (error) throw error;
+      return data?.map(p => p.key?.toUpperCase()) || [];
+    },
+  });
+
+  const KEY_REGEX = /^[A-Z]{3}$/;
+
+  const validateKey = (value: string): string => {
+    if (!value) return 'Program key is required';
+    if (!KEY_REGEX.test(value)) return 'Key must be exactly 3 uppercase letters (A-Z)';
+    if (existingKeys?.includes(value.toUpperCase())) return 'This key is already in use';
+    return '';
+  };
 
   const createMutation = useMutation({
     mutationFn: async () => {
-      const finalKey = key.trim() || generateKey(name);
-      const { data, error } = await supabase
+      const finalKey = key.trim().toUpperCase();
+      
+      // Final validation
+      const error = validateKey(finalKey);
+      if (error) throw new Error(error);
+
+      const { data, error: dbError } = await supabase
         .from('portfolios')
         .insert({
           name: name.trim(),
-          key: finalKey.toUpperCase(),
+          key: finalKey,
           description: description.trim() || null,
           status: 'active',
         })
         .select()
         .single();
 
-      if (error) throw error;
+      if (dbError) throw dbError;
       return data;
     },
     onSuccess: (data) => {
-      // Invalidate all relevant queries
       queryClient.invalidateQueries({ queryKey: ['programs-directory'] });
       queryClient.invalidateQueries({ queryKey: ['programs-header'] });
       queryClient.invalidateQueries({ queryKey: ['workspace-programs'] });
       queryClient.invalidateQueries({ queryKey: ['admin-programs'] });
       queryClient.invalidateQueries({ queryKey: ['portfolios'] });
+      queryClient.invalidateQueries({ queryKey: ['program-keys'] });
       
       toast.success('Program created successfully');
       handleClose();
       
-      // Call onSuccess callback or navigate to program
       if (onSuccess) {
         onSuccess({ id: data.id, name: data.name, key: data.key });
       } else {
@@ -73,6 +99,7 @@ export function CreateProgramDialog({ open, onOpenChange, onSuccess }: CreatePro
     setName('');
     setKey('');
     setDescription('');
+    setKeyError('');
     onOpenChange(false);
   };
 
@@ -82,29 +109,22 @@ export function CreateProgramDialog({ open, onOpenChange, onSuccess }: CreatePro
       toast.error('Program name is required');
       return;
     }
+    const error = validateKey(key);
+    if (error) {
+      setKeyError(error);
+      return;
+    }
     createMutation.mutate();
   };
 
-  const generateKey = (name: string): string => {
-    if (!name.trim()) return '';
-    const words = name.trim().split(/\s+/);
-    if (words.length === 1) {
-      return words[0].substring(0, 4).toUpperCase();
-    }
-    return words.slice(0, 4).map(w => w[0]).join('').toUpperCase();
-  };
-
-  const handleNameChange = (value: string) => {
-    setName(value);
-    // Auto-generate key if user hasn't manually edited it
-    if (!key || key === generateKey(name)) {
-      setKey(generateKey(value));
-    }
-  };
-
   const handleKeyChange = (value: string) => {
-    // Only allow uppercase alphanumeric
-    setKey(value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10));
+    const upperValue = value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3);
+    setKey(upperValue);
+    if (upperValue.length === 3) {
+      setKeyError(validateKey(upperValue));
+    } else {
+      setKeyError('');
+    }
   };
 
   return (
@@ -124,7 +144,7 @@ export function CreateProgramDialog({ open, onOpenChange, onSuccess }: CreatePro
                 id="program-name"
                 placeholder="e.g., Digital Transformation"
                 value={name}
-                onChange={(e) => handleNameChange(e.target.value)}
+                onChange={(e) => setName(e.target.value)}
                 required
                 autoFocus
               />
@@ -136,14 +156,19 @@ export function CreateProgramDialog({ open, onOpenChange, onSuccess }: CreatePro
               </Label>
               <Input
                 id="program-key"
-                placeholder="e.g., DT"
+                placeholder="e.g., DTG"
                 value={key}
                 onChange={(e) => handleKeyChange(e.target.value)}
-                maxLength={10}
+                maxLength={3}
+                className={keyError ? 'border-destructive' : ''}
               />
-              <p className="text-xs text-muted-foreground">
-                Unique prefix for epics (e.g., {key || 'KEY'}-001)
-              </p>
+              {keyError ? (
+                <p className="text-xs text-destructive">{keyError}</p>
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  Exactly 3 uppercase letters (A-Z). Used as prefix for epics (e.g., {key || 'ABC'}-001)
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -164,7 +189,7 @@ export function CreateProgramDialog({ open, onOpenChange, onSuccess }: CreatePro
             </Button>
             <Button
               type="submit"
-              disabled={!name.trim() || createMutation.isPending}
+              disabled={!name.trim() || !key || key.length !== 3 || !!keyError || createMutation.isPending}
               className="bg-brand-gold hover:bg-brand-gold-hover"
             >
               {createMutation.isPending ? 'Creating...' : 'Create program'}
