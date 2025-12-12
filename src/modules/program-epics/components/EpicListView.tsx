@@ -3,7 +3,8 @@
  * Jira-style list view for epics in Program Room, replicating work-hub ListView structure.
  * Uses canonical EpicDetailsPanel drawer when clicking an epic.
  */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -122,6 +123,7 @@ interface EpicListViewProps {
 }
 
 export function EpicListView({ programId }: EpicListViewProps) {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [sortField, setSortField] = useState<SortField | null>(null);
@@ -129,6 +131,9 @@ export function EpicListView({ programId }: EpicListViewProps) {
   const [hoveredRow, setHoveredRow] = useState<string | null>(null);
   const [selectedEpic, setSelectedEpic] = useState<Epic | null>(null);
   const queryClient = useQueryClient();
+
+  // Check URL for epicId param to auto-open drawer (used when navigating from Business Request links)
+  const epicIdFromUrl = searchParams.get('epicId');
 
   // Fetch epics - show all if programId is actually a portfolio or doesn't exist in programs
   const { data: epics = [], refetch } = useQuery({
@@ -185,6 +190,20 @@ export function EpicListView({ programId }: EpicListViewProps) {
       toast.error('Failed to update state');
     }
   });
+
+  // Auto-open epic drawer if epicId is in URL (from Business Request Links navigation)
+  useEffect(() => {
+    if (epicIdFromUrl && epics.length > 0) {
+      const epic = epics.find(e => e.id === epicIdFromUrl);
+      if (epic) {
+        setSelectedEpic(epic);
+        // Clear the epicId from URL to avoid re-opening on navigation
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.delete('epicId');
+        setSearchParams(newSearchParams, { replace: true });
+      }
+    }
+  }, [epicIdFromUrl, epics, searchParams, setSearchParams]);
 
   const handleSort = (field: SortField, direction: SortDirection) => {
     setSortField(field);

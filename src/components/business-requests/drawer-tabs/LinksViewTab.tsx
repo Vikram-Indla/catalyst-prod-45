@@ -120,6 +120,7 @@ const TYPE_BADGE_CONFIG: Record<string, { bg: string; text: string }> = {
 
 interface LinksViewTabProps {
   requestId: string;
+  onNavigateToEpic?: (epicId: string, programId?: string | null) => void;
 }
 
 const formatFileSize = (bytes: number): string => {
@@ -143,7 +144,7 @@ const formatDate = (dateStr: string): string => {
   });
 };
 
-export function LinksViewTab({ requestId }: LinksViewTabProps) {
+export function LinksViewTab({ requestId, onNavigateToEpic }: LinksViewTabProps) {
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
@@ -1131,14 +1132,24 @@ export function LinksViewTab({ requestId }: LinksViewTabProps) {
                       {/* Line 1: Title + Type Badge + Status Badge + Menu */}
                       <div className="flex items-center gap-2">
                         {/* Title - truncates to make room for badges */}
-                        <a 
-                          href={link.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-[14px] font-medium text-brand-gold hover:underline underline-offset-2 truncate flex-1 min-w-0"
-                        >
-                          {link.title}
-                        </a>
+                        {/* Epic links get special navigation handling */}
+                        {link.kind === 'implementation' && link.linked_item_type === 'epic' && onNavigateToEpic ? (
+                          <button
+                            onClick={() => onNavigateToEpic(link.linked_item_id, null)}
+                            className="text-[14px] font-medium text-brand-gold hover:underline underline-offset-2 truncate flex-1 min-w-0 text-left"
+                          >
+                            {link.title}
+                          </button>
+                        ) : (
+                          <a 
+                            href={link.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[14px] font-medium text-brand-gold hover:underline underline-offset-2 truncate flex-1 min-w-0"
+                          >
+                            {link.title}
+                          </a>
+                        )}
                         
                         {/* Badges Group - flex-shrink-0 to keep visible */}
                         <div className="flex items-center gap-1.5 flex-shrink-0">

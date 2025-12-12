@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetClose } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -164,6 +165,7 @@ const FALLBACK_TABS = [
 
 export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestChange }: BusinessRequestDrawerProps) {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const { data: request, isLoading } = useBusinessRequest(requestId);
   const updateMutation = useUpdateBusinessRequest();
   const deleteMutation = useDeleteBusinessRequest();
@@ -188,6 +190,21 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
   // Track if we initiated a data update (to avoid resetting hasChanges on refetch)
   // Using ref instead of state to avoid triggering useEffect re-runs
   const skipNextFormResetRef = useRef(false);
+
+  // Handle navigation to Epic from Links tab
+  // Closes this drawer, navigates to epics backlog with epicId param so drawer auto-opens there
+  const handleNavigateToEpic = useCallback((epicId: string, programId?: string | null) => {
+    // 1. Close the business drawer
+    onClose();
+
+    // 2. Build route to epics backlog with epicId query param
+    const path = programId
+      ? `/program/${programId}/epics?epicId=${epicId}`
+      : `/enterprise/epics?epicId=${epicId}`;
+
+    // 3. Navigate using push (not replace) to preserve browser back behaviour
+    navigate(path);
+  }, [onClose, navigate]);
 
   // Reset to default tab when drawer opens
   useEffect(() => {
@@ -587,7 +604,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                 {requestId && <MilestonesViewTab requestId={requestId} />}
               </TabsContent>
               <TabsContent value="links" className="m-0 focus-visible:outline-none">
-                {requestId && <LinksViewTab requestId={requestId} />}
+                {requestId && <LinksViewTab requestId={requestId} onNavigateToEpic={handleNavigateToEpic} />}
               </TabsContent>
               <TabsContent value="discussions" className="m-0 focus-visible:outline-none h-[500px]">
                 {requestId && <DiscussionsViewTab requestId={requestId} />}
