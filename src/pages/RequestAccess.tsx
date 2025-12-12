@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle2, Download, ArrowLeft, Upload, X, Check, Globe } from 'lucide-react';
+import { CheckCircle2, Download, ArrowLeft, Upload, X, Check, Globe, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,6 +12,12 @@ import { cn } from '@/lib/utils';
 import { RichTextEditor } from '@/components/business-requests/RichTextEditor';
 import { DELIVERY_PLATFORM_OPTIONS, DEPARTMENT_OPTIONS } from '@/types/business-request';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
+import { 
+  useCreateUploadSession, 
+  useStageAttachment, 
+  useCommitAttachments,
+  type UnifiedAttachment 
+} from '@/hooks/useUnifiedAttachments';
 
 // Description template with section hints
 const DESCRIPTION_TEMPLATE_EN = `<p><strong>Business Need:</strong></p>
@@ -203,8 +209,29 @@ export default function RequestAccess() {
     businessOwner: '',
   });
   
-  // Attachments
-  const [attachments, setAttachments] = useState<File[]>([]);
+  // Attachments - now uses unified attachment system
+  const [stagedAttachments, setStagedAttachments] = useState<UnifiedAttachment[]>([]);
+  const [uploadSessionId, setUploadSessionId] = useState<string | null>(null);
+  const [isUploadingFile, setIsUploadingFile] = useState(false);
+  
+  // Attachment mutations
+  const createSession = useCreateUploadSession();
+  const stageAttachment = useStageAttachment();
+  const commitAttachments = useCommitAttachments();
+  
+  // Create upload session on mount
+  useEffect(() => {
+    const initSession = async () => {
+      try {
+        const session = await createSession.mutateAsync('anonymous-external-user');
+        setUploadSessionId(session.id);
+        console.log('[External Request] Upload session created:', session.id);
+      } catch (error) {
+        console.error('[External Request] Failed to create upload session:', error);
+      }
+    };
+    initSession();
+  }, []);
   
   // Submission state
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -256,24 +283,23 @@ export default function RequestAccess() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (!files) return;
+    if (!files || !uploadSessionId) return;
     
     const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 
                         'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                         'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
                         'text/plain', 'text/csv'];
     
-    const newFiles: File[] = [];
-    let totalSize = attachments.reduce((sum, f) => sum + f.size, 0);
+    let totalSize = stagedAttachments.reduce((sum, f) => sum + (f.file_size || 0), 0);
     
     for (const file of Array.from(files)) {
       if (!validTypes.includes(file.type)) {
         toast({ title: 'Invalid file type', description: `${file.name} is not a supported document type`, variant: 'destructive' });
         continue;
       }
-      if (attachments.length + newFiles.length >= 5) {
+      if (stagedAttachments.length >= 5) {
         toast({ title: 'Maximum files reached', description: 'You can only upload up to 5 files', variant: 'destructive' });
         break;
       }
@@ -281,15 +307,46 @@ export default function RequestAccess() {
         toast({ title: 'Size limit exceeded', description: 'Total file size cannot exceed 20MB', variant: 'destructive' });
         break;
       }
-      newFiles.push(file);
-      totalSize += file.size;
+      
+      // Upload and stage the file immediately
+      setIsUploadingFile(true);
+      try {
+        const attachment = await stageAttachment.mutateAsync({
+          file,
+          uploadSessionId,
+          uploadedByName: formData.reporter || 'External User',
+          uploadedByType: 'external',
+          sourceContext: 'external_wizard'
+        });
+        setStagedAttachments(prev => [...prev, attachment]);
+        totalSize += file.size;
+        console.log('[External Request] File staged:', attachment.file_name);
+      } catch (error) {
+        console.error('[External Request] Failed to upload file:', error);
+        toast({ title: 'Upload failed', description: `Failed to upload ${file.name}`, variant: 'destructive' });
+      } finally {
+        setIsUploadingFile(false);
+      }
     }
     
-    setAttachments([...attachments, ...newFiles]);
+    // Clear the input
+    e.target.value = '';
   };
 
-  const removeAttachment = (index: number) => {
-    setAttachments(attachments.filter((_, i) => i !== index));
+  const removeAttachment = async (attachmentId: string) => {
+    // Remove from UI immediately
+    setStagedAttachments(prev => prev.filter(a => a.id !== attachmentId));
+    
+    // Delete from database (fire and forget - it's staged anyway)
+    try {
+      const attachment = stagedAttachments.find(a => a.id === attachmentId);
+      if (attachment) {
+        await supabase.storage.from('attachments').remove([attachment.storage_key]);
+        await supabase.from('unified_attachments').delete().eq('id', attachmentId);
+      }
+    } catch (error) {
+      console.error('[External Request] Failed to delete staged attachment:', error);
+    }
   };
 
   const handleNext = () => {
@@ -400,6 +457,22 @@ export default function RequestAccess() {
         console.log('Audit log created successfully');
       }
       
+      // 3. Commit staged attachments to this business request
+      if (uploadSessionId && stagedAttachments.length > 0) {
+        try {
+          const committedAttachments = await commitAttachments.mutateAsync({
+            uploadSessionId,
+            workItemId: requestData.id,
+            workItemType: 'business_request'
+          });
+          console.log('[External Request] Attachments committed:', committedAttachments.length);
+        } catch (attachError) {
+          console.error('[External Request] Failed to commit attachments:', attachError);
+          // Don't throw - the request was created, attachments are secondary
+          toast({ title: 'Warning', description: 'Some attachments may not have been saved', variant: 'destructive' });
+        }
+      }
+      
       setTicketNumber(requestData.request_key);
       setSubmissionSuccess(true);
       
@@ -483,7 +556,7 @@ export default function RequestAccess() {
       department: '',
       businessOwner: '',
     });
-    setAttachments([]);
+    setStagedAttachments([]);
     setErrors({});
   };
 
@@ -764,14 +837,21 @@ export default function RequestAccess() {
                     </div>
                   </div>
                   
-                  {attachments.length > 0 && (
+                  {isUploadingFile && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Uploading...</span>
+                    </div>
+                  )}
+                  
+                  {stagedAttachments.length > 0 && (
                     <div className="space-y-2 mt-3">
-                      {attachments.map((file, index) => (
-                        <div key={index} className="flex items-center justify-between gap-3 px-3 py-2.5 border border-[#E5E7EB] rounded-xl bg-white text-[13px]">
-                          <span className="truncate">{file.name}</span>
+                      {stagedAttachments.map((attachment) => (
+                        <div key={attachment.id} className="flex items-center justify-between gap-3 px-3 py-2.5 border border-[#E5E7EB] rounded-xl bg-white text-[13px]">
+                          <span className="truncate">{attachment.file_name}</span>
                           <div className="flex items-center gap-2">
-                            <span className="text-[#6B7280]">{Math.round(file.size / 1024)} KB</span>
-                            <button onClick={() => removeAttachment(index)} className="text-[#B42318] hover:bg-[#B42318]/10 p-1 rounded">
+                            <span className="text-[#6B7280]">{Math.round((attachment.file_size || 0) / 1024)} KB</span>
+                            <button onClick={() => removeAttachment(attachment.id)} className="text-[#B42318] hover:bg-[#B42318]/10 p-1 rounded">
                               <X className="w-4 h-4" />
                             </button>
                           </div>
@@ -812,10 +892,10 @@ export default function RequestAccess() {
                       <strong>{t.ownerLabel}:</strong>
                       <span className="text-[#6B7280]">{formData.businessOwner || '—'}</span>
                     </div>
-                    {attachments.length > 0 && (
+                    {stagedAttachments.length > 0 && (
                       <div className="flex items-center justify-between gap-3 px-3 py-2.5 border border-[#E5E7EB] rounded-xl bg-white text-[13px]">
                         <strong>{t.attachLabel}:</strong>
-                        <span className="text-[#6B7280]">{attachments.length} file(s)</span>
+                        <span className="text-[#6B7280]">{stagedAttachments.length} file(s)</span>
                       </div>
                     )}
                   </div>
