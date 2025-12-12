@@ -61,19 +61,24 @@ export function useWorkspaceAccess() {
     enabled: !!userId && !isAdmin,
   });
 
+  const DEFAULT_PROGRAM_ID = '00000000-0000-0000-0000-000000000001';
+
   // Fetch all programs with access info (now 'programs' table)
+  // Excludes Default program from the list - it's only used as fallback for project linkage
   const { data: programs, isLoading: programsLoading } = useQuery({
     queryKey: ['workspace-programs', userId, isAdmin, programMemberships],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('programs')
         .select('id, key, name, description')
+        .neq('id', DEFAULT_PROGRAM_ID) // Exclude Default program
         .order('name');
       if (error) throw error;
 
       return (data || []).map(p => ({
         id: p.id,
-        key: p.key || '',
+        // Use first 3 letters of key for display (handles legacy long keys)
+        key: p.key ? p.key.slice(0, 3).toUpperCase() : '',
         name: p.name,
         description: p.description,
         canAccess: isAdmin || (programMemberships?.includes(p.id) ?? false),

@@ -153,7 +153,12 @@ const WorkspaceListItem = React.memo(function WorkspaceListItem({
           <Lock className="h-3 w-3 text-muted-foreground flex-shrink-0" />
         )}
       </div>
-      <span className="text-xs text-muted-foreground flex-shrink-0 max-w-[60px] truncate">{item.key}</span>
+      {/* Show 3-letter key, fixed width - hide for Default */}
+      {item.key && item.name.toLowerCase() !== 'default' && (
+        <span className="text-xs text-muted-foreground flex-shrink-0 w-[36px] text-right font-mono">
+          {item.key.slice(0, 3).toUpperCase()}
+        </span>
+      )}
     </button>
   );
 });
