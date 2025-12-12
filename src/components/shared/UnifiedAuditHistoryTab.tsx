@@ -39,7 +39,14 @@ export function UnifiedAuditHistoryTab({ entityId, entityType }: UnifiedAuditHis
 
       if (config.useActivityLogs) {
         // Use activity_logs table for epics, themes, objectives, features
-        const entityTypeFilter = entityType === 'objective' ? 'objective' : entityType + 's';
+        // Map entity types to their actual table names in activity_logs
+        const entityTypeMap: Record<string, string> = {
+          'epic': 'epics',
+          'theme': 'strategic_themes',
+          'objective': 'objective',
+          'feature': 'features',
+        };
+        const entityTypeFilter = entityTypeMap[entityType] || entityType;
         const { data: logs, error, count } = await supabase
           .from('activity_logs')
           .select('*', { count: 'exact' })

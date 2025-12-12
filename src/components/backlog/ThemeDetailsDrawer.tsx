@@ -14,6 +14,7 @@ import { Trash2, Copy, Lock, Unlock } from 'lucide-react';
 import { CanonicalDrawerShell, DrawerTab, KebabMenuItem } from '@/components/shared/CanonicalDrawerShell';
 import { UnifiedLinksTab } from '@/components/shared/UnifiedLinksTab';
 import { UnifiedAuditHistoryTab } from '@/components/shared/UnifiedAuditHistoryTab';
+import { CommentsSection } from '@/components/shared/CommentsSection';
 import { ThemeChildrenTab } from './tabs/ThemeChildrenTab';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
@@ -338,8 +339,20 @@ function ThemeDetailsTab({
   );
 }
 
+// Theme Discussions Tab Component
+function ThemeDiscussionsTab({ themeId }: { themeId: string }) {
+  return (
+    <div className="p-4 md:p-5 pb-6">
+      <CommentsSection entityType="strategic_themes" entityId={themeId} />
+    </div>
+  );
+}
+
 // Theme Objectives Tab Component
 function ThemeObjectivesTab({ themeId }: { themeId: string }) {
+  const queryClient = useQueryClient();
+  const [showLinkDialog, setShowLinkDialog] = useState(false);
+
   const { data: objectives, isLoading } = useQuery({
     queryKey: ['theme-objectives', themeId],
     queryFn: async () => {
@@ -355,6 +368,40 @@ function ThemeObjectivesTab({ themeId }: { themeId: string }) {
     enabled: !!themeId,
   });
 
+  // Fetch all objectives that are NOT linked to this theme (for linking)
+  const { data: availableObjectives } = useQuery({
+    queryKey: ['available-objectives-for-theme', themeId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('objectives')
+        .select('id, name')
+        .is('theme_id', null)
+        .order('name');
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: showLinkDialog,
+  });
+
+  const linkObjectiveMutation = useMutation({
+    mutationFn: async (objectiveId: string) => {
+      const { error } = await supabase
+        .from('objectives')
+        .update({ theme_id: themeId })
+        .eq('id', objectiveId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['theme-objectives', themeId] });
+      queryClient.invalidateQueries({ queryKey: ['available-objectives-for-theme', themeId] });
+      toast.success('Objective linked to theme');
+      setShowLinkDialog(false);
+    },
+    onError: () => {
+      toast.error('Failed to link objective');
+    },
+  });
+
   if (isLoading) {
     return (
       <div className="p-4 md:p-5 pb-6">
@@ -363,56 +410,73 @@ function ThemeObjectivesTab({ themeId }: { themeId: string }) {
     );
   }
 
-  if (!objectives || objectives.length === 0) {
-    return (
-      <div className="p-4 md:p-5 pb-6 space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-sm font-medium">Linked Objectives</h3>
-          <Button size="sm" variant="outline" className="gap-2">
-            <Plus className="h-4 w-4" />
-            Link Objective
-          </Button>
-        </div>
-        <div className="border rounded-lg p-8 text-center text-muted-foreground">
-          <p className="text-sm">No objectives linked to this theme</p>
-          <p className="text-xs mt-1">Click "Link Objective" to connect one</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="p-4 md:p-5 pb-6 space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium">Linked Objectives ({objectives.length})</h3>
-        <Button size="sm" variant="outline" className="gap-2">
+        <h3 className="text-sm font-medium">Linked Objectives {objectives && objectives.length > 0 ? `(${objectives.length})` : ''}</h3>
+        <Button size="sm" variant="outline" className="gap-2" onClick={() => setShowLinkDialog(true)}>
           <Plus className="h-4 w-4" />
           Link Objective
         </Button>
       </div>
-      <div className="space-y-2">
-        {objectives.map((objective) => (
-          <Card key={objective.id} className="cursor-pointer hover:bg-accent/50 transition-colors">
-            <CardContent className="p-4">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <h4 className="font-medium text-sm mb-1">{objective.name}</h4>
-                  {objective.status && (
-                    <Badge variant="outline" className="text-xs">
-                      {objective.status}
-                    </Badge>
+      
+      {(!objectives || objectives.length === 0) ? (
+        <div className="border rounded-lg p-8 text-center text-muted-foreground">
+          <p className="text-sm">No objectives linked to this theme</p>
+          <p className="text-xs mt-1">Click "Link Objective" to connect one</p>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {objectives.map((objective) => (
+            <Card key={objective.id} className="cursor-pointer hover:bg-accent/50 transition-colors">
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-medium text-sm mb-1">{objective.name}</h4>
+                    {objective.status && (
+                      <Badge variant="outline" className="text-xs">
+                        {objective.status}
+                      </Badge>
+                    )}
+                  </div>
+                  {objective.overall_progress !== null && (
+                    <span className="text-sm text-muted-foreground">
+                      {Math.round((objective.overall_progress || 0) * 100)}%
+                    </span>
                   )}
                 </div>
-                {objective.overall_progress !== null && (
-                  <span className="text-sm text-muted-foreground">
-                    {Math.round((objective.overall_progress || 0) * 100)}%
-                  </span>
-                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {/* Link Objective Dialog */}
+      {showLinkDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl">
+            <h3 className="text-lg font-semibold mb-4">Link Objective to Theme</h3>
+            {availableObjectives && availableObjectives.length > 0 ? (
+              <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                {availableObjectives.map((obj) => (
+                  <button
+                    key={obj.id}
+                    onClick={() => linkObjectiveMutation.mutate(obj.id)}
+                    className="w-full text-left p-3 border rounded-lg hover:bg-muted transition-colors"
+                  >
+                    {obj.name}
+                  </button>
+                ))}
               </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+            ) : (
+              <p className="text-muted-foreground text-sm">No unlinked objectives available</p>
+            )}
+            <div className="flex justify-end mt-4">
+              <Button variant="outline" onClick={() => setShowLinkDialog(false)}>Cancel</Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -638,9 +702,9 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
       content: <UnifiedLinksTab entityType="theme" entityId={theme.id} />,
     },
     {
-      value: 'milestones',
-      label: 'Milestones',
-      content: <ThemeMilestonesTab themeId={theme.id} />,
+      value: 'discussions',
+      label: 'Discussions',
+      content: <ThemeDiscussionsTab themeId={theme.id} />,
     },
     {
       value: 'audit-history',
