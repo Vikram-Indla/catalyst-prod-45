@@ -57,7 +57,7 @@ export function ProjectMappingDialog({ open, onOpenChange, connectionId }: Proje
   const loadPrograms = async () => {
     try {
       const { data, error } = await supabase
-        .from("programs")
+        .from("projects")
         .select("id, name")
         .order("name");
 

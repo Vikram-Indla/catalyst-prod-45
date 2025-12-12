@@ -16,17 +16,18 @@ interface PIDialogProps {
 
 export function PIDialog({ open, onOpenChange, pi }: PIDialogProps) {
   const [name, setName] = useState(pi?.name || '');
-  const [portfolioId, setPortfolioId] = useState(pi?.portfolio_id || '');
+  const [programId, setProgramId] = useState(pi?.program_id || '');
   const [state, setState] = useState(pi?.state || 'planned');
   const [startDate, setStartDate] = useState(pi?.start_date || '');
   const [endDate, setEndDate] = useState(pi?.end_date || '');
 
   const queryClient = useQueryClient();
 
-  const { data: portfolios } = useQuery({
-    queryKey: ['portfolios'],
+  // Fetch programs (formerly portfolios)
+  const { data: programs } = useQuery({
+    queryKey: ['programs'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('portfolios').select('*').order('name');
+      const { data, error } = await supabase.from('programs').select('*').order('name');
       if (error) throw error;
       return data;
     },
@@ -59,13 +60,13 @@ export function PIDialog({ open, onOpenChange, pi }: PIDialogProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!portfolioId || !startDate || !endDate) {
+    if (!programId || !startDate || !endDate) {
       toast.error('Please fill all required fields');
       return;
     }
     mutation.mutate({
       name,
-      portfolio_id: portfolioId,
+      program_id: programId,
       state,
       start_date: startDate,
       end_date: endDate,
@@ -90,15 +91,15 @@ export function PIDialog({ open, onOpenChange, pi }: PIDialogProps) {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="portfolio">Portfolio *</Label>
-              <Select value={portfolioId} onValueChange={setPortfolioId}>
+              <Label htmlFor="program">Program *</Label>
+              <Select value={programId} onValueChange={setProgramId}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select portfolio" />
+                  <SelectValue placeholder="Select program" />
                 </SelectTrigger>
                 <SelectContent>
-                  {portfolios?.map((portfolio) => (
-                    <SelectItem key={portfolio.id} value={portfolio.id}>
-                      {portfolio.name}
+                  {programs?.map((program) => (
+                    <SelectItem key={program.id} value={program.id}>
+                      {program.name}
                     </SelectItem>
                   ))}
                 </SelectContent>

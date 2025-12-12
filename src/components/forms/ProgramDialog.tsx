@@ -14,17 +14,20 @@ interface ProgramDialogProps {
   program?: any;
 }
 
+// Note: "Program" in UI now maps to "projects" table in database
+// Parent "Portfolio" maps to "programs" table
 export function ProgramDialog({ open, onOpenChange, program }: ProgramDialogProps) {
   const [name, setName] = useState(program?.name || '');
-  const [portfolioId, setPortfolioId] = useState(program?.portfolio_id || '');
+  const [programId, setProgramId] = useState(program?.program_id || '');
   const [status, setStatus] = useState(program?.status || 'active');
 
   const queryClient = useQueryClient();
 
-  const { data: portfolios } = useQuery({
-    queryKey: ['portfolios'],
+  // Fetch parent programs (formerly portfolios)
+  const { data: programs } = useQuery({
+    queryKey: ['programs'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('portfolios').select('*').order('name');
+      const { data, error } = await supabase.from('programs').select('*').order('name');
       if (error) throw error;
       return data;
     },
@@ -34,37 +37,37 @@ export function ProgramDialog({ open, onOpenChange, program }: ProgramDialogProp
     mutationFn: async (data: any) => {
       if (program) {
         const { error } = await supabase
-          .from('programs')
+          .from('projects')
           .update(data)
           .eq('id', program.id);
         if (error) throw error;
       } else {
         const { error } = await supabase
-          .from('programs')
+          .from('projects')
           .insert([data]);
         if (error) throw error;
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['programs'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-programs'] });
-      toast.success(program ? 'Program updated' : 'Program created');
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-projects'] });
+      toast.success(program ? 'Project updated' : 'Project created');
       onOpenChange(false);
     },
     onError: () => {
-      toast.error('Failed to save program');
+      toast.error('Failed to save project');
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!portfolioId) {
-      toast.error('Please select a portfolio');
+    if (!programId) {
+      toast.error('Please select a program');
       return;
     }
     mutation.mutate({
       name,
-      portfolio_id: portfolioId,
+      program_id: programId,
       status,
     });
   };
@@ -73,7 +76,7 @@ export function ProgramDialog({ open, onOpenChange, program }: ProgramDialogProp
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{program ? 'Edit Program' : 'Create Program'}</DialogTitle>
+          <DialogTitle>{program ? 'Edit Project' : 'Create Project'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -87,15 +90,15 @@ export function ProgramDialog({ open, onOpenChange, program }: ProgramDialogProp
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="portfolio">Portfolio *</Label>
-              <Select value={portfolioId} onValueChange={setPortfolioId}>
+              <Label htmlFor="program">Program *</Label>
+              <Select value={programId} onValueChange={setProgramId}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select portfolio" />
+                  <SelectValue placeholder="Select program" />
                 </SelectTrigger>
                 <SelectContent>
-                  {portfolios?.map((portfolio) => (
-                    <SelectItem key={portfolio.id} value={portfolio.id}>
-                      {portfolio.name}
+                  {programs?.map((prog) => (
+                    <SelectItem key={prog.id} value={prog.id}>
+                      {prog.name}
                     </SelectItem>
                   ))}
                 </SelectContent>

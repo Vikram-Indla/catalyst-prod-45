@@ -129,7 +129,7 @@ export function CreateEntityDialog({
         result = data;
       } else if (entityType === 'program') {
         const { data, error } = await supabase
-          .from('portfolios')
+          .from('programs')
           .insert({ 
             name: name.trim(),
             key: key.trim(),
@@ -140,32 +140,33 @@ export function CreateEntityDialog({
         if (error) throw error;
         result = data;
       } else {
-        const { data: portfolios } = await supabase
-          .from('portfolios')
+        // Creating a project - need parent program
+        const { data: programs } = await supabase
+          .from('programs')
           .select('id')
           .limit(1);
 
-        let portfolioId = portfolios?.[0]?.id;
+        let programId = programs?.[0]?.id;
 
-        if (!portfolioId) {
-          const { data: newPortfolio, error: portfolioError } = await supabase
-            .from('portfolios')
+        if (!programId) {
+          const { data: newProgram, error: programError } = await supabase
+            .from('programs')
             .insert({ name: 'Default', key: 'DEFAULT' })
             .select()
             .single();
-          if (portfolioError) throw portfolioError;
-          portfolioId = newPortfolio.id;
+          if (programError) throw programError;
+          programId = newProgram.id;
           queryClient.invalidateQueries({ queryKey: ['admin-programs'] });
           queryClient.invalidateQueries({ queryKey: ['programs-header'] });
         }
 
         const { data, error } = await supabase
-          .from('programs')
+          .from('projects')
           .insert({ 
             name: name.trim(), 
             key: key.trim(),
             description: description.trim() || null,
-            portfolio_id: portfolioId 
+            program_id: programId 
           })
           .select()
           .single();

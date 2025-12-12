@@ -14,6 +14,7 @@ interface PortfolioDialogProps {
   portfolio?: any;
 }
 
+// Note: "Portfolio" in UI maps to "programs" table in database
 export function PortfolioDialog({ open, onOpenChange, portfolio }: PortfolioDialogProps) {
   const [name, setName] = useState(portfolio?.name || '');
   const [status, setStatus] = useState(portfolio?.status || 'active');
@@ -24,25 +25,25 @@ export function PortfolioDialog({ open, onOpenChange, portfolio }: PortfolioDial
     mutationFn: async (data: any) => {
       if (portfolio) {
         const { error } = await supabase
-          .from('portfolios')
+          .from('programs')
           .update(data)
           .eq('id', portfolio.id);
         if (error) throw error;
       } else {
         const { error } = await supabase
-          .from('portfolios')
+          .from('programs')
           .insert([data]);
         if (error) throw error;
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['portfolios'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-portfolios'] });
-      toast.success(portfolio ? 'Portfolio updated' : 'Portfolio created');
+      queryClient.invalidateQueries({ queryKey: ['programs'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-programs'] });
+      toast.success(portfolio ? 'Program updated' : 'Program created');
       onOpenChange(false);
     },
     onError: () => {
-      toast.error('Failed to save portfolio');
+      toast.error('Failed to save program');
     },
   });
 
@@ -58,7 +59,7 @@ export function PortfolioDialog({ open, onOpenChange, portfolio }: PortfolioDial
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{portfolio ? 'Edit Portfolio' : 'Create Portfolio'}</DialogTitle>
+          <DialogTitle>{portfolio ? 'Edit Program' : 'Create Program'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

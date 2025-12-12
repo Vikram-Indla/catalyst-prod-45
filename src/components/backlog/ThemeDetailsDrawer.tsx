@@ -91,12 +91,12 @@ function ThemeDetailsTab({
 }) {
   const [targetDateLocked, setTargetDateLocked] = useState(false);
 
-  // Fetch active programs for multi-select
+  // Fetch active programs for multi-select (now 'programs' table)
   const { data: programs } = useQuery({
     queryKey: ['active-programs'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('portfolios')
+        .from('programs')
         .select('id, name')
         .eq('status', 'active')
         .order('name');

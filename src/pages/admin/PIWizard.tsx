@@ -30,7 +30,7 @@ export default function PIWizard() {
     queryKey: ["portfolios"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("portfolios")
+        .from("programs")
         .select("*")
         .eq("status", "active")
         .order("name");
@@ -44,9 +44,9 @@ export default function PIWizard() {
     queryFn: async () => {
       if (!formData.portfolioId) return [];
       const { data, error } = await supabase
-        .from("programs")
+        .from("projects")
         .select("*")
-        .eq("portfolio_id", formData.portfolioId)
+        .eq("program_id", formData.portfolioId)
         .eq("status", "active");
       if (error) throw error;
       return data;
@@ -62,9 +62,9 @@ export default function PIWizard() {
         .from("teams")
         .select(`
           *,
-          programs!inner(portfolio_id)
+          projects!inner(program_id)
         `)
-        .eq("programs.portfolio_id", formData.portfolioId)
+        .eq("projects.program_id", formData.portfolioId)
         .eq("status", "active");
       if (error) throw error;
       return data;
@@ -82,7 +82,7 @@ export default function PIWizard() {
         .from("program_increments")
         .insert({
           name: formData.name,
-          portfolio_id: formData.portfolioId,
+          program_id: formData.portfolioId,
           start_date: format(startDate, "yyyy-MM-dd"),
           end_date: format(endDate, "yyyy-MM-dd"),
           state: "planned",
