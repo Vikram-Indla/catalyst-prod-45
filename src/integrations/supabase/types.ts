@@ -1900,6 +1900,35 @@ export type Database = {
           },
         ]
       }
+      epic_key_sequences: {
+        Row: {
+          created_at: string | null
+          last_sequence: number
+          program_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          last_sequence?: number
+          program_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          last_sequence?: number
+          program_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "epic_key_sequences_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: true
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       epic_label_assignments: {
         Row: {
           created_at: string | null
@@ -12615,6 +12644,10 @@ export type Database = {
       }
       current_user_is_approved: { Args: never; Returns: boolean }
       extract_kb_tiptap_text: { Args: { content: Json }; Returns: string }
+      generate_next_epic_key: {
+        Args: { p_program_id: string }
+        Returns: string
+      }
       get_user_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]

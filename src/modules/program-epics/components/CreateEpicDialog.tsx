@@ -1,8 +1,12 @@
 /**
- * Create Epic Dialog - Simple dialog for creating epics within a program context
+ * Create Epic Dialog - Creates epics with auto-generated keys
+ * 
+ * KEY FORMAT: <PROGRAM_KEY>-<SEQUENCE> (e.g., DTP-001)
+ * - Program key must be exactly 3 uppercase letters
+ * - Sequence is 3-digit zero-padded, per-program scope
  */
 import React, { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import {
   Dialog,
@@ -16,6 +20,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { generateNextEpicKey, isValidProgramKey } from '@/utils/epic-key-generator';
 
 interface CreateEpicDialogProps {
   open: boolean;
@@ -32,14 +37,42 @@ export function CreateEpicDialog({
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
 
+  // Fetch program info to display the key preview
+  const { data: program } = useQuery({
+    queryKey: ['program-for-epic', programId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('programs')
+        .select('id, key, name')
+        .eq('id', programId)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: open && !!programId,
+  });
+
+  // Derive the 3-letter key for display
+  const getProgramKeyPreview = () => {
+    if (!program?.key) return '???';
+    if (isValidProgramKey(program.key)) return program.key;
+    // Extract first 3 letters
+    const upper = program.key.toUpperCase().replace(/[^A-Z]/g, '');
+    return upper.length >= 3 ? upper.substring(0, 3) : 'PRG';
+  };
+
   const createEpicMutation = useMutation({
     mutationFn: async () => {
+      // Generate the next epic key for this program
+      const epicKey = await generateNextEpicKey(programId);
+      
       const { data, error } = await supabase
         .from('epics')
         .insert({
           name: name.trim(),
           description: description.trim() || null,
-          primary_program_id: programId, // CRITICAL: Use primary_program_id for program scoping
+          primary_program_id: programId,
+          epic_key: epicKey,
           status: 'proposed',
           health: 'green',
         } as any)
@@ -47,15 +80,15 @@ export function CreateEpicDialog({
         .single();
 
       if (error) throw error;
-      return data;
+      return { ...data, epic_key: epicKey };
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       // Invalidate all epic-related queries with programId scope
       queryClient.invalidateQueries({ queryKey: ['epics'] });
       queryClient.invalidateQueries({ queryKey: ['program-epics', programId] });
       queryClient.invalidateQueries({ queryKey: ['backlog-items', programId] });
       queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
-      toast.success('Epic created successfully');
+      toast.success(`Epic ${data.epic_key} created successfully`);
       handleClose();
     },
     onError: (error) => {
@@ -84,6 +117,15 @@ export function CreateEpicDialog({
           <DialogTitle>Create Epic</DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-4 py-4">
+          {/* Epic Number Preview */}
+          <div className="flex items-center gap-2 p-3 rounded-md bg-muted/50 border border-border">
+            <span className="text-sm text-muted-foreground">Epic Number:</span>
+            <span className="font-mono font-medium text-brand-gold">
+              {getProgramKeyPreview()}-###
+            </span>
+            <span className="text-xs text-muted-foreground">(auto-generated)</span>
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="epic-name">
               Epic Name <span className="text-destructive">*</span>
