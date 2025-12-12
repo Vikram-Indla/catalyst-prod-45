@@ -11,6 +11,7 @@ import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { RichTextEditor } from '@/components/business-requests/RichTextEditor';
 import { DELIVERY_PLATFORM_OPTIONS, DEPARTMENT_OPTIONS } from '@/types/business-request';
+import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 
 // Description template with section hints
 const DESCRIPTION_TEMPLATE_EN = `<p><strong>Business Need:</strong></p>
@@ -58,6 +59,8 @@ const translations = {
     descPlaceholder: 'Provide enough details for the business request (50 words minimum)',
     descHint: 'Tip: include objective, impacted users, urgency, and expected outcome.',
     descError: 'Description is required.',
+    businessAskLabel: 'Business Ask',
+    businessAskPlaceholder: 'Select',
     platformLabel: 'Delivery Platform',
     platformPlaceholder: 'Select platform…',
     platformHint: 'Choose the delivery platform that will implement this request.',
@@ -123,6 +126,8 @@ const translations = {
     descPlaceholder: 'قدم تفاصيل كافية لطلب العمل (50 كلمة كحد أدنى)',
     descHint: 'نصيحة: اذكر الهدف، المستخدمين المتأثرين، الاستعجال، والنتيجة المتوقعة.',
     descError: 'الوصف مطلوب.',
+    businessAskLabel: 'تاريخ الطلب',
+    businessAskPlaceholder: 'اختر',
     platformLabel: 'منصة التسليم',
     platformPlaceholder: 'اختر المنصة…',
     platformHint: 'اختر منصة التسليم التي ستنفذ هذا الطلب.',
@@ -190,6 +195,7 @@ export default function RequestAccess() {
   const [formData, setFormData] = useState({
     summary: '',
     description: '',
+    businessAsk: '',
     deliveryPlatform: '',
     reporter: '',
     email: '',
@@ -335,6 +341,7 @@ export default function RequestAccess() {
         .insert([{
           title: formData.summary,
           description: formData.description,
+          start_date: formData.businessAsk || null, // Business Ask date - same field as drawer
           delivery_platform: formData.deliveryPlatform,
           department: formData.department,
           business_owner: formData.businessOwner,
@@ -469,6 +476,7 @@ export default function RequestAccess() {
     setFormData({
       summary: '',
       description: '',
+      businessAsk: '',
       deliveryPlatform: '',
       reporter: '',
       email: '',
@@ -611,6 +619,17 @@ export default function RequestAccess() {
                       <span>{countWordsFromHtml(formData.description)} words</span>
                     </div>
                     {errors.description && <p className="text-xs font-bold text-[#B42318]">{errors.description}</p>}
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label className="text-[13px] font-bold text-[#111827]">
+                      {t.businessAskLabel}
+                    </Label>
+                    <CatalystDatePicker
+                      value={formData.businessAsk || null}
+                      onChange={(date) => setFormData({ ...formData, businessAsk: date ? format(date, 'yyyy-MM-dd') : '' })}
+                      placeholder={t.businessAskPlaceholder}
+                    />
                   </div>
 
                   <div className={cn("space-y-1.5", errors.deliveryPlatform && "has-error")}>
