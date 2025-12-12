@@ -248,7 +248,7 @@ export function BudgetViewTab({ data, onChange }: BudgetViewTabProps) {
           </div>
           <p className="text-lg font-semibold text-foreground">{fundingStatus}</p>
           <p className="text-xs text-muted-foreground mt-1">
-            Source: {budgetType.length > 0 ? budgetType.join(' / ') : 'Not set'}
+            Type: {budgetType.length > 0 ? budgetType.join(' / ') : 'Not set'}
           </p>
         </div>
 
@@ -259,9 +259,9 @@ export function BudgetViewTab({ data, onChange }: BudgetViewTabProps) {
             <span className="text-xs font-medium text-muted-foreground">Approved Budget</span>
           </div>
           <p className="text-lg font-semibold text-foreground">{formatCurrency(approvedBudget)}</p>
-          <button className="text-xs text-brand-gold hover:underline mt-1">
-            View breakdown
-          </button>
+          <p className="text-xs text-muted-foreground mt-1">
+            Budget year: {data.budget_year || 'Not selected'}
+          </p>
         </div>
 
         {/* Capacity Status Card */}
