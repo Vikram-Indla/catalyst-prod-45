@@ -10,7 +10,10 @@ import { useUserRole } from './useUserRole';
 import { 
   DEFAULT_PROGRAM_ID, 
   getCanonicalProgramKey, 
-  isDefaultProgram 
+  getCanonicalProjectKey,
+  isDefaultProgram,
+  logProgramKeyBinding,
+  logProjectKeyBinding
 } from '@/lib/programKeyUtils';
 
 interface ProgramWithAccess {
@@ -81,6 +84,8 @@ export function useWorkspaceAccess() {
       return (data || [])
         .filter(p => !isDefaultProgram(p)) // Double-check exclusion
         .map(p => {
+          // Log key binding for diagnostics
+          logProgramKeyBinding(p);
           const canonicalKey = getCanonicalProgramKey(p);
           return {
             id: p.id,
@@ -112,6 +117,12 @@ export function useWorkspaceAccess() {
       if (error) throw error;
 
       return (data || []).map(p => {
+        // Log key binding for diagnostics
+        logProjectKeyBinding({
+          ...p,
+          programs: p.programs as { id?: string; name?: string; key?: string | null } | null
+        });
+
         // Project is accessible if:
         // 1. User is admin, OR
         // 2. User is a direct project member, OR
@@ -119,9 +130,12 @@ export function useWorkspaceAccess() {
         const hasDirectAccess = projectMemberships?.includes(p.id) ?? false;
         const hasInheritedAccess = p.program_id && (programMemberships?.includes(p.program_id) ?? false);
         
+        // Use canonical 3-letter keys
+        const canonicalProjectKey = getCanonicalProjectKey(p);
+
         return {
           id: p.id,
-          key: p.key || '',
+          key: canonicalProjectKey || p.key || '',
           name: p.name,
           description: p.description,
           programId: p.program_id,
