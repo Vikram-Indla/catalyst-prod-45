@@ -170,6 +170,7 @@ serve(async (req) => {
     await supabaseAdmin
       .from("profiles")
       .update({ 
+        last_login: new Date().toISOString(),
         last_login_at: new Date().toISOString(),
         failed_login_count: 0,
         locked_until: null
