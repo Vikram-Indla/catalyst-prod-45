@@ -25,7 +25,7 @@ import {
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
-import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
+import { EpicDrawer } from '@/components/items/epics/EpicDrawer';
 
 interface Epic {
   id: string;
@@ -471,14 +471,12 @@ export function EpicListView({ programId }: EpicListViewProps) {
         </div>
       </div>
 
-      {/* Epic Details Panel */}
-      {selectedEpic && (
-        <EpicDetailsPanel 
-          epic={selectedEpic} 
-          open={true}
-          onClose={() => setSelectedEpic(null)} 
-        />
-      )}
+      {/* Epic Drawer */}
+      <EpicDrawer 
+        epicId={selectedEpic?.id || null}
+        isOpen={!!selectedEpic}
+        onClose={() => setSelectedEpic(null)} 
+      />
     </div>
   );
 }
