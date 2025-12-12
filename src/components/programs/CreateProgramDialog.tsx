@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import {
@@ -12,24 +13,31 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { getProgramLandingRoute } from '@/lib/workspaceContext';
 
 interface CreateProgramDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSuccess?: (program: { id: string; name: string; key: string }) => void;
 }
 
-export function CreateProgramDialog({ open, onOpenChange }: CreateProgramDialogProps) {
+export function CreateProgramDialog({ open, onOpenChange, onSuccess }: CreateProgramDialogProps) {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [name, setName] = useState('');
   const [key, setKey] = useState('');
   const [description, setDescription] = useState('');
 
   const createMutation = useMutation({
     mutationFn: async () => {
+      const finalKey = key.trim() || generateKey(name);
       const { data, error } = await supabase
         .from('portfolios')
         .insert({
           name: name.trim(),
+          key: finalKey.toUpperCase(),
+          description: description.trim() || null,
           status: 'active',
         })
         .select()
@@ -38,11 +46,23 @@ export function CreateProgramDialog({ open, onOpenChange }: CreateProgramDialogP
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      // Invalidate all relevant queries
       queryClient.invalidateQueries({ queryKey: ['programs-directory'] });
       queryClient.invalidateQueries({ queryKey: ['programs-header'] });
+      queryClient.invalidateQueries({ queryKey: ['workspace-programs'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-programs'] });
+      queryClient.invalidateQueries({ queryKey: ['portfolios'] });
+      
       toast.success('Program created successfully');
       handleClose();
+      
+      // Call onSuccess callback or navigate to program
+      if (onSuccess) {
+        onSuccess({ id: data.id, name: data.name, key: data.key });
+      } else {
+        navigate(getProgramLandingRoute(data.id));
+      }
     },
     onError: (error) => {
       toast.error('Failed to create program: ' + error.message);
@@ -65,18 +85,26 @@ export function CreateProgramDialog({ open, onOpenChange }: CreateProgramDialogP
     createMutation.mutate();
   };
 
-  const generateKey = (name: string) => {
-    return name
-      .toUpperCase()
-      .replace(/[^A-Z0-9]/g, '')
-      .slice(0, 10);
+  const generateKey = (name: string): string => {
+    if (!name.trim()) return '';
+    const words = name.trim().split(/\s+/);
+    if (words.length === 1) {
+      return words[0].substring(0, 4).toUpperCase();
+    }
+    return words.slice(0, 4).map(w => w[0]).join('').toUpperCase();
   };
 
   const handleNameChange = (value: string) => {
     setName(value);
+    // Auto-generate key if user hasn't manually edited it
     if (!key || key === generateKey(name)) {
       setKey(generateKey(value));
     }
+  };
+
+  const handleKeyChange = (value: string) => {
+    // Only allow uppercase alphanumeric
+    setKey(value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10));
   };
 
   return (
@@ -94,7 +122,7 @@ export function CreateProgramDialog({ open, onOpenChange }: CreateProgramDialogP
               </Label>
               <Input
                 id="program-name"
-                placeholder="Enter program name"
+                placeholder="e.g., Digital Transformation"
                 value={name}
                 onChange={(e) => handleNameChange(e.target.value)}
                 required
@@ -103,25 +131,29 @@ export function CreateProgramDialog({ open, onOpenChange }: CreateProgramDialogP
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="program-key">Key</Label>
+              <Label htmlFor="program-key">
+                Key <span className="text-destructive">*</span>
+              </Label>
               <Input
                 id="program-key"
-                placeholder="e.g., PROD"
+                placeholder="e.g., DT"
                 value={key}
-                onChange={(e) => setKey(e.target.value)}
+                onChange={(e) => handleKeyChange(e.target.value)}
+                maxLength={10}
               />
               <p className="text-xs text-muted-foreground">
-                A unique identifier for this program
+                Unique prefix for epics (e.g., {key || 'KEY'}-001)
               </p>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="program-description">Description</Label>
-              <Input
+              <Textarea
                 id="program-description"
-                placeholder="Describe the purpose of this program"
+                placeholder="Brief description (optional)"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                rows={3}
               />
             </div>
           </div>
@@ -133,6 +165,7 @@ export function CreateProgramDialog({ open, onOpenChange }: CreateProgramDialogP
             <Button
               type="submit"
               disabled={!name.trim() || createMutation.isPending}
+              className="bg-brand-gold hover:bg-brand-gold-hover"
             >
               {createMutation.isPending ? 'Creating...' : 'Create program'}
             </Button>

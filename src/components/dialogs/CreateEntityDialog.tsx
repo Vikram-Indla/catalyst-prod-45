@@ -130,7 +130,11 @@ export function CreateEntityDialog({
       } else if (entityType === 'program') {
         const { data, error } = await supabase
           .from('portfolios')
-          .insert({ name: name.trim() })
+          .insert({ 
+            name: name.trim(),
+            key: key.trim(),
+            description: description.trim() || null,
+          })
           .select()
           .single();
         if (error) throw error;
@@ -146,7 +150,7 @@ export function CreateEntityDialog({
         if (!portfolioId) {
           const { data: newPortfolio, error: portfolioError } = await supabase
             .from('portfolios')
-            .insert({ name: 'Default Project' })
+            .insert({ name: 'Default', key: 'DEFAULT' })
             .select()
             .single();
           if (portfolioError) throw portfolioError;
@@ -157,7 +161,12 @@ export function CreateEntityDialog({
 
         const { data, error } = await supabase
           .from('programs')
-          .insert({ name: name.trim(), portfolio_id: portfolioId })
+          .insert({ 
+            name: name.trim(), 
+            key: key.trim(),
+            description: description.trim() || null,
+            portfolio_id: portfolioId 
+          })
           .select()
           .single();
         if (error) throw error;

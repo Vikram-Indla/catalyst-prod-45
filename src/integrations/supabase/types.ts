@@ -6729,7 +6729,9 @@ export type Database = {
       portfolios: {
         Row: {
           created_at: string | null
+          description: string | null
           id: string
+          key: string
           name: string
           owner_id: string | null
           status: Database["public"]["Enums"]["portfolio_status"] | null
@@ -6737,7 +6739,9 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          description?: string | null
           id?: string
+          key: string
           name: string
           owner_id?: string | null
           status?: Database["public"]["Enums"]["portfolio_status"] | null
@@ -6745,7 +6749,9 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          description?: string | null
           id?: string
+          key?: string
           name?: string
           owner_id?: string | null
           status?: Database["public"]["Enums"]["portfolio_status"] | null
@@ -7284,7 +7290,9 @@ export type Database = {
       programs: {
         Row: {
           created_at: string | null
+          description: string | null
           id: string
+          key: string
           name: string
           portfolio_id: string
           rte_id: string | null
@@ -7293,7 +7301,9 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          description?: string | null
           id?: string
+          key: string
           name: string
           portfolio_id: string
           rte_id?: string | null
@@ -7302,7 +7312,9 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          description?: string | null
           id?: string
+          key?: string
           name?: string
           portfolio_id?: string
           rte_id?: string | null

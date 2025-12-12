@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import {
   Dialog,
@@ -21,15 +22,28 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { toast } from 'sonner';
+import { getProjectLandingRoute } from '@/lib/workspaceContext';
 
 interface CreateProjectDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSuccess?: (project: { id: string; name: string; key: string }) => void;
 }
 
-export function CreateProjectDialog({ open, onOpenChange }: CreateProjectDialogProps) {
+function generateKey(name: string): string {
+  if (!name.trim()) return '';
+  const words = name.trim().split(/\s+/);
+  if (words.length === 1) {
+    return words[0].substring(0, 4).toUpperCase();
+  }
+  return words.slice(0, 4).map(w => w[0]).join('').toUpperCase();
+}
+
+export function CreateProjectDialog({ open, onOpenChange, onSuccess }: CreateProjectDialogProps) {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [name, setName] = useState('');
+  const [key, setKey] = useState('');
   const [description, setDescription] = useState('');
   const [programId, setProgramId] = useState('');
   const [projectType, setProjectType] = useState<'scrum' | 'kanban'>('scrum');
@@ -66,7 +80,7 @@ export function CreateProjectDialog({ open, onOpenChange }: CreateProjectDialogP
           // Create default program
           const { data: newDefault, error: defaultError } = await supabase
             .from('portfolios')
-            .insert({ name: 'Default', status: 'active' })
+            .insert({ name: 'Default', key: 'DEFAULT', status: 'active' })
             .select('id')
             .single();
           
@@ -75,20 +89,34 @@ export function CreateProjectDialog({ open, onOpenChange }: CreateProjectDialogP
         }
       }
 
-      const { error } = await supabase
+      const finalKey = key.trim() || generateKey(name);
+      const { data, error } = await supabase
         .from('programs')
         .insert({
-          name,
+          name: name.trim(),
+          key: finalKey.toUpperCase(),
+          description: description.trim() || null,
           portfolio_id: portfolioId,
-        });
+        })
+        .select()
+        .single();
 
       if (error) throw error;
+      return data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['projects-directory'] });
       queryClient.invalidateQueries({ queryKey: ['programs-for-project'] });
+      queryClient.invalidateQueries({ queryKey: ['workspace-projects'] });
+      queryClient.invalidateQueries({ queryKey: ['projects-header'] });
       toast.success('Project created successfully');
       handleClose();
+      
+      if (onSuccess) {
+        onSuccess({ id: data.id, name: data.name, key: data.key });
+      } else {
+        navigate(getProjectLandingRoute(data.id));
+      }
     },
     onError: (error) => {
       toast.error('Failed to create project: ' + error.message);
@@ -97,6 +125,7 @@ export function CreateProjectDialog({ open, onOpenChange }: CreateProjectDialogP
 
   const handleClose = () => {
     setName('');
+    setKey('');
     setDescription('');
     setProgramId('');
     setProjectType('scrum');
@@ -181,7 +210,14 @@ export function CreateProjectDialog({ open, onOpenChange }: CreateProjectDialogP
             <Button type="button" variant="outline" onClick={handleClose}>
               Cancel
             </Button>
-            <Button type="submit" disabled={createProject.isPending}>
+            <Button 
+              type="submit" 
+              disabled={createProject.isPending}
+              className="bg-brand-gold hover:bg-brand-gold-hover"
+            >
+              {createProject.isPending ? 'Creating...' : 'Create project'}
+            </Button>
+          </DialogFooter>
               {createProject.isPending ? 'Creating...' : 'Create project'}
             </Button>
           </DialogFooter>
