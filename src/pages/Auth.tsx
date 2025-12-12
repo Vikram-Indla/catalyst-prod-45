@@ -43,14 +43,19 @@ export default function Auth() {
         .from('profiles')
         .select('must_change_password')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error checking must_change_password:', error);
         return false;
       }
 
-      return profile?.must_change_password === true;
+      // No profile found - user might be pending approval
+      if (!profile) {
+        return false;
+      }
+
+      return profile.must_change_password === true;
     } catch (err) {
       console.error('Error in checkMustChangePassword:', err);
       return false;
