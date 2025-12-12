@@ -164,7 +164,7 @@ export function PortfolioRoomSidebar({
     <aside 
       className={cn(
         "h-full border-r bg-card transition-all duration-300 flex-shrink-0 relative flex flex-col",
-        expanded ? "w-[280px]" : "w-16",
+        expanded ? "w-[200px] min-w-[200px] max-w-[240px]" : "w-14",
         className
       )}
     >
