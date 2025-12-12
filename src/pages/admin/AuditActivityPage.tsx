@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { format, subDays, isWithinInterval, parseISO } from 'date-fns';
 import { Json } from '@/integrations/supabase/types';
@@ -13,21 +13,35 @@ import {
   Search, 
   Download, 
   Save,
-  ChevronDown,
+  Trash2,
   RotateCcw,
   Layers
 } from 'lucide-react';
 import { AuditDetailsDrawer } from '@/components/admin/audit/AuditDetailsDrawer';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 // Types
 interface ActivityEvent {
   id: string;
   created_at: string | null;
   actor_id: string | null;
+  actor_name?: string;
   action: string;
   entity_type: string;
   entity_id: string;
+  entity_name?: string;
   before_json: Json | null;
   after_json: Json | null;
 }
@@ -42,7 +56,33 @@ const datePresets = [
 // Action types
 const actionTypes = ['INSERT', 'UPDATE', 'DELETE'];
 
+// Helper to get entity name from after_json
+const getEntityName = (log: ActivityEvent): string => {
+  if (log.after_json && typeof log.after_json === 'object' && !Array.isArray(log.after_json)) {
+    const json = log.after_json as Record<string, unknown>;
+    return (json.name as string) || (json.title as string) || (json.summary as string) || '';
+  }
+  return '';
+};
+
+// Helper to format action as readable verb
+const getActionVerb = (action: string): string => {
+  switch (action) {
+    case 'INSERT': return 'created';
+    case 'UPDATE': return 'updated';
+    case 'DELETE': return 'deleted';
+    default: return action.toLowerCase();
+  }
+};
+
+// Helper to format entity type as readable noun
+const formatEntityType = (type: string): string => {
+  return type.replace(/_/g, ' ').replace(/s$/, '');
+};
+
 export default function AuditActivityPage() {
+  const queryClient = useQueryClient();
+  
   // Filters state
   const [datePreset, setDatePreset] = useState('7d');
   const [actorFilter, setActorFilter] = useState('');
@@ -54,6 +94,27 @@ export default function AuditActivityPage() {
   // Drawer state
   const [selectedEvent, setSelectedEvent] = useState<ActivityEvent | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  // Fetch profiles for actor names
+  const { data: profiles } = useQuery({
+    queryKey: ['profiles-for-audit'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, full_name, email');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Create a lookup map for actor names
+  const actorNameMap = useMemo(() => {
+    const map = new Map<string, string>();
+    profiles?.forEach(p => {
+      map.set(p.id, p.full_name || p.email || 'Unknown');
+    });
+    return map;
+  }, [profiles]);
 
   // Fetch activity logs
   const { data: activityLogs, isLoading } = useQuery({
@@ -67,6 +128,24 @@ export default function AuditActivityPage() {
       
       if (error) throw error;
       return data as ActivityEvent[];
+    },
+  });
+
+  // Clear all logs mutation
+  const clearLogsMutation = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from('activity_logs')
+        .delete()
+        .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all rows
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['audit-activity-logs'] });
+      toast.success('Activity log cleared successfully');
+    },
+    onError: () => {
+      toast.error('Failed to clear activity log');
     },
   });
 
@@ -187,6 +266,31 @@ export default function AuditActivityPage() {
             </p>
           </div>
           <div className="flex items-center gap-2">
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-2 text-destructive hover:text-destructive">
+                  <Trash2 className="h-4 w-4" />
+                  Clear Log
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Clear Activity Log?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will permanently delete all activity log entries. This action cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction 
+                    onClick={() => clearLogsMutation.mutate()}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    {clearLogsMutation.isPending ? 'Clearing...' : 'Clear All'}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
             <Button variant="outline" size="sm" className="gap-2">
               <Save className="h-4 w-4" />
               Save view
@@ -293,54 +397,55 @@ export default function AuditActivityPage() {
               <thead className="bg-muted/50 sticky top-0">
                 <tr className="border-b">
                   <th className="text-left font-medium px-4 py-2 w-40">Time</th>
-                  <th className="text-left font-medium px-4 py-2 w-32">Actor</th>
-                  <th className="text-left font-medium px-4 py-2 w-24">Action</th>
+                  <th className="text-left font-medium px-4 py-2">Activity</th>
                   <th className="text-left font-medium px-4 py-2 w-32">Entity Type</th>
-                  <th className="text-left font-medium px-4 py-2">Entity</th>
-                  <th className="text-left font-medium px-4 py-2">Details</th>
                 </tr>
               </thead>
               <tbody>
-                {displayLogs.map((log) => (
-                  <tr
-                    key={log.id}
-                    onClick={() => handleRowClick(log)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleRowClick(log)}
-                    tabIndex={0}
-                    className={cn(
-                      'border-b cursor-pointer hover:bg-muted/50 transition-colors',
-                      'focus:outline-none focus:bg-brand-gold/5'
-                    )}
-                  >
-                    <td className="px-4 py-2 text-muted-foreground whitespace-nowrap">
-                      {log.created_at ? format(parseISO(log.created_at), 'MMM d, HH:mm:ss') : '-'}
-                    </td>
-                    <td className="px-4 py-2 truncate max-w-[128px]">
-                      {log.actor_id ? log.actor_id.slice(0, 8) + '...' : 'System'}
-                    </td>
-                    <td className="px-4 py-2">
-                      <Badge variant={getActionBadgeVariant(log.action)} className="text-xs">
-                        {log.action}
-                      </Badge>
-                      {'repeatCount' in log && (log as ActivityEvent & { repeatCount?: number }).repeatCount && (
-                        <Badge variant="outline" className="ml-1 text-xs">
-                          ×{(log as ActivityEvent & { repeatCount?: number }).repeatCount}
-                        </Badge>
+                {displayLogs.map((log) => {
+                  const actorName = log.actor_id ? actorNameMap.get(log.actor_id) || 'Unknown User' : 'System';
+                  const entityName = getEntityName(log);
+                  const actionVerb = getActionVerb(log.action);
+                  const entityType = formatEntityType(log.entity_type);
+                  
+                  return (
+                    <tr
+                      key={log.id}
+                      onClick={() => handleRowClick(log)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleRowClick(log)}
+                      tabIndex={0}
+                      className={cn(
+                        'border-b cursor-pointer hover:bg-muted/50 transition-colors',
+                        'focus:outline-none focus:bg-brand-gold/5'
                       )}
-                    </td>
-                    <td className="px-4 py-2 text-muted-foreground">
-                      {log.entity_type}
-                    </td>
-                    <td className="px-4 py-2 font-mono text-xs truncate max-w-[200px]">
-                      {log.entity_id}
-                    </td>
-                    <td className="px-4 py-2 text-muted-foreground text-xs truncate max-w-[200px]">
-                      {log.after_json && typeof log.after_json === 'object' && !Array.isArray(log.after_json) 
-                        ? `${Object.keys(log.after_json).length} fields` 
-                        : '-'}
-                    </td>
-                  </tr>
-                ))}
+                    >
+                      <td className="px-4 py-2 text-muted-foreground whitespace-nowrap">
+                        {log.created_at ? format(parseISO(log.created_at), 'MMM d, HH:mm:ss') : '-'}
+                      </td>
+                      <td className="px-4 py-2">
+                        <span className="font-medium text-foreground">{actorName}</span>
+                        {' '}
+                        <Badge variant={getActionBadgeVariant(log.action)} className="text-xs mx-1">
+                          {actionVerb}
+                        </Badge>
+                        {' '}
+                        {entityName ? (
+                          <span className="text-foreground">"{entityName}"</span>
+                        ) : (
+                          <span className="text-muted-foreground">a {entityType}</span>
+                        )}
+                        {'repeatCount' in log && (log as ActivityEvent & { repeatCount?: number }).repeatCount && (
+                          <Badge variant="outline" className="ml-2 text-xs">
+                            ×{(log as ActivityEvent & { repeatCount?: number }).repeatCount}
+                          </Badge>
+                        )}
+                      </td>
+                      <td className="px-4 py-2 text-muted-foreground capitalize">
+                        {entityType}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           )}
