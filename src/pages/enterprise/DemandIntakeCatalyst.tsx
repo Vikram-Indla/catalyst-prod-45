@@ -54,7 +54,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 
 type ViewMode = 'list' | 'kanban';
-type SortOrder = 'ASC' | 'DESC';
+type SortOrder = 'NONE' | 'ASC' | 'DESC';
 
 // Process Step lozenge styles matching production
 const getProcessStepStyle = (status: string): string => {
@@ -124,8 +124,8 @@ export default function DemandIntakeCatalyst() {
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [filtersDialogOpen, setFiltersDialogOpen] = useState(false);
   const [filters, setFilters] = useState<SmartFilters>({});
-  const [sortKey, setSortKey] = useState<string>('rank');
-  const [sortOrder, setSortOrder] = useState<SortOrder>('ASC');
+  const [sortKey, setSortKey] = useState<string | null>(null);
+  const [sortOrder, setSortOrder] = useState<SortOrder>('NONE');
   
   // Modal states
   const [bulkStatusModalOpen, setBulkStatusModalOpen] = useState(false);
@@ -191,21 +191,25 @@ export default function DemandIntakeCatalyst() {
       });
     }
 
-    // Sort
-    return filtered.sort((a, b) => {
-      let aVal = a[sortKey];
-      let bVal = b[sortKey];
-      
-      if (sortKey === 'business_score') {
-        aVal = a.business_score ?? 0;
-        bVal = b.business_score ?? 0;
-      }
-      
-      if (sortOrder === 'ASC') {
-        return aVal > bVal ? 1 : -1;
-      }
-      return aVal < bVal ? 1 : -1;
-    }).map((req, idx) => ({
+    // Sort only if sortOrder is not NONE
+    if (sortOrder !== 'NONE' && sortKey) {
+      filtered = filtered.sort((a, b) => {
+        let aVal = a[sortKey];
+        let bVal = b[sortKey];
+        
+        if (sortKey === 'business_score') {
+          aVal = a.business_score ?? 0;
+          bVal = b.business_score ?? 0;
+        }
+        
+        if (sortOrder === 'ASC') {
+          return aVal > bVal ? 1 : -1;
+        }
+        return aVal < bVal ? 1 : -1;
+      });
+    }
+    
+    return filtered.map((req, idx) => ({
       ...req,
       displayRank: idx + 1
     }));
@@ -218,7 +222,15 @@ export default function DemandIntakeCatalyst() {
 
   const handleSort = (key: string) => {
     if (sortKey === key) {
-      setSortOrder(prev => prev === 'ASC' ? 'DESC' : 'ASC');
+      // Cycle through: NONE → ASC → DESC → NONE
+      if (sortOrder === 'NONE') {
+        setSortOrder('ASC');
+      } else if (sortOrder === 'ASC') {
+        setSortOrder('DESC');
+      } else {
+        setSortOrder('NONE');
+        setSortKey(null);
+      }
     } else {
       setSortKey(key);
       setSortOrder('ASC');
@@ -324,7 +336,7 @@ export default function DemandIntakeCatalyst() {
   const isAllSelected = selectedRows.length === paginatedRequests.length && paginatedRequests.length > 0;
 
   const SortIcon = ({ columnKey }: { columnKey: string }) => {
-    if (sortKey !== columnKey) {
+    if (sortKey !== columnKey || sortOrder === 'NONE') {
       return <ArrowUpDown className="ml-2 h-4 w-4 text-muted-foreground/60" />;
     }
     return sortOrder === 'ASC' 
