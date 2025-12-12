@@ -1,10 +1,74 @@
+// Program Roadmaps Page - Epic Roadmap
+// Route: /program/:programId/roadmaps
+
+import { useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { ProgramPageLayout } from '@/components/program/ProgramPageLayout';
-import Roadmaps from '../Roadmaps';
+import { RoadmapEngine } from '@/components/roadmap/RoadmapEngine';
+import { epicRoadmapConfig } from '@/config/roadmaps/epicRoadmapConfig';
+import { useEpicRoadmapItems } from '@/hooks/useEpicRoadmapItems';
+import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function RoadmapsWithSidebar() {
+  const { programId } = useParams<{ programId: string }>();
+  const [selectedEpicId, setSelectedEpicId] = useState<string | null>(null);
+
+  // Fetch epics for roadmap, scoped to program
+  const { items, isLoading } = useEpicRoadmapItems(programId);
+
+  // Fetch selected epic data for drawer
+  const { data: selectedEpic } = useQuery({
+    queryKey: ['epic-detail', selectedEpicId],
+    queryFn: async () => {
+      if (!selectedEpicId) return null;
+      const { data, error } = await supabase
+        .from('epics')
+        .select('*')
+        .eq('id', selectedEpicId)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!selectedEpicId,
+  });
+
+  // Handle epic bar click - open drawer
+  const handleEpicClick = (epicId: string) => {
+    setSelectedEpicId(epicId);
+  };
+
+  // Close drawer
+  const handleCloseDrawer = () => {
+    setSelectedEpicId(null);
+  };
+
+  // Create config with openDrawer wired
+  const configWithDrawer = {
+    ...epicRoadmapConfig,
+    openDrawer: handleEpicClick,
+  };
+
   return (
     <ProgramPageLayout>
-      <Roadmaps />
+      <div className="h-full flex flex-col bg-background">
+        <RoadmapEngine
+          config={configWithDrawer}
+          items={items}
+          isLoading={isLoading}
+          onItemClick={handleEpicClick}
+        />
+
+        {/* Epic Details Panel */}
+        {selectedEpic && (
+          <EpicDetailsPanel
+            epic={selectedEpic}
+            open={!!selectedEpicId}
+            onClose={handleCloseDrawer}
+          />
+        )}
+      </div>
     </ProgramPageLayout>
   );
 }
