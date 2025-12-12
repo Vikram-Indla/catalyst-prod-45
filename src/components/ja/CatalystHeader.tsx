@@ -213,7 +213,7 @@ export function CatalystHeader() {
                           </Button>
                         </PopoverTrigger>
                         {activeDropdown === item.label && (
-                          <PopoverContent className="p-0 w-auto z-[60]" align="start">
+                          <PopoverContent className="p-0 w-auto" align="start">
                             <ProductSelectorDropdown 
                               onClose={() => setActiveDropdown(null)} 
                               onCreateClick={() => setCreateDialogType('product')}
@@ -234,7 +234,7 @@ export function CatalystHeader() {
                           </Button>
                         </PopoverTrigger>
                         {activeDropdown === item.label && (
-                          <PopoverContent className="p-0 w-auto z-[60]" align="start">
+                          <PopoverContent className="p-0 w-auto" align="start">
                             <ProgramSelectorDropdown 
                               onClose={() => setActiveDropdown(null)} 
                               onCreateClick={() => setCreateDialogType('program')}
@@ -255,7 +255,7 @@ export function CatalystHeader() {
                           </Button>
                         </PopoverTrigger>
                         {activeDropdown === item.label && (
-                          <PopoverContent className="p-0 w-auto z-[60]" align="start">
+                          <PopoverContent className="p-0 w-auto" align="start">
                             <ProjectSelectorDropdown 
                               onClose={() => setActiveDropdown(null)} 
                               onCreateClick={() => setCreateDialogType('project')}
@@ -278,7 +278,7 @@ export function CatalystHeader() {
                           </Button>
                         </PopoverTrigger>
                         {activeDropdown === item.label && (
-                          <PopoverContent className="p-0 w-auto z-[60]" align="start">
+                          <PopoverContent className="p-0 w-auto" align="start">
                             <ReleaseDropdown onClose={() => setActiveDropdown(null)} />
                           </PopoverContent>
                         )}
@@ -295,7 +295,7 @@ export function CatalystHeader() {
                           </Button>
                         </PopoverTrigger>
                         {activeDropdown === item.label && (
-                          <PopoverContent className="p-0 w-auto z-[60]" align="start">
+                          <PopoverContent className="p-0 w-auto" align="start">
                             <StarredDropdown onClose={() => setActiveDropdown(null)} />
                           </PopoverContent>
                         )}
@@ -311,7 +311,7 @@ export function CatalystHeader() {
                             <ChevronDown className="h-3 w-3 block" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start" className="w-48 bg-popover z-[60]">
+                        <DropdownMenuContent align="start" className="w-48 bg-popover">
                           <DropdownMenuItem className="text-muted-foreground text-xs">
                             TODO (needs confirmation)
                           </DropdownMenuItem>
@@ -396,7 +396,7 @@ export function CatalystHeader() {
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 bg-popover z-[60]">
+                <DropdownMenuContent align="end" className="w-56 bg-popover">
                   <div className="flex flex-col space-y-1 p-2">
                     <p className="text-sm font-medium truncate">{user?.email}</p>
                     <p className="text-xs text-muted-foreground">User Account</p>
