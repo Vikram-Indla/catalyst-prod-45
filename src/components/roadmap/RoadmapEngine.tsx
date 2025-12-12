@@ -476,8 +476,12 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
     return isRTL ? statusConfig?.labelAr || statusKey : statusConfig?.label || statusKey;
   };
 
-  // Get platform name from config
+  // Get platform name from config - returns empty string if platform is a UUID (for Epic/Theme roadmaps)
   const getPlatformName = (platformKey: string) => {
+    // Skip UUIDs (theme_id, snapshot_id used for lane grouping)
+    if (platformKey && platformKey.match(/^[0-9a-f]{8}-[0-9a-f]{4}-/i)) {
+      return '';
+    }
     const platformConfig = config.platforms[platformKey];
     return isRTL ? platformConfig?.nameAr || platformKey : platformConfig?.name || platformKey;
   };
@@ -1013,8 +1017,12 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
                   </TooltipProvider>
                   <div className="text-[11px] mt-1 truncate" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
                     {isRTL ? item.ownerAr : item.ownerEn}
-                    <span className="mx-1.5">·</span>
-                    <span style={{ color: 'hsl(var(--roadmap-status-new))' }}>{getPlatformName(item.platform)}</span>
+                    {getPlatformName(item.platform) && (
+                      <>
+                        <span className="mx-1.5">·</span>
+                        <span style={{ color: 'hsl(var(--roadmap-status-new))' }}>{getPlatformName(item.platform)}</span>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
