@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Droppable, Draggable } from '@hello-pangea/dnd';
 import { BacklogPISection, BacklogItem } from '../types';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, ChevronRight, GripVertical } from 'lucide-react';
+import { ChevronDown, ChevronRight, GripVertical, ChevronLeft } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import { QuickAddRow } from './QuickAddRow';
@@ -18,16 +18,8 @@ interface BacklogSectionProps {
   onItemSelect: (itemId: string, selected: boolean) => void;
 }
 
-// New column configuration matching exact requirements
-const TABLE_COLUMNS = [
-  { id: 'epicNumber', label: 'Epic Number', width: 'min-w-[100px]' },
-  { id: 'drag', label: '', width: 'w-8' },
-  { id: 'summary', label: 'Summary', width: 'flex-1 min-w-[250px]' },
-  { id: 'quarters', label: 'Quarters', width: 'min-w-[120px]' },
-  { id: 'mvp', label: 'MVP', width: 'min-w-[60px] text-center' },
-  { id: 'status', label: 'Status', width: 'min-w-[120px]' },
-  { id: 'technicalScore', label: 'Technical Score', width: 'min-w-[100px] text-right' },
-];
+// Pagination settings
+const ITEMS_PER_PAGE = 10;
 
 export function BacklogSection({
   section,
@@ -36,10 +28,15 @@ export function BacklogSection({
   onItemSelect,
 }: BacklogSectionProps) {
   const [isExpanded, setIsExpanded] = useState(section.isExpanded);
+  const [currentPage, setCurrentPage] = useState(1);
   const { columnsShown, isEpicBacklog } = useBacklogState();
 
-  // Check if any items exist
-  const hasItems = section.items.length > 0;
+  // Pagination calculations
+  const totalItems = section.items.length;
+  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, totalItems);
+  const paginatedItems = section.items.slice(startIndex, endIndex);
 
   return (
     <div className="border rounded-lg bg-card overflow-hidden">
@@ -50,11 +47,11 @@ export function BacklogSection({
           {/* Expand chevron column */}
           <div className="w-6" />
           
-          {/* Epic Number */}
-          <div className="min-w-[100px]">Epic Number</div>
+          {/* Key (renamed from Epic Number) */}
+          <div className="min-w-[100px]">Key</div>
           
-          {/* Drag handle column */}
-          <div className="w-8">Drag</div>
+          {/* Drag handle column - NO LABEL */}
+          <div className="w-8" />
           
           {/* Health dot space */}
           <div className="w-3" />
@@ -90,8 +87,8 @@ export function BacklogSection({
                   Drag & Drop Items Here
                 </div>
               ) : (
-                section.items.map((item, index) => (
-                  <Draggable key={item.id} draggableId={item.id} index={index}>
+                paginatedItems.map((item, index) => (
+                  <Draggable key={item.id} draggableId={item.id} index={startIndex + index}>
                     {(provided, snapshot) => (
                       <div
                         ref={provided.innerRef}
@@ -99,7 +96,7 @@ export function BacklogSection({
                       >
                         <BacklogItemRow
                           item={item}
-                          rank={index + 1}
+                          rank={startIndex + index + 1}
                           isSelected={selectedItems.includes(item.id)}
                           onItemClick={onItemClick}
                           onItemSelect={onItemSelect}
@@ -119,6 +116,48 @@ export function BacklogSection({
 
         {/* Quick Add Row - Always at the bottom */}
         <QuickAddRow itemType={isEpicBacklog ? 'epic' : 'epic'} />
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between px-4 py-3 border-t bg-muted/10">
+            <div className="text-sm text-muted-foreground">
+              Showing {startIndex + 1}-{endIndex} of {totalItems} epics
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="h-4 w-4" />
+                Previous
+              </Button>
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                  <Button
+                    key={page}
+                    variant={currentPage === page ? "default" : "outline"}
+                    size="sm"
+                    className="w-8 h-8 p-0"
+                    onClick={() => setCurrentPage(page)}
+                  >
+                    {page}
+                  </Button>
+                ))}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+              >
+                Next
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
