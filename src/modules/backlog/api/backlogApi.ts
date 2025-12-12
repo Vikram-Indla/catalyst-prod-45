@@ -11,13 +11,31 @@ import {
 
 /**
  * Fetch backlog items based on query parameters
+ * CRITICAL: For program-scoped backlogs, programId MUST be provided to prevent cross-program data leakage
  */
 export async function fetchBacklogItems(params: BacklogQueryParams): Promise<BacklogResponse> {
-  const { scope, type, timeboxType, timeboxId, sort, filters, search } = params;
+  const { scope, type, timeboxType, timeboxId, sort, filters, search, programId } = params;
+
+  // HARD GUARD: For program-scoped epic backlog, programId is REQUIRED
+  if (scope === 'program' && type === 'epic' && !programId) {
+    console.error('[BacklogAPI] Program-scoped epic backlog requires programId');
+    return {
+      items: [],
+      meta: await fetchBacklogMeta(params),
+      sections: [],
+    };
+  }
 
   // Build query based on type
   const tableName = getTableName(type);
   let query: any = (supabase as any).from(tableName).select('*');
+
+  // CRITICAL: Filter by programId for program-scoped queries
+  if (programId && type === 'epic') {
+    query = query.eq('primary_program_id', programId);
+  } else if (programId && type === 'feature') {
+    query = query.eq('program_id', programId);
+  }
 
   // Apply search
   if (search) {
@@ -52,12 +70,29 @@ export async function fetchBacklogItems(params: BacklogQueryParams): Promise<Bac
 
 /**
  * Fetch unassigned items for the unassigned backlog panel
+ * CRITICAL: programId scoping applies here as well
  */
 export async function fetchUnassignedItems(params: BacklogQueryParams): Promise<{ items: BacklogItem[]; meta: BacklogMeta }> {
-  const { type } = params;
+  const { type, programId, scope } = params;
+
+  // HARD GUARD: For program-scoped epic backlog, programId is REQUIRED
+  if (scope === 'program' && type === 'epic' && !programId) {
+    console.error('[BacklogAPI] Program-scoped unassigned items require programId');
+    return {
+      items: [],
+      meta: await fetchBacklogMeta(params),
+    };
+  }
 
   const tableName = getTableName(type);
   let query: any = (supabase as any).from(tableName).select('*');
+
+  // CRITICAL: Filter by programId for program-scoped queries
+  if (programId && type === 'epic') {
+    query = query.eq('primary_program_id', programId);
+  } else if (programId && type === 'feature') {
+    query = query.eq('program_id', programId);
+  }
 
   // Filter for unassigned items
   if (type === 'epic' || type === 'feature' || type === 'capability') {

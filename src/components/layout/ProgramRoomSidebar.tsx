@@ -52,19 +52,19 @@ type MenuItem =
   | { id: string; label: string; icon: any; expandable: true; path?: never; badge?: never };
 
 const menuItems: MenuItem[] = [
-  { id: 'room', label: 'Project Room', icon: LayoutDashboard, path: '/programs/:programId/room' },
-  { id: 'epic-backlog', label: 'Epic Backlog', icon: Square, path: '/programs/:programId/epic-backlog' },
-  { id: 'features', label: 'Features', icon: Layers3, path: '/programs/:programId/features' },
-  { id: 'backlog', label: 'Backlog', icon: Diamond, path: '/programs/:programId/backlog' },
-  { id: 'program-board', label: 'Project board', icon: GitBranch, path: '/programs/:programId/program-board' },
-  { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/programs/:programId/roadmaps' },
-  { id: 'objective-tree', label: 'Objective tree (OKR hub)', icon: Target, path: '/programs/:programId/objective-tree' },
-  { id: 'work-tree', label: 'Work tree', icon: Network, path: '/programs/:programId/work-tree' },
-  { id: 'dependencies', label: 'Dependencies', icon: Link2, path: '/programs/:programId/dependencies' },
-  { id: 'tests', label: 'Tests', icon: FlaskConical, path: '/programs/:programId/tests' },
-  { id: 'forecast', label: 'Forecast', icon: Grid3x3, path: '/programs/:programId/forecast' },
-  { id: 'capacity', label: 'Capacity', icon: UsersIcon, path: '/programs/:programId/capacity', badge: 'NEW' },
-  { id: 'increments', label: 'Project Increments', icon: Calendar, path: '/programs/:programId/increments' },
+  { id: 'room', label: 'Project Room', icon: LayoutDashboard, path: '/program/:programId/room' },
+  { id: 'epic-backlog', label: 'Epic Backlog', icon: Square, path: '/program/:programId/epic-backlog' },
+  { id: 'features', label: 'Features', icon: Layers3, path: '/program/:programId/features' },
+  { id: 'backlog', label: 'Backlog', icon: Diamond, path: '/program/:programId/backlog' },
+  { id: 'program-board', label: 'Project board', icon: GitBranch, path: '/program/:programId/program-board' },
+  { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/program/:programId/roadmaps' },
+  { id: 'objective-tree', label: 'Objective tree (OKR hub)', icon: Target, path: '/program/:programId/objective-tree' },
+  { id: 'work-tree', label: 'Work tree', icon: Network, path: '/program/:programId/work-tree' },
+  { id: 'dependencies', label: 'Dependencies', icon: Link2, path: '/program/:programId/dependencies' },
+  { id: 'tests', label: 'Tests', icon: FlaskConical, path: '/program/:programId/tests' },
+  { id: 'forecast', label: 'Forecast', icon: Grid3x3, path: '/program/:programId/forecast' },
+  { id: 'capacity', label: 'Capacity', icon: UsersIcon, path: '/program/:programId/capacity', badge: 'NEW' },
+  { id: 'increments', label: 'Project Increments', icon: Calendar, path: '/program/:programId/increments' },
   { id: 'more-items', label: 'More items', icon: Menu, expandable: true },
   { id: 'reports', label: 'Reports', icon: FileText, expandable: true },
   { id: 'more-pages', label: 'More pages', icon: Menu, expandable: true },
@@ -85,30 +85,30 @@ export function ProgramRoomSidebar({
   const [morePagesExpanded, setMorePagesExpanded] = useState(false);
 
   const moreItemsSubMenu = [
-    { id: 'kanban-boards', label: 'Kanban Boards', path: '/programs/:programId/kanban-boards' },
-    { id: 'epics', label: 'Epics', path: '/programs/:programId/epics' },
-    { id: 'stories', label: 'Stories', path: '/programs/:programId/stories' },
-    { id: 'defects', label: 'Defects', path: '/programs/:programId/defects' },
-    { id: 'tasks', label: 'Tasks', path: '/programs/:programId/tasks' },
-    { id: 'risks', label: 'Risks', path: '/programs/:programId/risks' },
-    { id: 'impediments', label: 'Impediments', path: '/programs/:programId/impediments' },
-    { id: 'sprints', label: 'Sprints', path: '/programs/:programId/sprints' },
-    { id: 'release-vehicles', label: 'Release Vehicles', path: '/programs/:programId/release-vehicles' },
+    { id: 'kanban-boards', label: 'Kanban Boards', path: '/program/:programId/kanban-boards' },
+    { id: 'epics', label: 'Epics', path: '/program/:programId/epics' },
+    { id: 'stories', label: 'Stories', path: '/program/:programId/stories' },
+    { id: 'defects', label: 'Defects', path: '/program/:programId/defects' },
+    { id: 'tasks', label: 'Tasks', path: '/program/:programId/tasks' },
+    { id: 'risks', label: 'Risks', path: '/program/:programId/risks' },
+    { id: 'impediments', label: 'Impediments', path: '/program/:programId/impediments' },
+    { id: 'sprints', label: 'Sprints', path: '/program/:programId/sprints' },
+    { id: 'release-vehicles', label: 'Release Vehicles', path: '/program/:programId/release-vehicles' },
   ];
 
   const reportsSubMenu = [
-    { id: 'feature-status', label: 'Feature status report', path: '/programs/:programId/reports/feature-status' },
-    { id: 'program-board-history', label: 'Project board history', path: '/programs/:programId/reports/board-history' },
-    { id: 'work-tree', label: 'Work tree', path: '/programs/:programId/reports/work-tree' },
-    { id: 'pi-objectives', label: 'PI objectives report', path: '/programs/:programId/reports/pi-objectives' },
+    { id: 'feature-status', label: 'Feature status report', path: '/program/:programId/reports/feature-status' },
+    { id: 'program-board-history', label: 'Project board history', path: '/program/:programId/reports/board-history' },
+    { id: 'work-tree', label: 'Work tree', path: '/program/:programId/reports/work-tree' },
+    { id: 'pi-objectives', label: 'PI objectives report', path: '/program/:programId/reports/pi-objectives' },
     { id: 'work-spend-grid', label: 'Work spend grid', path: '/work-spend-grid' },
   ];
 
   const morePagesSubMenu = [
     { id: 'knowledge-hub', label: 'Knowledge Hub', path: '/knowledge-hub' },
-    { id: 'assessments', label: 'Assessments', path: '/programs/:programId/pages/assessments' },
-    { id: 'metrics', label: 'Metrics', path: '/programs/:programId/pages/metrics' },
-    { id: 'meetings', label: 'Meetings', path: '/programs/:programId/pages/meetings' },
+    { id: 'assessments', label: 'Assessments', path: '/program/:programId/pages/assessments' },
+    { id: 'metrics', label: 'Metrics', path: '/program/:programId/pages/metrics' },
+    { id: 'meetings', label: 'Meetings', path: '/program/:programId/pages/meetings' },
   ];
 
   // Fetch program details

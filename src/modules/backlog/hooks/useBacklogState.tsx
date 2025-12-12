@@ -15,6 +15,8 @@ interface BacklogStateContextValue extends BacklogState {
   resetState: () => void;
   // Epic Backlog mode - locks type to 'epic' and hides PI/Viewing selectors
   isEpicBacklog: boolean;
+  // Program ID for scoping data - CRITICAL for isolation
+  programId: string | null;
 }
 
 const BacklogStateContext = createContext<BacklogStateContextValue | null>(null);
@@ -26,6 +28,8 @@ interface BacklogStateProviderProps {
   contextId?: string;
   /** When true, locks type to 'epic' and hides PI/Viewing selectors */
   isEpicBacklog?: boolean;
+  /** Program ID from route - REQUIRED for program-scoped backlogs */
+  programId?: string;
 }
 
 const DEFAULT_STATE: BacklogState = {
@@ -50,6 +54,7 @@ export function BacklogStateProvider({
   initialType, 
   contextId,
   isEpicBacklog = false,
+  programId,
 }: BacklogStateProviderProps) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -114,6 +119,7 @@ export function BacklogStateProvider({
   const contextValue: BacklogStateContextValue = {
     ...state,
     isEpicBacklog,
+    programId: programId || null,
     setScope: (scope) => setState((prev) => ({ ...prev, scope })),
     // For Epic Backlog, setType is a no-op (type is locked to 'epic')
     setType: (type) => {

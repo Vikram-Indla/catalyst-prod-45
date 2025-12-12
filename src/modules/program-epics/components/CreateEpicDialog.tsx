@@ -39,7 +39,7 @@ export function CreateEpicDialog({
         .insert({
           name: name.trim(),
           description: description.trim() || null,
-          program_id: programId,
+          primary_program_id: programId, // CRITICAL: Use primary_program_id for program scoping
           status: 'proposed',
           health: 'green',
         } as any)
@@ -50,8 +50,11 @@ export function CreateEpicDialog({
       return data;
     },
     onSuccess: () => {
+      // Invalidate all epic-related queries with programId scope
       queryClient.invalidateQueries({ queryKey: ['epics'] });
       queryClient.invalidateQueries({ queryKey: ['program-epics', programId] });
+      queryClient.invalidateQueries({ queryKey: ['backlog-items', programId] });
+      queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
       toast.success('Epic created successfully');
       handleClose();
     },
