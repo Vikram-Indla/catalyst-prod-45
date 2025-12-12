@@ -324,17 +324,6 @@ function ThemeDetailsTab({
           />
         </div>
       </div>
-
-      {/* ATTACHMENTS Section */}
-      <div className="border border-border rounded-xl bg-white p-5 shadow-sm">
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-gold mb-4">Attachments</h3>
-        <div className="border-2 border-dashed rounded-lg p-8 text-center">
-          <div className="flex flex-col items-center gap-2 text-muted-foreground">
-            <Plus className="h-6 w-6" />
-            <p className="text-sm">Drop files or click here to upload</p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
