@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -23,28 +23,33 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
-import { AlertTriangle, Info } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { AlertTriangle, Info, Search } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 interface Project {
   id: string;
   key: string;
   name: string;
-  description: string;
-  programId: string;
-  programName: string;
-  lead: string;
-  type: string;
-  category: string;
+  description: string | null;
+  program_id: string;
+  programs: {
+    id: string;
+    name: string;
+    key: string;
+  } | null;
 }
-
-const mockUsers = [
-  { label: 'Vikram Indla', value: 'vikram-indla' },
-  { label: 'Jane Smith', value: 'jane-smith' },
-  { label: 'Bob Johnson', value: 'bob-johnson' },
-  { label: 'Alice Brown', value: 'alice-brown' },
-];
 
 export default function ProjectSettingsPage() {
   const { projectKey } = useParams<{ projectKey: string }>();
@@ -54,34 +59,15 @@ export default function ProjectSettingsPage() {
   const { data: project, isLoading } = useQuery({
     queryKey: ['project-settings', projectKey],
     queryFn: async () => {
-      const mockProject: Project = {
-        id: '1',
-        key: projectKey || 'ICP',
-        name: 'ICP Project',
-        description: 'Invoice and compliance platform',
-        programId: 'PROD',
-        programName: 'Product Program',
-        lead: 'vikram-indla',
-        type: 'Scrum',
-        category: 'Company-managed software',
-      };
-      return mockProject;
+      const { data, error } = await supabase
+        .from('projects')
+        .select('id, key, name, description, program_id, programs(id, name, key)')
+        .eq('key', projectKey!)
+        .single();
+      if (error) throw error;
+      return data as Project;
     },
     enabled: !!projectKey,
-  });
-
-  const updateProjectMutation = useMutation({
-    mutationFn: async (data: Partial<Project>) => {
-      console.log('Updating project:', data);
-      return data;
-    },
-    onSuccess: () => {
-      toast.success('Project settings saved');
-      queryClient.invalidateQueries({ queryKey: ['project-settings', projectKey] });
-    },
-    onError: (error: Error) => {
-      toast.error('Failed to save settings: ' + error.message);
-    },
   });
 
   if (isLoading || !project) {
@@ -105,7 +91,7 @@ export default function ProjectSettingsPage() {
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link to={`/projects/${projectKey}`}>{project.name}</Link>
+              <Link to={`/projects/${project.key}`}>{project.name}</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
@@ -134,23 +120,19 @@ export default function ProjectSettingsPage() {
         </TabsList>
 
         <TabsContent value="details" className="mt-4">
-          <DetailsTab
-            project={project}
-            onSave={(data) => updateProjectMutation.mutate(data)}
-            isSaving={updateProjectMutation.isPending}
-          />
+          <DetailsTab project={project} />
         </TabsContent>
 
         <TabsContent value="access" className="mt-4">
-          <AccessTab project={project} />
+          <AccessTab />
         </TabsContent>
 
         <TabsContent value="notifications" className="mt-4">
-          <NotificationsTab project={project} />
+          <NotificationsTab />
         </TabsContent>
 
         <TabsContent value="features" className="mt-4">
-          <FeaturesTab project={project} />
+          <FeaturesTab />
         </TabsContent>
 
         <TabsContent value="advanced" className="mt-4">
@@ -161,154 +143,236 @@ export default function ProjectSettingsPage() {
   );
 }
 
-function DetailsTab({ project, onSave, isSaving }: { project: Project; onSave: (data: any) => void; isSaving: boolean }) {
+function DetailsTab({ project }: { project: Project }) {
+  const queryClient = useQueryClient();
   const [name, setName] = useState(project.name);
-  const [description, setDescription] = useState(project.description);
-  const [lead, setLead] = useState(project.lead);
+  const [description, setDescription] = useState(project.description || '');
+  const [programId, setProgramId] = useState(project.program_id);
+  const [originalProgramId] = useState(project.program_id);
+  const [programSearch, setProgramSearch] = useState('');
+  const [showProgramChangeConfirm, setShowProgramChangeConfirm] = useState(false);
+  const [pendingProgramId, setPendingProgramId] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Fetch programs for dropdown
+  const { data: programs } = useQuery({
+    queryKey: ['programs-for-project'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('programs')
+        .select('id, name, key')
+        .order('name');
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const filteredPrograms = programs?.filter(p => 
+    p.name.toLowerCase().includes(programSearch.toLowerCase()) ||
+    p.key?.toLowerCase().includes(programSearch.toLowerCase())
+  );
+
+  const updateProject = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from('projects')
+        .update({
+          name: name.trim(),
+          description: description.trim() || null,
+          program_id: programId,
+        })
+        .eq('id', project.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['project-settings'] });
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      toast.success('Project settings saved');
+    },
+    onError: (error) => {
+      toast.error('Failed to save settings: ' + error.message);
+    },
+  });
+
+  const handleProgramChange = (newProgramId: string) => {
+    if (newProgramId !== originalProgramId) {
+      setPendingProgramId(newProgramId);
+      setShowProgramChangeConfirm(true);
+    } else {
+      setProgramId(newProgramId);
+    }
+  };
+
+  const confirmProgramChange = () => {
+    if (pendingProgramId) {
+      setProgramId(pendingProgramId);
+    }
+    setShowProgramChangeConfirm(false);
+    setPendingProgramId(null);
+  };
+
+  const cancelProgramChange = () => {
+    setShowProgramChangeConfirm(false);
+    setPendingProgramId(null);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors: Record<string, string> = {};
     if (!name.trim()) newErrors.name = 'Project name is required';
     if (name.trim().length < 3) newErrors.name = 'Name must be at least 3 characters';
-    if (!lead) newErrors.lead = 'Project lead is required';
     
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
     
-    onSave({ name, description, lead });
+    updateProject.mutate();
   };
 
+  const selectedProgram = programs?.find(p => p.id === programId);
+  const originalProgram = programs?.find(p => p.id === originalProgramId);
+  const pendingProgram = programs?.find(p => p.id === pendingProgramId);
+
   return (
-    <Card className="max-w-xl">
-      <CardHeader>
-        <CardTitle className="text-sm font-semibold">Project details</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Key (read-only) */}
-          <div className="space-y-2">
-            <Label className="text-xs font-semibold">Key</Label>
-            <div className="px-3 py-2 bg-muted border rounded-md text-sm">
-              {project.key}
+    <>
+      <Card className="max-w-xl">
+        <CardHeader>
+          <CardTitle className="text-sm font-semibold">Project details</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Key (read-only) */}
+            <div className="space-y-2">
+              <Label className="text-xs font-semibold">Key</Label>
+              <div className="px-3 py-2 bg-muted border rounded-md text-sm font-mono">
+                {project.key}
+              </div>
+              <p className="text-[11px] text-muted-foreground">
+                Project key cannot be changed here. Use Key Migration for key changes.
+              </p>
             </div>
-            <p className="text-[11px] text-muted-foreground">
-              Project key cannot be changed
-            </p>
-          </div>
 
-          {/* Program (read-only with link) */}
-          <div className="space-y-2">
-            <Label className="text-xs font-semibold">Program</Label>
-            <div className="px-3 py-2 bg-muted border rounded-md text-sm">
-              <Link
-                to={`/programs/${project.programId}`}
-                className="text-primary hover:underline"
-              >
-                {project.programName} ({project.programId})
-              </Link>
+            {/* Name */}
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-xs font-semibold">
+                Name <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Enter project name"
+              />
+              {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
             </div>
-            <p className="text-[11px] text-muted-foreground">
-              This project is linked to this program. Epics from this program can be linked to features in this project.
-            </p>
-          </div>
 
-          {/* Name */}
-          <div className="space-y-2">
-            <Label htmlFor="name" className="text-xs font-semibold">
-              Name <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Enter project name"
-            />
-            {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
-            <p className="text-[11px] text-muted-foreground">
-              The display name for this project
-            </p>
-          </div>
-
-          {/* Description */}
-          <div className="space-y-2">
-            <Label htmlFor="description" className="text-xs font-semibold">Description</Label>
-            <Textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Project description"
-              rows={3}
-            />
-            <p className="text-[11px] text-muted-foreground">
-              A brief description of this project
-            </p>
-          </div>
-
-          {/* Lead */}
-          <div className="space-y-2">
-            <Label className="text-xs font-semibold">
-              Project lead <span className="text-destructive">*</span>
-            </Label>
-            <Select value={lead} onValueChange={setLead}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select project lead" />
-              </SelectTrigger>
-              <SelectContent>
-                {mockUsers.map((user) => (
-                  <SelectItem key={user.value} value={user.value}>
-                    {user.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {errors.lead && <p className="text-xs text-destructive">{errors.lead}</p>}
-            <p className="text-[11px] text-muted-foreground">
-              The person responsible for this project
-            </p>
-          </div>
-
-          {/* Type (read-only) */}
-          <div className="space-y-2">
-            <Label className="text-xs font-semibold">Project type</Label>
-            <div className="px-3 py-2 bg-muted border rounded-md text-sm">
-              {project.type}
+            {/* Program */}
+            <div className="space-y-2">
+              <Label className="text-xs font-semibold">
+                Program <span className="text-destructive">*</span>
+              </Label>
+              <Select value={programId} onValueChange={handleProgramChange}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a program">
+                    {selectedProgram ? `${selectedProgram.name} (${selectedProgram.key})` : 'Select a program'}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="z-[400]">
+                  <div className="px-2 py-2 border-b">
+                    <div className="relative">
+                      <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search programs..."
+                        value={programSearch}
+                        onChange={(e) => setProgramSearch(e.target.value)}
+                        className="pl-8 h-8"
+                      />
+                    </div>
+                  </div>
+                  {filteredPrograms?.map((program) => (
+                    <SelectItem key={program.id} value={program.id}>
+                      {program.name} ({program.key})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {programId !== originalProgramId && (
+                <p className="text-xs text-warning flex items-center gap-1">
+                  <AlertTriangle className="h-3 w-3" />
+                  Program will be changed from {originalProgram?.name} to {selectedProgram?.name}
+                </p>
+              )}
+              <p className="text-[11px] text-muted-foreground">
+                This project is linked to this program. Epics from this program can be linked to features in this project.
+              </p>
             </div>
-            <p className="text-[11px] text-muted-foreground">
-              Project type cannot be changed after creation
-            </p>
-          </div>
 
-          {/* Category (read-only) */}
-          <div className="space-y-2">
-            <Label className="text-xs font-semibold">Category</Label>
-            <div className="px-3 py-2 bg-muted border rounded-md text-sm">
-              {project.category}
+            {/* Description */}
+            <div className="space-y-2">
+              <Label htmlFor="description" className="text-xs font-semibold">Description</Label>
+              <Textarea
+                id="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Project description"
+                rows={3}
+              />
             </div>
-            <p className="text-[11px] text-muted-foreground">
-              Project category
-            </p>
-          </div>
 
-          {/* Actions */}
-          <div className="flex gap-2 pt-4">
-            <Button type="submit" disabled={isSaving}>
-              {isSaving ? 'Saving...' : 'Save changes'}
-            </Button>
-            <Button type="button" variant="outline">
-              Cancel
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+            {/* Actions */}
+            <div className="flex gap-2 pt-4">
+              <Button type="submit" disabled={updateProject.isPending} className="bg-brand-gold hover:bg-brand-gold-hover">
+                {updateProject.isPending ? 'Saving...' : 'Save changes'}
+              </Button>
+              <Button type="button" variant="outline" onClick={() => {
+                setName(project.name);
+                setDescription(project.description || '');
+                setProgramId(project.program_id);
+              }}>
+                Reset
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+
+      {/* Program Change Confirmation */}
+      <AlertDialog open={showProgramChangeConfirm} onOpenChange={setShowProgramChangeConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-warning" />
+              Confirm Program Change
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-2">
+              <p>
+                You are moving this project from <strong>{originalProgram?.name}</strong> to{' '}
+                <strong>{pendingProgram?.name}</strong>.
+              </p>
+              <p className="text-sm">
+                This will affect:
+              </p>
+              <ul className="list-disc list-inside text-sm space-y-1">
+                <li>Program → Project filtering</li>
+                <li>Inherited access permissions</li>
+                <li>Work item visibility in program views</li>
+              </ul>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={cancelProgramChange}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmProgramChange} className="bg-brand-gold hover:bg-brand-gold-hover">
+              Confirm Change
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
 
-function AccessTab({ project }: { project: Project }) {
+function AccessTab() {
   return (
     <Card className="max-w-xl">
       <CardHeader>
@@ -329,7 +393,7 @@ function AccessTab({ project }: { project: Project }) {
   );
 }
 
-function NotificationsTab({ project }: { project: Project }) {
+function NotificationsTab() {
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [slackNotifications, setSlackNotifications] = useState(false);
 
@@ -377,7 +441,7 @@ function NotificationsTab({ project }: { project: Project }) {
   );
 }
 
-function FeaturesTab({ project }: { project: Project }) {
+function FeaturesTab() {
   const [issueTypes, setIssueTypes] = useState(true);
   const [sprints, setSprints] = useState(true);
   const [releases, setReleases] = useState(true);
@@ -434,6 +498,25 @@ function AdvancedTab({ project }: { project: Project }) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteConfirmKey, setDeleteConfirmKey] = useState('');
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const deleteProject = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from('projects')
+        .delete()
+        .eq('id', project.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      toast.success('Project deleted permanently');
+      navigate('/projects');
+    },
+    onError: (error) => {
+      toast.error('Failed to delete project: ' + error.message);
+    },
+  });
 
   const handleArchive = () => {
     if (confirm('Are you sure you want to archive this project?')) {
@@ -444,8 +527,7 @@ function AdvancedTab({ project }: { project: Project }) {
 
   const handleDelete = () => {
     if (deleteConfirmKey === project.key) {
-      toast.success('Project deleted permanently');
-      navigate('/projects');
+      deleteProject.mutate();
     } else {
       toast.error('Project key does not match');
     }
@@ -499,9 +581,9 @@ function AdvancedTab({ project }: { project: Project }) {
                     variant="destructive"
                     size="sm"
                     onClick={handleDelete}
-                    disabled={deleteConfirmKey !== project.key}
+                    disabled={deleteConfirmKey !== project.key || deleteProject.isPending}
                   >
-                    Delete permanently
+                    {deleteProject.isPending ? 'Deleting...' : 'Delete permanently'}
                   </Button>
                   <Button
                     variant="outline"
