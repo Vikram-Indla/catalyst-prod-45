@@ -33,11 +33,10 @@ interface BusinessRequestsKanbanViewProps {
 
 import { PROCESS_STEPS } from '@/types/business-request';
 
-// Use the centralized PROCESS_STEPS as Kanban columns
+// Use the centralized PROCESS_STEPS as Kanban columns - no colors (neutral styling)
 const KANBAN_COLUMNS = PROCESS_STEPS.map(step => ({
   id: step.value,
   label: step.label,
-  color: step.color,
 }));
 
 export function BusinessRequestsKanbanView({ requests, onRequestSelect, allExpanded, onExpandedChange }: BusinessRequestsKanbanViewProps) {
@@ -149,7 +148,7 @@ export function BusinessRequestsKanbanView({ requests, onRequestSelect, allExpan
                   >
                     <Card className="h-full bg-card/50 backdrop-blur-sm border-border/50 hover:border-brand-gold/30 transition-colors">
                       <div className="h-full flex flex-col items-center py-4">
-                        <div className={cn("w-3 h-3 rounded-full shadow-sm mb-3", column.color)} />
+                        <div className="w-3 h-3 rounded-full shadow-sm bg-muted border border-border" />
                         <Badge variant="secondary" className="rounded-full text-xs font-medium px-2 py-0.5 bg-muted/80 mb-3">
                           {columnRequests.length}
                         </Badge>
@@ -184,7 +183,7 @@ export function BusinessRequestsKanbanView({ requests, onRequestSelect, allExpan
                           >
                             <ChevronLeft className="h-4 w-4 text-muted-foreground" />
                           </button>
-                          <div className={cn("w-3 h-3 rounded-full shadow-sm", column.color)} />
+                          <div className="w-3 h-3 rounded-full shadow-sm bg-muted border border-border" />
                           <CardTitle className="text-sm font-semibold tracking-tight">{column.label}</CardTitle>
                         </div>
                         <Badge variant="secondary" className="rounded-full text-xs font-medium px-2.5 py-0.5 bg-muted/80">

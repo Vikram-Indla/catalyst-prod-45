@@ -68,19 +68,8 @@ const typeIcons: Record<string, { icon: React.ReactNode; color: string }> = {
   Incident: { icon: <AlertTriangle className="h-4 w-4" />, color: 'text-orange-500' },
 };
 
-// Jira-style status lozenge styles
-const statusStyles: Record<string, { bg: string; text: string; label: string }> = {
-  'Backlog': { bg: 'bg-slate-200', text: 'text-slate-700', label: 'BACKLOG' },
-  'To Do': { bg: 'bg-slate-200', text: 'text-slate-700', label: 'TO DO' },
-  'In Progress': { bg: 'bg-blue-600', text: 'text-white', label: 'IN PROGRESS' },
-  'In Requirement': { bg: 'bg-blue-600', text: 'text-white', label: 'IN REQUIREMENTS' },
-  'In Production': { bg: 'bg-green-600', text: 'text-white', label: 'IN PRODUCTION' },
-  'In QA': { bg: 'bg-green-600', text: 'text-white', label: 'IN QA' },
-  'Ready for QA': { bg: 'bg-amber-500', text: 'text-white', label: 'READY FOR QA' },
-  'Done': { bg: 'bg-green-600', text: 'text-white', label: 'DONE' },
-  'Closed': { bg: 'bg-slate-200', text: 'text-slate-700', label: 'CLOSED' },
-  'Blocked': { bg: 'bg-red-600', text: 'text-white', label: 'BLOCKED' },
-};
+// Status lozenge - NEUTRAL STYLING (no colors per status)
+const formatStatusLabel = (status: string): string => status.toUpperCase();
 
 export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPanelProps) {
   const [activeTab, setActiveTab] = useState<ActivityTab>('comments');
@@ -92,7 +81,8 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
   if (!item) return null;
 
   const typeInfo = typeIcons[item.type] || typeIcons['Task'];
-  const statusStyle = statusStyles[item.status] || statusStyles['Backlog'];
+  // Status label - neutral styling
+  const statusLabel = formatStatusLabel(item.status);
 
   const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   const getAvatarColor = (name: string) => {
@@ -350,26 +340,20 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
         <div className="w-[260px] border-l border-slate-200 bg-slate-50/50 flex-shrink-0">
           <ScrollArea className="h-full">
             <div className="p-4 space-y-4">
-              {/* Status badge - prominent at top */}
+              {/* Status badge - prominent at top - NEUTRAL STYLING */}
               <div className="flex items-center gap-2">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className={cn(
-                      "inline-flex items-center gap-1 px-3 py-1.5 rounded text-[11px] font-bold uppercase tracking-wide cursor-pointer transition-colors",
-                      statusStyle.bg, statusStyle.text
-                    )}>
-                      {statusStyle.label}
+                    <button className="catalyst-status inline-flex items-center gap-1 px-3 py-1.5 rounded text-[11px] font-medium uppercase tracking-wide cursor-pointer bg-muted/50 text-foreground border border-border">
+                      {statusLabel}
                       <ChevronDown className="h-3 w-3" />
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start" className="w-48 bg-white">
-                    {Object.entries(statusStyles).map(([status, style]) => (
+                    {['Backlog', 'To Do', 'In Progress', 'In Requirement', 'In Production', 'In QA', 'Ready for QA', 'Done', 'Closed', 'Blocked'].map((status) => (
                       <DropdownMenuItem key={status} className="cursor-pointer">
-                        <span className={cn(
-                          "inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase",
-                          style.bg, style.text
-                        )}>
-                          {style.label}
+                        <span className="catalyst-status inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium uppercase bg-muted/50 text-foreground border border-border">
+                          {status.toUpperCase()}
                         </span>
                       </DropdownMenuItem>
                     ))}

@@ -77,21 +77,10 @@ const mockReleases: Release[] = [
   },
 ];
 
-// Status pill component matching Jira's neutral/semantic lozenges
-const statusStyles: Record<ReleaseStatus, string> = {
-  UNRELEASED: 'bg-slate-100 text-slate-700',
-  RELEASED: 'bg-green-100 text-green-800',
-  ARCHIVED: 'bg-slate-50 text-slate-500 border border-slate-200',
-};
-
+// Status pill - NEUTRAL STYLING (no colors per status)
 function ReleaseStatusPill({ status }: { status: ReleaseStatus }) {
   return (
-    <span
-      className={cn(
-        'inline-flex items-center rounded px-2 py-0.5 text-[11px] leading-[16px] font-semibold uppercase tracking-wide',
-        statusStyles[status]
-      )}
-    >
+    <span className="catalyst-status inline-flex items-center rounded px-2 py-0.5 text-[11px] leading-[16px] font-medium uppercase tracking-wide bg-muted/50 text-foreground border border-border">
       {status}
     </span>
   );
