@@ -57,6 +57,7 @@ export interface BacklogItem {
   type: BacklogType;
   name: string;
   displayId: string | number;
+  epicKey?: string;
   state?: string;
   processStep?: string;
   piId?: string | null;
@@ -84,6 +85,7 @@ export interface BacklogItem {
   owner?: string;
   labels?: BacklogLabel[];
   tags?: string[];
+  quarters?: string[];
   isParked?: boolean;
   isDeleted?: boolean;
   deletedAt?: string | null;

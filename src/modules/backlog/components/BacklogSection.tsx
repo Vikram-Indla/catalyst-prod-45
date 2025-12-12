@@ -2,14 +2,13 @@ import { useState } from 'react';
 import { Droppable, Draggable } from '@hello-pangea/dnd';
 import { BacklogPISection, BacklogItem } from '../types';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, ChevronRight, GripVertical, Download, TrendingUp } from 'lucide-react';
+import { ChevronDown, ChevronRight, GripVertical } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import { QuickAddRow } from './QuickAddRow';
 import { BacklogContextMenu } from './BacklogContextMenu';
 import { useBacklogActions } from '../hooks/useBacklogActions';
 import { useBacklogState } from '../hooks/useBacklogState';
-import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 
 interface BacklogSectionProps {
@@ -18,6 +17,17 @@ interface BacklogSectionProps {
   onItemClick: (itemId: string) => void;
   onItemSelect: (itemId: string, selected: boolean) => void;
 }
+
+// New column configuration matching exact requirements
+const TABLE_COLUMNS = [
+  { id: 'epicNumber', label: 'Epic Number', width: 'min-w-[100px]' },
+  { id: 'drag', label: '', width: 'w-8' },
+  { id: 'summary', label: 'Summary', width: 'flex-1 min-w-[250px]' },
+  { id: 'quarters', label: 'Quarters', width: 'min-w-[120px]' },
+  { id: 'mvp', label: 'MVP', width: 'min-w-[60px] text-center' },
+  { id: 'status', label: 'Status', width: 'min-w-[120px]' },
+  { id: 'technicalScore', label: 'Technical Score', width: 'min-w-[100px] text-right' },
+];
 
 export function BacklogSection({
   section,
@@ -28,135 +38,88 @@ export function BacklogSection({
   const [isExpanded, setIsExpanded] = useState(section.isExpanded);
   const { columnsShown, isEpicBacklog } = useBacklogState();
 
+  // Check if any items exist
+  const hasItems = section.items.length > 0;
+
   return (
     <div className="border rounded-lg bg-card overflow-hidden">
-      {/* Section Header - Jira Align style */}
-      <div className="flex items-center gap-3 border-b bg-muted/30 px-4 py-2.5">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-6 w-6 p-0 hover:bg-muted"
-          onClick={() => setIsExpanded(!isExpanded)}
-        >
-          {isExpanded ? (
-            <ChevronDown className="h-4 w-4" />
-          ) : (
-            <ChevronRight className="h-4 w-4" />
-          )}
-        </Button>
-        
-        <span className="font-medium text-sm">{section.title}</span>
-        <span className="text-sm text-brand-gold font-medium">
-          Total Items: {section.itemCount}
-        </span>
-
-        <div className="flex-1" />
-
-        {/* Section Actions */}
-        <Button variant="ghost" size="sm" className="h-7 text-xs gap-1.5">
-          <TrendingUp className="h-3.5 w-3.5" />
-          Prioritize
-        </Button>
-        <Button variant="ghost" size="sm" className="h-7 text-xs gap-1.5">
-          <Download className="h-3.5 w-3.5" />
-          Export
-        </Button>
-
-        {section.progress !== undefined && (
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">PI Progress:</span>
-            <div className="h-2 w-24 bg-muted rounded-full overflow-hidden">
-              <div
-                className="h-full bg-success"
-                style={{ width: `${section.progress}%` }}
-              />
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Section Content */}
-      {isExpanded && (
-        <div>
-          {/* Column Headers */}
-          <div className="flex items-center gap-3 px-4 py-2 bg-muted/20 border-b text-xs font-medium text-muted-foreground">
-            <div className="w-6" /> {/* Drag handle space */}
-            <div className="w-5" /> {/* Checkbox space */}
-            <div className="w-2" /> {/* Health dot space */}
-            
-            {/* Epic column - always shown */}
-            {(columnsShown.includes('epic') || columnsShown.includes('name')) && (
-              <div className="flex-1 min-w-[200px]">Epic</div>
-            )}
-            
-            {/* Labels column */}
-            {columnsShown.includes('labels') && (
-              <div className="min-w-[120px]" />
-            )}
-            
-            {/* Points column */}
-            {columnsShown.includes('points') && (
-              <div className="min-w-[60px] text-right">Points</div>
-            )}
-            
-            {/* MVP column */}
-            {columnsShown.includes('mvp') && (
-              <div className="min-w-[50px] text-center">MVP</div>
-            )}
-            
-            {/* Process Step column */}
-            {columnsShown.includes('processStep') && (
-              <div className="min-w-[100px]">Process Step</div>
-            )}
-            
-            {/* Strategic Value Score column */}
-            {columnsShown.includes('strategicValueScore') && (
-              <div className="min-w-[80px] text-right">Strategic Value Score</div>
-            )}
-          </div>
-
-          <QuickAddRow itemType={isEpicBacklog ? 'epic' : 'epic'} />
+      {/* Section Content - No header row with "All Items" */}
+      <div>
+        {/* Column Headers - starts immediately */}
+        <div className="flex items-center gap-3 px-4 py-2 bg-muted/20 border-b text-xs font-medium text-muted-foreground uppercase tracking-wide">
+          {/* Expand chevron column */}
+          <div className="w-6" />
           
-          <Droppable droppableId={section.id}>
-            {(provided) => (
-              <div 
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-                className="divide-y"
-              >
-                {section.items.length === 0 ? (
-                  <div className="px-4 py-8 text-center text-sm text-muted-foreground border-2 border-dashed border-muted mx-4 my-4 rounded">
-                    Drag & Drop Items Here
-                  </div>
-                ) : (
-                  section.items.map((item, index) => (
-                    <Draggable key={item.id} draggableId={item.id} index={index}>
-                      {(provided, snapshot) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                        >
-                          <BacklogItemRow
-                            item={item}
-                            rank={index + 1}
-                            isSelected={selectedItems.includes(item.id)}
-                            onItemClick={onItemClick}
-                            onItemSelect={onItemSelect}
-                            dragHandleProps={provided.dragHandleProps}
-                            isDragging={snapshot.isDragging}
-                            columnsShown={columnsShown}
-                          />
-                        </div>
-                      )}
-                    </Draggable>
-                  ))
-                )}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
+          {/* Epic Number */}
+          <div className="min-w-[100px]">Epic Number</div>
+          
+          {/* Drag handle column */}
+          <div className="w-8">Drag</div>
+          
+          {/* Health dot space */}
+          <div className="w-3" />
+          
+          {/* Checkbox space */}
+          <div className="w-5" />
+          
+          {/* Summary */}
+          <div className="flex-1 min-w-[250px]">Summary</div>
+          
+          {/* Quarters */}
+          <div className="min-w-[120px]">Quarters</div>
+          
+          {/* MVP */}
+          <div className="min-w-[60px] text-center">MVP</div>
+          
+          {/* Status (renamed from Process Step) */}
+          <div className="min-w-[120px]">Status</div>
+          
+          {/* Technical Score (renamed from Strategic Value Score) */}
+          <div className="min-w-[100px] text-right">Technical Score</div>
         </div>
-      )}
+        
+        <Droppable droppableId={section.id}>
+          {(provided) => (
+            <div 
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+              className="divide-y"
+            >
+              {section.items.length === 0 ? (
+                <div className="px-4 py-8 text-center text-sm text-muted-foreground border-2 border-dashed border-muted mx-4 my-4 rounded">
+                  Drag & Drop Items Here
+                </div>
+              ) : (
+                section.items.map((item, index) => (
+                  <Draggable key={item.id} draggableId={item.id} index={index}>
+                    {(provided, snapshot) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                      >
+                        <BacklogItemRow
+                          item={item}
+                          rank={index + 1}
+                          isSelected={selectedItems.includes(item.id)}
+                          onItemClick={onItemClick}
+                          onItemSelect={onItemSelect}
+                          dragHandleProps={provided.dragHandleProps}
+                          isDragging={snapshot.isDragging}
+                          columnsShown={columnsShown}
+                        />
+                      </div>
+                    )}
+                  </Draggable>
+                ))
+              )}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+
+        {/* Quick Add Row - Always at the bottom */}
+        <QuickAddRow itemType={isEpicBacklog ? 'epic' : 'epic'} />
+      </div>
     </div>
   );
 }
@@ -192,14 +155,25 @@ function BacklogItemRow({
     gray: 'bg-muted-foreground',
   }[item.health || 'gray'];
 
-  // Check if column should be shown
-  const showColumn = (columnKey: string) => columnsShown.includes(columnKey);
+  // Format quarters for display
+  const formatQuarters = (quarters?: string[]) => {
+    if (!quarters || quarters.length === 0) return '—';
+    return quarters.slice(0, 3).map((q, i) => (
+      <Badge 
+        key={i} 
+        variant="outline" 
+        className="text-[10px] px-1.5 py-0 h-5 border-brand-gold/50 text-brand-gold"
+      >
+        {q}
+      </Badge>
+    ));
+  };
 
-  // Generate mock labels for PI tags (in real implementation, this would come from item.labels)
-  const mockLabels = item.labels || [
-    { id: '1', name: 'PI-5', color: '#8B5CF6' },
-    { id: '2', name: 'PI-6', color: '#8B5CF6' },
-  ];
+  // Format status for human-readable display
+  const formatStatus = (status?: string) => {
+    if (!status) return '—';
+    return status.replace(/_/g, ' ').toLowerCase();
+  };
 
   return (
     <BacklogContextMenu
@@ -224,25 +198,20 @@ function BacklogItemRow({
         {/* Expand chevron */}
         <ChevronRight className="h-4 w-4 text-muted-foreground" />
 
-        {/* Rank number */}
-        <div className="text-xs text-muted-foreground min-w-[20px]">
-          {rank}
+        {/* Epic Number (epic_key or displayId, NOT row index) */}
+        <div className="font-mono text-xs text-muted-foreground min-w-[100px]">
+          {item.epicKey || item.displayId || '—'}
         </div>
 
         {/* Drag handle */}
-        <div {...dragHandleProps} className="cursor-grab active:cursor-grabbing">
+        <div {...dragHandleProps} className="cursor-grab active:cursor-grabbing w-8">
           <GripVertical className="h-4 w-4 text-muted-foreground" />
         </div>
 
         {/* Health status dot */}
         <div className={cn('h-3 w-3 rounded-full flex-shrink-0', healthColor)} />
 
-        {/* Epic ID */}
-        <div className="font-mono text-xs text-muted-foreground min-w-[45px]">
-          {item.displayId}
-        </div>
-
-        {/* Checkbox icon (mock - representing epic type) */}
+        {/* Checkbox */}
         <Checkbox
           checked={isSelected}
           onCheckedChange={(checked) => onItemSelect(item.id, checked as boolean)}
@@ -250,59 +219,30 @@ function BacklogItemRow({
           className="h-4 w-4"
         />
 
-        {/* Epic Name */}
-        {(showColumn('epic') || showColumn('name')) && (
-          <div className="flex-1 min-w-[200px]">
-            <span className="text-sm font-medium truncate">{item.name}</span>
-          </div>
-        )}
+        {/* Summary (Epic Name) */}
+        <div className="flex-1 min-w-[250px]">
+          <span className="text-sm font-medium truncate">{item.name}</span>
+        </div>
 
-        {/* Labels (PI tags) */}
-        {showColumn('labels') && (
-          <div className="flex items-center gap-1 min-w-[120px]">
-            {mockLabels.slice(0, 3).map((label) => (
-              <Badge 
-                key={label.id} 
-                variant="outline" 
-                className="text-[10px] px-1.5 py-0 h-5"
-                style={{ borderColor: label.color, color: label.color }}
-              >
-                {label.name}
-              </Badge>
-            ))}
-            {mockLabels.length > 3 && (
-              <span className="text-[10px] text-muted-foreground">+{mockLabels.length - 3}</span>
-            )}
-          </div>
-        )}
-
-        {/* Points */}
-        {showColumn('points') && (
-          <div className="text-sm text-right min-w-[60px]">
-            {item.points ?? item.totalEstimate ?? 0}
-          </div>
-        )}
+        {/* Quarters */}
+        <div className="flex items-center gap-1 min-w-[120px]">
+          {formatQuarters(item.quarters)}
+        </div>
 
         {/* MVP */}
-        {showColumn('mvp') && (
-          <div className="text-sm text-center min-w-[50px]">
-            {item.mvp ? 'Yes' : 'No'}
-          </div>
-        )}
+        <div className="text-sm text-center min-w-[60px]">
+          {item.mvp ? 'Yes' : 'No'}
+        </div>
 
-        {/* Process Step */}
-        {showColumn('processStep') && (
-          <div className="text-sm min-w-[100px] truncate">
-            {item.processStep || item.state || '—'}
-          </div>
-        )}
+        {/* Status (renamed from Process Step) */}
+        <div className="text-sm min-w-[120px] truncate">
+          {formatStatus(item.processStep || item.state)}
+        </div>
 
-        {/* Strategic Value Score */}
-        {showColumn('strategicValueScore') && (
-          <div className="text-sm text-right min-w-[80px] font-medium">
-            {item.technicalScore ?? item.businessScore ?? '—'}
-          </div>
-        )}
+        {/* Technical Score (renamed from Strategic Value Score) */}
+        <div className="text-sm text-right min-w-[100px] font-medium">
+          {item.technicalScore ?? item.businessScore ?? '—'}
+        </div>
       </div>
     </BacklogContextMenu>
   );

@@ -114,8 +114,8 @@ export default function Stories() {
           .eq('program_id', programFilter);
         
         if (programFeatures && programFeatures.length > 0) {
-          const featureIds = programFeatures.map(f => f.id);
-          query = query.in('feature_id', featureIds);
+          const featureIds: string[] = programFeatures.map(f => f.id);
+          query = query.in('feature_id', featureIds) as typeof query;
         } else {
           // No features in this program, return empty
           return [];
@@ -131,8 +131,8 @@ export default function Stories() {
           .eq('program_id', advancedFilters.programId);
         
         if (programFeatures && programFeatures.length > 0) {
-          const featureIds = programFeatures.map(f => f.id);
-          query = query.in('feature_id', featureIds);
+          const featureIds: string[] = programFeatures.map(f => f.id);
+          query = query.in('feature_id', featureIds) as typeof query;
         } else {
           // No features in this program, return empty
           return [];
