@@ -472,8 +472,8 @@ export default function DemandIntakeCatalyst() {
           ) : sortedRequests.length > 0 ? (
             <Table>
               <TableHeader>
-                <TableRow className="bg-muted/30">
-                  <TableHead className="w-10">
+                <TableRow className="bg-brand-gold/10 border-b-2 border-brand-gold/30">
+                  <TableHead className="w-10 font-semibold text-foreground">
                     <Checkbox
                       checked={isAllSelected}
                       onCheckedChange={handleSelectAll}
