@@ -427,30 +427,24 @@ function MilestoneForm({
       {/* Date Fields */}
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <Label className="text-xs font-medium flex items-center gap-1">
+          <Label className="text-xs font-medium mb-1.5 block">
             Start date
-            <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
           </Label>
-          <div className="mt-1">
-            <CatalystDatePicker
-              value={formData.start_date || null}
-              onChange={(date) => setFormData({ ...formData, start_date: date ? format(date, 'yyyy-MM-dd') : '' })}
-              placeholder="Select start date"
-            />
-          </div>
+          <CatalystDatePicker
+            value={formData.start_date || null}
+            onChange={(date) => setFormData({ ...formData, start_date: date ? format(date, 'yyyy-MM-dd') : '' })}
+            placeholder="Select start date"
+          />
         </div>
         <div>
-          <Label className="text-xs font-medium flex items-center gap-1">
+          <Label className="text-xs font-medium mb-1.5 block">
             Due date
-            <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
           </Label>
-          <div className="mt-1">
-            <CatalystDatePicker
-              value={formData.due_date || null}
-              onChange={(date) => setFormData({ ...formData, due_date: date ? format(date, 'yyyy-MM-dd') : '' })}
-              placeholder="Select due date"
-            />
-          </div>
+          <CatalystDatePicker
+            value={formData.due_date || null}
+            onChange={(date) => setFormData({ ...formData, due_date: date ? format(date, 'yyyy-MM-dd') : '' })}
+            placeholder="Select due date"
+          />
         </div>
       </div>
 
