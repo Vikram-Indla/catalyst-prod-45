@@ -37,9 +37,7 @@ import {
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
-  Bookmark,
-  ChevronsLeft,
-  ChevronsRight
+  Bookmark
 } from 'lucide-react';
 
 // Catalyst Demand-specific modals
@@ -636,69 +634,58 @@ export default function DemandIntakeCatalyst() {
           )}
         </div>
 
-        {/* Pagination - Production Style */}
+        {/* Pagination - Epic Backlog Style */}
         {viewMode === 'list' && sortedRequests.length > 0 && (
-          <div className="flex items-center justify-between mt-4">
+          <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
             <p className="text-sm text-muted-foreground">
               Showing {startIndex + 1}-{Math.min(endIndex, sortedRequests.length)} of {sortedRequests.length} requests
             </p>
             
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => setCurrentPage(1)}
-                disabled={currentPage === 1}
-                className="p-1.5 text-muted-foreground hover:text-foreground disabled:opacity-40"
-              >
-                <ChevronsLeft className="h-4 w-4" />
-              </button>
+            <div className="flex items-center gap-2">
+              {/* Previous Button */}
               <button
                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1}
-                className="p-1.5 text-muted-foreground hover:text-foreground disabled:opacity-40"
+                className={cn(
+                  "flex items-center gap-1 px-3 py-1.5 text-sm border border-border rounded-md transition-colors",
+                  currentPage === 1 
+                    ? "text-muted-foreground/50 cursor-not-allowed" 
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                )}
               >
                 <ChevronLeft className="h-4 w-4" />
+                Previous
               </button>
               
-              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                let pageNum: number;
-                if (totalPages <= 5) {
-                  pageNum = i + 1;
-                } else if (currentPage <= 3) {
-                  pageNum = i + 1;
-                } else if (currentPage >= totalPages - 2) {
-                  pageNum = totalPages - 4 + i;
-                } else {
-                  pageNum = currentPage - 2 + i;
-                }
-                return (
-                  <button
-                    key={pageNum}
-                    onClick={() => setCurrentPage(pageNum)}
-                    className={cn(
-                      "w-8 h-8 text-sm rounded transition-colors",
-                      currentPage === pageNum 
-                        ? "bg-brand-gold text-white font-medium" 
-                        : "text-muted-foreground hover:bg-muted"
-                    )}
-                  >
-                    {pageNum}
-                  </button>
-                );
-              })}
+              {/* Page Numbers */}
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                <button
+                  key={pageNum}
+                  onClick={() => setCurrentPage(pageNum)}
+                  className={cn(
+                    "w-8 h-8 text-sm rounded-md transition-colors",
+                    currentPage === pageNum 
+                      ? "bg-brand-gold text-white font-medium" 
+                      : "text-muted-foreground hover:bg-muted border border-border"
+                  )}
+                >
+                  {pageNum}
+                </button>
+              ))}
               
+              {/* Next Button */}
               <button
                 onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                 disabled={currentPage >= totalPages}
-                className="p-1.5 text-muted-foreground hover:text-foreground disabled:opacity-40"
+                className={cn(
+                  "flex items-center gap-1 px-3 py-1.5 text-sm border border-border rounded-md transition-colors",
+                  currentPage >= totalPages 
+                    ? "text-muted-foreground/50 cursor-not-allowed" 
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                )}
               >
+                Next
                 <ChevronRight className="h-4 w-4" />
-              </button>
-              <button
-                onClick={() => setCurrentPage(totalPages)}
-                disabled={currentPage >= totalPages}
-                className="p-1.5 text-muted-foreground hover:text-foreground disabled:opacity-40"
-              >
-                <ChevronsRight className="h-4 w-4" />
               </button>
             </div>
           </div>
