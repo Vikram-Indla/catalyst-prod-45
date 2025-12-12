@@ -104,37 +104,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = async (email: string, password: string, fullName?: string) => {
     try {
-      const redirectUrl = `${window.location.origin}/`;
-      
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: redirectUrl,
-          data: {
-            full_name: fullName || email,
-          },
+      // Use the secure signup edge function with approval workflow
+      const { data, error: invokeError } = await supabase.functions.invoke('signup-with-approval', {
+        body: { 
+          email: email.toLowerCase().trim(), 
+          password,
+          fullName: fullName || email,
         },
       });
-      
-      if (error) {
+
+      if (invokeError) {
+        console.error('Signup invoke error:', invokeError);
         toast({
           title: "Sign up failed",
-          description: error.message,
+          description: "An error occurred during registration. Please try again.",
           variant: "destructive",
         });
-      } else {
-        toast({
-          title: "Account created",
-          description: "You can now sign in with your credentials.",
-        });
+        return { error: invokeError };
       }
+
+      if (!data?.success) {
+        toast({
+          title: "Sign up failed",
+          description: data?.error || "Registration failed. Please try again.",
+          variant: "destructive",
+        });
+        return { error: { message: data?.error || "Registration failed" } };
+      }
+
+      // Sign out immediately - user must wait for approval
+      await supabase.auth.signOut();
+
+      toast({
+        title: "Registration submitted",
+        description: "Your account is pending approval. You can sign in once an administrator approves your request.",
+      });
       
-      return { error };
+      return { error: null, isPending: true };
     } catch (error: any) {
       toast({
         title: "Sign up failed",
-        description: error.message,
+        description: error.message || "An unexpected error occurred.",
         variant: "destructive",
       });
       return { error };

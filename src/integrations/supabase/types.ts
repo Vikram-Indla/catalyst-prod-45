@@ -12537,6 +12537,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      current_user_is_approved: { Args: never; Returns: boolean }
       extract_kb_tiptap_text: { Args: { content: Json }; Returns: string }
       get_user_role: {
         Args: { _user_id: string }
@@ -12550,6 +12551,8 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_user_admin: { Args: { user_id: string }; Returns: boolean }
+      is_user_approved: { Args: { user_id: string }; Returns: boolean }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
       track_room_access: {
