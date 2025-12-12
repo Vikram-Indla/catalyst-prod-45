@@ -97,7 +97,7 @@ export function BacklogWorkspace() {
       />
 
       <div className="flex flex-1 overflow-hidden">
-        <div className="flex-1 overflow-auto px-4 sm:px-6 py-6">
+        <div className="flex-1 overflow-auto px-4 sm:px-6 pt-2 pb-4">
           {isLoading ? (
             <div className="flex items-center justify-center h-full">
               <div className="text-muted-foreground">Loading...</div>
