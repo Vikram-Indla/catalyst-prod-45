@@ -116,7 +116,7 @@ export default function KeyManagement() {
           }).select();
         }
         // Update program key
-        const { error } = await supabase.from('portfolios').update({ key: mapping.newKey }).eq('id', mapping.id);
+        const { error } = await supabase.from('programs').update({ key: mapping.newKey }).eq('id', mapping.id);
         if (error) throw error;
       }
       return toMigrate.length;

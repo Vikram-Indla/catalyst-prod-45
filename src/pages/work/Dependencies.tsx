@@ -71,14 +71,12 @@ export default function DependenciesPage() {
         .from('dependencies')
         .select(`
           *,
-          from_feature:features!dependencies_from_feature_id_fkey(id, name, display_id, team_id, teams(name), program_id, programs(name)),
-          to_feature:features!dependencies_to_feature_id_fkey(id, name, display_id, team_id, teams(name), program_id, programs(name)),
+          from_feature:features!dependencies_from_feature_id_fkey(id, name, display_id, team_id, teams(name)),
+          to_feature:features!dependencies_to_feature_id_fkey(id, name, display_id, team_id, teams(name)),
           needed_by_sprint:iterations!dependencies_needed_by_sprint_id_fkey(id, name, start_date),
           committed_by_sprint:iterations!dependencies_committed_by_sprint_id_fkey(id, name, start_date),
           requesting_team:teams!dependencies_requesting_team_id_fkey(id, name),
           depends_on_team:teams!dependencies_depends_on_team_id_fkey(id, name),
-          requesting_program:programs!dependencies_requesting_program_id_fkey(id, name),
-          depends_on_program:programs!dependencies_depends_on_program_id_fkey(id, name),
           external_entity:external_entities(id, name, entity_type)
         `);
 
@@ -125,9 +123,9 @@ export default function DependenciesPage() {
     const headers = ['Action Required', 'Requesting Team', 'Requested For', 'Depends On Team', 'Need By', 'Commit By', 'Status'];
     const csvData = filteredDependencies.map(dep => [
       dep.from_feature?.name || '',
-      dep.requesting_team?.name || dep.requesting_program?.name || '',
+      dep.requesting_team?.name || '',
       dep.to_feature?.name || '',
-      dep.depends_on_team?.name || dep.depends_on_program?.name || '',
+      dep.depends_on_team?.name || '',
       dep.needed_by_date || dep.needed_by_sprint?.start_date || '',
       dep.committed_by_date || dep.committed_by_sprint?.start_date || '',
       dep.status || ''
@@ -376,13 +374,13 @@ export default function DependenciesPage() {
                                 {dep.from_feature?.name || dep.description || '-'}
                               </TableCell>
                               <TableCell className="text-sm">
-                                {dep.requesting_team?.name || dep.requesting_program?.name || '-'}
+                                {dep.requesting_team?.name || '-'}
                               </TableCell>
                               <TableCell className="text-sm">
                                 {dep.to_feature?.name || dep.external_entity?.name || '-'}
                               </TableCell>
                               <TableCell className="text-sm">
-                                {dep.depends_on_team?.name || dep.depends_on_program?.name || dep.external_entity?.name || '-'}
+                                {dep.depends_on_team?.name || dep.external_entity?.name || '-'}
                               </TableCell>
                               <TableCell>
                                 <Badge variant="outline" className="text-xs capitalize">

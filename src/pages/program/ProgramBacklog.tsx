@@ -60,7 +60,7 @@ export default function ProgramBacklog() {
           epic_id,
           epics(name)
         `)
-        .eq('program_id', programId)
+        .eq('project_id', programId)
         .is('deleted_at', null)
         .order('global_rank', { ascending: true, nullsFirst: false });
 
