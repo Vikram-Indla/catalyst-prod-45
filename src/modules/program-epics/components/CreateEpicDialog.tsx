@@ -26,12 +26,14 @@ interface CreateEpicDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   programId: string;
+  onCreated?: (epicId: string) => void;
 }
 
 export function CreateEpicDialog({ 
   open, 
   onOpenChange, 
-  programId 
+  programId,
+  onCreated,
 }: CreateEpicDialogProps) {
   const queryClient = useQueryClient();
   const [name, setName] = useState('');
@@ -90,6 +92,9 @@ export function CreateEpicDialog({
       queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
       toast.success(`Epic ${data.epic_key} created successfully`);
       handleClose();
+      if (onCreated) {
+        onCreated(data.id);
+      }
     },
     onError: (error) => {
       console.error('Failed to create epic:', error);
