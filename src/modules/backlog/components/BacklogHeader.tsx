@@ -121,12 +121,7 @@ export function BacklogHeader({ onOpenFilters, onOpenColumns, onOpenPrioritize, 
 
             {/* Program Backlog Title - shown only in Epic Backlog mode with 20px font */}
             {isEpicBacklog && (
-              <>
-                <span className="text-[20px] font-semibold text-foreground whitespace-nowrap">Program Backlog</span>
-                <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded whitespace-nowrap">
-                  Epics
-                </span>
-              </>
+              <span className="text-[20px] font-semibold text-foreground whitespace-nowrap">Program Backlog</span>
             )}
 
             {/* Viewing Dropdown (Type Selector) - HIDDEN in Epic Backlog mode */}

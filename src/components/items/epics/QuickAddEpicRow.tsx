@@ -71,7 +71,7 @@ export function QuickAddEpicRow({ columnsCount }: QuickAddEpicRowProps) {
             className="w-full justify-start text-muted-foreground hover:text-foreground"
           >
             <Plus className="h-4 w-4 mr-2" />
-            Quick add epic
+            Add Business Request
           </Button>
         </TableCell>
       </TableRow>
@@ -84,7 +84,7 @@ export function QuickAddEpicRow({ columnsCount }: QuickAddEpicRowProps) {
         <div className="flex items-center gap-2">
           <Input
             autoFocus
-            placeholder="Enter epic name..."
+            placeholder="Enter Business Request name..."
             value={epicName}
             onChange={(e) => setEpicName(e.target.value)}
             onKeyDown={handleKeyDown}
