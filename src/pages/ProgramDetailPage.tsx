@@ -24,6 +24,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
+import { CreateEpicDialog } from '@/modules/program-epics/components/CreateEpicDialog';
 
 interface Program {
   id: string;
@@ -58,6 +59,7 @@ export default function ProgramDetailPage({ programKey }: { programKey: string }
   const [program, setProgram] = useState<Program>(mockProgram);
   const [epics] = useState<Epic[]>(mockEpics);
   const [selectedTab, setSelectedTab] = useState('epics');
+  const [isCreateEpicOpen, setIsCreateEpicOpen] = useState(false);
 
   const toggleStar = () => {
     setProgram({ ...program, isStarred: !program.isStarred });
@@ -186,13 +188,18 @@ export default function ProgramDetailPage({ programKey }: { programKey: string }
             <h2 className="text-sm font-semibold text-foreground m-0">
               Epics in this program
             </h2>
-            <Button size="sm">
+            <Button size="sm" onClick={() => setIsCreateEpicOpen(true)}>
               <Plus className="w-4 h-4 mr-1" />
               Create epic
             </Button>
           </div>
 
-          <EpicsList epics={epics} programKey={programKey} />
+          <EpicsList 
+            epics={epics} 
+            programKey={programKey} 
+            programId={program.id}
+            onCreateEpic={() => setIsCreateEpicOpen(true)}
+          />
         </TabsContent>
 
         {/* PROJECTS TAB */}
@@ -215,6 +222,13 @@ export default function ProgramDetailPage({ programKey }: { programKey: string }
           </p>
         </TabsContent>
       </Tabs>
+
+      {/* CANONICAL Create Epic Dialog */}
+      <CreateEpicDialog
+        open={isCreateEpicOpen}
+        onOpenChange={setIsCreateEpicOpen}
+        programId={program.id}
+      />
     </div>
   );
 }
@@ -223,14 +237,24 @@ export default function ProgramDetailPage({ programKey }: { programKey: string }
 // EPICS LIST COMPONENT
 // ============================================
 
-function EpicsList({ epics, programKey }: { epics: Epic[]; programKey: string }) {
+function EpicsList({ 
+  epics, 
+  programKey, 
+  programId,
+  onCreateEpic 
+}: { 
+  epics: Epic[]; 
+  programKey: string; 
+  programId: string;
+  onCreateEpic: () => void;
+}) {
   if (epics.length === 0) {
     return (
       <div className="bg-card border border-border rounded p-8 text-center">
         <p className="text-sm text-muted-foreground mb-3">
           No epics in this program yet
         </p>
-        <Button>
+        <Button onClick={onCreateEpic}>
           Create your first epic
         </Button>
       </div>

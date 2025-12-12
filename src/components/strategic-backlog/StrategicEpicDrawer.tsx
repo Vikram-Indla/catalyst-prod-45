@@ -111,11 +111,16 @@ export function StrategicEpicDrawer({
   // Create epic mutation
   const createEpicMutation = useMutation({
     mutationFn: async () => {
+      // HARD GUARD: programId is required for creating epics
+      if (!programId) {
+        throw new Error('Program is required to create an epic');
+      }
+
       // Create epic - use any to bypass strict Supabase types
       const epicData = {
         name,
         description: description || null,
-        primary_program_id: programId || null,
+        primary_program_id: programId,  // REQUIRED - no null fallback
         owner_id: ownerId || null,
         health: health === 'amber' ? 'yellow' : health || null,
         status: status || 'analyzing',
