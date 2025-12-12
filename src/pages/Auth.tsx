@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { Loader2, Briefcase, Package, GitMerge, Link2, TriangleAlert, FlaskConical, FileText } from "lucide-react";
@@ -27,6 +27,9 @@ export default function Auth() {
   const [loginError, setLoginError] = useState<string | null>(null);
   const { signIn, signUp, user, loading } = useAuth();
   const navigate = useNavigate();
+  
+  // Track if we've already checked this user to prevent infinite loops
+  const checkedUserRef = useRef<string | null>(null);
 
   // Load remembered email on mount
   useEffect(() => {
@@ -37,21 +40,21 @@ export default function Auth() {
     }
   }, []);
 
-  const checkMustChangePassword = async (userId: string) => {
+  const checkMustChangePassword = useCallback(async (userId: string): Promise<boolean> => {
     try {
       const { data: profile, error } = await supabase
         .from('profiles')
-        .select('must_change_password')
+        .select('must_change_password, approval_status')
         .eq('id', userId)
         .maybeSingle();
 
       if (error) {
-        console.error('Error checking must_change_password:', error);
+        console.error('Error checking profile:', error);
         return false;
       }
 
-      // No profile found - user might be pending approval
-      if (!profile) {
+      // No profile found or not approved - don't redirect
+      if (!profile || profile.approval_status !== 'APPROVED') {
         return false;
       }
 
@@ -60,25 +63,51 @@ export default function Auth() {
       console.error('Error in checkMustChangePassword:', err);
       return false;
     }
-  };
+  }, []);
 
   useEffect(() => {
+    // Skip if still loading or no user
+    if (loading || !user) {
+      checkedUserRef.current = null;
+      return;
+    }
+    
+    // Skip if we've already checked this user
+    if (checkedUserRef.current === user.id) {
+      return;
+    }
+    
+    // Skip if already handling password change
+    if (mustChangePassword) {
+      return;
+    }
+
     const handleAuthRedirect = async () => {
-      if (!loading && user && !mustChangePassword) {
-        const needsPasswordChange = await checkMustChangePassword(user.id);
+      checkedUserRef.current = user.id;
+      
+      const needsPasswordChange = await checkMustChangePassword(user.id);
+      
+      if (needsPasswordChange) {
+        setMustChangePassword(true);
+        setCurrentUserId(user.id);
+      } else {
+        // Check if user is approved before redirecting
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('approval_status')
+          .eq('id', user.id)
+          .maybeSingle();
         
-        if (needsPasswordChange) {
-          setMustChangePassword(true);
-          setCurrentUserId(user.id);
-        } else {
+        if (profile?.approval_status === 'APPROVED') {
           const lastRoute = getLastRoute();
           navigate(lastRoute, { replace: true });
         }
+        // If not approved, stay on auth page (don't redirect)
       }
     };
 
     handleAuthRedirect();
-  }, [user, loading, navigate, mustChangePassword]);
+  }, [user, loading, mustChangePassword, navigate, checkMustChangePassword]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
