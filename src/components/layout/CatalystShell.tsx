@@ -92,10 +92,9 @@ function CatalystShellContent() {
         }
         // Show empty state if no program selected
         return (
-          <div className="w-[280px] h-full border-r bg-card flex items-center justify-center p-6 text-center">
-            <div className="text-muted-foreground">
+          <div className="w-44 h-full border-r bg-card flex items-center justify-center p-4 text-center">
+            <div className="text-muted-foreground text-xs">
               <p className="font-medium">Select a Program</p>
-              <p className="text-sm mt-1">Choose a program from the top navigation</p>
             </div>
           </div>
         );
@@ -114,10 +113,9 @@ function CatalystShellContent() {
         }
         // Show empty state if no project selected
         return (
-          <div className="w-[280px] h-full border-r bg-card flex items-center justify-center p-6 text-center">
-            <div className="text-muted-foreground">
+          <div className="w-44 h-full border-r bg-card flex items-center justify-center p-4 text-center">
+            <div className="text-muted-foreground text-xs">
               <p className="font-medium">Select a Project</p>
-              <p className="text-sm mt-1">Choose a project from the top navigation</p>
             </div>
           </div>
         );
