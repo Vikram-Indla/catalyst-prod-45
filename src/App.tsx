@@ -377,11 +377,11 @@ const App = () => (
               <Route path="/themes/grid" element={<ThemesGrid />} />
               <Route path="/portfolio/:portfolioId/themes" element={<ThemesGrid />} />
               <Route path="/initiatives" element={<Initiatives />} />
-              <Route path="/epics" element={<Navigate to="/items/epics" replace />} />
-              <Route path="/backlog/epics" element={<Navigate to="/items/epics" replace />} />
+              <Route path="/epics" element={<Navigate to="/program/b2c3d4e5-f6a7-8901-bcde-f12345678901/epic-backlog" replace />} />
+              <Route path="/backlog/epics" element={<Navigate to="/program/b2c3d4e5-f6a7-8901-bcde-f12345678901/epic-backlog" replace />} />
             <Route path="/features" element={<FeaturesBacklog />} />
             <Route path="/features/prioritization" element={<FeaturePrioritizationView />} />
-              <Route path="/items/epics" element={<EpicsPage />} />
+              <Route path="/items/epics" element={<Navigate to="/program/b2c3d4e5-f6a7-8901-bcde-f12345678901/epic-backlog" replace />} />
               <Route path="/items/epics/recycle-bin" element={<EpicsRecycleBinPage />} />
               <Route path="/items/epics/canceled" element={<EpicsCanceledPage />} />
               <Route path="/items/epics/:epicId/status-report" element={<EpicStatusReport />} />
