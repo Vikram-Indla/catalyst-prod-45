@@ -14,6 +14,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { HealthBadge } from '@/components/shared/HealthBadge';
+import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { Link as LinkIcon, Lock, Unlock, Plus, Loader2, X, ChevronRight, Search } from 'lucide-react';
 import { WorkItemVersionsSection } from '@/components/work-items/WorkItemVersionsSection';
 import { KeyHistorySection } from '@/components/work-items/KeyHistorySection';
@@ -24,6 +25,7 @@ import { WorkItemCommentsSection } from '@/components/work-items/WorkItemComment
 import { AddProgramDialog } from '../dialogs/AddProgramDialog';
 import { RiskDialog } from '@/components/forms/RiskDialog';
 import { toast } from 'sonner';
+import { format } from 'date-fns';
 
 interface EpicDetailsTabProps {
   epic: any;
@@ -642,21 +644,23 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label>Initiation Date</Label>
-            <Input 
-              type="date" 
-              value={formData.initiation_date}
-              onChange={(e) => handleFieldChange('initiation_date', e.target.value)}
+            <Label className="mb-1.5 block">Initiation Date</Label>
+            <CatalystDatePicker
+              value={formData.initiation_date || null}
+              onChange={(date) => handleFieldChange('initiation_date', date ? format(date, 'yyyy-MM-dd') : null)}
+              placeholder="Select date"
             />
           </div>
           <div>
-            <Label>Target Completion Date</Label>
+            <Label className="mb-1.5 block">Target Completion Date</Label>
             <div className="flex gap-2">
-              <Input 
-                type="date" 
-                value={formData.target_completion_date}
-                onChange={(e) => handleFieldChange('target_completion_date', e.target.value)}
-              />
+              <div className="flex-1">
+                <CatalystDatePicker
+                  value={formData.target_completion_date || null}
+                  onChange={(date) => handleFieldChange('target_completion_date', date ? format(date, 'yyyy-MM-dd') : null)}
+                  placeholder="Select date"
+                />
+              </div>
               <Button 
                 variant="outline" 
                 size="icon"
