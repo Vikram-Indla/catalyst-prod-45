@@ -31,7 +31,23 @@ export function BacklogSection({
 }: BacklogSectionProps) {
   const [isExpanded, setIsExpanded] = useState(section.isExpanded);
   const [currentPage, setCurrentPage] = useState(1);
-  const { columnsShown, isEpicBacklog } = useBacklogState();
+  const { columnsShown, isEpicBacklog, programId } = useBacklogState();
+
+  // Fetch program key for epic numbering
+  const { data: programData } = useQuery({
+    queryKey: ['program-key', programId],
+    queryFn: async () => {
+      if (!programId) return null;
+      const { data, error } = await supabase
+        .from('programs')
+        .select('key, name')
+        .eq('id', programId)
+        .single();
+      if (error) return null;
+      return data;
+    },
+    enabled: !!programId && isEpicBacklog,
+  });
 
   // Pagination calculations
   const totalItems = section.items.length;
@@ -44,16 +60,16 @@ export function BacklogSection({
     <div className="border rounded-lg bg-card overflow-hidden">
       {/* Section Content - No header row with "All Items" */}
       <div>
-        {/* Column Headers - starts immediately */}
-        <div className="flex items-center gap-3 px-4 py-2 bg-muted/20 border-b text-xs font-medium text-muted-foreground uppercase tracking-wide">
+        {/* Column Headers - Light gold background with title case */}
+        <div className="flex items-center gap-3 px-4 py-2.5 bg-brand-gold/10 border-b border-brand-gold/30 text-xs font-semibold text-foreground capitalize tracking-wide">
+          {/* Drag handle column - LEFTMOST */}
+          <div className="w-8" />
+          
           {/* Expand chevron column */}
           <div className="w-6" />
           
-          {/* Key (renamed from Epic Number) */}
-          <div className="min-w-[80px]">Key</div>
-          
-          {/* Drag handle column - NO LABEL */}
-          <div className="w-8" />
+          {/* Key */}
+          <div className="min-w-[100px]">Key</div>
           
           {/* Health dot space */}
           <div className="w-3" />
@@ -71,12 +87,12 @@ export function BacklogSection({
           <div className="min-w-[100px]">Quarters</div>
           
           {/* MVP */}
-          <div className="min-w-[50px] text-center">MVP</div>
+          <div className="min-w-[50px] text-center">Mvp</div>
           
-          {/* Status (renamed from Process Step) */}
+          {/* Status */}
           <div className="min-w-[100px]">Status</div>
           
-          {/* Technical Score (renamed from Strategic Value Score) */}
+          {/* Technical Score */}
           <div className="min-w-[80px] text-right">Score</div>
         </div>
         
@@ -108,6 +124,7 @@ export function BacklogSection({
                           dragHandleProps={provided.dragHandleProps}
                           isDragging={snapshot.isDragging}
                           columnsShown={columnsShown}
+                          programKey={programData?.key || null}
                         />
                       </div>
                     )}
@@ -190,6 +207,7 @@ interface BacklogItemRowProps {
   dragHandleProps?: any;
   isDragging?: boolean;
   columnsShown: string[];
+  programKey?: string | null;
 }
 
 function BacklogItemRow({
@@ -201,6 +219,7 @@ function BacklogItemRow({
   dragHandleProps,
   isDragging,
   columnsShown,
+  programKey,
 }: BacklogItemRowProps) {
   const [isRowExpanded, setIsRowExpanded] = useState(false);
   const { type, isEpicBacklog } = useBacklogState();
@@ -276,6 +295,11 @@ function BacklogItemRow({
           )}
           onClick={() => onItemClick(item.id)}
         >
+          {/* Drag handle - LEFTMOST */}
+          <div {...dragHandleProps} className="cursor-grab active:cursor-grabbing w-8">
+            <GripVertical className="h-4 w-4 text-muted-foreground" />
+          </div>
+
           {/* Expand chevron - clickable to expand features */}
           <button 
             onClick={handleExpandClick}
@@ -288,14 +312,9 @@ function BacklogItemRow({
             )}
           </button>
 
-          {/* Key (epic_key or displayId, NOT row index) */}
-          <div className="font-mono text-xs text-muted-foreground min-w-[80px]">
-            {item.epicKey || item.displayId || '—'}
-          </div>
-
-          {/* Drag handle */}
-          <div {...dragHandleProps} className="cursor-grab active:cursor-grabbing w-8">
-            <GripVertical className="h-4 w-4 text-muted-foreground" />
+          {/* Key - Generate program-based epic key (e.g., ABC-001) */}
+          <div className="font-mono text-xs text-muted-foreground min-w-[100px]">
+            {item.epicKey || (programKey ? `${programKey}-${String(rank).padStart(3, '0')}` : item.displayId || '—')}
           </div>
 
           {/* Health status dot */}
