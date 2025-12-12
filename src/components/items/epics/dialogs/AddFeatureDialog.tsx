@@ -90,7 +90,7 @@ export function AddFeatureDialog({ epicId, open, onOpenChange }: AddFeatureDialo
         .insert([{
           name,
           epic_id: epicId,
-          program_id: epic?.primary_program_id,
+          project_id: epic?.primary_program_id,
           status: 'funnel',
         }])
         .select()

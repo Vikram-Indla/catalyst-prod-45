@@ -48,7 +48,7 @@ export function DependencyDialog({ open, onClose, dependencyId }: DependencyDial
     queryFn: async () => {
       const { data, error } = await supabase
         .from('features')
-        .select('*, programs(name)')
+        .select('*, projects(name)')
         .order('name');
       if (error) throw error;
       return data;
@@ -155,7 +155,7 @@ export function DependencyDialog({ open, onClose, dependencyId }: DependencyDial
                     <SelectContent>
                       {features?.map((feature) => (
                         <SelectItem key={feature.id} value={feature.id}>
-                          {feature.name} ({feature.programs?.name})
+                          {feature.name} ({feature.projects?.name})
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -180,7 +180,7 @@ export function DependencyDialog({ open, onClose, dependencyId }: DependencyDial
                     <SelectContent>
                       {features?.map((feature) => (
                         <SelectItem key={feature.id} value={feature.id}>
-                          {feature.name} ({feature.programs?.name})
+                          {feature.name} ({feature.projects?.name})
                         </SelectItem>
                       ))}
                     </SelectContent>

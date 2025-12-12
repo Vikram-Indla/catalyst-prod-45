@@ -102,10 +102,10 @@ export function ObjectiveDialog({ open, onClose, objectiveId, scopeType = 'portf
   const { data: teams } = useQuery({
     queryKey: ['teams', form.watch('program_id')],
     queryFn: async () => {
-      let query = supabase.from('teams').select('id, name, program_id').order('name');
+      let query = supabase.from('teams').select('id, name, project_id').order('name');
       const programId = form.watch('program_id');
       if (programId) {
-        query = query.eq('program_id', programId);
+        query = query.eq('project_id', programId);
       }
       const { data, error } = await query;
       if (error) throw error;

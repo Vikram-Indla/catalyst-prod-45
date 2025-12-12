@@ -47,7 +47,7 @@ export function CreateProjectDialog({ open, onOpenChange, onSuccess }: CreatePro
     queryKey: ['programs-for-project'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('portfolios')
+        .from('programs')
         .select('id, name, key')
         .order('name');
       if (error) throw error;
@@ -60,7 +60,7 @@ export function CreateProjectDialog({ open, onOpenChange, onSuccess }: CreatePro
     queryKey: ['project-keys'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('programs')
+        .from('projects')
         .select('key');
       if (error) throw error;
       return data?.map(p => p.key?.toUpperCase()) || [];
@@ -91,7 +91,7 @@ export function CreateProjectDialog({ open, onOpenChange, onSuccess }: CreatePro
       // If no program selected, use default
       if (!portfolioId) {
         const { data: existingDefault } = await supabase
-          .from('portfolios')
+          .from('programs')
           .select('id')
           .eq('name', 'Default')
           .single();

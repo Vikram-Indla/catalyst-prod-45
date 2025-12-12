@@ -112,7 +112,7 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
     queryFn: async () => {
       const { data, error } = await supabase
         .from('features')
-        .select('id, name, display_id, team_id, program_id')
+        .select('id, name, display_id, team_id, project_id')
         .order('name');
       if (error) throw error;
       return data;
@@ -171,9 +171,9 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
         from_feature_id: existingDependency.from_feature_id || undefined,
         to_feature_id: existingDependency.to_feature_id || undefined,
         requesting_team_id: existingDependency.requesting_team_id || undefined,
-        requesting_program_id: existingDependency.requesting_program_id || undefined,
+        requesting_project_id: existingDependency.requesting_project_id || undefined,
         depends_on_team_id: existingDependency.depends_on_team_id || undefined,
-        depends_on_program_id: existingDependency.depends_on_program_id || undefined,
+        depends_on_project_id: existingDependency.depends_on_project_id || undefined,
         external_entity_id: existingDependency.external_entity_id || undefined,
         owner_id: existingDependency.owner_id || undefined,
         pi_id: existingDependency.pi_id || undefined,

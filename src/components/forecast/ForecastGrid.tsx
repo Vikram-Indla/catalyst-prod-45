@@ -243,10 +243,10 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
     return entry?.estimate || 0;
   };
 
-  const calculateTotalForContext = (projectId?: string, teamId?: string) => {
+  const calculateTotalForContext = (programId?: string, teamId?: string) => {
     // Handle null/undefined comparison correctly
     return forecasts
-      .filter(f => (f.project_id || null) === (projectId || null) && (f.team_id || null) === (teamId || null))
+      .filter(f => (f.program_id || null) === (programId || null) && (f.team_id || null) === (teamId || null))
       .reduce((sum, f) => sum + (f.estimate || 0), 0);
   };
 
@@ -462,7 +462,7 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
                               </td>
                               <td className="p-3 text-right text-sm font-medium">
                                 {forecasts
-                                  .filter(f => f.work_item_id === item.id && f.project_id && !f.team_id)
+                                  .filter(f => f.work_item_id === item.id && f.program_id && !f.team_id)
                                   .reduce((sum, f) => sum + (f.estimate || 0), 0) || 'No data'}
                               </td>
                               <td className="p-3 text-right text-sm font-medium">
@@ -478,13 +478,13 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
                 
                  {/* Zone 3: Estimate inputs */}
                  {capacities.map((capacity, idx) => {
-                   const inputKey = `${item.id}-${capacity.project_id || 'null'}-${capacity.team_id || 'null'}`;
-                   const value = getForecastValue(item.id as string, capacity.project_id, capacity.team_id, inputKey);
+                   const inputKey = `${item.id}-${capacity.program_id || 'null'}-${capacity.team_id || 'null'}`;
+                   const value = getForecastValue(item.id as string, capacity.program_id, capacity.team_id, inputKey);
                    const isAssigned = workItems.some(wi => 
                      wi.id === item.id && 
                      assignments.some(a => 
                        a.work_item_id === wi.id &&
-                       ((capacity.project_id && a.project_id === capacity.project_id && !a.team_id) ||
+                       ((capacity.program_id && a.program_id === capacity.program_id && !a.team_id) ||
                         (capacity.team_id && a.team_id === capacity.team_id))
                      )
                    );

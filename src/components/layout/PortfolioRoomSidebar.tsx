@@ -123,7 +123,7 @@ export function PortfolioRoomSidebar({
     queryKey: ['portfolio', portfolioId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('portfolios')
+        .from('programs')
         .select('id, name')
         .eq('id', portfolioId)
         .maybeSingle();

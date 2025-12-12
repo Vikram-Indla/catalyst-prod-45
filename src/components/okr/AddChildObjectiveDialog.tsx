@@ -50,7 +50,7 @@ export function AddChildObjectiveDialog({
       // Fetch objectives
       let query = supabase
         .from("objectives")
-        .select("id, name, tier, status, score, portfolio_id, program_id")
+        .select("id, name, tier, status, score, portfolio_id, project_id")
         .neq("id", parentObjectiveId)
         .is("parent_objective_id", null)
         .in("tier", ["portfolio", "program"])
@@ -65,7 +65,7 @@ export function AddChildObjectiveDialog({
 
       // Get unique portfolio/program IDs
       const portfolioIds = [...new Set(objectivesData?.map(o => o.portfolio_id).filter(Boolean))];
-      const programIds = [...new Set(objectivesData?.map(o => o.program_id).filter(Boolean))];
+      const programIds = [...new Set(objectivesData?.map(o => o.project_id).filter(Boolean))];
 
       // Fetch portfolio names (now 'programs' table)
       let portfoliosMap: Record<string, string> = {};
@@ -92,7 +92,7 @@ export function AddChildObjectiveDialog({
         ...obj,
         summary: obj.name,
         portfolioName: obj.portfolio_id ? portfoliosMap[obj.portfolio_id] : null,
-        programName: obj.program_id ? programsMap[obj.program_id] : null,
+        programName: obj.project_id ? programsMap[obj.project_id] : null,
       }));
     },
     enabled: open,

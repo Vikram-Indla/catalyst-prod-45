@@ -47,11 +47,11 @@ export function AddProgramDialog({ epicId, primaryProgramId, open, onOpenChange 
     queryKey: ['epic-additional-programs', epicId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('epic_programs')
-        .select('program_id')
+        .from('epic_projects')
+        .select('project_id')
         .eq('epic_id', epicId);
       if (error) throw error;
-      return data?.map(p => p.program_id) || [];
+      return data?.map(p => p.project_id) || [];
     },
     enabled: open,
   });
@@ -65,21 +65,21 @@ export function AddProgramDialog({ epicId, primaryProgramId, open, onOpenChange 
 
   const saveMutation = useMutation({
     mutationFn: async () => {
-      // Delete existing additional program links
+      // Delete existing additional project links
       await supabase
-        .from('epic_programs')
+        .from('epic_projects')
         .delete()
         .eq('epic_id', epicId);
 
-      // Insert new additional program links
+      // Insert new additional project links
       if (selectedPrograms.length > 0) {
-        const inserts = selectedPrograms.map((programId) => ({
+        const inserts = selectedPrograms.map((projectId) => ({
           epic_id: epicId,
-          program_id: programId,
+          project_id: projectId,
         }));
 
         const { error } = await supabase
-          .from('epic_programs')
+          .from('epic_projects')
           .insert(inserts);
 
         if (error) throw error;

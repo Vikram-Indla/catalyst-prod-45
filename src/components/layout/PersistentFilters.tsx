@@ -37,7 +37,7 @@ export function PersistentFilters() {
     queryKey: ['programs'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('portfolios')
+        .from('programs')
         .select('*')
         .eq('status', 'active')
         .order('name');
@@ -52,9 +52,9 @@ export function PersistentFilters() {
     queryFn: async () => {
       if (!selectedProgramId) return [];
       const { data, error } = await supabase
-        .from('programs')
+        .from('projects')
         .select('*')
-        .eq('portfolio_id', selectedProgramId)
+        .eq('program_id', selectedProgramId)
         .eq('status', 'active')
         .order('name');
       if (error) throw error;

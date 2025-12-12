@@ -25,8 +25,8 @@ export function TeamSelectorDropdown({ onClose }: TeamSelectorDropdownProps) {
         .select(`
           id,
           name,
-          program_id,
-          programs!program_id (
+          project_id,
+          projects!project_id (
             name
           )
         `)
@@ -53,7 +53,7 @@ export function TeamSelectorDropdown({ onClose }: TeamSelectorDropdownProps) {
       room_type: 'team',
       room_id: team.id,
       room_name: team.name,
-      room_subtitle: team.programs?.name || 'Team',
+      room_subtitle: team.projects?.name || 'Team',
       room_path: `/teams/${team.id}/room`,
       pi_label: null,
     });
