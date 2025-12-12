@@ -130,6 +130,8 @@ export default function Auth() {
     navigate(lastRoute);
   };
 
+  const [showPendingMessage, setShowPendingMessage] = useState(false);
+
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -141,22 +143,22 @@ export default function Auth() {
       return;
     }
 
-    if (password.length < 6) {
-      setLoginError("Password must be at least 6 characters");
+    if (password.length < 8) {
+      setLoginError("Password must be at least 8 characters");
       setIsLoading(false);
       return;
     }
 
-    const { error } = await signUp(email, password, fullName);
+    const result = await signUp(email, password, fullName);
 
-    if (error) {
-      setLoginError(error.message || "Failed to create account");
+    if (result.error) {
+      setLoginError(result.error.message || "Failed to create account");
       setIsLoading(false);
       return;
     }
 
-    setAuthMode("signin");
-    setEmail("");
+    // Show pending approval message
+    setShowPendingMessage(true);
     setPassword("");
     setConfirmPassword("");
     setFullName("");
@@ -295,7 +297,32 @@ export default function Auth() {
         {/* Main Container */}
         <div className="w-full max-w-md mx-auto relative z-10" style={{ marginTop: "clamp(100px, 16vh, 140px)" }}>
           
-          {mustChangePassword && currentUserId ? (
+          {showPendingMessage ? (
+            <div className="text-center">
+              <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-brand-gold/10 flex items-center justify-center">
+                <FileText className="w-8 h-8 text-brand-gold" />
+              </div>
+              <h2 className="text-2xl font-display font-medium text-brand-dark mb-3">
+                Registration Submitted
+              </h2>
+              <p className="text-muted-foreground mb-6 font-body">
+                Thanks for registering. Your account is pending approval.
+              </p>
+              <p className="text-sm text-muted-foreground mb-8 font-body">
+                You can sign in once an administrator approves your request.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowPendingMessage(false);
+                  setAuthMode("signin");
+                }}
+                className="px-6 py-3 rounded-lg bg-brand-gold text-white font-medium hover:bg-brand-gold-hover transition-colors"
+              >
+                Back to Sign In
+              </button>
+            </div>
+          ) : mustChangePassword && currentUserId ? (
             <ForcePasswordReset 
               userId={currentUserId} 
               onSuccess={handlePasswordResetSuccess} 
