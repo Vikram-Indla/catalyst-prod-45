@@ -56,7 +56,7 @@ import { EpicChildrenTab } from './tabs/EpicChildrenTab';
 import { EpicEstimationTab } from './tabs/EpicEstimationTab';
 import { EpicFinancialsTab } from './tabs/EpicFinancialsTab';
 import { EpicDiscussionsTab } from './tabs/EpicDiscussionsTab';
-import { WorkItemLinksSection } from '@/components/work-items/WorkItemLinksSection';
+import { UnifiedLinksTab } from '@/components/shared/UnifiedLinksTab';
 // Roll-up summary (compact mode)
 import { EpicRollUpSummary } from './EpicRollUpSummary';
 // Dialogs
@@ -575,8 +575,8 @@ export function EpicDetailsPanel({ epic: initialEpic, open, onClose }: EpicDetai
               <TabsContent value="financials" className="m-0 focus-visible:outline-none">
                 <EpicFinancialsTab epic={epic} />
               </TabsContent>
-              <TabsContent value="links" className="m-0 focus-visible:outline-none p-4">
-                <WorkItemLinksSection workItemType="epic" workItemId={epic.id} />
+              <TabsContent value="links" className="m-0 focus-visible:outline-none">
+                <UnifiedLinksTab entityType="epic" entityId={epic.id} />
               </TabsContent>
               <TabsContent value="discussions" className="m-0 focus-visible:outline-none h-[500px]">
                 <EpicDiscussionsTab epic={epic} />

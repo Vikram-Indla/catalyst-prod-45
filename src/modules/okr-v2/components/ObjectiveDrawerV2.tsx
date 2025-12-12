@@ -35,8 +35,8 @@ import { MoreVertical, Trash2, Users, Calendar, Target, ChevronDown, X, Copy, Do
 import { ObjectiveOverviewTabV2, ObjectiveFormData } from './ObjectiveOverviewTabV2';
 import { KeyResultsTabV2 } from './KeyResultsTabV2';
 import { LinkedWorkTabV2 } from './LinkedWorkTabV2';
-// Reuse v1 tab components for Links, Discussions, Audit Log (NO Details tab in v2)
-import { LinkedItemsTab } from '@/components/okr/LinkedItemsTab';
+// Reuse v1 tab components for Discussions, Audit Log (NO Details tab in v2)
+import { UnifiedLinksTab } from '@/components/shared/UnifiedLinksTab';
 import { DiscussionsTab } from '@/components/okr/DiscussionsTab';
 import { AuditLogTab } from '@/components/okr/AuditLogTab';
 import { toast } from 'sonner';
@@ -545,8 +545,8 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
                   <TabsContent value="work" className="m-0 h-full">
                     <LinkedWorkTabV2 objectiveId={objective.id} onMutation={markDrawerChanged} />
                   </TabsContent>
-                  <TabsContent value="links" className="m-0 p-6">
-                    <LinkedItemsTab objectiveId={objective.id} />
+                  <TabsContent value="links" className="m-0">
+                    <UnifiedLinksTab entityType="objective" entityId={objective.id} />
                   </TabsContent>
                   <TabsContent value="discussions" className="m-0 p-6">
                     <DiscussionsTab objectiveId={objective.id} />
