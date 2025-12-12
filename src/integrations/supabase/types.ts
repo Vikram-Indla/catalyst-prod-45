@@ -2668,7 +2668,7 @@ export type Database = {
             foreignKeyName: "epics_primary_program_id_fkey"
             columns: ["primary_program_id"]
             isOneToOne: false
-            referencedRelation: "projects"
+            referencedRelation: "programs"
             referencedColumns: ["id"]
           },
           {

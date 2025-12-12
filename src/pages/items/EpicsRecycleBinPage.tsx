@@ -30,7 +30,7 @@ export default function EpicsRecycleBinPage() {
     queryFn: async () => {
       let query = supabase
         .from('epics')
-        .select('*, strategic_themes(name), programs(name)')
+        .select('*, strategic_themes(name), programs!primary_program_id(name)')
         .not('deleted_at', 'is', null)
         .order('deleted_at', { ascending: false });
 

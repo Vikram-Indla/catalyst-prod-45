@@ -19,7 +19,7 @@ export default function EpicsCanceledPage() {
     queryFn: async () => {
       let query = supabase
         .from('epics')
-        .select('*, strategic_themes(name), programs(name)')
+        .select('*, strategic_themes(name), programs!primary_program_id(name)')
         .eq('status', 'cancelled')
         .is('deleted_at', null)
         .order('updated_at', { ascending: false });

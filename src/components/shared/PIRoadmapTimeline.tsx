@@ -26,19 +26,17 @@ export function PIRoadmapTimeline({ portfolioId, selectedPIs }: PIRoadmapTimelin
   const { data: pis, isLoading: pisLoading } = useQuery({
     queryKey: ['pis-timeline', portfolioId, selectedPIs],
     queryFn: async () => {
-      let query = supabase
-        .from('program_increments')
+      // Cast to break type recursion
+      const query = (supabase.from('program_increments') as any)
         .select('*')
         .eq('portfolio_id', portfolioId)
         .order('start_date');
 
-      if (selectedPIs.length > 0) {
-        query = query.in('id', selectedPIs);
-      }
-
-      const { data, error } = await query;
-      if (error) throw error;
-      return data;
+      const result = selectedPIs.length > 0 
+        ? await query.in('id', selectedPIs)
+        : await query;
+      if (result.error) throw result.error;
+      return result.data || [];
     },
     enabled: !!portfolioId,
   });

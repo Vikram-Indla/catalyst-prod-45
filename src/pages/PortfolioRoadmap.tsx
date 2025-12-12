@@ -56,23 +56,24 @@ export default function PortfolioRoadmap() {
   const { data: features } = useQuery({
     queryKey: ['roadmap-features', selectedProgramId, selectedProjectId],
     queryFn: async () => {
-      let query = supabase
-        .from('features')
+      // Cast to break type recursion
+      const baseQuery = (supabase.from('features') as any)
         .select(`
           *,
           epics(id, name, strategic_themes(id, name)),
-          programs(id, name, portfolio_id)
+          programs!program_id(id, name, portfolio_id)
         `);
       
+      let finalQuery = baseQuery;
       if (selectedProjectId) {
-        query = query.eq('program_id', selectedProjectId);
+        finalQuery = baseQuery.eq('program_id', selectedProjectId);
       } else if (selectedProgramId) {
-        query = query.eq('programs.portfolio_id', selectedProgramId);
+        finalQuery = baseQuery.eq('programs.portfolio_id', selectedProgramId);
       }
       
-      const { data, error } = await query.order('planned_start_date');
-      if (error) throw error;
-      return data;
+      const result = await finalQuery.order('planned_start_date');
+      if (result.error) throw result.error;
+      return result.data || [];
     },
     enabled: !!selectedProgramId || !!selectedProjectId,
   });
