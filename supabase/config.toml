@@ -1,1 +1,4 @@
 project_id = "stcpycushiccfvrqwipw"
+
+[functions.signup-with-approval]
+verify_jwt = false
