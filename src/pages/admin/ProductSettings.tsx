@@ -11,10 +11,12 @@ import { WorkflowStatusesPanel } from '@/components/admin/product-settings/Workf
 import { IntakeViewsPanel } from '@/components/admin/product-settings/IntakeViewsPanel';
 import { AccessControlPanel } from '@/components/admin/product-settings/AccessControlPanel';
 import { DataManagementPanel } from '@/components/admin/product-settings/DataManagementPanel';
+import { LookupManagementPanel } from '@/components/admin/lookup-management/LookupManagementPanel';
 
 export type ProductSettingsTab = 
   | 'business-lines'
   | 'fields-layout'
+  | 'lookup-management'
   | 'workflow-statuses'
   | 'intake-views'
   | 'access-control'
@@ -48,6 +50,8 @@ export default function ProductSettings() {
         return <BusinessLinesPanel onChanges={() => setHasChanges(true)} />;
       case 'fields-layout':
         return <FieldsLayoutPanel onChanges={() => setHasChanges(true)} />;
+      case 'lookup-management':
+        return <LookupManagementPanel />;
       case 'workflow-statuses':
         return <WorkflowStatusesPanel onChanges={() => setHasChanges(true)} />;
       case 'intake-views':

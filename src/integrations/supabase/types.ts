@@ -6163,6 +6163,89 @@ export type Database = {
           },
         ]
       }
+      option_sets: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          is_system: boolean
+          key: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          is_system?: boolean
+          key: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          is_system?: boolean
+          key?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      option_values: {
+        Row: {
+          color: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          is_default: boolean
+          label: string
+          label_ar: string | null
+          option_set_id: string
+          sort_order: number
+          updated_at: string
+          value_key: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          is_default?: boolean
+          label: string
+          label_ar?: string | null
+          option_set_id: string
+          sort_order?: number
+          updated_at?: string
+          value_key: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          is_default?: boolean
+          label?: string
+          label_ar?: string | null
+          option_set_id?: string
+          sort_order?: number
+          updated_at?: string
+          value_key?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "option_values_option_set_id_fkey"
+            columns: ["option_set_id"]
+            isOneToOne: false
+            referencedRelation: "option_sets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       org_modules: {
         Row: {
           created_at: string | null

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { Button } from '@/components/ui/button';
 import { Lock, Unlock } from 'lucide-react';
@@ -10,18 +9,13 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { RichTextEditor } from '../RichTextEditor';
 import { UserPicker } from '@/components/ui/user-picker';
+import { BusinessRequest } from '@/types/business-request';
 import { 
-  BusinessRequest, 
-  DELIVERY_PLATFORM_OPTIONS,
-  DEPARTMENT_OPTIONS
-} from '@/types/business-request';
-
-// Delivery Track Options
-const DELIVERY_TRACK_OPTIONS = [
-  'BAU Fast Track',
-  'Project',
-  'Entity Integration',
-];
+  DepartmentSelect, 
+  DeliveryPlatformSelect, 
+  DeliveryTrackSelect, 
+  PlannedQuarterSelect 
+} from '@/components/ui/lookup-select';
 
 interface DemandDetailsViewTabProps {
   data: Partial<BusinessRequest> & Record<string, any>;
