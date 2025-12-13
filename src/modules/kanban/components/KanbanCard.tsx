@@ -44,9 +44,9 @@ function DaysInColumnIndicator({ days }: { days: number }) {
   );
 }
 
-// Score Badge
-function ScoreBadge({ score }: { score: number | null }) {
-  if (score === null || score === undefined) {
+// Rank Badge
+function RankBadge({ rank }: { rank: number | null }) {
+  if (rank === null || rank === undefined) {
     return (
       <span style={{
         display: 'inline-flex',
@@ -59,17 +59,10 @@ function ScoreBadge({ score }: { score: number | null }) {
         fontSize: '10px',
         fontWeight: 500,
       }}>
-        <KanbanIcons.StarOutline /> Unscored
+        Unranked
       </span>
     );
   }
-  
-  const getScoreColor = (s: number) => {
-    if (s >= 80) return KANBAN_COLORS.success;
-    if (s >= 60) return KANBAN_COLORS.info;
-    if (s >= 40) return KANBAN_COLORS.warning;
-    return KANBAN_COLORS.danger;
-  };
   
   return (
     <span style={{
@@ -78,12 +71,12 @@ function ScoreBadge({ score }: { score: number | null }) {
       gap: '3px',
       padding: '2px 6px',
       borderRadius: '4px',
-      backgroundColor: `${getScoreColor(score)}15`,
-      color: getScoreColor(score),
+      backgroundColor: `${KANBAN_COLORS.gold}20`,
+      color: KANBAN_COLORS.goldDark,
       fontSize: '10px',
       fontWeight: 600,
     }}>
-      <KanbanIcons.Star /> {score}
+      #{rank}
     </span>
   );
 }
@@ -172,7 +165,7 @@ export function KanbanCard({ ticket, onClick, compactMode, teamMembers = [] }: K
         <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: KANBAN_COLORS.textPrimary }}>
           {ticket.summary}
         </span>
-        <ScoreBadge score={ticket.score} />
+        <RankBadge rank={ticket.rank} />
         <DaysInColumnIndicator days={ticket.daysInColumn} />
         {assignee && <Avatar member={assignee} size={22} />}
       </div>
@@ -205,7 +198,7 @@ export function KanbanCard({ ticket, onClick, compactMode, teamMembers = [] }: K
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span style={{ fontSize: '11px', fontWeight: 600, color: KANBAN_COLORS.textMuted, fontFamily: 'monospace' }}>{ticket.id}</span>
         </div>
-        <ScoreBadge score={ticket.score} />
+        <RankBadge rank={ticket.rank} />
       </div>
 
       {/* Summary */}
@@ -223,36 +216,36 @@ export function KanbanCard({ ticket, onClick, compactMode, teamMembers = [] }: K
         {ticket.summary}
       </p>
 
-      {/* Epic & Department */}
+      {/* Business Owner & Department */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '10px' }}>
-        {ticket.epic && (
+        {ticket.businessOwner && (
           <span style={{
             display: 'inline-flex',
             alignItems: 'center',
             gap: '4px',
             padding: '3px 8px',
-            backgroundColor: `${KANBAN_COLORS.purple}12`,
+            backgroundColor: `${KANBAN_COLORS.olive}12`,
             borderRadius: '4px',
             fontSize: '10px',
-            color: KANBAN_COLORS.purple,
+            color: KANBAN_COLORS.olive,
             fontWeight: 500,
           }}>
-            <KanbanIcons.Layers />
-            {ticket.epic}
+            <KanbanIcons.User />
+            {ticket.businessOwner}
           </span>
         )}
-        {department && (
+        {(ticket.department || department) && (
           <span style={{
             display: 'inline-flex',
             alignItems: 'center',
             padding: '3px 8px',
-            backgroundColor: `${department.color}12`,
+            backgroundColor: `${department?.color || KANBAN_COLORS.bronze}12`,
             borderRadius: '4px',
             fontSize: '10px',
-            color: department.color,
+            color: department?.color || KANBAN_COLORS.bronze,
             fontWeight: 500,
           }}>
-            {department.label}
+            {department?.label || ticket.department}
           </span>
         )}
       </div>
