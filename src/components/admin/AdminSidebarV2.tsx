@@ -9,16 +9,17 @@ import {
   Shield,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   Search,
   Pin,
   Palette
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useState, useMemo } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 interface AdminSidebarV2Props {
   expanded: boolean;
@@ -139,6 +140,17 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
   const [searchQuery, setSearchQuery] = useState('');
   const [pinnedItems] = useState<string[]>(['/admin/users', '/admin/activity']);
   
+  // Track which sections are expanded - default open sections that have active children
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(() => {
+    const initial = new Set<string>();
+    adminPockets.forEach(pocket => {
+      if (pocket.children?.some(c => location.pathname === c.path)) {
+        initial.add(pocket.id);
+      }
+    });
+    return initial;
+  });
+  
   const allPaths = useMemo(() => getAllPaths(), []);
   
   const filteredPaths = useMemo(() => {
@@ -153,6 +165,18 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
   const isActive = (path: string) => location.pathname === path;
   const isChildActive = (children?: { path: string }[]) => 
     children?.some(c => location.pathname === c.path);
+
+  const toggleSection = (id: string) => {
+    setExpandedSections(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -266,12 +290,14 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
           </div>
         )}
 
-        {/* Navigation - Compact Atlassian style */}
+        {/* Navigation - Collapsible sections */}
         <ScrollArea className="flex-1">
           <nav className="p-2 space-y-0.5">
             {adminPockets.map((pocket) => {
               const Icon = pocket.icon;
               const active = isActive(pocket.path) || isChildActive(pocket.children);
+              const hasChildren = pocket.children && pocket.children.length > 0;
+              const isOpen = expandedSections.has(pocket.id);
 
               if (!expanded) {
                 return (
@@ -299,26 +325,84 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
                 );
               }
 
+              // No children - simple link
+              if (!hasChildren) {
+                return (
+                  <Link
+                    key={pocket.id}
+                    to={pocket.path}
+                    className={cn(
+                      'flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm transition-colors relative group',
+                      active 
+                        ? 'bg-brand-gold/10 text-brand-gold font-medium' 
+                        : 'text-foreground hover:bg-accent'
+                    )}
+                  >
+                    {active && (
+                      <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-brand-gold rounded-r" />
+                    )}
+                    <Icon className={cn(
+                      'h-4 w-4 flex-shrink-0',
+                      active ? 'text-brand-gold' : 'text-muted-foreground group-hover:text-foreground'
+                    )} />
+                    <span className="truncate">{pocket.label}</span>
+                  </Link>
+                );
+              }
+
+              // Has children - collapsible section
               return (
-                <Link
-                  key={pocket.id}
-                  to={pocket.children?.[0]?.path || pocket.path}
-                  className={cn(
-                    'flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm transition-colors relative group',
-                    active 
-                      ? 'bg-brand-gold/10 text-brand-gold font-medium' 
-                      : 'text-foreground hover:bg-accent'
-                  )}
+                <Collapsible 
+                  key={pocket.id} 
+                  open={isOpen} 
+                  onOpenChange={() => toggleSection(pocket.id)}
                 >
-                  {active && (
-                    <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-brand-gold rounded-r" />
-                  )}
-                  <Icon className={cn(
-                    'h-4 w-4 flex-shrink-0',
-                    active ? 'text-brand-gold' : 'text-muted-foreground group-hover:text-foreground'
-                  )} />
-                  <span className="truncate">{pocket.label}</span>
-                </Link>
+                  <CollapsibleTrigger asChild>
+                    <button
+                      className={cn(
+                        'w-full flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm transition-colors relative group',
+                        active 
+                          ? 'bg-brand-gold/10 text-brand-gold font-medium' 
+                          : 'text-foreground hover:bg-accent'
+                      )}
+                    >
+                      {active && (
+                        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-brand-gold rounded-r" />
+                      )}
+                      <Icon className={cn(
+                        'h-4 w-4 flex-shrink-0',
+                        active ? 'text-brand-gold' : 'text-muted-foreground group-hover:text-foreground'
+                      )} />
+                      <span className="truncate flex-1 text-left">{pocket.label}</span>
+                      <ChevronDown className={cn(
+                        'h-3.5 w-3.5 text-muted-foreground transition-transform',
+                        isOpen && 'rotate-180'
+                      )} />
+                    </button>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="pl-6 mt-0.5 space-y-0.5">
+                    {pocket.children?.map(child => {
+                      const childActive = isActive(child.path);
+                      return (
+                        <Link
+                          key={child.path}
+                          to={child.path}
+                          className={cn(
+                            'flex items-center px-2.5 py-1.5 rounded-md text-sm transition-colors relative',
+                            childActive 
+                              ? 'bg-brand-gold/10 text-brand-gold font-medium' 
+                              : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+                          )}
+                        >
+                          {childActive && (
+                            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-brand-gold rounded-r" />
+                          )}
+                          <span className="truncate">{child.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </CollapsibleContent>
+                </Collapsible>
               );
             })}
           </nav>
