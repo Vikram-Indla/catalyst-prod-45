@@ -265,7 +265,7 @@ const App = () => (
               <Route path="/home" element={<Home />} />
               
               {/* Industry/Demand routes */}
-              <Route path="/industry" element={<IndustryPage />} />
+              <Route path="/industry" element={<Navigate to="/industry/backlog" replace />} />
               <Route path="/industry1" element={<IndustryPage />} />
               <Route path="/industry/industry" element={<IndustryPage />} />
               <Route path="/industry/backlog" element={<ProductBacklogPage />} />

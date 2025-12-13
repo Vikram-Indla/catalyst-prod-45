@@ -90,8 +90,8 @@ export function useRecentPlaceTracker() {
    */
   const getPageLabel = (path: string): { pageKey: string; label: string; cleanPath: string } => {
     // Product Room pages
-    if (path === "/industry" || path === "/industry/") {
-      return { pageKey: "backlog", label: "Backlog", cleanPath: "/industry" };
+    if (path === "/industry" || path === "/industry/" || path === "/industry/backlog") {
+      return { pageKey: "backlog", label: "Backlog", cleanPath: "/industry/backlog" };
     }
     if (path === "/industry/roadmaps" || path.startsWith("/industry/roadmaps")) {
       return { pageKey: "roadmaps", label: "Roadmaps", cleanPath: "/industry/roadmaps" };
