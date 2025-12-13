@@ -397,21 +397,9 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
     };
   }, [isResizing, firstColumnWidth]);
 
-  // Fetch the selected business request ID from request_key
-  const { data: selectedRequestDbId } = useQuery({
-    queryKey: ['business-request-id', selectedRequestId],
-    queryFn: async () => {
-      if (!selectedRequestId) return null;
-      const { data, error } = await supabase
-        .from('business_requests')
-        .select('id')
-        .eq('request_key', selectedRequestId)
-        .maybeSingle();
-      if (error) throw error;
-      return data?.id || null;
-    },
-    enabled: !!selectedRequestId,
-  });
+  // selectedRequestId is already the database UUID (from item.id)
+  // No need to fetch again - use it directly
+  const selectedRequestDbId = selectedRequestId;
 
   // Use database items if available, fallback to API items - NO seed data fallback
   const items = useMemo(() => {
