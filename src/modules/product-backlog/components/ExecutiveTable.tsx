@@ -442,12 +442,13 @@ function DensitySelector({ value, onChange }: { value: string; onChange: (value:
 }
 
 // Column Manager
-function ColumnManager({ columns, visibleColumns, onChange, externalOpen, onExternalOpenChange }: { 
+function ColumnManager({ columns, visibleColumns, onChange, externalOpen, onExternalOpenChange, hideButton = false }: { 
   columns: typeof ALL_COLUMNS; 
   visibleColumns: string[]; 
   onChange: (visible: string[]) => void;
   externalOpen?: boolean;
   onExternalOpenChange?: (open: boolean) => void;
+  hideButton?: boolean;
 }) {
   const [internalOpen, setInternalOpen] = useState(false);
   const isOpen = externalOpen !== undefined ? externalOpen : internalOpen;
@@ -470,6 +471,34 @@ function ColumnManager({ columns, visibleColumns, onChange, externalOpen, onExte
     onChange(newVisible);
   };
 
+  // When hideButton is true, render only the dropdown (for external header case)
+  if (hideButton) {
+    if (!isOpen) return null;
+    return (
+      <div ref={ref} className="fixed top-24 right-6 bg-card border border-border rounded-lg shadow-lg z-[500] min-w-[200px] max-h-[300px] overflow-y-auto">
+        <div className="p-2">
+          <div className="text-[10px] text-muted-foreground px-2 py-1 mb-1 uppercase tracking-wider">
+            Toggle Visibility
+          </div>
+          {columns.map(col => (
+            <label
+              key={col.id}
+              className="flex items-center gap-2 px-2 py-2 rounded cursor-pointer text-xs hover:bg-muted"
+            >
+              <input
+                type="checkbox"
+                checked={visibleColumns.includes(col.id)}
+                onChange={() => toggleColumn(col.id)}
+                className="accent-brand-gold"
+              />
+              {col.header}
+            </label>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div ref={ref} className="relative">
       <button
@@ -481,7 +510,7 @@ function ColumnManager({ columns, visibleColumns, onChange, externalOpen, onExte
       </button>
 
       {isOpen && (
-        <div className="absolute top-full right-0 mt-1 bg-background border border-border rounded-lg shadow-lg z-[100] min-w-[200px] max-h-[300px] overflow-y-auto">
+        <div className="absolute top-full right-0 mt-1 bg-card border border-border rounded-lg shadow-lg z-[500] min-w-[200px] max-h-[300px] overflow-y-auto">
           <div className="p-2">
             <div className="text-[10px] text-muted-foreground px-2 py-1 mb-1 uppercase tracking-wider">
               Toggle Visibility
@@ -941,7 +970,18 @@ export function ExecutiveTable({
     <div className="flex flex-col h-full bg-background">
       {/* EXTERNAL HEADER or INTERNAL HEADER */}
       {externalHeader ? (
-        <>{externalHeader}</>
+        <>
+          {externalHeader}
+          {/* Render ColumnManager when external header is used so columns dropdown works */}
+          <ColumnManager 
+            columns={ALL_COLUMNS} 
+            visibleColumns={visibleColumns} 
+            onChange={setVisibleColumns} 
+            externalOpen={externalColumnsOpen} 
+            onExternalOpenChange={externalOnColumnsChange}
+            hideButton={true}
+          />
+        </>
       ) : (
         <div className="bg-background flex-shrink-0">
           {/* Row 1: Title Row - 44px, no border */}
