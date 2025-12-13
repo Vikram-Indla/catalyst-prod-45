@@ -2,7 +2,11 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { BusinessRequest, DELIVERY_PLATFORM_OPTIONS, DEPARTMENT_OPTIONS, PROCESS_STEPS, HEALTH_OPTIONS, COMPLEXITY_OPTIONS, URGENCY_OPTIONS } from '@/types/business-request';
+import { BusinessRequest, DELIVERY_PLATFORM_OPTIONS, PROCESS_STEPS, HEALTH_OPTIONS, COMPLEXITY_OPTIONS, URGENCY_OPTIONS } from '@/types/business-request';
+import { DepartmentSelect } from '@/components/business-requests/DepartmentSelect';
+import { BusinessOwnerSelect } from '@/components/business-requests/BusinessOwnerSelect';
+import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings, getOwnerIdForDepartment } from '@/hooks/useDepartmentsAndOwners';
+import { useEffect } from 'react';
 
 const QUARTER_OPTIONS = [
   'Q1 2024', 'Q2 2024', 'Q3 2024', 'Q4 2024',
@@ -17,9 +21,61 @@ interface DemandDetailsViewTabProps {
 }
 
 export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDetailsViewTabProps) {
+  const { data: departments } = useDepartments();
+  const { data: owners } = useBusinessOwners();
+  const { data: mappings } = useDepartmentOwnerMappings();
+
+  // Resolve legacy text values to IDs on initial load
+  useEffect(() => {
+    if (departments && !data.department_id && data.department) {
+      const dept = departments.find(d => d.name.toLowerCase() === (data.department || '').toLowerCase());
+      if (dept) {
+        onChange('department_id', dept.id);
+      }
+    }
+  }, [departments, data.department, data.department_id, onChange]);
+
+  useEffect(() => {
+    if (owners && !data.business_owner_id && data.business_owner) {
+      const owner = owners.find(o => o.name.toLowerCase() === (data.business_owner || '').toLowerCase());
+      if (owner) {
+        onChange('business_owner_id', owner.id);
+      }
+    }
+  }, [owners, data.business_owner, data.business_owner_id, onChange]);
+
   const handleChange = (field: string, value: any) => {
     onChange(field, value);
     onDirtyChange?.(true);
+  };
+
+  // Handle department change with auto-setting of business owner
+  const handleDepartmentChange = (departmentId: string) => {
+    handleChange('department_id', departmentId);
+    // Find department name and set it for legacy field
+    const dept = departments?.find(d => d.id === departmentId);
+    if (dept) {
+      handleChange('department', dept.name);
+    }
+    // Auto-set business owner from mapping
+    if (mappings) {
+      const ownerId = getOwnerIdForDepartment(departmentId, mappings);
+      if (ownerId) {
+        handleChange('business_owner_id', ownerId);
+        const owner = owners?.find(o => o.id === ownerId);
+        if (owner) {
+          handleChange('business_owner', owner.name);
+        }
+      }
+    }
+  };
+
+  const handleBusinessOwnerChange = (ownerId: string) => {
+    handleChange('business_owner_id', ownerId);
+    const owner = owners?.find(o => o.id === ownerId);
+    if (owner) {
+      handleChange('business_owner', owner.name);
+    }
   };
 
   return (
@@ -35,7 +91,7 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
               <SelectTrigger className="bg-background">
                 <SelectValue placeholder="Select step" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="z-[400]">
                 {PROCESS_STEPS.map((s) => (
                   <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
                 ))}
@@ -49,7 +105,7 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
               <SelectTrigger className="bg-background">
                 <SelectValue placeholder="Select health" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="z-[400]">
                 {HEALTH_OPTIONS.map((h) => (
                   <SelectItem key={h.value} value={h.value}>{h.label}</SelectItem>
                 ))}
@@ -63,7 +119,7 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
               <SelectTrigger className="bg-background">
                 <SelectValue placeholder="Select complexity" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="z-[400]">
                 {COMPLEXITY_OPTIONS.map((c) => (
                   <SelectItem key={c} value={c}>{c}</SelectItem>
                 ))}
@@ -77,7 +133,7 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
               <SelectTrigger className="bg-background">
                 <SelectValue placeholder="Select urgency" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="z-[400]">
                 {URGENCY_OPTIONS.map((u) => (
                   <SelectItem key={u} value={u}>{u}</SelectItem>
                 ))}
@@ -115,27 +171,22 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
           </div>
 
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Business Owner</Label>
-            <Input
-              value={data.business_owner || ''}
-              onChange={(e) => handleChange('business_owner', e.target.value)}
-              placeholder="Business owner name"
-              className="bg-background"
+            <Label className="text-sm font-medium">Business Owner <span className="text-destructive">*</span></Label>
+            <BusinessOwnerSelect
+              value={data.business_owner_id || null}
+              onChange={handleBusinessOwnerChange}
+              departmentId={data.department_id || null}
+              placeholder="Select business owner"
             />
           </div>
 
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Department</Label>
-            <Select value={data.department || ''} onValueChange={(v) => handleChange('department', v)}>
-              <SelectTrigger className="bg-background">
-                <SelectValue placeholder="Select department" />
-              </SelectTrigger>
-              <SelectContent>
-                {DEPARTMENT_OPTIONS.map((d) => (
-                  <SelectItem key={d.value} value={d.value}>{d.label.en}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Label className="text-sm font-medium">Department <span className="text-destructive">*</span></Label>
+            <DepartmentSelect
+              value={data.department_id || null}
+              onChange={handleDepartmentChange}
+              placeholder="Select department"
+            />
           </div>
 
           <div className="space-y-2">
