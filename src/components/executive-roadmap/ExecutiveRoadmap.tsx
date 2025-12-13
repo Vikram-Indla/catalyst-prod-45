@@ -57,6 +57,13 @@ const currentQuarter = Math.floor(currentMonth / 3);
 const currentWeek = Math.ceil((new Date().getTime() - new Date(currentYear, 0, 1).getTime()) / (7 * 24 * 60 * 60 * 1000));
 const AVAILABLE_YEARS = [currentYear - 1, currentYear, currentYear + 1, currentYear + 2];
 
+// Helper to format display key - use item.key if available, otherwise format UUID
+function formatDisplayKey(item: RoadmapItem): string {
+  if (item.key) return item.key;
+  // Fallback: format UUID as short key (first 4 chars uppercase)
+  return item.id.slice(0, 8).toUpperCase();
+}
+
 // Time period selection - adapts based on view scale
 interface TimePeriodSelection {
   years: number[];
@@ -1197,7 +1204,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                       className="text-xs font-medium hover:underline cursor-pointer bg-transparent border-none p-0 shrink-0"
                       style={{ color: 'hsl(var(--roadmap-status-new))' }}
                     >
-                      {item.id}
+                      {formatDisplayKey(item)}
                     </button>
                   </div>
                   <TooltipProvider delayDuration={300}>
@@ -1220,7 +1227,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                         }}
                       >
                         <div className="font-semibold mb-1.5 text-xs uppercase tracking-wider" style={{ color: 'hsl(35, 46%, 70%)' }}>
-                          {item.id}
+                          {formatDisplayKey(item)}
                         </div>
                         <div className="font-medium" style={{ color: 'white' }}>
                           {isRTL ? item.titleAr : item.titleEn}
@@ -1461,7 +1468,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                               className="text-xs font-medium mb-1.5"
                               style={{ color: 'hsl(35, 30%, 65%)' }}
                             >
-                              {item.id}
+                              {formatDisplayKey(item)}
                             </div>
                             
                             {/* Title/Summary */}
