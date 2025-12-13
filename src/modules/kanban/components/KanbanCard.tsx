@@ -48,34 +48,42 @@ function DaysInColumnIndicator({ days }: { days: number }) {
 function RankBadge({ rank }: { rank: number | null }) {
   if (rank === null || rank === undefined) {
     return (
-      <span style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '3px',
-        padding: '2px 6px',
-        borderRadius: '4px',
-        backgroundColor: KANBAN_COLORS.greyLight,
-        color: KANBAN_COLORS.textMuted,
-        fontSize: '10px',
-        fontWeight: 500,
-      }}>
+      <span 
+        title="No rank assigned"
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '3px',
+          padding: '2px 6px',
+          borderRadius: '4px',
+          backgroundColor: KANBAN_COLORS.greyLight,
+          color: KANBAN_COLORS.textMuted,
+          fontSize: '10px',
+          fontWeight: 500,
+          cursor: 'default',
+        }}
+      >
         Unranked
       </span>
     );
   }
   
   return (
-    <span style={{
-      display: 'inline-flex',
-      alignItems: 'center',
-      gap: '3px',
-      padding: '2px 6px',
-      borderRadius: '4px',
-      backgroundColor: `${KANBAN_COLORS.gold}20`,
-      color: KANBAN_COLORS.goldDark,
-      fontSize: '10px',
-      fontWeight: 600,
-    }}>
+    <span 
+      title={`Rank: ${rank}`}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '3px',
+        padding: '2px 6px',
+        borderRadius: '4px',
+        backgroundColor: `${KANBAN_COLORS.gold}20`,
+        color: KANBAN_COLORS.goldDark,
+        fontSize: '10px',
+        fontWeight: 600,
+        cursor: 'default',
+      }}
+    >
       #{rank}
     </span>
   );
