@@ -1,43 +1,60 @@
+/**
+ * Release Dropdown - Revamped for Catalyst Menu
+ * Shows: Create Release, Manage Releases (admin only)
+ */
+import React, { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LayoutDashboard, AlertCircle, Tag, Calendar } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Plus, Settings } from 'lucide-react';
+import { useUserRole } from '@/hooks/useUserRole';
 
 interface ReleaseDropdownProps {
   onClose: () => void;
 }
 
-const releaseItems = [
-  { label: 'Versions', icon: Tag, path: '/release/versions' },
-  { label: 'Calendar', icon: Calendar, path: '/release/calendar' },
-];
-
 export function ReleaseDropdown({ onClose }: ReleaseDropdownProps) {
   const navigate = useNavigate();
+  const { isAdmin } = useUserRole();
 
-  const handleNavigate = (path: string) => {
-    navigate(path);
+  const handleCreateRelease = useCallback(() => {
+    navigate('/release/versions?create=true');
     onClose();
-  };
+  }, [navigate, onClose]);
+
+  const handleManageReleases = useCallback(() => {
+    navigate('/release/versions');
+    onClose();
+  }, [navigate, onClose]);
 
   return (
-    <div className="w-64 p-2">
-      <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wide px-2 py-1.5">
-        Release Management
+    <div className="w-64 bg-popover border border-border rounded-md shadow-md overflow-hidden z-[60]">
+      <div className="px-3 py-2 border-b border-border">
+        <p className="text-sm font-medium text-foreground">Release</p>
       </div>
-      <div className="space-y-0.5">
-        {releaseItems.map((item) => (
+      
+      <div className="divide-y divide-border/50">
+        {isAdmin && (
           <button
-            key={item.path}
-            onClick={() => handleNavigate(item.path)}
-            className={cn(
-              "w-full flex items-center gap-3 px-2 py-2 text-sm rounded-md transition-colors",
-              "text-foreground hover:bg-accent hover:text-accent-foreground"
-            )}
+            onClick={handleCreateRelease}
+            className="flex items-center gap-2 w-full px-3 py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
           >
-            <item.icon className="h-4 w-4 text-muted-foreground" />
-            <span>{item.label}</span>
+            <Plus className="h-4 w-4 text-muted-foreground" />
+            Create Release
           </button>
-        ))}
+        )}
+        {isAdmin && (
+          <button
+            onClick={handleManageReleases}
+            className="flex items-center gap-2 w-full px-3 py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
+          >
+            <Settings className="h-4 w-4 text-muted-foreground" />
+            Manage Releases
+          </button>
+        )}
+        {!isAdmin && (
+          <div className="px-3 py-4 text-center text-sm text-muted-foreground">
+            No actions available
+          </div>
+        )}
       </div>
     </div>
   );
