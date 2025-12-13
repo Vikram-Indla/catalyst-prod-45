@@ -31,16 +31,6 @@ interface AdminSidebarProps {
 
 const adminSections = [
   {
-    title: 'Access Controls & Logs',
-    items: [
-      { label: 'Activity', path: '/admin/activity', icon: Activity },
-      { label: 'Changes', path: '/admin/changes', icon: FileText },
-      { label: 'Changes Log', path: '/admin/changes-log', icon: FileText },
-      { label: 'Use Trend', path: '/admin/use-trend', icon: TrendingUp },
-      { label: 'Usage Trends', path: '/admin/usage-trends', icon: TrendingUp },
-    ],
-  },
-  {
     title: 'General',
     items: [
       { label: 'Modules & Packages', path: '/admin/modules-packages', icon: Package },
