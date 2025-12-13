@@ -1,6 +1,6 @@
 // Main KanbanBoard component - BusinessRequestsKanbanPage
 
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { KanbanTicket, StatusId, GroupByOption, ScoringFilter, COLUMNS_CONFIG, PRIORITIES, DEPARTMENTS, GROUP_BY_OPTIONS, SCORING_OPTIONS, KANBAN_COLORS, SwimlaneGroup } from '../types';
 import { useKanbanData, useTeamMembers } from '../hooks/useKanbanData';
@@ -10,6 +10,7 @@ import { QuickFilterAvatars, FilterDropdown, GroupByDropdown } from '../componen
 import { CardDetailPanel } from '../components/CardDetailPanel';
 import { KanbanIcons } from '../components/KanbanIcons';
 import { Skeleton } from '@/components/ui/skeleton';
+import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 
 export default function BusinessRequestsKanbanPage() {
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ export default function BusinessRequestsKanbanPage() {
   const [compactMode, setCompactMode] = useState(false);
   const [groupBy, setGroupBy] = useState<GroupByOption>('none');
   const [expandedSwimlanes, setExpandedSwimlanes] = useState<Record<string, boolean>>({});
+  const [createModalOpen, setCreateModalOpen] = useState(false);
 
   // Filter tickets
   const filteredTickets = useMemo(() => {
@@ -154,11 +156,8 @@ export default function BusinessRequestsKanbanPage() {
                 <KanbanIcons.Grid /> Kanban
               </button>
             </div>
-            <button style={{ padding: '10px 12px', border: `1px solid ${KANBAN_COLORS.borderDefault}`, borderRadius: '8px', backgroundColor: KANBAN_COLORS.bgCard, color: KANBAN_COLORS.textMuted, cursor: 'pointer' }}>
-              <KanbanIcons.Download />
-            </button>
-            <button style={{ padding: '10px 20px', border: 'none', borderRadius: '8px', backgroundColor: KANBAN_COLORS.gold, color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: 600 }}>
-              <KanbanIcons.Plus /> New Request
+            <button onClick={() => setCreateModalOpen(true)} style={{ padding: '10px 14px', border: 'none', borderRadius: '8px', backgroundColor: KANBAN_COLORS.gold, color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: 600 }}>
+              <KanbanIcons.Plus />
             </button>
           </div>
         </div>
@@ -208,6 +207,9 @@ export default function BusinessRequestsKanbanPage() {
           <CardDetailPanel ticket={selectedCard} onClose={() => setSelectedCard(null)} teamMembers={teamMembers} />
         </>
       )}
+
+      {/* Create Business Request Modal */}
+      <CreateBusinessRequestModal isOpen={createModalOpen} onClose={() => setCreateModalOpen(false)} />
     </div>
   );
 }
