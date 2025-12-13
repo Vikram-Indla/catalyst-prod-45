@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 
 interface UnifiedAuditHistoryTabProps {
   entityId: string;
-  entityType: 'business_request' | 'epic' | 'theme' | 'objective' | 'feature';
+  entityType: 'business_request' | 'epic' | 'theme' | 'objective' | 'feature' | 'risk';
 }
 
 const PAGE_SIZE = 50;
@@ -19,6 +19,7 @@ const ENTITY_CONFIG: Record<string, { table: string; idColumn: string; useActivi
   theme: { table: 'activity_logs', idColumn: 'entity_id', useActivityLogs: true },
   objective: { table: 'activity_logs', idColumn: 'entity_id', useActivityLogs: true },
   feature: { table: 'activity_logs', idColumn: 'entity_id', useActivityLogs: true },
+  risk: { table: 'activity_logs', idColumn: 'entity_id', useActivityLogs: true },
 };
 
 export function UnifiedAuditHistoryTab({ entityId, entityType }: UnifiedAuditHistoryTabProps) {
@@ -45,6 +46,7 @@ export function UnifiedAuditHistoryTab({ entityId, entityType }: UnifiedAuditHis
           'theme': 'strategic_themes',
           'objective': 'objective',
           'feature': 'features',
+          'risk': 'risks',
         };
         const entityTypeFilter = entityTypeMap[entityType] || entityType;
         const { data: logs, error, count } = await supabase
