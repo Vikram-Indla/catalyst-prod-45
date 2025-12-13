@@ -131,7 +131,6 @@ export function KanbanCard({ ticket, onClick, compactMode, teamMembers = [] }: K
   const [isHovered, setIsHovered] = useState(false);
   
   const assignee = teamMembers.find(m => m.id === ticket.assignee || m.name === ticket.assignee);
-  const priority = PRIORITIES.find(p => p.id === ticket.priority);
   const department = DEPARTMENTS.find(d => d.id === ticket.department || d.label === ticket.department);
   
   const handleDragStart = (e: React.DragEvent) => {
@@ -143,10 +142,6 @@ export function KanbanCard({ ticket, onClick, compactMode, teamMembers = [] }: K
   const handleDragEnd = () => {
     setIsDragging(false);
   };
-
-  const isOverdue = ticket.dueDate && new Date(ticket.dueDate) < new Date();
-  const isDueSoon = ticket.dueDate && !isOverdue && 
-    new Date(ticket.dueDate) < new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
 
   if (compactMode) {
     return (
@@ -165,7 +160,7 @@ export function KanbanCard({ ticket, onClick, compactMode, teamMembers = [] }: K
           backgroundColor: KANBAN_COLORS.bgCard,
           borderRadius: '6px',
           border: `1px solid ${isHovered ? KANBAN_COLORS.borderDefault : KANBAN_COLORS.borderLight}`,
-          borderLeft: `4px solid ${priority?.color || KANBAN_COLORS.grey}`,
+          borderLeft: `4px solid ${department?.color || KANBAN_COLORS.grey}`,
           cursor: 'grab',
           opacity: isDragging ? 0.6 : 1,
           fontSize: '12px',
@@ -197,7 +192,7 @@ export function KanbanCard({ ticket, onClick, compactMode, teamMembers = [] }: K
         backgroundColor: KANBAN_COLORS.bgCard,
         borderRadius: '8px',
         border: `1px solid ${isHovered ? KANBAN_COLORS.borderDefault : KANBAN_COLORS.borderLight}`,
-        borderLeft: `4px solid ${priority?.color || KANBAN_COLORS.grey}`,
+        borderLeft: `4px solid ${department?.color || KANBAN_COLORS.grey}`,
         cursor: 'grab',
         opacity: isDragging ? 0.6 : 1,
         transition: 'all 0.15s ease',
@@ -209,7 +204,6 @@ export function KanbanCard({ ticket, onClick, compactMode, teamMembers = [] }: K
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span style={{ fontSize: '11px', fontWeight: 600, color: KANBAN_COLORS.textMuted, fontFamily: 'monospace' }}>{ticket.id}</span>
-          <PriorityIndicator priority={ticket.priority} />
         </div>
         <ScoreBadge score={ticket.score} />
       </div>
@@ -266,19 +260,6 @@ export function KanbanCard({ ticket, onClick, compactMode, teamMembers = [] }: K
       {/* Footer */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          {ticket.dueDate && (
-            <span style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              fontSize: '11px',
-              color: isOverdue ? KANBAN_COLORS.danger : isDueSoon ? KANBAN_COLORS.warning : KANBAN_COLORS.textMuted,
-              fontWeight: isOverdue || isDueSoon ? 600 : 400,
-            }}>
-              <KanbanIcons.Clock />
-              {new Date(ticket.dueDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
-            </span>
-          )}
           <DaysInColumnIndicator days={ticket.daysInColumn} />
         </div>
         {assignee && <Avatar member={assignee} size={26} />}

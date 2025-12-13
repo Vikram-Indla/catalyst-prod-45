@@ -19,7 +19,6 @@ export default function BusinessRequestsKanbanPage() {
   
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedAssignees, setSelectedAssignees] = useState<string[]>([]);
-  const [selectedPriorities, setSelectedPriorities] = useState<string[]>([]);
   const [scoringFilter, setScoringFilter] = useState<ScoringFilter>('all');
   const [selectedCard, setSelectedCard] = useState<KanbanTicket | null>(null);
   const [collapsedColumns, setCollapsedColumns] = useState<StatusId[]>([]);
@@ -40,14 +39,11 @@ export default function BusinessRequestsKanbanPage() {
       if (selectedAssignees.length > 0 && !selectedAssignees.includes(ticket.assignee || '')) {
         return false;
       }
-      if (selectedPriorities.length > 0 && !selectedPriorities.includes(ticket.priority)) {
-        return false;
-      }
       if (scoringFilter === 'scored' && ticket.score === null) return false;
       if (scoringFilter === 'unscored' && ticket.score !== null) return false;
       return true;
     });
-  }, [tickets, searchQuery, selectedAssignees, selectedPriorities, scoringFilter]);
+  }, [tickets, searchQuery, selectedAssignees, scoringFilter]);
 
   // Group tickets by column
   const ticketsByColumn = useMemo(() => {
@@ -74,15 +70,8 @@ export default function BusinessRequestsKanbanPage() {
       let key = 'unassigned';
       let label = 'Unassigned';
       let color: string | undefined;
-      let icon: string | undefined;
       
-      if (groupBy === 'priority') {
-        const p = PRIORITIES.find(pr => pr.id === ticket.priority);
-        key = ticket.priority;
-        label = p?.label || 'Unknown';
-        color = p?.color;
-        icon = p?.icon;
-      } else if (groupBy === 'department') {
+      if (groupBy === 'department') {
         const d = DEPARTMENTS.find(dp => dp.id === ticket.department || dp.label === ticket.department);
         key = ticket.department || 'unassigned';
         label = d?.label || ticket.department || 'Unassigned';
@@ -98,7 +87,7 @@ export default function BusinessRequestsKanbanPage() {
       }
       
       if (!groups[key]) {
-        groups[key] = { label, color, icon, tickets: [] };
+        groups[key] = { label, color, tickets: [] };
       }
       groups[key].tickets.push(ticket);
     });
@@ -121,11 +110,10 @@ export default function BusinessRequestsKanbanPage() {
   const clearAllFilters = () => {
     setSearchQuery('');
     setSelectedAssignees([]);
-    setSelectedPriorities([]);
     setScoringFilter('all');
   };
 
-  const hasActiveFilters = searchQuery || selectedAssignees.length > 0 || selectedPriorities.length > 0 || scoringFilter !== 'all';
+  const hasActiveFilters = searchQuery || selectedAssignees.length > 0 || scoringFilter !== 'all';
 
   if (isLoading) {
     return (
@@ -248,7 +236,6 @@ export default function BusinessRequestsKanbanPage() {
             onToggle={(id) => setSelectedAssignees(prev => prev.includes(id) ? prev.filter(a => a !== id) : [...prev, id])} 
           />
           <div style={{ width: '1px', height: '20px', backgroundColor: KANBAN_COLORS.borderLight }} />
-          <FilterDropdown label="" options={PRIORITIES} selected={selectedPriorities} onToggle={(id) => setSelectedPriorities(prev => prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id])} colorKey="color" icon="⚡" tooltip="Priority" />
           <FilterDropdown label="" options={SCORING_OPTIONS} singleSelect value={scoringFilter} onChange={(v) => setScoringFilter(v as ScoringFilter)} icon="📊" tooltip="Scoring" />
           <GroupByDropdown value={groupBy} onChange={setGroupBy} iconOnly />
           {hasActiveFilters && (

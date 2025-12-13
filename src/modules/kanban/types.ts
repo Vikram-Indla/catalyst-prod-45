@@ -9,7 +9,7 @@ export type StatusId =
   | 'rejected'
   | 'on_hold';
 
-export type PriorityId = 'critical' | 'high' | 'medium' | 'low';
+// Priority is now derived from business_score only, not stored in DB
 
 export type DepartmentId = 
   | 'investment_ops'
@@ -19,14 +19,13 @@ export type DepartmentId =
   | 'it_systems'
   | 'strategy';
 
-export type GroupByOption = 'none' | 'priority' | 'assignee' | 'department' | 'business_owner';
+export type GroupByOption = 'none' | 'assignee' | 'department' | 'business_owner';
 export type ScoringFilter = 'all' | 'scored' | 'unscored';
 
 export interface KanbanTicket {
   id: string;
   summary: string;
   status: StatusId;
-  priority: PriorityId;
   assignee: string | null;
   businessOwner: string | null;
   department: string | null;
@@ -34,7 +33,6 @@ export interface KanbanTicket {
   rank: number | null;
   epic: string | null;
   platform: string | null;
-  dueDate: string | null;
   createdAt: string;
   daysInColumn: number;
 }
@@ -46,8 +44,9 @@ export interface StatusConfig {
   order: number;
 }
 
+// Priority configuration kept for visual styling but derived from score, not stored in DB
 export interface PriorityConfig {
-  id: PriorityId;
+  id: string;
   label: string;
   color: string;
   icon: string;
@@ -169,7 +168,6 @@ export const DEPARTMENTS: DepartmentConfig[] = [
 // Group By Options
 export const GROUP_BY_OPTIONS: GroupByConfig[] = [
   { id: 'none', label: 'No Grouping', icon: '⊟' },
-  { id: 'priority', label: 'Priority', icon: '⚡' },
   { id: 'assignee', label: 'Assignee', icon: '👤' },
   { id: 'department', label: 'Department', icon: '🏢' },
   { id: 'business_owner', label: 'Business Owner', icon: '👔' },

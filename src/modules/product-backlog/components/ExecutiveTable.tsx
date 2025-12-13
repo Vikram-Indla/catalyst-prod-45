@@ -27,13 +27,7 @@ const PROCESS_STEPS = [
   { value: 'on_hold', label: 'On-Hold', semantic: 'warning' },
 ];
 
-// Priority Options
-const PRIORITIES = [
-  { value: 'critical', label: 'Critical', semantic: 'danger' },
-  { value: 'high', label: 'High', semantic: 'warning' },
-  { value: 'medium', label: 'Medium', semantic: 'info' },
-  { value: 'low', label: 'Low', semantic: 'success' },
-];
+// Departments
 
 // Departments
 const DEPARTMENTS = [
@@ -80,12 +74,10 @@ const ALL_COLUMNS = [
   { id: 'id', header: 'Request ID', accessor: 'id', minWidth: 110, sortable: true },
   { id: 'summary', header: 'Summary', accessor: 'summary', minWidth: 320, sortable: true, editable: true },
   { id: 'processStep', header: 'Process Step', accessor: 'processStep', minWidth: 160, sortable: true, filterable: true, editable: true, type: 'select', options: PROCESS_STEPS },
-  { id: 'priority', header: 'Priority', accessor: 'priority', minWidth: 140, sortable: true, filterable: true, editable: true, type: 'select', options: PRIORITIES },
   { id: 'score', header: 'Score', accessor: 'score', minWidth: 120, sortable: true, type: 'number', align: 'right' },
   { id: 'rank', header: 'Rank', accessor: 'rank', minWidth: 100, sortable: true, type: 'number', align: 'right' },
   { id: 'department', header: 'Department', accessor: 'department', minWidth: 180, sortable: true, filterable: true, editable: true, type: 'select', options: DEPARTMENTS },
   { id: 'platform', header: 'Delivery Platform', accessor: 'platform', minWidth: 150, sortable: true, filterable: true, editable: true, type: 'select', options: PLATFORMS },
-  { id: 'dueDate', header: 'Due Date', accessor: 'dueDate', minWidth: 110, sortable: true, editable: true, type: 'date' },
   { id: 'createdAt', header: 'Created', accessor: 'createdAt', minWidth: 110, sortable: true },
 ];
 
@@ -93,12 +85,10 @@ interface BusinessRequest {
   id: string;
   summary: string;
   processStep: string;
-  priority: string;
   score: number | null;
   rank: number | null;
   department: string;
   platform: string | null;
-  dueDate: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -128,27 +118,6 @@ function StatusBadge({ value, options }: { value: string; options: { value: stri
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold whitespace-nowrap ${semanticClasses[option.semantic || 'muted'] || semanticClasses.muted}`}>
       {option.label}
-    </span>
-  );
-}
-
-// Priority Badge
-function PriorityBadge({ priority }: { priority: string }) {
-  const p = PRIORITIES.find(pr => pr.value === priority);
-  if (!p) return <span className="text-muted-foreground">—</span>;
-  
-  const semanticClasses: Record<string, string> = {
-    danger: 'text-destructive',
-    warning: 'text-warning',
-    info: 'text-info',
-    success: 'text-success',
-  };
-  
-  const icons: Record<string, string> = { critical: '🔴', high: '🟠', medium: '🔵', low: '🟢' };
-  return (
-    <span className="flex items-center gap-1 text-[11px]">
-      <span className="text-[8px]">{icons[priority]}</span>
-      <span className={`font-medium ${semanticClasses[p.semantic || 'muted']}`}>{p.label}</span>
     </span>
   );
 }
@@ -626,9 +595,6 @@ function RowDetailPanel({ row, onClose, onOpenFullView }: {
         </h2>
 
         <div>
-          <DetailRow label="Priority">
-            <PriorityBadge priority={row.priority} />
-          </DetailRow>
           <DetailRow label="Score">
             <ScoreBar score={row.score} />
           </DetailRow>
@@ -640,9 +606,6 @@ function RowDetailPanel({ row, onClose, onOpenFullView }: {
           </DetailRow>
           <DetailRow label="Platform">
             {platform?.label || '—'}
-          </DetailRow>
-          <DetailRow label="Due Date">
-            <DateDisplay date={row.dueDate} />
           </DetailRow>
           <DetailRow label="Created">
             <DateDisplay date={row.createdAt} />
@@ -956,19 +919,6 @@ export function ExecutiveTable({
       );
     }
     
-    if (column.id === 'priority') {
-      return (
-        <EditableCell
-          value={value}
-          type="select"
-          options={PRIORITIES}
-          displayValue={<PriorityBadge priority={value} />}
-          onSave={handleInlineSave}
-          columnId={column.id}
-        />
-      );
-    }
-    
     if (column.id === 'score') {
       return <ScoreBar score={value} />;
     }
@@ -999,18 +949,6 @@ export function ExecutiveTable({
           type="select"
           options={PLATFORMS}
           displayValue={<span className="text-xs">{plat?.label || <span className="text-muted-foreground">—</span>}</span>}
-          onSave={handleInlineSave}
-          columnId={column.id}
-        />
-      );
-    }
-    
-    if (column.id === 'dueDate') {
-      return (
-        <EditableCell
-          value={value}
-          type="date"
-          displayValue={<DateDisplay date={value} />}
           onSave={handleInlineSave}
           columnId={column.id}
         />

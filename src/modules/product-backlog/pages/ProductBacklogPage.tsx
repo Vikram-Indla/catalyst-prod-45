@@ -25,12 +25,10 @@ export default function ProductBacklogPage() {
       _dbId: br.id, // Keep original DB id for updates
       summary: br.title || '—',
       processStep: br.process_step?.toLowerCase().replace(/ /g, '_') || 'new_request',
-      priority: br.urgency?.toLowerCase() || 'medium',
       score: br.business_score ?? null,
       rank: br.rank ?? null,
       department: br.department?.toLowerCase().replace(/ /g, '_') || null,
       platform: br.delivery_platform?.toLowerCase().replace(/ /g, '_') || null,
-      dueDate: br.end_date || null,
       createdAt: br.created_at?.split('T')[0] || null,
       updatedAt: br.updated_at?.split('T')[0] || null,
     }));
@@ -62,10 +60,8 @@ export default function ProductBacklogPage() {
     // Map field names back to DB column names
     const fieldMap: Record<string, string> = {
       processStep: 'process_step',
-      priority: 'urgency',
       department: 'department',
       platform: 'delivery_platform',
-      dueDate: 'end_date',
     };
 
     const dbField = fieldMap[field] || field;
