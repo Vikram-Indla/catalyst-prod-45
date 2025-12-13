@@ -1058,7 +1058,7 @@ export function ExecutiveTable({
         </div>
 
         {/* Row 2: Toolbar Row - 52px, with border-bottom */}
-        <div className="h-13 flex items-center px-6 border-b border-border">
+        <div className="h-13 flex items-center px-6">
           <div className="w-full grid grid-cols-[auto_1fr_auto] items-center gap-4">
             {/* Left Zone: View Toggles */}
             <div className="flex items-center gap-2">
