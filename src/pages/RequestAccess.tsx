@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -13,6 +13,8 @@ import { RichTextEditor } from '@/components/business-requests/RichTextEditor';
 import { DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings, getOwnerIdForDepartment } from '@/hooks/useDepartmentsAndOwners';
+import { DepartmentSelect } from '@/components/business-requests/DepartmentSelect';
+import { BusinessOwnerSelect } from '@/components/business-requests/BusinessOwnerSelect';
 import { 
   useCreateUploadSession, 
   useStageAttachment, 
@@ -187,7 +189,6 @@ const translations = {
 
 export default function RequestAccess() {
   const navigate = useNavigate();
-  const { toast } = useToast();
   
   // Language state
   const [lang, setLang] = useState<'en' | 'ar'>('en');
@@ -305,15 +306,15 @@ export default function RequestAccess() {
     
     for (const file of Array.from(files)) {
       if (!validTypes.includes(file.type)) {
-        toast({ title: 'Invalid file type', description: `${file.name} is not a supported document type`, variant: 'destructive' });
+        toast.error(`Invalid file type: ${file.name} is not a supported document type`);
         continue;
       }
       if (stagedAttachments.length >= 5) {
-        toast({ title: 'Maximum files reached', description: 'You can only upload up to 5 files', variant: 'destructive' });
+        toast.error('Maximum files reached: You can only upload up to 5 files');
         break;
       }
       if (totalSize + file.size > 20 * 1024 * 1024) {
-        toast({ title: 'Size limit exceeded', description: 'Total file size cannot exceed 20MB', variant: 'destructive' });
+        toast.error('Size limit exceeded: Total file size cannot exceed 20MB');
         break;
       }
       
@@ -332,7 +333,7 @@ export default function RequestAccess() {
         console.log('[External Request] File staged:', attachment.file_name);
       } catch (error) {
         console.error('[External Request] Failed to upload file:', error);
-        toast({ title: 'Upload failed', description: `Failed to upload ${file.name}`, variant: 'destructive' });
+        toast.error(`Upload failed: Failed to upload ${file.name}`);
       } finally {
         setIsUploadingFile(false);
       }
@@ -361,7 +362,7 @@ export default function RequestAccess() {
   const handleNext = () => {
     if (currentStep < 3) {
       if (!validateStep(currentStep)) {
-        toast({ title: 'Please fix the errors', variant: 'destructive' });
+        toast.info('Please complete all required fields before continuing');
         return;
       }
       setCurrentStep(currentStep + 1);
@@ -382,7 +383,7 @@ export default function RequestAccess() {
     // Validate all required fields before submission
     if (!validateStep(0) || !validateStep(1)) {
       setCurrentStep(0);
-      toast({ title: 'Please fix the errors', variant: 'destructive' });
+      toast.info('Please complete all required fields before submitting');
       return;
     }
     
@@ -480,7 +481,7 @@ export default function RequestAccess() {
         } catch (attachError) {
           console.error('[External Request] Failed to commit attachments:', attachError);
           // Don't throw - the request was created, attachments are secondary
-          toast({ title: 'Warning', description: 'Some attachments may not have been saved', variant: 'destructive' });
+          toast.warning('Some attachments may not have been saved');
         }
       }
       
@@ -489,7 +490,7 @@ export default function RequestAccess() {
       
     } catch (error: any) {
       console.error('Submission failed:', error);
-      toast({ title: 'Submission failed', description: error.message, variant: 'destructive' });
+      toast.error(`Submission failed: ${error.message}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -784,15 +785,15 @@ export default function RequestAccess() {
                       <Label className="text-[13px] font-bold text-[#111827]">
                         {t.deptLabel}<span className="text-[#B42318] ml-1">{t.required}</span>
                       </Label>
-                      <Select 
-                        value={formData.departmentId} 
-                        onValueChange={(v) => {
-                          const dept = departments?.find(d => d.id === v);
+                      <DepartmentSelect
+                        value={formData.departmentId || null}
+                        onChange={(departmentId) => {
+                          const dept = departments?.find(d => d.id === departmentId);
                           // Auto-set business owner from mapping
                           let ownerId = '';
                           let ownerName = '';
-                          if (mappings && v) {
-                            const mapping = mappings.find(m => m.department_id === v);
+                          if (mappings && departmentId) {
+                            const mapping = mappings.find(m => m.department_id === departmentId);
                             if (mapping) {
                               ownerId = mapping.owner_id;
                               const owner = owners?.find(o => o.id === mapping.owner_id);
@@ -801,25 +802,18 @@ export default function RequestAccess() {
                           }
                           setFormData({ 
                             ...formData, 
-                            departmentId: v,
+                            departmentId: departmentId,
                             department: dept?.name || '',
                             businessOwnerId: ownerId,
                             businessOwner: ownerName,
                           });
                         }}
-                      >
-                        <SelectTrigger className={cn(
+                        placeholder={t.deptPlaceholder}
+                        triggerClassName={cn(
                           "h-11 rounded-xl border-[#E5E7EB]",
                           errors.department && "border-[#B42318]/55"
-                        )}>
-                          <SelectValue placeholder={t.deptPlaceholder} />
-                        </SelectTrigger>
-                        <SelectContent className="z-[400]">
-                          {departments?.map((d) => (
-                            <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                        )}
+                      />
                       {errors.department && <p className="text-xs font-bold text-[#B42318]">{errors.department}</p>}
                     </div>
 
@@ -827,19 +821,25 @@ export default function RequestAccess() {
                       <Label className="text-[13px] font-bold text-[#111827]">
                         {t.ownerLabel}<span className="text-[#B42318] ml-1">{t.required}</span>
                       </Label>
-                      <Select value={formData.businessOwnerId} disabled>
-                        <SelectTrigger className={cn(
+                      <BusinessOwnerSelect
+                        value={formData.businessOwnerId || null}
+                        onChange={(ownerId) => {
+                          const owner = owners?.find(o => o.id === ownerId);
+                          setFormData({
+                            ...formData,
+                            businessOwnerId: ownerId,
+                            businessOwner: owner?.name || '',
+                          });
+                        }}
+                        departmentId={formData.departmentId || null}
+                        placeholder={t.ownerPlaceholder}
+                        disabled={true}
+                        triggerClassName={cn(
                           "h-11 rounded-xl border-[#E5E7EB] bg-muted/50",
                           errors.businessOwner && "border-[#B42318]/55"
-                        )}>
-                          <SelectValue placeholder={formData.businessOwner || t.ownerPlaceholder} />
-                        </SelectTrigger>
-                        <SelectContent className="z-[400]">
-                          {owners?.map((o) => (
-                            <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                        )}
+                        autoSetFromDepartment={true}
+                      />
                       <p className="text-xs text-muted-foreground">Auto-set based on department</p>
                       {errors.businessOwner && <p className="text-xs font-bold text-[#B42318]">{errors.businessOwner}</p>}
                     </div>
