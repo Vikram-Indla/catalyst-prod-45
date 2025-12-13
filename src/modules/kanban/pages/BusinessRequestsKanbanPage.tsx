@@ -162,131 +162,29 @@ export default function BusinessRequestsKanbanPage() {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: KANBAN_COLORS.bgPage }}>
-      {/* Row 1 - Title Row (44px) - Title + Count only, no border */}
-      <div style={{ 
-        height: '44px', 
-        padding: '0 24px', 
-        display: 'flex', 
-        alignItems: 'center', 
-        gap: '8px',
-        backgroundColor: KANBAN_COLORS.bgHeader 
-      }}>
-        <h1 style={{ fontSize: '20px', fontWeight: 600, color: KANBAN_COLORS.textPrimary, margin: 0 }}>Business Requests</h1>
-        <span style={{ 
-          fontSize: '12px', 
-          fontWeight: 500, 
-          color: KANBAN_COLORS.textMuted, 
-          backgroundColor: 'hsl(var(--muted))', 
-          padding: '2px 8px', 
-          borderRadius: '10px' 
-        }}>{filteredTickets.length}</span>
-      </div>
-
-      {/* Row 2 - Toolbar Row (52px) - All controls, no border */}
-      <div style={{ 
-        height: '52px', 
-        padding: '0 24px', 
-        display: 'grid', 
-        gridTemplateColumns: 'auto 1fr auto', 
-        alignItems: 'center', 
-        gap: '12px',
-        backgroundColor: KANBAN_COLORS.bgHeader,
-        position: 'sticky',
-        top: 0,
-        zIndex: 100
-      }}>
-        {/* Left - View toggle - show only switch-to-other-view button */}
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <IndustryViewSwitchButton currentView="kanban" />
-        </div>
-
-        {/* Center - Search */}
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '8px', 
-            padding: '0 12px', 
-            height: '32px',
-            border: `1px solid ${KANBAN_COLORS.borderDefault}`, 
-            borderRadius: '6px', 
-            backgroundColor: KANBAN_COLORS.bgCard, 
-            width: '100%',
-            maxWidth: '320px' 
-          }}>
-            <KanbanIcons.Search />
-            <input 
-              type="text" 
-              placeholder="Search requests..." 
-              value={searchQuery} 
-              onChange={(e) => setSearchQuery(e.target.value)} 
-              style={{ border: 'none', outline: 'none', fontSize: '13px', flex: 1, backgroundColor: 'transparent', color: KANBAN_COLORS.textPrimary }} 
-            />
-            {searchQuery && (
-              <button onClick={() => setSearchQuery('')} style={{ background: 'none', border: 'none', padding: '2px', cursor: 'pointer', color: KANBAN_COLORS.textMuted }}>
-                <KanbanIcons.X />
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Right - Filters + Actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <QuickFilterAvatars 
-            members={teamMembers.slice(0, 6)} 
-            selected={selectedAssignees} 
-            onToggle={(id) => setSelectedAssignees(prev => prev.includes(id) ? prev.filter(a => a !== id) : [...prev, id])} 
-          />
-          <div style={{ width: '1px', height: '20px', backgroundColor: KANBAN_COLORS.borderLight }} />
-          <FilterDropdown label="" options={SCORING_OPTIONS} singleSelect value={scoringFilter} onChange={(v) => setScoringFilter(v as ScoringFilter)} icon="📊" tooltip="Scoring" />
-          <GroupByDropdown value={groupBy} onChange={setGroupBy} iconOnly />
-          {hasActiveFilters && (
-            <button onClick={clearAllFilters} title="Clear Filters" style={{ width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', borderRadius: '6px', backgroundColor: `${KANBAN_COLORS.danger}10`, color: KANBAN_COLORS.danger, cursor: 'pointer' }}>
-              <KanbanIcons.X />
-            </button>
-          )}
-          <div style={{ width: '1px', height: '20px', backgroundColor: KANBAN_COLORS.borderLight }} />
-          <button 
-            onClick={() => setCompactMode(!compactMode)} 
-            title={compactMode ? 'Standard View' : 'Compact View'} 
-            style={{ 
-              width: '32px', 
-              height: '32px', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              border: `1px solid ${compactMode ? KANBAN_COLORS.gold : KANBAN_COLORS.borderDefault}`, 
-              borderRadius: '6px', 
-              backgroundColor: compactMode ? KANBAN_COLORS.bgSelected : KANBAN_COLORS.bgCard, 
-              color: compactMode ? KANBAN_COLORS.gold : KANBAN_COLORS.textMuted, 
-              cursor: 'pointer' 
-            }}
-          >
-            {compactMode ? '⊡' : '⊟'}
-          </button>
-          <button 
-            onClick={() => setCreateModalOpen(true)} 
-            title="Create Request" 
-            style={{ 
-              height: '32px',
-              padding: '0 12px', 
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              border: 'none', 
-              borderRadius: '6px', 
-              backgroundColor: KANBAN_COLORS.gold, 
-              color: 'white', 
-              cursor: 'pointer',
-              fontSize: '13px',
-              fontWeight: 500
-            }}
-          >
-            <KanbanIcons.Plus />
-            <span>Add</span>
-          </button>
-        </div>
-      </div>
+      {/* Unified Header Toolbar */}
+      <IndustryHeaderToolbarV2
+        title="Business Requests"
+        countText={`${filteredTickets.length}`}
+        activeView="board"
+        searchValue={searchQuery}
+        onSearchChange={setSearchQuery}
+        avatars={teamMembers.slice(0, 6).map(m => ({
+          id: m.id,
+          name: m.name,
+          initials: m.name.split(' ').map(n => n[0]).join('').substring(0, 2),
+          color: m.color
+        }))}
+        selectedAvatarIds={selectedAssignees}
+        onToggleAvatar={(id) => setSelectedAssignees(prev => prev.includes(id) ? prev.filter(a => a !== id) : [...prev, id])}
+        onSelectAllAvatars={() => setSelectedAssignees([])}
+        onQuickActions={() => {}}
+        onInsights={() => {}}
+        onViewSettings={() => setCompactMode(!compactMode)}
+        onExport={() => {}}
+        onOverflow={() => {}}
+        onAdd={() => setCreateModalOpen(true)}
+      />
 
       {/* Board */}
       <div style={{ padding: '20px 28px' }}>
