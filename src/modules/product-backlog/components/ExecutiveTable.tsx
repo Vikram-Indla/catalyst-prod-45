@@ -96,6 +96,14 @@ interface ExecutiveTableProps {
   onCreateNew: () => void;
   onDuplicate?: (requestId: string) => Promise<void>;
   onDelete?: (requestId: string) => Promise<void>;
+  /** If provided, external header is rendered; internal header is hidden */
+  externalHeader?: React.ReactNode;
+  /** External search value for controlled search */
+  searchValue?: string;
+  /** Callback when search value changes */
+  onSearchChange?: (value: string) => void;
+  /** Callback for export action */
+  onExport?: () => void;
 }
 
 // Status Badge - neutral pill with small left accent dot
@@ -610,7 +618,11 @@ export function ExecutiveTable({
   onFieldUpdate,
   onCreateNew,
   onDuplicate,
-  onDelete
+  onDelete,
+  externalHeader,
+  searchValue: externalSearchValue,
+  onSearchChange: externalOnSearchChange,
+  onExport: externalOnExport
 }: ExecutiveTableProps) {
   const navigate = useNavigate();
   
@@ -619,7 +631,10 @@ export function ExecutiveTable({
   const departmentOptions = adminDepartments.map(d => ({ value: d.id, label: d.name }));
   
   const [density, setDensity] = useState<'compact' | 'regular' | 'relaxed'>('regular');
-  const [searchQuery, setSearchQuery] = useState('');
+  // Use external search if provided, otherwise internal
+  const [internalSearchQuery, setInternalSearchQuery] = useState('');
+  const searchQuery = externalSearchValue !== undefined ? externalSearchValue : internalSearchQuery;
+  const setSearchQuery = externalOnSearchChange || setInternalSearchQuery;
   const [filters, setFilters] = useState<Record<string, string[]>>({});
   const [sortConfig, setSortConfig] = useState<{ column: string | null; direction: 'asc' | 'desc' | null }>({ column: null, direction: null });
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
@@ -904,102 +919,106 @@ export function ExecutiveTable({
 
   return (
     <div className="flex flex-col h-full bg-background">
-      {/* MASTER PAGE HEADER - 2-Row Pattern */}
-      <div className="bg-background flex-shrink-0">
-        {/* Row 1: Title Row - 44px, no border */}
-        <div className="h-11 flex items-center px-6">
-          <div className="flex items-baseline gap-2.5">
-            <h1 className="text-xl font-bold text-secondary-green m-0 leading-tight">
-              Business Requests
-            </h1>
-            <span className="text-sm font-medium text-muted-foreground">
-              {processedData.length}/{data.length}
-              {selectedRows.length > 0 && (
-                <span className="ml-2 text-brand-gold font-semibold">
-                  • {selectedRows.length} selected
-                </span>
-              )}
-            </span>
-          </div>
-        </div>
-
-        {/* Row 2: Toolbar Row - 52px, with border-bottom */}
-        <div className="h-13 flex items-center px-6">
-          <div className="w-full grid grid-cols-[auto_1fr_auto] items-center gap-4">
-            {/* Left Zone: View Toggle - Show only switch-to-other-view button */}
-            <div className="flex items-center">
-              <IndustryViewSwitchButton currentView="list" />
-            </div>
-
-            {/* Center Zone: Search */}
-            <div className="flex justify-center">
-              <div className="w-full max-w-[480px] h-10 flex items-center gap-2 px-3 border border-border rounded-lg bg-muted/50">
-                <Icons.Search />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search..."
-                  className="flex-1 border-none outline-none text-sm bg-transparent text-foreground"
-                />
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery('')}
-                    className="border-none bg-transparent cursor-pointer text-muted-foreground p-0.5"
-                  >
-                    <Icons.X />
-                  </button>
+      {/* EXTERNAL HEADER or INTERNAL HEADER */}
+      {externalHeader ? (
+        <>{externalHeader}</>
+      ) : (
+        <div className="bg-background flex-shrink-0">
+          {/* Row 1: Title Row - 44px, no border */}
+          <div className="h-11 flex items-center px-6">
+            <div className="flex items-baseline gap-2.5">
+              <h1 className="text-xl font-bold text-secondary-green m-0 leading-tight">
+                Business Requests
+              </h1>
+              <span className="text-sm font-medium text-muted-foreground">
+                {processedData.length}/{data.length}
+                {selectedRows.length > 0 && (
+                  <span className="ml-2 text-brand-gold font-semibold">
+                    • {selectedRows.length} selected
+                  </span>
                 )}
-              </div>
+              </span>
             </div>
+          </div>
 
-            {/* Right Zone: Actions */}
-            <div className="flex items-center gap-3">
-              {/* Avatar Group Placeholder */}
-              <div className="flex items-center gap-1">
-                <div className="w-7 h-7 rounded-full bg-info border-2 border-background flex items-center justify-center text-white text-[11px] font-semibold">J</div>
-                <div className="w-7 h-7 rounded-full bg-info border-2 border-background -ml-1.5 flex items-center justify-center text-white text-[11px] font-semibold">VI</div>
-                <div className="w-7 h-7 rounded-full bg-brand-gold border-2 border-background -ml-1.5 flex items-center justify-center text-white text-[11px] font-semibold">VI</div>
+          {/* Row 2: Toolbar Row - 52px, with border-bottom */}
+          <div className="h-13 flex items-center px-6">
+            <div className="w-full grid grid-cols-[auto_1fr_auto] items-center gap-4">
+              {/* Left Zone: View Toggle - Show only switch-to-other-view button */}
+              <div className="flex items-center">
+                <IndustryViewSwitchButton currentView="list" />
               </div>
 
-              {/* Vertical Separator */}
-              <div className="w-px h-6 bg-border" />
+              {/* Center Zone: Search */}
+              <div className="flex justify-center">
+                <div className="w-full max-w-[480px] h-10 flex items-center gap-2 px-3 border border-border rounded-lg bg-muted/50">
+                  <Icons.Search />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search..."
+                    className="flex-1 border-none outline-none text-sm bg-transparent text-foreground"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="border-none bg-transparent cursor-pointer text-muted-foreground p-0.5"
+                    >
+                      <Icons.X />
+                    </button>
+                  )}
+                </div>
+              </div>
 
-              {/* Icon Buttons - 32x32 */}
-              <button className="w-8 h-8 border border-border rounded-md bg-background text-muted-foreground flex items-center justify-center cursor-pointer hover:bg-muted" title="Quick Actions">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/>
-                </svg>
-              </button>
-              <button className="w-8 h-8 border border-border rounded-md bg-background text-muted-foreground flex items-center justify-center cursor-pointer hover:bg-muted" title="Analytics">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="18" y1="20" x2="18" y2="10"/>
-                  <line x1="12" y1="20" x2="12" y2="4"/>
-                  <line x1="6" y1="20" x2="6" y2="14"/>
-                </svg>
-              </button>
-              <DensitySelector value={density} onChange={(v) => setDensity(v as any)} />
-              <ColumnManager columns={ALL_COLUMNS} visibleColumns={visibleColumns} onChange={setVisibleColumns} />
-              <button
-                onClick={handleExport}
-                className="w-8 h-8 border border-border rounded-md bg-background text-muted-foreground flex items-center justify-center cursor-pointer hover:bg-muted"
-                title="Export CSV"
-              >
-                <Icons.Download />
-              </button>
+              {/* Right Zone: Actions */}
+              <div className="flex items-center gap-3">
+                {/* Avatar Group Placeholder */}
+                <div className="flex items-center gap-1">
+                  <div className="w-7 h-7 rounded-full bg-info border-2 border-background flex items-center justify-center text-white text-[11px] font-semibold">J</div>
+                  <div className="w-7 h-7 rounded-full bg-info border-2 border-background -ml-1.5 flex items-center justify-center text-white text-[11px] font-semibold">VI</div>
+                  <div className="w-7 h-7 rounded-full bg-brand-gold border-2 border-background -ml-1.5 flex items-center justify-center text-white text-[11px] font-semibold">VI</div>
+                </div>
 
-              {/* Primary Add Button - 32x32 */}
-              <button
-                onClick={onCreateNew}
-                className="w-8 h-8 border-none rounded-md bg-brand-gold text-white flex items-center justify-center cursor-pointer hover:bg-brand-gold-hover"
-                title="New Request"
-              >
-                <Icons.Plus />
-              </button>
+                {/* Vertical Separator */}
+                <div className="w-px h-6 bg-border" />
+
+                {/* Icon Buttons - 32x32 */}
+                <button className="w-8 h-8 border border-border rounded-md bg-background text-muted-foreground flex items-center justify-center cursor-pointer hover:bg-muted" title="Quick Actions">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/>
+                  </svg>
+                </button>
+                <button className="w-8 h-8 border border-border rounded-md bg-background text-muted-foreground flex items-center justify-center cursor-pointer hover:bg-muted" title="Analytics">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="18" y1="20" x2="18" y2="10"/>
+                    <line x1="12" y1="20" x2="12" y2="4"/>
+                    <line x1="6" y1="20" x2="6" y2="14"/>
+                  </svg>
+                </button>
+                <DensitySelector value={density} onChange={(v) => setDensity(v as any)} />
+                <ColumnManager columns={ALL_COLUMNS} visibleColumns={visibleColumns} onChange={setVisibleColumns} />
+                <button
+                  onClick={externalOnExport || handleExport}
+                  className="w-8 h-8 border border-border rounded-md bg-background text-muted-foreground flex items-center justify-center cursor-pointer hover:bg-muted"
+                  title="Export CSV"
+                >
+                  <Icons.Download />
+                </button>
+
+                {/* Primary Add Button - 32x32 */}
+                <button
+                  onClick={onCreateNew}
+                  className="w-8 h-8 border-none rounded-md bg-brand-gold text-white flex items-center justify-center cursor-pointer hover:bg-brand-gold-hover"
+                  title="New Request"
+                >
+                  <Icons.Plus />
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* TABLE CONTAINER - Single boxed card with border, border-radius, horizontal scroll */}
       {/* margin-top: 12px separates from toolbar divider to avoid double-line effect */}

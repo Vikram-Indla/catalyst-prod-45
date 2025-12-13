@@ -11,7 +11,7 @@ import { CardDetailPanel } from '../components/CardDetailPanel';
 import { KanbanIcons } from '../components/KanbanIcons';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
-import { IndustryViewSwitchButton } from '@/components/industry/IndustryViewSwitchButton';
+import { IndustryHeaderToolbarV2 } from '@/shared/components/IndustryHeaderToolbarV2';
 import { useDepartments } from '@/hooks/useDepartmentsAndOwners';
 
 export default function BusinessRequestsKanbanPage() {
