@@ -7,12 +7,12 @@ import { useKanbanData, useTeamMembers } from '../hooks/useKanbanData';
 import { KanbanColumn } from '../components/KanbanColumn';
 import { Swimlane } from '../components/Swimlane';
 import { QuickFilterAvatars, FilterDropdown, GroupByDropdown } from '../components/KanbanFilters';
-import { CardDetailPanel } from '../components/CardDetailPanel';
 import { KanbanIcons } from '../components/KanbanIcons';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { IndustryHeaderToolbarV2 } from '@/shared/components/IndustryHeaderToolbarV2';
 import { useDepartments } from '@/hooks/useDepartmentsAndOwners';
+import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 
 export default function BusinessRequestsKanbanPage() {
   const navigate = useNavigate();
@@ -32,12 +32,19 @@ export default function BusinessRequestsKanbanPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedAssignees, setSelectedAssignees] = useState<string[]>([]);
   const [scoringFilter, setScoringFilter] = useState<ScoringFilter>('all');
-  const [selectedCard, setSelectedCard] = useState<KanbanTicket | null>(null);
+  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
   const [collapsedColumns, setCollapsedColumns] = useState<StatusId[]>([]);
   const [compactMode, setCompactMode] = useState(false);
   const [groupBy, setGroupBy] = useState<GroupByOption>('none');
   const [expandedSwimlanes, setExpandedSwimlanes] = useState<Record<string, boolean>>({});
   const [createModalOpen, setCreateModalOpen] = useState(false);
+
+  // Handle card click - open main business drawer directly
+  const handleCardClick = useCallback((ticket: KanbanTicket) => {
+    if (ticket._dbId) {
+      setSelectedCardId(ticket._dbId);
+    }
+  }, []);
 
   // Filter tickets
   const filteredTickets = useMemo(() => {
@@ -203,25 +210,24 @@ export default function BusinessRequestsKanbanPage() {
         {groupBy === 'none' ? (
           <div style={{ display: 'flex', gap: '14px', overflowX: 'auto', minWidth: 'max-content', paddingBottom: '20px' }}>
             {COLUMNS_CONFIG.map(column => (
-              <KanbanColumn key={column.id} column={column.id} tickets={ticketsByColumn[column.id] || []} onDrop={handleDrop} onCardClick={setSelectedCard} compactMode={compactMode} collapsed={collapsedColumns.includes(column.id)} onToggleCollapse={() => toggleColumnCollapse(column.id)} teamMembers={teamMembers} />
+              <KanbanColumn key={column.id} column={column.id} tickets={ticketsByColumn[column.id] || []} onDrop={handleDrop} onCardClick={handleCardClick} compactMode={compactMode} collapsed={collapsedColumns.includes(column.id)} onToggleCollapse={() => toggleColumnCollapse(column.id)} teamMembers={teamMembers} />
             ))}
           </div>
         ) : (
           <div>
             {Object.entries(groupedTickets || {}).map(([key, group]) => (
-              <Swimlane key={key} label={group.label} color={group.color} icon={group.icon} tickets={group.tickets} count={group.tickets.length} onDrop={handleDrop} onCardClick={setSelectedCard} compactMode={compactMode} collapsedColumns={collapsedColumns} onToggleColumnCollapse={toggleColumnCollapse} isExpanded={expandedSwimlanes[key] !== false} onToggleExpand={() => toggleSwimlaneExpand(key)} teamMembers={teamMembers} />
+              <Swimlane key={key} label={group.label} color={group.color} icon={group.icon} tickets={group.tickets} count={group.tickets.length} onDrop={handleDrop} onCardClick={handleCardClick} compactMode={compactMode} collapsedColumns={collapsedColumns} onToggleColumnCollapse={toggleColumnCollapse} isExpanded={expandedSwimlanes[key] !== false} onToggleExpand={() => toggleSwimlaneExpand(key)} teamMembers={teamMembers} />
             ))}
           </div>
         )}
       </div>
 
-      {/* Detail Panel */}
-      {selectedCard && (
-        <>
-          <div onClick={() => setSelectedCard(null)} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 150 }} />
-          <CardDetailPanel ticket={selectedCard} onClose={() => setSelectedCard(null)} teamMembers={teamMembers} />
-        </>
-      )}
+      {/* Business Request Drawer */}
+      <BusinessRequestDrawer
+        isOpen={!!selectedCardId}
+        onClose={() => setSelectedCardId(null)}
+        requestId={selectedCardId || undefined}
+      />
 
       {/* Create Business Request Modal */}
       <CreateBusinessRequestModal isOpen={createModalOpen} onClose={() => setCreateModalOpen(false)} />

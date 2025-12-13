@@ -35,6 +35,7 @@ export interface KanbanTicket {
   platform: string | null;
   createdAt: string;
   daysInColumn: number;
+  _dbId?: string; // Database ID for opening drawers
 }
 
 export interface StatusConfig {
