@@ -189,11 +189,17 @@
   /* Radius */
   --radius: 3px;
   
-  /* Layout Measurements */
+  /* Layout Measurements - CATALYST_MASTER_PAGE_SPECIFICATION v1.0 */
   --topnav-h: 56px;
-  --pagehdr-h: 56px;
-  --sidebar-w: 280px;
-  --toolbar-h: 48px;
+  --title-row-h: 44px;
+  --toolbar-row-h: 52px;
+  --sidebar-w-expanded: 220px;
+  --sidebar-w-collapsed: 60px;
+  --sidebar-item-h: 40px;
+  --btn-h: 36px;
+  --btn-sm-h: 32px;
+  --icon-btn-h: 32px;
+  --input-h: 36px;
   --grid-row: 40px;
   --grid-row-compact: 32px;
   

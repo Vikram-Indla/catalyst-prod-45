@@ -36,9 +36,9 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
       <aside
         className={cn(
           'h-full border-r bg-card transition-all duration-300 flex-shrink-0 relative flex flex-col overflow-visible',
-          expanded ? 'w-44' : 'w-14',
           className
         )}
+        style={{ width: expanded ? '220px' : '60px' }}
       >
         {/* Toggle Handle - positioned outside sidebar */}
         <button
@@ -49,17 +49,26 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
           {expanded ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
         </button>
 
-        {/* Header - h-12 to align with main header */}
-        <div className="h-12 px-2 border-b border-border flex items-center shrink-0">
+        {/* Header - 44px per spec */}
+        <div 
+          className="px-3 border-b flex items-center shrink-0"
+          style={{ height: '44px', borderColor: '#f3f4f6' }}
+        >
           {expanded ? (
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-md bg-brand-gold flex items-center justify-center text-white text-xs font-semibold">
+            <div className="flex items-center gap-2.5">
+              <div 
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-[11px] font-bold"
+                style={{ background: 'linear-gradient(135deg, #c69c6d 0%, #8b7355 100%)' }}
+              >
                 PR
               </div>
-              <span className="text-sm font-medium text-foreground truncate">Product</span>
+              <span className="text-[13px] font-bold text-foreground truncate">Product</span>
             </div>
           ) : (
-            <div className="w-8 h-8 rounded-md bg-brand-gold flex items-center justify-center text-white text-xs font-semibold mx-auto">
+            <div 
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-[11px] font-bold mx-auto"
+              style={{ background: 'linear-gradient(135deg, #c69c6d 0%, #8b7355 100%)' }}
+            >
               PR
             </div>
           )}
@@ -67,7 +76,7 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
 
         {/* Navigation Menu */}
         <nav className="p-2 space-y-1">
-          {menuItems.map(item => {
+        {menuItems.map(item => {
             const Icon = item.icon;
             const active = isActive(item.path, item.exact);
 
@@ -75,17 +84,23 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
               return (
                 <Tooltip key={item.title}>
                   <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
+                    <button
                       onClick={() => navigate(item.path)}
                       className={cn(
-                        'w-full h-10 flex items-center justify-center',
-                        active && 'bg-brand-gold-pale text-brand-gold'
+                        'w-full h-10 flex items-center justify-center rounded-md transition-all relative',
+                        active && 'bg-[rgba(198,156,109,0.08)]'
                       )}
+                      style={active ? { color: '#c69c6d' } : { color: '#4b5563' }}
                     >
+                      {/* Gold left border indicator for active state */}
+                      {active && (
+                        <span 
+                          className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r"
+                          style={{ backgroundColor: '#c69c6d' }}
+                        />
+                      )}
                       <Icon className="h-5 w-5" />
-                    </Button>
+                    </button>
                   </TooltipTrigger>
                   <TooltipContent side="right" className="bg-popover border">
                     {item.title}
@@ -95,21 +110,28 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
             }
 
             return (
-              <Button
+              <button
                 key={item.title}
-                variant="ghost"
                 onClick={() => {
                   navigate(item.path);
                   onToggle(); // Collapse sidebar on click
                 }}
                 className={cn(
-                  'w-full justify-start gap-3 h-10',
-                  active && 'bg-brand-gold-pale text-brand-gold'
+                  'w-full h-10 flex items-center gap-3 px-3 rounded-md transition-all relative text-left',
+                  active && 'bg-[rgba(198,156,109,0.08)] font-semibold'
                 )}
+                style={active ? { color: '#c69c6d' } : { color: '#4b5563' }}
               >
+                {/* Gold left border indicator for active state */}
+                {active && (
+                  <span 
+                    className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r"
+                    style={{ backgroundColor: '#c69c6d' }}
+                  />
+                )}
                 <Icon className="h-5 w-5" />
-                <span>{item.title}</span>
-              </Button>
+                <span className="text-[13px] font-medium">{item.title}</span>
+              </button>
             );
           })}
         </nav>
