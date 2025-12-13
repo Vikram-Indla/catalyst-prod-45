@@ -5,22 +5,7 @@ import { useQueryClient, useMutation } from '@tanstack/react-query';
 // Catalyst/shadcn imports
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 
 // Icons
 import { 
@@ -32,13 +17,11 @@ import {
   ChevronLeft,
   ChevronRight,
   Plus, 
-  MoreHorizontal,
   AlertTriangle,
-  ArrowUpDown,
-  ArrowUp,
-  ArrowDown,
-  Bookmark
 } from 'lucide-react';
+
+// EnterpriseTable component
+import { EnterpriseTable, Column } from '@/components/industry/EnterpriseTable';
 
 // Catalyst Demand-specific modals
 import { DemandBulkStatusModal } from '@/components/demand/DemandBulkStatusModal';
@@ -58,15 +41,25 @@ import { PROCESS_STEPS, getProcessStepInfo } from '@/types/business-request';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
-import { QuickAddRow } from '@/components/shared/QuickAddRow';
 
 type ViewMode = 'list' | 'kanban';
-type SortOrder = 'NONE' | 'ASC' | 'DESC';
 
-// Process Step lozenge styles - neutral/plain styling
-const getProcessStepStyle = (): string => {
-  return 'bg-muted/50 text-foreground border border-border';
-};
+// Business Request type for EnterpriseTable
+interface BusinessRequest {
+  id: string;
+  request_key: string | null;
+  title: string | null;
+  process_step: string | null;
+  business_score: number | null;
+  rank: number | null;
+  delivery_platform: string | null;
+  business_owner: string | null;
+  created_at: string | null;
+  end_date: string | null;
+  department: string | null;
+  planned_quarter: string | null;
+  [key: string]: any;
+}
 
 const formatDate = (dateStr: string | null) => {
   if (!dateStr) return '-';
@@ -85,18 +78,6 @@ const calculateAgeing = (createdAt: string | null): number => {
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 };
 
-// Get health dot color based on target date
-const getHealthDotColor = (endDate: string | null): string => {
-  if (!endDate) return 'bg-amber-500';
-  const target = new Date(endDate);
-  const now = new Date();
-  const daysUntil = Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-  
-  if (daysUntil < 0) return 'bg-red-500'; // Overdue
-  if (daysUntil <= 7) return 'bg-amber-500'; // At risk
-  return 'bg-emerald-500'; // On track
-};
-
 const ITEMS_PER_PAGE = 20;
 
 export default function DemandIntakeCatalyst() {
@@ -109,8 +90,6 @@ export default function DemandIntakeCatalyst() {
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [filtersDialogOpen, setFiltersDialogOpen] = useState(false);
   const [filters, setFilters] = useState<SmartFilters>({});
-  const [sortKey, setSortKey] = useState<string | null>(null);
-  const [sortOrder, setSortOrder] = useState<SortOrder>('NONE');
   
   // Modal states
   const [bulkStatusModalOpen, setBulkStatusModalOpen] = useState(false);
@@ -159,7 +138,7 @@ export default function DemandIntakeCatalyst() {
     return value !== undefined && value !== '' && value !== null;
   }).length;
 
-  // Process and sort data
+  // Process and filter data
   const sortedRequests = useMemo(() => {
     if (!requests || requests.length === 0) return [];
     
@@ -175,52 +154,17 @@ export default function DemandIntakeCatalyst() {
         return false;
       });
     }
-
-    // Sort only if sortOrder is not NONE
-    if (sortOrder !== 'NONE' && sortKey) {
-      filtered = filtered.sort((a, b) => {
-        let aVal = a[sortKey];
-        let bVal = b[sortKey];
-        
-        if (sortKey === 'business_score') {
-          aVal = a.business_score ?? 0;
-          bVal = b.business_score ?? 0;
-        }
-        
-        if (sortOrder === 'ASC') {
-          return aVal > bVal ? 1 : -1;
-        }
-        return aVal < bVal ? 1 : -1;
-      });
-    }
     
     return filtered.map((req, idx) => ({
       ...req,
       displayRank: idx + 1
     }));
-  }, [requests, filters, sortKey, sortOrder]);
+  }, [requests, filters]);
 
   const totalPages = Math.ceil(sortedRequests.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const paginatedRequests = sortedRequests.slice(startIndex, endIndex);
-
-  const handleSort = (key: string) => {
-    if (sortKey === key) {
-      // Cycle through: NONE → ASC → DESC → NONE
-      if (sortOrder === 'NONE') {
-        setSortOrder('ASC');
-      } else if (sortOrder === 'ASC') {
-        setSortOrder('DESC');
-      } else {
-        setSortOrder('NONE');
-        setSortKey(null);
-      }
-    } else {
-      setSortKey(key);
-      setSortOrder('ASC');
-    }
-  };
 
   const handleExport = () => {
     if (requests && requests.length > 0) {
@@ -309,25 +253,138 @@ export default function DemandIntakeCatalyst() {
     },
   });
 
-  // Select all checkbox handler
-  const handleSelectAll = () => {
-    if (selectedRows.length === paginatedRequests.length) {
-      setSelectedRows([]);
-    } else {
-      setSelectedRows(paginatedRequests.map((r: any) => r.id));
+  // Handle row update from EnterpriseTable inline editing
+  const handleRowUpdate = async (rowId: string, columnId: string, newValue: any) => {
+    const { error } = await supabase
+      .from('business_requests')
+      .update({ [columnId]: newValue })
+      .eq('id', rowId);
+    
+    if (error) {
+      toast({ title: 'Failed to update', variant: 'destructive' });
+      throw error;
     }
+    
+    queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+    toast({ title: 'Updated successfully' });
   };
 
-  const isAllSelected = selectedRows.length === paginatedRequests.length && paginatedRequests.length > 0;
-
-  const SortIcon = ({ columnKey }: { columnKey: string }) => {
-    if (sortKey !== columnKey || sortOrder === 'NONE') {
-      return <ArrowUpDown className="ml-2 h-4 w-4 text-muted-foreground/60" />;
+  // Handle row delete from EnterpriseTable
+  const handleRowDelete = async (rowId: string) => {
+    const { error } = await supabase
+      .from('business_requests')
+      .delete()
+      .eq('id', rowId);
+    
+    if (error) {
+      toast({ title: 'Failed to delete', variant: 'destructive' });
+      throw error;
     }
-    return sortOrder === 'ASC' 
-      ? <ArrowUp className="ml-2 h-4 w-4 text-brand-gold" /> 
-      : <ArrowDown className="ml-2 h-4 w-4 text-brand-gold" />;
+    
+    queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+    toast({ title: 'Deleted successfully' });
   };
+
+  // Define columns for EnterpriseTable
+  const tableColumns: Column<BusinessRequest>[] = useMemo(() => [
+    {
+      id: 'request_key',
+      header: 'Request ID',
+      accessor: 'request_key',
+      width: '100px',
+      sortable: true,
+      renderCell: (value, row) => (
+        <span className="text-foreground hover:text-brand-gold font-medium text-sm">
+          {value || `MIM-${String(row.id).slice(-3)}`}
+        </span>
+      ),
+    },
+    {
+      id: 'title',
+      header: 'Summary',
+      accessor: 'title',
+      width: '280px',
+      sortable: true,
+      editable: true,
+      editType: 'text',
+      renderCell: (value) => (
+        <span className="max-w-[280px] truncate block">{value || '-'}</span>
+      ),
+    },
+    {
+      id: 'process_step',
+      header: 'Process Step',
+      accessor: 'process_step',
+      sortable: true,
+      filterable: true,
+      filterOptions: PROCESS_STEPS.map(step => ({
+        value: step.value,
+        label: step.label,
+      })),
+      renderCell: (value) => (
+        <span className="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded bg-muted/50 text-foreground border border-border">
+          {getProcessStepInfo(value).label}
+        </span>
+      ),
+    },
+    {
+      id: 'business_score',
+      header: 'Score',
+      accessor: 'business_score',
+      width: '80px',
+      sortable: true,
+      editable: true,
+      editType: 'number',
+      renderCell: (value) => (
+        <span className="text-center font-semibold block">{value || '—'}</span>
+      ),
+    },
+    {
+      id: 'rank',
+      header: 'Rank',
+      accessor: 'rank',
+      width: '80px',
+      sortable: true,
+      renderCell: (value) => (
+        <span className="text-center block">{value || '-'}</span>
+      ),
+    },
+    {
+      id: 'delivery_platform',
+      header: 'Delivery Platform',
+      accessor: 'delivery_platform',
+      sortable: true,
+      editable: true,
+      editType: 'text',
+      renderCell: (value) => value || '-',
+    },
+    {
+      id: 'business_owner',
+      header: 'Business Owner',
+      accessor: 'business_owner',
+      sortable: true,
+      renderCell: (value) => value || '-',
+    },
+    {
+      id: 'created_at',
+      header: 'Submitted Date',
+      accessor: 'created_at',
+      sortable: true,
+      renderCell: (value) => (
+        <span className="text-muted-foreground">{formatDate(value)}</span>
+      ),
+    },
+    {
+      id: 'age',
+      header: 'Age',
+      accessor: (row) => calculateAgeing(row.created_at),
+      width: '60px',
+      sortable: true,
+      renderCell: (value) => (
+        <span className="text-center text-muted-foreground block">{value}</span>
+      ),
+    },
+  ], []);
 
   return (
     <div className="flex flex-col h-full bg-white">
@@ -422,200 +479,41 @@ export default function DemandIntakeCatalyst() {
         </div>
 
         {/* Table Content - auto height to fit content */}
-        <div className="bg-white border border-border rounded-lg shadow-sm flex flex-col">
+        <div className="flex-1 flex flex-col min-h-0">
           {isLoading ? (
-            <div className="p-8 space-y-4">
+            <div className="bg-white border border-border rounded-lg shadow-sm p-8 space-y-4">
               {Array.from({ length: 5 }).map((_, i) => (
                 <Skeleton key={i} className="h-12 w-full" />
               ))}
             </div>
           ) : viewMode === 'kanban' ? (
-            <StatusSummaryKanbanView 
-              requests={sortedRequests}
-              onRequestSelect={(id) => setSelectedRequestId(id)}
-            />
+            <div className="bg-white border border-border rounded-lg shadow-sm flex-1 overflow-auto">
+              <StatusSummaryKanbanView 
+                requests={sortedRequests}
+                onRequestSelect={(id) => setSelectedRequestId(id)}
+              />
+            </div>
           ) : sortedRequests.length > 0 ? (
-            <>
-              {/* Scrollable table area */}
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-brand-gold/10 border-b-2 border-brand-gold/30">
-                      <TableHead className="w-10 font-semibold text-foreground">
-                        <Checkbox
-                          checked={isAllSelected}
-                          onCheckedChange={handleSelectAll}
-                          aria-label="Select all"
-                        />
-                      </TableHead>
-                      <TableHead 
-                        className="cursor-pointer hover:bg-muted/50 transition-colors"
-                        onClick={() => handleSort('request_key')}
-                      >
-                        <div className="flex items-center">
-                          Request ID
-                          <SortIcon columnKey="request_key" />
-                        </div>
-                      </TableHead>
-                      <TableHead 
-                        className="cursor-pointer hover:bg-muted/50 min-w-[220px] transition-colors"
-                        onClick={() => handleSort('title')}
-                      >
-                        <div className="flex items-center">
-                          Summary
-                          <SortIcon columnKey="title" />
-                        </div>
-                      </TableHead>
-                      <TableHead 
-                        className="cursor-pointer hover:bg-muted/50 transition-colors"
-                        onClick={() => handleSort('process_step')}
-                      >
-                        <div className="flex items-center">
-                          Process Step
-                          <SortIcon columnKey="process_step" />
-                        </div>
-                      </TableHead>
-                      <TableHead 
-                        className="cursor-pointer hover:bg-muted/50 text-center transition-colors"
-                        onClick={() => handleSort('business_score')}
-                      >
-                        <div className="flex items-center justify-center">
-                          Score
-                          <SortIcon columnKey="business_score" />
-                        </div>
-                      </TableHead>
-                      <TableHead 
-                        className="cursor-pointer hover:bg-muted/50 text-center transition-colors"
-                        onClick={() => handleSort('rank')}
-                      >
-                        <div className="flex items-center justify-center">
-                          Rank
-                          <SortIcon columnKey="rank" />
-                        </div>
-                      </TableHead>
-                      <TableHead 
-                        className="cursor-pointer hover:bg-muted/50 transition-colors"
-                        onClick={() => handleSort('delivery_platform')}
-                      >
-                        <div className="flex items-center">
-                          Delivery Platform
-                          <SortIcon columnKey="delivery_platform" />
-                        </div>
-                      </TableHead>
-                      <TableHead 
-                        className="cursor-pointer hover:bg-muted/50 transition-colors"
-                        onClick={() => handleSort('business_owner')}
-                      >
-                        <div className="flex items-center">
-                          Business Owner
-                          <SortIcon columnKey="business_owner" />
-                        </div>
-                      </TableHead>
-                      <TableHead 
-                        className="cursor-pointer hover:bg-muted/50 transition-colors"
-                        onClick={() => handleSort('created_at')}
-                      >
-                        <div className="flex items-center">
-                          Submitted Date
-                          <SortIcon columnKey="created_at" />
-                        </div>
-                      </TableHead>
-                      <TableHead 
-                        className="cursor-pointer hover:bg-muted/50 text-center transition-colors"
-                        onClick={() => handleSort('created_at')}
-                      >
-                        <div className="flex items-center justify-center">
-                          Age
-                          <SortIcon columnKey="created_at" />
-                        </div>
-                      </TableHead>
-                      <TableHead className="w-10"></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {paginatedRequests.map((request: any) => (
-                      <TableRow 
-                        key={request.id}
-                        className="cursor-pointer hover:bg-muted/30"
-                        onClick={() => setSelectedRequestId(request.id)}
-                      >
-                        <TableCell onClick={(e) => e.stopPropagation()}>
-                          <Checkbox
-                            checked={selectedRows.includes(request.id)}
-                            onCheckedChange={() => {
-                              setSelectedRows(prev => 
-                                prev.includes(request.id) 
-                                  ? prev.filter(id => id !== request.id)
-                                  : [...prev, request.id]
-                              );
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <button 
-                            className="text-foreground hover:text-brand-gold font-medium text-sm"
-                            onClick={(e) => { e.stopPropagation(); setSelectedRequestId(request.id); }}
-                          >
-                            {request.request_key || `MIM-${String(request.id).slice(-3)}`}
-                          </button>
-                        </TableCell>
-                        <TableCell className="max-w-[280px] truncate">
-                          {request.title || '-'}
-                        </TableCell>
-                        <TableCell>
-                          <span className="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded bg-muted/50 text-foreground border border-border">
-                            {getProcessStepInfo(request.process_step).label}
-                          </span>
-                        </TableCell>
-                        <TableCell className="text-center font-semibold">
-                          {request.business_score || '—'}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {request.rank || '-'}
-                        </TableCell>
-                        <TableCell>
-                          {request.delivery_platform || '-'}
-                        </TableCell>
-                        <TableCell>
-                          {request.business_owner || '-'}
-                        </TableCell>
-                        <TableCell className="text-muted-foreground">
-                          {formatDate(request.created_at)}
-                        </TableCell>
-                        <TableCell className="text-center text-muted-foreground">
-                          {calculateAgeing(request.created_at)}
-                        </TableCell>
-                        <TableCell onClick={(e) => e.stopPropagation()}>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="bg-white z-50">
-                              <DropdownMenuItem onClick={() => setSelectedRequestId(request.id)}>
-                                Edit
-                              </DropdownMenuItem>
-                              <DropdownMenuItem>Clone</DropdownMenuItem>
-                              <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                    {/* Quick Add Row */}
-                    <QuickAddRow
-                      columnsCount={11}
-                      label="Add business request"
-                      placeholder="Enter business request summary..."
-                      createType="business_request"
-                      onCreated={(id) => setSelectedRequestId(id)}
-                    />
-                  </TableBody>
-                </Table>
+            <div className="flex flex-col flex-1 min-h-0">
+              {/* EnterpriseTable with inline editing */}
+              <div className="flex-1 overflow-auto">
+                <EnterpriseTable
+                  data={paginatedRequests as BusinessRequest[]}
+                  columns={tableColumns}
+                  onRowClick={(row) => setSelectedRequestId(row.id)}
+                  onRowUpdate={handleRowUpdate}
+                  onRowDelete={handleRowDelete}
+                  editMode="cell"
+                  enableUndo={true}
+                  showCheckboxes={true}
+                  showActionsColumn={true}
+                  selectedRows={selectedRows}
+                  onSelectionChange={setSelectedRows}
+                />
               </div>
-              {/* Pagination - Outside scroll area but inside card */}
-              <div className="flex items-center justify-between px-4 py-4 border-t border-border">
+              
+              {/* Pagination */}
+              <div className="flex items-center justify-between px-4 py-4 border-t border-border bg-white">
                 <p className="text-sm text-muted-foreground whitespace-nowrap">
                   Showing {startIndex + 1}-{Math.min(endIndex, sortedRequests.length)} of {sortedRequests.length} requests
                 </p>
@@ -633,7 +531,7 @@ export default function DemandIntakeCatalyst() {
                     <ChevronLeft className="h-4 w-4" />
                     Previous
                   </button>
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                  {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => i + 1).map((pageNum) => (
                     <button
                       key={pageNum}
                       onClick={() => setCurrentPage(pageNum)}
@@ -662,9 +560,9 @@ export default function DemandIntakeCatalyst() {
                   </button>
                 </div>
               </div>
-            </>
+            </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-16 text-center">
+            <div className="bg-white border border-border rounded-lg shadow-sm flex flex-col items-center justify-center py-16 text-center">
               <div className="rounded-full bg-muted p-4 mb-4">
                 <AlertTriangle className="h-8 w-8 text-muted-foreground" />
               </div>
