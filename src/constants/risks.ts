@@ -9,8 +9,11 @@ export const ROAM_STATUSES: RoamStatus[] = ['Resolved', 'Owned', 'Accepted', 'Mi
 // Risk Status options (Source: FieldValidation-Risks)
 export const RISK_STATUSES: RiskStatus[] = ['Open', 'Closed'];
 
-// Severity levels (Source: FieldValidation-Risks)
+// Severity levels for Occurrence (Source: FieldValidation-Risks)
 export const SEVERITY_LEVELS: SeverityLevel[] = ['Low', 'Medium', 'High', 'Critical'];
+
+// Impact levels (Critical, High, Medium, Low)
+export const IMPACT_LEVELS: SeverityLevel[] = ['Critical', 'High', 'Medium', 'Low'];
 
 // Relationship types (Source: FieldValidation-Risks)
 export const RELATIONSHIP_TYPES: RelationshipType[] = [
