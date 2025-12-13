@@ -140,6 +140,7 @@ import AdminOverview from "./pages/admin/AdminOverview";
 import AuditActivityPage from "./pages/admin/AuditActivityPage";
 import KanbanSettings from "./pages/admin/KanbanSettings";
 import ResourceInventory from "./pages/admin/ResourceInventory";
+import DevelopmentInventory from "./pages/admin/DevelopmentInventory";
 import ValueStreamView from "./pages/ValueStreamView";
 import UserProfile from "./pages/UserProfile";
 import ProgramInsights from "./pages/insights/ProgramInsights";
@@ -670,6 +671,7 @@ const App = () => (
                 <Route path="design-audit" element={<DesignAuditPage />} />
                 <Route path="kanban-settings" element={<KanbanSettings />} />
                 <Route path="resourceinventory" element={<ResourceInventory />} />
+                <Route path="developmentinventory" element={<DevelopmentInventory />} />
               </Route>
 
               <Route path="/items/epics/:epicId/status-report" element={<EpicStatusReport />} />

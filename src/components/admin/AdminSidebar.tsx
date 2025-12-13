@@ -15,7 +15,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Upload,
-  Columns
+  Columns,
+  Boxes,
+  Code2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -73,6 +75,13 @@ const adminSections = [
     title: 'Connectors',
     items: [
       { label: 'Jira Integration', path: '/admin/jira-config', icon: Database },
+    ],
+  },
+  {
+    title: 'Inventory',
+    items: [
+      { label: 'Resource Inventory', path: '/admin/resourceinventory', icon: Boxes },
+      { label: 'Development Inventory', path: '/admin/developmentinventory', icon: Code2 },
     ],
   },
   {
