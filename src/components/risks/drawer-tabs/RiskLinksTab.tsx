@@ -1,7 +1,7 @@
 /**
  * RiskLinksTab - Links tab for Risk Drawer
- * Shows only "Upload Documents" and "External Link" tiles (no Implementation Links or Knowledge Hub)
- * Follows the UnifiedLinksTab pattern for UI consistency
+ * Shows parent item link (Epic, Feature, Theme, Objective, Business Request)
+ * Plus "Upload Documents" and "External Link" tiles
  */
 
 import { useState, useRef, useCallback, useMemo } from 'react';
@@ -33,14 +33,23 @@ import {
   MoreVertical,
   Calendar,
   Filter,
-  ChevronDown
+  ChevronDown,
+  Zap,
+  Target,
+  Palette,
+  Flag
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
+import { ThemeDetailsDrawer } from '@/components/backlog/ThemeDetailsDrawer';
+import { ObjectiveDrawerV2 } from '@/modules/okr-v2';
 
 interface RiskLinksTabProps {
   riskId: string;
   businessRequestId?: string | null;
+  relatedItemId?: string | null;
+  relationship?: string | null;
 }
 
 type LinkKind = 'document' | 'external';
@@ -70,7 +79,7 @@ const formatDate = (dateStr: string): string => {
   });
 };
 
-export function RiskLinksTab({ riskId, businessRequestId }: RiskLinksTabProps) {
+export function RiskLinksTab({ riskId, businessRequestId, relatedItemId, relationship }: RiskLinksTabProps) {
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
@@ -85,6 +94,12 @@ export function RiskLinksTab({ riskId, businessRequestId }: RiskLinksTabProps) {
   
   // Document upload form state
   const [documentForm, setDocumentForm] = useState({ title: '', files: [] as File[] });
+
+  // State to control which drawer to open
+  const [openEpicId, setOpenEpicId] = useState<string | null>(null);
+  const [openFeatureId, setOpenFeatureId] = useState<string | null>(null);
+  const [openThemeId, setOpenThemeId] = useState<string | null>(null);
+  const [openObjectiveId, setOpenObjectiveId] = useState<string | null>(null);
 
   // Fetch linked Business Request if present
   const { data: linkedBusinessRequest, isLoading: brLoading } = useQuery({
@@ -101,6 +116,74 @@ export function RiskLinksTab({ riskId, businessRequestId }: RiskLinksTabProps) {
     },
     enabled: !!businessRequestId
   });
+
+  // Fetch linked Epic if relationship is Epic
+  const { data: linkedEpic, isLoading: epicLoading } = useQuery({
+    queryKey: ['epic', relatedItemId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('epics')
+        .select('id, epic_key, name')
+        .eq('id', relatedItemId!)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!relatedItemId && relationship === 'Epic'
+  });
+
+  // Fetch linked Feature if relationship is Feature
+  const { data: linkedFeature, isLoading: featureLoading } = useQuery({
+    queryKey: ['feature', relatedItemId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('features')
+        .select('id, display_id, name')
+        .eq('id', relatedItemId!)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!relatedItemId && relationship === 'Feature'
+  });
+
+  // Fetch linked Theme if relationship is Theme
+  const { data: linkedTheme, isLoading: themeLoading } = useQuery({
+    queryKey: ['theme', relatedItemId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('strategic_themes')
+        .select('id, name')
+        .eq('id', relatedItemId!)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!relatedItemId && relationship === 'Theme'
+  });
+
+  // Fetch linked Objective if relationship is Objective
+  const { data: linkedObjective, isLoading: objectiveLoading } = useQuery({
+    queryKey: ['objective', relatedItemId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('objectives')
+        .select('id, name')
+        .eq('id', relatedItemId!)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!relatedItemId && relationship === 'Objective'
+  });
+
+  // Check if we have any linked parent item
+  const hasLinkedParentItem = linkedBusinessRequest || linkedEpic || linkedFeature || linkedTheme || linkedObjective;
+  const isLoadingParentItem = brLoading || epicLoading || featureLoading || themeLoading || objectiveLoading;
 
   // Fetch existing links
   const { data: links = [], isLoading: linksLoading } = useQuery({
@@ -309,37 +392,143 @@ export function RiskLinksTab({ riskId, businessRequestId }: RiskLinksTabProps) {
   };
 
   return (
+    <>
     <div className="p-4 md:p-6 space-y-6">
-      {/* Linked Items Section - Shows parent Business Request */}
-      {(linkedBusinessRequest || brLoading) && (
+      {/* Linked Items Section - Shows parent entity (Epic, Feature, Theme, Objective, or Business Request) */}
+      {(hasLinkedParentItem || isLoadingParentItem) && (
         <Card className="p-5 border border-border/60 bg-card">
           <h4 className="font-semibold text-[15px] text-foreground mb-4">Linked Items</h4>
           
-          {brLoading ? (
+          {isLoadingParentItem ? (
             <div className="text-[13px] text-muted-foreground">Loading...</div>
-          ) : linkedBusinessRequest ? (
-            <div 
-              className="p-3 border border-border/60 rounded-lg bg-muted/20 hover:bg-muted/40 transition-colors cursor-pointer group"
-              onClick={() => navigate(`/industry/backlog?openRequest=${linkedBusinessRequest.id}`)}
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-brand-gold/10 flex items-center justify-center shrink-0">
-                  <FileText className="h-4 w-4 text-brand-gold" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <span className="px-1.5 py-0.5 text-[10px] font-medium uppercase rounded bg-brand-gold/10 text-brand-gold">
-                      Business Request
-                    </span>
+          ) : (
+            <div className="space-y-2">
+              {/* Business Request Link */}
+              {linkedBusinessRequest && (
+                <div 
+                  className="p-3 border border-border/60 rounded-lg bg-muted/20 hover:bg-muted/40 transition-colors cursor-pointer group"
+                  onClick={() => navigate(`/industry/backlog?openRequest=${linkedBusinessRequest.id}`)}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-brand-gold/10 flex items-center justify-center shrink-0">
+                      <FileText className="h-4 w-4 text-brand-gold" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <span className="px-1.5 py-0.5 text-[10px] font-medium uppercase rounded bg-brand-gold/10 text-brand-gold">
+                          Business Request
+                        </span>
+                      </div>
+                      <div className="text-[13px] font-medium text-foreground group-hover:text-brand-gold transition-colors">
+                        {linkedBusinessRequest.request_key} – {linkedBusinessRequest.title}
+                      </div>
+                    </div>
+                    <ExternalLink className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
-                  <div className="text-[13px] font-medium text-foreground group-hover:text-brand-gold transition-colors">
-                    {linkedBusinessRequest.request_key} – {linkedBusinessRequest.title}
+                </div>
+              )}
+
+              {/* Epic Link */}
+              {linkedEpic && (
+                <div 
+                  className="p-3 border border-border/60 rounded-lg bg-muted/20 hover:bg-muted/40 transition-colors cursor-pointer group"
+                  onClick={() => setOpenEpicId(linkedEpic.id)}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-secondary-green/10 flex items-center justify-center shrink-0">
+                      <Zap className="h-4 w-4 text-secondary-green" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <span className="px-1.5 py-0.5 text-[10px] font-medium uppercase rounded bg-secondary-green/10 text-secondary-green">
+                          Epic
+                        </span>
+                      </div>
+                      <div className="text-[13px] font-medium text-foreground group-hover:text-secondary-green transition-colors">
+                        {linkedEpic.epic_key} – {linkedEpic.name}
+                      </div>
+                    </div>
+                    <ExternalLink className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
                 </div>
-                <ExternalLink className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
+              )}
+
+              {/* Feature Link */}
+              {linkedFeature && (
+                <div 
+                  className="p-3 border border-border/60 rounded-lg bg-muted/20 hover:bg-muted/40 transition-colors cursor-pointer group"
+                  onClick={() => setOpenFeatureId(linkedFeature.id)}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-secondary-bronze/10 flex items-center justify-center shrink-0">
+                      <Flag className="h-4 w-4 text-secondary-bronze" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <span className="px-1.5 py-0.5 text-[10px] font-medium uppercase rounded bg-secondary-bronze/10 text-secondary-bronze">
+                          Feature
+                        </span>
+                      </div>
+                      <div className="text-[13px] font-medium text-foreground group-hover:text-secondary-bronze transition-colors">
+                        {linkedFeature.display_id || linkedFeature.id.slice(0, 8).toUpperCase()} – {linkedFeature.name}
+                      </div>
+                    </div>
+                    <ExternalLink className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                </div>
+              )}
+
+              {/* Theme Link */}
+              {linkedTheme && (
+                <div 
+                  className="p-3 border border-border/60 rounded-lg bg-muted/20 hover:bg-muted/40 transition-colors cursor-pointer group"
+                  onClick={() => setOpenThemeId(linkedTheme.id)}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-palette-intermediate/10 flex items-center justify-center shrink-0">
+                      <Palette className="h-4 w-4 text-palette-intermediate" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <span className="px-1.5 py-0.5 text-[10px] font-medium uppercase rounded bg-palette-intermediate/10 text-palette-intermediate">
+                          Theme
+                        </span>
+                      </div>
+                      <div className="text-[13px] font-medium text-foreground group-hover:text-palette-intermediate transition-colors">
+                        TH-{linkedTheme.id.slice(0, 4).toUpperCase()} – {linkedTheme.name}
+                      </div>
+                    </div>
+                    <ExternalLink className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                </div>
+              )}
+
+              {/* Objective Link */}
+              {linkedObjective && (
+                <div 
+                  className="p-3 border border-border/60 rounded-lg bg-muted/20 hover:bg-muted/40 transition-colors cursor-pointer group"
+                  onClick={() => setOpenObjectiveId(linkedObjective.id)}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-brand-gold/10 flex items-center justify-center shrink-0">
+                      <Target className="h-4 w-4 text-brand-gold" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <span className="px-1.5 py-0.5 text-[10px] font-medium uppercase rounded bg-brand-gold/10 text-brand-gold">
+                          Objective
+                        </span>
+                      </div>
+                      <div className="text-[13px] font-medium text-foreground group-hover:text-brand-gold transition-colors">
+                        {linkedObjective.name}
+                      </div>
+                    </div>
+                    <ExternalLink className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                </div>
+              )}
             </div>
-          ) : null}
+          )}
         </Card>
       )}
 
@@ -648,5 +837,31 @@ export function RiskLinksTab({ riskId, businessRequestId }: RiskLinksTabProps) {
         </div>
       </Card>
     </div>
+
+    {/* Epic Details Drawer */}
+    {openEpicId && linkedEpic && (
+      <EpicDetailsPanel
+        epic={linkedEpic}
+        open={!!openEpicId}
+        onClose={() => setOpenEpicId(null)}
+      />
+    )}
+
+    {/* Theme Details Drawer */}
+    {openThemeId && linkedTheme && (
+      <ThemeDetailsDrawer
+        theme={linkedTheme as any}
+        isOpen={!!openThemeId}
+        onClose={() => setOpenThemeId(null)}
+      />
+    )}
+
+    {/* Objective Drawer */}
+    <ObjectiveDrawerV2
+      objectiveId={openObjectiveId}
+      open={!!openObjectiveId}
+      onClose={() => setOpenObjectiveId(null)}
+    />
+    </>
   );
 }
