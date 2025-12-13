@@ -1,6 +1,6 @@
 /**
  * Product Backlog Page - Executive Table view for Business Requests
- * Wired to existing Business Request data and drawer
+ * Uses unified IndustryHeaderToolbarV2 component
  */
 
 import React, { useState, useMemo } from 'react';
@@ -8,6 +8,7 @@ import { useBusinessRequests } from '@/hooks/useBusinessRequests';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { ExecutiveTable } from '../components/ExecutiveTable';
+import { IndustryHeaderToolbarV2 } from '@/shared/components/IndustryHeaderToolbarV2';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
@@ -17,12 +18,13 @@ export default function ProductBacklogPage() {
   const { data: businessRequests = [], isLoading } = useBusinessRequests();
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
 
   // Transform business requests to match ExecutiveTable format
   const tableData = useMemo(() => {
     return businessRequests.map((br: any) => ({
       id: br.request_key || br.id?.slice(0, 8) || '—',
-      _dbId: br.id, // Keep original DB id for updates
+      _dbId: br.id,
       summary: br.title || '—',
       processStep: br.process_step?.toLowerCase().replace(/ /g, '_') || 'new_request',
       score: br.business_score ?? null,
@@ -52,7 +54,6 @@ export default function ProductBacklogPage() {
     const dbId = getDbIdFromDisplayId(requestId);
     if (!dbId) return;
 
-    // Map field names back to DB column names
     const fieldMap: Record<string, string> = {
       processStep: 'process_step',
       department: 'department',
@@ -66,10 +67,7 @@ export default function ProductBacklogPage() {
       .update({ [dbField]: value })
       .eq('id', dbId);
 
-    if (error) {
-      throw error;
-    }
-
+    if (error) throw error;
     queryClient.invalidateQueries({ queryKey: ['business-requests'] });
   };
 
@@ -80,7 +78,6 @@ export default function ProductBacklogPage() {
     const originalRequest = businessRequests.find((br: any) => br.id === dbId);
     if (!originalRequest) return;
 
-    // Create duplicate with "(Copy)" appended to title
     const { error } = await supabase
       .from('business_requests')
       .insert({
@@ -108,7 +105,6 @@ export default function ProductBacklogPage() {
     const dbId = getDbIdFromDisplayId(requestId);
     if (!dbId) return;
 
-    // Soft delete by setting deleted_at
     const { error } = await supabase
       .from('business_requests')
       .update({ deleted_at: new Date().toISOString() })
@@ -122,6 +118,18 @@ export default function ProductBacklogPage() {
     queryClient.invalidateQueries({ queryKey: ['business-requests'] });
   };
 
+  // Unified header component
+  const headerElement = (
+    <IndustryHeaderToolbarV2
+      title="Business Requests"
+      countText={`${tableData.length}`}
+      activeView="list"
+      searchValue={searchValue}
+      onSearchChange={setSearchValue}
+      onAdd={() => setCreateModalOpen(true)}
+    />
+  );
+
   return (
     <div className="h-full flex flex-col">
       <ExecutiveTable
@@ -133,6 +141,9 @@ export default function ProductBacklogPage() {
         onCreateNew={() => setCreateModalOpen(true)}
         onDuplicate={handleDuplicate}
         onDelete={handleDelete}
+        externalHeader={headerElement}
+        searchValue={searchValue}
+        onSearchChange={setSearchValue}
       />
 
       <BusinessRequestDrawer
