@@ -63,7 +63,6 @@ export const ProgramSelectorDropdown = React.memo(function ProgramSelectorDropdo
       items={items}
       isLoading={programsLoading}
       showActions={isAdmin}
-      isAdmin={isAdmin}
       onSelectItem={handleSelect}
       onCreate={isAdmin ? handleCreate : undefined}
       onManage={isAdmin ? handleManage : undefined}
