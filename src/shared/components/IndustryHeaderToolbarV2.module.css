@@ -63,6 +63,7 @@
   padding: 0 24px;
   background: hsl(var(--background));
   gap: 12px;
+  border-bottom: 1px solid hsl(var(--border));
 }
 
 /* ========================
