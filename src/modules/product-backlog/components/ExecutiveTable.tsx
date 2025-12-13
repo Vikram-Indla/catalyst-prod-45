@@ -943,7 +943,10 @@ function RowDetailPanel({ row, onClose, onOpenFullView }: {
         gap: '12px',
       }}>
         <button 
-          onClick={() => onOpenFullView(row.id)}
+          onClick={() => {
+            onClose();
+            onOpenFullView(row.id);
+          }}
           style={{
             flex: 1,
             padding: '12px',
@@ -957,22 +960,6 @@ function RowDetailPanel({ row, onClose, onOpenFullView }: {
           }}
         >
           Edit
-        </button>
-        <button 
-          onClick={() => onOpenFullView(row.id)}
-          style={{
-            flex: 1,
-            padding: '12px',
-            border: 'none',
-            borderRadius: '8px',
-            backgroundColor: colors.gold,
-            color: 'white',
-            fontSize: '13px',
-            fontWeight: 600,
-            cursor: 'pointer',
-          }}
-        >
-          Open Full View
         </button>
       </div>
     </div>
