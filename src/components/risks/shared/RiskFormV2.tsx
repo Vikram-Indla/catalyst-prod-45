@@ -228,6 +228,35 @@ export function RiskFormV2({
           </div>
         </div>
 
+        {/* Risk Owner - full width */}
+        <div className="mb-4">
+          <Label className="text-xs font-medium mb-1.5 block">Risk Owner</Label>
+          {isEditing ? (
+            <Select
+              value={value.owner_id || undefined}
+              onValueChange={v => handleChange('owner_id', v === 'UNASSIGNED' ? null : v)}
+            >
+              <SelectTrigger className="h-9 text-sm border-border">
+                <SelectValue placeholder="Select owner..." />
+              </SelectTrigger>
+              <SelectContent className="bg-popover border shadow-lg z-[400]">
+                <SelectItem value="UNASSIGNED">
+                  <span className="text-muted-foreground italic">Unassigned</span>
+                </SelectItem>
+                {profiles.map(profile => (
+                  <SelectItem key={profile.id} value={profile.id}>
+                    {profile.full_name || profile.email}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : (
+            <div className="h-9 flex items-center px-3 text-sm border border-border rounded-md bg-muted/30">
+              {value.owner_id ? ownerName : <span className="text-muted-foreground italic">Unassigned</span>}
+            </div>
+          )}
+        </div>
+
         {/* Title */}
         <div className="mb-4">
           <Label className="text-xs font-medium mb-1.5 block">

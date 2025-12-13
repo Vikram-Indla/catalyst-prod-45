@@ -4,6 +4,7 @@
 import { useState, useMemo } from 'react';
 import { Search, Filter, MoreVertical, Plus, Star, X, Check, Circle, Diamond } from 'lucide-react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
+import { useQuery } from '@tanstack/react-query';
 import { useRisks, RiskWithBR } from '@/hooks/risks/useRisks';
 import { useToast } from '@/hooks/use-toast';
 import { Risk, RiskFormData, RiskGridFilters } from '@/types/risks';
@@ -22,6 +23,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { supabase } from '@/integrations/supabase/client';
 
 // Catalyst Golden Hour Palette (semantic tokens)
 const palette = {
@@ -64,11 +66,13 @@ type DrillDownMode =
 function RiskDrillDownDrawer({
   mode,
   allRisks,
+  usersMap,
   onClose,
   onRiskClick,
 }: {
   mode: DrillDownMode;
   allRisks: RiskWithBR[];
+  usersMap: Record<string, string>;
   onClose: () => void;
   onRiskClick: (risk: RiskWithBR) => void;
 }) {
@@ -113,6 +117,14 @@ function RiskDrillDownDrawer({
   };
 
   const { label, title, subtitle } = getHeaderInfo();
+
+  // Helper to get owner display name
+  const getOwnerName = (risk: RiskWithBR) => {
+    if (risk.owner_id && usersMap[risk.owner_id]) {
+      return usersMap[risk.owner_id];
+    }
+    return 'Unassigned';
+  };
 
   return (
     <Sheet open={!!mode} onOpenChange={onClose}>
@@ -177,12 +189,15 @@ function RiskDrillDownDrawer({
                   </span>
                 )}
               </div>
-              <div className="mt-3 pt-3 border-t border-border flex gap-4 text-xs">
+              <div className="mt-3 pt-3 border-t border-border flex flex-wrap gap-4 text-xs">
                 <span className="text-muted-foreground">
                   Occ: <strong className="text-foreground">{risk.occurrence || '-'}</strong>
                 </span>
                 <span className="text-muted-foreground">
                   Impact: <strong className="text-foreground">{risk.impact || '-'}</strong>
+                </span>
+                <span className="text-muted-foreground">
+                  Owner: <strong className="text-foreground">{getOwnerName(risk)}</strong>
                 </span>
               </div>
             </div>
@@ -199,6 +214,29 @@ function RiskDrillDownDrawer({
 export default function EnterpriseRisks() {
   const { toast } = useToast();
   const { risks, isLoading, createRisk, updateRisk, deleteRisk, isCreating, isUpdating } = useRisks();
+
+  // Fetch profiles for owner_id → name lookup
+  const { data: profiles = [] } = useQuery({
+    queryKey: ['profiles-list'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, full_name, email')
+        .order('full_name');
+      if (error) throw error;
+      return data || [];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Build usersMap for owner_id → displayName lookup
+  const usersMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    profiles.forEach(p => {
+      map[p.id] = p.full_name || p.email || p.id;
+    });
+    return map;
+  }, [profiles]);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRiskIds, setSelectedRiskIds] = useState<string[]>([]);
@@ -846,6 +884,7 @@ export default function EnterpriseRisks() {
       <RiskDrillDownDrawer
         mode={drillDownMode}
         allRisks={allRisks}
+        usersMap={usersMap}
         onClose={() => setDrillDownMode(null)}
         onRiskClick={(risk) => {
           setDrillDownMode(null);
