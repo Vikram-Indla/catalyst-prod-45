@@ -4433,6 +4433,39 @@ export type Database = {
           },
         ]
       }
+      kanban_board_settings: {
+        Row: {
+          created_at: string | null
+          id: string
+          scope: string
+          scope_id: string | null
+          settings_json: Json
+          updated_at: string | null
+          updated_by: string | null
+          version: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          scope?: string
+          scope_id?: string | null
+          settings_json?: Json
+          updated_at?: string | null
+          updated_by?: string | null
+          version?: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          scope?: string
+          scope_id?: string | null
+          settings_json?: Json
+          updated_at?: string | null
+          updated_by?: string | null
+          version?: number
+        }
+        Relationships: []
+      }
       kanban_board_users: {
         Row: {
           board_id: string | null

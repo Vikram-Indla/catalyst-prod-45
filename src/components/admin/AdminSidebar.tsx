@@ -14,7 +14,8 @@ import {
   Package,
   ChevronLeft,
   ChevronRight,
-  Upload
+  Upload,
+  Columns
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -41,6 +42,7 @@ const adminSections = [
     title: 'General',
     items: [
       { label: 'Modules & Packages', path: '/admin/modules-packages', icon: Package },
+      { label: 'Kanban Configuration', path: '/admin/kanban-settings', icon: Columns },
       { label: 'Details Panels', path: '/admin/details-panels', icon: Settings },
       { label: 'General Settings', path: '/admin/general-settings', icon: Settings },
       { label: 'General Config', path: '/admin/general-config', icon: Settings },
