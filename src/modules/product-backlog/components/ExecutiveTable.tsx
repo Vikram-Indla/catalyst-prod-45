@@ -1,43 +1,12 @@
 /**
  * Executive Table - High-density, enterprise-grade data table for Business Requests
  * Implements the Catalyst Executive Table specification exactly
+ * REFACTORED: Single boxed container, no frozen columns by default, pagination footer inside
  */
 
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-
-// Colors from the Golden Hour Design System
-const colors = {
-  olive: '#5c7c5c',
-  oliveLight: '#6d8d6d',
-  bronze: '#8b7355',
-  bronzeLight: '#a08868',
-  gold: '#c69c6d',
-  goldLight: '#d4ae85',
-  goldDark: '#b8894f',
-  champagne: '#d4b896',
-  champagneLight: '#e8dcc8',
-  grey: '#c8ccd0',
-  greyLight: '#e5e7eb',
-  greyDark: '#9ca3af',
-  bgPage: '#ffffff',
-  bgHeader: '#f8f9fa',
-  bgRowHover: '#fafafa',
-  bgRowSelected: 'rgba(198, 156, 109, 0.08)',
-  bgRowEditing: 'rgba(198, 156, 109, 0.12)',
-  textPrimary: '#1f2937',
-  textSecondary: '#4b5563',
-  textMuted: '#6b7280',
-  textLight: '#9ca3af',
-  borderLight: '#f0f0f0',
-  borderDefault: '#e5e7eb',
-  success: '#22c55e',
-  warning: '#f59e0b',
-  danger: '#dc2626',
-  info: '#3b82f6',
-  purple: '#8b5cf6',
-};
 
 // Row heights for density modes
 const DENSITY_CONFIG = {
@@ -46,24 +15,24 @@ const DENSITY_CONFIG = {
   relaxed: { rowHeight: 52, fontSize: 14, padding: '14px 12px' },
 };
 
-// Process Steps
+// Process Steps - using semantic tokens for status colors
 const PROCESS_STEPS = [
-  { value: 'new_request', label: 'New Request', color: colors.greyDark },
-  { value: 'analyse', label: 'Analyse', color: colors.bronze },
-  { value: 'in_review', label: 'In Review', color: colors.info },
-  { value: 'approved', label: 'Approved', color: colors.purple },
-  { value: 'implement', label: 'Implement', color: colors.success },
-  { value: 'closed', label: 'Closed', color: colors.olive },
-  { value: 'rejected', label: 'Rejected', color: colors.danger },
-  { value: 'on_hold', label: 'On-Hold', color: colors.warning },
+  { value: 'new_request', label: 'New Request', semantic: 'muted' },
+  { value: 'analyse', label: 'Analyse', semantic: 'warning' },
+  { value: 'in_review', label: 'In Review', semantic: 'info' },
+  { value: 'approved', label: 'Approved', semantic: 'info' },
+  { value: 'implement', label: 'Implement', semantic: 'success' },
+  { value: 'closed', label: 'Closed', semantic: 'success' },
+  { value: 'rejected', label: 'Rejected', semantic: 'danger' },
+  { value: 'on_hold', label: 'On-Hold', semantic: 'warning' },
 ];
 
 // Priority Options
 const PRIORITIES = [
-  { value: 'critical', label: 'Critical', color: colors.danger },
-  { value: 'high', label: 'High', color: colors.warning },
-  { value: 'medium', label: 'Medium', color: colors.info },
-  { value: 'low', label: 'Low', color: colors.success },
+  { value: 'critical', label: 'Critical', semantic: 'danger' },
+  { value: 'high', label: 'High', semantic: 'warning' },
+  { value: 'medium', label: 'Medium', semantic: 'info' },
+  { value: 'low', label: 'Low', semantic: 'success' },
 ];
 
 // Departments
@@ -90,6 +59,8 @@ const Icons = {
   Search: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>,
   ChevronUp: () => <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 15l-6-6-6 6"/></svg>,
   ChevronDown: () => <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6"/></svg>,
+  ChevronLeft: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>,
+  ChevronRight: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>,
   Filter: () => <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"/></svg>,
   X: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
   Download: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>,
@@ -100,23 +71,22 @@ const Icons = {
   Edit: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>,
   Trash: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>,
   Copy: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>,
-  Undo: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>,
   Grid: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>,
   Plus: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
 };
 
-// All columns configuration
+// All columns configuration - NO frozen columns by default
 const ALL_COLUMNS = [
-  { id: 'id', header: 'Request ID', accessor: 'id', width: '100px', frozen: true, sortable: true },
-  { id: 'summary', header: 'Summary', accessor: 'summary', width: '280px', frozen: true, sortable: true, editable: true },
-  { id: 'processStep', header: 'Process Step', accessor: 'processStep', width: '120px', sortable: true, filterable: true, editable: true, type: 'select', options: PROCESS_STEPS },
-  { id: 'priority', header: 'Priority', accessor: 'priority', width: '100px', sortable: true, filterable: true, editable: true, type: 'select', options: PRIORITIES },
-  { id: 'score', header: 'Score', accessor: 'score', width: '120px', sortable: true, type: 'number', align: 'right' },
-  { id: 'rank', header: 'Rank', accessor: 'rank', width: '70px', sortable: true, type: 'number', align: 'right' },
-  { id: 'department', header: 'Department', accessor: 'department', width: '140px', sortable: true, filterable: true, editable: true, type: 'select', options: DEPARTMENTS },
-  { id: 'platform', header: 'Delivery Platform', accessor: 'platform', width: '150px', sortable: true, filterable: true, editable: true, type: 'select', options: PLATFORMS },
-  { id: 'dueDate', header: 'Due Date', accessor: 'dueDate', width: '100px', sortable: true, editable: true, type: 'date' },
-  { id: 'createdAt', header: 'Created', accessor: 'createdAt', width: '100px', sortable: true },
+  { id: 'id', header: 'Request ID', accessor: 'id', minWidth: 110, sortable: true },
+  { id: 'summary', header: 'Summary', accessor: 'summary', minWidth: 320, sortable: true, editable: true },
+  { id: 'processStep', header: 'Process Step', accessor: 'processStep', minWidth: 160, sortable: true, filterable: true, editable: true, type: 'select', options: PROCESS_STEPS },
+  { id: 'priority', header: 'Priority', accessor: 'priority', minWidth: 140, sortable: true, filterable: true, editable: true, type: 'select', options: PRIORITIES },
+  { id: 'score', header: 'Score', accessor: 'score', minWidth: 120, sortable: true, type: 'number', align: 'right' },
+  { id: 'rank', header: 'Rank', accessor: 'rank', minWidth: 100, sortable: true, type: 'number', align: 'right' },
+  { id: 'department', header: 'Department', accessor: 'department', minWidth: 180, sortable: true, filterable: true, editable: true, type: 'select', options: DEPARTMENTS },
+  { id: 'platform', header: 'Delivery Platform', accessor: 'platform', minWidth: 150, sortable: true, filterable: true, editable: true, type: 'select', options: PLATFORMS },
+  { id: 'dueDate', header: 'Due Date', accessor: 'dueDate', minWidth: 110, sortable: true, editable: true, type: 'date' },
+  { id: 'createdAt', header: 'Created', accessor: 'createdAt', minWidth: 110, sortable: true },
 ];
 
 interface BusinessRequest {
@@ -142,47 +112,21 @@ interface ExecutiveTableProps {
   onCreateNew: () => void;
 }
 
-// Avatar Component
-function Avatar({ member, size = 24 }: { member: { initials: string; color?: string; name?: string } | null; size?: number }) {
-  if (!member) return <span style={{ color: colors.textLight }}>—</span>;
-  return (
-    <div
-      style={{
-        width: size,
-        height: size,
-        borderRadius: '50%',
-        backgroundColor: member.color || colors.greyDark,
-        color: 'white',
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontSize: size * 0.4,
-        fontWeight: 600,
-        flexShrink: 0,
-      }}
-      title={member.name}
-    >
-      {member.initials}
-    </div>
-  );
-}
-
-// Status Badge
-function StatusBadge({ value, options }: { value: string; options: { value: string; label: string; color: string }[] }) {
+// Status Badge - uses semantic CSS classes
+function StatusBadge({ value, options }: { value: string; options: { value: string; label: string; semantic?: string }[] }) {
   const option = options.find(o => o.value === value);
-  if (!option) return <span style={{ color: colors.textLight }}>—</span>;
+  if (!option) return <span className="text-muted-foreground">—</span>;
+  
+  const semanticClasses: Record<string, string> = {
+    success: 'bg-success/10 text-success',
+    warning: 'bg-warning/10 text-warning',
+    danger: 'bg-destructive/10 text-destructive',
+    info: 'bg-info/10 text-info',
+    muted: 'bg-muted text-muted-foreground',
+  };
+  
   return (
-    <span style={{
-      display: 'inline-flex',
-      alignItems: 'center',
-      padding: '3px 8px',
-      borderRadius: '4px',
-      fontSize: '11px',
-      fontWeight: 600,
-      backgroundColor: `${option.color}12`,
-      color: option.color,
-      whiteSpace: 'nowrap',
-    }}>
+    <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold whitespace-nowrap ${semanticClasses[option.semantic || 'muted'] || semanticClasses.muted}`}>
       {option.label}
     </span>
   );
@@ -191,12 +135,20 @@ function StatusBadge({ value, options }: { value: string; options: { value: stri
 // Priority Badge
 function PriorityBadge({ priority }: { priority: string }) {
   const p = PRIORITIES.find(pr => pr.value === priority);
-  if (!p) return <span style={{ color: colors.textLight }}>—</span>;
+  if (!p) return <span className="text-muted-foreground">—</span>;
+  
+  const semanticClasses: Record<string, string> = {
+    danger: 'text-destructive',
+    warning: 'text-warning',
+    info: 'text-info',
+    success: 'text-success',
+  };
+  
   const icons: Record<string, string> = { critical: '🔴', high: '🟠', medium: '🔵', low: '🟢' };
   return (
-    <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px' }}>
-      <span style={{ fontSize: '8px' }}>{icons[priority]}</span>
-      <span style={{ color: p.color, fontWeight: 500 }}>{p.label}</span>
+    <span className="flex items-center gap-1 text-[11px]">
+      <span className="text-[8px]">{icons[priority]}</span>
+      <span className={`font-medium ${semanticClasses[p.semantic || 'muted']}`}>{p.label}</span>
     </span>
   );
 }
@@ -204,32 +156,32 @@ function PriorityBadge({ priority }: { priority: string }) {
 // Score Progress Bar
 function ScoreBar({ score }: { score: number | null }) {
   if (score === null || score === undefined) {
-    return <span style={{ color: colors.textLight, fontSize: '11px' }}>—</span>;
+    return <span className="text-muted-foreground text-[11px]">—</span>;
   }
-  const getColor = (s: number) => {
-    if (s >= 75) return colors.success;
-    if (s >= 50) return colors.info;
-    if (s >= 25) return colors.warning;
-    return colors.danger;
+  
+  const getColorClass = (s: number) => {
+    if (s >= 75) return 'bg-success';
+    if (s >= 50) return 'bg-info';
+    if (s >= 25) return 'bg-warning';
+    return 'bg-destructive';
   };
+  
+  const getTextClass = (s: number) => {
+    if (s >= 75) return 'text-success';
+    if (s >= 50) return 'text-info';
+    if (s >= 25) return 'text-warning';
+    return 'text-destructive';
+  };
+  
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: '80px' }}>
-      <div style={{
-        flex: 1,
-        height: '6px',
-        backgroundColor: colors.greyLight,
-        borderRadius: '3px',
-        overflow: 'hidden',
-      }}>
-        <div style={{
-          width: `${score}%`,
-          height: '100%',
-          backgroundColor: getColor(score),
-          borderRadius: '3px',
-          transition: 'width 0.3s ease',
-        }} />
+    <div className="flex items-center gap-2 min-w-[80px]">
+      <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
+        <div 
+          className={`h-full rounded-full transition-all duration-300 ${getColorClass(score)}`}
+          style={{ width: `${score}%` }}
+        />
       </div>
-      <span style={{ fontSize: '12px', fontWeight: 600, color: getColor(score), minWidth: '24px', fontVariantNumeric: 'tabular-nums' }}>
+      <span className={`text-xs font-semibold min-w-[24px] tabular-nums ${getTextClass(score)}`}>
         {score}
       </span>
     </div>
@@ -238,7 +190,7 @@ function ScoreBar({ score }: { score: number | null }) {
 
 // Date Display
 function DateDisplay({ date }: { date: string | null }) {
-  if (!date) return <span style={{ color: colors.textLight }}>—</span>;
+  if (!date) return <span className="text-muted-foreground">—</span>;
   const d = new Date(date);
   const today = new Date();
   const diffDays = Math.ceil((d.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
@@ -246,11 +198,7 @@ function DateDisplay({ date }: { date: string | null }) {
   const isDueSoon = diffDays >= 0 && diffDays <= 7;
   
   return (
-    <span style={{
-      fontSize: '12px',
-      color: isOverdue ? colors.danger : isDueSoon ? colors.warning : colors.textSecondary,
-      fontWeight: isOverdue || isDueSoon ? 600 : 400,
-    }}>
+    <span className={`text-xs ${isOverdue ? 'text-destructive font-semibold' : isDueSoon ? 'text-warning font-semibold' : 'text-muted-foreground'}`}>
       {d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' })}
     </span>
   );
@@ -285,17 +233,6 @@ function InlineCellEditor({ value, type, options, onSave, onCancel }: {
     }
   };
 
-  const inputStyle: React.CSSProperties = {
-    width: '100%',
-    padding: '4px 8px',
-    border: `2px solid ${colors.gold}`,
-    borderRadius: '4px',
-    fontSize: '12px',
-    outline: 'none',
-    backgroundColor: 'white',
-    boxShadow: '0 2px 8px rgba(198,156,109,0.25)',
-  };
-
   if (type === 'select' && options) {
     return (
       <select
@@ -304,7 +241,7 @@ function InlineCellEditor({ value, type, options, onSave, onCancel }: {
         onChange={(e) => { setLocalValue(e.target.value); onSave(e.target.value); }}
         onBlur={onCancel}
         onKeyDown={handleKeyDown}
-        style={{ ...inputStyle, cursor: 'pointer', minWidth: '120px' }}
+        className="w-full px-2 py-1 border-2 border-brand-gold rounded text-xs outline-none bg-background shadow-md min-w-[120px] cursor-pointer"
       >
         <option value="">Select...</option>
         {options.map(opt => (
@@ -323,7 +260,7 @@ function InlineCellEditor({ value, type, options, onSave, onCancel }: {
         onChange={(e) => { setLocalValue(e.target.value); onSave(e.target.value || null); }}
         onBlur={onCancel}
         onKeyDown={handleKeyDown}
-        style={{ ...inputStyle, cursor: 'pointer', minWidth: '130px' }}
+        className="w-full px-2 py-1 border-2 border-brand-gold rounded text-xs outline-none bg-background shadow-md min-w-[130px] cursor-pointer"
       />
     );
   }
@@ -336,7 +273,7 @@ function InlineCellEditor({ value, type, options, onSave, onCancel }: {
       onChange={(e) => setLocalValue(e.target.value)}
       onBlur={() => onSave(localValue === '' ? null : (type === 'number' ? Number(localValue) : localValue))}
       onKeyDown={handleKeyDown}
-      style={inputStyle}
+      className="w-full px-2 py-1 border-2 border-brand-gold rounded text-xs outline-none bg-background shadow-md"
     />
   );
 }
@@ -366,7 +303,7 @@ function EditableCell({ value, type, options, displayValue, onSave, columnId }: 
 
   if (isEditing) {
     return (
-      <div style={{ margin: '-4px -8px' }}>
+      <div className="-m-1">
         <InlineCellEditor
           value={value}
           type={type || 'text'}
@@ -392,39 +329,17 @@ function EditableCell({ value, type, options, displayValue, onSave, columnId }: 
           setIsEditing(true);
         }
       }}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '4px',
-        padding: '2px 4px',
-        margin: '-2px -4px',
-        borderRadius: '4px',
-        cursor: isQuickEdit ? 'pointer' : 'default',
-        transition: 'all 0.15s',
-        backgroundColor: isSaving ? `${colors.success}15` : 'transparent',
-        border: `1px solid transparent`,
-      }}
-      onMouseEnter={(e) => {
-        if (isQuickEdit) {
-          e.currentTarget.style.backgroundColor = `${colors.gold}10`;
-          e.currentTarget.style.borderColor = `${colors.gold}40`;
-        }
-      }}
-      onMouseLeave={(e) => {
-        if (!isSaving) {
-          e.currentTarget.style.backgroundColor = 'transparent';
-          e.currentTarget.style.borderColor = 'transparent';
-        }
-      }}
+      className={`flex items-center gap-1 px-1 py-0.5 -mx-1 rounded transition-all ${isQuickEdit ? 'cursor-pointer hover:bg-brand-gold/10 hover:border-brand-gold/40' : ''} ${isSaving ? 'bg-success/15' : ''}`}
+      style={{ border: '1px solid transparent' }}
     >
       {displayValue}
       {isQuickEdit && (
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={colors.textLight} strokeWidth="2" style={{ flexShrink: 0, opacity: 0.5 }}>
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0 opacity-50 text-muted-foreground">
           <path d="M6 9l6 6 6-6"/>
         </svg>
       )}
       {isSaving && (
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={colors.success} strokeWidth="3" style={{ flexShrink: 0 }}>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="flex-shrink-0 text-success">
           <polyline points="20,6 9,17 4,12"/>
         </svg>
       )}
@@ -435,7 +350,7 @@ function EditableCell({ value, type, options, displayValue, onSave, columnId }: 
 // Column Filter Dropdown
 function ColumnFilterDropdown({ column, options, selected, onApply, onClear }: {
   column: string;
-  options: { value: string; label: string; color?: string }[];
+  options: { value: string; label: string }[];
   selected: string[];
   onApply: (values: string[]) => void;
   onClear: () => void;
@@ -463,121 +378,47 @@ function ColumnFilterDropdown({ column, options, selected, onApply, onClear }: {
   };
 
   return (
-    <div ref={ref} style={{ position: 'relative', display: 'inline-flex' }}>
+    <div ref={ref} className="relative inline-flex">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        style={{
-          padding: '2px',
-          border: 'none',
-          background: 'none',
-          cursor: 'pointer',
-          color: selected.length > 0 ? colors.gold : colors.textLight,
-          display: 'flex',
-          alignItems: 'center',
-        }}
+        className={`p-0.5 border-none bg-transparent cursor-pointer flex items-center ${selected.length > 0 ? 'text-brand-gold' : 'text-muted-foreground'}`}
       >
         <Icons.Filter />
         {selected.length > 0 && (
-          <span style={{
-            position: 'absolute',
-            top: '-4px',
-            right: '-4px',
-            width: '14px',
-            height: '14px',
-            borderRadius: '50%',
-            backgroundColor: colors.gold,
-            color: 'white',
-            fontSize: '9px',
-            fontWeight: 700,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
+          <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-brand-gold text-white text-[9px] font-bold flex items-center justify-center">
             {selected.length}
           </span>
         )}
       </button>
 
       {isOpen && (
-        <div style={{
-          position: 'absolute',
-          top: '100%',
-          left: 0,
-          marginTop: '4px',
-          minWidth: '180px',
-          backgroundColor: 'white',
-          border: `1px solid ${colors.borderDefault}`,
-          borderRadius: '8px',
-          boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
-          zIndex: 200,
-        }}>
-          <div style={{ padding: '8px', maxHeight: '200px', overflowY: 'auto' }}>
+        <div className="absolute top-full left-0 mt-1 min-w-[180px] bg-background border border-border rounded-lg shadow-lg z-[200]">
+          <div className="p-2 max-h-[200px] overflow-y-auto">
             {options.map(opt => (
               <label
                 key={opt.value}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '6px 8px',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontSize: '12px',
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = colors.bgRowHover)}
-                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                className="flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer text-xs hover:bg-muted"
               >
                 <input
                   type="checkbox"
                   checked={localSelected.includes(opt.value)}
                   onChange={() => handleToggle(opt.value)}
-                  style={{ accentColor: colors.gold }}
+                  className="accent-brand-gold"
                 />
-                {opt.color && (
-                  <span style={{
-                    width: '8px',
-                    height: '8px',
-                    borderRadius: '50%',
-                    backgroundColor: opt.color,
-                  }} />
-                )}
                 {opt.label}
               </label>
             ))}
           </div>
-          <div style={{
-            padding: '8px',
-            borderTop: `1px solid ${colors.borderLight}`,
-            display: 'flex',
-            gap: '8px',
-          }}>
+          <div className="p-2 border-t border-border flex gap-2">
             <button
               onClick={() => { onClear(); setIsOpen(false); }}
-              style={{
-                flex: 1,
-                padding: '6px',
-                border: `1px solid ${colors.borderDefault}`,
-                borderRadius: '4px',
-                backgroundColor: 'white',
-                fontSize: '11px',
-                cursor: 'pointer',
-              }}
+              className="flex-1 py-1.5 border border-border rounded bg-background text-[11px] cursor-pointer hover:bg-muted"
             >
               Clear
             </button>
             <button
               onClick={() => { onApply(localSelected); setIsOpen(false); }}
-              style={{
-                flex: 1,
-                padding: '6px',
-                border: 'none',
-                borderRadius: '4px',
-                backgroundColor: colors.gold,
-                color: 'white',
-                fontSize: '11px',
-                fontWeight: 600,
-                cursor: 'pointer',
-              }}
+              className="flex-1 py-1.5 border-none rounded bg-brand-gold text-white text-[11px] font-semibold cursor-pointer hover:bg-brand-gold-hover"
             >
               Apply
             </button>
@@ -608,59 +449,27 @@ function DensitySelector({ value, onChange }: { value: string; onChange: (value:
   ];
 
   return (
-    <div ref={ref} style={{ position: 'relative' }}>
+    <div ref={ref} className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px',
-          padding: '8px 12px',
-          border: `1px solid ${colors.borderDefault}`,
-          borderRadius: '6px',
-          backgroundColor: 'white',
-          color: colors.textSecondary,
-          fontSize: '12px',
-          cursor: 'pointer',
-        }}
+        className="flex items-center gap-1.5 px-3 py-2 border border-border rounded-md bg-background text-muted-foreground text-xs cursor-pointer hover:bg-muted"
         title="Row Density"
       >
         <Icons.Density />
       </button>
 
       {isOpen && (
-        <div style={{
-          position: 'absolute',
-          top: '100%',
-          right: 0,
-          marginTop: '4px',
-          backgroundColor: 'white',
-          border: `1px solid ${colors.borderDefault}`,
-          borderRadius: '8px',
-          boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
-          zIndex: 100,
-          minWidth: '140px',
-        }}>
+        <div className="absolute top-full right-0 mt-1 bg-background border border-border rounded-lg shadow-lg z-[100] min-w-[140px]">
           {options.map(opt => (
             <button
               key={opt.value}
               onClick={() => { onChange(opt.value); setIsOpen(false); }}
-              style={{
-                width: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                padding: '10px 12px',
-                border: 'none',
-                backgroundColor: value === opt.value ? colors.bgRowSelected : 'transparent',
-                cursor: 'pointer',
-                textAlign: 'left',
-              }}
+              className={`w-full flex flex-col items-start px-3 py-2.5 border-none text-left cursor-pointer hover:bg-muted ${value === opt.value ? 'bg-brand-gold/10' : 'bg-transparent'}`}
             >
-              <span style={{ fontSize: '12px', fontWeight: value === opt.value ? 600 : 400, color: colors.textPrimary }}>
+              <span className={`text-xs ${value === opt.value ? 'font-semibold' : ''} text-foreground`}>
                 {opt.label}
               </span>
-              <span style={{ fontSize: '10px', color: colors.textLight }}>{opt.desc}</span>
+              <span className="text-[10px] text-muted-foreground">{opt.desc}</span>
             </button>
           ))}
         </div>
@@ -694,65 +503,31 @@ function ColumnManager({ columns, visibleColumns, onChange }: {
   };
 
   return (
-    <div ref={ref} style={{ position: 'relative' }}>
+    <div ref={ref} className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px',
-          padding: '8px 12px',
-          border: `1px solid ${colors.borderDefault}`,
-          borderRadius: '6px',
-          backgroundColor: 'white',
-          color: colors.textSecondary,
-          fontSize: '12px',
-          cursor: 'pointer',
-        }}
+        className="flex items-center gap-1.5 px-3 py-2 border border-border rounded-md bg-background text-muted-foreground text-xs cursor-pointer hover:bg-muted"
         title="Columns"
       >
         <Icons.Columns />
       </button>
 
       {isOpen && (
-        <div style={{
-          position: 'absolute',
-          top: '100%',
-          right: 0,
-          marginTop: '4px',
-          backgroundColor: 'white',
-          border: `1px solid ${colors.borderDefault}`,
-          borderRadius: '8px',
-          boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
-          zIndex: 100,
-          minWidth: '200px',
-          maxHeight: '300px',
-          overflowY: 'auto',
-        }}>
-          <div style={{ padding: '8px' }}>
-            <div style={{ fontSize: '10px', color: colors.textLight, padding: '4px 8px', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+        <div className="absolute top-full right-0 mt-1 bg-background border border-border rounded-lg shadow-lg z-[100] min-w-[200px] max-h-[300px] overflow-y-auto">
+          <div className="p-2">
+            <div className="text-[10px] text-muted-foreground px-2 py-1 mb-1 uppercase tracking-wider">
               Toggle Visibility
             </div>
-            {columns.filter(c => !c.frozen).map(col => (
+            {columns.map(col => (
               <label
                 key={col.id}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '8px',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontSize: '12px',
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = colors.bgRowHover)}
-                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                className="flex items-center gap-2 px-2 py-2 rounded cursor-pointer text-xs hover:bg-muted"
               >
                 <input
                   type="checkbox"
                   checked={visibleColumns.includes(col.id)}
                   onChange={() => toggleColumn(col.id)}
-                  style={{ accentColor: colors.gold }}
+                  className="accent-brand-gold"
                 />
                 {col.header}
               </label>
@@ -783,34 +558,16 @@ function RowActionsMenu({ onView, onEdit, onDuplicate, onDelete }: {
   }, []);
 
   return (
-    <div ref={ref} style={{ position: 'relative' }}>
+    <div ref={ref} className="relative">
       <button
         onClick={(e) => { e.stopPropagation(); setIsOpen(!isOpen); }}
-        style={{
-          padding: '4px',
-          border: 'none',
-          background: 'none',
-          cursor: 'pointer',
-          color: colors.textMuted,
-          borderRadius: '4px',
-        }}
+        className="p-1 border-none bg-transparent cursor-pointer text-muted-foreground rounded hover:bg-muted"
       >
         <Icons.MoreVertical />
       </button>
 
       {isOpen && (
-        <div style={{
-          position: 'absolute',
-          top: '100%',
-          right: 0,
-          marginTop: '4px',
-          backgroundColor: 'white',
-          border: `1px solid ${colors.borderDefault}`,
-          borderRadius: '8px',
-          boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
-          zIndex: 100,
-          minWidth: '140px',
-        }}>
+        <div className="absolute top-full right-0 mt-1 bg-background border border-border rounded-lg shadow-lg z-[100] min-w-[140px]">
           {[
             { icon: Icons.Eye, label: 'View Details', action: onView },
             { icon: Icons.Edit, label: 'Edit', action: onEdit },
@@ -820,21 +577,7 @@ function RowActionsMenu({ onView, onEdit, onDuplicate, onDelete }: {
             <button
               key={i}
               onClick={(e) => { e.stopPropagation(); item.action?.(); setIsOpen(false); }}
-              style={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '10px 12px',
-                border: 'none',
-                backgroundColor: 'transparent',
-                color: item.danger ? colors.danger : colors.textPrimary,
-                fontSize: '12px',
-                cursor: 'pointer',
-                textAlign: 'left',
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = colors.bgRowHover)}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+              className={`w-full flex items-center gap-2 px-3 py-2.5 border-none bg-transparent text-xs cursor-pointer text-left hover:bg-muted ${item.danger ? 'text-destructive' : 'text-foreground'}`}
             >
               <item.icon />
               {item.label}
@@ -852,62 +595,33 @@ function RowDetailPanel({ row, onClose, onOpenFullView }: {
   onClose: () => void;
   onOpenFullView: (id: string) => void;
 }) {
-  const processStep = PROCESS_STEPS.find(p => p.value === row.processStep);
   const department = DEPARTMENTS.find(d => d.value === row.department);
   const platform = PLATFORMS.find(p => p.value === row.platform);
 
   const DetailRow = ({ label, children }: { label: string; children: React.ReactNode }) => (
-    <div style={{ display: 'flex', padding: '12px 0', borderBottom: `1px solid ${colors.borderLight}` }}>
-      <span style={{ width: '140px', fontSize: '12px', color: colors.textMuted, fontWeight: 500 }}>{label}</span>
-      <div style={{ flex: 1, fontSize: '13px', color: colors.textPrimary }}>{children}</div>
+    <div className="flex py-3 border-b border-border">
+      <span className="w-[140px] text-xs text-muted-foreground font-medium">{label}</span>
+      <div className="flex-1 text-sm text-foreground">{children}</div>
     </div>
   );
 
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      right: 0,
-      bottom: 0,
-      width: '420px',
-      backgroundColor: 'white',
-      boxShadow: '-8px 0 32px rgba(0,0,0,0.12)',
-      zIndex: 300,
-      display: 'flex',
-      flexDirection: 'column',
-      animation: 'slideRight 0.2s ease',
-    }}>
-      <style>{`
-        @keyframes slideRight { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: translateX(0); } }
-      `}</style>
-      <div style={{
-        padding: '20px 24px',
-        borderBottom: `1px solid ${colors.borderLight}`,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <span style={{ fontSize: '14px', fontWeight: 700, color: colors.textMuted, fontFamily: "'SF Mono', monospace" }}>{row.id}</span>
+    <div className="fixed top-0 right-0 bottom-0 w-[420px] bg-background shadow-2xl z-[300] flex flex-col animate-in slide-in-from-right duration-200">
+      <div className="px-6 py-5 border-b border-border flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <span className="text-sm font-bold text-muted-foreground font-mono">{row.id}</span>
           <StatusBadge value={row.processStep} options={PROCESS_STEPS} />
         </div>
         <button
           onClick={onClose}
-          style={{
-            padding: '8px',
-            border: 'none',
-            background: 'none',
-            cursor: 'pointer',
-            color: colors.textMuted,
-            borderRadius: '6px',
-          }}
+          className="p-2 border-none bg-transparent cursor-pointer text-muted-foreground rounded-md hover:bg-muted"
         >
           <Icons.X />
         </button>
       </div>
 
-      <div style={{ flex: 1, padding: '24px', overflowY: 'auto' }}>
-        <h2 style={{ fontSize: '18px', fontWeight: 700, color: colors.textPrimary, marginBottom: '24px', lineHeight: 1.4 }}>
+      <div className="flex-1 p-6 overflow-y-auto">
+        <h2 className="text-lg font-bold text-foreground mb-6 leading-relaxed">
           {row.summary}
         </h2>
 
@@ -919,7 +633,7 @@ function RowDetailPanel({ row, onClose, onOpenFullView }: {
             <ScoreBar score={row.score} />
           </DetailRow>
           <DetailRow label="Rank">
-            {row.rank ? <span style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>#{row.rank}</span> : '—'}
+            {row.rank ? <span className="font-semibold tabular-nums">#{row.rank}</span> : '—'}
           </DetailRow>
           <DetailRow label="Department">
             {department?.label || '—'}
@@ -936,31 +650,80 @@ function RowDetailPanel({ row, onClose, onOpenFullView }: {
         </div>
       </div>
 
-      <div style={{
-        padding: '16px 24px',
-        borderTop: `1px solid ${colors.borderLight}`,
-        display: 'flex',
-        gap: '12px',
-      }}>
+      <div className="px-6 py-4 border-t border-border flex gap-3">
         <button 
           onClick={() => {
             onClose();
             onOpenFullView(row.id);
           }}
-          style={{
-            flex: 1,
-            padding: '12px',
-            border: `1px solid ${colors.borderDefault}`,
-            borderRadius: '8px',
-            backgroundColor: 'white',
-            color: colors.textPrimary,
-            fontSize: '13px',
-            fontWeight: 600,
-            cursor: 'pointer',
-          }}
+          className="flex-1 py-3 border border-border rounded-lg bg-background text-foreground text-sm font-semibold cursor-pointer hover:bg-muted"
         >
           Edit
         </button>
+      </div>
+    </div>
+  );
+}
+
+// Pagination Footer
+function PaginationFooter({ 
+  currentPage, 
+  totalPages, 
+  totalItems, 
+  pageSize, 
+  onPageChange, 
+  onPageSizeChange 
+}: {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  pageSize: number;
+  onPageChange: (page: number) => void;
+  onPageSizeChange: (size: number) => void;
+}) {
+  const startItem = (currentPage - 1) * pageSize + 1;
+  const endItem = Math.min(currentPage * pageSize, totalItems);
+
+  return (
+    <div className="flex items-center justify-between px-4 py-3 border-t border-border bg-background">
+      {/* Left: Rows per page */}
+      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        <span>Rows per page:</span>
+        <select
+          value={pageSize}
+          onChange={(e) => onPageSizeChange(Number(e.target.value))}
+          className="px-2 py-1 border border-border rounded bg-background text-xs cursor-pointer"
+        >
+          <option value={25}>25</option>
+          <option value={50}>50</option>
+          <option value={100}>100</option>
+        </select>
+      </div>
+
+      {/* Center: Prev/Next + Page indicator */}
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="p-1.5 border border-border rounded bg-background disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer hover:bg-muted"
+        >
+          <Icons.ChevronLeft />
+        </button>
+        <span className="text-xs text-muted-foreground px-2">
+          Page {currentPage} of {totalPages}
+        </span>
+        <button
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="p-1.5 border border-border rounded bg-background disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer hover:bg-muted"
+        >
+          <Icons.ChevronRight />
+        </button>
+      </div>
+
+      {/* Right: Showing X-Y of Z */}
+      <div className="text-xs text-muted-foreground">
+        Showing {startItem}–{endItem} of {totalItems}
       </div>
     </div>
   );
@@ -986,17 +749,17 @@ export function ExecutiveTable({
   const [columnOrder, setColumnOrder] = useState(ALL_COLUMNS.map(c => c.id));
   const [draggingColumn, setDraggingColumn] = useState<string | null>(null);
   const [dragOverColumn, setDragOverColumn] = useState<string | null>(null);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
 
-  // Columns
+  // Columns - NO frozen columns by default, all scroll together
   const columns = useMemo(() => {
-    const orderedColumns = columnOrder
+    return columnOrder
       .map(id => ALL_COLUMNS.find(c => c.id === id))
-      .filter(c => c && (c.frozen || visibleColumns.includes(c.id)));
-    return orderedColumns as typeof ALL_COLUMNS;
+      .filter(c => c && visibleColumns.includes(c.id)) as typeof ALL_COLUMNS;
   }, [visibleColumns, columnOrder]);
-
-  const frozenColumns = columns.filter(c => c.frozen);
-  const scrollableColumns = columns.filter(c => !c.frozen);
 
   // Density config
   const { rowHeight } = DENSITY_CONFIG[density];
@@ -1042,6 +805,19 @@ export function ExecutiveTable({
     return result;
   }, [data, searchQuery, filters, sortConfig]);
 
+  // Paginated data
+  const paginatedData = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    return processedData.slice(startIndex, startIndex + pageSize);
+  }, [processedData, currentPage, pageSize]);
+
+  const totalPages = Math.max(1, Math.ceil(processedData.length / pageSize));
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, filters, sortConfig]);
+
   // Handlers
   const handleSort = (columnId: string) => {
     setSortConfig(prev => {
@@ -1071,10 +847,10 @@ export function ExecutiveTable({
   };
 
   const handleSelectAll = () => {
-    if (selectedRows.length === processedData.length) {
+    if (selectedRows.length === paginatedData.length) {
       setSelectedRows([]);
     } else {
-      setSelectedRows(processedData.map(r => r.id));
+      setSelectedRows(paginatedData.map(r => r.id));
     }
   };
 
@@ -1140,33 +916,6 @@ export function ExecutiveTable({
     setDragOverColumn(null);
   };
 
-  // Cell styles
-  const thStyle: React.CSSProperties = {
-    padding: '10px 12px',
-    textAlign: 'left',
-    fontWeight: 600,
-    fontSize: '11px',
-    color: colors.textMuted,
-    textTransform: 'uppercase',
-    letterSpacing: '0.5px',
-    backgroundColor: colors.bgHeader,
-    borderBottom: `2px solid ${colors.borderDefault}`,
-    position: 'sticky',
-    top: 0,
-    zIndex: 10,
-    whiteSpace: 'nowrap',
-  };
-
-  const tdStyle: React.CSSProperties = {
-    padding: '8px 12px',
-    borderBottom: `1px solid ${colors.borderLight}`,
-    fontSize: '13px',
-    color: colors.textPrimary,
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-  };
-
   // Render cell content
   const renderCellContent = (row: BusinessRequest, column: typeof ALL_COLUMNS[0]) => {
     const value = (row as any)[column.accessor];
@@ -1176,7 +925,7 @@ export function ExecutiveTable({
     };
 
     if (column.id === 'id') {
-      return <span style={{ fontWeight: 600, color: colors.textMuted, fontFamily: "'SF Mono', monospace", fontSize: '12px' }}>{value}</span>;
+      return <span className="font-semibold text-muted-foreground font-mono text-xs">{value}</span>;
     }
     
     if (column.id === 'summary') {
@@ -1186,24 +935,7 @@ export function ExecutiveTable({
             e.stopPropagation();
             setSelectedRow(row);
           }}
-          style={{
-            display: 'block',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            cursor: 'pointer',
-            color: colors.textPrimary,
-            fontWeight: 500,
-            transition: 'color 0.15s',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = colors.gold;
-            e.currentTarget.style.textDecoration = 'underline';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = colors.textPrimary;
-            e.currentTarget.style.textDecoration = 'none';
-          }}
+          className="block overflow-hidden text-ellipsis whitespace-nowrap cursor-pointer text-foreground font-medium hover:text-brand-gold hover:underline transition-colors"
           title={`Click to view details: ${value}`}
         >
           {value}
@@ -1242,7 +974,7 @@ export function ExecutiveTable({
     }
     
     if (column.id === 'rank') {
-      return value ? <span style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>#{value}</span> : <span style={{ color: colors.textLight }}>—</span>;
+      return value ? <span className="font-semibold tabular-nums">#{value}</span> : <span className="text-muted-foreground">—</span>;
     }
     
     if (column.id === 'department') {
@@ -1252,7 +984,7 @@ export function ExecutiveTable({
           value={value}
           type="select"
           options={DEPARTMENTS}
-          displayValue={<span style={{ fontSize: '12px' }}>{dept?.label || <span style={{ color: colors.textLight }}>—</span>}</span>}
+          displayValue={<span className="text-xs">{dept?.label || <span className="text-muted-foreground">—</span>}</span>}
           onSave={handleInlineSave}
           columnId={column.id}
         />
@@ -1266,7 +998,7 @@ export function ExecutiveTable({
           value={value}
           type="select"
           options={PLATFORMS}
-          displayValue={<span style={{ fontSize: '12px' }}>{plat?.label || <span style={{ color: colors.textLight }}>—</span>}</span>}
+          displayValue={<span className="text-xs">{plat?.label || <span className="text-muted-foreground">—</span>}</span>}
           onSave={handleInlineSave}
           columnId={column.id}
         />
@@ -1290,7 +1022,7 @@ export function ExecutiveTable({
     }
 
     return (
-      <span style={{ display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={value}>
+      <span className="block overflow-hidden text-ellipsis whitespace-nowrap" title={value}>
         {value ?? '—'}
       </span>
     );
@@ -1298,41 +1030,26 @@ export function ExecutiveTable({
 
   if (isLoading) {
     return (
-      <div style={{ padding: '40px', textAlign: 'center', color: colors.textMuted }}>
+      <div className="p-10 text-center text-muted-foreground">
         Loading...
       </div>
     );
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: colors.bgPage }}>
-      {/* MASTER PAGE HEADER - 2-Row Pattern per CATALYST_MASTER_PAGE_SPECIFICATION v1.0 */}
-      <div style={{ backgroundColor: 'white', flexShrink: 0 }}>
+    <div className="flex flex-col h-full bg-background">
+      {/* MASTER PAGE HEADER - 2-Row Pattern */}
+      <div className="bg-background flex-shrink-0">
         {/* Row 1: Title Row - 44px, no border */}
-        <div style={{ 
-          height: '44px', 
-          display: 'flex', 
-          alignItems: 'center', 
-          padding: '0 24px' 
-        }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
-            <h1 style={{ 
-              fontSize: '20px', 
-              fontWeight: 700, 
-              color: colors.olive, 
-              margin: 0,
-              lineHeight: 1.3 
-            }}>
+        <div className="h-11 flex items-center px-6">
+          <div className="flex items-baseline gap-2.5">
+            <h1 className="text-xl font-bold text-secondary-green m-0 leading-tight">
               Business Requests
             </h1>
-            <span style={{ 
-              fontSize: '13px', 
-              fontWeight: 500, 
-              color: colors.textMuted 
-            }}>
+            <span className="text-sm font-medium text-muted-foreground">
               {processedData.length}/{data.length}
               {selectedRows.length > 0 && (
-                <span style={{ marginLeft: '8px', color: colors.gold, fontWeight: 600 }}>
+                <span className="ml-2 text-brand-gold font-semibold">
                   • {selectedRows.length} selected
                 </span>
               )}
@@ -1341,56 +1058,16 @@ export function ExecutiveTable({
         </div>
 
         {/* Row 2: Toolbar Row - 52px, with border-bottom */}
-        <div style={{ 
-          height: '52px', 
-          display: 'flex', 
-          alignItems: 'center', 
-          padding: '0 24px',
-          borderBottom: '1px solid #e5e7eb'
-        }}>
-          <div style={{ 
-            width: '100%',
-            display: 'grid',
-            gridTemplateColumns: 'auto 1fr auto',
-            alignItems: 'center',
-            gap: '16px'
-          }}>
+        <div className="h-13 flex items-center px-6 border-b border-border">
+          <div className="w-full grid grid-cols-[auto_1fr_auto] items-center gap-4">
             {/* Left Zone: View Toggles */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <button
-                style={{
-                  height: '36px',
-                  padding: '0 12px',
-                  border: `1px solid ${colors.gold}`,
-                  borderRadius: '6px',
-                  backgroundColor: 'rgba(198,156,109,0.08)',
-                  color: colors.gold,
-                  fontSize: '13px',
-                  fontWeight: 500,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  cursor: 'pointer',
-                }}
-              >
+            <div className="flex items-center gap-2">
+              <button className="h-9 px-3 border border-brand-gold rounded-md bg-brand-gold/10 text-brand-gold text-sm font-medium flex items-center gap-1.5 cursor-pointer">
                 <Icons.Grid /> Board
               </button>
               <button
                 onClick={() => navigate('/industry/kanban')}
-                style={{
-                  height: '36px',
-                  padding: '0 12px',
-                  border: `1px solid ${colors.borderDefault}`,
-                  borderRadius: '6px',
-                  backgroundColor: 'white',
-                  color: colors.textSecondary,
-                  fontSize: '13px',
-                  fontWeight: 500,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  cursor: 'pointer',
-                }}
+                className="h-9 px-3 border border-border rounded-md bg-background text-muted-foreground text-sm font-medium flex items-center gap-1.5 cursor-pointer hover:bg-muted"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="3" y1="6" x2="21" y2="6"/>
@@ -1402,37 +1079,20 @@ export function ExecutiveTable({
             </div>
 
             {/* Center Zone: Search */}
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <div style={{
-                width: 'min(480px, 100%)',
-                height: '40px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '0 12px',
-                border: `1px solid ${colors.borderDefault}`,
-                borderRadius: '10px',
-                backgroundColor: '#f9fafb',
-              }}>
+            <div className="flex justify-center">
+              <div className="w-full max-w-[480px] h-10 flex items-center gap-2 px-3 border border-border rounded-lg bg-muted/50">
                 <Icons.Search />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search..."
-                  style={{
-                    flex: 1,
-                    border: 'none',
-                    outline: 'none',
-                    fontSize: '14px',
-                    backgroundColor: 'transparent',
-                    color: colors.textPrimary,
-                  }}
+                  className="flex-1 border-none outline-none text-sm bg-transparent text-foreground"
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery('')}
-                    style={{ border: 'none', background: 'none', cursor: 'pointer', color: colors.textMuted, padding: '2px' }}
+                    className="border-none bg-transparent cursor-pointer text-muted-foreground p-0.5"
                   >
                     <Icons.X />
                   </button>
@@ -1441,90 +1101,24 @@ export function ExecutiveTable({
             </div>
 
             {/* Right Zone: Actions */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div className="flex items-center gap-3">
               {/* Avatar Group Placeholder */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <div style={{
-                  width: '28px',
-                  height: '28px',
-                  borderRadius: '50%',
-                  backgroundColor: '#3b82f6',
-                  border: '2px solid white',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'white',
-                  fontSize: '11px',
-                  fontWeight: 600,
-                }}>J</div>
-                <div style={{
-                  width: '28px',
-                  height: '28px',
-                  borderRadius: '50%',
-                  backgroundColor: '#8b5cf6',
-                  border: '2px solid white',
-                  marginLeft: '-6px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'white',
-                  fontSize: '11px',
-                  fontWeight: 600,
-                }}>VI</div>
-                <div style={{
-                  width: '28px',
-                  height: '28px',
-                  borderRadius: '50%',
-                  backgroundColor: '#c69c6d',
-                  border: '2px solid white',
-                  marginLeft: '-6px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'white',
-                  fontSize: '11px',
-                  fontWeight: 600,
-                }}>VI</div>
+              <div className="flex items-center gap-1">
+                <div className="w-7 h-7 rounded-full bg-info border-2 border-background flex items-center justify-center text-white text-[11px] font-semibold">J</div>
+                <div className="w-7 h-7 rounded-full bg-info border-2 border-background -ml-1.5 flex items-center justify-center text-white text-[11px] font-semibold">VI</div>
+                <div className="w-7 h-7 rounded-full bg-brand-gold border-2 border-background -ml-1.5 flex items-center justify-center text-white text-[11px] font-semibold">VI</div>
               </div>
 
               {/* Vertical Separator */}
-              <div style={{ width: '1px', height: '24px', backgroundColor: '#c8ccd0' }} />
+              <div className="w-px h-6 bg-border" />
 
               {/* Icon Buttons - 32x32 */}
-              <button
-                style={{
-                  width: '32px',
-                  height: '32px',
-                  border: `1px solid ${colors.borderDefault}`,
-                  borderRadius: '6px',
-                  backgroundColor: 'white',
-                  color: colors.textMuted,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                }}
-                title="Quick Actions"
-              >
+              <button className="w-8 h-8 border border-border rounded-md bg-background text-muted-foreground flex items-center justify-center cursor-pointer hover:bg-muted" title="Quick Actions">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/>
                 </svg>
               </button>
-              <button
-                style={{
-                  width: '32px',
-                  height: '32px',
-                  border: `1px solid ${colors.borderDefault}`,
-                  borderRadius: '6px',
-                  backgroundColor: 'white',
-                  color: colors.textMuted,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                }}
-                title="Analytics"
-              >
+              <button className="w-8 h-8 border border-border rounded-md bg-background text-muted-foreground flex items-center justify-center cursor-pointer hover:bg-muted" title="Analytics">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="18" y1="20" x2="18" y2="10"/>
                   <line x1="12" y1="20" x2="12" y2="4"/>
@@ -1535,18 +1129,7 @@ export function ExecutiveTable({
               <ColumnManager columns={ALL_COLUMNS} visibleColumns={visibleColumns} onChange={setVisibleColumns} />
               <button
                 onClick={handleExport}
-                style={{
-                  width: '32px',
-                  height: '32px',
-                  border: `1px solid ${colors.borderDefault}`,
-                  borderRadius: '6px',
-                  backgroundColor: 'white',
-                  color: colors.textMuted,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                }}
+                className="w-8 h-8 border border-border rounded-md bg-background text-muted-foreground flex items-center justify-center cursor-pointer hover:bg-muted"
                 title="Export CSV"
               >
                 <Icons.Download />
@@ -1555,18 +1138,7 @@ export function ExecutiveTable({
               {/* Primary Add Button - 32x32 */}
               <button
                 onClick={onCreateNew}
-                style={{
-                  width: '32px',
-                  height: '32px',
-                  border: 'none',
-                  borderRadius: '6px',
-                  backgroundColor: colors.gold,
-                  color: 'white',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                }}
+                className="w-8 h-8 border-none rounded-md bg-brand-gold text-white flex items-center justify-center cursor-pointer hover:bg-brand-gold-hover"
                 title="New Request"
               >
                 <Icons.Plus />
@@ -1576,203 +1148,130 @@ export function ExecutiveTable({
         </div>
       </div>
 
-      {/* Table Container */}
-      <div style={{ flex: 1, display: 'flex', position: 'relative', overflow: 'hidden' }}>
-        {/* Frozen Columns */}
-        <div style={{
-          flexShrink: 0,
-          backgroundColor: 'white',
-          borderRight: `2px solid ${colors.borderDefault}`,
-          zIndex: 20,
-          boxShadow: '4px 0 8px rgba(0,0,0,0.04)',
-          overflowY: 'auto',
-        }}>
-          <table style={{ borderCollapse: 'collapse', tableLayout: 'fixed' }}>
-            <thead>
-              <tr>
-                <th style={{ ...thStyle, width: '40px', textAlign: 'center' }}>
-                  <input
-                    type="checkbox"
-                    checked={processedData.length > 0 && selectedRows.length === processedData.length}
-                    onChange={handleSelectAll}
-                    style={{ width: '14px', height: '14px', accentColor: colors.gold }}
-                  />
-                </th>
-                {frozenColumns.map(col => (
-                  <th key={col.id} style={{ ...thStyle, width: col.width }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span>{col.header}</span>
-                      {col.sortable && (
-                        <button
-                          onClick={() => handleSort(col.id)}
-                          style={{
-                            padding: '2px',
-                            border: 'none',
-                            background: 'none',
-                            cursor: 'pointer',
-                            color: sortConfig.column === col.id ? colors.gold : colors.textLight,
-                            display: 'flex',
-                            alignItems: 'center',
-                          }}
-                        >
-                          {sortConfig.column === col.id && sortConfig.direction === 'desc' 
-                            ? <Icons.ChevronDown />
-                            : <Icons.ChevronUp />
-                          }
-                        </button>
-                      )}
-                    </div>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {processedData.map((row, index) => (
-                <tr
-                  key={row.id}
-                  style={{
-                    height: `${rowHeight}px`,
-                    backgroundColor: selectedRows.includes(row.id) 
-                      ? colors.bgRowSelected 
-                      : index % 2 === 1 ? '#fafafa' : 'white',
-                    transition: 'background-color 0.1s',
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!selectedRows.includes(row.id)) {
-                      e.currentTarget.style.backgroundColor = colors.bgRowHover;
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!selectedRows.includes(row.id)) {
-                      e.currentTarget.style.backgroundColor = index % 2 === 1 ? '#fafafa' : 'white';
-                    }
-                  }}
-                >
-                  <td style={{ ...tdStyle, textAlign: 'center' }}>
+      {/* TABLE CONTAINER - Single boxed card with border, border-radius, horizontal scroll */}
+      <div className="flex-1 p-4 overflow-hidden">
+        <div className="h-full flex flex-col border border-border rounded-xl bg-background overflow-hidden">
+          {/* Scrollable Table Area */}
+          <div className="flex-1 overflow-auto">
+            <table className="w-full border-collapse" style={{ minWidth: columns.reduce((acc, col) => acc + (col.minWidth || 100), 48 + 40) }}>
+              <thead className="sticky top-0 z-10">
+                <tr>
+                  {/* Checkbox column */}
+                  <th className="w-10 px-3 py-2.5 text-center font-semibold text-[11px] text-muted-foreground uppercase tracking-wider bg-muted border-b-2 border-border whitespace-nowrap">
                     <input
                       type="checkbox"
-                      checked={selectedRows.includes(row.id)}
-                      onChange={() => handleSelectRow(row.id)}
-                      style={{ width: '14px', height: '14px', accentColor: colors.gold }}
+                      checked={paginatedData.length > 0 && selectedRows.length === paginatedData.length}
+                      onChange={handleSelectAll}
+                      className="w-3.5 h-3.5 accent-brand-gold"
                     />
-                  </td>
-                  {frozenColumns.map(col => (
-                    <td key={col.id} style={{ ...tdStyle, width: col.width }}>
-                      {renderCellContent(row, col)}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Scrollable Columns */}
-        <div style={{ flex: 1, overflowX: 'auto', overflowY: 'auto' }}>
-          <table style={{ borderCollapse: 'collapse', tableLayout: 'fixed', minWidth: '100%' }}>
-            <thead>
-              <tr>
-                {scrollableColumns.map(col => (
-                  <th 
-                    key={col.id} 
-                    draggable={true}
-                    onDragStart={(e) => handleColumnDragStart(e, col.id)}
-                    onDragOver={(e) => handleColumnDragOver(e, col.id)}
-                    onDragLeave={() => setDragOverColumn(null)}
-                    onDrop={(e) => handleColumnDrop(e, col.id)}
-                    onDragEnd={() => { setDraggingColumn(null); setDragOverColumn(null); }}
-                    style={{ 
-                      ...thStyle, 
-                      width: col.width,
-                      cursor: 'grab',
-                      opacity: draggingColumn === col.id ? 0.5 : 1,
-                      backgroundColor: dragOverColumn === col.id ? colors.champagneLight : colors.bgHeader,
-                      borderLeft: dragOverColumn === col.id ? `3px solid ${colors.gold}` : 'none',
-                      transition: 'background-color 0.15s, border-left 0.15s',
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={colors.textLight} strokeWidth="2" style={{ flexShrink: 0, cursor: 'grab' }}>
-                        <circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/>
-                        <circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/>
-                      </svg>
-                      <span style={{ userSelect: 'none' }}>{col.header}</span>
-                      {col.sortable && (
-                        <button
-                          onClick={(e) => { e.stopPropagation(); handleSort(col.id); }}
-                          onMouseDown={(e) => e.stopPropagation()}
-                          style={{
-                            padding: '2px',
-                            border: 'none',
-                            background: 'none',
-                            cursor: 'pointer',
-                            color: sortConfig.column === col.id ? colors.gold : colors.textLight,
-                            display: 'flex',
-                            alignItems: 'center',
-                          }}
-                        >
-                          {sortConfig.column === col.id && sortConfig.direction === 'desc' 
-                            ? <Icons.ChevronDown />
-                            : <Icons.ChevronUp />
-                          }
-                        </button>
-                      )}
-                      {col.filterable && col.options && (
-                        <div onMouseDown={(e) => e.stopPropagation()}>
-                          <ColumnFilterDropdown
-                            column={col.id}
-                            options={col.options}
-                            selected={filters[col.id] || []}
-                            onApply={(values) => handleFilter(col.id, values)}
-                            onClear={() => handleFilter(col.id, [])}
-                          />
-                        </div>
-                      )}
-                    </div>
                   </th>
-                ))}
-                <th style={{ ...thStyle, width: '48px' }}></th>
-              </tr>
-            </thead>
-            <tbody>
-              {processedData.map((row, index) => (
-                <tr
-                  key={row.id}
-                  style={{
-                    height: `${rowHeight}px`,
-                    backgroundColor: selectedRows.includes(row.id) 
-                      ? colors.bgRowSelected 
-                      : index % 2 === 1 ? '#fafafa' : 'white',
-                    transition: 'background-color 0.1s',
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!selectedRows.includes(row.id)) {
-                      e.currentTarget.style.backgroundColor = colors.bgRowHover;
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!selectedRows.includes(row.id)) {
-                      e.currentTarget.style.backgroundColor = index % 2 === 1 ? '#fafafa' : 'white';
-                    }
-                  }}
-                >
-                  {scrollableColumns.map(col => (
-                    <td key={col.id} style={{ ...tdStyle, width: col.width, textAlign: (col.align || 'left') as React.CSSProperties['textAlign'] }}>
-                      {renderCellContent(row, col)}
-                    </td>
+                  {columns.map(col => (
+                    <th 
+                      key={col.id}
+                      draggable={true}
+                      onDragStart={(e) => handleColumnDragStart(e, col.id)}
+                      onDragOver={(e) => handleColumnDragOver(e, col.id)}
+                      onDragLeave={() => setDragOverColumn(null)}
+                      onDrop={(e) => handleColumnDrop(e, col.id)}
+                      onDragEnd={() => { setDraggingColumn(null); setDragOverColumn(null); }}
+                      className={`px-3 py-2.5 text-left font-semibold text-[11px] text-muted-foreground uppercase tracking-wider bg-muted border-b-2 border-border whitespace-nowrap cursor-grab transition-colors ${
+                        draggingColumn === col.id ? 'opacity-50' : ''
+                      } ${dragOverColumn === col.id ? 'bg-brand-gold/20 border-l-2 border-l-brand-gold' : ''}`}
+                      style={{ minWidth: col.minWidth }}
+                    >
+                      <div className="flex items-center gap-1.5">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0 cursor-grab text-muted-foreground/50">
+                          <circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/>
+                          <circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/>
+                        </svg>
+                        <span className="select-none">{col.header}</span>
+                        {col.sortable && (
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleSort(col.id); }}
+                            onMouseDown={(e) => e.stopPropagation()}
+                            className={`p-0.5 border-none bg-transparent cursor-pointer flex items-center ${sortConfig.column === col.id ? 'text-brand-gold' : 'text-muted-foreground/50'}`}
+                          >
+                            {sortConfig.column === col.id && sortConfig.direction === 'desc' 
+                              ? <Icons.ChevronDown />
+                              : <Icons.ChevronUp />
+                            }
+                          </button>
+                        )}
+                        {col.filterable && col.options && (
+                          <div onMouseDown={(e) => e.stopPropagation()}>
+                            <ColumnFilterDropdown
+                              column={col.id}
+                              options={col.options}
+                              selected={filters[col.id] || []}
+                              onApply={(values) => handleFilter(col.id, values)}
+                              onClear={() => handleFilter(col.id, [])}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </th>
                   ))}
-                  <td style={{ ...tdStyle, width: '48px' }}>
-                    <RowActionsMenu
-                      onView={() => setSelectedRow(row)}
-                      onEdit={() => onOpenFullView(row.id)}
-                      onDuplicate={() => toast.success('Duplicated')}
-                      onDelete={() => toast.success('Deleted')}
-                    />
-                  </td>
+                  {/* Actions column */}
+                  <th className="w-12 px-3 py-2.5 bg-muted border-b-2 border-border"></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {paginatedData.map((row, index) => (
+                  <tr
+                    key={row.id}
+                    className={`transition-colors ${
+                      selectedRows.includes(row.id) 
+                        ? 'bg-brand-gold/10' 
+                        : index % 2 === 1 ? 'bg-muted/30' : 'bg-background'
+                    } hover:bg-muted/60`}
+                    style={{ height: `${rowHeight}px` }}
+                  >
+                    <td className="px-3 py-2 text-center border-b border-border/50">
+                      <input
+                        type="checkbox"
+                        checked={selectedRows.includes(row.id)}
+                        onChange={() => handleSelectRow(row.id)}
+                        className="w-3.5 h-3.5 accent-brand-gold"
+                      />
+                    </td>
+                    {columns.map(col => (
+                      <td 
+                        key={col.id} 
+                        className="px-3 py-2 border-b border-border/50 text-sm text-foreground whitespace-nowrap overflow-hidden text-ellipsis"
+                        style={{ 
+                          minWidth: col.minWidth,
+                          textAlign: (col.align || 'left') as React.CSSProperties['textAlign'] 
+                        }}
+                      >
+                        {renderCellContent(row, col)}
+                      </td>
+                    ))}
+                    <td className="px-3 py-2 border-b border-border/50">
+                      <RowActionsMenu
+                        onView={() => setSelectedRow(row)}
+                        onEdit={() => onOpenFullView(row.id)}
+                        onDuplicate={() => toast.success('Duplicated')}
+                        onDelete={() => toast.success('Deleted')}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination Footer - INSIDE the boxed container */}
+          <PaginationFooter
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={processedData.length}
+            pageSize={pageSize}
+            onPageChange={setCurrentPage}
+            onPageSizeChange={(size) => {
+              setPageSize(size);
+              setCurrentPage(1);
+            }}
+          />
         </div>
       </div>
 
@@ -1781,15 +1280,7 @@ export function ExecutiveTable({
         <>
           <div
             onClick={() => setSelectedRow(null)}
-            style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: 'rgba(0,0,0,0.3)',
-              zIndex: 250,
-            }}
+            className="fixed inset-0 bg-black/30 z-[250]"
           />
           <RowDetailPanel row={selectedRow} onClose={() => setSelectedRow(null)} onOpenFullView={onOpenFullView} />
         </>
