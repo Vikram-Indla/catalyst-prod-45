@@ -1009,7 +1009,7 @@ export function ExecutiveTable({
               <thead className="sticky top-0 z-10">
                 <tr>
                   {/* Checkbox column */}
-                  <th className="w-10 px-3 py-2.5 text-center font-semibold text-[11px] text-muted-foreground uppercase tracking-wider bg-muted border-b-2 border-border whitespace-nowrap">
+                  <th className="w-10 px-3 py-2.5 text-center font-semibold text-[11px] text-muted-foreground uppercase tracking-wider bg-muted/60 border-b border-border whitespace-nowrap">
                     <input
                       type="checkbox"
                       checked={paginatedData.length > 0 && selectedRows.length === paginatedData.length}
@@ -1017,35 +1017,39 @@ export function ExecutiveTable({
                       className="w-3.5 h-3.5 accent-brand-gold"
                     />
                   </th>
-                  {columns.map(col => (
-                    <th 
-                      key={col.id}
-                      draggable={true}
-                      onDragStart={(e) => handleColumnDragStart(e, col.id)}
-                      onDragOver={(e) => handleColumnDragOver(e, col.id)}
-                      onDragLeave={() => setDragOverColumn(null)}
-                      onDrop={(e) => handleColumnDrop(e, col.id)}
-                      onDragEnd={() => { setDraggingColumn(null); setDragOverColumn(null); }}
-                      className={`px-3 py-2.5 text-left font-semibold text-[11px] text-muted-foreground uppercase tracking-wider bg-muted border-b-2 border-border whitespace-nowrap cursor-grab transition-colors ${
-                        draggingColumn === col.id ? 'opacity-50' : ''
-                      } ${dragOverColumn === col.id ? 'bg-brand-gold/20 border-l-2 border-l-brand-gold' : ''}`}
-                      style={{ minWidth: col.minWidth }}
-                    >
-                      <div className="flex items-center gap-1.5">
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0 cursor-grab text-muted-foreground/50">
-                          <circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/>
-                          <circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/>
-                        </svg>
-                        <span className="select-none">{col.header}</span>
-                        {col.sortable && (
-                          <button
-                            onClick={(e) => { e.stopPropagation(); handleSort(col.id); }}
-                            onMouseDown={(e) => e.stopPropagation()}
-                            className={`p-0.5 border-none bg-transparent cursor-pointer flex items-center ${sortConfig.column === col.id ? 'text-brand-gold' : 'text-muted-foreground/50'}`}
-                          >
-                            {sortConfig.column === col.id && sortConfig.direction === 'desc' 
-                              ? <Icons.ChevronDown />
-                              : <Icons.ChevronUp />
+                  {columns.map(col => {
+                    const isSorted = sortConfig.column === col.id;
+                    return (
+                      <th 
+                        key={col.id}
+                        draggable={true}
+                        onDragStart={(e) => handleColumnDragStart(e, col.id)}
+                        onDragOver={(e) => handleColumnDragOver(e, col.id)}
+                        onDragLeave={() => setDragOverColumn(null)}
+                        onDrop={(e) => handleColumnDrop(e, col.id)}
+                        onDragEnd={() => { setDraggingColumn(null); setDragOverColumn(null); }}
+                        className={`px-3 py-2.5 text-left font-semibold text-[11px] text-muted-foreground uppercase tracking-wider bg-muted/60 border-b border-border whitespace-nowrap cursor-grab transition-colors ${
+                          draggingColumn === col.id ? 'opacity-50' : ''
+                        } ${dragOverColumn === col.id ? 'bg-brand-gold/20 border-l-2 border-l-brand-gold' : ''} ${
+                          isSorted ? 'border-b-2 border-b-brand-gold' : ''
+                        }`}
+                        style={{ minWidth: col.minWidth }}
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0 cursor-grab text-muted-foreground/50">
+                            <circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/>
+                            <circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/>
+                          </svg>
+                          <span className="select-none">{col.header}</span>
+                          {col.sortable && (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); handleSort(col.id); }}
+                              onMouseDown={(e) => e.stopPropagation()}
+                              className={`p-0.5 border-none bg-transparent cursor-pointer flex items-center ${isSorted ? 'text-brand-gold' : 'text-muted-foreground/50'}`}
+                            >
+                              {isSorted && sortConfig.direction === 'desc' 
+                                ? <Icons.ChevronDown />
+                                : <Icons.ChevronUp />
                             }
                           </button>
                         )}
@@ -1062,9 +1066,10 @@ export function ExecutiveTable({
                         )}
                       </div>
                     </th>
-                  ))}
+                    );
+                  })}
                   {/* Actions column */}
-                  <th className="w-12 px-3 py-2.5 bg-muted border-b-2 border-border"></th>
+                  <th className="w-12 px-3 py-2.5 bg-muted/60 border-b border-border"></th>
                 </tr>
               </thead>
               <tbody>
