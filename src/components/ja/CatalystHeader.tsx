@@ -127,250 +127,247 @@ export function CatalystHeader() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b bg-background">
-        {/* CSS Grid: Logo | Nav (left-aligned) | Actions (right-aligned) */}
-        <div className="grid grid-cols-[auto_1fr_auto] items-center h-14 sm:h-16 px-4 sm:px-6">
-          {/* Left Column: Mobile Menu + Logo */}
-          <div className="flex items-center gap-2 shrink-0">
-            <MobileNavigationMenu />
-            <div 
-              className="flex items-center cursor-pointer h-10"
-              onClick={() => navigate('/home')}
-            >
-              <span 
-                className="font-semibold whitespace-nowrap leading-none"
-                style={{ 
-                  fontSize: '20px', 
-                  letterSpacing: '-0.02em',
-                }}
-              >
-                <span className="text-foreground">Cata</span>
-                <span className="text-brand-gold">lyst</span>
-              </span>
-            </div>
-          </div>
-
-          {/* Middle Column: Main Navigation - centered for balanced appearance */}
-          <nav className="hidden md:flex items-center justify-center gap-4">
-            <TooltipProvider>
-              {navItems.map((item) => {
-                // Disabled module rendering
-                if (!item.isEnabled) {
-                  return (
-                    <Tooltip key={item.label}>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          className="h-10 px-[10px] py-0 text-sm font-medium opacity-40 cursor-not-allowed hover:bg-transparent rounded-lg inline-flex items-center gap-2 leading-none"
-                          onClick={() => handleDisabledModuleClick(item.label)}
-                        >
-                          {item.label}
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>
-                          {isAdmin 
-                            ? `This module is disabled. Enable it in Administration → Modules & Packages.`
-                            : `This module is disabled by your organization.`}
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  );
-                }
-
-                // Enabled module rendering - with gold underline for active workspace
-                const isActive = item.label === activeNavItem;
-                const navButtonClass = cn(
-                  "h-10 px-[10px] py-0 text-sm font-medium hover:bg-accent/50 rounded-lg inline-flex items-center gap-2 leading-none whitespace-nowrap relative",
-                  isActive && "text-brand-gold font-semibold"
-                );
-                const activeUnderline = isActive ? (
-                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-0.5 bg-brand-gold rounded-full" />
-                ) : null;
-                
+      <header className="h-14 bg-white border-b border-[#e5e7eb] flex items-center px-4 sticky top-0 z-[100]">
+        {/* ===== LOGO ZONE ===== */}
+        <div 
+          className="flex items-center mr-8 flex-shrink-0 cursor-pointer"
+          onClick={() => navigate('/home')}
+        >
+          <span className="text-[22px] font-bold tracking-tight">
+            <span className="text-[#5c7c5c]">Cata</span>
+            <span className="text-[#c69c6d]">lyst</span>
+          </span>
+        </div>
+        
+        {/* ===== NAVIGATION ZONE ===== */}
+        <nav className="hidden md:flex items-center gap-1 flex-1">
+          <TooltipProvider>
+            {navItems.map((item) => {
+              // Disabled module rendering
+              if (!item.isEnabled) {
                 return (
-                  <div key={item.label} className="inline-flex items-center relative">
-                    {item.label === "Product" ? (
-                      <Popover
-                        open={activeDropdown === item.label}
-                        onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
-                      >
-                        <PopoverTrigger asChild>
-                          <Button variant="ghost" className={navButtonClass}>
-                            {item.label}
-                            <ChevronDown className="h-3 w-3 block" />
-                            {activeUnderline}
-                          </Button>
-                        </PopoverTrigger>
-                        {activeDropdown === item.label && (
-                          <PopoverContent className="p-0 w-auto" align="start">
-                            <ProductSelectorDropdown 
-                              onClose={() => setActiveDropdown(null)} 
-                              onCreateClick={() => setCreateDialogType('product')}
-                            />
-                          </PopoverContent>
-                        )}
-                      </Popover>
-                    ) : item.label === "Program" ? (
-                      <Popover
-                        open={activeDropdown === item.label}
-                        onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
-                      >
-                        <PopoverTrigger asChild>
-                          <Button variant="ghost" className={navButtonClass}>
-                            {item.label}
-                            <ChevronDown className="h-3 w-3 block" />
-                            {activeUnderline}
-                          </Button>
-                        </PopoverTrigger>
-                        {activeDropdown === item.label && (
-                          <PopoverContent className="p-0 w-auto" align="start">
-                            <ProgramSelectorDropdown 
-                              onClose={() => setActiveDropdown(null)} 
-                              onCreateClick={() => setCreateDialogType('program')}
-                            />
-                          </PopoverContent>
-                        )}
-                      </Popover>
-                    ) : item.label === "Project" ? (
-                      <Popover
-                        open={activeDropdown === item.label}
-                        onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
-                      >
-                        <PopoverTrigger asChild>
-                          <Button variant="ghost" className={navButtonClass}>
-                            {item.label}
-                            <ChevronDown className="h-3 w-3 block" />
-                            {activeUnderline}
-                          </Button>
-                        </PopoverTrigger>
-                        {activeDropdown === item.label && (
-                          <PopoverContent className="p-0 w-auto" align="start">
-                            <ProjectSelectorDropdown 
-                              onClose={() => setActiveDropdown(null)} 
-                              onCreateClick={() => setCreateDialogType('project')}
-                            />
-                          </PopoverContent>
-                        )}
-                      </Popover>
-                    ) : item.label === "Release" ? (
-                      <Popover
-                        open={activeDropdown === item.label}
-                        onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
-                      >
-                        <PopoverTrigger asChild>
-                          <Button 
-                            variant="ghost" 
-                            className={`${navButtonClass} ${location.pathname.startsWith('/release') ? 'text-brand-gold font-semibold' : ''}`}
-                          >
-                            {item.label}
-                            <ChevronDown className="h-3 w-3 block" />
-                          </Button>
-                        </PopoverTrigger>
-                        {activeDropdown === item.label && (
-                          <PopoverContent className="p-0 w-auto" align="start">
-                          <ReleaseDropdown onClose={() => setActiveDropdown(null)} />
-                          </PopoverContent>
-                        )}
-                      </Popover>
-                    ) : (
-                      <Button
-                        variant="ghost"
-                        className={navButtonClass}
-                        onClick={() => item.path && navigate(item.path)}
+                  <Tooltip key={item.label}>
+                    <TooltipTrigger asChild>
+                      <button
+                        className="h-9 px-3 text-sm font-medium text-[#374151] opacity-40 cursor-not-allowed rounded-md flex items-center gap-1"
+                        onClick={() => handleDisabledModuleClick(item.label)}
                       >
                         {item.label}
-                      </Button>
-                    )}
-                  </div>
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>
+                        {isAdmin 
+                          ? `This module is disabled. Enable it in Administration → Modules & Packages.`
+                          : `This module is disabled by your organization.`}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
                 );
-              })}
-            </TooltipProvider>
-          </nav>
+              }
 
-          {/* Right Column: Actions - justify-self-end keeps it right-aligned */}
-          <div className="flex items-center gap-3 justify-self-end">
-            {/* Create Button - Always visible */}
-            <CreateDropdown />
-
-            <TooltipProvider>
-              {/* Notifications - h-10 w-10 for consistent control size */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <NotificationsPanel />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Notifications</p>
-                </TooltipContent>
-              </Tooltip>
-
-              {/* Settings - Fixed square control */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-10 w-10 grid place-items-center rounded-full"
-                    onClick={() => navigate('/admin/activity')}
-                  >
-                    <Settings className="h-5 w-5 block" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Settings</p>
-                </TooltipContent>
-              </Tooltip>
-
-              {/* Search - Fixed square control */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-10 w-10 grid place-items-center rounded-full"
-                    onClick={() => setIsSearchOpen(true)}
-                  >
-                    <Search className="h-5 w-5 block" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Search (Ctrl+K)</p>
-                </TooltipContent>
-              </Tooltip>
-
-              {/* User Profile Menu - Fixed square control */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full grid place-items-center">
-                    <Avatar className="h-8 w-8">
-                      <AvatarFallback className="bg-brand-gold text-background text-sm font-semibold">
-                        {user?.email?.charAt(0).toUpperCase() || 'U'}
-                      </AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 bg-popover">
-                  <div className="flex flex-col space-y-1 p-2">
-                    <p className="text-sm font-medium truncate">{user?.email}</p>
-                    <p className="text-xs text-muted-foreground">User Account</p>
-                  </div>
-                  {isAdmin && (
-                    <DropdownMenuItem 
-                      onClick={() => navigate('/admin/activity')} 
-                      className="cursor-pointer"
+              // Check if this nav item is active
+              const isActive = item.label === activeNavItem;
+              const navButtonClass = cn(
+                "h-9 px-3 text-sm rounded-md flex items-center gap-1 transition-colors relative",
+                isActive 
+                  ? "text-[#c69c6d] font-semibold" 
+                  : "text-[#374151] font-medium hover:bg-[#f3f4f6]"
+              );
+              
+              // Active underline indicator
+              const activeUnderline = isActive ? (
+                <span className="absolute -bottom-[10px] left-3 right-3 h-0.5 bg-[#c69c6d] rounded-sm" />
+              ) : null;
+              
+              return (
+                <div key={item.label} className="inline-flex items-center relative">
+                  {item.label === "Product" ? (
+                    <Popover
+                      open={activeDropdown === item.label}
+                      onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
                     >
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span>Administration</span>
-                    </DropdownMenuItem>
+                      <PopoverTrigger asChild>
+                        <button className={navButtonClass}>
+                          {item.label}
+                          <ChevronDown className="w-4 h-4" />
+                          {activeUnderline}
+                        </button>
+                      </PopoverTrigger>
+                      {activeDropdown === item.label && (
+                        <PopoverContent className="p-0 w-auto" align="start">
+                          <ProductSelectorDropdown 
+                            onClose={() => setActiveDropdown(null)} 
+                            onCreateClick={() => setCreateDialogType('product')}
+                          />
+                        </PopoverContent>
+                      )}
+                    </Popover>
+                  ) : item.label === "Program" ? (
+                    <Popover
+                      open={activeDropdown === item.label}
+                      onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
+                    >
+                      <PopoverTrigger asChild>
+                        <button className={navButtonClass}>
+                          {item.label}
+                          <ChevronDown className="w-4 h-4" />
+                          {activeUnderline}
+                        </button>
+                      </PopoverTrigger>
+                      {activeDropdown === item.label && (
+                        <PopoverContent className="p-0 w-auto" align="start">
+                          <ProgramSelectorDropdown 
+                            onClose={() => setActiveDropdown(null)} 
+                            onCreateClick={() => setCreateDialogType('program')}
+                          />
+                        </PopoverContent>
+                      )}
+                    </Popover>
+                  ) : item.label === "Project" ? (
+                    <Popover
+                      open={activeDropdown === item.label}
+                      onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
+                    >
+                      <PopoverTrigger asChild>
+                        <button className={navButtonClass}>
+                          {item.label}
+                          <ChevronDown className="w-4 h-4" />
+                          {activeUnderline}
+                        </button>
+                      </PopoverTrigger>
+                      {activeDropdown === item.label && (
+                        <PopoverContent className="p-0 w-auto" align="start">
+                          <ProjectSelectorDropdown 
+                            onClose={() => setActiveDropdown(null)} 
+                            onCreateClick={() => setCreateDialogType('project')}
+                          />
+                        </PopoverContent>
+                      )}
+                    </Popover>
+                  ) : item.label === "Release" ? (
+                    <Popover
+                      open={activeDropdown === item.label}
+                      onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
+                    >
+                      <PopoverTrigger asChild>
+                        <button className={cn(
+                          navButtonClass,
+                          location.pathname.startsWith('/release') && "text-[#c69c6d] font-semibold"
+                        )}>
+                          {item.label}
+                          <ChevronDown className="w-4 h-4" />
+                          {location.pathname.startsWith('/release') && (
+                            <span className="absolute -bottom-[10px] left-3 right-3 h-0.5 bg-[#c69c6d] rounded-sm" />
+                          )}
+                        </button>
+                      </PopoverTrigger>
+                      {activeDropdown === item.label && (
+                        <PopoverContent className="p-0 w-auto" align="start">
+                          <ReleaseDropdown onClose={() => setActiveDropdown(null)} />
+                        </PopoverContent>
+                      )}
+                    </Popover>
+                  ) : (
+                    <button
+                      className={navButtonClass}
+                      onClick={() => item.path && navigate(item.path)}
+                    >
+                      {item.label}
+                      {activeUnderline}
+                    </button>
                   )}
-                  <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Sign out</span>
+                </div>
+              );
+            })}
+          </TooltipProvider>
+        </nav>
+
+        {/* Mobile Menu */}
+        <div className="md:hidden flex-1">
+          <MobileNavigationMenu />
+        </div>
+        
+        {/* ===== ACTIONS ZONE ===== */}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {/* Create Button (Primary CTA) */}
+          <CreateDropdown />
+          
+          <TooltipProvider>
+            {/* Notifications */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <NotificationsPanel />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Notifications</p>
+              </TooltipContent>
+            </Tooltip>
+
+            {/* Settings */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-[#f3f4f6] text-[#6b7280] hover:text-[#374151] transition-colors"
+                  onClick={() => navigate('/admin/activity')}
+                  title="Settings"
+                >
+                  <Settings className="w-5 h-5" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Settings</p>
+              </TooltipContent>
+            </Tooltip>
+
+            {/* Search */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-[#f3f4f6] text-[#6b7280] hover:text-[#374151] transition-colors"
+                  onClick={() => setIsSearchOpen(true)}
+                  title="Search"
+                >
+                  <Search className="w-5 h-5" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Search (Ctrl+K)</p>
+              </TooltipContent>
+            </Tooltip>
+
+            {/* User Avatar */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div 
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[13px] font-semibold cursor-pointer transition-transform hover:scale-105"
+                  style={{ background: 'linear-gradient(135deg, #c69c6d 0%, #8b7355 100%)' }}
+                  title="Profile"
+                >
+                  {user?.email?.charAt(0).toUpperCase() || 'U'}
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56 bg-popover">
+                <div className="flex flex-col space-y-1 p-2">
+                  <p className="text-sm font-medium truncate">{user?.email}</p>
+                  <p className="text-xs text-muted-foreground">User Account</p>
+                </div>
+                {isAdmin && (
+                  <DropdownMenuItem 
+                    onClick={() => navigate('/admin/activity')} 
+                    className="cursor-pointer"
+                  >
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Administration</span>
                   </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </TooltipProvider>
-          </div>
+                )}
+                <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Sign out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </TooltipProvider>
         </div>
       </header>
 
