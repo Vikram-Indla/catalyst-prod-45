@@ -1472,7 +1472,6 @@ export function ExecutiveTable({
                     backgroundColor: selectedRows.includes(row.id) 
                       ? colors.bgRowSelected 
                       : index % 2 === 1 ? '#fafafa' : 'white',
-                    cursor: 'pointer',
                     transition: 'background-color 0.1s',
                   }}
                   onMouseEnter={(e) => {
@@ -1485,9 +1484,8 @@ export function ExecutiveTable({
                       e.currentTarget.style.backgroundColor = index % 2 === 1 ? '#fafafa' : 'white';
                     }
                   }}
-                  onClick={() => setSelectedRow(row)}
                 >
-                  <td style={{ ...tdStyle, textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
+                  <td style={{ ...tdStyle, textAlign: 'center' }}>
                     <input
                       type="checkbox"
                       checked={selectedRows.includes(row.id)}
@@ -1582,7 +1580,6 @@ export function ExecutiveTable({
                     backgroundColor: selectedRows.includes(row.id) 
                       ? colors.bgRowSelected 
                       : index % 2 === 1 ? '#fafafa' : 'white',
-                    cursor: 'pointer',
                     transition: 'background-color 0.1s',
                   }}
                   onMouseEnter={(e) => {
@@ -1595,14 +1592,13 @@ export function ExecutiveTable({
                       e.currentTarget.style.backgroundColor = index % 2 === 1 ? '#fafafa' : 'white';
                     }
                   }}
-                  onClick={() => setSelectedRow(row)}
                 >
                   {scrollableColumns.map(col => (
                     <td key={col.id} style={{ ...tdStyle, width: col.width, textAlign: (col.align || 'left') as React.CSSProperties['textAlign'] }}>
                       {renderCellContent(row, col)}
                     </td>
                   ))}
-                  <td style={{ ...tdStyle, width: '48px' }} onClick={(e) => e.stopPropagation()}>
+                  <td style={{ ...tdStyle, width: '48px' }}>
                     <RowActionsMenu
                       onView={() => setSelectedRow(row)}
                       onEdit={() => onOpenFullView(row.id)}
