@@ -127,20 +127,38 @@ export function CatalystHeader() {
 
   return (
     <>
-      <header className="h-14 bg-white border-b border-[#e5e7eb] flex items-center px-4 sticky top-0 z-[100]">
-        {/* ===== LOGO ZONE ===== */}
-        <div 
-          className="flex items-center mr-8 flex-shrink-0 cursor-pointer"
+      {/* TopNav: 56px fixed height, white bg, 1px bottom border */}
+      <header 
+        className="sticky top-0 z-[100] flex items-center bg-white"
+        style={{ 
+          height: '56px', 
+          borderBottom: '1px solid #e5e7eb',
+          padding: '0 16px',
+          fontFamily: "var(--font-sans, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif)"
+        }}
+      >
+        {/* ===== LOGO ZONE - Split color treatment ===== */}
+        <a 
+          className="flex items-center flex-shrink-0 cursor-pointer no-underline"
+          style={{ marginRight: '32px' }}
           onClick={() => navigate('/home')}
         >
-          <span className="text-[22px] font-bold tracking-tight">
-            <span className="text-[#5c7c5c]">Cata</span>
-            <span className="text-[#c69c6d]">lyst</span>
+          <span 
+            className="catalyst-logo"
+            style={{ 
+              fontSize: '22px', 
+              fontWeight: 700, 
+              letterSpacing: '-0.5px',
+              lineHeight: 1
+            }}
+          >
+            <span style={{ color: '#5c7c5c' }}>Cata</span>
+            <span style={{ color: '#c69c6d' }}>lyst</span>
           </span>
-        </div>
+        </a>
         
         {/* ===== NAVIGATION ZONE ===== */}
-        <nav className="hidden md:flex items-center gap-1 flex-1">
+        <nav className="hidden md:flex items-center flex-1" style={{ gap: '4px' }}>
           <TooltipProvider>
             {navItems.map((item) => {
               // Disabled module rendering
@@ -149,7 +167,18 @@ export function CatalystHeader() {
                   <Tooltip key={item.label}>
                     <TooltipTrigger asChild>
                       <button
-                        className="h-9 px-3 text-sm font-medium text-[#374151] opacity-40 cursor-not-allowed rounded-md flex items-center gap-1"
+                        className="flex items-center cursor-not-allowed opacity-40"
+                        style={{
+                          height: '36px',
+                          padding: '0 14px',
+                          fontSize: '14px',
+                          fontWeight: 500,
+                          color: '#374151',
+                          borderRadius: '6px',
+                          gap: '4px',
+                          border: 'none',
+                          background: 'transparent',
+                        }}
                         onClick={() => handleDisabledModuleClick(item.label)}
                       >
                         {item.label}
@@ -168,16 +197,39 @@ export function CatalystHeader() {
 
               // Check if this nav item is active
               const isActive = item.label === activeNavItem;
-              const navButtonClass = cn(
-                "h-9 px-3 text-sm rounded-md flex items-center gap-1 transition-colors relative",
-                isActive 
-                  ? "text-[#c69c6d] font-semibold" 
-                  : "text-[#374151] font-medium hover:bg-[#f3f4f6]"
-              );
               
-              // Active underline indicator
+              // TopNav item styles matching reference exactly
+              const navButtonStyle: React.CSSProperties = {
+                height: '36px',
+                padding: '0 14px',
+                fontSize: '14px',
+                fontWeight: isActive ? 600 : 500,
+                color: isActive ? '#c69c6d' : '#374151',
+                borderRadius: '6px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+                border: 'none',
+                background: 'transparent',
+                position: 'relative' as const,
+                fontFamily: 'inherit',
+              };
+              
+              // Active underline indicator - positioned under text
               const activeUnderline = isActive ? (
-                <span className="absolute -bottom-[10px] left-3 right-3 h-0.5 bg-[#c69c6d] rounded-sm" />
+                <span 
+                  style={{
+                    position: 'absolute',
+                    bottom: '-10px',
+                    left: '14px',
+                    right: '14px',
+                    height: '2px',
+                    background: '#c69c6d',
+                    borderRadius: '1px',
+                  }}
+                />
               ) : null;
               
               return (
@@ -188,9 +240,13 @@ export function CatalystHeader() {
                       onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
                     >
                       <PopoverTrigger asChild>
-                        <button className={navButtonClass}>
+                        <button 
+                          style={navButtonStyle}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                        >
                           {item.label}
-                          <ChevronDown className="w-4 h-4" />
+                          <ChevronDown style={{ width: '16px', height: '16px' }} />
                           {activeUnderline}
                         </button>
                       </PopoverTrigger>
@@ -209,9 +265,13 @@ export function CatalystHeader() {
                       onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
                     >
                       <PopoverTrigger asChild>
-                        <button className={navButtonClass}>
+                        <button 
+                          style={navButtonStyle}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                        >
                           {item.label}
-                          <ChevronDown className="w-4 h-4" />
+                          <ChevronDown style={{ width: '16px', height: '16px' }} />
                           {activeUnderline}
                         </button>
                       </PopoverTrigger>
@@ -230,9 +290,13 @@ export function CatalystHeader() {
                       onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
                     >
                       <PopoverTrigger asChild>
-                        <button className={navButtonClass}>
+                        <button 
+                          style={navButtonStyle}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                        >
                           {item.label}
-                          <ChevronDown className="w-4 h-4" />
+                          <ChevronDown style={{ width: '16px', height: '16px' }} />
                           {activeUnderline}
                         </button>
                       </PopoverTrigger>
@@ -251,14 +315,29 @@ export function CatalystHeader() {
                       onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
                     >
                       <PopoverTrigger asChild>
-                        <button className={cn(
-                          navButtonClass,
-                          location.pathname.startsWith('/release') && "text-[#c69c6d] font-semibold"
-                        )}>
+                        <button 
+                          style={{
+                            ...navButtonStyle,
+                            color: location.pathname.startsWith('/release') ? '#c69c6d' : navButtonStyle.color,
+                            fontWeight: location.pathname.startsWith('/release') ? 600 : navButtonStyle.fontWeight,
+                          }}
+                          onMouseEnter={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                        >
                           {item.label}
-                          <ChevronDown className="w-4 h-4" />
+                          <ChevronDown style={{ width: '16px', height: '16px' }} />
                           {location.pathname.startsWith('/release') && (
-                            <span className="absolute -bottom-[10px] left-3 right-3 h-0.5 bg-[#c69c6d] rounded-sm" />
+                            <span 
+                              style={{
+                                position: 'absolute',
+                                bottom: '-10px',
+                                left: '14px',
+                                right: '14px',
+                                height: '2px',
+                                background: '#c69c6d',
+                                borderRadius: '1px',
+                              }}
+                            />
                           )}
                         </button>
                       </PopoverTrigger>
@@ -270,7 +349,9 @@ export function CatalystHeader() {
                     </Popover>
                   ) : (
                     <button
-                      className={navButtonClass}
+                      style={navButtonStyle}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                       onClick={() => item.path && navigate(item.path)}
                     >
                       {item.label}
@@ -289,7 +370,7 @@ export function CatalystHeader() {
         </div>
         
         {/* ===== ACTIONS ZONE ===== */}
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center flex-shrink-0" style={{ gap: '8px' }}>
           {/* Create Button (Primary CTA) */}
           <CreateDropdown />
           
@@ -304,15 +385,35 @@ export function CatalystHeader() {
               </TooltipContent>
             </Tooltip>
 
-            {/* Settings */}
+            {/* Settings - 32x32 icon button */}
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
-                  className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-[#f3f4f6] text-[#6b7280] hover:text-[#374151] transition-colors"
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: 'none',
+                    borderRadius: '6px',
+                    background: 'transparent',
+                    color: '#6b7280',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                  }}
+                  onMouseEnter={(e) => { 
+                    e.currentTarget.style.background = '#f3f4f6'; 
+                    e.currentTarget.style.color = '#374151';
+                  }}
+                  onMouseLeave={(e) => { 
+                    e.currentTarget.style.background = 'transparent'; 
+                    e.currentTarget.style.color = '#6b7280';
+                  }}
                   onClick={() => navigate('/admin/activity')}
                   title="Settings"
                 >
-                  <Settings className="w-5 h-5" />
+                  <Settings style={{ width: '20px', height: '20px' }} />
                 </button>
               </TooltipTrigger>
               <TooltipContent>
@@ -320,15 +421,35 @@ export function CatalystHeader() {
               </TooltipContent>
             </Tooltip>
 
-            {/* Search */}
+            {/* Search - 32x32 icon button */}
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
-                  className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-[#f3f4f6] text-[#6b7280] hover:text-[#374151] transition-colors"
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: 'none',
+                    borderRadius: '6px',
+                    background: 'transparent',
+                    color: '#6b7280',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                  }}
+                  onMouseEnter={(e) => { 
+                    e.currentTarget.style.background = '#f3f4f6'; 
+                    e.currentTarget.style.color = '#374151';
+                  }}
+                  onMouseLeave={(e) => { 
+                    e.currentTarget.style.background = 'transparent'; 
+                    e.currentTarget.style.color = '#6b7280';
+                  }}
                   onClick={() => setIsSearchOpen(true)}
                   title="Search"
                 >
-                  <Search className="w-5 h-5" />
+                  <Search style={{ width: '20px', height: '20px' }} />
                 </button>
               </TooltipTrigger>
               <TooltipContent>

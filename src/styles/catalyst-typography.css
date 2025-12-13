@@ -1,0 +1,402 @@
+/**
+ * ============================================================
+ * CATALYST TYPOGRAPHY SYSTEM
+ * Version: 1.0
+ * 
+ * Import this file to apply consistent typography across
+ * your Catalyst application.
+ * 
+ * Usage: @import 'catalyst-typography.css';
+ * ============================================================
+ */
+
+/* ===== FONT IMPORT ===== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* ===== CSS CUSTOM PROPERTIES ===== */
+:root {
+  /* ----- Font Family ----- */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'SF Mono', Monaco, 'Inconsolata', 'Roboto Mono', 'Consolas', monospace;
+
+  /* ----- Font Sizes ----- */
+  --text-display: 32px;   /* Marketing headlines */
+  --text-h1: 24px;        /* Page titles (Hero Text) */
+  --text-h2: 20px;        /* Section headers */
+  --text-h3: 18px;        /* Card titles */
+  --text-h4: 16px;        /* Subsection headers */
+  --text-body: 14px;      /* Default body text */
+  --text-body-sm: 13px;   /* Buttons, secondary text */
+  --text-caption: 12px;   /* Labels, metadata */
+  --text-micro: 11px;     /* Badges, table headers */
+
+  /* ----- Font Weights ----- */
+  --font-regular: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  /* ----- Line Heights ----- */
+  --leading-none: 1;
+  --leading-tight: 1.25;
+  --leading-snug: 1.375;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+
+  /* ----- Letter Spacing ----- */
+  --tracking-tighter: -0.5px;
+  --tracking-tight: -0.3px;
+  --tracking-normal: 0;
+  --tracking-wide: 0.5px;
+
+  /* ----- Text Colors: Neutrals ----- */
+  --text-primary: #1f2937;    /* Grey-900: Primary text */
+  --text-secondary: #374151;  /* Grey-700: Body text */
+  --text-tertiary: #4b5563;   /* Grey-600: Sidebar items */
+  --text-muted: #6b7280;      /* Grey-500: Placeholders */
+  --text-disabled: #9ca3af;   /* Grey-400: Disabled */
+
+  /* ----- Text Colors: Brand ----- */
+  --text-olive: #5c7c5c;      /* Page titles, logo "Cata" */
+  --text-gold: #c69c6d;       /* Active states, logo "lyst" */
+  --text-bronze: #8b7355;     /* Count badges, secondary brand */
+
+  /* ----- Text Colors: Semantic ----- */
+  --text-success: #22c55e;
+  --text-warning: #f59e0b;
+  --text-danger: #dc2626;
+  --text-info: #3b82f6;
+
+  /* ----- Text Colors: On-Color ----- */
+  --text-on-primary: #ffffff;
+  --text-on-dark: #ffffff;
+}
+
+/* ===== BASE STYLES ===== */
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  font-weight: var(--font-regular);
+  line-height: var(--leading-normal);
+  color: var(--text-primary);
+}
+
+/* ===== TYPOGRAPHY UTILITY CLASSES ===== */
+
+/* ----- Font Sizes ----- */
+.text-display {
+  font-size: var(--text-display);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tighter);
+}
+
+.text-h1 {
+  font-size: var(--text-h1);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+}
+
+.text-h2 {
+  font-size: var(--text-h2);
+  line-height: var(--leading-snug);
+}
+
+.text-h3 {
+  font-size: var(--text-h3);
+  line-height: var(--leading-snug);
+}
+
+.text-h4 {
+  font-size: var(--text-h4);
+  line-height: var(--leading-normal);
+}
+
+.text-body {
+  font-size: var(--text-body);
+  line-height: var(--leading-normal);
+}
+
+.text-body-sm {
+  font-size: var(--text-body-sm);
+  line-height: var(--leading-normal);
+}
+
+.text-caption {
+  font-size: var(--text-caption);
+  line-height: var(--leading-normal);
+}
+
+.text-micro {
+  font-size: var(--text-micro);
+  line-height: var(--leading-none);
+}
+
+/* ----- Font Weights ----- */
+.font-regular { font-weight: var(--font-regular); }
+.font-medium { font-weight: var(--font-medium); }
+.font-semibold { font-weight: var(--font-semibold); }
+.font-bold { font-weight: var(--font-bold); }
+
+/* ----- Line Heights ----- */
+.leading-none { line-height: var(--leading-none); }
+.leading-tight { line-height: var(--leading-tight); }
+.leading-snug { line-height: var(--leading-snug); }
+.leading-normal { line-height: var(--leading-normal); }
+.leading-relaxed { line-height: var(--leading-relaxed); }
+
+/* ----- Letter Spacing ----- */
+.tracking-tighter { letter-spacing: var(--tracking-tighter); }
+.tracking-tight { letter-spacing: var(--tracking-tight); }
+.tracking-normal { letter-spacing: var(--tracking-normal); }
+.tracking-wide { letter-spacing: var(--tracking-wide); }
+
+/* ----- Text Colors: Neutrals ----- */
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-tertiary { color: var(--text-tertiary); }
+.text-muted { color: var(--text-muted); }
+.text-disabled { color: var(--text-disabled); }
+
+/* ----- Text Colors: Brand ----- */
+.text-olive { color: var(--text-olive); }
+.text-gold { color: var(--text-gold); }
+.text-bronze { color: var(--text-bronze); }
+
+/* ----- Text Colors: Semantic ----- */
+.text-success { color: var(--text-success); }
+.text-warning { color: var(--text-warning); }
+.text-danger { color: var(--text-danger); }
+.text-info { color: var(--text-info); }
+
+/* ----- Text Colors: On-Color ----- */
+.text-on-primary { color: var(--text-on-primary); }
+.text-on-dark { color: var(--text-on-dark); }
+
+/* ----- Font Family ----- */
+.font-sans { font-family: var(--font-sans); }
+.font-mono { font-family: var(--font-mono); }
+
+/* ----- Text Transform ----- */
+.uppercase { text-transform: uppercase; }
+.lowercase { text-transform: lowercase; }
+.capitalize { text-transform: capitalize; }
+.normal-case { text-transform: none; }
+
+/* ===== COMPONENT-SPECIFIC TYPOGRAPHY ===== */
+
+/* ----- Logo ----- */
+.catalyst-logo {
+  font-size: 22px;
+  font-weight: var(--font-bold);
+  letter-spacing: var(--tracking-tighter);
+  line-height: var(--leading-none);
+}
+
+.catalyst-logo__cata {
+  color: var(--text-olive);
+}
+
+.catalyst-logo__lyst {
+  color: var(--text-gold);
+}
+
+/* ----- Page Title (Hero Text) ----- */
+.page-title {
+  font-size: var(--text-h1);
+  font-weight: var(--font-bold);
+  color: var(--text-olive);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-tight);
+  margin: 0;
+}
+
+/* ----- Section Header ----- */
+.section-header {
+  font-size: var(--text-h3);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  line-height: var(--leading-snug);
+  margin: 0;
+}
+
+/* ----- Top Navigation ----- */
+.topnav-item {
+  font-size: var(--text-body);
+  font-weight: var(--font-medium);
+  color: var(--text-secondary);
+  line-height: var(--leading-none);
+}
+
+.topnav-item--active {
+  font-weight: var(--font-semibold);
+  color: var(--text-gold);
+}
+
+.topnav-item:hover:not(.topnav-item--active) {
+  color: var(--text-primary);
+}
+
+/* ----- Sidebar ----- */
+.sidebar-header {
+  font-size: var(--text-body);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+  line-height: var(--leading-none);
+}
+
+.sidebar-item {
+  font-size: var(--text-body);
+  font-weight: var(--font-medium);
+  color: var(--text-tertiary);
+  line-height: var(--leading-none);
+}
+
+.sidebar-item--active {
+  font-weight: var(--font-semibold);
+  color: var(--text-gold);
+}
+
+.sidebar-item:hover:not(.sidebar-item--active) {
+  color: var(--text-primary);
+}
+
+/* ----- Buttons ----- */
+.btn-text {
+  font-size: var(--text-body-sm);
+  font-weight: var(--font-semibold);
+  line-height: var(--leading-none);
+}
+
+.btn-text--primary {
+  color: var(--text-on-primary);
+}
+
+.btn-text--secondary {
+  color: var(--text-secondary);
+}
+
+/* ----- Form Elements ----- */
+.form-label {
+  font-size: var(--text-body-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-secondary);
+  line-height: var(--leading-none);
+}
+
+.form-input {
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  font-weight: var(--font-regular);
+  color: var(--text-primary);
+  line-height: var(--leading-normal);
+}
+
+.form-input::placeholder {
+  color: var(--text-disabled);
+}
+
+/* ----- Table ----- */
+.table-header {
+  font-size: var(--text-micro);
+  font-weight: var(--font-semibold);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  line-height: var(--leading-none);
+}
+
+.table-cell {
+  font-size: var(--text-body);
+  font-weight: var(--font-regular);
+  color: var(--text-primary);
+  line-height: var(--leading-normal);
+}
+
+.table-cell--muted {
+  color: var(--text-muted);
+}
+
+/* ----- Badge / Count ----- */
+.badge {
+  font-size: var(--text-body-sm);
+  font-weight: var(--font-semibold);
+  line-height: var(--leading-none);
+}
+
+.badge--count {
+  color: var(--text-bronze);
+}
+
+.badge--status {
+  font-size: var(--text-caption);
+  font-weight: var(--font-medium);
+}
+
+/* ----- Tooltip ----- */
+.tooltip-text {
+  font-size: var(--text-caption);
+  font-weight: var(--font-medium);
+  color: var(--text-on-dark);
+  line-height: var(--leading-tight);
+}
+
+/* ----- Keyboard Shortcut ----- */
+.kbd {
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  font-weight: var(--font-regular);
+  color: var(--text-disabled);
+  line-height: var(--leading-none);
+}
+
+/* ----- Request ID / Code ----- */
+.code-text {
+  font-family: var(--font-mono);
+  font-size: var(--text-body);
+  font-weight: var(--font-medium);
+  color: var(--text-secondary);
+  line-height: var(--leading-none);
+}
+
+/* ----- Empty State ----- */
+.empty-state-title {
+  font-size: var(--text-body);
+  font-weight: var(--font-medium);
+  color: var(--text-muted);
+}
+
+.empty-state-description {
+  font-size: var(--text-body-sm);
+  font-weight: var(--font-regular);
+  color: var(--text-disabled);
+}
+
+/* ===== RESPONSIVE ADJUSTMENTS ===== */
+@media (max-width: 768px) {
+  :root {
+    --text-h1: 22px;
+    --text-h2: 18px;
+    --text-h3: 16px;
+  }
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+  body {
+    font-size: 12pt;
+    line-height: 1.4;
+    color: #000;
+  }
+  
+  .page-title {
+    font-size: 18pt;
+    color: #000;
+  }
+}

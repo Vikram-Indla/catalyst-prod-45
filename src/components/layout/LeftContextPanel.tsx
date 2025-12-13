@@ -215,52 +215,124 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
 
   return (
     <aside
-      className={cn(
-        "h-full border-r bg-card transition-all duration-300 flex-shrink-0 relative flex flex-col",
-        expanded ? "w-44" : "w-14",
-        className
-      )}
+      style={{
+        width: expanded ? '220px' : '60px',
+        height: '100%',
+        background: '#ffffff',
+        borderRight: '1px solid #e5e7eb',
+        transition: 'all 0.3s ease',
+        flexShrink: 0,
+        position: 'relative',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+      className={className}
     >
       {/* Toggle Handle */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="absolute -right-3 top-6 z-50 w-6 h-6 rounded-full bg-card border shadow-sm flex items-center justify-center hover:bg-accent transition-transform"
+        style={{
+          position: 'absolute',
+          right: '-12px',
+          top: '24px',
+          zIndex: 50,
+          width: '24px',
+          height: '24px',
+          borderRadius: '9999px',
+          background: '#ffffff',
+          border: '1px solid #e5e7eb',
+          boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+        }}
         aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
       >
         {expanded ? (
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft style={{ width: '16px', height: '16px' }} />
         ) : (
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight style={{ width: '16px', height: '16px' }} />
         )}
       </button>
 
-      <div className="h-full flex flex-col overflow-hidden">
-        {/* Context Header - fixed height 72px to align with page header */}
-        <div className={cn("h-[72px] border-b border-border flex items-center", expanded ? "px-4" : "justify-center")}>
+      <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        {/* Context Header - 52px per reference */}
+        <div 
+          style={{ 
+            height: '52px', 
+            padding: expanded ? '0 12px' : '0',
+            display: 'flex', 
+            alignItems: 'center',
+            justifyContent: expanded ? 'space-between' : 'center',
+            borderBottom: '1px solid #e5e7eb',
+            flexShrink: 0,
+          }}
+        >
           {!expanded && (
-            <div className="w-8 h-8 rounded bg-brand-gold flex items-center justify-center text-white text-xs font-semibold">
+            <div 
+              style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: '6px',
+                background: 'linear-gradient(135deg, #5c7c5c 0%, #6d8d6d 100%)',
+                color: '#ffffff',
+                fontSize: '11px',
+                fontWeight: 700,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
               EN
             </div>
           )}
           {expanded && workspaceType === 'enterprise' && (
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded bg-brand-gold flex items-center justify-center text-white text-xs font-semibold">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div 
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '6px',
+                  background: 'linear-gradient(135deg, #5c7c5c 0%, #6d8d6d 100%)',
+                  color: '#ffffff',
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
                 EN
               </div>
               <div>
-                <div className="text-sm font-medium">Enterprise</div>
-                <div className="text-xs text-muted-foreground">Strategy</div>
+                <div style={{ fontSize: '14px', fontWeight: 700, color: '#1f2937' }}>Enterprise</div>
+                <div style={{ fontSize: '12px', color: '#6b7280' }}>Strategy</div>
               </div>
             </div>
           )}
           {expanded && (workspaceType === 'project' || workspaceType === 'program') && currentPortfolio && (
-            <div className="flex items-center gap-3">
-              <div className={cn("w-8 h-8 rounded flex items-center justify-center text-white text-xs font-semibold flex-shrink-0", currentPortfolio.color)}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div 
+                className={currentPortfolio.color}
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '6px',
+                  color: '#ffffff',
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
                 {currentPortfolio.abbr}
               </div>
-              <div className="flex-1 text-left min-w-0">
-                <div className="text-sm font-medium text-foreground truncate">{currentPortfolio.name}</div>
-                <div className="text-xs text-muted-foreground">Portfolio</div>
+              <div style={{ flex: 1, textAlign: 'left', minWidth: 0 }}>
+                <div style={{ fontSize: '14px', fontWeight: 500, color: '#1f2937', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{currentPortfolio.name}</div>
+                <div style={{ fontSize: '12px', color: '#6b7280' }}>Portfolio</div>
               </div>
             </div>
           )}
@@ -316,26 +388,54 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                       handleNavigation(item.path);
                     }
                   }}
-                  className={cn(
-                    "w-full flex items-center gap-3 text-sm font-normal transition-colors",
-                    "hover:bg-accent/50",
-                    active && "bg-accent text-primary font-medium",
-                    expanded ? "px-4 py-2.5" : "justify-center px-0 py-3"
-                  )}
+                  style={{
+                    width: '100%',
+                    height: '40px',
+                    padding: expanded ? '0 12px' : '0',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    borderRadius: '6px',
+                    border: 'none',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                    marginBottom: '2px',
+                    position: 'relative',
+                    justifyContent: expanded ? 'flex-start' : 'center',
+                    background: active ? 'rgba(198, 156, 109, 0.06)' : 'transparent',
+                    color: active ? '#c69c6d' : '#4b5563',
+                    fontWeight: active ? 600 : 500,
+                    fontSize: '14px',
+                    fontFamily: 'inherit',
+                  }}
                 >
-                  <Icon className={cn(
-                    "flex-shrink-0",
-                    expanded ? "h-5 w-5 text-muted-foreground" : "h-5 w-5 text-muted-foreground mx-auto"
-                  )} />
-                  {expanded && <span className="truncate text-left flex-1">{item.label}</span>}
+                  {/* Gold left bar indicator for active state */}
+                  {active && (
+                    <span 
+                      style={{
+                        position: 'absolute',
+                        left: 0,
+                        top: '8px',
+                        bottom: '8px',
+                        width: '3px',
+                        background: '#c69c6d',
+                        borderRadius: '0 2px 2px 0',
+                      }}
+                    />
+                  )}
+                  <Icon style={{ width: '20px', height: '20px', flexShrink: 0, color: active ? '#c69c6d' : '#6b7280' }} />
+                  {expanded && <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'left', flex: 1 }}>{item.label}</span>}
                   {expanded && item.expandable && (
                     <ChevronRight 
-                      className={cn(
-                        "h-4 w-4 text-muted-foreground transition-transform",
-                        ((isMoreItems && moreItemsExpanded) || 
+                      style={{
+                        width: '16px',
+                        height: '16px',
+                        color: '#6b7280',
+                        transition: 'transform 0.15s ease',
+                        transform: ((isMoreItems && moreItemsExpanded) || 
                          (isReports && reportsExpanded) || 
-                         (isMorePages && morePagesExpanded)) && "rotate-90"
-                      )} 
+                         (isMorePages && morePagesExpanded)) ? 'rotate(90deg)' : 'rotate(0deg)',
+                      }}
                     />
                   )}
                 </button>
