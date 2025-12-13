@@ -284,7 +284,7 @@ export default function RisksGridPage() {
                   )}
                   {visibleColumns.includes('pi') && (
                     <TableCell className="text-text-secondary text-xs sm:text-sm hidden md:table-cell">
-                      PI-{risk.program_increment_id.substring(0, 8)}
+                      {risk.program_increment_id ? `PI-${risk.program_increment_id.substring(0, 8)}` : '—'}
                     </TableCell>
                   )}
                   {visibleColumns.includes('occurrence') && (
