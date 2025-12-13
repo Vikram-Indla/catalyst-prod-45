@@ -34,28 +34,23 @@ export default function ProductBacklogPage() {
     }));
   }, [businessRequests]);
 
+  const getDbIdFromDisplayId = (displayId: string) => {
+    const originalRequest = businessRequests.find((br: any) => 
+      (br.request_key || br.id?.slice(0, 8)) === displayId
+    );
+    return originalRequest?.id || null;
+  };
+
   const handleOpenFullView = (requestId: string) => {
-    // Find the actual DB id from the display id
-    const request = tableData.find(r => r.id === requestId);
-    if (request) {
-      const originalRequest = businessRequests.find((br: any) => 
-        (br.request_key || br.id?.slice(0, 8)) === requestId
-      );
-      if (originalRequest) {
-        setSelectedRequestId(originalRequest.id);
-      }
+    const dbId = getDbIdFromDisplayId(requestId);
+    if (dbId) {
+      setSelectedRequestId(dbId);
     }
   };
 
   const handleFieldUpdate = async (requestId: string, field: string, value: any) => {
-    // Find the actual DB id
-    const request = tableData.find(r => r.id === requestId);
-    if (!request) return;
-    
-    const originalRequest = businessRequests.find((br: any) => 
-      (br.request_key || br.id?.slice(0, 8)) === requestId
-    );
-    if (!originalRequest) return;
+    const dbId = getDbIdFromDisplayId(requestId);
+    if (!dbId) return;
 
     // Map field names back to DB column names
     const fieldMap: Record<string, string> = {
@@ -69,9 +64,58 @@ export default function ProductBacklogPage() {
     const { error } = await supabase
       .from('business_requests')
       .update({ [dbField]: value })
-      .eq('id', originalRequest.id);
+      .eq('id', dbId);
 
     if (error) {
+      throw error;
+    }
+
+    queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+  };
+
+  const handleDuplicate = async (requestId: string) => {
+    const dbId = getDbIdFromDisplayId(requestId);
+    if (!dbId) return;
+
+    const originalRequest = businessRequests.find((br: any) => br.id === dbId);
+    if (!originalRequest) return;
+
+    // Create duplicate with "(Copy)" appended to title
+    const { error } = await supabase
+      .from('business_requests')
+      .insert({
+        title: `${originalRequest.title} (Copy)`,
+        description: originalRequest.description,
+        process_step: 'new_request',
+        department: originalRequest.department,
+        delivery_platform: originalRequest.delivery_platform,
+        platform: originalRequest.platform,
+        complexity: originalRequest.complexity,
+        urgency: originalRequest.urgency,
+        health: 'green',
+      });
+
+    if (error) {
+      toast.error('Failed to duplicate request');
+      throw error;
+    }
+
+    queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+    toast.success('Request duplicated successfully');
+  };
+
+  const handleDelete = async (requestId: string) => {
+    const dbId = getDbIdFromDisplayId(requestId);
+    if (!dbId) return;
+
+    // Soft delete by setting deleted_at
+    const { error } = await supabase
+      .from('business_requests')
+      .update({ deleted_at: new Date().toISOString() })
+      .eq('id', dbId);
+
+    if (error) {
+      toast.error('Failed to delete request');
       throw error;
     }
 
@@ -87,6 +131,8 @@ export default function ProductBacklogPage() {
         onOpenFullView={handleOpenFullView}
         onFieldUpdate={handleFieldUpdate}
         onCreateNew={() => setCreateModalOpen(true)}
+        onDuplicate={handleDuplicate}
+        onDelete={handleDelete}
       />
 
       <BusinessRequestDrawer
