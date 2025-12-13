@@ -44,6 +44,7 @@ import { cn } from '@/lib/utils';
 import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
 import { ThemeDetailsDrawer } from '@/components/backlog/ThemeDetailsDrawer';
 import { ObjectiveDrawerV2 } from '@/modules/okr-v2';
+import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 
 interface RiskLinksTabProps {
   riskId: string;
@@ -100,6 +101,7 @@ export function RiskLinksTab({ riskId, businessRequestId, relatedItemId, relatio
   const [openFeatureId, setOpenFeatureId] = useState<string | null>(null);
   const [openThemeId, setOpenThemeId] = useState<string | null>(null);
   const [openObjectiveId, setOpenObjectiveId] = useState<string | null>(null);
+  const [openBusinessRequestId, setOpenBusinessRequestId] = useState<string | null>(null);
 
   // Fetch linked Business Request if present
   const { data: linkedBusinessRequest, isLoading: brLoading } = useQuery({
@@ -407,7 +409,7 @@ export function RiskLinksTab({ riskId, businessRequestId, relatedItemId, relatio
               {linkedBusinessRequest && (
                 <div 
                   className="p-3 border border-border/60 rounded-lg bg-muted/20 hover:bg-muted/40 transition-colors cursor-pointer group"
-                  onClick={() => navigate(`/industry/backlog?openRequest=${linkedBusinessRequest.id}`)}
+                  onClick={() => setOpenBusinessRequestId(linkedBusinessRequest.id)}
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-brand-gold/10 flex items-center justify-center shrink-0">
@@ -861,6 +863,13 @@ export function RiskLinksTab({ riskId, businessRequestId, relatedItemId, relatio
       objectiveId={openObjectiveId}
       open={!!openObjectiveId}
       onClose={() => setOpenObjectiveId(null)}
+    />
+
+    {/* Business Request Drawer */}
+    <BusinessRequestDrawer
+      isOpen={!!openBusinessRequestId}
+      onClose={() => setOpenBusinessRequestId(null)}
+      requestId={openBusinessRequestId}
     />
     </>
   );
