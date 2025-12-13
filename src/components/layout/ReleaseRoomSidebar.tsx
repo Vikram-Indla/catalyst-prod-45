@@ -49,7 +49,7 @@ export function ReleaseRoomSidebar({ expanded, onToggle, className }: ReleaseRoo
         <div className="h-[72px] px-4 border-b border-border flex items-center shrink-0">
           {expanded ? (
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-brand-gold/20 flex items-center justify-center text-brand-gold font-semibold text-sm">
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center font-semibold text-sm text-white" style={{ background: 'linear-gradient(135deg, #5c7c5c 0%, #6d8d6d 100%)' }}>
                 RL
               </div>
               <div className="flex flex-col">
@@ -58,7 +58,7 @@ export function ReleaseRoomSidebar({ expanded, onToggle, className }: ReleaseRoo
               </div>
             </div>
           ) : (
-            <div className="w-10 h-10 rounded-lg bg-brand-gold/20 flex items-center justify-center text-brand-gold font-semibold text-sm mx-auto">
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center font-semibold text-sm mx-auto text-white" style={{ background: 'linear-gradient(135deg, #5c7c5c 0%, #6d8d6d 100%)' }}>
               RL
             </div>
           )}
@@ -80,7 +80,7 @@ export function ReleaseRoomSidebar({ expanded, onToggle, className }: ReleaseRoo
                       onClick={() => navigate(item.path)}
                       className={cn(
                         'w-full h-10 flex items-center justify-center',
-                        active && 'bg-brand-gold-pale text-brand-gold'
+                        active && 'bg-[rgba(92,124,92,0.08)] text-[#5c7c5c]'
                       )}
                     >
                       <Icon className="h-5 w-5" />
@@ -100,7 +100,7 @@ export function ReleaseRoomSidebar({ expanded, onToggle, className }: ReleaseRoo
                 onClick={() => navigate(item.path)}
                 className={cn(
                   'w-full justify-start gap-3 h-10',
-                  active && 'bg-brand-gold-pale text-brand-gold'
+                  active && 'bg-[rgba(92,124,92,0.08)] text-[#5c7c5c]'
                 )}
               >
                 <Icon className="h-5 w-5" />
@@ -120,10 +120,10 @@ export function ReleaseRoomSidebar({ expanded, onToggle, className }: ReleaseRoo
                   variant="ghost"
                   size="icon"
                   onClick={() => navigate('/release/settings')}
-                  className={cn(
-                    'w-full h-10 flex items-center justify-center',
-                    isActive('/release/settings', true) && 'bg-brand-gold-pale text-brand-gold'
-                  )}
+                    className={cn(
+                      'w-full h-10 flex items-center justify-center',
+                      isActive('/release/settings', true) && 'bg-[rgba(92,124,92,0.08)] text-[#5c7c5c]'
+                    )}
                 >
                   <Settings className="h-5 w-5" />
                 </Button>
@@ -138,7 +138,7 @@ export function ReleaseRoomSidebar({ expanded, onToggle, className }: ReleaseRoo
               onClick={() => navigate('/release/settings')}
               className={cn(
                 'w-full justify-start gap-3 h-10',
-                isActive('/release/settings', true) && 'bg-brand-gold-pale text-brand-gold'
+                isActive('/release/settings', true) && 'bg-[rgba(92,124,92,0.08)] text-[#5c7c5c]'
               )}
             >
               <Settings className="h-5 w-5" />
