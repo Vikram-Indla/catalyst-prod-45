@@ -10,8 +10,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { RichTextEditor } from '@/components/business-requests/RichTextEditor';
-import { DELIVERY_PLATFORM_OPTIONS, DEPARTMENT_OPTIONS } from '@/types/business-request';
+import { DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
+import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings, getOwnerIdForDepartment } from '@/hooks/useDepartmentsAndOwners';
 import { 
   useCreateUploadSession, 
   useStageAttachment, 
@@ -206,8 +207,15 @@ export default function RequestAccess() {
     reporter: '',
     email: '',
     department: '',
+    departmentId: '',
     businessOwner: '',
+    businessOwnerId: '',
   });
+
+  // Fetch departments, owners and mappings from DB
+  const { data: departments } = useDepartments();
+  const { data: owners } = useBusinessOwners();
+  const { data: mappings } = useDepartmentOwnerMappings();
   
   // Attachments - now uses unified attachment system
   const [stagedAttachments, setStagedAttachments] = useState<UnifiedAttachment[]>([]);
@@ -271,10 +279,11 @@ export default function RequestAccess() {
       if (emailError) {
         newErrors.email = emailError;
       }
-      if (!formData.department) {
+      if (!formData.departmentId) {
         newErrors.department = t.deptError;
       }
-      if (!formData.businessOwner.trim()) {
+      // Business owner is auto-set from department, but validate it exists
+      if (!formData.businessOwnerId) {
         newErrors.businessOwner = t.ownerError;
       }
     }
@@ -398,11 +407,13 @@ export default function RequestAccess() {
         .insert([{
           title: formData.summary,
           description: formData.description,
-          start_date: formData.businessAsk || null, // Business Ask date - same field as drawer
+          start_date: formData.businessAsk || null,
           delivery_platform: formData.deliveryPlatform,
           department: formData.department,
+          department_id: formData.departmentId || null,
           business_owner: formData.businessOwner,
-          process_step: 'new_request', // Must be 'new_request' NOT 'request_received'
+          business_owner_id: formData.businessOwnerId || null,
+          process_step: 'new_request',
           health: 'green',
           platform: 'Web',
           complexity: 'Medium',
@@ -554,7 +565,9 @@ export default function RequestAccess() {
       reporter: '',
       email: '',
       department: '',
+      departmentId: '',
       businessOwner: '',
+      businessOwnerId: '',
     });
     setStagedAttachments([]);
     setErrors({});
@@ -771,7 +784,30 @@ export default function RequestAccess() {
                       <Label className="text-[13px] font-bold text-[#111827]">
                         {t.deptLabel}<span className="text-[#B42318] ml-1">{t.required}</span>
                       </Label>
-                      <Select value={formData.department} onValueChange={(v) => setFormData({ ...formData, department: v })}>
+                      <Select 
+                        value={formData.departmentId} 
+                        onValueChange={(v) => {
+                          const dept = departments?.find(d => d.id === v);
+                          // Auto-set business owner from mapping
+                          let ownerId = '';
+                          let ownerName = '';
+                          if (mappings && v) {
+                            const mapping = mappings.find(m => m.department_id === v);
+                            if (mapping) {
+                              ownerId = mapping.owner_id;
+                              const owner = owners?.find(o => o.id === mapping.owner_id);
+                              ownerName = owner?.name || '';
+                            }
+                          }
+                          setFormData({ 
+                            ...formData, 
+                            departmentId: v,
+                            department: dept?.name || '',
+                            businessOwnerId: ownerId,
+                            businessOwner: ownerName,
+                          });
+                        }}
+                      >
                         <SelectTrigger className={cn(
                           "h-11 rounded-xl border-[#E5E7EB]",
                           errors.department && "border-[#B42318]/55"
@@ -779,8 +815,8 @@ export default function RequestAccess() {
                           <SelectValue placeholder={t.deptPlaceholder} />
                         </SelectTrigger>
                         <SelectContent>
-                          {DEPARTMENT_OPTIONS.map((d) => (
-                            <SelectItem key={d.value} value={d.value}>{lang === 'en' ? d.label.en : d.label.ar}</SelectItem>
+                          {departments?.map((d) => (
+                            <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -791,15 +827,20 @@ export default function RequestAccess() {
                       <Label className="text-[13px] font-bold text-[#111827]">
                         {t.ownerLabel}<span className="text-[#B42318] ml-1">{t.required}</span>
                       </Label>
-                      <Input
-                        value={formData.businessOwner}
-                        onChange={(e) => setFormData({ ...formData, businessOwner: e.target.value })}
-                        placeholder={t.ownerPlaceholder}
-                        className={cn(
-                          "h-11 rounded-xl border-[#E5E7EB]",
+                      <Select value={formData.businessOwnerId} disabled>
+                        <SelectTrigger className={cn(
+                          "h-11 rounded-xl border-[#E5E7EB] bg-muted/50",
                           errors.businessOwner && "border-[#B42318]/55"
-                        )}
-                      />
+                        )}>
+                          <SelectValue placeholder={formData.businessOwner || t.ownerPlaceholder} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {owners?.map((o) => (
+                            <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-muted-foreground">Auto-set based on department</p>
                       {errors.businessOwner && <p className="text-xs font-bold text-[#B42318]">{errors.businessOwner}</p>}
                     </div>
                   </div>
@@ -886,7 +927,7 @@ export default function RequestAccess() {
                     </div>
                     <div className="flex items-center justify-between gap-3 px-3 py-2.5 border border-[#E5E7EB] rounded-xl bg-white text-[13px]">
                       <strong>{t.deptLabel}:</strong>
-                      <span className="text-[#6B7280]">{DEPARTMENT_OPTIONS.find(d => d.value === formData.department)?.label[lang] || formData.department || '—'}</span>
+                      <span className="text-[#6B7280]">{formData.department || '—'}</span>
                     </div>
                     <div className="flex items-center justify-between gap-3 px-3 py-2.5 border border-[#E5E7EB] rounded-xl bg-white text-[13px]">
                       <strong>{t.ownerLabel}:</strong>

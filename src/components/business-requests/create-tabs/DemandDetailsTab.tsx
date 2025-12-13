@@ -13,6 +13,9 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { RichTextEditor } from '../RichTextEditor';
 import { UserPicker } from '@/components/ui/user-picker';
+import { DepartmentSelect } from '../DepartmentSelect';
+import { BusinessOwnerSelect } from '../BusinessOwnerSelect';
+import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings, getOwnerIdForDepartment } from '@/hooks/useDepartmentsAndOwners';
 
 // Allowed document MIME types
 const ALLOWED_FILE_TYPES = [
@@ -43,12 +46,45 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const currentUser = 'Current User';
 
+  const { data: departments } = useDepartments();
+  const { data: owners } = useBusinessOwners();
+  const { data: mappings } = useDepartmentOwnerMappings();
+
   // Auto-populate reporter with current logged-in user on create
   useEffect(() => {
     if (user?.id && !data.requestor) {
       onChange('requestor', user.id);
     }
   }, [user?.id, data.requestor, onChange]);
+
+  // Handle department change with auto-setting of business owner
+  const handleDepartmentChange = (departmentId: string) => {
+    onChange('department_id', departmentId);
+    // Find department name and set it for legacy field
+    const dept = departments?.find(d => d.id === departmentId);
+    if (dept) {
+      onChange('department', dept.name);
+    }
+    // Auto-set business owner from mapping
+    if (mappings) {
+      const ownerId = getOwnerIdForDepartment(departmentId, mappings);
+      if (ownerId) {
+        onChange('business_owner_id', ownerId);
+        const owner = owners?.find(o => o.id === ownerId);
+        if (owner) {
+          onChange('business_owner', owner.name);
+        }
+      }
+    }
+  };
+
+  const handleBusinessOwnerChange = (ownerId: string) => {
+    onChange('business_owner_id', ownerId);
+    const owner = owners?.find(o => o.id === ownerId);
+    if (owner) {
+      onChange('business_owner', owner.name);
+    }
+  };
 
   const attachments: File[] = data.attachments || [];
 
@@ -357,35 +393,27 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
               <Label className="text-sm font-medium">
                 Department <span className="text-destructive">*</span>
               </Label>
-              <Select
-                value={data.department || ''}
-                onValueChange={(value) => onChange('department', value)}
-              >
-                <SelectTrigger className="mt-1.5">
-                  <SelectValue placeholder="Select department..." />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border shadow-lg z-50">
-                  <SelectItem value="it">Information Technology</SelectItem>
-                  <SelectItem value="operations">Operations</SelectItem>
-                  <SelectItem value="finance">Finance</SelectItem>
-                  <SelectItem value="hr">Human Resources</SelectItem>
-                  <SelectItem value="marketing">Marketing</SelectItem>
-                  <SelectItem value="sales">Sales</SelectItem>
-                  <SelectItem value="legal">Legal</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="mt-1.5">
+                <DepartmentSelect
+                  value={data.department_id || null}
+                  onChange={handleDepartmentChange}
+                  placeholder="Select department..."
+                />
+              </div>
             </div>
 
             <div>
               <Label className="text-sm font-medium">
                 Business Owner <span className="text-destructive">*</span>
               </Label>
-              <Input
-                value={data.business_owner || ''}
-                onChange={(e) => onChange('business_owner', e.target.value)}
-                placeholder="Enter business owner name"
-                className="mt-1.5"
-              />
+              <div className="mt-1.5">
+                <BusinessOwnerSelect
+                  value={data.business_owner_id || null}
+                  onChange={handleBusinessOwnerChange}
+                  departmentId={data.department_id || null}
+                  placeholder="Select business owner..."
+                />
+              </div>
             </div>
           </div>
         </CardContent>

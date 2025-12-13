@@ -359,6 +359,33 @@ export type Database = {
         }
         Relationships: []
       }
+      business_owners: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       business_request_audit_logs: {
         Row: {
           action: string
@@ -522,6 +549,7 @@ export type Database = {
           budget_year: string | null
           business_justification: string | null
           business_owner: string | null
+          business_owner_id: string | null
           business_score: number | null
           business_value: number | null
           capacity_risks: string | null
@@ -539,6 +567,7 @@ export type Database = {
           delivery_platform: string | null
           delivery_track: string | null
           department: string | null
+          department_id: string | null
           dependencies: string | null
           description: string | null
           end_date: string | null
@@ -615,6 +644,7 @@ export type Database = {
           budget_year?: string | null
           business_justification?: string | null
           business_owner?: string | null
+          business_owner_id?: string | null
           business_score?: number | null
           business_value?: number | null
           capacity_risks?: string | null
@@ -632,6 +662,7 @@ export type Database = {
           delivery_platform?: string | null
           delivery_track?: string | null
           department?: string | null
+          department_id?: string | null
           dependencies?: string | null
           description?: string | null
           end_date?: string | null
@@ -708,6 +739,7 @@ export type Database = {
           budget_year?: string | null
           business_justification?: string | null
           business_owner?: string | null
+          business_owner_id?: string | null
           business_score?: number | null
           business_value?: number | null
           capacity_risks?: string | null
@@ -725,6 +757,7 @@ export type Database = {
           delivery_platform?: string | null
           delivery_track?: string | null
           department?: string | null
+          department_id?: string | null
           dependencies?: string | null
           description?: string | null
           end_date?: string | null
@@ -786,7 +819,22 @@ export type Database = {
           urgency?: string | null
           vendor_effort_pct?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "business_requests_business_owner_id_fkey"
+            columns: ["business_owner_id"]
+            isOneToOne: false
+            referencedRelation: "business_owners"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "business_requests_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       capacity_allocations: {
         Row: {
@@ -1257,6 +1305,69 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      department_owner_mapping: {
+        Row: {
+          created_at: string | null
+          department_id: string
+          id: string
+          owner_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          department_id: string
+          id?: string
+          owner_id: string
+        }
+        Update: {
+          created_at?: string | null
+          department_id?: string
+          id?: string
+          owner_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "department_owner_mapping_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: true
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "department_owner_mapping_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "business_owners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      departments: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       dependencies: {
         Row: {
