@@ -23,25 +23,33 @@ export function RiskDiscussionsTab({ riskId }: RiskDiscussionsTabProps) {
   const { data: discussions = [], isLoading } = useQuery({
     queryKey: ['risk-discussions', riskId],
     queryFn: async () => {
+      // Fetch discussions without join (no FK relationship exists)
       const { data, error } = await supabase
         .from('discussions')
-        .select(`
-          id,
-          message,
-          created_at,
-          updated_at,
-          user_id,
-          profiles:user_id (
-            full_name,
-            email
-          )
-        `)
+        .select('id, message, created_at, updated_at, user_id')
         .eq('entity_type', 'risks')
         .eq('entity_id', riskId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data || [];
+      
+      // Enrich with user profiles separately
+      const enrichedDiscussions = await Promise.all(
+        (data || []).map(async (discussion) => {
+          let profile = null;
+          if (discussion.user_id) {
+            const { data: profileData } = await supabase
+              .from('profiles')
+              .select('full_name, email')
+              .eq('id', discussion.user_id)
+              .single();
+            profile = profileData;
+          }
+          return { ...discussion, profiles: profile };
+        })
+      );
+      
+      return enrichedDiscussions;
     },
   });
 
