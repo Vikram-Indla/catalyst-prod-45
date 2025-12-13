@@ -45,6 +45,7 @@ export interface Risk {
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
+  business_request_id: string | null;
 }
 
 // Form data for creating/editing risks (Source: Doc-Create_risks)

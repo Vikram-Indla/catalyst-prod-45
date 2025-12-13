@@ -4,7 +4,7 @@
 import { useState, useMemo } from 'react';
 import { Search, Filter, MoreVertical, Plus, Star, X, Check, Circle, Diamond } from 'lucide-react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
-import { useRisks } from '@/hooks/risks/useRisks';
+import { useRisks, RiskWithBR } from '@/hooks/risks/useRisks';
 import { useToast } from '@/hooks/use-toast';
 import { Risk, RiskFormData, RiskGridFilters } from '@/types/risks';
 import { RoamBadge } from '@/components/risks/RoamBadge';
@@ -68,17 +68,17 @@ function RiskDrillDownDrawer({
   onRiskClick,
 }: {
   mode: DrillDownMode;
-  allRisks: Risk[];
+  allRisks: RiskWithBR[];
   onClose: () => void;
-  onRiskClick: (risk: Risk) => void;
+  onRiskClick: (risk: RiskWithBR) => void;
 }) {
   if (!mode) return null;
 
-  // Filter risks based on drill-down mode
+  // Filter risks based on drill-down mode - FIXED: use department and business_owner from joined BR
   const filteredRisks = allRisks.filter(risk => {
     if (mode.type === 'roam') return risk.resolution_method === mode.value;
-    if (mode.type === 'department') return (risk.relationship || 'Enterprise') === mode.value;
-    if (mode.type === 'owner') return risk.owner_id === mode.value;
+    if (mode.type === 'department') return (risk.department || 'Unassigned') === mode.value;
+    if (mode.type === 'owner') return (risk.business_owner || 'Unassigned') === mode.value;
     return false;
   });
 
@@ -169,7 +169,7 @@ function RiskDrillDownDrawer({
               <h3 className="font-medium mb-2 text-foreground">{risk.title}</h3>
               <div className="flex flex-wrap gap-2 text-xs">
                 <span className="px-2 py-1 rounded-full bg-palette-expert/15 text-palette-expert">
-                  {risk.relationship || 'Enterprise'}
+                  {risk.department || 'Unassigned'}
                 </span>
                 {risk.target_resolution_date && (
                   <span className="px-2 py-1 rounded-full bg-palette-beginner/50 text-palette-advanced">
@@ -232,16 +232,16 @@ export default function EnterpriseRisks() {
     });
   }, [risks, filters, searchQuery]);
 
-  // Calculate KPI metrics
-  const allRisks = risks || [];
+  // Calculate KPI metrics - using RiskWithBR type with joined department/business_owner
+  const allRisks = (risks || []) as RiskWithBR[];
   const openRisks = allRisks.filter(r => r.status === 'Open');
   const criticalHighRisks = openRisks.filter(r => 
     r.critical_path === 'Yes' || r.impact === 'Critical' || r.impact === 'High'
   );
   const mitigatedRisks = openRisks.filter(r => r.resolution_method === 'Mitigated');
+  // FIXED: Proper filter for BR-linked risks - check actual business_request_id value
   const brRisks = openRisks.filter(r => 
-    r.relationship === 'Feature' || r.relationship === 'Epic' || 
-    (risk => (risk as any).business_request_id)
+    r.business_request_id !== null && r.business_request_id !== undefined
   );
 
   // ROAM summary
@@ -271,23 +271,24 @@ export default function EnterpriseRisks() {
     { name: 'Low', value: openRisks.filter(r => r.impact === 'Low').length, color: CHART_COLORS.olive },
   ];
 
-  // Business line distribution (using relationship as proxy)
+  // By Level distribution - uses relationship (temporary, shows work item level)
   const businessLineData = useMemo(() => {
-    const byLine: Record<string, number> = {};
+    const byLevel: Record<string, number> = {};
     allRisks.forEach(r => {
-      const line = r.relationship || 'Enterprise';
-      byLine[line] = (byLine[line] || 0) + 1;
+      // Use relationship for Level chart, default to 'Demand' for BR-linked risks
+      const level = r.relationship || 'Demand';
+      byLevel[level] = (byLevel[level] || 0) + 1;
     });
-    return Object.entries(byLine)
+    return Object.entries(byLevel)
       .map(([name, value]) => ({ name, value }))
       .sort((a, b) => b.value - a.value);
   }, [allRisks]);
 
-  // Department distribution (using relationship as department proxy for now)
+  // FIXED: Department distribution - uses department from joined business_requests
   const departmentData = useMemo(() => {
     const byDept: Record<string, number> = {};
     openRisks.forEach(r => {
-      const dept = r.relationship || 'Enterprise';
+      const dept = r.department || 'Unassigned';
       byDept[dept] = (byDept[dept] || 0) + 1;
     });
     return Object.entries(byDept)
@@ -295,19 +296,19 @@ export default function EnterpriseRisks() {
       .sort((a, b) => b.value - a.value);
   }, [openRisks]);
 
-  // Top business owners by risk count
+  // FIXED: Top business owners by risk count - uses business_owner from joined BR
   const topBusinessOwners = useMemo(() => {
-    const byOwner: Record<string, { count: number; unit: string }> = {};
+    const byOwner: Record<string, { count: number; department: string }> = {};
     openRisks.forEach(r => {
-      const ownerName = r.owner_id || 'Unassigned';
-      const unit = r.relationship || 'Enterprise';
+      const ownerName = r.business_owner || 'Unassigned';
+      const dept = r.department || 'Unassigned';
       if (!byOwner[ownerName]) {
-        byOwner[ownerName] = { count: 0, unit };
+        byOwner[ownerName] = { count: 0, department: dept };
       }
       byOwner[ownerName].count++;
     });
     return Object.entries(byOwner)
-      .map(([owner, data]) => ({ owner, openRisks: data.count, unit: data.unit }))
+      .map(([owner, data]) => ({ owner, openRisks: data.count, unit: data.department }))
       .sort((a, b) => b.openRisks - a.openRisks)
       .slice(0, 5);
   }, [openRisks]);
