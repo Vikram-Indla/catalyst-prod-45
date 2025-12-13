@@ -78,7 +78,46 @@ export function useBusinessRequests(searchQuery?: string) {
 
       const { data, error } = await query;
       if (error) throw error;
-      return (data || []).map(transformRow);
+      
+      // Collect unique user IDs from requestor and assignee fields
+      const userIds = new Set<string>();
+      (data || []).forEach(row => {
+        // Only add if it looks like a UUID (contains dashes and is 36 chars)
+        if (row.requestor && row.requestor.length === 36 && row.requestor.includes('-')) {
+          userIds.add(row.requestor);
+        }
+        if (row.assignee && row.assignee.length === 36 && row.assignee.includes('-')) {
+          userIds.add(row.assignee);
+        }
+      });
+      
+      // Fetch profile names for all user IDs
+      let profileMap: Record<string, string> = {};
+      if (userIds.size > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, full_name, email')
+          .in('id', Array.from(userIds));
+        
+        if (profiles) {
+          profiles.forEach(p => {
+            profileMap[p.id] = p.full_name || p.email || '—';
+          });
+        }
+      }
+      
+      // Transform rows and resolve user IDs to names
+      return (data || []).map(row => {
+        const transformed = transformRow(row);
+        // Resolve requestor/assignee UUIDs to names
+        if (row.requestor && profileMap[row.requestor]) {
+          transformed.requestor_name = profileMap[row.requestor];
+        }
+        if (row.assignee && profileMap[row.assignee]) {
+          transformed.assignee_name = profileMap[row.assignee];
+        }
+        return transformed;
+      });
     },
   });
 }
