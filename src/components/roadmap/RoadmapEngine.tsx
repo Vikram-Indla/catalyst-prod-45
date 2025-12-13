@@ -1179,7 +1179,7 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
                             className="max-w-[380px] px-4 py-3.5 rounded-lg shadow-2xl z-[9999]"
                             style={{ backgroundColor: 'hsl(20, 8%, 20%)', color: 'white', border: 'none' }}
                           >
-                            <div className="text-xs font-medium mb-1.5" style={{ color: 'hsl(35, 30%, 65%)' }}>{item.id}</div>
+                            <div className="text-xs font-medium mb-1.5" style={{ color: 'hsl(35, 30%, 65%)' }}>{item.key || `TH-${item.id.slice(0, 4).toUpperCase()}`}</div>
                             <div className="font-medium text-sm mb-3 leading-snug" style={{ color: 'white' }}>{isRTL ? item.titleAr : item.titleEn}</div>
                             <div className="flex items-center gap-2 mb-3">
                               <span className="text-[10px] font-medium uppercase tracking-wide" style={{ color: 'hsl(35, 30%, 60%)' }}>STATUS:</span>
