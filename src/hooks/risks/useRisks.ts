@@ -23,14 +23,24 @@ export function useRisks(programId?: string, programIncrementId?: string) {
   } = useQuery({
     queryKey: ['risks', programId, programIncrementId],
     queryFn: async () => {
-      // Join risks with business_requests to get department and business_owner
+      // Join risks with business_requests, departments, and business_owners to get names
       let query = supabase
         .from('risks')
         .select(`
           *,
           business_requests (
             department,
-            business_owner
+            business_owner,
+            department_id,
+            business_owner_id,
+            departments:department_id (
+              id,
+              name
+            ),
+            business_owners:business_owner_id (
+              id,
+              name
+            )
           )
         `)
         .is('deleted_at', null)
@@ -48,11 +58,11 @@ export function useRisks(programId?: string, programIncrementId?: string) {
 
       if (error) throw error;
       
-      // Flatten the joined data
+      // Flatten the joined data - prefer lookup table names over legacy text fields
       return (data || []).map((risk: any) => ({
         ...risk,
-        department: risk.business_requests?.department || null,
-        business_owner: risk.business_requests?.business_owner || null,
+        department: risk.business_requests?.departments?.name || risk.business_requests?.department || null,
+        business_owner: risk.business_requests?.business_owners?.name || risk.business_requests?.business_owner || null,
         business_requests: undefined, // Remove nested object
       })) as RiskWithBR[];
     }
