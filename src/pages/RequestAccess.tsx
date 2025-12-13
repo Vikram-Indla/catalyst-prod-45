@@ -729,7 +729,7 @@ export default function RequestAccess() {
                       )}>
                         <SelectValue placeholder={t.platformPlaceholder} />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="z-[400]">
                         {DELIVERY_PLATFORM_OPTIONS.map((p) => (
                           <SelectItem key={p.value} value={p.value}>{lang === 'en' ? p.label.en : p.label.ar}</SelectItem>
                         ))}
@@ -814,7 +814,7 @@ export default function RequestAccess() {
                         )}>
                           <SelectValue placeholder={t.deptPlaceholder} />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="z-[400]">
                           {departments?.map((d) => (
                             <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
                           ))}
@@ -834,7 +834,7 @@ export default function RequestAccess() {
                         )}>
                           <SelectValue placeholder={formData.businessOwner || t.ownerPlaceholder} />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="z-[400]">
                           {owners?.map((o) => (
                             <SelectItem key={o.id} value={o.id}>{o.name}</SelectItem>
                           ))}
