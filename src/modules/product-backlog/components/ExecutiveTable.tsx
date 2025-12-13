@@ -62,6 +62,26 @@ const Icons = {
   Plus: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
 };
 
+// Delivery Track options
+const DELIVERY_TRACKS = [
+  { value: 'bau_fast_track', label: 'BAU Fast Track' },
+  { value: 'standard', label: 'Standard' },
+  { value: 'strategic', label: 'Strategic' },
+  { value: 'innovation', label: 'Innovation' },
+];
+
+// Quarter options
+const QUARTERS = [
+  { value: 'q1_2025', label: 'Q1 2025' },
+  { value: 'q2_2025', label: 'Q2 2025' },
+  { value: 'q3_2025', label: 'Q3 2025' },
+  { value: 'q4_2025', label: 'Q4 2025' },
+  { value: 'q1_2026', label: 'Q1 2026' },
+  { value: 'q2_2026', label: 'Q2 2026' },
+  { value: 'q3_2026', label: 'Q3 2026' },
+  { value: 'q4_2026', label: 'Q4 2026' },
+];
+
 // All columns configuration - NO frozen columns by default
 // Note: Department options are loaded dynamically inside the component via useDepartments hook
 const ALL_COLUMNS = [
@@ -70,8 +90,16 @@ const ALL_COLUMNS = [
   { id: 'processStep', header: 'Status', accessor: 'processStep', minWidth: 160, sortable: true, filterable: true, editable: true, type: 'select', options: STATUS_OPTIONS },
   { id: 'score', header: 'Score', accessor: 'score', minWidth: 120, sortable: true, type: 'number', align: 'right' },
   { id: 'rank', header: 'Rank', accessor: 'rank', minWidth: 100, sortable: true, type: 'number', align: 'center' },
+  { id: 'reporter', header: 'Reporter', accessor: 'reporter', minWidth: 140, sortable: true },
+  { id: 'assignee', header: 'Assignee', accessor: 'assignee', minWidth: 140, sortable: true },
   { id: 'department', header: 'Department', accessor: 'department', minWidth: 180, sortable: true, filterable: true, editable: true, type: 'select', options: [] }, // Populated dynamically
+  { id: 'businessOwner', header: 'Business Owner', accessor: 'businessOwner', minWidth: 160, sortable: true },
+  { id: 'businessAsk', header: 'Business Ask', accessor: 'businessAsk', minWidth: 120, sortable: true, type: 'date' },
+  { id: 'kickoff', header: 'Kickoff', accessor: 'kickoff', minWidth: 120, sortable: true, type: 'date' },
+  { id: 'targetComplete', header: 'Target Complete', accessor: 'targetComplete', minWidth: 130, sortable: true, type: 'date' },
+  { id: 'deliveryTrack', header: 'Delivery Track', accessor: 'deliveryTrack', minWidth: 140, sortable: true, filterable: true, editable: true, type: 'select', options: DELIVERY_TRACKS },
   { id: 'platform', header: 'Delivery Platform', accessor: 'platform', minWidth: 150, sortable: true, filterable: true, editable: true, type: 'select', options: PLATFORMS },
+  { id: 'quarter', header: 'Quarter', accessor: 'quarter', minWidth: 110, sortable: true, filterable: true, editable: true, type: 'select', options: QUARTERS },
   { id: 'createdAt', header: 'Created', accessor: 'createdAt', minWidth: 110, sortable: true },
 ];
 
@@ -81,8 +109,16 @@ interface BusinessRequest {
   processStep: string;
   score: number | null;
   rank: number | null;
+  reporter: string | null;
+  assignee: string | null;
   department: string;
+  businessOwner: string | null;
+  businessAsk: string | null;
+  kickoff: string | null;
+  targetComplete: string | null;
+  deliveryTrack: string | null;
   platform: string | null;
+  quarter: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -947,8 +983,44 @@ export function ExecutiveTable({
       );
     }
     
-    if (column.id === 'createdAt') {
+    if (column.id === 'reporter' || column.id === 'assignee' || column.id === 'businessOwner') {
+      return (
+        <span className="text-xs text-foreground truncate">
+          {value || '—'}
+        </span>
+      );
+    }
+    
+    if (column.id === 'businessAsk' || column.id === 'kickoff' || column.id === 'targetComplete' || column.id === 'createdAt') {
       return <DateDisplay date={value} />;
+    }
+    
+    if (column.id === 'deliveryTrack') {
+      const track = DELIVERY_TRACKS.find(t => t.value === value);
+      return (
+        <EditableCell
+          value={value}
+          type="select"
+          options={DELIVERY_TRACKS}
+          displayValue={<span className="text-xs text-foreground">{track?.label || ''}</span>}
+          onSave={handleInlineSave}
+          columnId={column.id}
+        />
+      );
+    }
+    
+    if (column.id === 'quarter') {
+      const q = QUARTERS.find(q => q.value === value);
+      return (
+        <EditableCell
+          value={value}
+          type="select"
+          options={QUARTERS}
+          displayValue={<span className="text-xs text-foreground">{q?.label || ''}</span>}
+          onSave={handleInlineSave}
+          columnId={column.id}
+        />
+      );
     }
 
     return (
