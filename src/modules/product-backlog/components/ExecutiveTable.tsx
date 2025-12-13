@@ -17,16 +17,16 @@ const DENSITY_CONFIG = {
   relaxed: { rowHeight: 52, fontSize: 14, padding: '14px 12px' },
 };
 
-// Process Steps - using semantic tokens for status colors
-const PROCESS_STEPS = [
-  { value: 'new_request', label: 'New Request', semantic: 'muted' },
-  { value: 'analyse', label: 'Analyse', semantic: 'warning' },
-  { value: 'in_review', label: 'In Review', semantic: 'info' },
-  { value: 'approved', label: 'Approved', semantic: 'info' },
-  { value: 'implement', label: 'Implement', semantic: 'success' },
-  { value: 'closed', label: 'Closed', semantic: 'success' },
-  { value: 'rejected', label: 'Rejected', semantic: 'danger' },
-  { value: 'on_hold', label: 'On-Hold', semantic: 'warning' },
+// Status options - neutral styling with accent indicators
+const STATUS_OPTIONS = [
+  { value: 'new_request', label: 'New Request', accent: 'gold' },
+  { value: 'analyse', label: 'Analyse', accent: 'green' },
+  { value: 'in_review', label: 'In Review', accent: 'gold' },
+  { value: 'approved', label: 'Approved', accent: 'neutral' },
+  { value: 'implement', label: 'Implement', accent: 'green' },
+  { value: 'closed', label: 'Closed', accent: 'neutral' },
+  { value: 'rejected', label: 'Rejected', accent: 'neutral' },
+  { value: 'on_hold', label: 'On-Hold', accent: 'neutral' },
 ];
 
 // Departments - loaded dynamically from admin-configured data via useDepartments hook
@@ -67,7 +67,7 @@ const Icons = {
 const ALL_COLUMNS = [
   { id: 'id', header: 'Request ID', accessor: 'id', minWidth: 110, sortable: true },
   { id: 'summary', header: 'Summary', accessor: 'summary', minWidth: 320, sortable: true, editable: true },
-  { id: 'processStep', header: 'Process Step', accessor: 'processStep', minWidth: 160, sortable: true, filterable: true, editable: true, type: 'select', options: PROCESS_STEPS },
+  { id: 'processStep', header: 'Status', accessor: 'processStep', minWidth: 160, sortable: true, filterable: true, editable: true, type: 'select', options: STATUS_OPTIONS },
   { id: 'score', header: 'Score', accessor: 'score', minWidth: 120, sortable: true, type: 'number', align: 'right' },
   { id: 'rank', header: 'Rank', accessor: 'rank', minWidth: 100, sortable: true, type: 'number', align: 'right' },
   { id: 'department', header: 'Department', accessor: 'department', minWidth: 180, sortable: true, filterable: true, editable: true, type: 'select', options: [] }, // Populated dynamically
@@ -98,41 +98,43 @@ interface ExecutiveTableProps {
   onDelete?: (requestId: string) => Promise<void>;
 }
 
-// Status Badge - uses semantic CSS classes
-function StatusBadge({ value, options }: { value: string; options: { value: string; label: string; semantic?: string }[] }) {
+// Status Badge - neutral pill with small left accent dot
+function StatusBadge({ value, options }: { value: string; options: { value: string; label: string; accent?: string }[] }) {
   const option = options.find(o => o.value === value);
-  if (!option) return <span className="text-muted-foreground">—</span>;
+  if (!option) return <span className="text-muted-foreground text-xs">—</span>;
   
-  const semanticClasses: Record<string, string> = {
-    success: 'bg-success/10 text-success',
-    warning: 'bg-warning/10 text-warning',
-    danger: 'bg-destructive/10 text-destructive',
-    info: 'bg-info/10 text-info',
-    muted: 'bg-muted text-muted-foreground',
+  // Accent dot color based on status category
+  const accentClasses: Record<string, string> = {
+    gold: 'bg-brand-gold',
+    green: 'bg-secondary-green',
+    neutral: 'bg-muted-foreground/40',
   };
   
+  const accentClass = accentClasses[option.accent || 'neutral'] || accentClasses.neutral;
+  
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold whitespace-nowrap ${semanticClasses[option.semantic || 'muted'] || semanticClasses.muted}`}>
+    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-muted/60 text-[11px] font-medium text-foreground whitespace-nowrap border border-border/40">
+      <span className={`w-1.5 h-1.5 rounded-full ${accentClass}`} />
       {option.label}
     </span>
   );
 }
 
-// Score Progress Bar - neutral text only
+// Score Progress Bar - with proper track border
 function ScoreBar({ score }: { score: number | null }) {
   if (score === null || score === undefined) {
-    return <span className="text-muted-foreground text-[11px]">—</span>;
+    return <span className="text-muted-foreground text-[11px]"></span>;
   }
   
   return (
     <div className="flex items-center gap-2 min-w-[80px]">
-      <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
+      <div className="flex-1 h-2 bg-muted/50 border border-border/60 rounded overflow-hidden">
         <div 
-          className="h-full rounded-full transition-all duration-300 bg-brand-gold"
-          style={{ width: `${score}%` }}
+          className="h-full rounded-sm transition-all duration-300 bg-brand-gold"
+          style={{ width: `${Math.min(score, 100)}%` }}
         />
       </div>
-      <span className="text-xs font-semibold min-w-[24px] tabular-nums text-foreground">
+      <span className="text-xs font-medium min-w-[24px] tabular-nums text-foreground">
         {score}
       </span>
     </div>
@@ -808,7 +810,7 @@ export function ExecutiveTable({
             e.stopPropagation();
             onOpenFullView(row.id);
           }}
-          className="font-semibold text-brand-gold font-mono text-xs cursor-pointer hover:underline transition-colors"
+          className="font-medium font-mono text-xs cursor-pointer hover:underline transition-colors text-foreground"
         >
           {value}
         </span>
@@ -835,8 +837,8 @@ export function ExecutiveTable({
         <EditableCell
           value={value}
           type="select"
-          options={PROCESS_STEPS}
-          displayValue={<StatusBadge value={value} options={PROCESS_STEPS} />}
+          options={STATUS_OPTIONS}
+          displayValue={<StatusBadge value={value} options={STATUS_OPTIONS} />}
           onSave={handleInlineSave}
           columnId={column.id}
         />
@@ -848,17 +850,19 @@ export function ExecutiveTable({
     }
     
     if (column.id === 'rank') {
-      return value ? <span className="font-semibold tabular-nums">#{value}</span> : <span className="text-muted-foreground">—</span>;
+      // Empty state = blank (not dashes)
+      return value ? <span className="font-medium tabular-nums text-foreground">#{value}</span> : null;
     }
     
     if (column.id === 'department') {
-      const dept = departmentOptions.find(d => d.value === value);
+      // Find department by ID or name (handles both FK and legacy string data)
+      const dept = departmentOptions.find(d => d.value === value || d.label === value);
       return (
         <EditableCell
           value={value}
           type="select"
           options={departmentOptions}
-          displayValue={<span className="text-xs">{dept?.label || value || <span className="text-muted-foreground">—</span>}</span>}
+          displayValue={<span className="text-xs text-foreground">{dept?.label || ''}</span>}
           onSave={handleInlineSave}
           columnId={column.id}
         />
@@ -872,7 +876,7 @@ export function ExecutiveTable({
           value={value}
           type="select"
           options={PLATFORMS}
-          displayValue={<span className="text-xs">{plat?.label || <span className="text-muted-foreground">—</span>}</span>}
+          displayValue={<span className="text-xs text-foreground">{plat?.label || ''}</span>}
           onSave={handleInlineSave}
           columnId={column.id}
         />
