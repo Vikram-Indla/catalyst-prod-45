@@ -63,6 +63,7 @@ interface FilterDropdownProps {
   singleSelect?: boolean;
   value?: string;
   onChange?: (value: string) => void;
+  tooltip?: string;
 }
 
 export function FilterDropdown({ 
@@ -74,7 +75,8 @@ export function FilterDropdown({
   icon, 
   singleSelect = false, 
   value, 
-  onChange 
+  onChange,
+  tooltip
 }: FilterDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -90,18 +92,20 @@ export function FilterDropdown({
   }, []);
 
   const isActive = singleSelect ? (value && value !== 'all' && value !== 'none') : selected?.length > 0;
+  const showIconOnly = !label;
 
   return (
     <div ref={ref} style={{ position: 'relative' }}>
       <button
         onClick={() => setIsOpen(!isOpen)}
+        title={tooltip}
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '8px',
-          padding: '8px 14px',
+          gap: showIconOnly ? '4px' : '8px',
+          padding: showIconOnly ? '6px 8px' : '8px 14px',
           border: `1px solid ${isActive ? KANBAN_COLORS.gold : KANBAN_COLORS.borderDefault}`,
-          borderRadius: '8px',
+          borderRadius: '6px',
           backgroundColor: isActive ? KANBAN_COLORS.bgSelected : KANBAN_COLORS.bgCard,
           color: isActive ? KANBAN_COLORS.gold : KANBAN_COLORS.textSecondary,
           fontSize: '13px',
@@ -114,7 +118,7 @@ export function FilterDropdown({
         {label}
         {!singleSelect && selected?.length > 0 && (
           <span style={{
-            padding: '2px 8px',
+            padding: '2px 6px',
             borderRadius: '10px',
             backgroundColor: KANBAN_COLORS.gold,
             color: 'white',
@@ -226,9 +230,10 @@ export function FilterDropdown({
 interface GroupByDropdownProps {
   value: GroupByOption;
   onChange: (value: GroupByOption) => void;
+  iconOnly?: boolean;
 }
 
-export function GroupByDropdown({ value, onChange }: GroupByDropdownProps) {
+export function GroupByDropdown({ value, onChange, iconOnly }: GroupByDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const selected = GROUP_BY_OPTIONS.find(o => o.id === value);
@@ -247,13 +252,14 @@ export function GroupByDropdown({ value, onChange }: GroupByDropdownProps) {
     <div ref={ref} style={{ position: 'relative' }}>
       <button
         onClick={() => setIsOpen(!isOpen)}
+        title="Group By"
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '8px',
-          padding: '8px 14px',
+          gap: iconOnly ? '4px' : '8px',
+          padding: iconOnly ? '6px 8px' : '8px 14px',
           border: `1px solid ${value !== 'none' ? KANBAN_COLORS.gold : KANBAN_COLORS.borderDefault}`,
-          borderRadius: '8px',
+          borderRadius: '6px',
           backgroundColor: value !== 'none' ? KANBAN_COLORS.bgSelected : KANBAN_COLORS.bgCard,
           color: value !== 'none' ? KANBAN_COLORS.gold : KANBAN_COLORS.textSecondary,
           fontSize: '13px',
@@ -263,7 +269,7 @@ export function GroupByDropdown({ value, onChange }: GroupByDropdownProps) {
         }}
       >
         <KanbanIcons.GroupBy />
-        <span>Group: {selected?.label}</span>
+        {!iconOnly && <span>Group: {selected?.label}</span>}
         <KanbanIcons.ChevronDown />
       </button>
 
