@@ -1149,10 +1149,11 @@ export function ExecutiveTable({
       </div>
 
       {/* TABLE CONTAINER - Single boxed card with border, border-radius, horizontal scroll */}
-      <div className="flex-1 p-4 overflow-hidden">
-        <div className="h-full flex flex-col border border-border rounded-xl bg-background overflow-hidden">
-          {/* Scrollable Table Area */}
-          <div className="flex-1 overflow-auto">
+      {/* margin-top: 12px separates from toolbar divider to avoid double-line effect */}
+      <div className="px-4 pb-4 pt-3 overflow-hidden" style={{ maxHeight: 'calc(100vh - 56px - 44px - 52px - 24px)' }}>
+        <div className="flex flex-col border border-border rounded-xl bg-background overflow-hidden h-full">
+          {/* Scrollable Table Area - owns horizontal + vertical scroll */}
+          <div className="flex-1 overflow-auto min-h-0">
             <table className="w-full border-collapse" style={{ minWidth: columns.reduce((acc, col) => acc + (col.minWidth || 100), 48 + 40) }}>
               <thead className="sticky top-0 z-10">
                 <tr>
