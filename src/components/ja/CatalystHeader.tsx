@@ -199,12 +199,13 @@ export function CatalystHeader() {
               const isActive = item.label === activeNavItem;
               
               // TopNav item styles matching reference exactly
+              // Active nav items use olive green (#5c7c5c) for consistency
               const navButtonStyle: React.CSSProperties = {
                 height: '36px',
                 padding: '0 14px',
                 fontSize: '14px',
                 fontWeight: isActive ? 600 : 500,
-                color: isActive ? '#c69c6d' : '#374151',
+                color: isActive ? '#5c7c5c' : '#374151',
                 borderRadius: '6px',
                 display: 'flex',
                 alignItems: 'center',
@@ -217,7 +218,7 @@ export function CatalystHeader() {
                 fontFamily: 'inherit',
               };
               
-              // Active underline indicator - positioned under text
+              // Active underline indicator - positioned under text (olive green)
               const activeUnderline = isActive ? (
                 <span 
                   style={{
@@ -226,7 +227,7 @@ export function CatalystHeader() {
                     left: '14px',
                     right: '14px',
                     height: '2px',
-                    background: '#c69c6d',
+                    background: '#5c7c5c',
                     borderRadius: '1px',
                   }}
                 />
@@ -318,7 +319,7 @@ export function CatalystHeader() {
                         <button 
                           style={{
                             ...navButtonStyle,
-                            color: location.pathname.startsWith('/release') ? '#c69c6d' : navButtonStyle.color,
+                            color: location.pathname.startsWith('/release') ? '#5c7c5c' : navButtonStyle.color,
                             fontWeight: location.pathname.startsWith('/release') ? 600 : navButtonStyle.fontWeight,
                           }}
                           onMouseEnter={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
@@ -334,7 +335,7 @@ export function CatalystHeader() {
                                 left: '14px',
                                 right: '14px',
                                 height: '2px',
-                                background: '#c69c6d',
+                                background: '#5c7c5c',
                                 borderRadius: '1px',
                               }}
                             />
