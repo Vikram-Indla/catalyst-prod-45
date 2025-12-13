@@ -38,16 +38,10 @@ const adminSections = [
     ],
   },
   {
-    title: 'Application Settings',
+    title: 'General',
     items: [
       { label: 'Modules & Packages', path: '/admin/modules-packages', icon: Package },
-      { label: 'Work Codes', path: '/admin/work-codes', icon: Database },
       { label: 'Details Panels', path: '/admin/details-panels', icon: Settings },
-      { label: 'Terminology', path: '/admin/terminology', icon: FileText },
-      { label: 'Team Settings', path: '/admin/team-settings', icon: Users },
-      { label: 'Progress Bars', path: '/admin/progress-bars', icon: TrendingUp },
-      { label: 'Progress Bars Config', path: '/admin/progress-bars-config', icon: BarChart3 },
-      { label: 'Estimation', path: '/admin/estimation', icon: Settings },
       { label: 'General Settings', path: '/admin/general-settings', icon: Settings },
       { label: 'General Config', path: '/admin/general-config', icon: Settings },
       { label: 'Security', path: '/admin/security', icon: Shield },
