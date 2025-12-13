@@ -7961,6 +7961,7 @@ export type Database = {
           name: string
           notes: string | null
           role_code: string | null
+          role_name: string | null
           updated_at: string | null
         }
         Insert: {
@@ -7971,6 +7972,7 @@ export type Database = {
           name: string
           notes?: string | null
           role_code?: string | null
+          role_name?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -7981,17 +7983,10 @@ export type Database = {
           name?: string
           notes?: string | null
           role_code?: string | null
+          role_name?: string | null
           updated_at?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "resource_inventory_role_code_fkey"
-            columns: ["role_code"]
-            isOneToOne: false
-            referencedRelation: "role_catalog"
-            referencedColumns: ["code"]
-          },
-        ]
+        Relationships: []
       }
       resource_roles: {
         Row: {
