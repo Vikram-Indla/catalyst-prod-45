@@ -65,6 +65,8 @@ const TYPE_BADGE_CONFIG: Record<string, { bg: string; text: string }> = {
 interface UnifiedLinksTabProps {
   entityType: LinkableEntityType;
   entityId: string;
+  /** Hide specific tiles from the selection view */
+  hideTiles?: ('implementation' | 'document' | 'knowledge-hub' | 'external')[];
 }
 
 const formatFileSize = (bytes: number): string => {
@@ -100,7 +102,7 @@ function getTableConfig(entityType: LinkableEntityType) {
   }
 }
 
-export function UnifiedLinksTab({ entityType, entityId }: UnifiedLinksTabProps) {
+export function UnifiedLinksTab({ entityType, entityId, hideTiles = [] }: UnifiedLinksTabProps) {
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const tableConfig = getTableConfig(entityType);
@@ -557,52 +559,60 @@ export function UnifiedLinksTab({ entityType, entityId }: UnifiedLinksTabProps) 
         {formView === 'selection' && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {/* Implementation Links */}
-            <button
-              className="p-4 border-2 border-dashed border-border rounded-xl text-center cursor-pointer transition-all hover:border-brand-gold/50 hover:bg-brand-gold/5 group"
-              onClick={() => setFormView('implementation')}
-            >
-              <div className="w-10 h-10 mx-auto mb-2 flex items-center justify-center bg-muted/50 rounded-lg group-hover:bg-brand-gold group-hover:text-white transition-all">
-                <LinkIcon className="h-5 w-5 text-muted-foreground group-hover:text-white" />
-              </div>
-              <div className="font-medium text-[13px] text-foreground mb-0.5">Implementation Links</div>
-              <div className="text-[11px] text-muted-foreground leading-tight">Link epics, features, or stories</div>
-            </button>
+            {!hideTiles.includes('implementation') && (
+              <button
+                className="p-4 border-2 border-dashed border-border rounded-xl text-center cursor-pointer transition-all hover:border-brand-gold/50 hover:bg-brand-gold/5 group"
+                onClick={() => setFormView('implementation')}
+              >
+                <div className="w-10 h-10 mx-auto mb-2 flex items-center justify-center bg-muted/50 rounded-lg group-hover:bg-brand-gold group-hover:text-white transition-all">
+                  <LinkIcon className="h-5 w-5 text-muted-foreground group-hover:text-white" />
+                </div>
+                <div className="font-medium text-[13px] text-foreground mb-0.5">Implementation Links</div>
+                <div className="text-[11px] text-muted-foreground leading-tight">Link epics, features, or stories</div>
+              </button>
+            )}
 
             {/* Upload Documents */}
-            <button
-              className="p-4 border-2 border-dashed border-border rounded-xl text-center cursor-pointer transition-all hover:border-brand-gold/50 hover:bg-brand-gold/5 group"
-              onClick={() => setFormView('document')}
-            >
-              <div className="w-10 h-10 mx-auto mb-2 flex items-center justify-center bg-muted/50 rounded-lg group-hover:bg-brand-gold group-hover:text-white transition-all">
-                <FilePlus className="h-5 w-5 text-muted-foreground group-hover:text-white" />
-              </div>
-              <div className="font-medium text-[13px] text-foreground mb-0.5">Upload Documents</div>
-              <div className="text-[11px] text-muted-foreground leading-tight">Attach files up to 20MB each</div>
-            </button>
+            {!hideTiles.includes('document') && (
+              <button
+                className="p-4 border-2 border-dashed border-border rounded-xl text-center cursor-pointer transition-all hover:border-brand-gold/50 hover:bg-brand-gold/5 group"
+                onClick={() => setFormView('document')}
+              >
+                <div className="w-10 h-10 mx-auto mb-2 flex items-center justify-center bg-muted/50 rounded-lg group-hover:bg-brand-gold group-hover:text-white transition-all">
+                  <FilePlus className="h-5 w-5 text-muted-foreground group-hover:text-white" />
+                </div>
+                <div className="font-medium text-[13px] text-foreground mb-0.5">Upload Documents</div>
+                <div className="text-[11px] text-muted-foreground leading-tight">Attach files up to 20MB each</div>
+              </button>
+            )}
 
             {/* Knowledge Hub */}
-            <button
-              className="p-4 border-2 border-dashed border-border rounded-xl text-center cursor-pointer transition-all hover:border-brand-gold/50 hover:bg-brand-gold/5 group"
-              onClick={() => setFormView('knowledge-hub')}
-            >
-              <div className="w-10 h-10 mx-auto mb-2 flex items-center justify-center bg-muted/50 rounded-lg group-hover:bg-brand-gold group-hover:text-white transition-all">
-                <BookOpen className="h-5 w-5 text-muted-foreground group-hover:text-white" />
-              </div>
-              <div className="font-medium text-[13px] text-foreground mb-0.5">Knowledge Hub</div>
-              <div className="text-[11px] text-muted-foreground leading-tight">Link to a KB page</div>
-            </button>
+            {!hideTiles.includes('knowledge-hub') && (
+              <button
+                className="p-4 border-2 border-dashed border-border rounded-xl text-center cursor-pointer transition-all hover:border-brand-gold/50 hover:bg-brand-gold/5 group"
+                onClick={() => setFormView('knowledge-hub')}
+              >
+                <div className="w-10 h-10 mx-auto mb-2 flex items-center justify-center bg-muted/50 rounded-lg group-hover:bg-brand-gold group-hover:text-white transition-all">
+                  <BookOpen className="h-5 w-5 text-muted-foreground group-hover:text-white" />
+                </div>
+                <div className="font-medium text-[13px] text-foreground mb-0.5">Knowledge Hub</div>
+                <div className="text-[11px] text-muted-foreground leading-tight">Link to a KB page</div>
+              </button>
+            )}
 
             {/* External Link */}
-            <button
-              className="p-4 border-2 border-dashed border-border rounded-xl text-center cursor-pointer transition-all hover:border-brand-gold/50 hover:bg-brand-gold/5 group"
-              onClick={() => setFormView('external')}
-            >
-              <div className="w-10 h-10 mx-auto mb-2 flex items-center justify-center bg-muted/50 rounded-lg group-hover:bg-brand-gold group-hover:text-white transition-all">
-                <ExternalLink className="h-5 w-5 text-muted-foreground group-hover:text-white" />
-              </div>
-              <div className="font-medium text-[13px] text-foreground mb-0.5">External Link</div>
-              <div className="text-[11px] text-muted-foreground leading-tight">Add a URL to external resource</div>
-            </button>
+            {!hideTiles.includes('external') && (
+              <button
+                className="p-4 border-2 border-dashed border-border rounded-xl text-center cursor-pointer transition-all hover:border-brand-gold/50 hover:bg-brand-gold/5 group"
+                onClick={() => setFormView('external')}
+              >
+                <div className="w-10 h-10 mx-auto mb-2 flex items-center justify-center bg-muted/50 rounded-lg group-hover:bg-brand-gold group-hover:text-white transition-all">
+                  <ExternalLink className="h-5 w-5 text-muted-foreground group-hover:text-white" />
+                </div>
+                <div className="font-medium text-[13px] text-foreground mb-0.5">External Link</div>
+                <div className="text-[11px] text-muted-foreground leading-tight">Add a URL to external resource</div>
+              </button>
+            )}
           </div>
         )}
 
