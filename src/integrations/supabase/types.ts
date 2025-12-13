@@ -1692,6 +1692,63 @@ export type Database = {
           },
         ]
       }
+      development_inventory: {
+        Row: {
+          capacity_percent: number
+          created_at: string | null
+          end_date: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          notes: string | null
+          project_id: string | null
+          role_code: string | null
+          start_date: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          capacity_percent?: number
+          created_at?: string | null
+          end_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          notes?: string | null
+          project_id?: string | null
+          role_code?: string | null
+          start_date?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          capacity_percent?: number
+          created_at?: string | null
+          end_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          notes?: string | null
+          project_id?: string | null
+          role_code?: string | null
+          start_date?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "development_inventory_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "development_inventory_role_code_fkey"
+            columns: ["role_code"]
+            isOneToOne: false
+            referencedRelation: "role_catalog"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
       discussion_mentions: {
         Row: {
           created_at: string
@@ -8178,6 +8235,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      role_catalog: {
+        Row: {
+          code: string
+          created_at: string | null
+          is_active: boolean | null
+          name: string
+          sort_order: number | null
+        }
+        Insert: {
+          code: string
+          created_at?: string | null
+          is_active?: boolean | null
+          name: string
+          sort_order?: number | null
+        }
+        Update: {
+          code?: string
+          created_at?: string | null
+          is_active?: boolean | null
+          name?: string
+          sort_order?: number | null
+        }
+        Relationships: []
       }
       saved_filters: {
         Row: {
