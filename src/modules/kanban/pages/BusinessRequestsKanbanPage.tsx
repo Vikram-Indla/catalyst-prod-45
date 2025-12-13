@@ -137,48 +137,33 @@ export default function BusinessRequestsKanbanPage() {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: KANBAN_COLORS.bgPage }}>
-      {/* Header */}
-      <div style={{ backgroundColor: KANBAN_COLORS.bgHeader, borderBottom: `1px solid ${KANBAN_COLORS.borderLight}`, padding: '16px 28px', position: 'sticky', top: 0, zIndex: 100 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-          <div>
-            <h1 style={{ fontSize: '22px', fontWeight: 700, color: KANBAN_COLORS.olive, margin: 0 }}>Business Requests Board</h1>
-            <p style={{ fontSize: '13px', color: KANBAN_COLORS.textMuted, marginTop: '4px' }}>
-              {filteredTickets.length} of {tickets.length} requests
-              <span style={{ marginLeft: '16px', color: KANBAN_COLORS.textLight }}>📊 {scoringStats.scored} scored • {scoringStats.unscored} unscored</span>
-            </p>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ display: 'flex', border: `1px solid ${KANBAN_COLORS.borderDefault}`, borderRadius: '8px', overflow: 'hidden' }}>
-              <button onClick={() => navigate('/industry')} style={{ padding: '10px 16px', border: 'none', backgroundColor: KANBAN_COLORS.bgCard, color: KANBAN_COLORS.textMuted, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 500 }}>
-                <KanbanIcons.List /> List
-              </button>
-              <button style={{ padding: '10px 16px', border: 'none', backgroundColor: KANBAN_COLORS.gold, color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 600 }}>
-                <KanbanIcons.Grid /> Kanban
-              </button>
-            </div>
-            <button onClick={() => setCreateModalOpen(true)} style={{ padding: '10px 14px', border: 'none', borderRadius: '8px', backgroundColor: KANBAN_COLORS.gold, color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: 600 }}>
-              <KanbanIcons.Plus />
-            </button>
-          </div>
-        </div>
-
-        {/* Filter Row - Single line compact */}
+      {/* Header - Single line */}
+      <div style={{ backgroundColor: KANBAN_COLORS.bgHeader, borderBottom: `1px solid ${KANBAN_COLORS.borderLight}`, padding: '12px 28px', position: 'sticky', top: 0, zIndex: 100 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 12px', border: `1px solid ${KANBAN_COLORS.borderDefault}`, borderRadius: '8px', backgroundColor: KANBAN_COLORS.bgCard, flex: 1, maxWidth: '320px' }}>
+          <h1 style={{ fontSize: '18px', fontWeight: 600, color: KANBAN_COLORS.olive, margin: 0, whiteSpace: 'nowrap' }}>Business Requests</h1>
+          <span style={{ fontSize: '12px', color: KANBAN_COLORS.textMuted }}>{filteredTickets.length}/{tickets.length}</span>
+          <div style={{ width: '1px', height: '24px', backgroundColor: KANBAN_COLORS.borderLight }} />
+          <button onClick={() => navigate('/industry')} title="List View" style={{ padding: '6px 10px', border: `1px solid ${KANBAN_COLORS.borderDefault}`, borderRadius: '6px', backgroundColor: KANBAN_COLORS.bgCard, color: KANBAN_COLORS.textMuted, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px' }}>
+            <KanbanIcons.List /> List
+          </button>
+          <div style={{ width: '1px', height: '24px', backgroundColor: KANBAN_COLORS.borderLight }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 10px', border: `1px solid ${KANBAN_COLORS.borderDefault}`, borderRadius: '6px', backgroundColor: KANBAN_COLORS.bgCard, flex: 1, maxWidth: '200px' }}>
             <KanbanIcons.Search />
-            <input type="text" placeholder="Search requests..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} style={{ border: 'none', outline: 'none', fontSize: '13px', flex: 1, backgroundColor: 'transparent', color: KANBAN_COLORS.textPrimary }} />
+            <input type="text" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} style={{ border: 'none', outline: 'none', fontSize: '12px', flex: 1, backgroundColor: 'transparent', color: KANBAN_COLORS.textPrimary }} />
             {searchQuery && (<button onClick={() => setSearchQuery('')} style={{ background: 'none', border: 'none', padding: '2px', cursor: 'pointer', color: KANBAN_COLORS.textMuted }}><KanbanIcons.X /></button>)}
           </div>
-          <div style={{ width: '1px', height: '24px', backgroundColor: KANBAN_COLORS.borderLight }} />
           <QuickFilterAvatars members={teamMembers.slice(0, 6)} selected={selectedAssignees} onToggle={(id) => setSelectedAssignees(prev => prev.includes(id) ? prev.filter(a => a !== id) : [...prev, id])} />
           <div style={{ width: '1px', height: '24px', backgroundColor: KANBAN_COLORS.borderLight }} />
-          <FilterDropdown label="Priority" options={PRIORITIES} selected={selectedPriorities} onToggle={(id) => setSelectedPriorities(prev => prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id])} colorKey="color" icon="⚡" />
-          <FilterDropdown label={scoringFilter === 'all' ? 'Scoring' : SCORING_OPTIONS.find(o => o.id === scoringFilter)?.label || 'Scoring'} options={SCORING_OPTIONS} singleSelect value={scoringFilter} onChange={(v) => setScoringFilter(v as ScoringFilter)} icon="📊" />
-          <GroupByDropdown value={groupBy} onChange={setGroupBy} />
-          {hasActiveFilters && (<button onClick={clearAllFilters} style={{ padding: '6px 10px', border: 'none', borderRadius: '6px', backgroundColor: `${KANBAN_COLORS.danger}10`, color: KANBAN_COLORS.danger, fontSize: '11px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}><KanbanIcons.X /></button>)}
+          <FilterDropdown label="" options={PRIORITIES} selected={selectedPriorities} onToggle={(id) => setSelectedPriorities(prev => prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id])} colorKey="color" icon="⚡" tooltip="Priority" />
+          <FilterDropdown label="" options={SCORING_OPTIONS} singleSelect value={scoringFilter} onChange={(v) => setScoringFilter(v as ScoringFilter)} icon="📊" tooltip="Scoring" />
+          <GroupByDropdown value={groupBy} onChange={setGroupBy} iconOnly />
+          {hasActiveFilters && (<button onClick={clearAllFilters} title="Clear Filters" style={{ padding: '6px', border: 'none', borderRadius: '6px', backgroundColor: `${KANBAN_COLORS.danger}10`, color: KANBAN_COLORS.danger, cursor: 'pointer' }}><KanbanIcons.X /></button>)}
           <div style={{ flex: 1 }} />
-          <button onClick={() => setCompactMode(!compactMode)} title={compactMode ? 'Standard View' : 'Compact View'} style={{ padding: '8px 10px', border: `1px solid ${compactMode ? KANBAN_COLORS.gold : KANBAN_COLORS.borderDefault}`, borderRadius: '8px', backgroundColor: compactMode ? KANBAN_COLORS.bgSelected : KANBAN_COLORS.bgCard, color: compactMode ? KANBAN_COLORS.gold : KANBAN_COLORS.textMuted, fontSize: '12px', fontWeight: 500, cursor: 'pointer' }}>
+          <button onClick={() => setCompactMode(!compactMode)} title={compactMode ? 'Standard View' : 'Compact View'} style={{ padding: '6px', border: `1px solid ${compactMode ? KANBAN_COLORS.gold : KANBAN_COLORS.borderDefault}`, borderRadius: '6px', backgroundColor: compactMode ? KANBAN_COLORS.bgSelected : KANBAN_COLORS.bgCard, color: compactMode ? KANBAN_COLORS.gold : KANBAN_COLORS.textMuted, cursor: 'pointer' }}>
             {compactMode ? '⊡' : '⊟'}
+          </button>
+          <button onClick={() => setCreateModalOpen(true)} title="Create Request" style={{ padding: '6px 10px', border: 'none', borderRadius: '6px', backgroundColor: KANBAN_COLORS.gold, color: 'white', cursor: 'pointer' }}>
+            <KanbanIcons.Plus />
           </button>
         </div>
       </div>
