@@ -28,12 +28,11 @@ export interface IndustryHeaderToolbarV2Props {
   selectedAvatarIds?: string[];
   onToggleAvatar?: (id: string) => void;
   onSelectAllAvatars?: () => void;
-  onQuickActions?: () => void;
-  onInsights?: () => void;
+  // Scoring filter
+  scoringFilter?: 'all' | 'scored' | 'unscored';
+  onScoringFilterChange?: (filter: 'all' | 'scored' | 'unscored') => void;
   onViewSettings?: () => void;
   onExport?: () => void;
-  onOverflow?: () => void;
-  onAdd: () => void;
 }
 
 // Icons - exact SVGs from FILE-1
@@ -124,12 +123,10 @@ export function IndustryHeaderToolbarV2({
   selectedAvatarIds = [],
   onToggleAvatar,
   onSelectAllAvatars,
-  onQuickActions,
-  onInsights,
+  scoringFilter = 'all',
+  onScoringFilterChange,
   onViewSettings,
   onExport,
-  onOverflow,
-  onAdd,
 }: IndustryHeaderToolbarV2Props) {
   const navigate = useNavigate();
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -271,54 +268,47 @@ export function IndustryHeaderToolbarV2({
 
         {/* Action Rail */}
         <div className={styles.actionRail}>
-          {/* Quick Actions */}
-          <button
-            className={`${styles.iconBtn} ${styles.actionRail__collapsible}`}
-            data-tooltip="Quick actions"
-            aria-label="Quick actions"
-            onClick={onQuickActions}
-          >
-            <Icons.QuickActions />
-          </button>
+          {/* Scoring Filter */}
+          <div className={styles.scoringFilter}>
+            <button
+              className={`${styles.iconBtn} ${scoringFilter !== 'all' ? styles.isActive : ''}`}
+              data-tooltip="Filter by score"
+              aria-label="Filter by score"
+              onClick={() => {
+                if (onScoringFilterChange) {
+                  // Cycle through: all -> scored -> unscored -> all
+                  const next = scoringFilter === 'all' ? 'scored' : scoringFilter === 'scored' ? 'unscored' : 'all';
+                  onScoringFilterChange(next);
+                }
+              }}
+            >
+              <Icons.Insights />
+              {scoringFilter !== 'all' && (
+                <span className={styles.filterBadge}>{scoringFilter === 'scored' ? 'S' : 'U'}</span>
+              )}
+            </button>
+          </div>
 
-          {/* Insights */}
-          <button
-            className={`${styles.iconBtn} ${styles.actionRail__collapsible}`}
-            data-tooltip="Insights"
-            aria-label="Insights"
-            onClick={onInsights}
-          >
-            <Icons.Insights />
-          </button>
+          {/* View Settings - Only show in Kanban view */}
+          {activeView === 'board' && (
+            <button
+              className={`${styles.iconBtn} ${styles.actionRail__collapsible}`}
+              data-tooltip="View settings"
+              aria-label="View settings"
+              onClick={onViewSettings}
+            >
+              <Icons.ViewSettings />
+            </button>
+          )}
 
-          {/* View Settings */}
+          {/* Export CSV */}
           <button
             className={`${styles.iconBtn} ${styles.actionRail__collapsible}`}
-            data-tooltip="View settings"
-            aria-label="View settings"
-            onClick={onViewSettings}
-          >
-            <Icons.ViewSettings />
-          </button>
-
-          {/* Export */}
-          <button
-            className={`${styles.iconBtn} ${styles.actionRail__collapsible}`}
-            data-tooltip="Export"
-            aria-label="Export"
+            data-tooltip="Export CSV"
+            aria-label="Export CSV"
             onClick={onExport}
           >
             <Icons.Export />
-          </button>
-
-          {/* Overflow (responsive) */}
-          <button
-            className={`${styles.iconBtn} ${styles.overflowBtn}`}
-            data-tooltip="More actions"
-            aria-label="More actions"
-            onClick={onOverflow}
-          >
-            <Icons.Overflow />
           </button>
         </div>
       </div>

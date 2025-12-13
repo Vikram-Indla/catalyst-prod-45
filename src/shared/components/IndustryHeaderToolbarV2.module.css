@@ -305,6 +305,37 @@
 }
 
 /* ========================
+   SCORING FILTER
+   ======================== */
+.scoringFilter {
+  display: flex;
+  align-items: center;
+}
+
+.iconBtn.isActive {
+  background: hsl(var(--brand-gold) / 0.1);
+  border-color: hsl(var(--brand-gold));
+  color: hsl(var(--brand-gold));
+}
+
+.filterBadge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  background: hsl(var(--brand-gold));
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ========================
    ACTION RAIL
    ======================== */
 .actionRail {

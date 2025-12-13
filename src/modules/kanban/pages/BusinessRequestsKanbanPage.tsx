@@ -178,12 +178,24 @@ export default function BusinessRequestsKanbanPage() {
         selectedAvatarIds={selectedAssignees}
         onToggleAvatar={(id) => setSelectedAssignees(prev => prev.includes(id) ? prev.filter(a => a !== id) : [...prev, id])}
         onSelectAllAvatars={() => setSelectedAssignees([])}
-        onQuickActions={() => {}}
-        onInsights={() => {}}
+        scoringFilter={scoringFilter}
+        onScoringFilterChange={setScoringFilter}
         onViewSettings={() => setCompactMode(!compactMode)}
-        onExport={() => {}}
-        onOverflow={() => {}}
-        onAdd={() => setCreateModalOpen(true)}
+        onExport={() => {
+          // Export CSV
+          const headers = ['ID', 'Summary', 'Status', 'Score', 'Assignee'];
+          const csvRows = [headers.join(',')];
+          filteredTickets.forEach(t => {
+            csvRows.push([t.id, `"${t.summary.replace(/"/g, '""')}"`, t.status, t.score ?? '', t.assignee ?? ''].join(','));
+          });
+          const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'business-requests.csv';
+          a.click();
+          URL.revokeObjectURL(url);
+        }}
       />
 
       {/* Board */}
