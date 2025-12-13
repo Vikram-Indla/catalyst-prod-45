@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import { PROCESS_STEPS, DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
+import { useDepartments } from '@/hooks/useDepartmentsAndOwners';
 
 interface IndustryFiltersDialogProps {
   open: boolean;
@@ -41,13 +42,9 @@ const ageingOptions = [
   { value: '30+', label: '30+ days' },
 ];
 
-const departmentOptions = [
-  { value: 'it', label: 'IT' },
-  { value: 'hr', label: 'HR' },
-  { value: 'finance', label: 'Finance' },
-  { value: 'operations', label: 'Operations' },
-  { value: 'marketing', label: 'Marketing' },
-];
+// REMOVED: departmentOptions hardcoded array
+// Departments must come ONLY from admin-configured data via useDepartments() hook
+// See ZERO-SEED / ZERO-HALLUCINATION policy
 
 export function IndustryFiltersDialog({
   open,
@@ -58,6 +55,10 @@ export function IndustryFiltersDialog({
   const [peopleOpen, setPeopleOpen] = useState(true);
   const [statusOpen, setStatusOpen] = useState(true);
   const [datesOpen, setDatesOpen] = useState(true);
+  
+  // Fetch departments from admin-configured data (ZERO-SEED policy)
+  const { data: departments = [] } = useDepartments();
+  const departmentOptions = departments.map(d => ({ value: d.id, label: d.name }));
 
   const handleClearFilters = () => {
     onFiltersChange({});
