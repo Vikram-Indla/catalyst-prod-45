@@ -28,7 +28,7 @@ export function useResourceRoles() {
     queryKey: ['resource-roles'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('resource_roles')
+        .from('role_catalog')
         .select('*')
         .eq('is_active', true)
         .order('sort_order', { ascending: true });
@@ -53,7 +53,7 @@ export function useResourceInventory() {
 
       // Fetch all roles for name mapping
       const { data: roles, error: rolesError } = await supabase
-        .from('resource_roles')
+        .from('role_catalog')
         .select('code, name');
 
       if (rolesError) throw rolesError;
