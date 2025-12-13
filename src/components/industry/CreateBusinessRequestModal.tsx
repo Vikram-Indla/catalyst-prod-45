@@ -52,11 +52,11 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
       toast.error('Assignee is required');
       return;
     }
-    if (!formData.department) {
+    if (!formData.department_id && !formData.department) {
       toast.error('Department is required');
       return;
     }
-    if (!formData.business_owner || formData.business_owner.trim().length === 0) {
+    if (!formData.business_owner_id && (!formData.business_owner || formData.business_owner.trim().length === 0)) {
       toast.error('Business Owner is required');
       return;
     }
@@ -76,6 +76,10 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
       impl_start_date: formData.impl_start_date,
       delivery_platform: formData.delivery_platform,
       planned_quarter: formData.planned_quarter,
+      department: formData.department,
+      department_id: formData.department_id,
+      business_owner: formData.business_owner,
+      business_owner_id: formData.business_owner_id,
     };
 
     await createMutation.mutateAsync(requestData as any);

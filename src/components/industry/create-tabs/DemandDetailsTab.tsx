@@ -1,10 +1,14 @@
+import { useEffect } from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
-import { DELIVERY_PLATFORM_OPTIONS, DEPARTMENT_OPTIONS } from '@/types/business-request';
+import { DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
 import { format } from 'date-fns';
+import { DepartmentSelect } from '@/components/business-requests/DepartmentSelect';
+import { BusinessOwnerSelect } from '@/components/business-requests/BusinessOwnerSelect';
+import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings, getOwnerIdForDepartment } from '@/hooks/useDepartmentsAndOwners';
 
 const QUARTER_OPTIONS = [
   'Q1 2024', 'Q2 2024', 'Q3 2024', 'Q4 2024',
@@ -18,6 +22,39 @@ interface DemandDetailsTabProps {
 }
 
 export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
+  const { data: departments } = useDepartments();
+  const { data: owners } = useBusinessOwners();
+  const { data: mappings } = useDepartmentOwnerMappings();
+
+  // Handle department change with auto-setting of business owner
+  const handleDepartmentChange = (departmentId: string) => {
+    onChange('department_id', departmentId);
+    // Find department name and set it for legacy field
+    const dept = departments?.find(d => d.id === departmentId);
+    if (dept) {
+      onChange('department', dept.name);
+    }
+    // Auto-set business owner from mapping
+    if (mappings) {
+      const ownerId = getOwnerIdForDepartment(departmentId, mappings);
+      if (ownerId) {
+        onChange('business_owner_id', ownerId);
+        const owner = owners?.find(o => o.id === ownerId);
+        if (owner) {
+          onChange('business_owner', owner.name);
+        }
+      }
+    }
+  };
+
+  const handleBusinessOwnerChange = (ownerId: string) => {
+    onChange('business_owner_id', ownerId);
+    const owner = owners?.find(o => o.id === ownerId);
+    if (owner) {
+      onChange('business_owner', owner.name);
+    }
+  };
+
   return (
     <div className="p-6 space-y-6">
       {/* Summary */}
@@ -70,21 +107,11 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
           <Label htmlFor="department" className="text-sm font-medium">
             Department <span className="text-destructive">*</span>
           </Label>
-          <Select
-            value={data.department || ''}
-            onValueChange={(value) => onChange('department', value)}
-          >
-            <SelectTrigger className="bg-background">
-              <SelectValue placeholder="Select department" />
-            </SelectTrigger>
-            <SelectContent>
-              {DEPARTMENT_OPTIONS.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value}>
-                  {opt.label.en}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <DepartmentSelect
+            value={data.department_id || null}
+            onChange={handleDepartmentChange}
+            placeholder="Select department"
+          />
         </div>
 
         {/* Business Owner */}
@@ -92,12 +119,11 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
           <Label htmlFor="business_owner" className="text-sm font-medium">
             Business Owner <span className="text-destructive">*</span>
           </Label>
-          <Input
-            id="business_owner"
-            value={data.business_owner || ''}
-            onChange={(e) => onChange('business_owner', e.target.value)}
-            placeholder="Enter business owner name"
-            className="bg-background"
+          <BusinessOwnerSelect
+            value={data.business_owner_id || null}
+            onChange={handleBusinessOwnerChange}
+            departmentId={data.department_id || null}
+            placeholder="Select business owner"
           />
         </div>
 
