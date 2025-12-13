@@ -57,7 +57,7 @@ const getEnterpriseMenuItems = (): MenuItem[] => [
   { id: 'strategic-backlog', label: 'Strategic Backlog', icon: ListTree, path: '/enterprise/backlog', tiers: ['enterprise'] },
   { id: 'objective-tree', label: 'Objective tree', icon: Workflow, path: '/enterprise/okr-hub', tiers: ['enterprise'] },
   { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/enterprise/roadmaps', tiers: ['enterprise'] },
-  { id: 'risks', label: 'Risks', icon: Blocks, path: '/risks', tiers: ['enterprise'] },
+  { id: 'risks', label: 'Risks', icon: Blocks, path: '/enterprise/risks', tiers: ['enterprise'] },
   { id: 'capacity-planning', label: 'Capacity', icon: UsersIcon, path: '/enterprise/reports/demand-capacity', tiers: ['enterprise'] },
   { id: 'reports', label: 'Reports', icon: TrendingUp, path: '/reports-discovery', tiers: ['enterprise'] },
 ];
