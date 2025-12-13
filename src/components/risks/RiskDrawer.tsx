@@ -389,7 +389,12 @@ export function RiskDrawer({ risk, isOpen, onClose, onUpdate }: RiskDrawerProps)
                 />
               </TabsContent>
               <TabsContent value="links" className="m-0 focus-visible:outline-none flex-1">
-                <RiskLinksTab riskId={risk.id} businessRequestId={risk.business_request_id} />
+                <RiskLinksTab 
+                  riskId={risk.id} 
+                  businessRequestId={risk.business_request_id}
+                  relatedItemId={risk.related_item_id}
+                  relationship={risk.relationship}
+                />
               </TabsContent>
               <TabsContent value="discussions" className="m-0 focus-visible:outline-none h-[500px]">
                 <RiskDiscussionsTab riskId={risk.id} />
