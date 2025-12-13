@@ -1,3 +1,19 @@
+/**
+ * Admin Overview Metrics Sources:
+ * ──────────────────────────────────────────────────────────
+ * usersCount         -> useUsers() from src/hooks/useUsers.ts (profiles table)
+ * integrationsCount  -> integration_connectors table (src/pages/admin/Integrations.tsx pattern)
+ * auditEventsCount   -> activity_logs table (src/pages/admin/Activity.tsx pattern)
+ * departmentsCount   -> useDepartments() from src/hooks/useDepartmentsAndOwners.ts
+ * businessOwnersCount-> useBusinessOwners() from src/hooks/useDepartmentsAndOwners.ts
+ * teamsCount         -> useTeams() from src/hooks/useTeams.ts
+ * programsCount      -> programs table (src/pages/admin/OrgSetup.tsx pattern)
+ * recentActivity     -> useRecentRooms() from src/hooks/useRecentRooms.ts
+ * adminChanges       -> activity_logs table filtered to admin entity types
+ *
+ * NO seeded/demo data. All counts are from real database.
+ */
+
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,94 +29,108 @@ import {
   Settings,
   Database,
   Clock,
-  ArrowRight
+  ArrowRight,
+  Loader2
 } from 'lucide-react';
 import { useState } from 'react';
+import { useAdminOverviewMetrics, useRecentAdminChanges, useRecentRooms } from '@/hooks/useAdminOverviewMetrics';
+import { formatDistanceToNow } from 'date-fns';
 
-// Mock data for recently visited
-const recentlyVisited = [
-  { label: 'Users', path: '/admin/users', lastAccessed: '2 min ago' },
-  { label: 'Jira Integration', path: '/admin/jira-config', lastAccessed: '15 min ago' },
-  { label: 'Activity Log', path: '/admin/audit/activity', lastAccessed: '1 hour ago' },
-  { label: 'Roles & Permissions', path: '/admin/roles-permissions', lastAccessed: '3 hours ago' },
-];
-
-// Mock data for recent admin changes
-const recentAdminChanges = [
-  { action: 'User role updated', actor: 'John Smith', time: '5 min ago', entity: 'Sarah Connor' },
-  { action: 'Integration configured', actor: 'Admin', time: '2 hours ago', entity: 'Jira' },
-  { action: 'New team created', actor: 'Jane Doe', time: '1 day ago', entity: 'Platform Team' },
-  { action: 'Permission granted', actor: 'John Smith', time: '2 days ago', entity: 'Developer Role' },
-];
-
-// Pocket cards configuration
-const pocketCards = [
-  {
-    id: 'users-access',
-    title: 'Users & Access',
-    description: 'Manage users, roles, and permissions',
-    icon: Users,
-    path: '/admin/users',
-    count: 24,
-    countLabel: 'users',
-  },
-  {
-    id: 'configuration',
-    title: 'Configuration',
-    description: 'System settings and preferences',
-    icon: Settings,
-    path: '/admin/modules-packages',
-    count: 13,
-    countLabel: 'settings',
-  },
-  {
-    id: 'reference-data',
-    title: 'Reference Data',
-    description: 'Teams, programs, and master data',
-    icon: Database,
-    path: '/admin/teams',
-    count: 156,
-    countLabel: 'records',
-  },
-  {
-    id: 'integrations',
-    title: 'Integrations',
-    description: 'External connections and imports',
-    icon: Link2,
-    path: '/admin/jira-config',
-    count: 2,
-    countLabel: 'active',
-  },
-  {
-    id: 'audit-usage',
-    title: 'Audit & Usage',
-    description: 'Activity logs and usage analytics',
-    icon: Activity,
-    path: '/admin/audit/activity',
-    count: 1247,
-    countLabel: 'events',
-  },
-  {
-    id: 'security',
-    title: 'Security',
-    description: 'Security settings and policies',
-    icon: Shield,
-    path: '/admin/security',
-    count: 3,
-    countLabel: 'policies',
-  },
-];
-
-// Quick actions
+// Quick actions - static config, no mock data
 const quickActions = [
   { label: 'Invite user', icon: UserPlus, path: '/admin/users', action: 'invite' },
   { label: 'Create role', icon: Shield, path: '/admin/roles-permissions', action: 'create' },
-  { label: 'Open audit log', icon: Activity, path: '/admin/audit/activity' },
+  { label: 'Open audit log', icon: Activity, path: '/admin/activity' },
   { label: 'Jira integration', icon: Link2, path: '/admin/jira-config' },
 ];
 
 export default function AdminOverview() {
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Real data from existing hooks - NO MOCK DATA
+  const metrics = useAdminOverviewMetrics();
+  const { data: recentChanges, isLoading: changesLoading } = useRecentAdminChanges(5);
+  const { recentRooms, loading: roomsLoading } = useRecentRooms({ limit: 4 });
+
+  // Dynamic pocket cards driven by real metrics
+  const pocketCards = [
+    {
+      id: 'users-access',
+      title: 'Users & Access',
+      description: 'Manage users, roles, and permissions',
+      icon: Users,
+      path: '/admin/users',
+      count: metrics.usersCount,
+      countLabel: 'users',
+    },
+    {
+      id: 'configuration',
+      title: 'Configuration',
+      description: 'System settings and preferences',
+      icon: Settings,
+      path: '/admin/modules-packages',
+      count: metrics.settingsCount,
+      countLabel: 'settings',
+    },
+    {
+      id: 'reference-data',
+      title: 'Reference Data',
+      description: 'Teams, programs, and master data',
+      icon: Database,
+      path: '/admin/teams',
+      count: metrics.referenceDataCount,
+      countLabel: 'records',
+    },
+    {
+      id: 'integrations',
+      title: 'Integrations',
+      description: 'External connections and imports',
+      icon: Link2,
+      path: '/admin/jira-config',
+      count: metrics.integrationsCount,
+      countLabel: 'active',
+    },
+    {
+      id: 'audit-usage',
+      title: 'Audit & Usage',
+      description: 'Activity logs and usage analytics',
+      icon: Activity,
+      path: '/admin/activity',
+      count: metrics.auditEventsCount,
+      countLabel: 'events',
+    },
+    {
+      id: 'security',
+      title: 'Security',
+      description: 'Security settings and policies',
+      icon: Shield,
+      path: '/admin/security',
+      // TODO: Security policies table does not exist - showing 0
+      count: metrics.securityPoliciesCount,
+      countLabel: 'policies',
+    },
+  ];
+
+  // Format action label for display
+  const formatActionLabel = (action: string, entityType: string): string => {
+    const actionMap: Record<string, string> = {
+      'INSERT': 'Created',
+      'UPDATE': 'Updated',
+      'DELETE': 'Deleted',
+    };
+    const entityMap: Record<string, string> = {
+      'user_roles': 'User role',
+      'profiles': 'User profile',
+      'integration_connectors': 'Integration',
+      'teams': 'Team',
+      'programs': 'Program',
+      'departments': 'Department',
+      'business_owners': 'Business owner',
+      'product_roles': 'Product role',
+      'auth_settings': 'Auth setting',
+    };
+    return `${actionMap[action] || action} ${entityMap[entityType] || entityType}`;
+  };
 
   return (
     <AdminGuard>
@@ -162,8 +192,14 @@ export default function AdminOverview() {
                           <Icon className="h-5 w-5 text-brand-gold" />
                         </div>
                         <div className="text-right">
-                          <span className="text-2xl font-bold text-foreground">{pocket.count}</span>
-                          <p className="text-xs text-muted-foreground">{pocket.countLabel}</p>
+                          {metrics.isLoading ? (
+                            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                          ) : (
+                            <>
+                              <span className="text-2xl font-bold text-foreground">{pocket.count}</span>
+                              <p className="text-xs text-muted-foreground">{pocket.countLabel}</p>
+                            </>
+                          )}
                         </div>
                       </div>
                     </CardHeader>
@@ -179,7 +215,7 @@ export default function AdminOverview() {
 
           {/* Bottom Row: Recently Visited + Recent Changes */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Recently Visited */}
+            {/* Recently Visited - from real recent_activity table */}
             <Card>
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-2">
@@ -188,23 +224,35 @@ export default function AdminOverview() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-1">
-                {recentlyVisited.map((item, idx) => (
-                  <Link
-                    key={idx}
-                    to={item.path}
-                    className="flex items-center justify-between py-2 px-2 -mx-2 rounded hover:bg-muted transition-colors group"
-                  >
-                    <span className="text-sm text-foreground">{item.label}</span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-muted-foreground">{item.lastAccessed}</span>
-                      <ArrowRight className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </div>
-                  </Link>
-                ))}
+                {roomsLoading ? (
+                  <div className="flex items-center justify-center py-4">
+                    <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                  </div>
+                ) : recentRooms.length > 0 ? (
+                  recentRooms.map((room) => (
+                    <Link
+                      key={room.id}
+                      to={room.room_path}
+                      className="flex items-center justify-between py-2 px-2 -mx-2 rounded hover:bg-muted transition-colors group"
+                    >
+                      <span className="text-sm text-foreground">{room.room_name}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground">
+                          {formatDistanceToNow(new Date(room.last_accessed_at), { addSuffix: true })}
+                        </span>
+                        <ArrowRight className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                    </Link>
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground py-4 text-center">
+                    No recent activity yet
+                  </p>
+                )}
               </CardContent>
             </Card>
 
-            {/* Recent Admin Changes */}
+            {/* Recent Admin Changes - from real activity_logs table */}
             <Card>
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
@@ -213,27 +261,42 @@ export default function AdminOverview() {
                     <CardTitle className="text-sm font-medium">Recent Admin Changes</CardTitle>
                   </div>
                   <Button variant="ghost" size="sm" asChild className="text-xs">
-                    <Link to="/admin/audit/activity">View all</Link>
+                    <Link to="/admin/activity">View all</Link>
                   </Button>
                 </div>
               </CardHeader>
               <CardContent className="space-y-2">
-                {recentAdminChanges.map((change, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-start justify-between py-2 border-b border-border last:border-0"
-                  >
-                    <div className="min-w-0">
-                      <p className="text-sm text-foreground truncate">{change.action}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {change.actor} • {change.entity}
-                      </p>
-                    </div>
-                    <span className="text-xs text-muted-foreground whitespace-nowrap ml-2">
-                      {change.time}
-                    </span>
+                {changesLoading ? (
+                  <div className="flex items-center justify-center py-4">
+                    <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
                   </div>
-                ))}
+                ) : recentChanges && recentChanges.length > 0 ? (
+                  recentChanges.map((change) => (
+                    <div
+                      key={change.id}
+                      className="flex items-start justify-between py-2 border-b border-border last:border-0"
+                    >
+                      <div className="min-w-0">
+                        <p className="text-sm text-foreground truncate">
+                          {formatActionLabel(change.action, change.entity_type)}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {change.entity_type} • {change.entity_id.slice(0, 8)}...
+                        </p>
+                      </div>
+                      <span className="text-xs text-muted-foreground whitespace-nowrap ml-2">
+                        {change.created_at 
+                          ? formatDistanceToNow(new Date(change.created_at), { addSuffix: true })
+                          : '-'
+                        }
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground py-4 text-center">
+                    No admin changes yet
+                  </p>
+                )}
               </CardContent>
             </Card>
           </div>
