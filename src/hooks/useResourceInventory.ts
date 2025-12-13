@@ -14,13 +14,12 @@ export interface ResourceInventoryItem {
   id: string;
   name: string;
   role_code: string | null;
+  role_name: string | null;
   default_capacity_percent: number;
   is_active: boolean;
   notes: string | null;
   created_at: string;
   updated_at: string;
-  // Joined field
-  role_name?: string;
 }
 
 export function useResourceRoles() {
@@ -43,27 +42,13 @@ export function useResourceInventory() {
   return useQuery({
     queryKey: ['resource-inventory'],
     queryFn: async () => {
-      // Fetch inventory with role join
-      const { data: inventory, error: invError } = await supabase
+      const { data, error } = await supabase
         .from('resource_inventory')
         .select('*')
         .order('name', { ascending: true });
 
-      if (invError) throw invError;
-
-      // Fetch all roles for name mapping
-      const { data: roles, error: rolesError } = await supabase
-        .from('role_catalog')
-        .select('code, name');
-
-      if (rolesError) throw rolesError;
-
-      const roleMap = new Map(roles?.map(r => [r.code, r.name]) || []);
-
-      return (inventory || []).map(item => ({
-        ...item,
-        role_name: item.role_code ? roleMap.get(item.role_code) || item.role_code : undefined,
-      })) as ResourceInventoryItem[];
+      if (error) throw error;
+      return (data || []) as ResourceInventoryItem[];
     },
   });
 }
@@ -75,6 +60,7 @@ export function useCreateResource() {
     mutationFn: async (data: {
       name: string;
       role_code?: string | null;
+      role_name?: string | null;
       default_capacity_percent?: number;
       is_active?: boolean;
       notes?: string | null;
@@ -84,6 +70,7 @@ export function useCreateResource() {
         .insert({
           name: data.name,
           role_code: data.role_code || null,
+          role_name: data.role_name || null,
           default_capacity_percent: data.default_capacity_percent ?? 100,
           is_active: data.is_active ?? true,
           notes: data.notes || null,
@@ -115,6 +102,7 @@ export function useUpdateResource() {
       id: string;
       name?: string;
       role_code?: string | null;
+      role_name?: string | null;
       default_capacity_percent?: number;
       is_active?: boolean;
       notes?: string | null;

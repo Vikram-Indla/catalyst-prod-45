@@ -26,13 +26,6 @@ import {
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
   useResourceInventory,
   useResourceRoles,
   useCreateResource,
@@ -51,7 +44,8 @@ export default function ResourceInventory() {
 
   // Form state
   const [formName, setFormName] = useState('');
-  const [formRoleCode, setFormRoleCode] = useState<string>('');
+  const [formRoleCode, setFormRoleCode] = useState('');
+  const [formRoleName, setFormRoleName] = useState('');
   const [formCapacity, setFormCapacity] = useState<number>(100);
   const [formNotes, setFormNotes] = useState('');
 
@@ -76,6 +70,7 @@ export default function ResourceInventory() {
   const resetForm = () => {
     setFormName('');
     setFormRoleCode('');
+    setFormRoleName('');
     setFormCapacity(100);
     setFormNotes('');
     setEditingResource(null);
@@ -90,6 +85,7 @@ export default function ResourceInventory() {
     setEditingResource(resource);
     setFormName(resource.name);
     setFormRoleCode(resource.role_code || '');
+    setFormRoleName(resource.role_name || '');
     setFormCapacity(resource.default_capacity_percent);
     setFormNotes(resource.notes || '');
     setIsDialogOpen(true);
@@ -100,7 +96,8 @@ export default function ResourceInventory() {
 
     const data = {
       name: formName.trim(),
-      role_code: formRoleCode || null,
+      role_code: formRoleCode.trim() || null,
+      role_name: formRoleName.trim() || null,
       default_capacity_percent: Math.max(0, Math.min(100, formCapacity)),
       notes: formNotes.trim() || null,
     };
@@ -248,7 +245,8 @@ export default function ResourceInventory() {
                 <thead className="bg-muted/50">
                   <tr>
                     <th className="text-left p-3 text-sm font-medium">Name</th>
-                    <th className="text-left p-3 text-sm font-medium">Role</th>
+                    <th className="text-left p-3 text-sm font-medium">Role Key</th>
+                    <th className="text-left p-3 text-sm font-medium">Role Name</th>
                     <th className="text-left p-3 text-sm font-medium">Capacity</th>
                     <th className="text-left p-3 text-sm font-medium">Notes</th>
                     <th className="text-left p-3 text-sm font-medium">Active</th>
@@ -258,13 +256,13 @@ export default function ResourceInventory() {
                 <tbody>
                   {isLoading ? (
                     <tr>
-                      <td colSpan={6} className="p-3 text-center text-muted-foreground">
+                      <td colSpan={7} className="p-3 text-center text-muted-foreground">
                         Loading...
                       </td>
                     </tr>
                   ) : filteredResources.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="p-3 text-center text-muted-foreground">
+                      <td colSpan={7} className="p-3 text-center text-muted-foreground">
                         No resources found
                       </td>
                     </tr>
@@ -274,15 +272,15 @@ export default function ResourceInventory() {
                         <td className="p-3 text-sm font-medium">{resource.name}</td>
                         <td className="p-3 text-sm">
                           {resource.role_code ? (
-                            <div className="flex items-center gap-2">
-                              <Badge variant="secondary" className="font-mono text-xs">
-                                {resource.role_code}
-                              </Badge>
-                              <span className="text-muted-foreground">{resource.role_name}</span>
-                            </div>
+                            <Badge variant="secondary" className="font-mono text-xs">
+                              {resource.role_code}
+                            </Badge>
                           ) : (
                             <span className="text-muted-foreground">—</span>
                           )}
+                        </td>
+                        <td className="p-3 text-sm text-muted-foreground">
+                          {resource.role_name || '—'}
                         </td>
                         <td className="p-3 text-sm">{resource.default_capacity_percent}%</td>
                         <td className="p-3 text-sm text-muted-foreground max-w-[200px] truncate">
@@ -340,21 +338,26 @@ export default function ResourceInventory() {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="role">Role</Label>
-                <Select value={formRoleCode} onValueChange={setFormRoleCode}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a role" />
-                  </SelectTrigger>
-                  <SelectContent className="z-[400]">
-                    <SelectItem value="">No role</SelectItem>
-                    {roles.map(role => (
-                      <SelectItem key={role.code} value={role.code}>
-                        {role.code} — {role.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="roleCode">Role Key</Label>
+                  <Input
+                    id="roleCode"
+                    value={formRoleCode}
+                    onChange={e => setFormRoleCode(e.target.value.toUpperCase())}
+                    placeholder="e.g., TPO, PO, BA"
+                    maxLength={10}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="roleName">Role Name</Label>
+                  <Input
+                    id="roleName"
+                    value={formRoleName}
+                    onChange={e => setFormRoleName(e.target.value)}
+                    placeholder="e.g., Product Owner"
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
