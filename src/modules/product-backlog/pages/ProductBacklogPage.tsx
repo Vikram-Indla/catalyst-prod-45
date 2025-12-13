@@ -9,6 +9,9 @@ import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRe
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { ExecutiveTable } from '../components/ExecutiveTable';
 import { IndustryHeaderToolbarV2 } from '@/shared/components/IndustryHeaderToolbarV2';
+import { DemandBulkActionsBar } from '@/components/demand/DemandBulkActionsBar';
+import { DemandBulkStatusModal } from '@/components/demand/DemandBulkStatusModal';
+import { DemandBulkDeleteModal } from '@/components/demand/DemandBulkDeleteModal';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
@@ -21,6 +24,11 @@ export default function ProductBacklogPage() {
   const [searchValue, setSearchValue] = useState('');
   const [scoringFilter, setScoringFilter] = useState<'all' | 'scored' | 'unscored'>('all');
   const [columnsDialogOpen, setColumnsDialogOpen] = useState(false);
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  
+  // Bulk action modals
+  const [bulkStatusModalOpen, setBulkStatusModalOpen] = useState(false);
+  const [bulkDeleteModalOpen, setBulkDeleteModalOpen] = useState(false);
 
   // Transform business requests to match ExecutiveTable format
   const tableData = useMemo(() => {
@@ -129,6 +137,46 @@ export default function ProductBacklogPage() {
     queryClient.invalidateQueries({ queryKey: ['business-requests'] });
   };
 
+  // Bulk status update handler
+  const handleBulkStatusUpdate = async (newStatus: string) => {
+    const dbIds = selectedRows.map(getDbIdFromDisplayId).filter(Boolean);
+    if (dbIds.length === 0) return;
+
+    const { error } = await supabase
+      .from('business_requests')
+      .update({ process_step: newStatus })
+      .in('id', dbIds);
+
+    if (error) {
+      toast.error('Failed to update status');
+      return;
+    }
+
+    queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+    setSelectedRows([]);
+    toast.success(`Updated ${dbIds.length} request(s)`);
+  };
+
+  // Bulk delete handler
+  const handleBulkDelete = async () => {
+    const dbIds = selectedRows.map(getDbIdFromDisplayId).filter(Boolean);
+    if (dbIds.length === 0) return;
+
+    const { error } = await supabase
+      .from('business_requests')
+      .update({ deleted_at: new Date().toISOString() })
+      .in('id', dbIds);
+
+    if (error) {
+      toast.error('Failed to delete requests');
+      return;
+    }
+
+    queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+    setSelectedRows([]);
+    toast.success(`Deleted ${dbIds.length} request(s)`);
+  };
+
   // Unified header component
   const headerElement = (
     <IndustryHeaderToolbarV2
@@ -183,6 +231,32 @@ export default function ProductBacklogPage() {
         onSearchChange={setSearchValue}
         columnsDialogOpen={columnsDialogOpen}
         onColumnsDialogChange={setColumnsDialogOpen}
+        selectedRows={selectedRows}
+        onSelectedRowsChange={setSelectedRows}
+      />
+
+      {/* Bulk Actions Bar */}
+      <DemandBulkActionsBar
+        selectedCount={selectedRows.length}
+        onClear={() => setSelectedRows([])}
+        onUpdateStatus={() => setBulkStatusModalOpen(true)}
+        onDelete={() => setBulkDeleteModalOpen(true)}
+      />
+
+      {/* Bulk Status Update Modal */}
+      <DemandBulkStatusModal
+        isOpen={bulkStatusModalOpen}
+        onClose={() => setBulkStatusModalOpen(false)}
+        onConfirm={handleBulkStatusUpdate}
+        selectedCount={selectedRows.length}
+      />
+
+      {/* Bulk Delete Modal */}
+      <DemandBulkDeleteModal
+        isOpen={bulkDeleteModalOpen}
+        onClose={() => setBulkDeleteModalOpen(false)}
+        onConfirm={handleBulkDelete}
+        selectedCount={selectedRows.length}
       />
 
       <BusinessRequestDrawer

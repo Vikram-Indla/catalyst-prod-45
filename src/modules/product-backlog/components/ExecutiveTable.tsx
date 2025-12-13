@@ -107,6 +107,9 @@ interface ExecutiveTableProps {
   /** External control for columns dialog */
   columnsDialogOpen?: boolean;
   onColumnsDialogChange?: (open: boolean) => void;
+  /** External control for selected rows */
+  selectedRows?: string[];
+  onSelectedRowsChange?: (rows: string[]) => void;
 }
 
 // Status Badge - neutral pill with small left accent dot
@@ -633,6 +636,8 @@ export function ExecutiveTable({
   onExport: externalOnExport,
   columnsDialogOpen: externalColumnsOpen,
   onColumnsDialogChange: externalOnColumnsChange,
+  selectedRows: externalSelectedRows,
+  onSelectedRowsChange,
 }: ExecutiveTableProps) {
   const navigate = useNavigate();
   
@@ -647,7 +652,12 @@ export function ExecutiveTable({
   const setSearchQuery = externalOnSearchChange || setInternalSearchQuery;
   const [filters, setFilters] = useState<Record<string, string[]>>({});
   const [sortConfig, setSortConfig] = useState<{ column: string | null; direction: 'asc' | 'desc' | null }>({ column: null, direction: null });
-  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const [internalSelectedRows, setInternalSelectedRows] = useState<string[]>([]);
+  
+  // Use external selected rows if provided, otherwise internal
+  const selectedRows = externalSelectedRows !== undefined ? externalSelectedRows : internalSelectedRows;
+  const setSelectedRows = onSelectedRowsChange || setInternalSelectedRows;
+  
   const [visibleColumns, setVisibleColumns] = useState(ALL_COLUMNS.map(c => c.id));
   const [columnOrder, setColumnOrder] = useState(ALL_COLUMNS.map(c => c.id));
   const [draggingColumn, setDraggingColumn] = useState<string | null>(null);
