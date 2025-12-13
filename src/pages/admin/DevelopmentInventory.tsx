@@ -8,7 +8,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { 
   Plus, Search, MoreHorizontal, Copy, Trash2, Power, 
   ArrowUpDown, ChevronLeft, ChevronRight, Filter 
@@ -16,7 +15,6 @@ import {
 import { 
   useDevelopmentInventory, 
   useRoleCatalog, 
-  useProjectsForInventory,
   useCreateDevelopmentInventory, 
   useUpdateDevelopmentInventory, 
   useDeleteDevelopmentInventory,
@@ -28,13 +26,12 @@ import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
 
-type SortField = 'name' | 'role_code' | 'project_name' | 'start_date' | 'end_date' | 'capacity_percent' | 'updated_at';
+type SortField = 'name' | 'role_code' | 'updated_at';
 type SortDirection = 'asc' | 'desc';
 
 export default function DevelopmentInventory() {
   const { data: inventory = [], isLoading } = useDevelopmentInventory();
   const { data: roles = [] } = useRoleCatalog();
-  const { data: projects = [] } = useProjectsForInventory();
   const createMutation = useCreateDevelopmentInventory();
   const updateMutation = useUpdateDevelopmentInventory();
   const deleteMutation = useDeleteDevelopmentInventory();
@@ -42,7 +39,6 @@ export default function DevelopmentInventory() {
   // Filters
   const [search, setSearch] = useState('');
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
-  const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
   const [activeFilter, setActiveFilter] = useState<'all' | 'active' | 'inactive'>('all');
 
   // Sorting
@@ -62,10 +58,6 @@ export default function DevelopmentInventory() {
   const [newItem, setNewItem] = useState({
     name: '',
     role_code: '',
-    project_id: '',
-    start_date: null as Date | null,
-    end_date: null as Date | null,
-    capacity_percent: 100,
     is_active: true,
     notes: '',
   });
@@ -89,11 +81,6 @@ export default function DevelopmentInventory() {
       result = result.filter(item => item.role_code && selectedRoles.includes(item.role_code));
     }
 
-    // Project filter
-    if (selectedProjects.length > 0) {
-      result = result.filter(item => item.project_id && selectedProjects.includes(item.project_id));
-    }
-
     // Active filter
     if (activeFilter === 'active') {
       result = result.filter(item => item.is_active);
@@ -105,11 +92,6 @@ export default function DevelopmentInventory() {
     result.sort((a, b) => {
       let aVal: any = a[sortField];
       let bVal: any = b[sortField];
-
-      if (sortField === 'project_name') {
-        aVal = a.project_name || '';
-        bVal = b.project_name || '';
-      }
 
       if (aVal === null || aVal === undefined) aVal = '';
       if (bVal === null || bVal === undefined) bVal = '';
@@ -125,7 +107,7 @@ export default function DevelopmentInventory() {
     });
 
     return result;
-  }, [inventory, search, selectedRoles, selectedProjects, activeFilter, sortField, sortDirection]);
+  }, [inventory, search, selectedRoles, activeFilter, sortField, sortDirection]);
 
   // Paginated data
   const paginatedData = useMemo(() => {
@@ -162,10 +144,10 @@ export default function DevelopmentInventory() {
       await createMutation.mutateAsync({
         name: newItem.name.trim(),
         role_code: newItem.role_code || null,
-        project_id: newItem.project_id || null,
-        start_date: newItem.start_date?.toISOString().split('T')[0] || null,
-        end_date: newItem.end_date?.toISOString().split('T')[0] || null,
-        capacity_percent: newItem.capacity_percent,
+        project_id: null,
+        start_date: null,
+        end_date: null,
+        capacity_percent: 100,
         is_active: newItem.is_active,
         notes: newItem.notes || null,
       });
@@ -174,10 +156,6 @@ export default function DevelopmentInventory() {
       setNewItem({
         name: '',
         role_code: '',
-        project_id: '',
-        start_date: null,
-        end_date: null,
-        capacity_percent: 100,
         is_active: true,
         notes: '',
       });
@@ -289,32 +267,6 @@ export default function DevelopmentInventory() {
               </PopoverContent>
             </Popover>
 
-            {/* Project filter */}
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2">
-                  <Filter className="h-4 w-4" />
-                  Project {selectedProjects.length > 0 && `(${selectedProjects.length})`}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-56 p-2 z-[400]">
-                {projects.map(project => (
-                  <label key={project.id} className="flex items-center gap-2 px-2 py-1.5 hover:bg-muted rounded cursor-pointer">
-                    <Checkbox
-                      checked={selectedProjects.includes(project.id)}
-                      onCheckedChange={(checked) => {
-                        setSelectedProjects(prev => 
-                          checked ? [...prev, project.id] : prev.filter(p => p !== project.id)
-                        );
-                        setPage(1);
-                      }}
-                    />
-                    <span className="text-sm">{project.name}</span>
-                  </label>
-                ))}
-              </PopoverContent>
-            </Popover>
-
             {/* Active filter */}
             <Select value={activeFilter} onValueChange={(v) => { setActiveFilter(v as any); setPage(1); }}>
               <SelectTrigger className="w-[120px]">
@@ -348,10 +300,6 @@ export default function DevelopmentInventory() {
               <TableRow>
                 <SortableHeader field="name">Name</SortableHeader>
                 <SortableHeader field="role_code">Role</SortableHeader>
-                <SortableHeader field="project_name">Project</SortableHeader>
-                <SortableHeader field="start_date">Start Date</SortableHeader>
-                <SortableHeader field="end_date">End Date</SortableHeader>
-                <SortableHeader field="capacity_percent">Capacity %</SortableHeader>
                 <TableHead>Active</TableHead>
                 <SortableHeader field="updated_at">Updated</SortableHeader>
                 <TableHead className="w-10"></TableHead>
@@ -360,13 +308,13 @@ export default function DevelopmentInventory() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
                     Loading...
                   </TableCell>
                 </TableRow>
               ) : paginatedData.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
                     No resources found
                   </TableCell>
                 </TableRow>
@@ -407,65 +355,6 @@ export default function DevelopmentInventory() {
                     </Select>
                   </TableCell>
 
-                  {/* Project */}
-                  <TableCell className="min-w-[160px]">
-                    <Select
-                      value={item.project_id || ''}
-                      onValueChange={(v) => handleInlineUpdate(item.id, 'project_id', v || null)}
-                    >
-                      <SelectTrigger className="h-8 border-transparent hover:border-border">
-                        <SelectValue placeholder="Select project">
-                          {item.project_name || ''}
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent className="z-[400]">
-                        {projects.map(project => (
-                          <SelectItem key={project.id} value={project.id}>
-                            {project.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
-
-                  {/* Start Date */}
-                  <TableCell className="min-w-[140px]">
-                    <CatalystDatePicker
-                      value={item.start_date ? new Date(item.start_date) : undefined}
-                      onChange={(date) => handleInlineUpdate(item.id, 'start_date', date?.toISOString().split('T')[0] || null)}
-                      placeholder="Start date"
-                    />
-                  </TableCell>
-
-                  {/* End Date */}
-                  <TableCell className="min-w-[140px]">
-                    <CatalystDatePicker
-                      value={item.end_date ? new Date(item.end_date) : undefined}
-                      onChange={(date) => {
-                        if (date && item.start_date && date < new Date(item.start_date)) {
-                          toast.error('End date must be after start date');
-                          return;
-                        }
-                        handleInlineUpdate(item.id, 'end_date', date?.toISOString().split('T')[0] || null);
-                      }}
-                      placeholder="End date"
-                    />
-                  </TableCell>
-
-                  {/* Capacity */}
-                  <TableCell className="w-[100px]">
-                    <Input
-                      type="number"
-                      min={0}
-                      max={100}
-                      value={item.capacity_percent}
-                      onChange={(e) => {
-                        const val = Math.min(100, Math.max(0, parseInt(e.target.value) || 0));
-                        handleInlineUpdate(item.id, 'capacity_percent', val);
-                      }}
-                      className="h-8 w-20 border-transparent hover:border-border focus:border-brand-gold"
-                    />
-                  </TableCell>
 
                   {/* Active */}
                   <TableCell>
@@ -571,54 +460,6 @@ export default function DevelopmentInventory() {
                     ))}
                   </SelectContent>
                 </Select>
-              </div>
-              <div>
-                <label className="text-sm font-medium">Project</label>
-                <Select value={newItem.project_id} onValueChange={(v) => setNewItem(prev => ({ ...prev, project_id: v }))}>
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select project" />
-                  </SelectTrigger>
-                  <SelectContent className="z-[500]">
-                    {projects.map(project => (
-                      <SelectItem key={project.id} value={project.id}>
-                        {project.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium">Start Date</label>
-                  <div className="mt-1">
-                    <CatalystDatePicker
-                      value={newItem.start_date || undefined}
-                      onChange={(date) => setNewItem(prev => ({ ...prev, start_date: date || null }))}
-                      placeholder="Start date"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="text-sm font-medium">End Date</label>
-                  <div className="mt-1">
-                    <CatalystDatePicker
-                      value={newItem.end_date || undefined}
-                      onChange={(date) => setNewItem(prev => ({ ...prev, end_date: date || null }))}
-                      placeholder="End date"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div>
-                <label className="text-sm font-medium">Capacity %</label>
-                <Input
-                  type="number"
-                  min={0}
-                  max={100}
-                  value={newItem.capacity_percent}
-                  onChange={(e) => setNewItem(prev => ({ ...prev, capacity_percent: Math.min(100, Math.max(0, parseInt(e.target.value) || 0)) }))}
-                  className="mt-1"
-                />
               </div>
               <div className="flex items-center gap-2">
                 <Switch
