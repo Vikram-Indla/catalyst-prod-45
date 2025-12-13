@@ -210,50 +210,27 @@ export function EntityRisksTab({ entityType, entityId }: EntityRisksTabProps) {
       };
 
       // Set the correct ID column and relationship based on entity type
+      // Note: program_id FK references projects table, not programs - so we don't set it for epic/feature/theme risks
+      // The check constraint now allows: program_id OR business_request_id OR (related_item_id + relationship)
       if (entityType === 'business_request') {
         insertPayload.business_request_id = entityId;
-        insertPayload.relationship = 'Demand'; // Risks from Business Requests are "Demand" level
+        insertPayload.relationship = 'Demand';
       } else if (entityType === 'epic') {
-        // Fetch epic's program_id to satisfy the constraint
-        const { data: epic } = await supabase
-          .from('epics')
-          .select('primary_program_id')
-          .eq('id', entityId)
-          .single();
-        insertPayload.program_id = epic?.primary_program_id || null;
         insertPayload.related_item_id = entityId;
         insertPayload.relationship = 'Epic';
       } else if (entityType === 'feature') {
-        // Fetch feature's program_id if available via epic
-        const { data: feature } = await supabase
-          .from('features')
-          .select('epic_id, epics(primary_program_id)')
-          .eq('id', entityId)
-          .single();
-        insertPayload.program_id = (feature as any)?.epics?.primary_program_id || null;
         insertPayload.related_item_id = entityId;
         insertPayload.relationship = 'Feature';
       } else if (entityType === 'theme') {
         insertPayload.related_item_id = entityId;
         insertPayload.relationship = 'Theme';
       } else if (entityType === 'program') {
-        insertPayload.program_id = entityId;
+        // program_id is for projects, not programs - skip setting it
+        insertPayload.related_item_id = entityId;
         insertPayload.relationship = 'Program';
       } else if (relationship) {
         insertPayload.related_item_id = entityId;
         insertPayload.relationship = relationship;
-      }
-
-      // If no program_id and no business_request_id, the constraint will fail
-      // Theme risks need special handling - they may need to link via a default program
-      if (!insertPayload.program_id && !insertPayload.business_request_id && entityType === 'theme') {
-        // For themes, use the Default program as fallback
-        const { data: defaultProgram } = await supabase
-          .from('programs')
-          .select('id')
-          .eq('name', 'Default')
-          .single();
-        insertPayload.program_id = defaultProgram?.id || null;
       }
 
       const { error } = await supabase.from('risks').insert(insertPayload);
