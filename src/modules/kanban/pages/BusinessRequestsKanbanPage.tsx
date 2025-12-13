@@ -146,7 +146,7 @@ export default function BusinessRequestsKanbanPage() {
         }}>{filteredTickets.length}</span>
       </div>
 
-      {/* Row 2 - Toolbar Row (52px) - All controls, border-bottom */}
+      {/* Row 2 - Toolbar Row (52px) - All controls, no border */}
       <div style={{ 
         height: '52px', 
         padding: '0 24px', 
@@ -154,7 +154,6 @@ export default function BusinessRequestsKanbanPage() {
         gridTemplateColumns: 'auto 1fr auto', 
         alignItems: 'center', 
         gap: '12px',
-        borderBottom: '1px solid hsl(var(--border))',
         backgroundColor: KANBAN_COLORS.bgHeader,
         position: 'sticky',
         top: 0,
