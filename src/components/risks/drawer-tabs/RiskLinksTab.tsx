@@ -6,6 +6,7 @@
 
 import { useState, useRef, useCallback, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -39,6 +40,7 @@ import { cn } from '@/lib/utils';
 
 interface RiskLinksTabProps {
   riskId: string;
+  businessRequestId?: string | null;
 }
 
 type LinkKind = 'document' | 'external';
@@ -68,9 +70,10 @@ const formatDate = (dateStr: string): string => {
   });
 };
 
-export function RiskLinksTab({ riskId }: RiskLinksTabProps) {
+export function RiskLinksTab({ riskId, businessRequestId }: RiskLinksTabProps) {
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
   
   const [formView, setFormView] = useState<FormView>('selection');
   const [isDragOver, setIsDragOver] = useState(false);
@@ -82,6 +85,22 @@ export function RiskLinksTab({ riskId }: RiskLinksTabProps) {
   
   // Document upload form state
   const [documentForm, setDocumentForm] = useState({ title: '', files: [] as File[] });
+
+  // Fetch linked Business Request if present
+  const { data: linkedBusinessRequest, isLoading: brLoading } = useQuery({
+    queryKey: ['business-request', businessRequestId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('business_requests')
+        .select('id, request_key, title')
+        .eq('id', businessRequestId!)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!businessRequestId
+  });
 
   // Fetch existing links
   const { data: links = [], isLoading: linksLoading } = useQuery({
@@ -291,6 +310,39 @@ export function RiskLinksTab({ riskId }: RiskLinksTabProps) {
 
   return (
     <div className="p-4 md:p-6 space-y-6">
+      {/* Linked Items Section - Shows parent Business Request */}
+      {(linkedBusinessRequest || brLoading) && (
+        <Card className="p-5 border border-border/60 bg-card">
+          <h4 className="font-semibold text-[15px] text-foreground mb-4">Linked Items</h4>
+          
+          {brLoading ? (
+            <div className="text-[13px] text-muted-foreground">Loading...</div>
+          ) : linkedBusinessRequest ? (
+            <div 
+              className="p-3 border border-border/60 rounded-lg bg-muted/20 hover:bg-muted/40 transition-colors cursor-pointer group"
+              onClick={() => navigate(`/industry/backlog?openRequest=${linkedBusinessRequest.id}`)}
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-brand-gold/10 flex items-center justify-center shrink-0">
+                  <FileText className="h-4 w-4 text-brand-gold" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <span className="px-1.5 py-0.5 text-[10px] font-medium uppercase rounded bg-brand-gold/10 text-brand-gold">
+                      Business Request
+                    </span>
+                  </div>
+                  <div className="text-[13px] font-medium text-foreground group-hover:text-brand-gold transition-colors">
+                    {linkedBusinessRequest.request_key} – {linkedBusinessRequest.title}
+                  </div>
+                </div>
+                <ExternalLink className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
+            </div>
+          ) : null}
+        </Card>
+      )}
+
       {/* Add New Link Section */}
       <Card className="p-5 border border-border/60 bg-card">
         <h4 className="font-semibold text-[15px] text-foreground mb-4">Add New Link</h4>
