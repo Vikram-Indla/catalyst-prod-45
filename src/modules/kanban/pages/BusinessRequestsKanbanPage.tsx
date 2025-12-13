@@ -168,7 +168,7 @@ export default function BusinessRequestsKanbanPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: KANBAN_COLORS.bgPage }}>
+    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: KANBAN_COLORS.bgPage, overflow: 'hidden' }}>
       {/* Unified Header Toolbar */}
       <IndustryHeaderToolbarV2
         title="Business Requests"
@@ -205,16 +205,16 @@ export default function BusinessRequestsKanbanPage() {
         }}
       />
 
-      {/* Board */}
-      <div style={{ padding: '20px 28px' }}>
+      {/* Board Container with horizontal scroll */}
+      <div style={{ flex: 1, overflow: 'auto', padding: '20px 28px' }}>
         {groupBy === 'none' ? (
-          <div style={{ display: 'flex', gap: '14px', overflowX: 'auto', minWidth: 'max-content', paddingBottom: '20px' }}>
+          <div style={{ display: 'flex', gap: '14px', minWidth: 'max-content', paddingBottom: '20px' }}>
             {COLUMNS_CONFIG.map(column => (
               <KanbanColumn key={column.id} column={column.id} tickets={ticketsByColumn[column.id] || []} onDrop={handleDrop} onCardClick={handleCardClick} compactMode={compactMode} collapsed={collapsedColumns.includes(column.id)} onToggleCollapse={() => toggleColumnCollapse(column.id)} teamMembers={teamMembers} />
             ))}
           </div>
         ) : (
-          <div>
+          <div style={{ minWidth: 'max-content' }}>
             {Object.entries(groupedTickets || {}).map(([key, group]) => (
               <Swimlane key={key} label={group.label} color={group.color} icon={group.icon} tickets={group.tickets} count={group.tickets.length} onDrop={handleDrop} onCardClick={handleCardClick} compactMode={compactMode} collapsedColumns={collapsedColumns} onToggleColumnCollapse={toggleColumnCollapse} isExpanded={expandedSwimlanes[key] !== false} onToggleExpand={() => toggleSwimlaneExpand(key)} teamMembers={teamMembers} />
             ))}
