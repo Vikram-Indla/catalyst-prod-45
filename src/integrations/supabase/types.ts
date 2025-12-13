@@ -2539,12 +2539,15 @@ export type Database = {
         Row: {
           ability_to_execute: string | null
           approvers: string | null
+          assignee_id: string | null
           capitalized: boolean | null
           created_at: string | null
           customers: string[] | null
           date_lock_history: Json | null
           date_locked: boolean | null
           deleted_at: string | null
+          delivery_platform: string | null
+          delivery_track: string | null
           description: string | null
           effort_swag: number | null
           end_date: string | null
@@ -2561,6 +2564,7 @@ export type Database = {
           initiation_date: string | null
           investment_type: string | null
           last_estimate_calculation: string | null
+          linked_business_request_id: string | null
           mvp: boolean | null
           name: string
           owner_id: string | null
@@ -2578,6 +2582,7 @@ export type Database = {
           quadrant: string | null
           quarters: string[] | null
           report_color: string | null
+          reporter_id: string | null
           start_date: string | null
           state: Database["public"]["Enums"]["epic_state"] | null
           status: Database["public"]["Enums"]["epic_status"] | null
@@ -2592,12 +2597,15 @@ export type Database = {
         Insert: {
           ability_to_execute?: string | null
           approvers?: string | null
+          assignee_id?: string | null
           capitalized?: boolean | null
           created_at?: string | null
           customers?: string[] | null
           date_lock_history?: Json | null
           date_locked?: boolean | null
           deleted_at?: string | null
+          delivery_platform?: string | null
+          delivery_track?: string | null
           description?: string | null
           effort_swag?: number | null
           end_date?: string | null
@@ -2614,6 +2622,7 @@ export type Database = {
           initiation_date?: string | null
           investment_type?: string | null
           last_estimate_calculation?: string | null
+          linked_business_request_id?: string | null
           mvp?: boolean | null
           name: string
           owner_id?: string | null
@@ -2631,6 +2640,7 @@ export type Database = {
           quadrant?: string | null
           quarters?: string[] | null
           report_color?: string | null
+          reporter_id?: string | null
           start_date?: string | null
           state?: Database["public"]["Enums"]["epic_state"] | null
           status?: Database["public"]["Enums"]["epic_status"] | null
@@ -2645,12 +2655,15 @@ export type Database = {
         Update: {
           ability_to_execute?: string | null
           approvers?: string | null
+          assignee_id?: string | null
           capitalized?: boolean | null
           created_at?: string | null
           customers?: string[] | null
           date_lock_history?: Json | null
           date_locked?: boolean | null
           deleted_at?: string | null
+          delivery_platform?: string | null
+          delivery_track?: string | null
           description?: string | null
           effort_swag?: number | null
           end_date?: string | null
@@ -2667,6 +2680,7 @@ export type Database = {
           initiation_date?: string | null
           investment_type?: string | null
           last_estimate_calculation?: string | null
+          linked_business_request_id?: string | null
           mvp?: boolean | null
           name?: string
           owner_id?: string | null
@@ -2684,6 +2698,7 @@ export type Database = {
           quadrant?: string | null
           quarters?: string[] | null
           report_color?: string | null
+          reporter_id?: string | null
           start_date?: string | null
           state?: Database["public"]["Enums"]["epic_state"] | null
           status?: Database["public"]["Enums"]["epic_status"] | null
@@ -2696,6 +2711,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "epics_linked_business_request_id_fkey"
+            columns: ["linked_business_request_id"]
+            isOneToOne: false
+            referencedRelation: "business_requests"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "epics_primary_program_id_fkey"
             columns: ["primary_program_id"]
