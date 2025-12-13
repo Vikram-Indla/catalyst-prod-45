@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { KanbanTicket, StatusId, GroupByOption, ScoringFilter, COLUMNS_CONFIG, PRIORITIES, DEPARTMENTS, GROUP_BY_OPTIONS, SCORING_OPTIONS, KANBAN_COLORS, SwimlaneGroup } from '../types';
+import { KanbanTicket, StatusId, GroupByOption, ScoringFilter, COLUMNS_CONFIG, PRIORITIES, GROUP_BY_OPTIONS, SCORING_OPTIONS, KANBAN_COLORS, SwimlaneGroup } from '../types';
 import { useKanbanData, useTeamMembers } from '../hooks/useKanbanData';
 import { KanbanColumn } from '../components/KanbanColumn';
 import { Swimlane } from '../components/Swimlane';
@@ -12,11 +12,22 @@ import { KanbanIcons } from '../components/KanbanIcons';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { IndustryViewSwitchButton } from '@/components/industry/IndustryViewSwitchButton';
+import { useDepartments } from '@/hooks/useDepartmentsAndOwners';
 
 export default function BusinessRequestsKanbanPage() {
   const navigate = useNavigate();
   const { tickets, isLoading, updateStatus } = useKanbanData();
   const teamMembers = useTeamMembers();
+  
+  // Fetch departments from admin-configured data (not hardcoded)
+  const { data: departments = [] } = useDepartments();
+  
+  // Build department ID → name map for grouping labels
+  const departmentNameById = useMemo(() => {
+    const map = new Map<string, string>();
+    departments.forEach(d => map.set(d.id, d.name));
+    return map;
+  }, [departments]);
   
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedAssignees, setSelectedAssignees] = useState<string[]>([]);
@@ -73,10 +84,18 @@ export default function BusinessRequestsKanbanPage() {
       let color: string | undefined;
       
       if (groupBy === 'department') {
-        const d = DEPARTMENTS.find(dp => dp.id === ticket.department || dp.label === ticket.department);
-        key = ticket.department || 'unassigned';
-        label = d?.label || ticket.department || 'Unassigned';
-        color = d?.color;
+        // Use admin-configured departments from database
+        if (ticket.department) {
+          key = ticket.department;
+          // Look up department name from admin data
+          const deptName = departmentNameById.get(ticket.department);
+          label = deptName || 'Unknown Department';
+        } else {
+          key = 'unassigned';
+          label = 'Unassigned';
+        }
+        // Use brand color for departments
+        color = KANBAN_COLORS.bronze;
       } else if (groupBy === 'assignee') {
         const m = teamMembers.find(tm => tm.id === ticket.assignee || tm.name === ticket.assignee);
         key = ticket.assignee || 'unassigned';
@@ -93,8 +112,25 @@ export default function BusinessRequestsKanbanPage() {
       groups[key].tickets.push(ticket);
     });
     
-    return groups;
-  }, [filteredTickets, groupBy, teamMembers]);
+    // Sort groups: admin-defined order for departments, alphabetical for others, "Unassigned" last
+    const sortedEntries = Object.entries(groups).sort((a, b) => {
+      if (a[0] === 'unassigned') return 1;
+      if (b[0] === 'unassigned') return -1;
+      
+      if (groupBy === 'department') {
+        // Sort by department sort_order from admin
+        const deptA = departments.find(d => d.id === a[0]);
+        const deptB = departments.find(d => d.id === b[0]);
+        const orderA = deptA?.sort_order ?? 999;
+        const orderB = deptB?.sort_order ?? 999;
+        return orderA - orderB;
+      }
+      
+      return a[1].label.localeCompare(b[1].label);
+    });
+    
+    return Object.fromEntries(sortedEntries);
+  }, [filteredTickets, groupBy, teamMembers, departmentNameById, departments]);
 
   const handleDrop = useCallback((ticketId: string, newStatus: StatusId) => {
     updateStatus({ ticketId, newStatus });
