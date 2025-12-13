@@ -235,9 +235,9 @@ export function UnifiedSidebar({
                   marginBottom: '2px',
                   position: 'relative',
                   justifyContent: expanded ? 'flex-start' : 'center',
-                  // Active state styling
-                  background: active ? 'rgba(198, 156, 109, 0.06)' : 'transparent',
-                  color: active ? '#c69c6d' : '#4b5563',
+                  // Active state styling - olive green
+                  background: active ? 'rgba(92, 124, 92, 0.06)' : 'transparent',
+                  color: active ? '#5c7c5c' : '#4b5563',
                   fontWeight: active ? 600 : 500,
                   fontSize: '14px',
                   fontFamily: 'inherit',
@@ -246,11 +246,11 @@ export function UnifiedSidebar({
                   if (!active) e.currentTarget.style.background = '#f9fafb'; 
                 }}
                 onMouseLeave={(e) => { 
-                  e.currentTarget.style.background = active ? 'rgba(198, 156, 109, 0.06)' : 'transparent'; 
+                  e.currentTarget.style.background = active ? 'rgba(92, 124, 92, 0.06)' : 'transparent'; 
                 }}
                 title={!expanded ? item.label : undefined}
               >
-                {/* Gold left bar indicator for active state */}
+                {/* Olive left bar indicator for active state */}
                 {active && (
                   <span 
                     style={{
@@ -259,7 +259,7 @@ export function UnifiedSidebar({
                       top: '8px',
                       bottom: '8px',
                       width: '3px',
-                      background: '#c69c6d',
+                      background: '#5c7c5c',
                       borderRadius: '0 2px 2px 0',
                     }}
                   />
@@ -273,8 +273,8 @@ export function UnifiedSidebar({
                         padding: '2px 6px', 
                         fontSize: '10px', 
                         fontWeight: 600, 
-                        background: '#c69c6d', 
-                        color: '#ffffff', 
+                        background: '#5c7c5c', 
+                        color: '#ffffff',
                         borderRadius: '4px',
                         textTransform: 'uppercase',
                       }}>

@@ -23,7 +23,7 @@ export function PortfolioRoomHeader({
     <header className="h-14 border-b bg-card flex items-center px-4 gap-4">
       {/* Left: Page Title */}
       <div className="flex items-center gap-2">
-        <Star className="h-5 w-5 text-brand-gold fill-brand-gold" />
+        <Star className="h-5 w-5 text-[#5c7c5c] fill-[#5c7c5c]" />
         <h1 className="text-lg font-semibold">Portfolio Room</h1>
       </div>
 

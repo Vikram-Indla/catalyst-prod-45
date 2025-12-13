@@ -108,7 +108,7 @@
 
 .viewToggle__btn.isActive {
   background: hsl(var(--background));
-  color: hsl(var(--brand-gold));
+  color: hsl(var(--secondary-green));
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   font-weight: 600;
 }
@@ -144,8 +144,8 @@
 }
 
 .searchInput:focus-within {
-  border-color: hsl(var(--brand-gold));
-  box-shadow: 0 0 0 3px hsl(var(--brand-gold) / 0.2);
+  border-color: hsl(var(--secondary-green));
+  box-shadow: 0 0 0 3px hsl(var(--secondary-green) / 0.2);
 }
 
 .searchInput__icon {
@@ -212,9 +212,9 @@
 }
 
 .avatarFilter__allBtn.isActive {
-  background: hsl(var(--brand-gold) / 0.1);
-  border-color: hsl(var(--brand-gold));
-  color: hsl(var(--brand-gold));
+  background: hsl(var(--secondary-green) / 0.1);
+  border-color: hsl(var(--secondary-green));
+  color: hsl(var(--secondary-green));
   font-weight: 600;
 }
 
@@ -250,7 +250,7 @@
 }
 
 .avatarFilter__item.isActive {
-  outline: 2px solid hsl(var(--brand-gold));
+  outline: 2px solid hsl(var(--secondary-green));
   outline-offset: 2px;
   z-index: 1;
 }
@@ -314,9 +314,9 @@
 }
 
 .iconBtn.isActive {
-  background: hsl(var(--brand-gold) / 0.1);
-  border-color: hsl(var(--brand-gold));
-  color: hsl(var(--brand-gold));
+  background: hsl(var(--secondary-green) / 0.1);
+  border-color: hsl(var(--secondary-green));
+  color: hsl(var(--secondary-green));
 }
 
 .filterBadge {
@@ -326,7 +326,7 @@
   min-width: 14px;
   height: 14px;
   padding: 0 3px;
-  background: hsl(var(--brand-gold));
+  background: hsl(var(--secondary-green));
   color: white;
   font-size: 9px;
   font-weight: 700;
@@ -368,7 +368,7 @@
 
 .iconBtn:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px hsl(var(--brand-gold) / 0.2);
+  box-shadow: 0 0 0 3px hsl(var(--secondary-green) / 0.2);
 }
 
 .iconBtn svg {
@@ -426,7 +426,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  background: hsl(var(--brand-gold));
+  background: hsl(var(--secondary-green));
   border: none;
   border-radius: var(--radius-md);
   color: white;
@@ -439,12 +439,12 @@
 }
 
 .primaryBtn:hover {
-  background: hsl(var(--brand-gold-hover));
+  background: hsl(var(--secondary-green) / 0.9);
 }
 
 .primaryBtn:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px hsl(var(--brand-gold) / 0.2);
+  box-shadow: 0 0 0 3px hsl(var(--secondary-green) / 0.2);
 }
 
 .primaryBtn svg {

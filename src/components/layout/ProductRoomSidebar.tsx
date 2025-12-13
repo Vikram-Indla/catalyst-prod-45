@@ -58,7 +58,7 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
             <div className="flex items-center gap-2.5">
               <div 
                 className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-[11px] font-bold"
-                style={{ background: 'linear-gradient(135deg, #c69c6d 0%, #8b7355 100%)' }}
+                style={{ background: 'linear-gradient(135deg, #5c7c5c 0%, #6d8d6d 100%)' }}
               >
                 PR
               </div>
@@ -67,7 +67,7 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
           ) : (
             <div 
               className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-[11px] font-bold mx-auto"
-              style={{ background: 'linear-gradient(135deg, #c69c6d 0%, #8b7355 100%)' }}
+              style={{ background: 'linear-gradient(135deg, #5c7c5c 0%, #6d8d6d 100%)' }}
             >
               PR
             </div>
@@ -88,15 +88,15 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
                       onClick={() => navigate(item.path)}
                       className={cn(
                         'w-full h-10 flex items-center justify-center rounded-md transition-all relative',
-                        active && 'bg-[rgba(198,156,109,0.08)]'
+                        active && 'bg-[rgba(92,124,92,0.08)]'
                       )}
-                      style={active ? { color: '#c69c6d' } : { color: '#4b5563' }}
+                      style={active ? { color: '#5c7c5c' } : { color: '#4b5563' }}
                     >
-                      {/* Gold left border indicator for active state */}
+                      {/* Olive left border indicator for active state */}
                       {active && (
                         <span 
                           className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r"
-                          style={{ backgroundColor: '#c69c6d' }}
+                          style={{ backgroundColor: '#5c7c5c' }}
                         />
                       )}
                       <Icon className="h-5 w-5" />
@@ -118,15 +118,15 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
                 }}
                 className={cn(
                   'w-full h-10 flex items-center gap-3 px-3 rounded-md transition-all relative text-left',
-                  active && 'bg-[rgba(198,156,109,0.08)] font-semibold'
+                  active && 'bg-[rgba(92,124,92,0.08)] font-semibold'
                 )}
-                style={active ? { color: '#c69c6d' } : { color: '#4b5563' }}
+                style={active ? { color: '#5c7c5c' } : { color: '#4b5563' }}
               >
-                {/* Gold left border indicator for active state */}
+                {/* Olive left border indicator for active state */}
                 {active && (
                   <span 
                     className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r"
-                    style={{ backgroundColor: '#c69c6d' }}
+                    style={{ backgroundColor: '#5c7c5c' }}
                   />
                 )}
                 <Icon className="h-5 w-5" />
