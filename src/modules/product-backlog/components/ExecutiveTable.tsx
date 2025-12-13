@@ -69,7 +69,7 @@ const ALL_COLUMNS = [
   { id: 'summary', header: 'Summary', accessor: 'summary', minWidth: 320, sortable: true, editable: true },
   { id: 'processStep', header: 'Status', accessor: 'processStep', minWidth: 160, sortable: true, filterable: true, editable: true, type: 'select', options: STATUS_OPTIONS },
   { id: 'score', header: 'Score', accessor: 'score', minWidth: 120, sortable: true, type: 'number', align: 'right' },
-  { id: 'rank', header: 'Rank', accessor: 'rank', minWidth: 100, sortable: true, type: 'number', align: 'right' },
+  { id: 'rank', header: 'Rank', accessor: 'rank', minWidth: 100, sortable: true, type: 'number', align: 'center' },
   { id: 'department', header: 'Department', accessor: 'department', minWidth: 180, sortable: true, filterable: true, editable: true, type: 'select', options: [] }, // Populated dynamically
   { id: 'platform', header: 'Delivery Platform', accessor: 'platform', minWidth: 150, sortable: true, filterable: true, editable: true, type: 'select', options: PLATFORMS },
   { id: 'createdAt', header: 'Created', accessor: 'createdAt', minWidth: 110, sortable: true },
