@@ -1,4 +1,6 @@
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
+import { GripVertical } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // ============================================================================
@@ -45,6 +47,10 @@ interface CatalystEnterpriseTableProps<T extends { id: string }> {
   onSelectionChange?: (ids: string[]) => void;
   showCheckboxes?: boolean;
   showActionsColumn?: boolean;
+  // Drag-drop support
+  enableDragDrop?: boolean;
+  onReorder?: (reorderedData: T[], sourceIndex: number, destinationIndex: number) => void;
+  droppableId?: string;
 }
 
 // Icons (inline SVG)
@@ -441,12 +447,31 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
   onSelectionChange,
   showCheckboxes = true,
   showActionsColumn = true,
+  enableDragDrop = false,
+  onReorder,
+  droppableId = 'catalyst-table',
 }: CatalystEnterpriseTableProps<T>) {
   const [sortConfig, setSortConfig] = useState<{ column: string | null; direction: SortDirection }>({ column: null, direction: null });
   const [filters, setFilters] = useState<Record<string, string[]>>({});
   const [editingCell, setEditingCell] = useState<{ rowId: string; columnId: string } | null>(null);
   const [undoStack, setUndoStack] = useState<{ rowId: string; columnId: string; oldValue: any; newValue: any }[]>([]);
   const [toast, setToast] = useState<string | null>(null);
+
+  // Handle drag end for reordering
+  const handleDragEnd = (result: DropResult) => {
+    if (!result.destination || !onReorder) return;
+    
+    const sourceIndex = result.source.index;
+    const destinationIndex = result.destination.index;
+    
+    if (sourceIndex === destinationIndex) return;
+    
+    const reordered = Array.from(processedData);
+    const [moved] = reordered.splice(sourceIndex, 1);
+    reordered.splice(destinationIndex, 0, moved);
+    
+    onReorder(reordered, sourceIndex, destinationIndex);
+  };
 
   // Process data with filters and sort
   const processedData = useMemo(() => {
@@ -598,13 +623,104 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
     verticalAlign: 'middle',
   };
 
-  return (
+  // Render row content (shared between drag and non-drag modes)
+  const renderRowContent = (row: T, rowIndex: number, dragHandleProps?: any, isDragging?: boolean) => (
+    <>
+      {/* Drag handle column */}
+      {enableDragDrop && (
+        <td style={{ ...tdStyle, padding: '8px', width: '32px' }} {...dragHandleProps}>
+          <GripVertical 
+            className={cn(
+              "h-4 w-4 cursor-grab active:cursor-grabbing",
+              isDragging ? "text-brand-gold" : "text-muted-foreground"
+            )} 
+          />
+        </td>
+      )}
+      {showCheckboxes && (
+        <td style={{ ...tdStyle, textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
+          <input
+            type="checkbox"
+            checked={selectedRows.includes(row.id)}
+            onChange={(e) => handleCheckboxChange(e, row.id)}
+            style={{ width: '16px', height: '16px', accentColor: colors.gold }}
+          />
+        </td>
+      )}
+      {columns.map((column) => {
+        const value = typeof column.accessor === 'function' 
+          ? column.accessor(row) 
+          : (row as any)[column.accessor];
+        const isEditing = editingCell?.rowId === row.id && editingCell?.columnId === column.id;
+
+        return (
+          <td
+            key={column.id}
+            style={tdStyle}
+            onDoubleClick={(e) => handleCellDoubleClick(e, row.id, column.id)}
+            title={column.editable ? 'Double-click to edit' : ''}
+          >
+            {isEditing ? (
+              <InlineCellEditor
+                value={value}
+                type={column.type || 'text'}
+                options={column.options}
+                onSave={(newValue) => handleCellSave(row.id, column.id, newValue)}
+                onCancel={() => setEditingCell(null)}
+              />
+            ) : column.render ? (
+              column.render(value, row)
+            ) : (
+              <span
+                style={{
+                  display: 'inline-block',
+                  padding: column.editable ? '4px 8px' : undefined,
+                  margin: column.editable ? '-4px -8px' : undefined,
+                  borderRadius: column.editable ? '4px' : undefined,
+                  border: column.editable ? '1px dashed transparent' : undefined,
+                  transition: 'all 0.15s',
+                  cursor: column.editable ? 'pointer' : undefined,
+                }}
+                onMouseOver={(e) => {
+                  if (column.editable) {
+                    e.currentTarget.style.borderColor = `${colors.gold}50`;
+                    e.currentTarget.style.backgroundColor = `${colors.gold}08`;
+                  }
+                }}
+                onMouseOut={(e) => {
+                  if (column.editable) {
+                    e.currentTarget.style.borderColor = 'transparent';
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }
+                }}
+              >
+                {value ?? '—'}
+              </span>
+            )}
+          </td>
+        );
+      })}
+      {showActionsColumn && (
+        <td style={tdStyle} onClick={(e) => e.stopPropagation()}>
+          <RowActionsMenu
+            onEdit={() => setEditingCell({ rowId: row.id, columnId: columns.find(c => c.editable)?.id || columns[0].id })}
+          />
+        </td>
+      )}
+    </>
+  );
+
+  const tableContent = (
     <div style={cardStyle}>
       {/* Table */}
       <div style={{ overflowX: 'auto' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
           <thead>
             <tr>
+              {/* Drag handle header */}
+              {enableDragDrop && (
+                <th style={{ ...thStyle, width: '32px' }}></th>
+              )}
               {showCheckboxes && (
                 <th style={{ ...thStyle, textAlign: 'center', width: '48px' }}>
                   <input
@@ -634,100 +750,75 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
               )}
             </tr>
           </thead>
-          <tbody>
-            {processedData.map((row, rowIndex) => (
-              <tr
-                key={row.id}
-                onClick={() => handleRowClick(row)}
-                style={{
-                  cursor: 'pointer',
-                  transition: 'background-color 0.15s',
-                  backgroundColor: selectedRows.includes(row.id) ? `${colors.gold}08` : 'transparent',
-                }}
-                onMouseOver={(e) => {
-                  if (!selectedRows.includes(row.id)) {
-                    e.currentTarget.style.backgroundColor = '#f8f8f8';
-                  }
-                }}
-                onMouseOut={(e) => {
-                  if (!selectedRows.includes(row.id)) {
-                    e.currentTarget.style.backgroundColor = 'transparent';
-                  }
-                }}
-              >
-                {showCheckboxes && (
-                  <td style={{ ...tdStyle, textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
-                    <input
-                      type="checkbox"
-                      checked={selectedRows.includes(row.id)}
-                      onChange={(e) => handleCheckboxChange(e, row.id)}
-                      style={{ width: '16px', height: '16px', accentColor: colors.gold }}
-                    />
-                  </td>
-                )}
-                {columns.map((column) => {
-                  const value = typeof column.accessor === 'function' 
-                    ? column.accessor(row) 
-                    : (row as any)[column.accessor];
-                  const isEditing = editingCell?.rowId === row.id && editingCell?.columnId === column.id;
-
-                  return (
-                    <td
-                      key={column.id}
-                      style={tdStyle}
-                      onDoubleClick={(e) => handleCellDoubleClick(e, row.id, column.id)}
-                      title={column.editable ? 'Double-click to edit' : ''}
-                    >
-                      {isEditing ? (
-                        <InlineCellEditor
-                          value={value}
-                          type={column.type || 'text'}
-                          options={column.options}
-                          onSave={(newValue) => handleCellSave(row.id, column.id, newValue)}
-                          onCancel={() => setEditingCell(null)}
-                        />
-                      ) : column.render ? (
-                        column.render(value, row)
-                      ) : (
-                        <span
+          {enableDragDrop ? (
+            <Droppable droppableId={droppableId}>
+              {(provided) => (
+                <tbody ref={provided.innerRef} {...provided.droppableProps}>
+                  {processedData.map((row, rowIndex) => (
+                    <Draggable key={row.id} draggableId={row.id} index={rowIndex}>
+                      {(provided, snapshot) => (
+                        <tr
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          onClick={() => handleRowClick(row)}
                           style={{
-                            display: 'inline-block',
-                            padding: column.editable ? '4px 8px' : undefined,
-                            margin: column.editable ? '-4px -8px' : undefined,
-                            borderRadius: column.editable ? '4px' : undefined,
-                            border: column.editable ? '1px dashed transparent' : undefined,
-                            transition: 'all 0.15s',
-                            cursor: column.editable ? 'pointer' : undefined,
+                            ...provided.draggableProps.style,
+                            cursor: 'pointer',
+                            transition: 'background-color 0.15s',
+                            backgroundColor: snapshot.isDragging 
+                              ? `${colors.gold}15` 
+                              : selectedRows.includes(row.id) 
+                                ? `${colors.gold}08` 
+                                : 'transparent',
+                            boxShadow: snapshot.isDragging ? '0 4px 12px rgba(0,0,0,0.15)' : undefined,
                           }}
                           onMouseOver={(e) => {
-                            if (column.editable) {
-                              e.currentTarget.style.borderColor = `${colors.gold}50`;
-                              e.currentTarget.style.backgroundColor = `${colors.gold}08`;
+                            if (!selectedRows.includes(row.id) && !snapshot.isDragging) {
+                              e.currentTarget.style.backgroundColor = '#f8f8f8';
                             }
                           }}
                           onMouseOut={(e) => {
-                            if (column.editable) {
-                              e.currentTarget.style.borderColor = 'transparent';
+                            if (!selectedRows.includes(row.id) && !snapshot.isDragging) {
                               e.currentTarget.style.backgroundColor = 'transparent';
                             }
                           }}
                         >
-                          {value ?? '—'}
-                        </span>
+                          {renderRowContent(row, rowIndex, provided.dragHandleProps, snapshot.isDragging)}
+                        </tr>
                       )}
-                    </td>
-                  );
-                })}
-                {showActionsColumn && (
-                  <td style={tdStyle} onClick={(e) => e.stopPropagation()}>
-                    <RowActionsMenu
-                      onEdit={() => setEditingCell({ rowId: row.id, columnId: columns.find(c => c.editable)?.id || columns[0].id })}
-                    />
-                  </td>
-                )}
-              </tr>
-            ))}
-          </tbody>
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </tbody>
+              )}
+            </Droppable>
+          ) : (
+            <tbody>
+              {processedData.map((row, rowIndex) => (
+                <tr
+                  key={row.id}
+                  onClick={() => handleRowClick(row)}
+                  style={{
+                    cursor: 'pointer',
+                    transition: 'background-color 0.15s',
+                    backgroundColor: selectedRows.includes(row.id) ? `${colors.gold}08` : 'transparent',
+                  }}
+                  onMouseOver={(e) => {
+                    if (!selectedRows.includes(row.id)) {
+                      e.currentTarget.style.backgroundColor = '#f8f8f8';
+                    }
+                  }}
+                  onMouseOut={(e) => {
+                    if (!selectedRows.includes(row.id)) {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                    }
+                  }}
+                >
+                  {renderRowContent(row, rowIndex)}
+                </tr>
+              ))}
+            </tbody>
+          )}
         </table>
       </div>
 
@@ -796,4 +887,15 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
       )}
     </div>
   );
+
+  // Wrap with DragDropContext if drag-drop is enabled
+  if (enableDragDrop) {
+    return (
+      <DragDropContext onDragEnd={handleDragEnd}>
+        {tableContent}
+      </DragDropContext>
+    );
+  }
+
+  return tableContent;
 }

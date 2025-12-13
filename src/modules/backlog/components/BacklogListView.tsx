@@ -1,9 +1,11 @@
-import { DragDropContext, Droppable, DropResult } from '@hello-pangea/dnd';
+import { DragDropContext, DropResult } from '@hello-pangea/dnd';
 import { BacklogItem, BacklogMeta, BacklogPISection } from '../types';
 import { BacklogSection } from './BacklogSection';
+import { BacklogEnterpriseTable } from './BacklogEnterpriseTable';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useBacklogState } from '../hooks/useBacklogState';
 
 interface BacklogListViewProps {
   items: BacklogItem[];
@@ -23,6 +25,7 @@ export function BacklogListView({
   onItemSelect,
 }: BacklogListViewProps) {
   const queryClient = useQueryClient();
+  const { isEpicBacklog } = useBacklogState();
 
   const updateRanksMutation = useMutation({
     mutationFn: async ({ updates }: { updates: Array<{ id: string; rank: number }> }) => {
@@ -66,6 +69,21 @@ export function BacklogListView({
     updateRanksMutation.mutate({ updates });
   };
 
+  // Use CatalystEnterpriseTable for Epic Backlog (flat list view)
+  if (isEpicBacklog && (!sections || sections.length === 0 || (sections.length === 1 && sections[0].id === 'all'))) {
+    return (
+      <div className="p-4">
+        <BacklogEnterpriseTable
+          items={items}
+          meta={meta}
+          selectedItems={selectedItems}
+          onItemClick={onItemClick}
+          onItemSelect={onItemSelect}
+        />
+      </div>
+    );
+  }
+
   // If we have sections, render grouped by PI with drag-drop
   if (sections && sections.length > 0) {
     return (
@@ -85,24 +103,16 @@ export function BacklogListView({
     );
   }
 
-  // Otherwise render flat list
+  // Fallback: render flat list with BacklogEnterpriseTable
   return (
-    <DragDropContext onDragEnd={handleDragEnd}>
-      <div className="p-4">
-        <BacklogSection
-          section={{
-            id: 'all',
-            type: 'pi',
-            title: 'All Items',
-            itemCount: items.length,
-            isExpanded: true,
-            items,
-          }}
-          selectedItems={selectedItems}
-          onItemClick={onItemClick}
-          onItemSelect={onItemSelect}
-        />
-      </div>
-    </DragDropContext>
+    <div className="p-4">
+      <BacklogEnterpriseTable
+        items={items}
+        meta={meta}
+        selectedItems={selectedItems}
+        onItemClick={onItemClick}
+        onItemSelect={onItemSelect}
+      />
+    </div>
   );
 }
