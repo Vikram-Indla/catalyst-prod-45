@@ -41,13 +41,10 @@ const adminSections = [
     title: 'Application Settings',
     items: [
       { label: 'Modules & Packages', path: '/admin/modules-packages', icon: Package },
-      { label: 'Product Settings', path: '/admin/product-settings', icon: Settings },
       { label: 'Work Codes', path: '/admin/work-codes', icon: Database },
       { label: 'Details Panels', path: '/admin/details-panels', icon: Settings },
       { label: 'Terminology', path: '/admin/terminology', icon: FileText },
       { label: 'Team Settings', path: '/admin/team-settings', icon: Users },
-      { label: 'Project Settings', path: '/admin/program-settings', icon: FolderTree },
-      { label: 'Program Settings', path: '/admin/portfolio-settings', icon: Building2 },
       { label: 'Progress Bars', path: '/admin/progress-bars', icon: TrendingUp },
       { label: 'Progress Bars Config', path: '/admin/progress-bars-config', icon: BarChart3 },
       { label: 'Estimation', path: '/admin/estimation', icon: Settings },
@@ -63,7 +60,8 @@ const adminSections = [
       { label: 'Programs', path: '/admin/portfolios', icon: Building2 },
       { label: 'Departments', path: '/admin/departments', icon: Building2 },
       { label: 'Business Owners', path: '/admin/business-owners', icon: Users },
-      { label: 'Theme Groups', path: '/admin/theme-groups', icon: FolderTree },
+      { label: 'Product Lines', path: '/admin/product-settings', icon: Settings },
+      { label: 'Strategic Themes', path: '/admin/theme-groups', icon: FolderTree },
     ],
   },
   {
