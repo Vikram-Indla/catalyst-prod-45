@@ -11,6 +11,7 @@ import { CardDetailPanel } from '../components/CardDetailPanel';
 import { KanbanIcons } from '../components/KanbanIcons';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
+import { IndustryViewSwitchButton } from '@/components/industry/IndustryViewSwitchButton';
 
 export default function BusinessRequestsKanbanPage() {
   const navigate = useNavigate();
@@ -159,43 +160,9 @@ export default function BusinessRequestsKanbanPage() {
         top: 0,
         zIndex: 100
       }}>
-        {/* Left - View toggle */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-          <button 
-            onClick={() => navigate('/industry/backlog')} 
-            title="List View" 
-            style={{ 
-              width: '32px', 
-              height: '32px', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              border: `1px solid ${KANBAN_COLORS.borderDefault}`, 
-              borderRadius: '6px', 
-              backgroundColor: KANBAN_COLORS.bgCard, 
-              color: KANBAN_COLORS.textMuted, 
-              cursor: 'pointer' 
-            }}
-          >
-            <KanbanIcons.List />
-          </button>
-          <button 
-            title="Kanban View" 
-            style={{ 
-              width: '32px', 
-              height: '32px', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              border: `1px solid ${KANBAN_COLORS.gold}`, 
-              borderRadius: '6px', 
-              backgroundColor: KANBAN_COLORS.bgSelected, 
-              color: KANBAN_COLORS.gold, 
-              cursor: 'pointer' 
-            }}
-          >
-            <KanbanIcons.Kanban />
-          </button>
+        {/* Left - View toggle - show only switch-to-other-view button */}
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <IndustryViewSwitchButton currentView="kanban" />
         </div>
 
         {/* Center - Search */}
