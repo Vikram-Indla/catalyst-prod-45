@@ -53,37 +53,76 @@ const DEFAULT_FILTERS: RiskGridFilters = {
 
 const ITEMS_PER_PAGE = 15;
 
-// ROAM Drill-Down Drawer Component
-function RoamDrillDownDrawer({
-  isOpen,
+// Drill-Down mode types
+type DrillDownMode = 
+  | { type: 'roam'; value: string }
+  | { type: 'department'; value: string }
+  | { type: 'owner'; value: string }
+  | null;
+
+// Unified Drill-Down Drawer Component
+function RiskDrillDownDrawer({
+  mode,
+  allRisks,
   onClose,
-  title,
-  risks,
-  color,
   onRiskClick,
 }: {
-  isOpen: boolean;
+  mode: DrillDownMode;
+  allRisks: Risk[];
   onClose: () => void;
-  title: string;
-  risks: Risk[];
-  color: string;
   onRiskClick: (risk: Risk) => void;
 }) {
-  const criticalCount = risks.filter(r => r.critical_path === 'Yes').length;
-  const highImpactCount = risks.filter(r => r.impact === 'High' || r.impact === 'Critical').length;
-  const thisQuarterCount = risks.filter(r => r.target_resolution_date && 
-    new Date(r.target_resolution_date) <= new Date(new Date().setMonth(new Date().getMonth() + 3))
-  ).length;
+  if (!mode) return null;
+
+  // Filter risks based on drill-down mode
+  const filteredRisks = allRisks.filter(risk => {
+    if (mode.type === 'roam') return risk.resolution_method === mode.value;
+    if (mode.type === 'department') return (risk.relationship || 'Enterprise') === mode.value;
+    if (mode.type === 'owner') return risk.owner_id === mode.value;
+    return false;
+  });
+
+  const criticalCount = filteredRisks.filter(r => r.critical_path === 'Yes').length;
+  const highImpactCount = filteredRisks.filter(r => r.impact === 'High' || r.impact === 'Critical').length;
+  const openCount = filteredRisks.filter(r => r.status === 'Open').length;
+
+  // Build title and subtitle based on mode
+  const getHeaderInfo = () => {
+    switch (mode.type) {
+      case 'roam':
+        return { 
+          label: 'ROAM Category', 
+          title: mode.value, 
+          subtitle: `${filteredRisks.length} risks in this category` 
+        };
+      case 'department':
+        return { 
+          label: 'Department', 
+          title: mode.value, 
+          subtitle: `Open risks owned by this department` 
+        };
+      case 'owner':
+        return { 
+          label: 'Business Owner', 
+          title: mode.value, 
+          subtitle: `Open risks linked to this business owner` 
+        };
+      default:
+        return { label: '', title: '', subtitle: '' };
+    }
+  };
+
+  const { label, title, subtitle } = getHeaderInfo();
 
   return (
-    <Sheet open={isOpen} onOpenChange={onClose}>
+    <Sheet open={!!mode} onOpenChange={onClose}>
       <SheetContent className="w-full sm:max-w-xl overflow-y-auto">
         <SheetHeader className="pb-4 border-b border-border">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-xs font-medium uppercase tracking-wide mb-1 text-brand-gold">ROAM Category</p>
+              <p className="text-xs font-medium uppercase tracking-wide mb-1 text-brand-gold">{label}</p>
               <SheetTitle className="text-xl font-bold">{title}</SheetTitle>
-              <p className="text-sm text-muted-foreground mt-1">{risks.length} risks</p>
+              <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>
             </div>
           </div>
           
@@ -98,15 +137,15 @@ function RoamDrillDownDrawer({
               <p className="text-lg font-bold text-brand-gold">{highImpactCount}</p>
             </div>
             <div className="px-3 py-2 rounded-lg bg-brand-gold/10">
-              <p className="text-xs text-muted-foreground">This Quarter</p>
-              <p className="text-lg font-bold text-brand-gold">{thisQuarterCount}</p>
+              <p className="text-xs text-muted-foreground">Open</p>
+              <p className="text-lg font-bold text-brand-gold">{openCount}</p>
             </div>
           </div>
         </SheetHeader>
         
         {/* Risk list */}
         <div className="py-4 space-y-3">
-          {risks.map(risk => (
+          {filteredRisks.map(risk => (
             <div 
               key={risk.id} 
               className="p-4 rounded-xl border border-border hover:shadow-md transition-all cursor-pointer bg-card"
@@ -148,7 +187,7 @@ function RoamDrillDownDrawer({
               </div>
             </div>
           ))}
-          {risks.length === 0 && (
+          {filteredRisks.length === 0 && (
             <p className="text-center text-muted-foreground py-8">No risks in this category</p>
           )}
         </div>
@@ -171,7 +210,7 @@ export default function EnterpriseRisks() {
   const [riskToDelete, setRiskToDelete] = useState<Risk | null>(null);
   const [filters, setFilters] = useState<RiskGridFilters>(DEFAULT_FILTERS);
   const [activeTab, setActiveTab] = useState<'summary' | 'roam'>('summary');
-  const [drillDown, setDrillDown] = useState<{ title: string; risks: Risk[]; color: string } | null>(null);
+  const [drillDownMode, setDrillDownMode] = useState<DrillDownMode>(null);
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
 
   // Filtered risks based on filters and search
@@ -244,12 +283,45 @@ export default function EnterpriseRisks() {
       .sort((a, b) => b.value - a.value);
   }, [allRisks]);
 
-  const handleRoamClick = (category: keyof typeof roamSummary, color: string, label: string) => {
-    setDrillDown({
-      title: label,
-      risks: roamSummary[category],
-      color
+  // Department distribution (using relationship as department proxy for now)
+  const departmentData = useMemo(() => {
+    const byDept: Record<string, number> = {};
+    openRisks.forEach(r => {
+      const dept = r.relationship || 'Enterprise';
+      byDept[dept] = (byDept[dept] || 0) + 1;
     });
+    return Object.entries(byDept)
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value);
+  }, [openRisks]);
+
+  // Top business owners by risk count
+  const topBusinessOwners = useMemo(() => {
+    const byOwner: Record<string, { count: number; unit: string }> = {};
+    openRisks.forEach(r => {
+      const ownerName = r.owner_id || 'Unassigned';
+      const unit = r.relationship || 'Enterprise';
+      if (!byOwner[ownerName]) {
+        byOwner[ownerName] = { count: 0, unit };
+      }
+      byOwner[ownerName].count++;
+    });
+    return Object.entries(byOwner)
+      .map(([owner, data]) => ({ owner, openRisks: data.count, unit: data.unit }))
+      .sort((a, b) => b.openRisks - a.openRisks)
+      .slice(0, 5);
+  }, [openRisks]);
+
+  const handleRoamClick = (category: keyof typeof roamSummary, label: string) => {
+    setDrillDownMode({ type: 'roam', value: label });
+  };
+
+  const handleDepartmentClick = (departmentName: string) => {
+    setDrillDownMode({ type: 'department', value: departmentName });
+  };
+
+  const handleOwnerClick = (ownerName: string) => {
+    setDrillDownMode({ type: 'owner', value: ownerName });
   };
 
   const toggleRiskSelection = (riskId: string) => {
@@ -425,102 +497,166 @@ export default function EnterpriseRisks() {
           </div>
 
           {activeTab === 'summary' && (
-            <div className="grid grid-cols-4 gap-4">
-              {/* Open vs Closed */}
-              <div className="rounded-xl p-4 border border-border bg-muted/50">
-                <h3 className="text-sm font-medium mb-1 text-foreground">Open vs Closed</h3>
-                <p className="text-xs mb-3 text-muted-foreground">Current risk posture</p>
-                <div className="h-32">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie data={openClosedData} cx="50%" cy="50%" innerRadius={35} outerRadius={50} paddingAngle={3} dataKey="value" stroke="none">
-                        {openClosedData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
-                      </Pie>
-                      <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }} />
-                    </PieChart>
-                  </ResponsiveContainer>
+            <>
+              <div className="grid grid-cols-4 gap-4">
+                {/* Open vs Closed */}
+                <div className="rounded-xl p-4 border border-border bg-muted/50">
+                  <h3 className="text-sm font-medium mb-1 text-foreground">Open vs Closed</h3>
+                  <p className="text-xs mb-3 text-muted-foreground">Current risk posture</p>
+                  <div className="h-32">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie data={openClosedData} cx="50%" cy="50%" innerRadius={35} outerRadius={50} paddingAngle={3} dataKey="value" stroke="none">
+                          {openClosedData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
+                        </Pie>
+                        <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="flex justify-center gap-4 mt-2">
+                    {openClosedData.map((item, i) => (
+                      <div key={i} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <span className="w-2.5 h-2.5 rounded-full" style={{ background: item.color }} />
+                        {item.name}: <strong className="text-foreground">{item.value}</strong>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="flex justify-center gap-4 mt-2">
-                  {openClosedData.map((item, i) => (
-                    <div key={i} className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                      <span className="w-2.5 h-2.5 rounded-full" style={{ background: item.color }} />
-                      {item.name}: <strong className="text-foreground">{item.value}</strong>
-                    </div>
-                  ))}
+
+                {/* Occurrence Likelihood */}
+                <div className="rounded-xl p-4 border border-border bg-muted/50">
+                  <h3 className="text-sm font-medium mb-1 text-foreground">Occurrence Likelihood</h3>
+                  <p className="text-xs mb-3 text-muted-foreground">Probability distribution</p>
+                  <div className="h-32">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie data={occurrenceData} cx="50%" cy="50%" innerRadius={35} outerRadius={50} paddingAngle={3} dataKey="value" stroke="none">
+                          {occurrenceData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
+                        </Pie>
+                        <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="flex justify-center gap-3 mt-2">
+                    {occurrenceData.map((item, i) => (
+                      <div key={i} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <span className="w-2.5 h-2.5 rounded-full" style={{ background: item.color }} />
+                        {item.name}: <strong className="text-foreground">{item.value}</strong>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Impact Severity */}
+                <div className="rounded-xl p-4 border border-border bg-muted/50">
+                  <h3 className="text-sm font-medium mb-1 text-foreground">Impact Severity</h3>
+                  <p className="text-xs mb-3 text-muted-foreground">Business impact levels</p>
+                  <div className="h-32">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie data={impactData} cx="50%" cy="50%" innerRadius={35} outerRadius={50} paddingAngle={3} dataKey="value" stroke="none">
+                          {impactData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
+                        </Pie>
+                        <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="flex justify-center gap-2 mt-2 flex-wrap">
+                    {impactData.map((item, i) => (
+                      <div key={i} className="flex items-center gap-1 text-xs text-muted-foreground">
+                        <span className="w-2 h-2 rounded-full" style={{ background: item.color }} />
+                        {item.name}: <strong className="text-foreground">{item.value}</strong>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* By Business Line */}
+                <div className="rounded-xl p-4 border border-border bg-muted/50">
+                  <h3 className="text-sm font-medium mb-1 text-foreground">By Level</h3>
+                  <p className="text-xs mb-3 text-muted-foreground">Distribution across units</p>
+                  <div className="h-36">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={businessLineData.slice(0, 6)} layout="vertical" margin={{ left: -20 }}>
+                        <XAxis type="number" hide />
+                        <YAxis 
+                          type="category" 
+                          dataKey="name" 
+                          width={90} 
+                          tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} 
+                          axisLine={false} 
+                          tickLine={false} 
+                        />
+                        <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }} />
+                        <Bar dataKey="value" fill={CHART_COLORS.gold} radius={[0, 4, 4, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
                 </div>
               </div>
 
-              {/* Occurrence Likelihood */}
-              <div className="rounded-xl p-4 border border-border bg-muted/50">
-                <h3 className="text-sm font-medium mb-1 text-foreground">Occurrence Likelihood</h3>
-                <p className="text-xs mb-3 text-muted-foreground">Probability distribution</p>
-                <div className="h-32">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie data={occurrenceData} cx="50%" cy="50%" innerRadius={35} outerRadius={50} paddingAngle={3} dataKey="value" stroke="none">
-                        {occurrenceData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
-                      </Pie>
-                      <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="flex justify-center gap-3 mt-2">
-                  {occurrenceData.map((item, i) => (
-                    <div key={i} className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                      <span className="w-2.5 h-2.5 rounded-full" style={{ background: item.color }} />
-                      {item.name}: <strong className="text-foreground">{item.value}</strong>
+              {/* Second row: Risks by Department + Top Business Owners (with scroll) */}
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                {/* Risks by Department */}
+                <div className="rounded-xl p-4 border border-border bg-muted/50">
+                  <h3 className="text-sm font-medium mb-1 text-foreground">Risks by Department</h3>
+                  <p className="text-xs mb-3 text-muted-foreground">Open risks grouped by department</p>
+                  <div className="max-h-56 overflow-y-auto">
+                    <div className="min-h-[176px]" style={{ height: Math.max(176, departmentData.length * 32) }}>
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={departmentData} layout="vertical" margin={{ left: 0 }}>
+                          <XAxis type="number" hide />
+                          <YAxis 
+                            type="category" 
+                            dataKey="name" 
+                            width={130} 
+                            tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} 
+                            axisLine={false} 
+                            tickLine={false} 
+                          />
+                          <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }} />
+                          <Bar 
+                            dataKey="value" 
+                            fill={CHART_COLORS.bronze} 
+                            radius={[0, 4, 4, 0]} 
+                            className="cursor-pointer"
+                            onClick={(data: any) => handleDepartmentClick(data.name)}
+                          />
+                        </BarChart>
+                      </ResponsiveContainer>
                     </div>
-                  ))}
+                  </div>
                 </div>
-              </div>
 
-              {/* Impact Severity */}
-              <div className="rounded-xl p-4 border border-border bg-muted/50">
-                <h3 className="text-sm font-medium mb-1 text-foreground">Impact Severity</h3>
-                <p className="text-xs mb-3 text-muted-foreground">Business impact levels</p>
-                <div className="h-32">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie data={impactData} cx="50%" cy="50%" innerRadius={35} outerRadius={50} paddingAngle={3} dataKey="value" stroke="none">
-                        {impactData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
-                      </Pie>
-                      <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="flex justify-center gap-2 mt-2 flex-wrap">
-                  {impactData.map((item, i) => (
-                    <div key={i} className="flex items-center gap-1 text-xs text-muted-foreground">
-                      <span className="w-2 h-2 rounded-full" style={{ background: item.color }} />
-                      {item.name}: <strong className="text-foreground">{item.value}</strong>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* By Business Line */}
-              <div className="rounded-xl p-4 border border-border bg-muted/50">
-                <h3 className="text-sm font-medium mb-1 text-foreground">By Level</h3>
-                <p className="text-xs mb-3 text-muted-foreground">Distribution across units</p>
-                <div className="h-36">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={businessLineData.slice(0, 6)} layout="vertical" margin={{ left: -20 }}>
-                      <XAxis type="number" hide />
-                      <YAxis 
-                        type="category" 
-                        dataKey="name" 
-                        width={90} 
-                        tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} 
-                        axisLine={false} 
-                        tickLine={false} 
-                      />
-                      <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }} />
-                      <Bar dataKey="value" fill={CHART_COLORS.gold} radius={[0, 4, 4, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
+                {/* Top Business Owners by Risk */}
+                <div className="rounded-xl p-4 border border-border bg-muted/50">
+                  <h3 className="text-sm font-medium mb-1 text-foreground">Top Business Owners by Risk</h3>
+                  <p className="text-xs mb-3 text-muted-foreground">Open risks per business owner (top 5)</p>
+                  <div className="max-h-56 overflow-y-auto space-y-2">
+                    {topBusinessOwners.length > 0 ? (
+                      topBusinessOwners.map((item, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => handleOwnerClick(item.owner)}
+                          className="flex items-center justify-between py-2 px-3 rounded-lg bg-card w-full text-left hover:bg-muted transition-colors cursor-pointer"
+                        >
+                          <div>
+                            <p className="text-sm font-medium text-foreground">{item.owner}</p>
+                            <p className="text-xs text-muted-foreground">{item.unit}</p>
+                          </div>
+                          <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-brand-gold/20 text-brand-gold">
+                            {item.openRisks}
+                          </span>
+                        </button>
+                      ))
+                    ) : (
+                      <p className="text-sm text-muted-foreground py-4 text-center">No owners with open risks</p>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
+            </>
           )}
 
           {activeTab === 'roam' && (
@@ -533,7 +669,7 @@ export default function EnterpriseRisks() {
               ].map(({ key, label, color, icon: Icon }) => (
                 <button
                   key={key}
-                  onClick={() => handleRoamClick(key, color, label)}
+                  onClick={() => handleRoamClick(key, label)}
                   className="rounded-xl p-5 border text-left transition-all hover:shadow-lg hover:scale-[1.02] group"
                   style={{ 
                     borderColor: `${color}40`, 
@@ -705,15 +841,13 @@ export default function EnterpriseRisks() {
         onFiltersChange={setFilters}
       />
 
-      {/* ROAM Drill-Down Drawer */}
-      <RoamDrillDownDrawer
-        isOpen={!!drillDown}
-        onClose={() => setDrillDown(null)}
-        title={drillDown?.title || ''}
-        risks={drillDown?.risks || []}
-        color={drillDown?.color || ''}
+      {/* Unified Drill-Down Drawer */}
+      <RiskDrillDownDrawer
+        mode={drillDownMode}
+        allRisks={allRisks}
+        onClose={() => setDrillDownMode(null)}
         onRiskClick={(risk) => {
-          setDrillDown(null);
+          setDrillDownMode(null);
           setSelectedRisk(risk);
         }}
       />
