@@ -6,6 +6,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { Risk, RiskFormData } from "@/types/risks";
 import { useToast } from "@/hooks/use-toast";
 
+// Extended Risk type with joined Business Request fields
+export type RiskWithBR = Risk & {
+  department?: string | null;
+  business_owner?: string | null;
+};
+
 export function useRisks(programId?: string, programIncrementId?: string) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -17,9 +23,16 @@ export function useRisks(programId?: string, programIncrementId?: string) {
   } = useQuery({
     queryKey: ['risks', programId, programIncrementId],
     queryFn: async () => {
+      // Join risks with business_requests to get department and business_owner
       let query = supabase
         .from('risks')
-        .select('*')
+        .select(`
+          *,
+          business_requests (
+            department,
+            business_owner
+          )
+        `)
         .is('deleted_at', null)
         .order('created_at', { ascending: false });
 
@@ -34,7 +47,14 @@ export function useRisks(programId?: string, programIncrementId?: string) {
       const { data, error } = await query;
 
       if (error) throw error;
-      return data as Risk[];
+      
+      // Flatten the joined data
+      return (data || []).map((risk: any) => ({
+        ...risk,
+        department: risk.business_requests?.department || null,
+        business_owner: risk.business_requests?.business_owner || null,
+        business_requests: undefined, // Remove nested object
+      })) as RiskWithBR[];
     }
   });
 
