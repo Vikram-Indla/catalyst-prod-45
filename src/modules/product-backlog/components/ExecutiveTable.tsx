@@ -1009,7 +1009,7 @@ export function ExecutiveTable({
               <thead className="sticky top-0 z-10">
                 <tr>
                   {/* Checkbox column */}
-                  <th className="w-10 px-3 py-2.5 text-center font-semibold text-[11px] text-muted-foreground uppercase tracking-wider bg-muted/60 border-b border-border whitespace-nowrap">
+                  <th className="w-10 px-3 py-2.5 text-center font-semibold text-[11px] text-muted-foreground uppercase tracking-wider bg-muted/40 border-b border-border whitespace-nowrap">
                     <input
                       type="checkbox"
                       checked={paginatedData.length > 0 && selectedRows.length === paginatedData.length}
@@ -1028,7 +1028,7 @@ export function ExecutiveTable({
                         onDragLeave={() => setDragOverColumn(null)}
                         onDrop={(e) => handleColumnDrop(e, col.id)}
                         onDragEnd={() => { setDraggingColumn(null); setDragOverColumn(null); }}
-                        className={`px-3 py-2.5 text-left font-semibold text-[11px] text-muted-foreground uppercase tracking-wider bg-muted/60 border-b border-border whitespace-nowrap cursor-grab transition-colors ${
+                        className={`px-3 py-2.5 text-left font-semibold text-[11px] text-muted-foreground uppercase tracking-wider bg-muted/40 border-b border-border whitespace-nowrap cursor-grab transition-colors ${
                           draggingColumn === col.id ? 'opacity-50' : ''
                         } ${dragOverColumn === col.id ? 'bg-brand-gold/20 border-l-2 border-l-brand-gold' : ''} ${
                           isSorted ? 'border-b-2 border-b-brand-gold' : ''
@@ -1069,7 +1069,7 @@ export function ExecutiveTable({
                     );
                   })}
                   {/* Actions column */}
-                  <th className="w-12 px-3 py-2.5 bg-muted/60 border-b border-border"></th>
+                  <th className="w-12 px-3 py-2.5 bg-muted/40 border-b border-border"></th>
                 </tr>
               </thead>
               <tbody>
