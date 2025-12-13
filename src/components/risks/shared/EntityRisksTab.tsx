@@ -203,13 +203,22 @@ export function EntityRisksTab({ entityType, entityId }: EntityRisksTabProps) {
         tags: '',
         business_request_id: null as string | null,
         related_item_id: null as string | null,
-        relationship: 'Feature' as string,
+        relationship: '' as string,
       };
 
-      // Set the correct ID column
+      // Set the correct ID column and relationship based on entity type
       if (entityType === 'business_request') {
         insertPayload.business_request_id = entityId;
+        insertPayload.relationship = 'Demand'; // Risks from Business Requests are "Demand" level
+      } else if (entityType === 'epic') {
+        insertPayload.related_item_id = entityId;
+        insertPayload.relationship = 'Epic';
+      } else if (entityType === 'feature') {
+        insertPayload.related_item_id = entityId;
         insertPayload.relationship = 'Feature';
+      } else if (entityType === 'theme') {
+        insertPayload.related_item_id = entityId;
+        insertPayload.relationship = 'Theme';
       } else if (relationship) {
         insertPayload.related_item_id = entityId;
         insertPayload.relationship = relationship;
