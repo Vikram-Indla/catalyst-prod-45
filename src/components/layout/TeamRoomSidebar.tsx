@@ -145,7 +145,7 @@ export function TeamRoomSidebar({
 
       <div className="h-full flex flex-col overflow-hidden">
         {/* Team Context Header */}
-        <div className={cn("px-4 pt-4 pb-3 border-b", !expanded && "px-2")}>
+        <div className={cn("px-4 pt-4 pb-3", expanded && "border-b", !expanded && "px-2")}>
           {expanded && (
             <>
               {/* Team Display */}

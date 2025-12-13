@@ -183,7 +183,7 @@ export function PortfolioRoomSidebar({
 
       <div className="h-full flex flex-col overflow-hidden">
         {/* Portfolio Context Header */}
-        <div className={cn("border-b", !expanded && "px-[var(--s2)]")} style={{ padding: expanded ? 'var(--s4)' : undefined, paddingTop: 'var(--s4)', paddingBottom: 'var(--s3)' }}>
+        <div className={cn(expanded && "border-b", !expanded && "px-[var(--s2)]")} style={{ padding: expanded ? 'var(--s4)' : undefined, paddingTop: 'var(--s4)', paddingBottom: 'var(--s3)' }}>
           {expanded && (
             <>
               {/* Portfolio Display (read-only, controlled by header) */}
