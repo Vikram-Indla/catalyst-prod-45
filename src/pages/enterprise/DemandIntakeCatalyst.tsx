@@ -20,8 +20,8 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 
-// EnterpriseTable component
-import { EnterpriseTable, Column } from '@/components/industry/EnterpriseTable';
+// CatalystEnterpriseTable component
+import { CatalystEnterpriseTable, CatalystColumn } from '@/components/industry/CatalystEnterpriseTable';
 
 // Catalyst Demand-specific modals
 import { DemandBulkStatusModal } from '@/components/demand/DemandBulkStatusModal';
@@ -286,14 +286,14 @@ export default function DemandIntakeCatalyst() {
   };
 
   // Define columns for EnterpriseTable
-  const tableColumns: Column<BusinessRequest>[] = useMemo(() => [
+  const tableColumns: CatalystColumn<BusinessRequest>[] = useMemo(() => [
     {
       id: 'request_key',
       header: 'Request ID',
       accessor: 'request_key',
       width: '100px',
       sortable: true,
-      renderCell: (value, row) => (
+      render: (value, row) => (
         <span className="text-foreground hover:text-brand-gold font-medium text-sm">
           {value || `MIM-${String(row.id).slice(-3)}`}
         </span>
@@ -306,8 +306,8 @@ export default function DemandIntakeCatalyst() {
       width: '280px',
       sortable: true,
       editable: true,
-      editType: 'text',
-      renderCell: (value) => (
+      type: 'text',
+      render: (value) => (
         <span className="max-w-[280px] truncate block">{value || '-'}</span>
       ),
     },
@@ -321,7 +321,7 @@ export default function DemandIntakeCatalyst() {
         value: step.value,
         label: step.label,
       })),
-      renderCell: (value) => (
+      render: (value) => (
         <span className="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded bg-muted/50 text-foreground border border-border">
           {getProcessStepInfo(value).label}
         </span>
@@ -334,8 +334,8 @@ export default function DemandIntakeCatalyst() {
       width: '80px',
       sortable: true,
       editable: true,
-      editType: 'number',
-      renderCell: (value) => (
+      type: 'number',
+      render: (value) => (
         <span className="text-center font-semibold block">{value || '—'}</span>
       ),
     },
@@ -345,7 +345,7 @@ export default function DemandIntakeCatalyst() {
       accessor: 'rank',
       width: '80px',
       sortable: true,
-      renderCell: (value) => (
+      render: (value) => (
         <span className="text-center block">{value || '-'}</span>
       ),
     },
@@ -355,22 +355,22 @@ export default function DemandIntakeCatalyst() {
       accessor: 'delivery_platform',
       sortable: true,
       editable: true,
-      editType: 'text',
-      renderCell: (value) => value || '-',
+      type: 'text',
+      render: (value) => value || '-',
     },
     {
       id: 'business_owner',
       header: 'Business Owner',
       accessor: 'business_owner',
       sortable: true,
-      renderCell: (value) => value || '-',
+      render: (value) => value || '-',
     },
     {
       id: 'created_at',
       header: 'Submitted Date',
       accessor: 'created_at',
       sortable: true,
-      renderCell: (value) => (
+      render: (value) => (
         <span className="text-muted-foreground">{formatDate(value)}</span>
       ),
     },
@@ -380,7 +380,7 @@ export default function DemandIntakeCatalyst() {
       accessor: (row) => calculateAgeing(row.created_at),
       width: '60px',
       sortable: true,
-      renderCell: (value) => (
+      render: (value) => (
         <span className="text-center text-muted-foreground block">{value}</span>
       ),
     },
@@ -497,14 +497,11 @@ export default function DemandIntakeCatalyst() {
             <div className="flex flex-col flex-1 min-h-0">
               {/* EnterpriseTable with inline editing */}
               <div className="flex-1 overflow-auto">
-                <EnterpriseTable
+                <CatalystEnterpriseTable
                   data={paginatedRequests as BusinessRequest[]}
                   columns={tableColumns}
                   onRowClick={(row) => setSelectedRequestId(row.id)}
                   onRowUpdate={handleRowUpdate}
-                  onRowDelete={handleRowDelete}
-                  editMode="cell"
-                  enableUndo={true}
                   showCheckboxes={true}
                   showActionsColumn={true}
                   selectedRows={selectedRows}
