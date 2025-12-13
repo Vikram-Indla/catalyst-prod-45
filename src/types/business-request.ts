@@ -87,6 +87,10 @@ export interface BusinessRequest {
   id: string;
   request_key: string;
   
+  // Resolved names (populated from profiles table)
+  requestor_name?: string;
+  assignee_name?: string;
+  
   // Overview
   title: string;
   description: string | null;
