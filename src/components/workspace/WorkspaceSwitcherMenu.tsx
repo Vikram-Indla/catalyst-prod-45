@@ -4,7 +4,7 @@
  * Includes admin-only key debug toggle
  */
 import React, { useState, useCallback } from 'react';
-import { Search, Plus, Settings, Folder, LayoutGrid, Lock, Bug } from 'lucide-react';
+import { Search, Plus, Settings, Folder, LayoutGrid, Lock } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 
@@ -24,7 +24,6 @@ export interface WorkspaceSwitcherMenuProps {
   items: WorkspaceItem[];
   isLoading?: boolean;
   showActions: boolean;
-  isAdmin?: boolean; // Admin flag for debug toggle
   onSelectItem: (item: WorkspaceItem) => void;
   onCreate?: () => void;
   onManage?: () => void;
@@ -36,13 +35,11 @@ export const WorkspaceSwitcherMenu = React.memo(function WorkspaceSwitcherMenu({
   items,
   isLoading = false,
   showActions,
-  isAdmin = false,
   onSelectItem,
   onCreate,
   onManage,
 }: WorkspaceSwitcherMenuProps) {
   const [search, setSearch] = useState('');
-  const [showKeyDebug, setShowKeyDebug] = useState(false);
 
   const filtered = items.filter(item =>
     item.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -91,14 +88,13 @@ export const WorkspaceSwitcherMenu = React.memo(function WorkspaceSwitcherMenu({
               item={item}
               type={title === 'Programs' ? 'program' : 'project'}
               onClick={handleItemClick}
-              showDebug={showKeyDebug}
             />
           ))
         )}
       </div>
 
-      {/* Footer Actions - Admin only */}
-      {showActions && (onCreate || onManage || isAdmin) && (
+      {/* Footer Actions */}
+      {showActions && (onCreate || onManage) && (
         <div className="border-t border-border divide-y divide-border/50">
           {onCreate && (
             <button
@@ -118,21 +114,6 @@ export const WorkspaceSwitcherMenu = React.memo(function WorkspaceSwitcherMenu({
               Manage {title}
             </button>
           )}
-          {/* Admin-only debug toggle */}
-          {isAdmin && (
-            <button
-              onClick={() => setShowKeyDebug(!showKeyDebug)}
-              className={cn(
-                "flex items-center gap-2 w-full px-3 py-2 text-xs transition-colors",
-                showKeyDebug 
-                  ? "text-brand-gold bg-brand-gold/10 hover:bg-brand-gold/20" 
-                  : "text-muted-foreground hover:bg-muted"
-              )}
-            >
-              <Bug className="h-3.5 w-3.5" />
-              {showKeyDebug ? 'Hide key debug' : 'Show key debug'}
-            </button>
-          )}
         </div>
       )}
     </div>
@@ -144,14 +125,12 @@ interface WorkspaceListItemProps {
   item: WorkspaceItem;
   type: 'program' | 'project';
   onClick: (item: WorkspaceItem) => void;
-  showDebug?: boolean;
 }
 
 const WorkspaceListItem = React.memo(function WorkspaceListItem({
   item,
   type,
   onClick,
-  showDebug = false,
 }: WorkspaceListItemProps) {
   const handleClick = useCallback(() => {
     onClick(item);
@@ -179,19 +158,11 @@ const WorkspaceListItem = React.memo(function WorkspaceListItem({
         {!item.canAccess && (
           <Lock className="h-3 w-3 text-muted-foreground flex-shrink-0" />
         )}
-        {/* Migration warning badge - admin debug mode only */}
-        {showDebug && item.needsMigration && (
-          <span className="text-[10px] bg-destructive/20 text-destructive px-1.5 py-0.5 rounded">
-            Needs migration
-          </span>
-        )}
       </div>
-      {/* Show canonical 3-letter key only - never long keys, never for Default */}
+      {/* Show canonical 3-letter key only */}
       {hasValidKey && (
         <span className="text-xs text-muted-foreground flex-shrink-0 w-[72px] text-right font-mono uppercase">
-          {showDebug && item.sourceField 
-            ? `${item.key} · ${item.sourceField.split(' ')[0]}` 
-            : item.key}
+          {item.key}
         </span>
       )}
     </button>

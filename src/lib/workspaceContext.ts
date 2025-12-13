@@ -83,13 +83,14 @@ export function getActiveNavItem(workspaceType: WorkspaceType): string {
 
 /**
  * Get landing route for each workspace type
+ * Programs land on Epic Backlog, Projects land on Backlog
  */
 export function getProgramLandingRoute(programId: string): string {
-  return `/program/${programId}/room`;
+  return `/program/${programId}/epic-backlog`;
 }
 
 export function getProjectLandingRoute(projectId: string): string {
-  return `/programs/${projectId}/room`;
+  return `/programs/${projectId}/backlog`;
 }
 
 /**
