@@ -45,7 +45,7 @@ import {
 } from 'lucide-react';
 import { Risk, RiskFormData, RoamStatus, RiskStatus, SeverityLevel, YesNo } from '@/types/risks';
 import { RiskFormV2, RiskFormDataV2 } from './shared/RiskFormV2';
-import { RiskLinkedItemsTab } from './drawer-tabs/RiskLinkedItemsTab';
+import { RiskLinksTab } from './drawer-tabs/RiskLinksTab';
 import { RiskDiscussionsTab } from './RiskDiscussionsTab';
 import { UnifiedAuditHistoryTab } from '@/components/shared/UnifiedAuditHistoryTab';
 import { toast } from 'sonner';
@@ -61,7 +61,7 @@ interface RiskDrawerProps {
 
 const TABS = [
   { value: 'details', label: 'Details' },
-  { value: 'linked-items', label: 'Linked Items' },
+  { value: 'links', label: 'Links' },
   { value: 'discussions', label: 'Discussions' },
   { value: 'audit-history', label: 'Audit History' },
 ];
@@ -388,8 +388,8 @@ export function RiskDrawer({ risk, isOpen, onClose, onUpdate }: RiskDrawerProps)
                   context="enterprise"
                 />
               </TabsContent>
-              <TabsContent value="linked-items" className="m-0 focus-visible:outline-none flex-1 p-4 md:p-5 pb-6">
-                <RiskLinkedItemsTab risk={risk} />
+              <TabsContent value="links" className="m-0 focus-visible:outline-none flex-1">
+                <RiskLinksTab riskId={risk.id} />
               </TabsContent>
               <TabsContent value="discussions" className="m-0 focus-visible:outline-none h-[500px]">
                 <RiskDiscussionsTab riskId={risk.id} />
