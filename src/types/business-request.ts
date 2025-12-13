@@ -61,19 +61,9 @@ export const DELIVERY_PLATFORM_OPTIONS = [
   { value: 'Other', label: { en: 'Other', ar: 'أخرى' } },
 ] as const;
 
-// Single source of truth for Department options (used in both internal and external forms)
-export const DEPARTMENT_OPTIONS = [
-  { value: 'it', label: { en: 'Information Technology', ar: 'تقنية المعلومات' } },
-  { value: 'operations', label: { en: 'Operations', ar: 'العمليات' } },
-  { value: 'finance', label: { en: 'Finance', ar: 'المالية' } },
-  { value: 'hr', label: { en: 'Human Resources', ar: 'الموارد البشرية' } },
-  { value: 'marketing', label: { en: 'Marketing', ar: 'التسويق' } },
-  { value: 'sales', label: { en: 'Sales', ar: 'المبيعات' } },
-  { value: 'legal', label: { en: 'Legal', ar: 'الشؤون القانونية' } },
-  { value: 'strategy', label: { en: 'Strategy', ar: 'الاستراتيجية' } },
-  { value: 'business', label: { en: 'Business', ar: 'الأعمال' } },
-  { value: 'other', label: { en: 'Other', ar: 'أخرى' } },
-] as const;
+// REMOVED: DEPARTMENT_OPTIONS - departments must come ONLY from admin-configured data
+// Use useDepartments() hook from @/hooks/useDepartmentsAndOwners to get department options
+// See ZERO-SEED / ZERO-HALLUCINATION policy
 
 export const DELIVERY_TRACK_OPTIONS = ['Digital', 'Core Banking', 'Payments', 'Analytics'];
 export const INTEGRATION_SYSTEMS_OPTIONS = ['SAP', 'Salesforce', 'Oracle', 'Microsoft Dynamics', 'Custom API', 'Core Banking', 'Payment Gateway'];

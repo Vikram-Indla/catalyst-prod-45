@@ -8,6 +8,7 @@ import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { IndustryViewSwitchButton } from '@/components/industry/IndustryViewSwitchButton';
+import { useDepartments } from '@/hooks/useDepartmentsAndOwners';
 
 // Row heights for density modes
 const DENSITY_CONFIG = {
@@ -28,17 +29,8 @@ const PROCESS_STEPS = [
   { value: 'on_hold', label: 'On-Hold', semantic: 'warning' },
 ];
 
-// Departments
-
-// Departments
-const DEPARTMENTS = [
-  { value: 'investment_ops', label: 'Investment Ops' },
-  { value: 'investor_relations', label: 'Investor Relations' },
-  { value: 'legal', label: 'Legal & Compliance' },
-  { value: 'finance', label: 'Finance' },
-  { value: 'it', label: 'IT & Systems' },
-  { value: 'strategy', label: 'Strategy' },
-];
+// Departments - loaded dynamically from admin-configured data via useDepartments hook
+// NO hardcoded department values - see ZERO-SEED policy
 
 // Platforms
 const PLATFORMS = [
@@ -71,13 +63,14 @@ const Icons = {
 };
 
 // All columns configuration - NO frozen columns by default
+// Note: Department options are loaded dynamically inside the component via useDepartments hook
 const ALL_COLUMNS = [
   { id: 'id', header: 'Request ID', accessor: 'id', minWidth: 110, sortable: true },
   { id: 'summary', header: 'Summary', accessor: 'summary', minWidth: 320, sortable: true, editable: true },
   { id: 'processStep', header: 'Process Step', accessor: 'processStep', minWidth: 160, sortable: true, filterable: true, editable: true, type: 'select', options: PROCESS_STEPS },
   { id: 'score', header: 'Score', accessor: 'score', minWidth: 120, sortable: true, type: 'number', align: 'right' },
   { id: 'rank', header: 'Rank', accessor: 'rank', minWidth: 100, sortable: true, type: 'number', align: 'right' },
-  { id: 'department', header: 'Department', accessor: 'department', minWidth: 180, sortable: true, filterable: true, editable: true, type: 'select', options: DEPARTMENTS },
+  { id: 'department', header: 'Department', accessor: 'department', minWidth: 180, sortable: true, filterable: true, editable: true, type: 'select', options: [] }, // Populated dynamically
   { id: 'platform', header: 'Delivery Platform', accessor: 'platform', minWidth: 150, sortable: true, filterable: true, editable: true, type: 'select', options: PLATFORMS },
   { id: 'createdAt', header: 'Created', accessor: 'createdAt', minWidth: 110, sortable: true },
 ];
@@ -618,6 +611,11 @@ export function ExecutiveTable({
   onDelete
 }: ExecutiveTableProps) {
   const navigate = useNavigate();
+  
+  // Fetch departments from admin-configured data (ZERO-SEED policy)
+  const { data: adminDepartments = [] } = useDepartments();
+  const departmentOptions = adminDepartments.map(d => ({ value: d.id, label: d.name }));
+  
   const [density, setDensity] = useState<'compact' | 'regular' | 'relaxed'>('regular');
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState<Record<string, string[]>>({});
@@ -854,13 +852,13 @@ export function ExecutiveTable({
     }
     
     if (column.id === 'department') {
-      const dept = DEPARTMENTS.find(d => d.value === value);
+      const dept = departmentOptions.find(d => d.value === value);
       return (
         <EditableCell
           value={value}
           type="select"
-          options={DEPARTMENTS}
-          displayValue={<span className="text-xs">{dept?.label || <span className="text-muted-foreground">—</span>}</span>}
+          options={departmentOptions}
+          displayValue={<span className="text-xs">{dept?.label || value || <span className="text-muted-foreground">—</span>}</span>}
           onSave={handleInlineSave}
           columnId={column.id}
         />

@@ -1,6 +1,6 @@
 // Bulk Operations Configuration for Demands (Business Requests)
 import { BulkOperationConfig } from '../types';
-import { PROCESS_STEPS, DELIVERY_PLATFORM_OPTIONS, DEPARTMENT_OPTIONS } from '@/types/business-request';
+import { PROCESS_STEPS, DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
 
 // Quarter options for bulk edit
 const QUARTER_OPTIONS = [
@@ -42,8 +42,10 @@ export const demandBulkConfig: BulkOperationConfig = {
       id: 'department',
       label: 'Department',
       type: 'select',
-      dbColumn: 'department',
-      options: DEPARTMENT_OPTIONS.map(d => ({ value: d.value, label: d.label.en })),
+      dbColumn: 'department_id',
+      // Department options are loaded dynamically - this field will be populated at runtime
+      // See ZERO-SEED policy: departments come ONLY from admin-configured data
+      options: [], // Populated dynamically by bulk edit component via useDepartments hook
     },
     {
       id: 'planned_quarter',

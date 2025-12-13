@@ -6,7 +6,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { CalendarIcon, Check, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { PROCESS_STEPS, DELIVERY_PLATFORM_OPTIONS, DEPARTMENT_OPTIONS } from '@/types/business-request';
+import { PROCESS_STEPS, DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
 
 interface InlineEditableCellProps {
   value: string | null | undefined;
@@ -99,7 +99,8 @@ export function InlineEditableCell({
       case 'delivery_platform':
         return DELIVERY_PLATFORM_OPTIONS.map(p => ({ value: p.value, label: p.label.en }));
       case 'department':
-        return DEPARTMENT_OPTIONS.map(d => ({ value: d.value, label: d.label.en }));
+        // Department options must be passed via props from parent (ZERO-SEED policy)
+        return options || [];
       case 'requestor':
       case 'business_owner':
       case 'created_by':

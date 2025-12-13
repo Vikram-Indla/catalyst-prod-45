@@ -5,7 +5,8 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { PROCESS_STEPS, DELIVERY_PLATFORM_OPTIONS, DEPARTMENT_OPTIONS } from '@/types/business-request';
+import { PROCESS_STEPS, DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
+import { useDepartments } from '@/hooks/useDepartmentsAndOwners';
 import { ChevronUp, X, CalendarIcon } from 'lucide-react';
 import { format, subDays, addQuarters } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -52,8 +53,8 @@ const AGEING_OPTIONS = [
   { value: '60+', label: '60+ days (Stale)' },
 ];
 
-// DEPARTMENT_OPTIONS imported from business-request.ts (single source of truth)
-const getDepartmentOptions = () => DEPARTMENT_OPTIONS.map(d => ({ value: d.value, label: d.label.en }));
+// getDepartmentOptions is now a hook-based function - must be called inside component
+// See ZERO-SEED policy: departments come ONLY from admin-configured data
 
 const generateQuarters = (): { value: string; label: string }[] => {
   const quarters = [];
@@ -276,6 +277,10 @@ export function FilterDemandsDialog({
     dates: true,
     classification: false,
   });
+  
+  // Fetch departments from admin-configured data (ZERO-SEED policy)
+  const { data: departments = [] } = useDepartments();
+  const getDepartmentOptions = () => departments.map(d => ({ value: d.id, label: d.name }));
 
   // Reset local state when dialog opens
   useEffect(() => {
