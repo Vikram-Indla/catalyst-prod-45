@@ -19,10 +19,11 @@ export default function ProductBacklogPage() {
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
+  const [scoringFilter, setScoringFilter] = useState<'all' | 'scored' | 'unscored'>('all');
 
   // Transform business requests to match ExecutiveTable format
   const tableData = useMemo(() => {
-    return businessRequests.map((br: any) => ({
+    let data = businessRequests.map((br: any) => ({
       id: br.request_key || br.id?.slice(0, 8) || '—',
       _dbId: br.id,
       summary: br.title || '—',
@@ -34,7 +35,16 @@ export default function ProductBacklogPage() {
       createdAt: br.created_at?.split('T')[0] || null,
       updatedAt: br.updated_at?.split('T')[0] || null,
     }));
-  }, [businessRequests]);
+    
+    // Apply scoring filter
+    if (scoringFilter === 'scored') {
+      data = data.filter(row => row.score !== null);
+    } else if (scoringFilter === 'unscored') {
+      data = data.filter(row => row.score === null);
+    }
+    
+    return data;
+  }, [businessRequests, scoringFilter]);
 
   const getDbIdFromDisplayId = (displayId: string) => {
     const originalRequest = businessRequests.find((br: any) => 
@@ -126,7 +136,32 @@ export default function ProductBacklogPage() {
       activeView="list"
       searchValue={searchValue}
       onSearchChange={setSearchValue}
-      onAdd={() => setCreateModalOpen(true)}
+      scoringFilter={scoringFilter}
+      onScoringFilterChange={setScoringFilter}
+      onExport={() => {
+        // Export CSV
+        const headers = ['Request ID', 'Summary', 'Status', 'Score', 'Rank', 'Department', 'Platform', 'Created'];
+        const csvRows = [headers.join(',')];
+        tableData.forEach(row => {
+          csvRows.push([
+            row.id,
+            `"${(row.summary || '').replace(/"/g, '""')}"`,
+            row.processStep,
+            row.score ?? '',
+            row.rank ?? '',
+            row.department ?? '',
+            row.platform ?? '',
+            row.createdAt ?? ''
+          ].join(','));
+        });
+        const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'business-requests.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+      }}
     />
   );
 
