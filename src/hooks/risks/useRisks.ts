@@ -23,7 +23,7 @@ export function useRisks(programId?: string, programIncrementId?: string) {
   } = useQuery({
     queryKey: ['risks', programId, programIncrementId],
     queryFn: async () => {
-      // Join risks with business_requests, departments, and business_owners to get names
+      // Fetch risks with business_requests join
       let query = supabase
         .from('risks')
         .select(`
@@ -32,15 +32,7 @@ export function useRisks(programId?: string, programIncrementId?: string) {
             department,
             business_owner,
             department_id,
-            business_owner_id,
-            departments:department_id (
-              id,
-              name
-            ),
-            business_owners:business_owner_id (
-              id,
-              name
-            )
+            business_owner_id
           )
         `)
         .is('deleted_at', null)
@@ -55,16 +47,48 @@ export function useRisks(programId?: string, programIncrementId?: string) {
       }
 
       const { data, error } = await query;
-
       if (error) throw error;
+
+      // Fetch all departments and business owners for lookup
+      const [deptRes, ownerRes] = await Promise.all([
+        supabase.from('departments').select('id, name'),
+        supabase.from('business_owners').select('id, name')
+      ]);
       
-      // Flatten the joined data - prefer lookup table names over legacy text fields
-      return (data || []).map((risk: any) => ({
-        ...risk,
-        department: risk.business_requests?.departments?.name || risk.business_requests?.department || null,
-        business_owner: risk.business_requests?.business_owners?.name || risk.business_requests?.business_owner || null,
-        business_requests: undefined, // Remove nested object
-      })) as RiskWithBR[];
+      const deptMap = new Map((deptRes.data || []).map(d => [d.id, d.name]));
+      const ownerMap = new Map((ownerRes.data || []).map(o => [o.id, o.name]));
+
+      // Flatten the joined data - resolve UUIDs to names
+      return (data || []).map((risk: any) => {
+        const br = risk.business_requests;
+        let deptName: string | null = null;
+        let ownerName: string | null = null;
+
+        if (br) {
+          // Try department_id first, then legacy department field (which may contain UUID)
+          if (br.department_id) {
+            deptName = deptMap.get(br.department_id) || null;
+          } else if (br.department) {
+            // Legacy field might contain UUID or text - try lookup
+            deptName = deptMap.get(br.department) || null;
+          }
+
+          // Try business_owner_id first, then legacy business_owner field
+          if (br.business_owner_id) {
+            ownerName = ownerMap.get(br.business_owner_id) || null;
+          } else if (br.business_owner) {
+            // Legacy field might contain name or UUID - try lookup first
+            ownerName = ownerMap.get(br.business_owner) || br.business_owner;
+          }
+        }
+
+        return {
+          ...risk,
+          department: deptName,
+          business_owner: ownerName,
+          business_requests: undefined,
+        };
+      }) as RiskWithBR[];
     }
   });
 
