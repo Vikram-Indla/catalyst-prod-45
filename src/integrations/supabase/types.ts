@@ -7988,7 +7988,7 @@ export type Database = {
             foreignKeyName: "resource_inventory_role_code_fkey"
             columns: ["role_code"]
             isOneToOne: false
-            referencedRelation: "resource_roles"
+            referencedRelation: "role_catalog"
             referencedColumns: ["code"]
           },
         ]
