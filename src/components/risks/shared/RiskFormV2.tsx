@@ -6,7 +6,9 @@
  * - Enterprise Risk Drawer
  * - Epic / Feature / Theme / Project risk tabs
  * 
- * Follows Business Drawer Risks tab as the canonical design.
+ * Follows Business Drawer as the canonical design with:
+ * - Bordered card containers for sections
+ * - All fields have visible borders (even in view mode)
  */
 
 import { useState, useMemo } from 'react';
@@ -14,7 +16,6 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { AlertCircle } from 'lucide-react';
@@ -72,15 +73,15 @@ interface RiskFormV2Props {
 
 // Configuration options
 const STATUS_OPTIONS = [
-  { value: 'Open', label: 'Open', color: 'bg-red-100 text-red-700' },
-  { value: 'Closed', label: 'Closed', color: 'bg-muted text-muted-foreground' },
+  { value: 'Open', label: 'Open' },
+  { value: 'Closed', label: 'Closed' },
 ];
 
 const RESOLUTION_METHOD_OPTIONS = [
-  { value: 'Resolved', label: 'Resolved', color: 'bg-emerald-100 text-emerald-700' },
-  { value: 'Owned', label: 'Owned', color: 'bg-blue-100 text-blue-700' },
-  { value: 'Accepted', label: 'Accepted', color: 'bg-amber-100 text-amber-700' },
-  { value: 'Mitigated', label: 'Mitigated', color: 'bg-purple-100 text-purple-700' },
+  { value: 'Resolved', label: 'Resolved' },
+  { value: 'Owned', label: 'Owned' },
+  { value: 'Accepted', label: 'Accepted' },
+  { value: 'Mitigated', label: 'Mitigated' },
 ];
 
 const SEVERITY_OPTIONS = [
@@ -145,7 +146,7 @@ export function RiskFormV2({
 
   // Format date for display
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return '—';
+    if (!dateString) return '';
     try {
       return format(parseISO(dateString), 'dd/MM/yyyy');
     } catch {
@@ -183,30 +184,22 @@ export function RiskFormV2({
     onSave?.();
   };
 
-  // Get status badge config
-  const getStatusConfig = (status: string) => {
-    return STATUS_OPTIONS.find(s => s.value === status) || STATUS_OPTIONS[0];
-  };
-
-  const getResolutionConfig = (method: string) => {
-    return RESOLUTION_METHOD_OPTIONS.find(m => m.value === method) || RESOLUTION_METHOD_OPTIONS[1];
-  };
-
   return (
     <div className="space-y-5">
-      {/* RISK DETAILS Section */}
-      <h4 className="text-xs font-semibold uppercase tracking-wider text-brand-gold">Risk Details</h4>
-      
-      {/* Status and Resolution Method - 2 column */}
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <Label className="text-xs font-medium">Status</Label>
-          {isEditing ? (
+      {/* RISK DETAILS Section - Wrapped in bordered card */}
+      <div className="border border-border rounded-lg p-5 bg-white">
+        <h4 className="text-xs font-semibold uppercase tracking-wider text-brand-gold mb-4">Risk Details</h4>
+        
+        {/* Status and Resolution Method - 2 column */}
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <div>
+            <Label className="text-xs font-medium mb-1.5 block">Status</Label>
             <Select 
               value={value.status} 
               onValueChange={v => handleChange('status', v)}
+              disabled={!isEditing}
             >
-              <SelectTrigger className="mt-1 h-9 text-sm">
+              <SelectTrigger className="h-9 text-sm border-border">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-popover border shadow-lg z-[400]">
@@ -215,22 +208,15 @@ export function RiskFormV2({
                 ))}
               </SelectContent>
             </Select>
-          ) : (
-            <div className="mt-1 h-9 flex items-center">
-              <Badge className={cn("text-xs", getStatusConfig(value.status).color)}>
-                {value.status}
-              </Badge>
-            </div>
-          )}
-        </div>
-        <div>
-          <Label className="text-xs font-medium">Resolution Method</Label>
-          {isEditing ? (
+          </div>
+          <div>
+            <Label className="text-xs font-medium mb-1.5 block">Resolution Method</Label>
             <Select 
               value={value.resolution_method} 
               onValueChange={v => handleChange('resolution_method', v)}
+              disabled={!isEditing}
             >
-              <SelectTrigger className="mt-1 h-9 text-sm">
+              <SelectTrigger className="h-9 text-sm border-border">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-popover border shadow-lg z-[400]">
@@ -239,57 +225,64 @@ export function RiskFormV2({
                 ))}
               </SelectContent>
             </Select>
-          ) : (
-            <div className="mt-1 h-9 flex items-center">
-              <span className="text-sm font-medium">{value.resolution_method}</span>
-            </div>
-          )}
+          </div>
         </div>
-      </div>
 
-      {/* Title */}
-      <div>
-        <Label className="text-xs font-medium">
-          Title<span className="text-destructive">*</span>
-        </Label>
-        {isEditing ? (
+        {/* Title */}
+        <div className="mb-4">
+          <Label className="text-xs font-medium mb-1.5 block">
+            Title<span className="text-destructive">*</span>
+          </Label>
           <Input
             value={value.title || ''}
             onChange={e => handleChange('title', e.target.value)}
             placeholder="Risk title"
-            className="mt-1 h-9 text-sm"
+            readOnly={!isEditing}
+            className="h-9 text-sm border-border"
           />
-        ) : (
-          <div className="mt-1 h-9 flex items-center">
-            <span className="text-sm">{value.title || '—'}</span>
+        </div>
+
+        {/* Description */}
+        <div className="mb-4">
+          <Label className="text-xs font-medium mb-1.5 block">
+            Description<span className="text-destructive">*</span>
+          </Label>
+          <Textarea
+            value={value.description || ''}
+            onChange={e => handleChange('description', e.target.value)}
+            placeholder={isEditing ? 'Describe the risk...' : ''}
+            readOnly={!isEditing}
+            className="min-h-[80px] text-sm border-border"
+          />
+        </div>
+
+        {/* Occurrence, Impact, Critical Path - 3 column */}
+        <div className="grid grid-cols-3 gap-4 mb-4">
+          <div>
+            <Label className="text-xs font-medium mb-1.5 block">Occurrence</Label>
+            <Select 
+              value={value.occurrence || ''} 
+              onValueChange={v => handleChange('occurrence', v || null)}
+              disabled={!isEditing}
+            >
+              <SelectTrigger className="h-9 text-sm border-border">
+                <SelectValue placeholder="Select..." />
+              </SelectTrigger>
+              <SelectContent className="bg-popover border shadow-lg z-[400]">
+                {SEVERITY_OPTIONS.map(opt => (
+                  <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-        )}
-      </div>
-
-      {/* Description */}
-      <div>
-        <Label className="text-xs font-medium">
-          Description<span className="text-destructive">*</span>
-        </Label>
-        <Textarea
-          value={value.description || ''}
-          onChange={e => handleChange('description', e.target.value)}
-          placeholder={isEditing ? 'Describe the risk...' : ''}
-          readOnly={!isEditing}
-          className="mt-1 min-h-[80px] text-sm bg-background border-border"
-        />
-      </div>
-
-      {/* Occurrence, Impact, Critical Path - 3 column */}
-      <div className="grid grid-cols-3 gap-3">
-        <div>
-          <Label className="text-xs font-medium">Occurrence</Label>
-          {isEditing ? (
+          <div>
+            <Label className="text-xs font-medium mb-1.5 block">Impact</Label>
             <Select 
-              value={value.occurrence || undefined} 
-              onValueChange={v => handleChange('occurrence', v)}
+              value={value.impact || ''} 
+              onValueChange={v => handleChange('impact', v || null)}
+              disabled={!isEditing}
             >
-              <SelectTrigger className="mt-1 h-9 text-sm">
+              <SelectTrigger className="h-9 text-sm border-border">
                 <SelectValue placeholder="Select..." />
               </SelectTrigger>
               <SelectContent className="bg-popover border shadow-lg z-[400]">
@@ -298,42 +291,15 @@ export function RiskFormV2({
                 ))}
               </SelectContent>
             </Select>
-          ) : (
-            <div className="mt-1 h-9 flex items-center">
-              <span className="text-sm">{value.occurrence || '—'}</span>
-            </div>
-          )}
-        </div>
-        <div>
-          <Label className="text-xs font-medium">Impact</Label>
-          {isEditing ? (
+          </div>
+          <div>
+            <Label className="text-xs font-medium mb-1.5 block">Critical Path</Label>
             <Select 
-              value={value.impact || undefined} 
-              onValueChange={v => handleChange('impact', v)}
+              value={value.critical_path || ''} 
+              onValueChange={v => handleChange('critical_path', v || null)}
+              disabled={!isEditing}
             >
-              <SelectTrigger className="mt-1 h-9 text-sm">
-                <SelectValue placeholder="Select..." />
-              </SelectTrigger>
-              <SelectContent className="bg-popover border shadow-lg z-[400]">
-                {SEVERITY_OPTIONS.map(opt => (
-                  <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          ) : (
-            <div className="mt-1 h-9 flex items-center">
-              <span className="text-sm">{value.impact || '—'}</span>
-            </div>
-          )}
-        </div>
-        <div>
-          <Label className="text-xs font-medium">Critical Path</Label>
-          {isEditing ? (
-            <Select 
-              value={value.critical_path || undefined} 
-              onValueChange={v => handleChange('critical_path', v)}
-            >
-              <SelectTrigger className="mt-1 h-9 text-sm">
+              <SelectTrigger className="h-9 text-sm border-border">
                 <SelectValue placeholder="Select..." />
               </SelectTrigger>
               <SelectContent className="bg-popover border shadow-lg z-[400]">
@@ -342,22 +308,12 @@ export function RiskFormV2({
                 ))}
               </SelectContent>
             </Select>
-          ) : (
-            <div className="mt-1 h-9 flex items-center">
-              {value.critical_path === 'Yes' ? (
-                <Badge variant="destructive" className="bg-red-500 text-white">Yes</Badge>
-              ) : (
-                <span className="text-sm">{value.critical_path || '—'}</span>
-              )}
-            </div>
-          )}
+          </div>
         </div>
-      </div>
 
-      {/* Target Resolution Date */}
-      <div>
-        <Label className="text-xs font-medium">Target Resolution Date</Label>
-        <div className="mt-1">
+        {/* Target Resolution Date */}
+        <div className="mb-4">
+          <Label className="text-xs font-medium mb-1.5 block">Target Resolution Date</Label>
           {isEditing ? (
             <CatalystDatePicker
               value={value.target_resolution_date ? parseISO(value.target_resolution_date) : undefined}
@@ -365,91 +321,96 @@ export function RiskFormV2({
               placeholder="Select date"
             />
           ) : (
-            <div className="h-9 flex items-center">
-              <span className="text-sm">{formatDate(value.target_resolution_date)}</span>
+            <Input
+              value={formatDate(value.target_resolution_date) || ''}
+              readOnly
+              placeholder="Select date"
+              className="h-9 text-sm border-border"
+            />
+          )}
+        </div>
+
+        {/* Consequence */}
+        <div>
+          <Label className="text-xs font-medium mb-1.5 block">Consequence</Label>
+          <Textarea
+            value={value.consequence || ''}
+            onChange={e => handleChange('consequence', e.target.value)}
+            placeholder={isEditing ? 'What are the consequences if this risk occurs?' : ''}
+            readOnly={!isEditing}
+            className="min-h-[60px] text-sm border-border"
+          />
+        </div>
+      </div>
+
+      {/* MITIGATION Section - Wrapped in bordered card */}
+      <div className="border border-border rounded-lg p-5 bg-white">
+        <h4 className="text-xs font-semibold uppercase tracking-wider text-brand-gold mb-4">Mitigation</h4>
+
+        {/* Mitigation Plan */}
+        <div className="mb-4">
+          <Label className="text-xs font-medium mb-1.5 block">
+            Mitigation Plan
+            {isMitigationRequired && <span className="text-destructive">*</span>}
+          </Label>
+          <Textarea
+            value={value.mitigation || ''}
+            onChange={e => handleChange('mitigation', e.target.value)}
+            placeholder={isEditing ? 'How will this risk be mitigated?' : ''}
+            readOnly={!isEditing}
+            className={cn(
+              "min-h-[60px] text-sm border-border",
+              showMitigationError && "border-destructive focus-visible:ring-destructive"
+            )}
+          />
+          {showMitigationError && (
+            <div className="flex items-center gap-1 text-destructive text-xs mt-1">
+              <AlertCircle className="h-3.5 w-3.5" />
+              <span>Mitigation Plan is required when Resolution Method is "Mitigated".</span>
+            </div>
+          )}
+        </div>
+
+        {/* Contingency Plan (Controls Implemented) */}
+        <div className="mb-4">
+          <Label className="text-xs font-medium mb-1.5 block">Contingency Plan / Controls Implemented</Label>
+          <Textarea
+            value={value.contingency || ''}
+            onChange={e => handleChange('contingency', e.target.value)}
+            placeholder={isEditing ? 'What is the backup plan if mitigation fails?' : ''}
+            readOnly={!isEditing}
+            className="min-h-[60px] text-sm border-border"
+          />
+        </div>
+
+        {/* Resolution Status */}
+        <div>
+          <Label className="text-xs font-medium mb-1.5 block">
+            Resolution Status
+            {isResolutionStatusRequired && <span className="text-destructive">*</span>}
+          </Label>
+          <Textarea
+            value={value.resolution_status || ''}
+            onChange={e => handleChange('resolution_status', e.target.value)}
+            placeholder={isEditing ? 'Current resolution status...' : ''}
+            readOnly={!isEditing}
+            className={cn(
+              "min-h-[60px] text-sm border-border",
+              formError === 'resolution_status_required' && "border-destructive focus-visible:ring-destructive"
+            )}
+          />
+          {formError === 'resolution_status_required' && (
+            <div className="flex items-center gap-1 text-destructive text-xs mt-1">
+              <AlertCircle className="h-3.5 w-3.5" />
+              <span>Resolution Status is required when Resolution Method is "Resolved".</span>
             </div>
           )}
         </div>
       </div>
 
-      {/* Consequence */}
-      <div>
-        <Label className="text-xs font-medium">Consequence</Label>
-        <Textarea
-          value={value.consequence || ''}
-          onChange={e => handleChange('consequence', e.target.value)}
-          placeholder={isEditing ? 'What are the consequences if this risk occurs?' : ''}
-          readOnly={!isEditing}
-          className="mt-1 min-h-[60px] text-sm bg-background border-border"
-        />
-      </div>
-
-      {/* MITIGATION Section */}
-      <h4 className="text-xs font-semibold uppercase tracking-wider text-brand-gold pt-2">Mitigation</h4>
-
-      {/* Mitigation Plan */}
-      <div>
-        <Label className="text-xs font-medium">
-          Mitigation Plan
-          {isMitigationRequired && <span className="text-destructive">*</span>}
-        </Label>
-        <Textarea
-          value={value.mitigation || ''}
-          onChange={e => handleChange('mitigation', e.target.value)}
-          placeholder={isEditing ? 'How will this risk be mitigated?' : ''}
-          readOnly={!isEditing}
-          className={cn(
-            "mt-1 min-h-[60px] text-sm bg-background border-border",
-            showMitigationError && "border-destructive focus-visible:ring-destructive"
-          )}
-        />
-        {showMitigationError && (
-          <div className="flex items-center gap-1 text-destructive text-xs mt-1">
-            <AlertCircle className="h-3.5 w-3.5" />
-            <span>Mitigation Plan is required when Resolution Method is "Mitigated".</span>
-          </div>
-        )}
-      </div>
-
-      {/* Contingency Plan (Controls Implemented) */}
-      <div>
-        <Label className="text-xs font-medium">Contingency Plan / Controls Implemented</Label>
-        <Textarea
-          value={value.contingency || ''}
-          onChange={e => handleChange('contingency', e.target.value)}
-          placeholder={isEditing ? 'What is the backup plan if mitigation fails?' : ''}
-          readOnly={!isEditing}
-          className="mt-1 min-h-[60px] text-sm bg-background border-border"
-        />
-      </div>
-
-      {/* Resolution Status */}
-      <div>
-        <Label className="text-xs font-medium">
-          Resolution Status
-          {isResolutionStatusRequired && <span className="text-destructive">*</span>}
-        </Label>
-        <Textarea
-          value={value.resolution_status || ''}
-          onChange={e => handleChange('resolution_status', e.target.value)}
-          placeholder={isEditing ? 'Current resolution status...' : ''}
-          readOnly={!isEditing}
-          className={cn(
-            "mt-1 min-h-[60px] text-sm bg-background border-border",
-            formError === 'resolution_status_required' && "border-destructive focus-visible:ring-destructive"
-          )}
-        />
-        {formError === 'resolution_status_required' && (
-          <div className="flex items-center gap-1 text-destructive text-xs mt-1">
-            <AlertCircle className="h-3.5 w-3.5" />
-            <span>Resolution Status is required when Resolution Method is "Resolved".</span>
-          </div>
-        )}
-      </div>
-
       {/* Context Metadata Block - only shown in certain contexts */}
       {showContextMetadata && (
-        <div className="pt-4 border-t border-border">
+        <div className="border border-border rounded-lg p-5 bg-white">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <span className="text-muted-foreground text-xs">Owner</span>
