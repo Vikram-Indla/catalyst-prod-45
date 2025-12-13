@@ -66,6 +66,25 @@ const calculateDaysInColumn = (createdAt: string | null): number => {
 export function useKanbanData() {
   const queryClient = useQueryClient();
   
+  // Fetch departments to resolve IDs to names
+  const { data: departments = [] } = useQuery({
+    queryKey: ['kanban-departments'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('departments')
+        .select('id, name')
+        .eq('is_active', true);
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  const departmentMap = useMemo(() => {
+    const map = new Map<string, string>();
+    departments.forEach(d => map.set(d.id, d.name));
+    return map;
+  }, [departments]);
+  
   const { data: rawRequests, isLoading, error } = useQuery({
     queryKey: ['kanban-business-requests'],
     queryFn: async () => {
@@ -90,18 +109,18 @@ export function useKanbanData() {
       status: mapProcessStepToStatus(req.process_step),
       assignee: req.assignee || null,
       businessOwner: req.business_owner || null,
-      department: req.department || null,
+      // Resolve department ID to name
+      department: req.department ? (departmentMap.get(req.department) || req.department) : null,
       score: req.business_score,
       rank: req.rank,
-      epic: null, // Could be linked via strategic_theme
+      epic: null,
       platform: req.delivery_platform,
       createdAt: req.created_at,
       daysInColumn: calculateDaysInColumn(req.updated_at || req.created_at),
-      _dbId: req.id, // Keep DB ID for updates
-      // Derived priority for visual display only (not stored in DB)
+      _dbId: req.id,
       _derivedPriority: derivePriorityFromScore(req.business_score),
     }));
-  }, [rawRequests]);
+  }, [rawRequests, departmentMap]);
 
   // Mutation to update status
   const updateStatusMutation = useMutation({

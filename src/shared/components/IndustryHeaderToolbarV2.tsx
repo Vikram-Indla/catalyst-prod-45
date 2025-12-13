@@ -172,7 +172,6 @@ export function IndustryHeaderToolbarV2({
       <header className={styles.titleBar}>
         <div className={styles.titleBar__content}>
           <h1 className={styles.titleBar__title}>{title}</h1>
-          <span className={styles.titleBar__count}>{countText}</span>
         </div>
       </header>
 
