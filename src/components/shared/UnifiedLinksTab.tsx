@@ -107,6 +107,10 @@ export function UnifiedLinksTab({ entityType, entityId, hideTiles = [] }: Unifie
   const fileInputRef = useRef<HTMLInputElement>(null);
   const tableConfig = getTableConfig(entityType);
   
+  // Calculate visible tiles count for responsive grid
+  const allTiles: ('implementation' | 'document' | 'knowledge-hub' | 'external')[] = ['implementation', 'document', 'knowledge-hub', 'external'];
+  const visibleTilesCount = allTiles.filter(tile => !hideTiles.includes(tile)).length;
+  
   const [formView, setFormView] = useState<FormView>('selection');
   const [isDragOver, setIsDragOver] = useState(false);
   const [typeFilters, setTypeFilters] = useState<LinkKind[]>([]);
@@ -557,7 +561,11 @@ export function UnifiedLinksTab({ entityType, entityId, hideTiles = [] }: Unifie
         <h4 className="font-semibold text-[15px] text-foreground mb-4">Add New Link</h4>
         
         {formView === 'selection' && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className={cn(
+            "grid gap-3",
+            // Use 2 columns when only 2 tiles visible, otherwise 2x2 on mobile, 4 on desktop
+            visibleTilesCount <= 2 ? "grid-cols-2" : "grid-cols-2 md:grid-cols-4"
+          )}>
             {/* Implementation Links */}
             {!hideTiles.includes('implementation') && (
               <button
@@ -895,12 +903,12 @@ export function UnifiedLinksTab({ entityType, entityId, hideTiles = [] }: Unifie
       {/* Filters and Sort */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-2">
-          {/* Type Filter */}
+          {/* Filter Button - Simplified */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="h-8 gap-1.5">
                 <Filter className="h-3.5 w-3.5" />
-                Type
+                Filter
                 {typeFilters.length > 0 && (
                   <span className="ml-1 px-1.5 py-0.5 text-[10px] bg-brand-gold/20 text-brand-gold rounded-full">
                     {typeFilters.length}
@@ -909,67 +917,88 @@ export function UnifiedLinksTab({ entityType, entityId, hideTiles = [] }: Unifie
                 <ChevronDown className="h-3.5 w-3.5" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-48">
+            <DropdownMenuContent align="start" className="w-48 bg-background z-[400]">
               <DropdownMenuLabel className="text-xs">Filter by Type</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuCheckboxItem
-                checked={typeFilters.includes('implementation')}
-                onCheckedChange={() => toggleTypeFilter('implementation')}
-              >
-                Implementation
-              </DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem
-                checked={typeFilters.includes('document')}
-                onCheckedChange={() => toggleTypeFilter('document')}
-              >
-                Document
-              </DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem
-                checked={typeFilters.includes('knowledge-hub')}
-                onCheckedChange={() => toggleTypeFilter('knowledge-hub')}
-              >
-                Knowledge Hub
-              </DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem
-                checked={typeFilters.includes('external')}
-                onCheckedChange={() => toggleTypeFilter('external')}
-              >
-                External
-              </DropdownMenuCheckboxItem>
+              {!hideTiles.includes('implementation') && (
+                <DropdownMenuCheckboxItem
+                  checked={typeFilters.includes('implementation')}
+                  onCheckedChange={() => toggleTypeFilter('implementation')}
+                >
+                  Implementation
+                </DropdownMenuCheckboxItem>
+              )}
+              {!hideTiles.includes('document') && (
+                <DropdownMenuCheckboxItem
+                  checked={typeFilters.includes('document')}
+                  onCheckedChange={() => toggleTypeFilter('document')}
+                >
+                  Document
+                </DropdownMenuCheckboxItem>
+              )}
+              {!hideTiles.includes('knowledge-hub') && (
+                <DropdownMenuCheckboxItem
+                  checked={typeFilters.includes('knowledge-hub')}
+                  onCheckedChange={() => toggleTypeFilter('knowledge-hub')}
+                >
+                  Knowledge Hub
+                </DropdownMenuCheckboxItem>
+              )}
+              {!hideTiles.includes('external') && (
+                <DropdownMenuCheckboxItem
+                  checked={typeFilters.includes('external')}
+                  onCheckedChange={() => toggleTypeFilter('external')}
+                >
+                  External
+                </DropdownMenuCheckboxItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Status Filter (placeholder for future) */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="h-8 gap-1.5">
-                <Clock className="h-3.5 w-3.5" />
-                Status
-                <ChevronDown className="h-3.5 w-3.5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-48">
-              <DropdownMenuLabel className="text-xs">Filter by Status</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuCheckboxItem checked>All Statuses</DropdownMenuCheckboxItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <span className="text-[12px] text-muted-foreground">{getFilterSummary()}</span>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-[12px] text-muted-foreground">Sort by</span>
-          <Select value={sortOption} onValueChange={(v) => setSortOption(v as SortOption)}>
-            <SelectTrigger className="h-8 w-[130px] text-[13px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="newest">Newest First</SelectItem>
-              <SelectItem value="oldest">Oldest First</SelectItem>
-              <SelectItem value="alpha-asc">A → Z</SelectItem>
-              <SelectItem value="alpha-desc">Z → A</SelectItem>
-              <SelectItem value="type">By Type</SelectItem>
-            </SelectContent>
-          </Select>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-8 gap-1.5 text-[13px]">
+                Sort
+                <ChevronDown className="h-3.5 w-3.5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-40 bg-background z-[400]">
+              <DropdownMenuCheckboxItem
+                checked={sortOption === 'newest'}
+                onCheckedChange={() => setSortOption('newest')}
+              >
+                Newest First
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem
+                checked={sortOption === 'oldest'}
+                onCheckedChange={() => setSortOption('oldest')}
+              >
+                Oldest First
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem
+                checked={sortOption === 'alpha-asc'}
+                onCheckedChange={() => setSortOption('alpha-asc')}
+              >
+                A → Z
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem
+                checked={sortOption === 'alpha-desc'}
+                onCheckedChange={() => setSortOption('alpha-desc')}
+              >
+                Z → A
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem
+                checked={sortOption === 'type'}
+                onCheckedChange={() => setSortOption('type')}
+              >
+                By Type
+              </DropdownMenuCheckboxItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
@@ -987,8 +1016,10 @@ export function UnifiedLinksTab({ entityType, entityId, hideTiles = [] }: Unifie
             Loading links...
           </Card>
         ) : filteredLinks.length === 0 ? (
-          <Card className="p-8 text-center text-muted-foreground">
-            No links yet. Use the tiles above to add links.
+          <Card className="p-8 text-center">
+            <LinkIcon className="h-8 w-8 mx-auto mb-2 text-muted-foreground/50" />
+            <p className="text-[14px] text-foreground mb-1">No links attached yet</p>
+            <p className="text-[12px] text-muted-foreground">Upload documents or add external links</p>
           </Card>
         ) : (
           <div className="space-y-2">
