@@ -7,7 +7,7 @@
  * - NO PI references - uses Quarter / Target Date only
  */
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
@@ -44,8 +44,7 @@ import {
   Star
 } from 'lucide-react';
 import { Risk, RiskFormData, RoamStatus, RiskStatus, SeverityLevel, YesNo } from '@/types/risks';
-import { RiskDetailsTab } from './drawer-tabs/RiskDetailsTab';
-import { RiskMitigationTab } from './drawer-tabs/RiskMitigationTab';
+import { RiskFormV2, RiskFormDataV2 } from './shared/RiskFormV2';
 import { RiskLinkedItemsTab } from './drawer-tabs/RiskLinkedItemsTab';
 import { RiskDiscussionsTab } from './RiskDiscussionsTab';
 import { toast } from 'sonner';
@@ -61,7 +60,6 @@ interface RiskDrawerProps {
 
 const TABS = [
   { value: 'details', label: 'Details' },
-  { value: 'mitigation', label: 'Mitigation' },
   { value: 'linked-items', label: 'Linked Items' },
   { value: 'discussions', label: 'Discussions' },
 ];
@@ -363,19 +361,29 @@ export function RiskDrawer({ risk, isOpen, onClose, onUpdate }: RiskDrawerProps)
 
             <div className="executive-drawer-content flex-1 flex flex-col min-h-0 overflow-y-auto">
               <TabsContent value="details" className="m-0 focus-visible:outline-none flex-1 p-4 md:p-5 pb-6">
-                <RiskDetailsTab 
-                  risk={risk} 
-                  formData={formData} 
-                  onChange={handleFieldChange}
-                  isEditing={isEditing}
-                />
-              </TabsContent>
-              <TabsContent value="mitigation" className="m-0 focus-visible:outline-none flex-1 p-4 md:p-5 pb-6">
-                <RiskMitigationTab 
-                  risk={risk}
-                  formData={formData}
-                  onChange={handleFieldChange}
-                  isEditing={isEditing}
+                <RiskFormV2
+                  mode={isEditing ? 'edit' : 'view'}
+                  value={{
+                    title: (formData.title ?? risk.title) || '',
+                    description: (formData.description ?? risk.description) || '',
+                    status: (formData.status ?? risk.status) || 'Open',
+                    resolution_method: (formData.resolution_method ?? risk.resolution_method) || 'Owned',
+                    occurrence: (formData.occurrence ?? risk.occurrence) || null,
+                    impact: (formData.impact ?? risk.impact) || null,
+                    critical_path: (formData.critical_path ?? risk.critical_path) || null,
+                    target_resolution_date: (formData.target_resolution_date ?? risk.target_resolution_date) || null,
+                    consequence: (formData.consequence ?? risk.consequence) || null,
+                    mitigation: (formData.mitigation ?? risk.mitigation) || null,
+                    contingency: (formData.contingency ?? risk.contingency) || null,
+                    resolution_status: (formData.resolution_status ?? risk.resolution_status) || null,
+                    owner_id: (formData.owner_id ?? risk.owner_id) || null,
+                  }}
+                  onChange={(data) => {
+                    Object.entries(data).forEach(([key, value]) => {
+                      handleFieldChange(key, value);
+                    });
+                  }}
+                  context="enterprise"
                 />
               </TabsContent>
               <TabsContent value="linked-items" className="m-0 focus-visible:outline-none flex-1 p-4 md:p-5 pb-6">
