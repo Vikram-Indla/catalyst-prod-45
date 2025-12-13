@@ -143,7 +143,7 @@ export default function BusinessRequestsKanbanPage() {
           <h1 style={{ fontSize: '18px', fontWeight: 600, color: KANBAN_COLORS.olive, margin: 0, whiteSpace: 'nowrap' }}>Business Requests</h1>
           <span style={{ fontSize: '12px', color: KANBAN_COLORS.textMuted }}>{filteredTickets.length}/{tickets.length}</span>
           <div style={{ width: '1px', height: '24px', backgroundColor: KANBAN_COLORS.borderLight }} />
-          <button onClick={() => navigate('/industry')} title="List View" style={{ padding: '6px 10px', border: `1px solid ${KANBAN_COLORS.borderDefault}`, borderRadius: '6px', backgroundColor: KANBAN_COLORS.bgCard, color: KANBAN_COLORS.textMuted, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px' }}>
+          <button onClick={() => navigate('/industry/backlog')} title="List View" style={{ padding: '6px 10px', border: `1px solid ${KANBAN_COLORS.borderDefault}`, borderRadius: '6px', backgroundColor: KANBAN_COLORS.bgCard, color: KANBAN_COLORS.textMuted, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px' }}>
             <KanbanIcons.List /> List
           </button>
           <div style={{ width: '1px', height: '24px', backgroundColor: KANBAN_COLORS.borderLight }} />
