@@ -5,14 +5,13 @@ import {
   Settings,
   Database,
   Link2,
-  Activity,
-  Shield,
   ChevronLeft,
   ChevronRight,
   ChevronDown,
   Search,
   Pin,
-  Palette
+  Boxes,
+  Code2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
@@ -27,7 +26,7 @@ interface AdminSidebarV2Props {
   className?: string;
 }
 
-// New IA: 7 top-level buckets + Design Audit
+// New IA: top-level buckets
 const adminPockets = [
   {
     id: 'overview',
@@ -85,28 +84,14 @@ const adminPockets = [
     ],
   },
   {
-    id: 'audit-usage',
-    label: 'Audit & Usage',
-    icon: Activity,
-    path: '/admin/activity',
+    id: 'inventory',
+    label: 'Inventory',
+    icon: Boxes,
+    path: '/admin/resourceinventory',
     children: [
-      { label: 'Activity', path: '/admin/activity' },
-      { label: 'Changes', path: '/admin/changes' },
-      { label: 'Changes Log', path: '/admin/changes-log' },
-      { label: 'Usage Trends', path: '/admin/usage-trends' },
+      { label: 'Resource Inventory', path: '/admin/resourceinventory' },
+      { label: 'Development Inventory', path: '/admin/developmentinventory' },
     ],
-  },
-  {
-    id: 'security',
-    label: 'Security',
-    icon: Shield,
-    path: '/admin/security',
-  },
-  {
-    id: 'design-audit',
-    label: 'Design Audit',
-    icon: Palette,
-    path: '/admin/design-audit',
   },
 ];
 

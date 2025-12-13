@@ -38,7 +38,6 @@ const adminSections = [
       { label: 'Details Panels', path: '/admin/details-panels', icon: Settings },
       { label: 'General Settings', path: '/admin/general-settings', icon: Settings },
       { label: 'General Config', path: '/admin/general-config', icon: Settings },
-      { label: 'Security', path: '/admin/security', icon: Shield },
     ],
   },
   {
