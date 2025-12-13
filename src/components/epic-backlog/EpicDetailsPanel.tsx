@@ -20,6 +20,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
 import { FileText, Gem, ClipboardList, TrendingUp, ThumbsUp, Milestone, DollarSign, BarChart3, Link as LinkIcon, MessageSquare, Star, Bell, Grid3x3, FileStack, Grid2x2, CheckSquare, ClipboardCheck, Package } from 'lucide-react';
+import { BusinessProcessesField } from './BusinessProcessesField';
 import { Textarea } from '@/components/ui/textarea';
 import { DetailsTabExtended } from '@/components/backlog/DetailPanel/tabs/DetailsTabExtended';
 import { DesignTab } from '@/components/backlog/DetailPanel/tabs/DesignTab';
@@ -183,6 +184,10 @@ export function EpicDetailsPanel({ epicId, onClose, onRefetch }: EpicDetailsPane
 
           <div className="flex-1 overflow-auto">
             <TabsContent value="details" className="m-0">
+              {/* Business Processes Field - ONLY in Epic drawer */}
+              <div className="px-6 pt-6">
+                <BusinessProcessesField epicId={epicId} />
+              </div>
               <DetailsTabExtended 
                 epic={epicDetail}
                 programs={programs}

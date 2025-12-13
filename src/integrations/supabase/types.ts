@@ -386,6 +386,36 @@ export type Database = {
         }
         Relationships: []
       }
+      business_processes: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          name_ar: string | null
+          name_en: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name_ar?: string | null
+          name_en: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name_ar?: string | null
+          name_en?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       business_request_audit_logs: {
         Row: {
           action: string
@@ -1892,6 +1922,39 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "epic_benefits_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "epics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      epic_business_processes: {
+        Row: {
+          business_process_id: string
+          created_at: string
+          epic_id: string
+        }
+        Insert: {
+          business_process_id: string
+          created_at?: string
+          epic_id: string
+        }
+        Update: {
+          business_process_id?: string
+          created_at?: string
+          epic_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "epic_business_processes_business_process_id_fkey"
+            columns: ["business_process_id"]
+            isOneToOne: false
+            referencedRelation: "business_processes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "epic_business_processes_epic_id_fkey"
             columns: ["epic_id"]
             isOneToOne: false
             referencedRelation: "epics"
