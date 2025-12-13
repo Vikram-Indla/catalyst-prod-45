@@ -7895,6 +7895,71 @@ export type Database = {
         }
         Relationships: []
       }
+      resource_inventory: {
+        Row: {
+          created_at: string | null
+          default_capacity_percent: number | null
+          id: string
+          is_active: boolean | null
+          name: string
+          notes: string | null
+          role_code: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          default_capacity_percent?: number | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          notes?: string | null
+          role_code?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          default_capacity_percent?: number | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          notes?: string | null
+          role_code?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resource_inventory_role_code_fkey"
+            columns: ["role_code"]
+            isOneToOne: false
+            referencedRelation: "resource_roles"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      resource_roles: {
+        Row: {
+          code: string
+          created_at: string | null
+          is_active: boolean | null
+          name: string
+          sort_order: number | null
+        }
+        Insert: {
+          code: string
+          created_at?: string | null
+          is_active?: boolean | null
+          name: string
+          sort_order?: number | null
+        }
+        Update: {
+          code?: string
+          created_at?: string | null
+          is_active?: boolean | null
+          name?: string
+          sort_order?: number | null
+        }
+        Relationships: []
+      }
       risk_links: {
         Row: {
           added_by_name: string | null
