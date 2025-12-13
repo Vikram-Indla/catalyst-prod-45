@@ -7,6 +7,7 @@
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { IndustryViewSwitchButton } from '@/components/industry/IndustryViewSwitchButton';
 
 // Row heights for density modes
 const DENSITY_CONFIG = {
@@ -923,22 +924,9 @@ export function ExecutiveTable({
         {/* Row 2: Toolbar Row - 52px, with border-bottom */}
         <div className="h-13 flex items-center px-6">
           <div className="w-full grid grid-cols-[auto_1fr_auto] items-center gap-4">
-            {/* Left Zone: View Toggles */}
-            <div className="flex items-center gap-2">
-              <button className="h-9 px-3 border border-brand-gold rounded-md bg-brand-gold/10 text-brand-gold text-sm font-medium flex items-center gap-1.5 cursor-pointer">
-                <Icons.Grid /> Board
-              </button>
-              <button
-                onClick={() => navigate('/industry/kanban')}
-                className="h-9 px-3 border border-border rounded-md bg-background text-muted-foreground text-sm font-medium flex items-center gap-1.5 cursor-pointer hover:bg-muted"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="3" y1="6" x2="21" y2="6"/>
-                  <line x1="3" y1="12" x2="21" y2="12"/>
-                  <line x1="3" y1="18" x2="21" y2="18"/>
-                </svg>
-                List
-              </button>
+            {/* Left Zone: View Toggle - Show only switch-to-other-view button */}
+            <div className="flex items-center">
+              <IndustryViewSwitchButton currentView="list" />
             </div>
 
             {/* Center Zone: Search */}
