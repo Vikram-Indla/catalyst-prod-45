@@ -129,6 +129,8 @@ import Regions from "./pages/admin/Regions";
 import ThemeGroups from "./pages/admin/ThemeGroups";
 import Teams from "./pages/admin/Teams";
 import Programs from "./pages/admin/Programs";
+import Departments from "./pages/admin/Departments";
+import BusinessOwnersAdmin from "./pages/admin/BusinessOwners";
 import Portfolios from "./pages/admin/Portfolios";
 import Estimation from "./pages/admin/Estimation";
 import Security from "./pages/admin/Security";
@@ -664,6 +666,8 @@ const App = () => (
                 <Route path="teams" element={<Teams />} />
                 <Route path="programs" element={<Programs />} />
                 <Route path="portfolios" element={<Portfolios />} />
+                <Route path="departments" element={<Departments />} />
+                <Route path="business-owners" element={<BusinessOwnersAdmin />} />
                 <Route path="estimation" element={<Estimation />} />
                 <Route path="security" element={<Security />} />
                 <Route path="jira-config" element={<JiraIntegrationConfig />} />
