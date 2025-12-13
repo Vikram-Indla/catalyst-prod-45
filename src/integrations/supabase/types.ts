@@ -7799,6 +7799,65 @@ export type Database = {
         }
         Relationships: []
       }
+      risk_links: {
+        Row: {
+          added_by_name: string | null
+          created_at: string
+          file_name: string | null
+          file_path: string | null
+          file_size: number | null
+          id: string
+          kind: string | null
+          link_type: string | null
+          mime_type: string | null
+          risk_id: string
+          title: string
+          updated_at: string
+          uploaded_by: string | null
+          url: string
+        }
+        Insert: {
+          added_by_name?: string | null
+          created_at?: string
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          id?: string
+          kind?: string | null
+          link_type?: string | null
+          mime_type?: string | null
+          risk_id: string
+          title: string
+          updated_at?: string
+          uploaded_by?: string | null
+          url: string
+        }
+        Update: {
+          added_by_name?: string | null
+          created_at?: string
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          id?: string
+          kind?: string | null
+          link_type?: string | null
+          mime_type?: string | null
+          risk_id?: string
+          title?: string
+          updated_at?: string
+          uploaded_by?: string | null
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "risk_links_risk_id_fkey"
+            columns: ["risk_id"]
+            isOneToOne: false
+            referencedRelation: "risks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       risks: {
         Row: {
           business_request_id: string | null
