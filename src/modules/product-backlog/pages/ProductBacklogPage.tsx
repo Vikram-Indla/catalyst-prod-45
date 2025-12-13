@@ -20,6 +20,7 @@ export default function ProductBacklogPage() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [scoringFilter, setScoringFilter] = useState<'all' | 'scored' | 'unscored'>('all');
+  const [columnsDialogOpen, setColumnsDialogOpen] = useState(false);
 
   // Transform business requests to match ExecutiveTable format
   const tableData = useMemo(() => {
@@ -138,6 +139,7 @@ export default function ProductBacklogPage() {
       onSearchChange={setSearchValue}
       scoringFilter={scoringFilter}
       onScoringFilterChange={setScoringFilter}
+      onColumnsConfig={() => setColumnsDialogOpen(true)}
       onExport={() => {
         // Export CSV
         const headers = ['Request ID', 'Summary', 'Status', 'Score', 'Rank', 'Department', 'Platform', 'Created'];
@@ -179,6 +181,8 @@ export default function ProductBacklogPage() {
         externalHeader={headerElement}
         searchValue={searchValue}
         onSearchChange={setSearchValue}
+        columnsDialogOpen={columnsDialogOpen}
+        onColumnsDialogChange={setColumnsDialogOpen}
       />
 
       <BusinessRequestDrawer
