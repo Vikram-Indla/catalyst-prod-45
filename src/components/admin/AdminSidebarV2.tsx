@@ -89,7 +89,7 @@ const adminPockets = [
     icon: Boxes,
     path: '/admin/resourceinventory',
     children: [
-      { label: 'Resource Inventory', path: '/admin/resourceinventory' },
+      { label: 'Product Inventory', path: '/admin/resourceinventory' },
       { label: 'Development Inventory', path: '/admin/developmentinventory' },
     ],
   },
