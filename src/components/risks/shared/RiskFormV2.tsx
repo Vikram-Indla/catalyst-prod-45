@@ -159,6 +159,9 @@ export function RiskFormV2({
     if (formError) setFormError('');
   };
 
+  // Check if resolution status is required (when resolution_method is 'Resolved')
+  const isResolutionStatusRequired = value.resolution_method === 'Resolved';
+
   // Handle save with validation
   const handleSave = () => {
     if (!value.title?.trim()) {
@@ -171,6 +174,10 @@ export function RiskFormV2({
     }
     if (isMitigationRequired && !value.mitigation?.trim()) {
       setFormError('mitigation_required');
+      return;
+    }
+    if (isResolutionStatusRequired && !value.resolution_status?.trim()) {
+      setFormError('resolution_status_required');
       return;
     }
     onSave?.();
@@ -418,14 +425,26 @@ export function RiskFormV2({
 
       {/* Resolution Status */}
       <div>
-        <Label className="text-xs font-medium">Resolution Status</Label>
+        <Label className="text-xs font-medium">
+          Resolution Status
+          {isResolutionStatusRequired && <span className="text-destructive">*</span>}
+        </Label>
         <Textarea
           value={value.resolution_status || ''}
           onChange={e => handleChange('resolution_status', e.target.value)}
           placeholder={isEditing ? 'Current resolution status...' : ''}
           readOnly={!isEditing}
-          className="mt-1 min-h-[60px] text-sm bg-background border-border"
+          className={cn(
+            "mt-1 min-h-[60px] text-sm bg-background border-border",
+            formError === 'resolution_status_required' && "border-destructive focus-visible:ring-destructive"
+          )}
         />
+        {formError === 'resolution_status_required' && (
+          <div className="flex items-center gap-1 text-destructive text-xs mt-1">
+            <AlertCircle className="h-3.5 w-3.5" />
+            <span>Resolution Status is required when Resolution Method is "Resolved".</span>
+          </div>
+        )}
       </div>
 
       {/* Context Metadata Block - only shown in certain contexts */}
@@ -468,8 +487,8 @@ export function RiskFormV2({
         </div>
       )}
 
-      {/* Error message - show general errors but not mitigation_required (shown inline) */}
-      {formError && formError !== 'mitigation_required' && (
+      {/* Error message - show general errors but not inline-specific errors */}
+      {formError && formError !== 'mitigation_required' && formError !== 'resolution_status_required' && (
         <div className="flex items-center gap-1 text-destructive text-xs">
           <AlertCircle className="h-3.5 w-3.5" />
           <span>{formError}</span>
