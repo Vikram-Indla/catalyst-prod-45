@@ -55,6 +55,13 @@ export const KanbanIcons = {
       <line x1="3" y1="18" x2="3.01" y2="18"/>
     </svg>
   ),
+  Kanban: () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="4" y="4" width="16" height="16" rx="2"/>
+      <line x1="9" y1="4" x2="9" y2="20"/>
+      <line x1="15" y1="4" x2="15" y2="20"/>
+    </svg>
+  ),
   Grid: () => (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="3" y="3" width="7" height="7"/>
