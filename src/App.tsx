@@ -120,14 +120,7 @@ import Users from "./pages/admin/Users";
 import TeamRoles from "./pages/admin/TeamRoles";
 import SystemRoles from "./pages/admin/SystemRoles";
 import RolesPermissions from "./pages/admin/RolesPermissions";
-import Cities from "./pages/admin/Cities";
-import Customers from "./pages/admin/Customers";
-import CostCenters from "./pages/admin/CostCenters";
-import Countries from "./pages/admin/Countries";
-import BusinessUnits from "./pages/admin/BusinessUnits";
-import Regions from "./pages/admin/Regions";
 import ThemeGroups from "./pages/admin/ThemeGroups";
-import Teams from "./pages/admin/Teams";
 import Programs from "./pages/admin/Programs";
 import Departments from "./pages/admin/Departments";
 import BusinessOwnersAdmin from "./pages/admin/BusinessOwners";
@@ -656,14 +649,7 @@ const App = () => (
                 <Route path="roles-permissions" element={<RolesPermissions />} />
                 <Route path="team-roles" element={<TeamRoles />} />
                 <Route path="system-roles" element={<SystemRoles />} />
-                <Route path="cities" element={<Cities />} />
-                <Route path="customers" element={<Customers />} />
-                <Route path="cost-centers" element={<CostCenters />} />
-                <Route path="countries" element={<Countries />} />
-                <Route path="business-units" element={<BusinessUnits />} />
-                <Route path="regions" element={<Regions />} />
                 <Route path="theme-groups" element={<ThemeGroups />} />
-                <Route path="teams" element={<Teams />} />
                 <Route path="programs" element={<Programs />} />
                 <Route path="portfolios" element={<Portfolios />} />
                 <Route path="departments" element={<Departments />} />

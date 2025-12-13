@@ -35,17 +35,10 @@ type AdminSectionType =
   | 'roles-permissions'
   | 'team-roles'
   | 'system-roles'
-  | 'teams'
   | 'programs' // formerly projects
   | 'portfolios' // formerly programs
   | 'departments'
   | 'business-owners'
-  | 'business-units'
-  | 'regions'
-  | 'cities'
-  | 'countries'
-  | 'customers'
-  | 'cost-centers'
   | 'modules-packages'
   | 'product-settings'
   | 'work-codes'
@@ -105,13 +98,6 @@ const SECTION_CONFIG: Record<AdminSectionType, SectionConfig> = {
     ctaLabel: 'Add system role',
     showCta: true,
   },
-  'teams': {
-    icon: Users,
-    title: 'No teams created',
-    subtitle: 'Create teams to organize your workforce and assign work.',
-    ctaLabel: 'Create team',
-    showCta: true,
-  },
   'programs': {
     icon: FolderKanban,
     title: 'No projects found',
@@ -138,48 +124,6 @@ const SECTION_CONFIG: Record<AdminSectionType, SectionConfig> = {
     title: 'No business owners defined',
     subtitle: 'Add business owners to assign accountability for requests.',
     ctaLabel: 'Add business owner',
-    showCta: true,
-  },
-  'business-units': {
-    icon: Building2,
-    title: 'No business units configured',
-    subtitle: 'Create business units to organize your organization structure.',
-    ctaLabel: 'Add business unit',
-    showCta: true,
-  },
-  'regions': {
-    icon: Globe,
-    title: 'No regions defined',
-    subtitle: 'Add regions to categorize geographic areas.',
-    ctaLabel: 'Add region',
-    showCta: true,
-  },
-  'cities': {
-    icon: MapPin,
-    title: 'No cities configured',
-    subtitle: 'Add cities for location-based categorization.',
-    ctaLabel: 'Add city',
-    showCta: true,
-  },
-  'countries': {
-    icon: Globe,
-    title: 'No countries configured',
-    subtitle: 'Add countries for geographic categorization.',
-    ctaLabel: 'Add country',
-    showCta: true,
-  },
-  'customers': {
-    icon: Users,
-    title: 'No customers added',
-    subtitle: 'Add customer records for tracking customer-related work.',
-    ctaLabel: 'Add customer',
-    showCta: true,
-  },
-  'cost-centers': {
-    icon: DollarSign,
-    title: 'No cost centers defined',
-    subtitle: 'Create cost centers for budget tracking and allocation.',
-    ctaLabel: 'Add cost center',
     showCta: true,
   },
   'modules-packages': {
