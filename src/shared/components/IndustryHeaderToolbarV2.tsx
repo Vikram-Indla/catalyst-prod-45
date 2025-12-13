@@ -321,19 +321,6 @@ export function IndustryHeaderToolbarV2({
             <Icons.Overflow />
           </button>
         </div>
-
-        <div className={styles.vDivider} />
-
-        {/* Primary Action */}
-        <button
-          className={styles.primaryBtn}
-          data-tooltip="Add new business request"
-          aria-label="Add new business request"
-          onClick={onAdd}
-        >
-          <Icons.Plus />
-          <span>Add</span>
-        </button>
       </div>
     </div>
   );
