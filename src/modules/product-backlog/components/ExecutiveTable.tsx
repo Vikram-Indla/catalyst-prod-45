@@ -104,6 +104,9 @@ interface ExecutiveTableProps {
   onSearchChange?: (value: string) => void;
   /** Callback for export action */
   onExport?: () => void;
+  /** External control for columns dialog */
+  columnsDialogOpen?: boolean;
+  onColumnsDialogChange?: (open: boolean) => void;
 }
 
 // Status Badge - neutral pill with small left accent dot
@@ -138,7 +141,7 @@ function ScoreBar({ score }: { score: number | null }) {
     <div className="flex items-center gap-2 min-w-[80px]">
       <div className="flex-1 h-2 bg-muted/50 border border-border/60 rounded overflow-hidden">
         <div 
-          className="h-full rounded-sm transition-all duration-300 bg-brand-gold"
+          className="h-full rounded-sm transition-all duration-300 bg-secondary-green"
           style={{ width: `${Math.min(score, 100)}%` }}
         />
       </div>
@@ -436,12 +439,17 @@ function DensitySelector({ value, onChange }: { value: string; onChange: (value:
 }
 
 // Column Manager
-function ColumnManager({ columns, visibleColumns, onChange }: { 
+function ColumnManager({ columns, visibleColumns, onChange, externalOpen, onExternalOpenChange }: { 
   columns: typeof ALL_COLUMNS; 
   visibleColumns: string[]; 
   onChange: (visible: string[]) => void;
+  externalOpen?: boolean;
+  onExternalOpenChange?: (open: boolean) => void;
 }) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isOpen = externalOpen !== undefined ? externalOpen : internalOpen;
+  const setIsOpen = onExternalOpenChange || setInternalOpen;
+  
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -450,7 +458,7 @@ function ColumnManager({ columns, visibleColumns, onChange }: {
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [setIsOpen]);
 
   const toggleColumn = (colId: string) => {
     const newVisible = visibleColumns.includes(colId)
@@ -622,7 +630,9 @@ export function ExecutiveTable({
   externalHeader,
   searchValue: externalSearchValue,
   onSearchChange: externalOnSearchChange,
-  onExport: externalOnExport
+  onExport: externalOnExport,
+  columnsDialogOpen: externalColumnsOpen,
+  onColumnsDialogChange: externalOnColumnsChange,
 }: ExecutiveTableProps) {
   const navigate = useNavigate();
   
@@ -997,7 +1007,7 @@ export function ExecutiveTable({
                   </svg>
                 </button>
                 <DensitySelector value={density} onChange={(v) => setDensity(v as any)} />
-                <ColumnManager columns={ALL_COLUMNS} visibleColumns={visibleColumns} onChange={setVisibleColumns} />
+                <ColumnManager columns={ALL_COLUMNS} visibleColumns={visibleColumns} onChange={setVisibleColumns} externalOpen={externalColumnsOpen} onExternalOpenChange={externalOnColumnsChange} />
                 <button
                   onClick={externalOnExport || handleExport}
                   className="w-8 h-8 border border-border rounded-md bg-background text-muted-foreground flex items-center justify-center cursor-pointer hover:bg-muted"
