@@ -24,6 +24,19 @@ const AVAILABLE_COLUMNS = [
   { id: 'owner', label: 'Owner', description: 'Epic owner name' },
   { id: 'dates', label: 'Dates', description: 'Start and target dates' },
   { id: 'estimate', label: 'Estimate', description: 'Bottom-up estimate' },
+  // People fields
+  { id: 'reporter', label: 'Reporter', description: 'Person who reported the epic' },
+  { id: 'assignee', label: 'Assignee', description: 'Person assigned to the epic' },
+  { id: 'department', label: 'Department', description: 'Department assignment' },
+  { id: 'business_owner', label: 'Business Owner', description: 'Business owner responsible' },
+  // Date fields
+  { id: 'business_ask', label: 'Business Ask', description: 'Business ask date' },
+  { id: 'kickoff', label: 'Kickoff', description: 'Kickoff date' },
+  { id: 'target_complete', label: 'Target Complete', description: 'Target completion date' },
+  // Delivery fields
+  { id: 'delivery_track', label: 'Delivery Track', description: 'Delivery track assignment' },
+  { id: 'delivery_platform', label: 'Delivery Platform', description: 'Delivery platform' },
+  { id: 'quarter', label: 'Quarter', description: 'Planned quarter' },
 ];
 
 const DEFAULT_COLUMNS = ['rank', 'name', 'theme', 'program', 'state', 'health', 'owner', 'dates', 'estimate'];
