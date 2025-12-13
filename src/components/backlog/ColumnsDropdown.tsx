@@ -86,7 +86,7 @@ export const ColumnsDropdown = ({ columns, onChange, trigger }: ColumnsDropdownP
       )}
 
       {isOpen && (
-        <div className="absolute top-full right-0 mt-1 min-w-[260px] bg-card border border-border rounded shadow-lg z-[100] py-2">
+        <div className="absolute top-full right-0 mt-1 min-w-[260px] bg-card border border-border rounded shadow-lg z-[500] py-2">
           <div className="px-4 py-1.5 text-xs text-muted-foreground font-medium border-b border-border mb-1">
             Drag to reorder • Click to toggle
           </div>
@@ -121,7 +121,7 @@ export const ColumnsDropdown = ({ columns, onChange, trigger }: ColumnsDropdownP
                             <div
                               className={`w-4 h-4 border-2 rounded flex items-center justify-center shrink-0 ${
                                 col.visible
-                                  ? "bg-brand-gold border-brand-gold"
+                                  ? "bg-secondary-green border-secondary-green"
                                   : "border-border"
                               }`}
                             >
@@ -129,7 +129,7 @@ export const ColumnsDropdown = ({ columns, onChange, trigger }: ColumnsDropdownP
                             </div>
                             <span className="flex-1">{col.label}</span>
                             {visibleOrder !== null && (
-                              <span className="w-5 h-5 rounded-full bg-brand-gold/10 text-brand-gold text-xs font-medium flex items-center justify-center">
+                              <span className="w-5 h-5 rounded-full bg-secondary-green/10 text-secondary-green text-xs font-medium flex items-center justify-center">
                                 {visibleOrder}
                               </span>
                             )}
@@ -145,7 +145,7 @@ export const ColumnsDropdown = ({ columns, onChange, trigger }: ColumnsDropdownP
           </DragDropContext>
           <div className="h-px bg-border my-2" />
           <div
-            className="px-4 py-2 text-sm text-brand-gold hover:bg-muted cursor-pointer"
+            className="px-4 py-2 text-sm text-secondary-green hover:bg-muted cursor-pointer"
             onClick={resetToDefault}
           >
             Reset to Default
