@@ -213,10 +213,6 @@ export function CardDetailPanel({ ticket, onClose, onOpenFullView, teamMembers =
             )}
           </DetailRow>
 
-          <DetailRow label="Priority">
-            <PriorityIndicator priority={ticket.priority} showLabel />
-          </DetailRow>
-
           <DetailRow label="Business Score">
             <ScoreBadge score={ticket.score} />
           </DetailRow>
@@ -249,12 +245,6 @@ export function CardDetailPanel({ ticket, onClose, onOpenFullView, teamMembers =
 
           <DetailRow label="Delivery Platform">
             <span style={{ fontSize: '13px', color: KANBAN_COLORS.textPrimary }}>{ticket.platform || '—'}</span>
-          </DetailRow>
-
-          <DetailRow label="Due Date">
-            <span style={{ fontSize: '13px', color: KANBAN_COLORS.textPrimary }}>
-              {ticket.dueDate ? new Date(ticket.dueDate).toLocaleDateString() : '—'}
-            </span>
           </DetailRow>
 
           <DetailRow label="Rank">

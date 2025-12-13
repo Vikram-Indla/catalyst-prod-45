@@ -3,7 +3,7 @@
 import { useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { KanbanTicket, StatusId, PriorityId, PRIORITIES } from '../types';
+import { KanbanTicket, StatusId, PRIORITIES } from '../types';
 import { toast } from 'sonner';
 
 // Map process_step from DB to StatusId
@@ -45,8 +45,8 @@ const mapStatusToProcessStep = (status: StatusId): string => {
   return stepMap[status];
 };
 
-// Derive priority from business_score
-const derivePriorityFromScore = (score: number | null): PriorityId => {
+// Derive priority from business_score (for visual display only)
+const derivePriorityFromScore = (score: number | null): string => {
   if (score === null) return 'medium';
   if (score >= 80) return 'critical';
   if (score >= 60) return 'high';
@@ -88,7 +88,6 @@ export function useKanbanData() {
       id: req.request_key || `MIM-${String(req.id).slice(-3)}`,
       summary: req.title || 'Untitled Request',
       status: mapProcessStepToStatus(req.process_step),
-      priority: derivePriorityFromScore(req.business_score),
       assignee: req.assignee || null,
       businessOwner: req.business_owner || null,
       department: req.department || null,
@@ -96,10 +95,11 @@ export function useKanbanData() {
       rank: req.rank,
       epic: null, // Could be linked via strategic_theme
       platform: req.delivery_platform,
-      dueDate: req.end_date,
       createdAt: req.created_at,
       daysInColumn: calculateDaysInColumn(req.updated_at || req.created_at),
       _dbId: req.id, // Keep DB ID for updates
+      // Derived priority for visual display only (not stored in DB)
+      _derivedPriority: derivePriorityFromScore(req.business_score),
     }));
   }, [rawRequests]);
 
