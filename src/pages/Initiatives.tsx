@@ -136,9 +136,9 @@ export default function Initiatives() {
                 <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Loading...</TableCell></TableRow>
               ) : items && items.length > 0 ? (
                 items.map((item) => (
-                  <TableRow key={item.id} className="hover:bg-muted/50">
-                    <TableCell><Checkbox /></TableCell>
-                    <TableCell className="font-medium cursor-pointer" onClick={() => setSelectedItem(item.id)}>{item.name}</TableCell>
+                  <TableRow key={item.id} className="cursor-pointer hover:bg-muted/50" onClick={() => setSelectedItem(item.id)}>
+                    <TableCell onClick={(e) => e.stopPropagation()}><Checkbox /></TableCell>
+                    <TableCell className="font-medium">{item.name}</TableCell>
                     <TableCell className="text-sm">{item.strategic_themes?.name || '-'}</TableCell>
                     <TableCell>{getStatusBadge(item.status || 'proposed')}</TableCell>
                     <TableCell className="text-sm">{item.wsjf_score || 0}</TableCell>
