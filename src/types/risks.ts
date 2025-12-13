@@ -16,7 +16,7 @@ export type SeverityLevel = 'Low' | 'Medium' | 'High' | 'Critical';
 export type YesNo = 'Yes' | 'No';
 
 // Relationship Types (Source: FieldValidation-Risks)
-export type RelationshipType = 'Theme' | 'Epic' | 'Capability' | 'Feature' | 'Program Increment';
+export type RelationshipType = 'Theme' | 'Epic' | 'Capability' | 'Feature' | 'Program Increment' | 'Demand';
 
 // Risk Entity (Source: FieldValidation-Risks, Screenshot-Risk1)
 export interface Risk {
