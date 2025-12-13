@@ -114,48 +114,105 @@ export function UnifiedSidebar({
 
   return (
     <aside 
-      className={cn(
-        "h-full border-r bg-card transition-all duration-300 flex-shrink-0 relative flex flex-col",
-        expanded ? "w-44" : "w-14",
-        className
-      )}
+      style={{
+        width: expanded ? '220px' : '60px',
+        height: '100%',
+        background: '#ffffff',
+        borderRight: '1px solid #e5e7eb',
+        transition: 'all 0.3s ease',
+        flexShrink: 0,
+        position: 'relative',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+      className={className}
     >
       {/* Toggle Handle */}
       <button
         onClick={onToggle}
-        className="absolute -right-3 top-6 z-50 w-6 h-6 rounded-full bg-card border shadow-sm flex items-center justify-center hover:bg-accent transition-transform"
+        style={{
+          position: 'absolute',
+          right: '-12px',
+          top: '24px',
+          zIndex: 50,
+          width: '24px',
+          height: '24px',
+          borderRadius: '9999px',
+          background: '#ffffff',
+          border: '1px solid #e5e7eb',
+          boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+        }}
         aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
       >
         {expanded ? (
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft style={{ width: '16px', height: '16px' }} />
         ) : (
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight style={{ width: '16px', height: '16px' }} />
         )}
       </button>
 
-      <div className="h-full flex flex-col overflow-hidden">
-        {/* Entity Context Header - h-12 to align with main header */}
-        <div className={cn("h-12 px-2 flex items-center border-b", !expanded && "px-1 justify-center")}>
+      <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        {/* Sidebar Header - 52px per reference */}
+        <div 
+          style={{ 
+            height: '52px', 
+            padding: expanded ? '0 12px' : '0',
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: expanded ? 'flex-start' : 'center',
+            borderBottom: '1px solid #e5e7eb',
+            flexShrink: 0,
+          }}
+        >
           {expanded ? (
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-md bg-brand-gold flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div 
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '6px',
+                  background: 'linear-gradient(135deg, #5c7c5c 0%, #6d8d6d 100%)',
+                  color: '#ffffff',
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
                 {entity?.name?.substring(0, 2).toUpperCase() || entityLabel.substring(0, 2).toUpperCase()}
               </div>
-              <div className="min-w-0 flex-1">
-                <div className="text-sm font-medium text-foreground truncate">
-                  {entity?.name || entityLabel}
-                </div>
-              </div>
+              <span style={{ fontSize: '14px', fontWeight: 700, color: '#1f2937' }}>
+                {entity?.name || entityLabel}
+              </span>
             </div>
           ) : (
-            <div className="w-8 h-8 rounded-md bg-brand-gold flex items-center justify-center text-white text-xs font-semibold">
+            <div 
+              style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: '6px',
+                background: 'linear-gradient(135deg, #5c7c5c 0%, #6d8d6d 100%)',
+                color: '#ffffff',
+                fontSize: '11px',
+                fontWeight: 700,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
               {entity?.name?.substring(0, 2).toUpperCase() || entityLabel.substring(0, 2).toUpperCase()}
             </div>
           )}
         </div>
 
         {/* Navigation Menu */}
-        <nav className="flex-1 overflow-y-auto py-1">
+        <nav style={{ flex: 1, overflowY: 'auto', padding: '12px 8px' }}>
           {menuItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.pathTemplate);
@@ -164,20 +221,63 @@ export function UnifiedSidebar({
               <button
                 key={item.id}
                 onClick={() => handleNavigation(item.pathTemplate)}
-                className={cn(
-                  "w-full flex items-center gap-3 px-4 py-2.5 text-sm font-normal transition-colors",
-                  "hover:bg-accent/50",
-                  active && "bg-accent text-primary font-medium",
-                  !expanded && "justify-center px-2"
-                )}
+                style={{
+                  width: '100%',
+                  height: '40px',
+                  padding: expanded ? '0 12px' : '0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  borderRadius: '6px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                  marginBottom: '2px',
+                  position: 'relative',
+                  justifyContent: expanded ? 'flex-start' : 'center',
+                  // Active state styling
+                  background: active ? 'rgba(198, 156, 109, 0.06)' : 'transparent',
+                  color: active ? '#c69c6d' : '#4b5563',
+                  fontWeight: active ? 600 : 500,
+                  fontSize: '14px',
+                  fontFamily: 'inherit',
+                }}
+                onMouseEnter={(e) => { 
+                  if (!active) e.currentTarget.style.background = '#f9fafb'; 
+                }}
+                onMouseLeave={(e) => { 
+                  e.currentTarget.style.background = active ? 'rgba(198, 156, 109, 0.06)' : 'transparent'; 
+                }}
                 title={!expanded ? item.label : undefined}
               >
-                <Icon className="h-5 w-5 flex-shrink-0 text-muted-foreground" />
+                {/* Gold left bar indicator for active state */}
+                {active && (
+                  <span 
+                    style={{
+                      position: 'absolute',
+                      left: 0,
+                      top: '8px',
+                      bottom: '8px',
+                      width: '3px',
+                      background: '#c69c6d',
+                      borderRadius: '0 2px 2px 0',
+                    }}
+                  />
+                )}
+                <Icon style={{ width: '20px', height: '20px', flexShrink: 0 }} />
                 {expanded && (
                   <>
-                    <span className="truncate text-left flex-1">{item.label}</span>
+                    <span style={{ textAlign: 'left', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.label}</span>
                     {item.badge && (
-                      <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-brand-gold text-white rounded uppercase">
+                      <span style={{ 
+                        padding: '2px 6px', 
+                        fontSize: '10px', 
+                        fontWeight: 600, 
+                        background: '#c69c6d', 
+                        color: '#ffffff', 
+                        borderRadius: '4px',
+                        textTransform: 'uppercase',
+                      }}>
                         {item.badge}
                       </span>
                     )}
@@ -190,16 +290,34 @@ export function UnifiedSidebar({
 
         {/* Footer */}
         {expanded && (
-          <div className="border-t">
+          <div style={{ borderTop: '1px solid #e5e7eb', padding: '12px 8px' }}>
             <button 
-              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-normal hover:bg-accent/50 transition-colors"
+              style={{
+                width: '100%',
+                height: '40px',
+                padding: '0 12px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                borderRadius: '6px',
+                border: 'none',
+                background: 'transparent',
+                color: '#4b5563',
+                fontSize: '14px',
+                fontWeight: 500,
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+                fontFamily: 'inherit',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = '#f9fafb'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               onClick={() => {
                 navigate(settingsPath);
                 onToggle();
               }}
             >
-              <Settings className="h-5 w-5 text-muted-foreground" />
-              <span className="text-left">{entityLabel} Settings</span>
+              <Settings style={{ width: '20px', height: '20px', color: '#6b7280' }} />
+              <span style={{ textAlign: 'left' }}>{entityLabel} Settings</span>
             </button>
           </div>
         )}
