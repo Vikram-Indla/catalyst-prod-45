@@ -2,8 +2,23 @@ import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react'
 import { cn } from '@/lib/utils';
 
 // ============================================================================
-// CATALYST ENTERPRISE TABLE - Styled after the provided design
+// CATALYST ENTERPRISE TABLE - STYLED EXACTLY LIKE THE REFERENCE
 // ============================================================================
+
+// Catalyst Golden Hour Color Palette
+const colors = {
+  olive: '#5c7c5c',
+  bronze: '#8b7355',
+  gold: '#c69c6d',
+  goldHover: '#b8894f',
+  champagne: '#d4b896',
+  grey: '#c8ccd0',
+  cream: '#faf7f1',
+  white: '#ffffff',
+  border: '#e5e5e5',
+  muted: '#6b7280',
+  danger: '#dc2626',
+};
 
 export type SortDirection = 'asc' | 'desc' | null;
 
@@ -35,17 +50,17 @@ interface CatalystEnterpriseTableProps<T extends { id: string }> {
 // Icons (inline SVG)
 const Icons = {
   ChevronUp: () => (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <path d="M18 15l-6-6-6 6"/>
     </svg>
   ),
   ChevronDown: () => (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <path d="M6 9l6 6 6-6"/>
     </svg>
   ),
   Filter: () => (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"/>
     </svg>
   ),
@@ -66,7 +81,9 @@ const Icons = {
   ),
 };
 
-// Inline Cell Editor
+// ============================================================================
+// INLINE CELL EDITOR COMPONENT
+// ============================================================================
 function InlineCellEditor({ 
   value, 
   type, 
@@ -101,28 +118,32 @@ function InlineCellEditor({
     }
   };
 
-  const handleBlur = () => {
-    onSave(localValue === '' ? null : (type === 'number' ? Number(localValue) : localValue));
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    padding: '6px 10px',
+    border: `2px solid ${colors.gold}`,
+    borderRadius: '4px',
+    fontSize: '14px',
+    outline: 'none',
+    backgroundColor: colors.white,
   };
 
-  const inputClass = "w-full px-2 py-1 text-sm border-2 border-brand-gold rounded outline-none bg-white";
-
-  if (type === 'select') {
+  if (type === 'select' && options) {
     return (
       <select
         ref={inputRef as React.RefObject<HTMLSelectElement>}
         value={localValue}
-        onChange={(e) => setLocalValue(e.target.value)}
-        onBlur={handleBlur}
+        onChange={(e) => {
+          setLocalValue(e.target.value);
+          onSave(e.target.value);
+        }}
+        onBlur={() => onCancel()}
         onKeyDown={handleKeyDown}
-        onClick={(e) => e.stopPropagation()}
-        className={inputClass}
+        style={{ ...inputStyle, cursor: 'pointer' }}
       >
-        <option value="">— Select —</option>
-        {options?.map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}
-          </option>
+        <option value="">Select...</option>
+        {options.map((opt) => (
+          <option key={opt.value} value={opt.value}>{opt.label}</option>
         ))}
       </select>
     );
@@ -134,31 +155,35 @@ function InlineCellEditor({
       type={type === 'number' ? 'number' : 'text'}
       value={localValue}
       onChange={(e) => setLocalValue(e.target.value)}
-      onBlur={handleBlur}
+      onBlur={() => onSave(localValue === '' ? null : (type === 'number' ? Number(localValue) : localValue))}
       onKeyDown={handleKeyDown}
-      onClick={(e) => e.stopPropagation()}
-      className={inputClass}
+      style={inputStyle}
     />
   );
 }
 
-// Column Header with Sort & Filter
+// ============================================================================
+// COLUMN HEADER WITH SORT & FILTER
+// ============================================================================
 function ColumnHeader<T>({ 
   column, 
   sortConfig, 
-  filterValues, 
-  onSort, 
-  onFilter 
-}: {
+  filterValues,
+  onSort,
+  onFilter,
+}: { 
   column: CatalystColumn<T>;
   sortConfig: { column: string | null; direction: SortDirection };
   filterValues: string[];
-  onSort: (colId: string) => void;
-  onFilter: (colId: string, values: string[]) => void;
+  onSort: (columnId: string) => void;
+  onFilter: (columnId: string, values: string[]) => void;
 }) {
   const [showFilter, setShowFilter] = useState(false);
-  const [selectedFilters, setSelectedFilters] = useState<string[]>(filterValues || []);
+  const [selectedFilters, setSelectedFilters] = useState<string[]>(filterValues);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  
+  const isSorted = sortConfig.column === column.id;
+  const hasFilters = filterValues.length > 0;
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -170,16 +195,11 @@ function ColumnHeader<T>({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  useEffect(() => {
-    setSelectedFilters(filterValues || []);
-  }, [filterValues]);
-
-  const isSorted = sortConfig.column === column.id;
-  const hasFilters = filterValues && filterValues.length > 0;
-
   const handleFilterToggle = (value: string) => {
-    setSelectedFilters((prev) =>
-      prev.includes(value) ? prev.filter((f) => f !== value) : [...prev, value]
+    setSelectedFilters(prev => 
+      prev.includes(value) 
+        ? prev.filter(v => v !== value)
+        : [...prev, value]
     );
   };
 
@@ -194,18 +214,30 @@ function ColumnHeader<T>({
     setShowFilter(false);
   };
 
+  const sortButtonStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '2px',
+    border: 'none',
+    backgroundColor: 'transparent',
+    cursor: 'pointer',
+    color: isSorted ? colors.gold : colors.muted,
+    opacity: isSorted ? 1 : 0.5,
+    transition: 'opacity 0.2s',
+  };
+
   return (
-    <div className="relative">
-      <div className="flex items-center gap-1.5">
-        <span className="font-medium text-muted-foreground whitespace-nowrap">{column.header}</span>
+    <div style={{ position: 'relative' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <span style={{ fontWeight: 500, color: colors.muted, whiteSpace: 'nowrap' }}>
+          {column.header}
+        </span>
         
         {column.sortable !== false && (
           <button
             onClick={(e) => { e.stopPropagation(); onSort(column.id); }}
-            className={cn(
-              "p-0.5 rounded hover:bg-muted/50 transition-colors",
-              isSorted ? "text-brand-gold" : "text-muted-foreground/50"
-            )}
+            style={sortButtonStyle}
             title="Sort"
           >
             {isSorted && sortConfig.direction === 'asc' ? (
@@ -213,7 +245,7 @@ function ColumnHeader<T>({
             ) : isSorted && sortConfig.direction === 'desc' ? (
               <Icons.ChevronDown />
             ) : (
-              <span className="text-xs opacity-40">⇅</span>
+              <span style={{ fontSize: '12px', opacity: 0.4 }}>⇅</span>
             )}
           </button>
         )}
@@ -221,15 +253,19 @@ function ColumnHeader<T>({
         {column.filterable !== false && column.filterOptions && column.filterOptions.length > 0 && (
           <button
             onClick={(e) => { e.stopPropagation(); setShowFilter(!showFilter); }}
-            className={cn(
-              "p-0.5 rounded hover:bg-muted/50 transition-colors",
-              hasFilters ? "text-brand-gold" : "text-muted-foreground/50"
-            )}
+            style={{ ...sortButtonStyle, color: hasFilters ? colors.gold : colors.muted, opacity: hasFilters ? 1 : 0.5 }}
             title="Filter"
           >
             <Icons.Filter />
             {hasFilters && (
-              <span className="ml-0.5 text-[10px] bg-brand-gold text-white rounded-full px-1">
+              <span style={{ 
+                marginLeft: '2px', 
+                fontSize: '10px', 
+                backgroundColor: colors.gold, 
+                color: colors.white, 
+                borderRadius: '9999px', 
+                padding: '0 4px' 
+              }}>
                 {filterValues.length}
               </span>
             )}
@@ -240,42 +276,78 @@ function ColumnHeader<T>({
       {showFilter && column.filterOptions && (
         <div 
           ref={dropdownRef} 
-          className="absolute top-full right-0 mt-2 w-56 bg-white border border-border rounded-lg shadow-xl z-50"
+          style={{
+            position: 'absolute',
+            top: '100%',
+            right: 0,
+            marginTop: '8px',
+            width: '240px',
+            backgroundColor: colors.white,
+            border: `1px solid ${colors.border}`,
+            borderRadius: '8px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            zIndex: 100,
+          }}
         >
-          <div className="p-3 border-b border-border">
-            <div className="text-xs font-semibold text-muted-foreground">
+          <div style={{ padding: '12px 14px', borderBottom: `1px solid ${colors.border}` }}>
+            <div style={{ fontSize: '12px', fontWeight: 600, color: colors.muted }}>
               Filter by {column.header}
             </div>
           </div>
-          <div className="max-h-48 overflow-y-auto">
+          <div style={{ maxHeight: '192px', overflowY: 'auto' }}>
             {column.filterOptions.map((opt) => (
               <label
                 key={opt.value}
-                className={cn(
-                  "flex items-center gap-2.5 px-3 py-2 cursor-pointer hover:bg-muted/30 transition-colors",
-                  selectedFilters.includes(opt.value) && "bg-brand-gold/5"
-                )}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  padding: '10px 14px',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.15s',
+                  backgroundColor: selectedFilters.includes(opt.value) ? `${colors.gold}10` : 'transparent',
+                  fontSize: '13px',
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = `${colors.gold}10`)}
+                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = selectedFilters.includes(opt.value) ? `${colors.gold}10` : 'transparent')}
               >
                 <input
                   type="checkbox"
                   checked={selectedFilters.includes(opt.value)}
                   onChange={() => handleFilterToggle(opt.value)}
-                  className="rounded border-border accent-brand-gold"
+                  style={{ width: '16px', height: '16px', accentColor: colors.gold }}
                 />
-                <span className="text-sm flex-1">{opt.label}</span>
+                <span style={{ flex: 1 }}>{opt.label}</span>
               </label>
             ))}
           </div>
-          <div className="flex justify-between p-3 border-t border-border bg-muted/20">
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            padding: '12px 14px', 
+            borderTop: `1px solid ${colors.border}`,
+            backgroundColor: '#fafafa',
+          }}>
             <button
               onClick={clearFilters}
-              className="text-sm text-muted-foreground hover:text-foreground"
+              style={{ fontSize: '13px', color: colors.muted, background: 'none', border: 'none', cursor: 'pointer' }}
             >
               Clear
             </button>
             <button
               onClick={applyFilters}
-              className="px-4 py-1 text-sm bg-brand-gold text-white rounded hover:bg-brand-gold-hover transition-colors"
+              style={{ 
+                padding: '6px 16px', 
+                fontSize: '13px', 
+                backgroundColor: colors.gold, 
+                color: colors.white, 
+                border: 'none',
+                borderRadius: '4px', 
+                cursor: 'pointer',
+                transition: 'background-color 0.2s',
+              }}
+              onMouseOver={(e) => (e.currentTarget.style.backgroundColor = colors.goldHover)}
+              onMouseOut={(e) => (e.currentTarget.style.backgroundColor = colors.gold)}
             >
               Apply
             </button>
@@ -286,7 +358,9 @@ function ColumnHeader<T>({
   );
 }
 
-// Row Actions Menu
+// ============================================================================
+// ROW ACTIONS MENU
+// ============================================================================
 function RowActionsMenu({ onEdit }: { onEdit: () => void }) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -302,19 +376,50 @@ function RowActionsMenu({ onEdit }: { onEdit: () => void }) {
   }, []);
 
   return (
-    <div ref={menuRef} className="relative">
+    <div ref={menuRef} style={{ position: 'relative' }}>
       <button
         onClick={(e) => { e.stopPropagation(); setIsOpen(!isOpen); }}
-        className="p-1 rounded hover:bg-muted/50 text-muted-foreground"
+        style={{ 
+          padding: '4px', 
+          borderRadius: '4px', 
+          border: 'none', 
+          background: 'none',
+          cursor: 'pointer',
+          color: colors.muted,
+        }}
+        onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#f0f0f0')}
+        onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
       >
         <Icons.MoreHorizontal />
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-1 bg-white border border-border rounded-lg shadow-lg z-50 min-w-[120px]">
+        <div style={{
+          position: 'absolute',
+          right: 0,
+          top: '100%',
+          marginTop: '4px',
+          backgroundColor: colors.white,
+          border: `1px solid ${colors.border}`,
+          borderRadius: '8px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          zIndex: 50,
+          minWidth: '120px',
+        }}>
           <button
             onClick={(e) => { e.stopPropagation(); onEdit(); setIsOpen(false); }}
-            className="w-full px-3 py-2 text-left text-sm hover:bg-muted/50 transition-colors"
+            style={{
+              width: '100%',
+              padding: '10px 14px',
+              textAlign: 'left',
+              fontSize: '13px',
+              border: 'none',
+              background: 'none',
+              cursor: 'pointer',
+              transition: 'background-color 0.15s',
+            }}
+            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#f0f0f0')}
+            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
           >
             Edit Row
           </button>
@@ -324,7 +429,9 @@ function RowActionsMenu({ onEdit }: { onEdit: () => void }) {
   );
 }
 
-// Main Table Component
+// ============================================================================
+// MAIN TABLE COMPONENT
+// ============================================================================
 export function CatalystEnterpriseTable<T extends { id: string }>({
   data,
   columns,
@@ -349,31 +456,24 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
     Object.entries(filters).forEach(([columnId, values]) => {
       if (values && values.length > 0) {
         result = result.filter((row) => {
-          const val = (row as any)[columnId];
-          return values.includes(val);
+          const col = columns.find(c => c.id === columnId);
+          const cellValue = col && typeof col.accessor === 'function' ? col.accessor(row) : (row as any)[columnId];
+          return values.includes(String(cellValue));
         });
       }
     });
 
-    // Apply sorting
+    // Apply sort
     if (sortConfig.column && sortConfig.direction) {
+      const col = columns.find(c => c.id === sortConfig.column);
       result.sort((a, b) => {
-        const col = columns.find(c => c.id === sortConfig.column);
-        if (!col) return 0;
-        
-        const aVal = typeof col.accessor === 'function' ? col.accessor(a) : (a as any)[col.accessor];
-        const bVal = typeof col.accessor === 'function' ? col.accessor(b) : (b as any)[col.accessor];
+        const aVal = col && typeof col.accessor === 'function' ? col.accessor(a) : (a as any)[sortConfig.column!];
+        const bVal = col && typeof col.accessor === 'function' ? col.accessor(b) : (b as any)[sortConfig.column!];
         
         if (aVal == null) return 1;
         if (bVal == null) return -1;
         
-        let comparison = 0;
-        if (typeof aVal === 'string') {
-          comparison = aVal.localeCompare(bVal);
-        } else {
-          comparison = aVal - bVal;
-        }
-        
+        const comparison = aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
         return sortConfig.direction === 'asc' ? comparison : -comparison;
       });
     }
@@ -382,17 +482,16 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
   }, [data, filters, sortConfig, columns]);
 
   const handleSort = (columnId: string) => {
-    setSortConfig((prev) => {
-      if (prev.column === columnId) {
-        if (prev.direction === 'asc') return { column: columnId, direction: 'desc' };
-        if (prev.direction === 'desc') return { column: null, direction: null };
-      }
+    setSortConfig(prev => {
+      if (prev.column !== columnId) return { column: columnId, direction: 'asc' };
+      if (prev.direction === 'asc') return { column: columnId, direction: 'desc' };
+      if (prev.direction === 'desc') return { column: null, direction: null };
       return { column: columnId, direction: 'asc' };
     });
   };
 
   const handleFilter = (columnId: string, values: string[]) => {
-    setFilters((prev) => ({ ...prev, [columnId]: values }));
+    setFilters(prev => ({ ...prev, [columnId]: values }));
   };
 
   const handleCellDoubleClick = (e: React.MouseEvent, rowId: string, columnId: string) => {
@@ -474,28 +573,52 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
     }
   };
 
+  // Styles matching the reference exactly
+  const cardStyle: React.CSSProperties = {
+    backgroundColor: colors.white,
+    borderRadius: '12px',
+    border: `1px solid ${colors.border}`,
+    overflow: 'hidden',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+  };
+
+  const thStyle: React.CSSProperties = {
+    textAlign: 'left',
+    padding: '12px 16px',
+    fontWeight: 500,
+    color: colors.muted,
+    borderBottom: `1px solid ${colors.border}`,
+    backgroundColor: '#fafafa',
+    whiteSpace: 'nowrap',
+  };
+
+  const tdStyle: React.CSSProperties = {
+    padding: '12px 16px',
+    borderBottom: `1px solid ${colors.border}`,
+    verticalAlign: 'middle',
+  };
+
   return (
-    <div className="bg-white border border-border rounded-xl shadow-sm overflow-hidden">
+    <div style={cardStyle}>
       {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse text-sm">
+      <div style={{ overflowX: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
           <thead>
-            <tr className="bg-muted/30">
+            <tr>
               {showCheckboxes && (
-                <th className="px-4 py-3 text-center w-10 border-b border-border">
+                <th style={{ ...thStyle, textAlign: 'center', width: '48px' }}>
                   <input
                     type="checkbox"
                     checked={processedData.length > 0 && selectedRows.length === processedData.length}
                     onChange={handleSelectAll}
-                    className="rounded border-border accent-brand-gold"
+                    style={{ width: '16px', height: '16px', accentColor: colors.gold }}
                   />
                 </th>
               )}
               {columns.map((column) => (
                 <th 
                   key={column.id} 
-                  className="px-4 py-3 text-left border-b border-border whitespace-nowrap"
-                  style={{ width: column.width }}
+                  style={{ ...thStyle, width: column.width }}
                 >
                   <ColumnHeader
                     column={column}
@@ -507,28 +630,38 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
                 </th>
               ))}
               {showActionsColumn && (
-                <th className="px-4 py-3 w-12 border-b border-border"></th>
+                <th style={{ ...thStyle, width: '48px' }}></th>
               )}
             </tr>
           </thead>
           <tbody>
-            {processedData.map((row) => (
+            {processedData.map((row, rowIndex) => (
               <tr
                 key={row.id}
                 onClick={() => handleRowClick(row)}
-                className={cn(
-                  "border-b border-border/50 transition-colors cursor-pointer",
-                  "hover:bg-muted/30",
-                  selectedRows.includes(row.id) && "bg-brand-gold/5"
-                )}
+                style={{
+                  cursor: 'pointer',
+                  transition: 'background-color 0.15s',
+                  backgroundColor: selectedRows.includes(row.id) ? `${colors.gold}08` : 'transparent',
+                }}
+                onMouseOver={(e) => {
+                  if (!selectedRows.includes(row.id)) {
+                    e.currentTarget.style.backgroundColor = '#f8f8f8';
+                  }
+                }}
+                onMouseOut={(e) => {
+                  if (!selectedRows.includes(row.id)) {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }
+                }}
               >
                 {showCheckboxes && (
-                  <td className="px-4 py-3 text-center" onClick={(e) => e.stopPropagation()}>
+                  <td style={{ ...tdStyle, textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
                     <input
                       type="checkbox"
                       checked={selectedRows.includes(row.id)}
                       onChange={(e) => handleCheckboxChange(e, row.id)}
-                      className="rounded border-border accent-brand-gold"
+                      style={{ width: '16px', height: '16px', accentColor: colors.gold }}
                     />
                   </td>
                 )}
@@ -541,7 +674,7 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
                   return (
                     <td
                       key={column.id}
-                      className="px-4 py-3"
+                      style={tdStyle}
                       onDoubleClick={(e) => handleCellDoubleClick(e, row.id, column.id)}
                       title={column.editable ? 'Double-click to edit' : ''}
                     >
@@ -557,10 +690,27 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
                         column.render(value, row)
                       ) : (
                         <span
-                          className={cn(
-                            column.editable && "inline-block px-1.5 py-0.5 -mx-1.5 rounded border border-transparent",
-                            column.editable && "hover:border-brand-gold/30 hover:bg-brand-gold/5 transition-colors"
-                          )}
+                          style={{
+                            display: 'inline-block',
+                            padding: column.editable ? '4px 8px' : undefined,
+                            margin: column.editable ? '-4px -8px' : undefined,
+                            borderRadius: column.editable ? '4px' : undefined,
+                            border: column.editable ? '1px dashed transparent' : undefined,
+                            transition: 'all 0.15s',
+                            cursor: column.editable ? 'pointer' : undefined,
+                          }}
+                          onMouseOver={(e) => {
+                            if (column.editable) {
+                              e.currentTarget.style.borderColor = `${colors.gold}50`;
+                              e.currentTarget.style.backgroundColor = `${colors.gold}08`;
+                            }
+                          }}
+                          onMouseOut={(e) => {
+                            if (column.editable) {
+                              e.currentTarget.style.borderColor = 'transparent';
+                              e.currentTarget.style.backgroundColor = 'transparent';
+                            }
+                          }}
                         >
                           {value ?? '—'}
                         </span>
@@ -569,7 +719,7 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
                   );
                 })}
                 {showActionsColumn && (
-                  <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                  <td style={tdStyle} onClick={(e) => e.stopPropagation()}>
                     <RowActionsMenu
                       onEdit={() => setEditingCell({ rowId: row.id, columnId: columns.find(c => c.editable)?.id || columns[0].id })}
                     />
@@ -583,12 +733,41 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
 
       {/* Undo Bar */}
       {undoStack.length > 0 && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 px-5 py-3 bg-gray-900 text-white rounded-lg shadow-lg z-50">
+        <div style={{
+          position: 'fixed',
+          bottom: '24px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          padding: '12px 20px',
+          backgroundColor: '#1f2937',
+          color: colors.white,
+          borderRadius: '8px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          fontSize: '14px',
+          zIndex: 1000,
+        }}>
           <Icons.Undo />
-          <span className="text-sm">{undoStack.length} unsaved change{undoStack.length !== 1 ? 's' : ''}</span>
+          <span>{undoStack.length} unsaved change{undoStack.length !== 1 ? 's' : ''}</span>
           <button 
             onClick={handleUndo}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-gold text-white rounded text-sm font-medium hover:bg-brand-gold-hover transition-colors"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '6px 12px',
+              border: 'none',
+              borderRadius: '4px',
+              backgroundColor: colors.gold,
+              color: colors.white,
+              cursor: 'pointer',
+              fontSize: '13px',
+              fontWeight: 500,
+            }}
+            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = colors.goldHover)}
+            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = colors.gold)}
           >
             Undo (Ctrl+Z)
           </button>
@@ -597,12 +776,24 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
 
       {/* Toast */}
       {toast && (
-        <div className="fixed top-6 right-6 flex items-center gap-2 px-4 py-3 bg-secondary-green text-white rounded-lg shadow-lg z-50 animate-in slide-in-from-right">
+        <div style={{
+          position: 'fixed',
+          top: '24px',
+          right: '24px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          padding: '12px 20px',
+          backgroundColor: colors.olive,
+          color: colors.white,
+          borderRadius: '8px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          fontSize: '14px',
+          zIndex: 1000,
+        }}>
           <Icons.Check /> {toast}
         </div>
       )}
     </div>
   );
 }
-
-
