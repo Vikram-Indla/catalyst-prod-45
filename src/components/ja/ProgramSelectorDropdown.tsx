@@ -1,15 +1,18 @@
 /**
- * Program Selector Dropdown - Uses shared WorkspaceSwitcherMenu
- * All users see all programs, but only Admin/Members can enter
- * Default program is hidden from the list
+ * Program Selector Dropdown - Revamped for Catalyst Menu
+ * Shows: Program list with "Name (KEY)" format
+ * Admin-only: Create Program, Manage Programs
+ * Default program hidden from list
+ * Clicking navigates to Epic Backlog
  */
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { WorkspaceSwitcherMenu, WorkspaceItem } from '@/components/workspace/WorkspaceSwitcherMenu';
+import { Search, Plus, Settings, Folder, Lock } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { useWorkspaceAccess } from '@/hooks/useWorkspaceAccess';
 import { useCatalystContext } from '@/contexts/CatalystContext';
-import { getProgramLandingRoute } from '@/lib/workspaceContext';
-import { DEFAULT_PROGRAM_ID, isDefaultProgram } from '@/lib/programKeyUtils';
+import { isDefaultProgram } from '@/lib/programKeyUtils';
+import { cn } from '@/lib/utils';
 
 interface ProgramSelectorDropdownProps {
   onClose: () => void;
@@ -23,26 +26,25 @@ export const ProgramSelectorDropdown = React.memo(function ProgramSelectorDropdo
   const navigate = useNavigate();
   const { programs, programsLoading, isAdmin } = useWorkspaceAccess();
   const { setProgramId, setProjectId, setProgramName, setProjectName } = useCatalystContext();
+  const [search, setSearch] = useState('');
 
-  // Map programs to WorkspaceItem format, excluding Default program
-  // Keys are already canonical 3-letter from useWorkspaceAccess
-  const items: WorkspaceItem[] = programs
+  // Filter programs: exclude Default, apply search
+  const filteredPrograms = programs
     .filter(p => !isDefaultProgram(p))
-    .map(p => ({
-      id: p.id,
-      key: p.key, // Already canonical 3-letter key from hook
-      name: p.name,
-      canAccess: p.canAccess,
-      sourceField: p.sourceField,
-      needsMigration: p.needsMigration,
-    }));
+    .filter(p => 
+      p.name.toLowerCase().includes(search.toLowerCase()) ||
+      p.key.toLowerCase().includes(search.toLowerCase())
+    );
 
-  const handleSelect = useCallback((item: WorkspaceItem) => {
-    setProgramId(item.id);
-    setProgramName(item.name);
+  const handleSelect = useCallback((program: typeof programs[0]) => {
+    if (!program.canAccess) return;
+    
+    setProgramId(program.id);
+    setProgramName(program.name);
     setProjectId(null);
     setProjectName(null);
-    navigate(getProgramLandingRoute(item.id));
+    // Navigate to Epic Backlog as default
+    navigate(`/program/${program.id}/epic-backlog`);
     onClose();
   }, [navigate, onClose, setProgramId, setProgramName, setProjectId, setProjectName]);
 
@@ -57,15 +59,86 @@ export const ProgramSelectorDropdown = React.memo(function ProgramSelectorDropdo
   }, [navigate, onClose]);
 
   return (
-    <WorkspaceSwitcherMenu
-      title="Programs"
-      searchPlaceholder="Search programs..."
-      items={items}
-      isLoading={programsLoading}
-      showActions={isAdmin}
-      onSelectItem={handleSelect}
-      onCreate={isAdmin ? handleCreate : undefined}
-      onManage={isAdmin ? handleManage : undefined}
-    />
+    <div className="w-72 bg-popover border border-border rounded-md shadow-md overflow-hidden z-[60]">
+      {/* Header */}
+      <div className="px-3 py-2 border-b border-border">
+        <p className="text-sm font-medium text-foreground mb-2">Programs</p>
+        <div className="relative">
+          <Input
+            placeholder="Search programs..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="h-8 text-sm pr-8"
+            autoFocus
+          />
+          <Search className="absolute right-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+        </div>
+      </div>
+
+      {/* Programs List */}
+      <div className="max-h-[280px] overflow-y-auto">
+        {programsLoading ? (
+          <div className="px-4 py-6 text-center text-sm text-muted-foreground">
+            Loading...
+          </div>
+        ) : filteredPrograms.length === 0 ? (
+          <div className="px-4 py-6 text-center text-sm text-muted-foreground">
+            {search ? 'No programs found' : 'No programs available'}
+          </div>
+        ) : (
+          filteredPrograms.map((program) => {
+            const hasValidKey = program.key && program.key.length === 3;
+            return (
+              <button
+                key={program.id}
+                onClick={() => handleSelect(program)}
+                disabled={!program.canAccess}
+                className={cn(
+                  "flex items-center gap-2 w-full px-3 py-2.5 text-left transition-colors",
+                  program.canAccess 
+                    ? "hover:bg-muted cursor-pointer" 
+                    : "opacity-50 cursor-not-allowed"
+                )}
+              >
+                <Folder className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                <div className="flex-1 min-w-0 flex items-center gap-1.5">
+                  <span className="text-sm text-foreground truncate">
+                    {program.name}
+                  </span>
+                  {!program.canAccess && (
+                    <Lock className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                  )}
+                </div>
+                {hasValidKey && (
+                  <span className="text-xs text-muted-foreground flex-shrink-0 font-mono uppercase">
+                    ({program.key})
+                  </span>
+                )}
+              </button>
+            );
+          })
+        )}
+      </div>
+
+      {/* Admin Actions */}
+      {isAdmin && (
+        <div className="border-t border-border divide-y divide-border/50">
+          <button
+            onClick={handleCreate}
+            className="flex items-center gap-2 w-full px-3 py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
+          >
+            <Plus className="h-4 w-4 text-muted-foreground" />
+            Create Program
+          </button>
+          <button
+            onClick={handleManage}
+            className="flex items-center gap-2 w-full px-3 py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
+          >
+            <Settings className="h-4 w-4 text-muted-foreground" />
+            Manage Programs
+          </button>
+        </div>
+      )}
+    </div>
   );
 });

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Search, Bell, HelpCircle, User, ChevronDown, LogOut, Settings, Lock } from "lucide-react";
+import { Search, ChevronDown, LogOut, Settings } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -8,18 +8,13 @@ import { useQuery } from "@tanstack/react-query";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useEnabledModules } from "@/hooks/useModules";
 import { Button } from "@/components/ui/button";
-import { ItemsDropdown } from "./ItemsDropdown";
 import { CreateDropdown } from "./CreateDropdown";
 import { SearchOverlay } from "./SearchOverlay";
 import { NotificationsPanel } from "./NotificationsPanel";
-import { PersonasPopover } from "./PersonasPopover";
 import { ProgramSelectorDropdown } from "./ProgramSelectorDropdown";
 import { ProjectSelectorDropdown } from "./ProjectSelectorDropdown";
-
-import { StarredDropdown } from "./StarredDropdown";
 import { ProductSelectorDropdown } from "./ProductSelectorDropdown";
 import { MobileNavigationMenu } from "./MobileNavigationMenu";
-import { TestsDropdown } from "./TestsDropdown";
 import { ReleaseDropdown } from "./ReleaseDropdown";
 import { catalystToast } from "@/lib/catalystToast";
 import { CreateEntityDialog } from "@/components/dialogs/CreateEntityDialog";
@@ -58,11 +53,6 @@ export function CatalystHeader() {
 
   // Create entity dialog states - lifted from dropdowns
   const [createDialogType, setCreateDialogType] = useState<'program' | 'project' | 'product' | null>(null);
-
-  // Show Tests dropdown only when in program context with tests visible
-  const isProgramRoute = location.pathname.startsWith('/programs/');
-  const isTestsRoute = location.pathname.includes('/tests');
-  const showTestsDropdown = isProgramRoute && isTestsRoute;
 
   // Get current user
   const { data: user } = useQuery({
@@ -279,44 +269,10 @@ export function CatalystHeader() {
                         </PopoverTrigger>
                         {activeDropdown === item.label && (
                           <PopoverContent className="p-0 w-auto" align="start">
-                            <ReleaseDropdown onClose={() => setActiveDropdown(null)} />
+                          <ReleaseDropdown onClose={() => setActiveDropdown(null)} />
                           </PopoverContent>
                         )}
                       </Popover>
-                    ) : item.label === "Starred" ? (
-                      <Popover
-                        open={activeDropdown === item.label}
-                        onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
-                      >
-                        <PopoverTrigger asChild>
-                          <Button variant="ghost" className={navButtonClass}>
-                            {item.label}
-                            <ChevronDown className="h-3 w-3 block" />
-                          </Button>
-                        </PopoverTrigger>
-                        {activeDropdown === item.label && (
-                          <PopoverContent className="p-0 w-auto" align="start">
-                            <StarredDropdown onClose={() => setActiveDropdown(null)} />
-                          </PopoverContent>
-                        )}
-                      </Popover>
-                    ) : item.hasDropdown ? (
-                      <DropdownMenu
-                        open={activeDropdown === item.label}
-                        onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
-                      >
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className={navButtonClass}>
-                            {item.label}
-                            <ChevronDown className="h-3 w-3 block" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start" className="w-48 bg-popover">
-                          <DropdownMenuItem className="text-muted-foreground text-xs">
-                            TODO (needs confirmation)
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
                     ) : (
                       <Button
                         variant="ghost"
@@ -330,9 +286,6 @@ export function CatalystHeader() {
                 );
               })}
             </TooltipProvider>
-
-            {/* Tests Dropdown - Only visible in program context */}
-            {showTestsDropdown && <TestsDropdown isActive />}
           </nav>
 
           {/* Right Column: Actions - justify-self-end keeps it right-aligned */}
