@@ -8,7 +8,7 @@ import { useRisks } from '@/hooks/risks/useRisks';
 import { useToast } from '@/hooks/use-toast';
 import { Risk, RiskFormData, RiskGridFilters } from '@/types/risks';
 import { RoamBadge } from '@/components/risks/RoamBadge';
-import { RiskDetailPanel } from '@/components/risks/RiskDetailPanel';
+import { RiskDrawer } from '@/components/risks/RiskDrawer';
 import { RiskFiltersDialog } from '@/components/risks/RiskFiltersDialog';
 import { CreateEditRiskPanel } from '@/components/risks/CreateEditRiskPanel';
 import { DeleteRiskDialog } from '@/components/risks/DeleteRiskDialog';
@@ -672,7 +672,7 @@ export default function EnterpriseRisks() {
 
       {/* Panels and Dialogs */}
       {selectedRisk && (
-        <RiskDetailPanel
+        <RiskDrawer
           risk={selectedRisk}
           isOpen={!!selectedRisk}
           onClose={() => setSelectedRisk(null)}
