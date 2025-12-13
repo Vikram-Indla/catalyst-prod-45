@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
@@ -11,11 +11,13 @@ import { RichTextEditor } from '../RichTextEditor';
 import { UserPicker } from '@/components/ui/user-picker';
 import { BusinessRequest } from '@/types/business-request';
 import { 
-  DepartmentSelect, 
   DeliveryPlatformSelect, 
   DeliveryTrackSelect, 
   PlannedQuarterSelect 
 } from '@/components/ui/lookup-select';
+import { DepartmentSelect } from '@/components/business-requests/DepartmentSelect';
+import { BusinessOwnerSelect } from '@/components/business-requests/BusinessOwnerSelect';
+import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings, getOwnerIdForDepartment } from '@/hooks/useDepartmentsAndOwners';
 
 interface DemandDetailsViewTabProps {
   data: Partial<BusinessRequest> & Record<string, any>;
@@ -26,6 +28,58 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
   const [targetDateLocked, setTargetDateLocked] = useState(false);
   const [lockedByUser, setLockedByUser] = useState<string | null>(null);
   const currentUser = 'Current User';
+
+  const { data: departments } = useDepartments();
+  const { data: owners } = useBusinessOwners();
+  const { data: mappings } = useDepartmentOwnerMappings();
+
+  // Resolve legacy text values to IDs on initial load
+  useEffect(() => {
+    if (departments && !data.department_id && data.department) {
+      const dept = departments.find(d => d.name.toLowerCase() === (data.department || '').toLowerCase());
+      if (dept) {
+        onChange('department_id', dept.id);
+      }
+    }
+  }, [departments, data.department, data.department_id, onChange]);
+
+  useEffect(() => {
+    if (owners && !data.business_owner_id && data.business_owner) {
+      const owner = owners.find(o => o.name.toLowerCase() === (data.business_owner || '').toLowerCase());
+      if (owner) {
+        onChange('business_owner_id', owner.id);
+      }
+    }
+  }, [owners, data.business_owner, data.business_owner_id, onChange]);
+
+  // Handle department change with auto-setting of business owner
+  const handleDepartmentChange = (departmentId: string) => {
+    onChange('department_id', departmentId);
+    // Find department name and set it for legacy field
+    const dept = departments?.find(d => d.id === departmentId);
+    if (dept) {
+      onChange('department', dept.name);
+    }
+    // Auto-set business owner from mapping
+    if (mappings) {
+      const ownerId = getOwnerIdForDepartment(departmentId, mappings);
+      if (ownerId) {
+        onChange('business_owner_id', ownerId);
+        const owner = owners?.find(o => o.id === ownerId);
+        if (owner) {
+          onChange('business_owner', owner.name);
+        }
+      }
+    }
+  };
+
+  const handleBusinessOwnerChange = (ownerId: string) => {
+    onChange('business_owner_id', ownerId);
+    const owner = owners?.find(o => o.id === ownerId);
+    if (owner) {
+      onChange('business_owner', owner.name);
+    }
+  };
 
   const handleLockToggle = () => {
     if (targetDateLocked) {
@@ -108,19 +162,22 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
               <Label className="text-xs font-medium">Department</Label>
               <div className="mt-1">
                 <DepartmentSelect
-                  value={data.department || null}
-                  onChange={(value) => onChange('department', value)}
+                  value={data.department_id || null}
+                  onChange={handleDepartmentChange}
+                  placeholder="Select department"
                 />
               </div>
             </div>
             <div>
               <Label className="text-xs font-medium">Business Owner</Label>
-              <Input
-                value={data.business_owner || ''}
-                onChange={(e) => onChange('business_owner', e.target.value)}
-                placeholder="Enter name"
-                className="mt-1 h-9 text-sm"
-              />
+              <div className="mt-1">
+                <BusinessOwnerSelect
+                  value={data.business_owner_id || null}
+                  onChange={handleBusinessOwnerChange}
+                  departmentId={data.department_id || null}
+                  placeholder="Select business owner"
+                />
+              </div>
             </div>
           </div>
         </div>
