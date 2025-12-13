@@ -100,6 +100,8 @@ interface ExecutiveTableProps {
   onOpenFullView: (requestId: string) => void;
   onFieldUpdate: (requestId: string, field: string, value: any) => Promise<void>;
   onCreateNew: () => void;
+  onDuplicate?: (requestId: string) => Promise<void>;
+  onDelete?: (requestId: string) => Promise<void>;
 }
 
 // Status Badge - uses semantic CSS classes
@@ -122,52 +124,34 @@ function StatusBadge({ value, options }: { value: string; options: { value: stri
   );
 }
 
-// Score Progress Bar
+// Score Progress Bar - neutral text only
 function ScoreBar({ score }: { score: number | null }) {
   if (score === null || score === undefined) {
     return <span className="text-muted-foreground text-[11px]">—</span>;
   }
   
-  const getColorClass = (s: number) => {
-    if (s >= 75) return 'bg-success';
-    if (s >= 50) return 'bg-info';
-    if (s >= 25) return 'bg-warning';
-    return 'bg-destructive';
-  };
-  
-  const getTextClass = (s: number) => {
-    if (s >= 75) return 'text-success';
-    if (s >= 50) return 'text-info';
-    if (s >= 25) return 'text-warning';
-    return 'text-destructive';
-  };
-  
   return (
     <div className="flex items-center gap-2 min-w-[80px]">
       <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
         <div 
-          className={`h-full rounded-full transition-all duration-300 ${getColorClass(score)}`}
+          className="h-full rounded-full transition-all duration-300 bg-brand-gold"
           style={{ width: `${score}%` }}
         />
       </div>
-      <span className={`text-xs font-semibold min-w-[24px] tabular-nums ${getTextClass(score)}`}>
+      <span className="text-xs font-semibold min-w-[24px] tabular-nums text-foreground">
         {score}
       </span>
     </div>
   );
 }
 
-// Date Display
+// Date Display - neutral text only
 function DateDisplay({ date }: { date: string | null }) {
   if (!date) return <span className="text-muted-foreground">—</span>;
   const d = new Date(date);
-  const today = new Date();
-  const diffDays = Math.ceil((d.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-  const isOverdue = diffDays < 0;
-  const isDueSoon = diffDays >= 0 && diffDays <= 7;
   
   return (
-    <span className={`text-xs ${isOverdue ? 'text-destructive font-semibold' : isDueSoon ? 'text-warning font-semibold' : 'text-muted-foreground'}`}>
+    <span className="text-xs text-muted-foreground">
       {d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' })}
     </span>
   );
@@ -508,10 +492,8 @@ function ColumnManager({ columns, visibleColumns, onChange }: {
   );
 }
 
-// Row Actions Menu
-function RowActionsMenu({ onView, onEdit, onDuplicate, onDelete }: {
-  onView: () => void;
-  onEdit: () => void;
+// Row Actions Menu - Only Duplicate + Delete
+function RowActionsMenu({ onDuplicate, onDelete }: {
   onDuplicate: () => void;
   onDelete: () => void;
 }) {
@@ -536,97 +518,28 @@ function RowActionsMenu({ onView, onEdit, onDuplicate, onDelete }: {
       </button>
 
       {isOpen && (
-        <div className="absolute top-full right-0 mt-1 bg-background border border-border rounded-lg shadow-lg z-[100] min-w-[140px]">
-          {[
-            { icon: Icons.Eye, label: 'View Details', action: onView },
-            { icon: Icons.Edit, label: 'Edit', action: onEdit },
-            { icon: Icons.Copy, label: 'Duplicate', action: onDuplicate },
-            { icon: Icons.Trash, label: 'Delete', action: onDelete, danger: true },
-          ].map((item, i) => (
-            <button
-              key={i}
-              onClick={(e) => { e.stopPropagation(); item.action?.(); setIsOpen(false); }}
-              className={`w-full flex items-center gap-2 px-3 py-2.5 border-none bg-transparent text-xs cursor-pointer text-left hover:bg-muted ${item.danger ? 'text-destructive' : 'text-foreground'}`}
-            >
-              <item.icon />
-              {item.label}
-            </button>
-          ))}
+        <div className="absolute top-full right-0 mt-1 bg-background border border-border rounded-lg shadow-lg z-[100] min-w-[120px]">
+          <button
+            onClick={(e) => { e.stopPropagation(); onDuplicate(); setIsOpen(false); }}
+            className="w-full flex items-center gap-2 px-3 py-2.5 border-none bg-transparent text-xs cursor-pointer text-left hover:bg-muted text-foreground"
+          >
+            <Icons.Copy />
+            Duplicate
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); onDelete(); setIsOpen(false); }}
+            className="w-full flex items-center gap-2 px-3 py-2.5 border-none bg-transparent text-xs cursor-pointer text-left hover:bg-muted text-destructive"
+          >
+            <Icons.Trash />
+            Delete
+          </button>
         </div>
       )}
     </div>
   );
 }
 
-// Row Detail Panel
-function RowDetailPanel({ row, onClose, onOpenFullView }: { 
-  row: BusinessRequest; 
-  onClose: () => void;
-  onOpenFullView: (id: string) => void;
-}) {
-  const department = DEPARTMENTS.find(d => d.value === row.department);
-  const platform = PLATFORMS.find(p => p.value === row.platform);
-
-  const DetailRow = ({ label, children }: { label: string; children: React.ReactNode }) => (
-    <div className="flex py-3 border-b border-border">
-      <span className="w-[140px] text-xs text-muted-foreground font-medium">{label}</span>
-      <div className="flex-1 text-sm text-foreground">{children}</div>
-    </div>
-  );
-
-  return (
-    <div className="fixed top-0 right-0 bottom-0 w-[420px] bg-background shadow-2xl z-[300] flex flex-col animate-in slide-in-from-right duration-200">
-      <div className="px-6 py-5 border-b border-border flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <span className="text-sm font-bold text-muted-foreground font-mono">{row.id}</span>
-          <StatusBadge value={row.processStep} options={PROCESS_STEPS} />
-        </div>
-        <button
-          onClick={onClose}
-          className="p-2 border-none bg-transparent cursor-pointer text-muted-foreground rounded-md hover:bg-muted"
-        >
-          <Icons.X />
-        </button>
-      </div>
-
-      <div className="flex-1 p-6 overflow-y-auto">
-        <h2 className="text-lg font-bold text-foreground mb-6 leading-relaxed">
-          {row.summary}
-        </h2>
-
-        <div>
-          <DetailRow label="Score">
-            <ScoreBar score={row.score} />
-          </DetailRow>
-          <DetailRow label="Rank">
-            {row.rank ? <span className="font-semibold tabular-nums">#{row.rank}</span> : '—'}
-          </DetailRow>
-          <DetailRow label="Department">
-            {department?.label || '—'}
-          </DetailRow>
-          <DetailRow label="Platform">
-            {platform?.label || '—'}
-          </DetailRow>
-          <DetailRow label="Created">
-            <DateDisplay date={row.createdAt} />
-          </DetailRow>
-        </div>
-      </div>
-
-      <div className="px-6 py-4 border-t border-border flex gap-3">
-        <button 
-          onClick={() => {
-            onClose();
-            onOpenFullView(row.id);
-          }}
-          className="flex-1 py-3 border border-border rounded-lg bg-background text-foreground text-sm font-semibold cursor-pointer hover:bg-muted"
-        >
-          Edit
-        </button>
-      </div>
-    </div>
-  );
-}
+// RowDetailPanel removed - clicks go directly to canonical drawer
 
 // Pagination Footer
 function PaginationFooter({ 
@@ -699,7 +612,9 @@ export function ExecutiveTable({
   onRowClick, 
   onOpenFullView, 
   onFieldUpdate,
-  onCreateNew 
+  onCreateNew,
+  onDuplicate,
+  onDelete
 }: ExecutiveTableProps) {
   const navigate = useNavigate();
   const [density, setDensity] = useState<'compact' | 'regular' | 'relaxed'>('regular');
@@ -707,11 +622,11 @@ export function ExecutiveTable({
   const [filters, setFilters] = useState<Record<string, string[]>>({});
   const [sortConfig, setSortConfig] = useState<{ column: string | null; direction: 'asc' | 'desc' | null }>({ column: null, direction: null });
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
-  const [selectedRow, setSelectedRow] = useState<BusinessRequest | null>(null);
   const [visibleColumns, setVisibleColumns] = useState(ALL_COLUMNS.map(c => c.id));
   const [columnOrder, setColumnOrder] = useState(ALL_COLUMNS.map(c => c.id));
   const [draggingColumn, setDraggingColumn] = useState<string | null>(null);
   const [dragOverColumn, setDragOverColumn] = useState<string | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -888,7 +803,17 @@ export function ExecutiveTable({
     };
 
     if (column.id === 'id') {
-      return <span className="font-semibold text-muted-foreground font-mono text-xs">{value}</span>;
+      return (
+        <span 
+          onClick={(e) => {
+            e.stopPropagation();
+            onOpenFullView(row.id);
+          }}
+          className="font-semibold text-brand-gold font-mono text-xs cursor-pointer hover:underline transition-colors"
+        >
+          {value}
+        </span>
+      );
     }
     
     if (column.id === 'summary') {
@@ -896,7 +821,7 @@ export function ExecutiveTable({
         <span 
           onClick={(e) => {
             e.stopPropagation();
-            setSelectedRow(row);
+            onOpenFullView(row.id);
           }}
           className="block overflow-hidden text-ellipsis whitespace-nowrap cursor-pointer text-foreground font-medium hover:text-brand-gold hover:underline transition-colors"
           title={`Click to view details: ${value}`}
@@ -1187,10 +1112,14 @@ export function ExecutiveTable({
                     ))}
                     <td className="px-3 py-2 border-b border-border/50">
                       <RowActionsMenu
-                        onView={() => setSelectedRow(row)}
-                        onEdit={() => onOpenFullView(row.id)}
-                        onDuplicate={() => toast.success('Duplicated')}
-                        onDelete={() => toast.success('Deleted')}
+                        onDuplicate={async () => {
+                          if (onDuplicate) {
+                            await onDuplicate(row.id);
+                          } else {
+                            toast.success('Duplicated');
+                          }
+                        }}
+                        onDelete={() => setDeleteConfirmId(row.id)}
                       />
                     </td>
                   </tr>
@@ -1214,14 +1143,39 @@ export function ExecutiveTable({
         </div>
       </div>
 
-      {/* Row Detail Panel */}
-      {selectedRow && (
+      {/* Delete Confirmation Modal */}
+      {deleteConfirmId && (
         <>
           <div
-            onClick={() => setSelectedRow(null)}
+            onClick={() => setDeleteConfirmId(null)}
             className="fixed inset-0 bg-black/30 z-[250]"
           />
-          <RowDetailPanel row={selectedRow} onClose={() => setSelectedRow(null)} onOpenFullView={onOpenFullView} />
+          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background border border-border rounded-xl shadow-2xl z-[300] p-6 w-[400px]">
+            <h3 className="text-lg font-bold text-foreground mb-2">Delete Business Request?</h3>
+            <p className="text-sm text-muted-foreground mb-6">
+              Are you sure you want to delete this business request? This action cannot be undone.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setDeleteConfirmId(null)}
+                className="flex-1 py-2.5 border border-border rounded-lg bg-background text-foreground text-sm font-medium cursor-pointer hover:bg-muted"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  if (onDelete) {
+                    await onDelete(deleteConfirmId);
+                  }
+                  setDeleteConfirmId(null);
+                  toast.success('Deleted successfully');
+                }}
+                className="flex-1 py-2.5 border-none rounded-lg bg-destructive text-white text-sm font-medium cursor-pointer hover:bg-destructive/90"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
         </>
       )}
     </div>
