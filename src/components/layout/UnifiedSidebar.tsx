@@ -164,7 +164,7 @@ export function UnifiedSidebar({
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: expanded ? 'flex-start' : 'center',
-            borderBottom: '1px solid #e5e7eb',
+            borderBottom: expanded ? '1px solid #e5e7eb' : 'none',
             flexShrink: 0,
           }}
         >

@@ -51,7 +51,7 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
 
         {/* Header - 44px per spec */}
         <div 
-          className="px-3 border-b flex items-center shrink-0"
+          className={cn("px-3 flex items-center shrink-0", expanded && "border-b")}
           style={{ height: '44px', borderColor: '#f3f4f6' }}
         >
           {expanded ? (

@@ -46,7 +46,7 @@ export function ReleaseRoomSidebar({ expanded, onToggle, className }: ReleaseRoo
         </button>
 
         {/* Header - fixed height to align with page header (72px) */}
-        <div className="h-[72px] px-4 border-b border-border flex items-center shrink-0">
+        <div className={cn("h-[72px] px-4 flex items-center shrink-0", expanded && "border-b border-border")}>
           {expanded ? (
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg flex items-center justify-center font-semibold text-sm text-white" style={{ background: 'linear-gradient(135deg, #5c7c5c 0%, #6d8d6d 100%)' }}>
