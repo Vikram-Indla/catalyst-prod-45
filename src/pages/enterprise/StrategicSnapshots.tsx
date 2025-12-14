@@ -80,29 +80,7 @@ export default function StrategicSnapshots() {
       </div>
 
       {/* Header Row 2: Toolbar - with divider AFTER */}
-      <div className="h-[52px] px-6 flex items-center justify-between border-b" style={{ borderColor: 'hsl(var(--border))' }}>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <Switch
-              id="show-archived"
-              checked={showArchived}
-              onCheckedChange={setShowArchived}
-            />
-            <Label htmlFor="show-archived" className="text-sm cursor-pointer">
-              Show archived
-            </Label>
-          </div>
-          
-          <div className="relative w-80">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search by name or description..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 h-9"
-            />
-          </div>
-        </div>
+      <div className="h-[52px] px-6 flex items-center justify-end border-b" style={{ borderColor: 'hsl(var(--border))' }}>
         
         <div className="flex items-center gap-2">
           <Button
