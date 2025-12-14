@@ -722,8 +722,11 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
 
       {/* Toolbar Row */}
       <div 
-        className="h-[52px] flex items-center justify-end px-6 border-b border-border print:hidden shrink-0 relative z-[100]"
-        style={{ backgroundColor: 'hsl(var(--background))' }}
+        className="h-[52px] flex items-center justify-end px-6 print:hidden shrink-0 relative z-[100]"
+        style={{ 
+          backgroundColor: 'hsl(var(--background))',
+          borderBottom: '1px solid hsl(var(--border))'
+        }}
       >
 
         {/* Toolbar */}
