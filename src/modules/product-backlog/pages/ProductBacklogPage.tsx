@@ -188,7 +188,7 @@ export default function ProductBacklogPage() {
   // Unified header component
   const headerElement = (
     <IndustryHeaderToolbarV2
-      title="Business Requests"
+      title="Product Backlog"
       countText={`${tableData.length}`}
       activeView="list"
       searchValue={searchValue}
