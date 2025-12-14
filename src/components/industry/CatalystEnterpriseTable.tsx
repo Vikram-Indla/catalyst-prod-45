@@ -7,18 +7,19 @@ import { cn } from '@/lib/utils';
 // CATALYST ENTERPRISE TABLE - STYLED EXACTLY LIKE THE REFERENCE
 // ============================================================================
 
-// Catalyst Golden Hour Color Palette
+// Catalyst Golden Hour Color Palette - uses CSS tokens for dark mode support
+// These are fallback constants; components should prefer CSS variables
 const colors = {
-  olive: '#5c7c5c',
-  bronze: '#8b7355',
-  gold: '#c69c6d',
-  goldHover: '#b8894f',
-  champagne: '#d4b896',
-  grey: '#c8ccd0',
-  cream: '#faf7f1',
-  white: '#ffffff',
-  border: '#e5e5e5',
-  muted: '#6b7280',
+  olive: 'var(--secondary-green, #5c7c5c)',
+  bronze: 'var(--secondary-bronze, #8b7355)',
+  gold: 'var(--brand-accent, #c69c6d)',
+  goldHover: 'var(--brand-accent-hover, #b8894f)',
+  champagne: 'var(--secondary-champagne, #d4b896)',
+  grey: 'var(--secondary-grey, #c8ccd0)',
+  cream: 'var(--surface-1, #faf7f1)',
+  white: 'var(--surface-1, #ffffff)',
+  border: 'var(--border-color, #e5e5e5)',
+  muted: 'var(--text-2, #6b7280)',
   danger: '#dc2626',
 };
 
@@ -127,11 +128,12 @@ function InlineCellEditor({
   const inputStyle: React.CSSProperties = {
     width: '100%',
     padding: '6px 10px',
-    border: `2px solid ${colors.gold}`,
+    border: `2px solid var(--brand-accent)`,
     borderRadius: '4px',
     fontSize: '14px',
     outline: 'none',
-    backgroundColor: colors.white,
+    backgroundColor: 'var(--input-bg)',
+    color: 'var(--input-text)',
   };
 
   if (type === 'select' && options) {
@@ -288,15 +290,15 @@ function ColumnHeader<T>({
             right: 0,
             marginTop: '8px',
             width: '240px',
-            backgroundColor: colors.white,
-            border: `1px solid ${colors.border}`,
+            backgroundColor: 'var(--surface-1)',
+            border: `1px solid var(--border-color)`,
             borderRadius: '8px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            boxShadow: 'var(--card-shadow)',
             zIndex: 100,
           }}
         >
-          <div style={{ padding: '12px 14px', borderBottom: `1px solid ${colors.border}` }}>
-            <div style={{ fontSize: '12px', fontWeight: 600, color: colors.muted }}>
+          <div style={{ padding: '12px 14px', borderBottom: `1px solid var(--divider)` }}>
+            <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-2)' }}>
               Filter by {column.header}
             </div>
           </div>
@@ -331,12 +333,12 @@ function ColumnHeader<T>({
             display: 'flex', 
             justifyContent: 'space-between', 
             padding: '12px 14px', 
-            borderTop: `1px solid ${colors.border}`,
-            backgroundColor: '#fafafa',
+            borderTop: `1px solid var(--divider)`,
+            backgroundColor: 'var(--surface-3)',
           }}>
             <button
               onClick={clearFilters}
-              style={{ fontSize: '13px', color: colors.muted, background: 'none', border: 'none', cursor: 'pointer' }}
+              style={{ fontSize: '13px', color: 'var(--text-2)', background: 'none', border: 'none', cursor: 'pointer' }}
             >
               Clear
             </button>
@@ -345,15 +347,15 @@ function ColumnHeader<T>({
               style={{ 
                 padding: '6px 16px', 
                 fontSize: '13px', 
-                backgroundColor: colors.gold, 
-                color: colors.white, 
+                backgroundColor: 'var(--brand-accent)', 
+                color: 'var(--text-inverse)', 
                 border: 'none',
                 borderRadius: '4px', 
                 cursor: 'pointer',
                 transition: 'background-color 0.2s',
               }}
-              onMouseOver={(e) => (e.currentTarget.style.backgroundColor = colors.goldHover)}
-              onMouseOut={(e) => (e.currentTarget.style.backgroundColor = colors.gold)}
+              onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'var(--brand-accent-hover)')}
+              onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'var(--brand-accent)')}
             >
               Apply
             </button>
@@ -391,9 +393,9 @@ function RowActionsMenu({ onEdit }: { onEdit: () => void }) {
           border: 'none', 
           background: 'none',
           cursor: 'pointer',
-          color: colors.muted,
+          color: 'var(--icon-default)',
         }}
-        onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#f0f0f0')}
+        onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'var(--nav-hover-bg)')}
         onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
       >
         <Icons.MoreHorizontal />
@@ -405,10 +407,10 @@ function RowActionsMenu({ onEdit }: { onEdit: () => void }) {
           right: 0,
           top: '100%',
           marginTop: '4px',
-          backgroundColor: colors.white,
-          border: `1px solid ${colors.border}`,
+          backgroundColor: 'var(--surface-1)',
+          border: `1px solid var(--border-color)`,
           borderRadius: '8px',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          boxShadow: 'var(--card-shadow)',
           zIndex: 50,
           minWidth: '120px',
         }}>
@@ -422,9 +424,10 @@ function RowActionsMenu({ onEdit }: { onEdit: () => void }) {
               border: 'none',
               background: 'none',
               cursor: 'pointer',
+              color: 'var(--text-1)',
               transition: 'background-color 0.15s',
             }}
-            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#f0f0f0')}
+            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'var(--nav-hover-bg)')}
             onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
           >
             Edit Row
@@ -598,29 +601,30 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
     }
   };
 
-  // Styles matching the reference exactly
+  // Styles using semantic CSS tokens for theme support
   const cardStyle: React.CSSProperties = {
-    backgroundColor: colors.white,
+    backgroundColor: 'var(--surface-2)',
     borderRadius: '12px',
-    border: `1px solid ${colors.border}`,
+    border: `1px solid var(--border-color)`,
     overflow: 'hidden',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+    boxShadow: 'var(--card-shadow)',
   };
 
   const thStyle: React.CSSProperties = {
     textAlign: 'left',
     padding: '12px 16px',
     fontWeight: 500,
-    color: colors.muted,
-    borderBottom: `1px solid ${colors.border}`,
-    backgroundColor: '#fafafa',
+    color: 'var(--text-2)',
+    borderBottom: `1px solid var(--divider)`,
+    backgroundColor: 'var(--surface-1)',
     whiteSpace: 'nowrap',
   };
 
   const tdStyle: React.CSSProperties = {
     padding: '12px 16px',
-    borderBottom: `1px solid ${colors.border}`,
+    borderBottom: `1px solid var(--divider)`,
     verticalAlign: 'middle',
+    color: 'var(--text-1)',
   };
 
   // Render row content (shared between drag and non-drag modes)
@@ -766,15 +770,15 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
                             cursor: 'pointer',
                             transition: 'background-color 0.15s',
                             backgroundColor: snapshot.isDragging 
-                              ? `${colors.gold}15` 
+                              ? 'var(--accent-muted)' 
                               : selectedRows.includes(row.id) 
-                                ? `${colors.gold}08` 
+                                ? 'var(--nav-active-bg)' 
                                 : 'transparent',
-                            boxShadow: snapshot.isDragging ? '0 4px 12px rgba(0,0,0,0.15)' : undefined,
+                            boxShadow: snapshot.isDragging ? 'var(--card-shadow)' : undefined,
                           }}
                           onMouseOver={(e) => {
                             if (!selectedRows.includes(row.id) && !snapshot.isDragging) {
-                              e.currentTarget.style.backgroundColor = '#f8f8f8';
+                              e.currentTarget.style.backgroundColor = 'var(--surface-3)';
                             }
                           }}
                           onMouseOut={(e) => {
@@ -801,11 +805,11 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
                   style={{
                     cursor: 'pointer',
                     transition: 'background-color 0.15s',
-                    backgroundColor: selectedRows.includes(row.id) ? `${colors.gold}08` : 'transparent',
+                    backgroundColor: selectedRows.includes(row.id) ? 'var(--nav-active-bg)' : 'transparent',
                   }}
                   onMouseOver={(e) => {
                     if (!selectedRows.includes(row.id)) {
-                      e.currentTarget.style.backgroundColor = '#f8f8f8';
+                      e.currentTarget.style.backgroundColor = 'var(--surface-3)';
                     }
                   }}
                   onMouseOut={(e) => {

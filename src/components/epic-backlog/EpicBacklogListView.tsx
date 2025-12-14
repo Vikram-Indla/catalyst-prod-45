@@ -208,10 +208,10 @@ export function EpicBacklogListView({
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
-      <div className="overflow-auto">
+      <div className="overflow-auto" style={{ backgroundColor: 'var(--surface-2)', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
         <Table>
           <TableHeader>
-            <TableRow className="hover:bg-transparent border-b bg-muted/30">
+            <TableRow className="hover:bg-transparent" style={{ backgroundColor: 'var(--surface-1)', borderBottom: '1px solid var(--divider)' }}>
               {/* Checkbox column */}
               <TableHead className="w-10 text-center">
                 <Checkbox 
@@ -224,7 +224,7 @@ export function EpicBacklogListView({
               <TableHead className="w-8"></TableHead>
               {/* Dynamic columns based on visibility */}
               {PRODUCTION_COLUMNS.filter(col => isColumnVisible(col.id)).map(col => (
-                <TableHead key={col.id} className={col.width}>
+                <TableHead key={col.id} className={col.width} style={{ color: 'var(--text-2)' }}>
                   {col.label}
                 </TableHead>
               ))}
@@ -235,7 +235,7 @@ export function EpicBacklogListView({
               <TableBody ref={provided.innerRef} {...provided.droppableProps}>
                 {epics.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={PRODUCTION_COLUMNS.filter(col => isColumnVisible(col.id)).length + 2} className="text-center py-12 text-muted-foreground">
+                    <TableCell colSpan={PRODUCTION_COLUMNS.filter(col => isColumnVisible(col.id)).length + 2} className="text-center py-12" style={{ color: 'var(--text-3)' }}>
                       <div className="text-sm">Drag & Drop Items Here</div>
                     </TableCell>
                   </TableRow>
@@ -253,10 +253,24 @@ export function EpicBacklogListView({
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               className={cn(
-                                "cursor-pointer hover:bg-accent/20 transition-colors border-b group",
-                                selectedEpics.has(epic.id) && "bg-accent/10",
-                                snapshot.isDragging && "bg-accent/30 shadow-lg"
+                                "cursor-pointer transition-colors group",
+                                selectedEpics.has(epic.id) && "bg-[var(--nav-active-bg)]"
                               )}
+                              style={{
+                                ...provided.draggableProps.style,
+                                backgroundColor: snapshot.isDragging ? 'var(--accent-muted)' : undefined,
+                                borderBottom: '1px solid var(--divider)',
+                              }}
+                              onMouseOver={(e) => {
+                                if (!snapshot.isDragging && !selectedEpics.has(epic.id)) {
+                                  e.currentTarget.style.backgroundColor = 'var(--surface-3)';
+                                }
+                              }}
+                              onMouseOut={(e) => {
+                                if (!snapshot.isDragging && !selectedEpics.has(epic.id)) {
+                                  e.currentTarget.style.backgroundColor = '';
+                                }
+                              }}
                             >
                               {/* Checkbox */}
                               <TableCell className="text-center" onClick={(e) => e.stopPropagation()}>
@@ -269,12 +283,12 @@ export function EpicBacklogListView({
                               
                               {/* Drag handle */}
                               <TableCell className="p-2" {...provided.dragHandleProps}>
-                                <GripVertical className="h-4 w-4 text-muted-foreground cursor-grab active:cursor-grabbing" />
+                                <GripVertical className="h-4 w-4 cursor-grab active:cursor-grabbing" style={{ color: 'var(--icon-muted)' }} />
                               </TableCell>
 
                               {/* Rank */}
                               {isColumnVisible('rank') && (
-                                <TableCell className="text-sm text-muted-foreground font-medium">
+                                <TableCell className="text-sm font-medium" style={{ color: 'var(--text-2)' }}>
                                   {epic.global_rank || index + 1}
                                 </TableCell>
                               )}
@@ -282,7 +296,7 @@ export function EpicBacklogListView({
                               {/* Name */}
                               {isColumnVisible('name') && (
                                 <TableCell onClick={() => onEpicSelect(epic.id)}>
-                                  <span className="font-medium text-sm hover:text-primary hover:underline cursor-pointer">
+                                  <span className="font-medium text-sm hover:underline cursor-pointer" style={{ color: 'var(--text-1)' }}>
                                     {epic.name}
                                   </span>
                                 </TableCell>
@@ -290,21 +304,21 @@ export function EpicBacklogListView({
 
                               {/* Epic Key */}
                               {isColumnVisible('epic_key') && (
-                                <TableCell className="font-mono text-sm text-muted-foreground">
+                                <TableCell className="font-mono text-sm" style={{ color: 'var(--text-2)' }}>
                                   {epic.epic_key || '–'}
                                 </TableCell>
                               )}
 
                               {/* Theme */}
                               {isColumnVisible('theme') && (
-                                <TableCell className="text-sm">
+                                <TableCell className="text-sm" style={{ color: 'var(--text-2)' }}>
                                   {themeName}
                                 </TableCell>
                               )}
 
                               {/* Program */}
                               {isColumnVisible('program') && (
-                                <TableCell className="text-sm">
+                                <TableCell className="text-sm" style={{ color: 'var(--text-2)' }}>
                                   {programName}
                                 </TableCell>
                               )}
@@ -325,21 +339,21 @@ export function EpicBacklogListView({
 
                               {/* Owner */}
                               {isColumnVisible('owner') && (
-                                <TableCell className="text-sm">
+                                <TableCell className="text-sm" style={{ color: 'var(--text-2)' }}>
                                   {epic.owner_name || '–'}
                                 </TableCell>
                               )}
 
                               {/* Dates */}
                               {isColumnVisible('dates') && (
-                                <TableCell className="text-sm text-muted-foreground">
+                                <TableCell className="text-sm" style={{ color: 'var(--text-3)' }}>
                                   {formatDates(epic.start_date, epic.target_completion_date || epic.end_date)}
                                 </TableCell>
                               )}
 
                               {/* Estimate */}
                               {isColumnVisible('estimate') && (
-                                <TableCell className="text-sm text-right">
+                                <TableCell className="text-sm text-right" style={{ color: 'var(--text-2)' }}>
                                   {epic.estimate || epic.points_estimate || '–'}
                                 </TableCell>
                               )}
@@ -353,11 +367,11 @@ export function EpicBacklogListView({
                 {provided.placeholder}
 
                 {/* Quick Add Row */}
-                <TableRow className="hover:bg-muted/20">
+                <TableRow style={{ borderBottom: '1px solid var(--divider)' }} className="hover:bg-[var(--surface-3)]">
                   <TableCell colSpan={2}></TableCell>
                   <TableCell colSpan={PRODUCTION_COLUMNS.filter(col => isColumnVisible(col.id)).length} className="py-2">
                     <div className="flex items-center gap-2">
-                      <Plus className="h-4 w-4 text-muted-foreground" />
+                      <Plus className="h-4 w-4" style={{ color: 'var(--icon-muted)' }} />
                       <Input
                         placeholder="Quick add epic"
                         value={quickAddName}
@@ -367,7 +381,8 @@ export function EpicBacklogListView({
                             handleQuickAddSubmit();
                           }
                         }}
-                        className="h-8 border-0 shadow-none bg-transparent focus-visible:ring-0 text-sm"
+                        className="h-8 border-0 shadow-none focus-visible:ring-0 text-sm"
+                        style={{ backgroundColor: 'transparent', color: 'var(--text-1)' }}
                       />
                     </div>
                   </TableCell>
