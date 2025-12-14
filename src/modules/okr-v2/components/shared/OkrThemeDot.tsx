@@ -43,13 +43,13 @@ function getColorForTheme(themeName?: string, index?: number): string {
 export function OkrThemeDot({ color, themeName, themeIndex, size = 'md' }: OkrThemeDotProps) {
   const sizeClass = size === 'sm' ? 'w-2 h-2' : 'w-2.5 h-2.5';
   
-  // Always use brand colors, ignore the color prop
-  const brandColor = getColorForTheme(themeName, themeIndex);
+  // Use provided color from database, fall back to brand color palette
+  const displayColor = color || getColorForTheme(themeName, themeIndex);
   
   const dot = (
     <span
       className={`${sizeClass} rounded-full flex-shrink-0`}
-      style={{ backgroundColor: brandColor }}
+      style={{ backgroundColor: displayColor }}
     />
   );
 
