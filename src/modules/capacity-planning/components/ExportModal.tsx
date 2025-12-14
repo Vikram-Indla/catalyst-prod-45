@@ -97,12 +97,16 @@ export function ExportModal({
 
   const handleDownload = () => {
     const content = getContent();
-    const blob = new Blob([content], { type: 'text/plain' });
+    const mimeType = format_ === 'json' ? 'application/json' : format_ === 'csv' ? 'text/csv' : 'text/plain';
+    const blob = new Blob([content], { type: mimeType });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = `capacity-planning-${format(new Date(), 'yyyy-MM-dd')}.${format_ === 'json' ? 'json' : format_ === 'csv' ? 'csv' : 'txt'}`;
+    a.style.display = 'none';
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
     URL.revokeObjectURL(url);
     onClose();
   };
