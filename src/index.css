@@ -233,180 +233,196 @@
   --brand-accent-hover: #B99057;
   --brand-active: #5E7C63;
   
-  /* Semantic Surfaces (Light) */
-  --bg: #F6F8FC;
-  --surface-0: #F6F8FC;
+  /* Semantic Surfaces (Light) - Enterprise grade hierarchy */
+  --bg: #F7F9FC;
+  --surface-0: #F7F9FC;
   --surface-1: #FFFFFF;
-  --surface-2: #FFFFFF;
-  --surface-3: #F1F5FF;
+  --surface-2: #EEF2F7;
+  --surface-3: #E4EAF2;
+  --surface-sunken: #F0F3F8;
+  --surface-raised: #FFFFFF;
+  --surface-backdrop: #FFFFFF;
   
   /* Semantic Text (Light) */
-  --text-1: #0F172A;
-  --text-2: #334155;
-  --text-3: #64748B;
-  --text-muted: #64748B;
-  --text-inverse: #0B1220;
+  --text-1: #1A1A1A;
+  --text-2: #5A6B80;
+  --text-3: #7A8A9C;
+  --text-muted: #7A8A9C;
+  --text-inverse: #FFFFFF;
   
-  /* Semantic Borders (Light) */
-  --border-color: rgba(15, 23, 42, 0.10);
-  --border-light: rgba(15, 23, 42, 0.06);
-  --border-strong: rgba(15, 23, 42, 0.14);
-  --divider: rgba(15, 23, 42, 0.08);
+  /* Semantic Borders (Light) - Slightly stronger for visibility */
+  --border-color: rgba(16, 24, 40, 0.10);
+  --border-light: rgba(16, 24, 40, 0.06);
+  --border-strong: rgba(16, 24, 40, 0.16);
+  --divider: rgba(16, 24, 40, 0.08);
   
   /* Semantic Icons (Light) */
-  --icon-default: #334155;
-  --icon-muted: #64748B;
+  --icon-default: #5A6B80;
+  --icon-muted: #7A8A9C;
   --icon-hover: #B99057;
   --icon-active: #5E7C63;
   
   /* Semantic Navigation (Light) */
   --nav-bg: var(--surface-1);
-  --nav-border: rgba(15, 23, 42, 0.10);
+  --nav-border: rgba(16, 24, 40, 0.10);
   --nav-text: var(--text-2);
   --nav-text-hover: var(--text-1);
   --nav-text-active: var(--text-1);
-  --nav-hover-bg: rgba(94, 124, 99, 0.08);
-  --nav-active-bg: rgba(94, 124, 99, 0.12);
+  --nav-hover-bg: rgba(92, 124, 92, 0.08);
+  --nav-active-bg: rgba(92, 124, 92, 0.08);
   --nav-indicator: var(--brand-accent);
   
   /* Semantic Interactive (Light) */
   --accent-color: var(--brand-accent);
   --accent-hover: var(--brand-accent-hover);
   --accent-muted: rgba(200, 162, 106, 0.14);
-  --focus-ring-color: rgba(200, 162, 106, 0.40);
+  --focus-ring-color: rgba(92, 124, 92, 0.35);
   
   /* Semantic Cards (Light) */
   --card-bg: #FFFFFF;
-  --card-border: rgba(15, 23, 42, 0.10);
-  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --card-border: rgba(16, 24, 40, 0.10);
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   
   /* Semantic Inputs (Light) */
   --input-bg: #FFFFFF;
-  --input-border: rgba(15, 23, 42, 0.14);
-  --input-text: #0F172A;
-  --input-placeholder: rgba(100, 116, 139, 0.90);
+  --input-border: rgba(16, 24, 40, 0.14);
+  --input-text: #1A1A1A;
+  --input-placeholder: rgba(90, 107, 128, 0.80);
   
   /* Toggle (Light) */
-  --toggle-track: #E5E7EB;
+  --toggle-track: #E2E8F0;
   --toggle-track-active: var(--brand-accent);
   --toggle-thumb: #FFFFFF;
   
   /* Overlay (Light) */
   --overlay-bg: rgba(0, 0, 0, 0.5);
+  
+  /* Empty State (Light) */
+  --empty-state-bg: var(--surface-2);
+  --empty-state-border: var(--border-color);
+  --empty-state-text: var(--text-2);
 }
 
 /* ============================================
    DARK THEME via data-theme="dark"
-   Executive dark palette with subtle alpha borders
+   Executive dark palette - clean, professional, no vignettes
    ============================================ */
 html[data-theme="dark"] {
-  /* Semantic Surfaces (Dark) - Professional flat backgrounds */
+  /* Semantic Surfaces (Dark) - Clean flat backgrounds */
   --bg: #0B1220;
   --surface-0: #0B1220;
-  --surface-1: #0F172A;
-  --surface-2: #121E33;
-  --surface-3: #1A2742;
+  --surface-1: #101B2E;
+  --surface-2: #14213A;
+  --surface-3: #1A2842;
+  --surface-sunken: #0A0F1A;
+  --surface-raised: #162742;
+  --surface-backdrop: #101B2E;
   
-  /* Semantic Text (Dark) - Improved contrast for legibility */
-  --text-1: #F0F4FF;
-  --text-2: #CBD5EA;
-  --text-3: #8EA0C9;
-  --text-muted: #8EA0C9;
+  /* Semantic Text (Dark) - High contrast for legibility */
+  --text-1: #EAF0F7;
+  --text-2: #A8B2C1;
+  --text-3: #7A8A9C;
+  --text-muted: #7A8A9C;
   --text-inverse: #0B1220;
   
-  /* Semantic Borders (Dark) - Increased alpha for visibility */
-  --border-color: rgba(255, 255, 255, 0.12);
+  /* Semantic Borders (Dark) - Visible but subtle */
+  --border-color: rgba(255, 255, 255, 0.10);
   --border-light: rgba(255, 255, 255, 0.06);
-  --border-strong: rgba(255, 255, 255, 0.18);
-  --divider: rgba(255, 255, 255, 0.10);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --divider: rgba(255, 255, 255, 0.08);
   
   /* Semantic Icons (Dark) */
-  --icon-default: #CBD5EA;
-  --icon-muted: #8EA0C9;
+  --icon-default: #A8B2C1;
+  --icon-muted: #7A8A9C;
   --icon-hover: var(--brand-accent);
   --icon-active: var(--brand-accent);
   
   /* Semantic Navigation (Dark) */
   --nav-bg: var(--surface-1);
-  --nav-border: rgba(255, 255, 255, 0.10);
+  --nav-border: rgba(255, 255, 255, 0.08);
   --nav-text: var(--text-2);
   --nav-text-hover: var(--text-1);
   --nav-text-active: var(--text-1);
-  --nav-hover-bg: rgba(94, 124, 99, 0.12);
-  --nav-active-bg: rgba(94, 124, 99, 0.18);
+  --nav-hover-bg: rgba(92, 124, 92, 0.08);
+  --nav-active-bg: rgba(92, 124, 92, 0.08);
   --nav-indicator: var(--brand-accent);
   
   /* Semantic Interactive (Dark) */
   --accent-color: var(--brand-accent);
   --accent-hover: var(--brand-accent-hover);
-  --accent-muted: rgba(200, 162, 106, 0.18);
-  --focus-ring-color: rgba(200, 162, 106, 0.40);
+  --accent-muted: rgba(200, 162, 106, 0.16);
+  --focus-ring-color: rgba(92, 124, 92, 0.45);
   
   /* Semantic Cards (Dark) */
   --card-bg: var(--surface-1);
   --card-border: rgba(255, 255, 255, 0.10);
-  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --card-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
   
   /* Semantic Inputs (Dark) */
-  --input-bg: rgba(255, 255, 255, 0.04);
-  --input-border: rgba(255, 255, 255, 0.14);
-  --input-text: #F0F4FF;
-  --input-placeholder: rgba(203, 213, 234, 0.70);
+  --input-bg: var(--surface-2);
+  --input-border: rgba(255, 255, 255, 0.12);
+  --input-text: #EAF0F7;
+  --input-placeholder: rgba(168, 178, 193, 0.70);
   
   /* Toggle (Dark) */
-  --toggle-track: rgba(255, 255, 255, 0.12);
+  --toggle-track: rgba(255, 255, 255, 0.10);
   --toggle-track-active: var(--brand-accent);
   --toggle-thumb: #FFFFFF;
   
   /* Overlay (Dark) */
   --overlay-bg: rgba(0, 0, 0, 0.7);
   
+  /* Empty State (Dark) */
+  --empty-state-bg: var(--surface-1);
+  --empty-state-border: var(--border-color);
+  --empty-state-text: var(--text-2);
+  
   /* Override Tailwind semantic colors for dark mode */
   --background: 222 47% 8%;                       /* #0B1220 */
-  --foreground: 224 100% 96%;                     /* #EAF0FF */
-  --card: 222 47% 11%;                            /* #0F172A */
-  --card-foreground: 224 100% 96%;
-  --popover: 222 47% 11%;
-  --popover-foreground: 224 100% 96%;
+  --foreground: 220 25% 94%;                      /* #EAF0F7 */
+  --card: 222 44% 12%;                            /* #101B2E */
+  --card-foreground: 220 25% 94%;
+  --popover: 222 44% 12%;
+  --popover-foreground: 220 25% 94%;
   
   /* Primary stays as brand gold in dark mode */
   --primary: 35 46% 60%;                          /* #C8A26A */
-  --primary-foreground: 0 0% 100%;
+  --primary-foreground: 222 47% 8%;
   
-  --secondary: 222 47% 13%;                       /* #121E33 */
-  --secondary-foreground: 224 100% 96%;
-  --muted: 222 47% 13%;
-  --muted-foreground: 222 35% 66%;                /* #8EA0C9 */
-  --accent: 222 47% 17%;                          /* #162746 */
-  --accent-foreground: 224 100% 96%;
+  --secondary: 222 42% 15%;                       /* #14213A */
+  --secondary-foreground: 220 25% 94%;
+  --muted: 222 42% 15%;
+  --muted-foreground: 220 18% 62%;                /* #A8B2C1 */
+  --accent: 222 40% 18%;                          /* #1A2842 */
+  --accent-foreground: 220 25% 94%;
   --destructive: 0 63% 45%;
   --destructive-foreground: 0 0% 100%;
-  --border: 222 47% 20%;
-  --input: 222 47% 13%;
-  --ring: 35 46% 60%;
+  --border: 222 40% 18%;
+  --input: 222 42% 15%;
+  --ring: 120 15% 43%;                            /* secondary-green for focus */
 }
 
 /* .dark class for Tailwind compatibility */
 .dark {
   --background: 222 47% 8%;
-  --foreground: 224 100% 97%;
-  --card: 222 47% 11%;
-  --card-foreground: 224 100% 97%;
-  --popover: 222 47% 11%;
-  --popover-foreground: 224 100% 97%;
+  --foreground: 220 25% 94%;
+  --card: 222 44% 12%;
+  --card-foreground: 220 25% 94%;
+  --popover: 222 44% 12%;
+  --popover-foreground: 220 25% 94%;
   --primary: 35 46% 60%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 222 47% 13%;
-  --secondary-foreground: 224 100% 97%;
-  --muted: 222 47% 13%;
-  --muted-foreground: 222 35% 72%;
-  --accent: 222 47% 17%;
-  --accent-foreground: 224 100% 97%;
+  --primary-foreground: 222 47% 8%;
+  --secondary: 222 42% 15%;
+  --secondary-foreground: 220 25% 94%;
+  --muted: 222 42% 15%;
+  --muted-foreground: 220 18% 62%;
+  --accent: 222 40% 18%;
+  --accent-foreground: 220 25% 94%;
   --destructive: 0 63% 45%;
   --destructive-foreground: 0 0% 100%;
-  --border: 222 47% 22%;
-  --input: 222 47% 13%;
-  --ring: 35 46% 60%;
+  --border: 222 40% 18%;
+  --input: 222 42% 15%;
+  --ring: 120 15% 43%;
 }
 
 /* ============================================
@@ -994,12 +1010,36 @@ html[data-theme="dark"] .executive-drawer-content {
   display: block;
 }
 
-/* Empty State */
+/* Empty State - Themed for both light and dark */
 .executive-empty-state {
-  color: hsl(var(--muted-foreground));
+  color: var(--text-2);
   font-size: 14px;
   text-align: center;
   padding: 48px 24px;
+  background-color: var(--surface-1);
+  border: 1px dashed var(--border-color);
+  border-radius: 8px;
+}
+
+html[data-theme="dark"] .executive-empty-state {
+  background-color: var(--surface-1);
+  border-color: var(--border-color);
+  color: var(--text-2);
+}
+
+/* Themed empty state card for tabs */
+.themed-empty-state {
+  background-color: var(--surface-1);
+  border: 1px dashed var(--border-color);
+  border-radius: 8px;
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--text-2);
+}
+
+html[data-theme="dark"] .themed-empty-state {
+  background-color: var(--surface-1);
+  border-color: var(--border-color);
 }
 
 /* Divider */
@@ -1009,24 +1049,24 @@ html[data-theme="dark"] .executive-drawer-content {
   margin: 16px 0;
 }
 
-/* Custom Scrollbar for drawer */
+/* Custom Scrollbar for drawer - themed */
 .executive-drawer-content::-webkit-scrollbar {
   width: 8px;
 }
 
 .executive-drawer-content::-webkit-scrollbar-track {
-  background: hsl(var(--n20));
+  background: var(--surface-2);
   border-radius: 4px;
 }
 
 .executive-drawer-content::-webkit-scrollbar-thumb {
-  background: hsl(var(--n100));
+  background: var(--text-3);
   border-radius: 4px;
   transition: background 150ms ease;
 }
 
 .executive-drawer-content::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--secondary-bronze));
+  background: var(--accent-color);
 }
 
 /* Badge styles for drawer */
