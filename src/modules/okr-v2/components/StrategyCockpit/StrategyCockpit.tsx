@@ -240,6 +240,11 @@ export function StrategyCockpit({ snapshotId }: StrategyCockpitProps) {
 
           {/* Actions */}
           <div className="flex items-center gap-2 ml-auto">
+            <Button variant="outline" size="sm" onClick={handleAnalyticsClick} className="gap-2">
+              <BarChart3 className="h-4 w-4" />
+              Analytics
+            </Button>
+
             <Button variant="outline" size="sm" onClick={handleExport} className="gap-2">
               <Download className="h-4 w-4" />
               Export
