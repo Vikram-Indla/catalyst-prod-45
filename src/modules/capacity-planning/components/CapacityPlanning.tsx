@@ -3,7 +3,6 @@ import { useResourceInventory } from '@/hooks/useResourceInventory';
 import { useCapacityBookings, useCreateBooking, useUpdateBooking, useDeleteBooking } from '../hooks/useCapacityBookings';
 import { useViewConfig, useSaveViewConfig } from '../hooks/useViewConfig';
 import { CapacityHeader } from './CapacityHeader';
-import { ControlsBar } from './ControlsBar';
 import { GanttView } from './GanttView';
 import { ListView } from './ListView';
 import { InsightsPanel } from './InsightsPanel';
@@ -45,6 +44,7 @@ export function CapacityPlanning() {
   const [groupBy, setGroupBy] = useState(viewConfig?.group_by || 'none');
   const [startDate, setStartDate] = useState(() => getGCCWeekStart(new Date()));
   const [searchQuery, setSearchQuery] = useState('');
+  const [showInsights, setShowInsights] = useState(true);
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
 
   // Modal state
@@ -151,13 +151,10 @@ export function CapacityPlanning() {
         onStartDateChange={setStartDate}
         timeSpan={timeSpan}
         onTimeSpanChange={handleTimeSpanChange}
-      />
-
-      {/* Controls Bar (List view only) */}
-      <ControlsBar
-        viewMode={viewMode}
         groupBy={groupBy}
         onGroupByChange={handleGroupByChange}
+        showInsights={showInsights}
+        onToggleInsights={() => setShowInsights(!showInsights)}
       />
 
       {/* Bulk Actions Bar */}
@@ -201,12 +198,14 @@ export function CapacityPlanning() {
           />
         )}
 
-        {/* Insights Panel */}
-        <InsightsPanel
-          resources={viewResources}
-          bookings={bookings}
-          visible={true}
-        />
+        {/* Insights Panel - only visible when showInsights is true */}
+        {showInsights && (
+          <InsightsPanel
+            resources={viewResources}
+            bookings={bookings}
+            visible={true}
+          />
+        )}
       </div>
 
       {/* Modals */}
