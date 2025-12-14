@@ -1,10 +1,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // OKR Linked Cell — Shared Presentational Component
-// Renders the chip for linked KRs/work ("2 KRs · 1 Work" or "2 KRs")
-// Used by both OKRHubV1 (Objectives Table) and OKRHubV2 (Strategy Tree)
+// Badge showing "X KRs · Y Work" format
 // ═══════════════════════════════════════════════════════════════════════════════
-
-import { Badge } from '@/components/ui/badge';
 
 interface OkrLinkedCellProps {
   krCount?: number;
@@ -20,17 +17,16 @@ export function OkrLinkedCell({ krCount = 0, workItemCount = 0, itemType = 'obje
       ? `${krCount} KRs · ${workItemCount} Work`
       : `${krCount} KRs`;
   } else if (itemType === 'keyResult') {
-    text = `${workItemCount} items`;
+    text = `${workItemCount} Work`;
   } else {
     return null;
   }
 
   return (
-    <Badge 
-      variant="outline" 
-      className="text-[10px] font-medium bg-muted/50 border-border whitespace-nowrap"
+    <span 
+      className="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-medium bg-transparent border border-border text-foreground whitespace-nowrap"
     >
       {text}
-    </Badge>
+    </span>
   );
 }

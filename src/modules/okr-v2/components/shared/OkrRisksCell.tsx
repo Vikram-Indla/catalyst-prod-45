@@ -1,11 +1,9 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // OKR Risks Cell — Shared Presentational Component
-// Renders compact risk summary (— or 3H / 1M, 1 blocked, 2 delayed)
-// Used by both OKRHubV1 (Objectives Table) and OKRHubV2 (Strategy Tree)
+// Risk chip with severity + blocked/delayed text below
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { cn } from '@/lib/utils';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 export interface RiskSummary {
   highRiskCount: number;
@@ -26,69 +24,55 @@ export function OkrRisksCell({ summary, compact = false }: OkrRisksCellProps) {
 
   if (totalRisks === 0 && totalIssues === 0) {
     return (
-      <span className="flex items-center justify-end w-full text-xs text-muted-foreground">
+      <span className="flex items-center justify-end w-full text-sm text-muted-foreground">
         —
       </span>
     );
   }
 
-  // Build risk text
-  let riskText = '';
+  // Build risk chip text and color
+  let chipText = '';
+  let chipBg = '';
+  let chipText_color = '';
+
   if (highRiskCount > 0 && mediumRiskCount > 0) {
-    riskText = `${highRiskCount}H / ${mediumRiskCount}M`;
+    // Mixed: "XH / XM"
+    chipText = `${highRiskCount}H / ${mediumRiskCount}M`;
+    chipBg = 'bg-[#c44536]';
+    chipText_color = 'text-white';
   } else if (highRiskCount > 0) {
-    riskText = compact ? `${highRiskCount}H` : `${highRiskCount} High`;
+    // High only
+    chipText = `${highRiskCount} High`;
+    chipBg = 'bg-[#c44536]';
+    chipText_color = 'text-white';
   } else if (mediumRiskCount > 0) {
-    riskText = compact ? `${mediumRiskCount}M` : `${mediumRiskCount} Medium`;
+    // Medium only
+    chipText = `${mediumRiskCount} Medium`;
+    chipBg = 'bg-[#e07830]';
+    chipText_color = 'text-white';
   }
 
-  // Build issues text
+  // Build issues text (blocked, delayed)
   const issuesParts: string[] = [];
   if (blockedWorkCount > 0) issuesParts.push(`${blockedWorkCount} blocked`);
   if (delayedWorkCount > 0) issuesParts.push(`${delayedWorkCount} delayed`);
   const issuesText = issuesParts.join(', ');
 
-  const hasHighRisk = highRiskCount > 0;
-  const tooltipContent = `High: ${highRiskCount}, Medium: ${mediumRiskCount}${totalIssues > 0 ? ` | Blocked: ${blockedWorkCount}, Delayed: ${delayedWorkCount}` : ''}`;
-
-  if (compact) {
-    // Compact mode for tree rows
-    return (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <span className={cn(
-              'text-xs font-medium whitespace-nowrap text-right block',
-              hasHighRisk ? 'text-destructive' : 'text-muted-foreground'
-            )}>
-              {riskText || `${blockedWorkCount + delayedWorkCount} issues`}
-            </span>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{tooltipContent}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    );
-  }
-
-  // Full mode for table rows
   return (
     <div className="flex flex-col items-end gap-0.5">
-      {riskText && (
+      {chipText && (
         <span
           className={cn(
-            'inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium',
-            hasHighRisk
-              ? 'bg-red-50 text-red-600'
-              : 'bg-orange-50 text-orange-600'
+            'inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+            chipBg,
+            chipText_color
           )}
         >
-          {riskText}
+          {chipText}
         </span>
       )}
       {issuesText && (
-        <span className="text-[10px] text-muted-foreground tracking-wide">
+        <span className="text-[10px] text-muted-foreground">
           {issuesText}
         </span>
       )}
