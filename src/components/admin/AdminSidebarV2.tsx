@@ -71,6 +71,7 @@ const adminPockets = [
       { label: 'Business Processes', path: '/admin/business-processes' },
       { label: 'Product Lines', path: '/admin/product-settings' },
       { label: 'Strategic Themes', path: '/admin/theme-groups' },
+      { label: 'Process Steps', path: '/admin/business/ProcessStep' },
     ],
   },
   {
