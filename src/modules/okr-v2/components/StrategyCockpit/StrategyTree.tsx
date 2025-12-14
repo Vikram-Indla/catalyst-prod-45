@@ -1,11 +1,13 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // OKR Hub V2 — Strategy Tree Component
-// Hierarchical tree view of Objectives → KRs → Work Items (themes are filters only)
+// Hierarchical tree view of Objectives → KRs → Work Items with smart filters
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { useMemo } from 'react';
 import { TreeRow } from './TreeRow';
-import type { Theme, Objective, TreeItem } from '../../lib/okrTypes';
+import type { Theme, Objective, TreeItem, StatusCode } from '../../lib/okrTypes';
+import type { OKRSmartFilters } from '../OKRSmartFiltersDialog';
+import { getObjectiveProgressBaseline, aggregateRisks, getTotalRiskCount } from '../../lib/okrMetrics';
 
 interface StrategyTreeProps {
   themes: Theme[];
@@ -13,9 +15,12 @@ interface StrategyTreeProps {
   expandedIds: string[];
   selectedItem: TreeItem | null;
   searchQuery: string;
+  filters?: OKRSmartFilters;
   onToggle: (id: string) => void;
   onSelect: (item: TreeItem) => void;
 }
+
+const GRID_COLUMNS = "1fr 120px 160px 100px 100px";
 
 export function StrategyTree({
   themes,
@@ -23,10 +28,11 @@ export function StrategyTree({
   expandedIds,
   selectedItem,
   searchQuery,
+  filters = {},
   onToggle,
   onSelect,
 }: StrategyTreeProps) {
-  // Build flat list of objectives from themes, respecting theme filter
+  // Build flat list of objectives from themes, respecting theme filter and smart filters
   const filteredObjectives = useMemo(() => {
     // Filter themes based on selected theme IDs
     let filteredThemes = themes;
@@ -35,10 +41,11 @@ export function StrategyTree({
     }
 
     // Flatten objectives from filtered themes, attaching theme info
-    const objectivesWithTheme: Array<{
+    let objectivesWithTheme: Array<{
       objective: Objective;
       themeColor: string;
       themeName: string;
+      themeId: string;
     }> = [];
 
     filteredThemes.forEach((theme) => {
@@ -47,6 +54,7 @@ export function StrategyTree({
           objective: obj,
           themeColor: theme.color || 'hsl(var(--brand-gold))',
           themeName: theme.name,
+          themeId: theme.id,
         });
       });
     });
@@ -54,7 +62,7 @@ export function StrategyTree({
     // Apply search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      return objectivesWithTheme.filter(({ objective }) => {
+      objectivesWithTheme = objectivesWithTheme.filter(({ objective }) => {
         // Match objective name
         if (objective.name.toLowerCase().includes(query)) return true;
         // Match KR names
@@ -66,8 +74,64 @@ export function StrategyTree({
       });
     }
 
+    // Apply smart filters
+    if (filters.themeIds && filters.themeIds.length > 0) {
+      objectivesWithTheme = objectivesWithTheme.filter(({ themeId }) =>
+        filters.themeIds!.includes(themeId)
+      );
+    }
+
+    if (filters.status && filters.status.length > 0) {
+      objectivesWithTheme = objectivesWithTheme.filter(({ objective }) =>
+        filters.status!.includes(objective.status as any)
+      );
+    }
+
+    if (filters.ownerIds && filters.ownerIds.length > 0) {
+      objectivesWithTheme = objectivesWithTheme.filter(({ objective }) =>
+        objective.ownerId && filters.ownerIds!.includes(objective.ownerId)
+      );
+    }
+
+    if (filters.progressMin !== undefined) {
+      objectivesWithTheme = objectivesWithTheme.filter(({ objective }) =>
+        objective.progress >= filters.progressMin!
+      );
+    }
+
+    if (filters.progressMax !== undefined) {
+      objectivesWithTheme = objectivesWithTheme.filter(({ objective }) =>
+        objective.progress <= filters.progressMax!
+      );
+    }
+
+    // Date filters
+    if (filters.startDateFrom) {
+      objectivesWithTheme = objectivesWithTheme.filter(({ objective }) =>
+        objective.startDate && new Date(objective.startDate) >= filters.startDateFrom!
+      );
+    }
+
+    if (filters.startDateTo) {
+      objectivesWithTheme = objectivesWithTheme.filter(({ objective }) =>
+        objective.startDate && new Date(objective.startDate) <= filters.startDateTo!
+      );
+    }
+
+    if (filters.dueDateFrom) {
+      objectivesWithTheme = objectivesWithTheme.filter(({ objective }) =>
+        objective.dueDate && new Date(objective.dueDate) >= filters.dueDateFrom!
+      );
+    }
+
+    if (filters.dueDateTo) {
+      objectivesWithTheme = objectivesWithTheme.filter(({ objective }) =>
+        objective.dueDate && new Date(objective.dueDate) <= filters.dueDateTo!
+      );
+    }
+
     return objectivesWithTheme;
-  }, [themes, selectedThemeIds, searchQuery]);
+  }, [themes, selectedThemeIds, searchQuery, filters]);
 
   // Build flat list of rows for rendering
   const renderTree = () => {
@@ -134,8 +198,6 @@ export function StrategyTree({
     return rows;
   };
 
-  const GRID_COLUMNS = "1fr 120px 140px 100px 100px";
-
   return (
     <div className="flex-1 flex flex-col bg-card">
       {/* Tree Header */}
@@ -145,7 +207,7 @@ export function StrategyTree({
       >
         <span className="truncate">OKRs</span>
         <span className="truncate">Status</span>
-        <span className="truncate">Progress</span>
+        <span className="truncate">Progress vs Plan</span>
         <span className="truncate">Risks</span>
         <span className="truncate text-right">Linked</span>
       </div>

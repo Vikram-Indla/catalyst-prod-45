@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // OKR Hub V2 — Tree Row Component
-// Expandable row for Objective/KR/WorkItem hierarchy (no theme rows)
+// Expandable row for Objective/KR/WorkItem hierarchy with baseline progress & trend
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { ChevronDown, ChevronRight } from 'lucide-react';
@@ -8,11 +8,17 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import type { TreeItem, StatusCode, OkrRiskSummary } from '../../lib/okrTypes';
-import { getStatusLabel, getTotalRiskCount } from '../../lib/okrMetrics';
+import type { TreeItem, StatusCode, OkrRiskSummary, Objective, KeyResult } from '../../lib/okrTypes';
+import { 
+  getStatusLabel, 
+  getTotalRiskCount,
+  getObjectiveProgressBaseline,
+  getKeyResultProgressBaseline,
+} from '../../lib/okrMetrics';
+import { TrendIcon } from '../TrendIcon';
 
 // Shared grid columns constant - must match StrategyTree header
-const GRID_COLUMNS = "1fr 120px 140px 100px 100px";
+const GRID_COLUMNS = "1fr 120px 160px 100px 100px";
 
 // Indentation per level (inside first column only)
 const INDENT_PX: Record<number, number> = {
@@ -61,14 +67,30 @@ function RiskChip({ risks }: { risks: OkrRiskSummary }) {
     return <span className="text-xs text-muted-foreground">—</span>;
   }
 
+  // Compact format: "2H / 1M" or just "3 High"
+  const parts: string[] = [];
+  if (risks.high > 0) parts.push(`${risks.high}H`);
+  if (risks.medium > 0) parts.push(`${risks.medium}M`);
+  if (risks.low > 0) parts.push(`${risks.low}L`);
+
   const hasHigh = (risks.high || 0) > 0;
+  
   return (
-    <Badge
-      variant={hasHigh ? 'destructive' : 'secondary'}
-      className="text-xs font-medium whitespace-nowrap"
-    >
-      {total} risk{total !== 1 ? 's' : ''}
-    </Badge>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className={cn(
+            'text-xs font-medium whitespace-nowrap',
+            hasHigh ? 'text-destructive' : 'text-muted-foreground'
+          )}>
+            {parts.join(' / ')}
+          </span>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>High: {risks.high}, Medium: {risks.medium}, Low: {risks.low}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
 
@@ -86,6 +108,35 @@ function LinkedChip({ item }: { item: TreeItem }) {
     <Badge variant="outline" className="text-xs font-medium whitespace-nowrap">
       {label}
     </Badge>
+  );
+}
+
+function ProgressWithTrend({ item }: { item: TreeItem }) {
+  // Calculate baseline and trend based on item type
+  let actual = item.progress;
+  let trend: 'ahead' | 'on-plan' | 'behind' | 'none' = 'none';
+  let variance: number | null = null;
+
+  if (item.type === 'objective') {
+    const baseline = getObjectiveProgressBaseline(item as Objective);
+    actual = baseline.actual;
+    trend = baseline.trend;
+    variance = baseline.variance;
+  } else if (item.type === 'keyResult') {
+    const baseline = getKeyResultProgressBaseline(item as KeyResult);
+    actual = baseline.actual;
+    trend = baseline.trend;
+    variance = baseline.variance;
+  }
+
+  return (
+    <div className="flex items-center gap-2 overflow-hidden">
+      <Progress value={Math.min(actual, 100)} className="h-2 flex-1 min-w-0" />
+      <span className="text-xs font-semibold text-muted-foreground flex-shrink-0 w-8 text-right">
+        {Math.round(actual)}%
+      </span>
+      {trend !== 'none' && <TrendIcon trend={trend} variance={variance} size="sm" />}
+    </div>
   );
 }
 
@@ -185,13 +236,8 @@ export function TreeRow({
         </Badge>
       </div>
 
-      {/* Progress Column */}
-      <div className="flex items-center gap-2 overflow-hidden">
-        <Progress value={Math.min(item.progress, 100)} className="h-2 flex-1 min-w-0" />
-        <span className="text-xs font-semibold text-muted-foreground flex-shrink-0 w-10 text-right">
-          {Math.round(item.progress)}%
-        </span>
-      </div>
+      {/* Progress Column with Trend */}
+      <ProgressWithTrend item={item} />
 
       {/* Risks Column */}
       <div className="overflow-hidden whitespace-nowrap">
