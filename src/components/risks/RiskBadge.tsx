@@ -20,6 +20,8 @@ export interface RiskBadgeProps {
   variant?: 'compact' | 'stacked';
   size?: 'sm' | 'md';
   className?: string;
+  /** Hide the "No risks" chip when all counts are zero. Useful for tables. */
+  hideEmpty?: boolean;
 }
 
 /**
@@ -85,9 +87,13 @@ export function RiskBadge({
   variant = 'compact', 
   size = 'md',
   className,
+  hideEmpty = false,
 }: RiskBadgeProps) {
   // No risks state
   if (hasNoRisks(counts)) {
+    if (hideEmpty) {
+      return <span className={cn('text-muted-foreground text-xs', className)}>—</span>;
+    }
     return (
       <div className={cn('inline-flex items-center', className)}>
         <NoRisksBadge size={size} />
