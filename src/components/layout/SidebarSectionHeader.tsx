@@ -1,14 +1,15 @@
 /**
  * SidebarSectionHeader — Standardized Sidebar Section Header
  * 
- * Expanded state: Green label + mini divider visible
+ * Uses semantic tokens for dark/light mode compatibility.
+ * Expanded state: Label + mini divider visible
  * Collapsed state: Badge only, no divider before menu items
  */
 
 import React from 'react';
 
 interface SidebarSectionHeaderProps {
-  /** Badge text shown in green gradient box (e.g., "PR", "EN") */
+  /** Badge text shown in brand-active box (e.g., "PR", "EN") */
   badge: string;
   /** Section label shown when expanded (e.g., "Product", "Enterprise") */
   label: string;
@@ -26,37 +27,73 @@ export function SidebarSectionHeader({
 }: SidebarSectionHeaderProps) {
   return (
     <div 
-      className="px-3 flex items-center shrink-0"
       style={{ 
         height: `${height}px`,
+        padding: expanded ? '0 12px' : '0',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: expanded ? 'flex-start' : 'center',
+        flexShrink: 0,
       }}
     >
       {expanded ? (
-        <div className="w-full">
-          <div className="flex items-center gap-2.5">
-            {/* Green gradient badge */}
+        <div style={{ width: '100%' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            {/* Badge with brand-active background */}
             <div 
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0"
-              style={{ background: 'linear-gradient(135deg, #5c7c5c 0%, #6d8d6d 100%)' }}
+              style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: '6px',
+                background: 'var(--brand-active)',
+                color: 'var(--text-inverse, #ffffff)',
+                fontSize: '11px',
+                fontWeight: 700,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
             >
               {badge}
             </div>
-            {/* Section label - always green when expanded */}
-            <span className="text-[13px] font-bold text-secondary-green truncate">
+            {/* Section label - uses text-1 for visibility */}
+            <span style={{ 
+              fontSize: '14px', 
+              fontWeight: 700, 
+              color: 'var(--text-1)',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}>
               {label}
             </span>
           </div>
           {/* Mini divider - only visible when expanded */}
           <div 
-            className="mt-2 w-full h-px"
-            style={{ backgroundColor: '#e5e7eb' }}
+            style={{ 
+              marginTop: '8px',
+              width: '100%',
+              height: '1px',
+              background: 'var(--divider)',
+            }}
           />
         </div>
       ) : (
         /* Collapsed: Badge only, centered, no divider */
         <div 
-          className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-[11px] font-bold mx-auto"
-          style={{ background: 'linear-gradient(135deg, #5c7c5c 0%, #6d8d6d 100%)' }}
+          style={{
+            width: '32px',
+            height: '32px',
+            borderRadius: '6px',
+            background: 'var(--brand-active)',
+            color: 'var(--text-inverse, #ffffff)',
+            fontSize: '11px',
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
         >
           {badge}
         </div>

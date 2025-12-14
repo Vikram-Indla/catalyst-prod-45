@@ -220,7 +220,7 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
         width: expanded ? '220px' : '60px',
         height: '100%',
         background: 'var(--surface-1)',
-        borderRight: '1px solid var(--border-color)',
+        borderRight: '1px solid var(--divider)',
         transition: 'all 0.3s ease',
         flexShrink: 0,
         position: 'relative',
@@ -241,7 +241,7 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
           height: '24px',
           borderRadius: '9999px',
           background: 'var(--surface-1)',
-          border: '1px solid var(--border-color)',
+          border: '1px solid var(--divider)',
           boxShadow: 'var(--card-shadow)',
           display: 'flex',
           alignItems: 'center',
@@ -267,7 +267,7 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
             display: 'flex', 
             alignItems: 'center',
             justifyContent: expanded ? 'space-between' : 'center',
-            borderBottom: expanded ? '1px solid var(--border-color)' : 'none',
+            borderBottom: expanded ? '1px solid var(--divider)' : 'none',
             flexShrink: 0,
           }}
         >
@@ -580,7 +580,7 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
 
         {/* Footer */}
         {expanded && (
-          <div style={{ borderTop: '1px solid var(--border-color)', padding: '8px' }}>
+          <div style={{ borderTop: '1px solid var(--divider)', padding: '8px' }}>
             <button 
               style={{
                 width: '100%',
