@@ -50,6 +50,7 @@ const adminSections = [
       { label: 'Product Lines', path: '/admin/product-settings', icon: Settings },
       { label: 'Strategic Themes', path: '/admin/theme-groups', icon: FolderTree },
       { label: 'Process Steps', path: '/admin/business/ProcessStep', icon: Activity },
+      { label: 'Risk Severity Levels', path: '/admin/business/RiskSeverity', icon: Activity },
     ],
   },
   {
