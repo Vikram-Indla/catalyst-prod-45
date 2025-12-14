@@ -25,13 +25,13 @@ export function CapacityPlanning() {
   const updateBooking = useUpdateBooking();
   const deleteBooking = useDeleteBooking();
 
-  // Fetch business requests with quarter and rank for the assign modal
+  // Fetch business requests with quarter, rank, and kickoff date for the assign modal
   const { data: businessRequests = [] } = useQuery({
     queryKey: ['business-requests-for-capacity'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('business_requests')
-        .select('id, request_key, title, planned_quarter, rank')
+        .select('id, request_key, title, planned_quarter, rank, impl_start_date')
         .order('created_at', { ascending: false });
       if (error) throw error;
       return data || [];

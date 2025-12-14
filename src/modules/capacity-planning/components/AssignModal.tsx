@@ -19,6 +19,7 @@ interface BusinessRequest {
   title: string;
   planned_quarter?: string | null;
   rank?: number | null;
+  impl_start_date?: string | null; // Kickoff date from business request
 }
 
 interface ResourceItem {
@@ -126,14 +127,16 @@ export function AssignModal({
     }
   }, [booking, initialDate, open, resourceId]);
 
-  // Update quarter and rank when ticket is selected (from business_requests table)
+  // Update quarter, rank, and kickoff date when ticket is selected (from business_requests table)
   useEffect(() => {
     if (selectedRequest) {
       setQuarter(selectedRequest.planned_quarter || '');
       setRank(selectedRequest.rank || undefined);
+      setKickoffDate(selectedRequest.impl_start_date ? new Date(selectedRequest.impl_start_date) : undefined);
     } else {
       setQuarter('');
       setRank(undefined);
+      setKickoffDate(undefined);
     }
   }, [selectedRequest]);
 
@@ -210,26 +213,18 @@ export function AssignModal({
             </Select>
           </div>
 
-          {/* Leave Checkbox */}
+          {/* Leave Checkbox - De-emphasized */}
           <div 
-            className={cn(
-              "flex items-center gap-3 p-3 rounded-lg border-2 transition-colors cursor-pointer",
-              isLeave 
-                ? "border-violet-400 bg-violet-50" 
-                : "border-border hover:border-violet-200"
-            )}
+            className="flex items-center gap-2 cursor-pointer"
             onClick={() => setIsLeave(!isLeave)}
           >
             <Checkbox
               id="is-leave"
               checked={isLeave}
               onCheckedChange={(checked) => setIsLeave(!!checked)}
-              className="data-[state=checked]:bg-violet-500 data-[state=checked]:border-violet-500"
+              className="h-4 w-4"
             />
-            <Label htmlFor="is-leave" className={cn(
-              "text-sm font-medium cursor-pointer",
-              isLeave ? "text-violet-600" : "text-secondary-green"
-            )}>
+            <Label htmlFor="is-leave" className="text-xs text-muted-foreground cursor-pointer">
               Book as Leave
             </Label>
           </div>
@@ -252,67 +247,88 @@ export function AssignModal({
               </TabsList>
 
               <TabsContent value="ticket" className="space-y-4 mt-4">
-                {/* Request Search */}
+                {/* Request Search with auto-complete dropdown */}
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">Request</Label>
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                       value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                        // Clear selection when searching
+                        if (e.target.value === '') {
+                          setSelectedTicketId('');
+                        }
+                      }}
                       placeholder="Search requests..."
                       className="pl-9"
                     />
                   </div>
-                  <Select value={selectedTicketId} onValueChange={setSelectedTicketId}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a request..." />
-                    </SelectTrigger>
-                    <SelectContent className="z-[400] bg-background max-h-[200px]">
-                      {filteredRequests.length === 0 ? (
-                        <div className="p-2 text-sm text-muted-foreground text-center">
-                          No requests found
-                        </div>
-                      ) : (
-                        filteredRequests.map(br => (
-                          <SelectItem key={br.id} value={br.id}>
-                            <span className="font-medium text-secondary-green">{br.request_key || br.id.slice(0, 8)}</span>
-                            <span className="text-muted-foreground mx-1">—</span>
-                            <span className="truncate">{br.title}</span>
-                          </SelectItem>
-                        ))
-                      )}
-                    </SelectContent>
-                  </Select>
+                  {/* Search Results Dropdown */}
+                  {searchQuery && filteredRequests.length > 0 && !selectedRequest && (
+                    <div className="border rounded-md bg-background shadow-md max-h-[160px] overflow-y-auto">
+                      {filteredRequests.slice(0, 5).map(br => (
+                        <button
+                          key={br.id}
+                          type="button"
+                          onClick={() => {
+                            setSelectedTicketId(br.id);
+                            setSearchQuery(`${br.request_key || br.id.slice(0, 8)} — ${br.title}`);
+                          }}
+                          className="w-full text-left px-3 py-2 hover:bg-muted/50 text-sm border-b last:border-b-0"
+                        >
+                          <span className="font-medium text-secondary-green">{br.request_key || br.id.slice(0, 8)}</span>
+                          <span className="text-muted-foreground mx-1">—</span>
+                          <span className="truncate">{br.title}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  {/* Selected Request Display */}
+                  {selectedRequest && (
+                    <div className="text-sm p-2 bg-muted/30 rounded-md flex items-center justify-between">
+                      <span>
+                        <span className="font-medium text-secondary-green">{selectedRequest.request_key}</span>
+                        <span className="text-muted-foreground mx-1">—</span>
+                        <span>{selectedRequest.title}</span>
+                      </span>
+                      <button 
+                        type="button"
+                        onClick={() => {
+                          setSelectedTicketId('');
+                          setSearchQuery('');
+                        }}
+                        className="text-muted-foreground hover:text-foreground text-xs"
+                      >
+                        Clear
+                      </button>
+                    </div>
+                  )}
                 </div>
 
-                {/* Quarter & Rank - Read Only */}
+                {/* Quarter & Rank - Read Only from Business Request */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-sm font-medium">Quarter</Label>
-                    <Input
-                      value={quarter || '—'}
-                      readOnly
-                      className="bg-muted/50"
-                    />
+                    <Label className="text-xs text-muted-foreground">Quarter</Label>
+                    <div className="text-sm font-medium py-2 px-3 bg-muted/30 rounded-md border border-border">
+                      {quarter || '—'}
+                    </div>
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-sm font-medium">Rank</Label>
-                    <Input
-                      value={rank || '—'}
-                      readOnly
-                      className="bg-muted/50"
-                    />
+                    <Label className="text-xs text-muted-foreground">Rank</Label>
+                    <div className="text-sm font-medium py-2 px-3 bg-muted/30 rounded-md border border-border">
+                      {rank || '—'}
+                    </div>
                   </div>
                 </div>
 
-                {/* Kick-off Date */}
+                {/* Kick-off Date - Read Only from Business Request */}
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Kick-off Date</Label>
-                  <CatalystDatePicker
-                    value={kickoffDate}
-                    onChange={setKickoffDate}
-                  />
+                  <Label className="text-xs text-muted-foreground">Kick-off Date</Label>
+                  <div className="text-sm font-medium py-2 px-3 bg-muted/30 rounded-md border border-border">
+                    {kickoffDate ? format(kickoffDate, 'dd/MM/yyyy') : '—'}
+                  </div>
                 </div>
               </TabsContent>
 
