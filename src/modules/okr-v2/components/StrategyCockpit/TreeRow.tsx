@@ -183,7 +183,7 @@ export function TreeRow({
       case 'progress':
         return (
           <div key={colKey} className="overflow-hidden">
-            <OkrProgressCell baseline={baseline} compact />
+            <OkrProgressCell baseline={baseline} status={item.status} compact />
           </div>
         );
 

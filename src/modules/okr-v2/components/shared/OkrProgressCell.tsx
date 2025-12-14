@@ -1,36 +1,99 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // OKR Progress Cell — Shared Presentational Component
-// Renders progress bar, percentage, and trend arrow
-// Used by both OKRHubV1 (Objectives Table) and OKRHubV2 (Strategy Tree)
+// Progress bar with status-matched colors + trend arrows
 // ═══════════════════════════════════════════════════════════════════════════════
 
-import { Progress } from '@/components/ui/progress';
-import { TrendIcon } from '../TrendIcon';
-import type { ProgressBaseline } from '../../lib/okrTypes';
+import { cn } from '@/lib/utils';
+import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import type { ProgressBaseline, TrendCode } from '../../lib/okrTypes';
 
 interface OkrProgressCellProps {
   baseline: ProgressBaseline;
+  status?: string;
   compact?: boolean;
 }
 
-export function OkrProgressCell({ baseline, compact = false }: OkrProgressCellProps) {
+// Get progress bar color based on status
+function getProgressBarColor(status?: string, progress?: number): string {
+  const normalizedStatus = status?.toLowerCase().replace(/\s+/g, '-') || '';
+  
+  switch (normalizedStatus) {
+    case 'on-track':
+    case 'completed':
+      return 'bg-secondary-green';
+    case 'in-progress':
+      return 'bg-brand-gold';
+    case 'at-risk':
+      return 'bg-[#e07830]';
+    case 'off-track':
+    case 'blocked':
+      return 'bg-[#c44536]';
+    default:
+      // Fallback based on progress value
+      if (progress !== undefined) {
+        if (progress >= 70) return 'bg-secondary-green';
+        if (progress >= 40) return 'bg-brand-gold';
+        return 'bg-[#c44536]';
+      }
+      return 'bg-muted-foreground';
+  }
+}
+
+// Trend icon component
+function TrendArrow({ trend, variance }: { trend: TrendCode; variance?: number | null }) {
+  if (trend === 'none') {
+    return null;
+  }
+
+  if (trend === 'ahead') {
+    return (
+      <TrendingUp className="h-3.5 w-3.5 text-secondary-green flex-shrink-0" />
+    );
+  }
+
+  if (trend === 'behind') {
+    return (
+      <TrendingDown className="h-3.5 w-3.5 text-[#c44536] flex-shrink-0" />
+    );
+  }
+
+  // on-plan
+  return (
+    <Minus className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+  );
+}
+
+export function OkrProgressCell({ baseline, status, compact = false }: OkrProgressCellProps) {
   const { actual, trend, variance } = baseline;
   
   // Only show dash if actual is null/undefined (not just 0)
   if (actual == null) {
-    return <span className="text-xs text-muted-foreground text-right block">—</span>;
+    return <span className="text-sm text-muted-foreground text-right block">—</span>;
   }
 
+  const barColor = getProgressBarColor(status, actual);
+
   return (
-    <div className="flex items-center justify-end gap-2 overflow-hidden">
-      <Progress 
-        value={Math.min(actual, 100)} 
-        className={compact ? 'h-1.5 flex-1 min-w-0 max-w-16' : 'h-1.5 flex-1 min-w-0 max-w-24'}
-      />
-      <span className="text-xs font-semibold text-foreground flex-shrink-0 w-8 text-right">
+    <div className="flex items-center justify-end gap-3 overflow-hidden">
+      {/* Progress bar */}
+      <div className={cn(
+        "flex-1 h-2 rounded-full overflow-hidden",
+        compact ? 'max-w-20' : 'max-w-28',
+        'bg-[#f0ebe3]'
+      )}>
+        <div
+          className={cn("h-full rounded-full transition-all duration-300", barColor)}
+          style={{ width: `${Math.min(actual, 100)}%` }}
+        />
+      </div>
+      
+      {/* Percentage */}
+      <span className="text-sm font-semibold text-foreground flex-shrink-0 min-w-[40px] text-right">
         {Math.round(actual)}%
       </span>
-      {trend !== 'none' && <TrendIcon trend={trend} variance={variance} size="sm" />}
+      
+      {/* Trend arrow */}
+      <TrendArrow trend={trend} variance={variance} />
     </div>
   );
 }

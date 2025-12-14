@@ -4,7 +4,7 @@
 // baseline progress with trend, and slide-in analytics drawer
 // ═══════════════════════════════════════════════════════════════════════════════
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Search, BarChart3, Download, Plus, X, Filter, Settings2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -25,9 +25,10 @@ import { CreateObjectiveDialogV2 } from '../CreateObjectiveDialogV2';
 import { ObjectiveDrawerV2 } from '../ObjectiveDrawerV2';
 import { OKRSmartFiltersDialog, OKRSmartFilters, countActiveFilters } from '../OKRSmartFiltersDialog';
 import { OKRColumnChooser, DEFAULT_OKR_COLUMNS, type OKRColumn } from '../OKRColumnChooser';
+import { OkrSummaryCards, type OkrSummaryMetrics } from '../shared/OkrSummaryCards';
 
 import { useOKRStrategicData, useOKRThemes } from '../../hooks/useOKRStrategicData';
-import type { TreeItem } from '../../lib/okrTypes';
+import type { TreeItem, Objective } from '../../lib/okrTypes';
 import { exportOkrViewToCsv, getStatusLabel } from '../../lib/okrMetrics';
 
 interface StrategyCockpitProps {
@@ -53,6 +54,22 @@ export function StrategyCockpit({ snapshotId }: StrategyCockpitProps) {
   const { data: themeChips } = useOKRThemes(snapshotId);
 
   const activeFilterCount = countActiveFilters(filters);
+
+  // Compute summary metrics from objectives
+  const summaryMetrics = useMemo<OkrSummaryMetrics>(() => {
+    if (!strategicData?.themes) {
+      return { totalObjectives: 0, onTrack: 0, atRisk: 0, blocked: 0 };
+    }
+
+    const allObjectives: Objective[] = strategicData.themes.flatMap(t => t.objectives || []);
+    
+    return {
+      totalObjectives: allObjectives.length,
+      onTrack: allObjectives.filter(o => o.status === 'on-track' || o.status === 'completed').length,
+      atRisk: allObjectives.filter(o => o.status === 'at-risk' || o.status === 'off-track').length,
+      blocked: allObjectives.filter(o => o.status === 'blocked').length,
+    };
+  }, [strategicData?.themes]);
 
   // Open create dialog when ?create=true is in URL
   useEffect(() => {
@@ -155,39 +172,29 @@ export function StrategyCockpit({ snapshotId }: StrategyCockpitProps) {
 
   return (
     <div className="flex flex-col h-full bg-background">
-      {/* Top Bar */}
-      <div className="flex justify-between items-center px-6 py-4 bg-card border-b border-border">
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span className="font-semibold text-brand-gold">OKR Hub v2</span>
-          <span className="text-muted-foreground/50">/</span>
-          <span>Enterprise</span>
-          <span className="text-muted-foreground/50">/</span>
-          <span className="text-foreground font-medium">Strategy Cockpit</span>
-        </div>
-
-        {/* Actions */}
-        <div className="flex items-center gap-3">
-          <Button variant="outline" size="sm" onClick={handleAnalyticsClick} className="gap-2">
-            <BarChart3 className="h-4 w-4" />
-            Analytics
-          </Button>
-
-          <Button variant="outline" size="sm" onClick={handleExport} className="gap-2">
-            <Download className="h-4 w-4" />
-            Export
-          </Button>
-
-          <Button size="sm" onClick={() => setShowCreateDialog(true)} className="gap-2 bg-brand-gold hover:bg-brand-gold-hover text-white">
-            <Plus className="h-4 w-4" />
-            New Objective
-          </Button>
-        </div>
+      {/* Page Header */}
+      <div className="px-6 pt-6 pb-2 bg-background">
+        <h1 className="text-2xl font-bold text-foreground">Objectives</h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          Track and manage strategic objectives across all themes
+        </p>
       </div>
 
+      {/* Summary Cards */}
+      <div className="px-6 py-4 bg-background">
+        {isLoading ? (
+          <div className="grid grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map((i) => (
+              <Skeleton key={i} className="h-20 w-full rounded-lg" />
+            ))}
+          </div>
+        ) : (
+          <OkrSummaryCards metrics={summaryMetrics} />
+        )}
+      </div>
 
       {/* Search & Filter Bar */}
-      <div className="px-6 py-3 bg-card border-b border-border">
+      <div className="px-6 py-3 bg-background border-b border-border">
         <div className="flex items-center gap-3">
           {/* Search */}
           <div className="flex items-center gap-2.5 flex-1 max-w-md px-4 py-2.5 bg-muted/50 rounded-lg border border-border">
@@ -230,6 +237,19 @@ export function StrategyCockpit({ snapshotId }: StrategyCockpitProps) {
             columns={columns} 
             onColumnsChange={setColumns} 
           />
+
+          {/* Actions */}
+          <div className="flex items-center gap-2 ml-auto">
+            <Button variant="outline" size="sm" onClick={handleExport} className="gap-2">
+              <Download className="h-4 w-4" />
+              Export
+            </Button>
+
+            <Button size="sm" onClick={() => setShowCreateDialog(true)} className="gap-2 bg-brand-gold hover:bg-brand-gold-hover text-white">
+              <Plus className="h-4 w-4" />
+              New Objective
+            </Button>
+          </div>
 
           {/* Clear all filters */}
           {hasActiveFilters && (
