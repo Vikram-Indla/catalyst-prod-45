@@ -404,14 +404,14 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                     marginBottom: '2px',
                     position: 'relative',
                     justifyContent: expanded ? 'flex-start' : 'center',
-                    background: active ? 'rgba(198, 156, 109, 0.06)' : 'transparent',
-                    color: active ? '#c69c6d' : '#4b5563',
+                    background: active ? 'rgba(92, 124, 92, 0.08)' : 'transparent',
+                    color: active ? '#5c7c5c' : '#4b5563',
                     fontWeight: active ? 600 : 500,
                     fontSize: '14px',
                     fontFamily: 'inherit',
                   }}
                 >
-                  {/* Gold left bar indicator for active state */}
+                  {/* Olive left bar indicator for active state */}
                   {active && (
                     <span 
                       style={{
@@ -420,15 +420,15 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                         top: '8px',
                         bottom: '8px',
                         width: '3px',
-                        background: '#c69c6d',
+                        background: '#5c7c5c',
                         borderRadius: '0 2px 2px 0',
                       }}
                     />
                   )}
                   {CustomIcon ? (
-                    <CustomIcon className="w-5 h-5 flex-shrink-0" style={{ color: active ? '#c69c6d' : '#6b7280' }} />
+                    <CustomIcon className="w-5 h-5 flex-shrink-0" style={{ color: active ? '#5c7c5c' : '#6b7280' }} />
                   ) : (
-                    <LucideIcon style={{ width: '20px', height: '20px', flexShrink: 0, color: active ? '#c69c6d' : '#6b7280' }} />
+                    <LucideIcon style={{ width: '20px', height: '20px', flexShrink: 0, color: active ? '#5c7c5c' : '#6b7280' }} />
                   )}
                   {expanded && <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'left', flex: 1 }}>{item.label}</span>}
                   {expanded && item.expandable && (
