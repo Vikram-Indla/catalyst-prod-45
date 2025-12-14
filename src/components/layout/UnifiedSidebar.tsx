@@ -118,7 +118,7 @@ export function UnifiedSidebar({
         width: expanded ? '220px' : '60px',
         height: '100%',
         background: 'var(--surface-1)',
-        borderRight: '1px solid var(--border-color)',
+        borderRight: '1px solid var(--divider)',
         transition: 'all 0.3s ease',
         flexShrink: 0,
         position: 'relative',
@@ -139,7 +139,7 @@ export function UnifiedSidebar({
           height: '24px',
           borderRadius: '9999px',
           background: 'var(--surface-1)',
-          border: '1px solid var(--border-color)',
+          border: '1px solid var(--divider)',
           boxShadow: 'var(--card-shadow)',
           display: 'flex',
           alignItems: 'center',
@@ -176,8 +176,8 @@ export function UnifiedSidebar({
                     width: '32px',
                     height: '32px',
                     borderRadius: '6px',
-                    background: 'linear-gradient(135deg, #5c7c5c 0%, #6d8d6d 100%)',
-                    color: '#ffffff',
+                    background: 'var(--brand-active)',
+                    color: 'var(--text-inverse, #ffffff)',
                     fontSize: '11px',
                     fontWeight: 700,
                     display: 'flex',
@@ -199,7 +199,7 @@ export function UnifiedSidebar({
                   marginTop: '8px',
                   width: '100%',
                   height: '1px',
-                  backgroundColor: 'var(--border-color)',
+                  background: 'var(--divider)',
                 }}
               />
             </div>
@@ -209,8 +209,8 @@ export function UnifiedSidebar({
                 width: '32px',
                 height: '32px',
                 borderRadius: '6px',
-                background: 'linear-gradient(135deg, #5c7c5c 0%, #6d8d6d 100%)',
-                color: '#ffffff',
+                background: 'var(--brand-active)',
+                color: 'var(--text-inverse, #ffffff)',
                 fontSize: '11px',
                 fontWeight: 700,
                 display: 'flex',
@@ -303,7 +303,7 @@ export function UnifiedSidebar({
 
         {/* Footer */}
         {expanded && (
-          <div style={{ borderTop: '1px solid var(--border-color)', padding: '12px 8px' }}>
+          <div style={{ borderTop: '1px solid var(--divider)', padding: '12px 8px' }}>
             <button 
               style={{
                 width: '100%',
