@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
+import { addWeeks, addDays, isAfter, isBefore, startOfDay } from 'date-fns';
 import { useResourceInventory } from '@/hooks/useResourceInventory';
-import { useCapacityBookings, useCreateBooking, useUpdateBooking, useDeleteBooking } from '../hooks/useCapacityBookings';
+import { useCapacityBookings, useCreateBooking, useUpdateBooking, useDeleteBooking, CapacityBooking } from '../hooks/useCapacityBookings';
 import { useViewConfig, useSaveViewConfig } from '../hooks/useViewConfig';
 import { CapacityHeader } from './CapacityHeader';
 import { GanttView } from './GanttView';
@@ -10,8 +11,9 @@ import { AddResourceModal } from './AddResourceModal';
 import { AssignModal } from './AssignModal';
 import { BulkActionsBar } from './BulkActionsBar';
 import { ExportModal } from './ExportModal';
-import { CapacityBooking } from '../hooks/useCapacityBookings';
 import { getGCCWeekStart } from '../utils/dateUtils';
+import { CapacityFilters, DEFAULT_FILTERS } from './CapacityFilter';
+import { groupBookingsByResourceWithLanes } from '../utils/laneAllocation';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -25,7 +27,7 @@ export function CapacityPlanning() {
   const updateBooking = useUpdateBooking();
   const deleteBooking = useDeleteBooking();
 
-  // Fetch business requests with quarter, rank, and kickoff date for the assign modal
+  // Fetch business requests for the assign modal
   const { data: businessRequests = [] } = useQuery({
     queryKey: ['business-requests-for-capacity'],
     queryFn: async () => {
@@ -46,7 +48,8 @@ export function CapacityPlanning() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showInsights, setShowInsights] = useState(true);
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
-  const [viewDirty, setViewDirty] = useState(false); // Track unsaved view changes
+  const [viewDirty, setViewDirty] = useState(false);
+  const [filters, setFilters] = useState<CapacityFilters>(DEFAULT_FILTERS);
 
   // Modal state
   const [addResourceOpen, setAddResourceOpen] = useState(false);
@@ -56,18 +59,102 @@ export function CapacityPlanning() {
   const [newBookingResourceId, setNewBookingResourceId] = useState<string | undefined>();
   const [newBookingDate, setNewBookingDate] = useState<Date | undefined>();
 
+  // Calculate visible date range
+  const weeksCount = timeSpan === '2weeks' ? 2 : 5;
+  const endDate = addDays(addWeeks(startDate, weeksCount), -1);
+
   // Resources currently in view
   const viewResourceIds = useMemo(() => {
     if (viewConfig?.resource_ids && viewConfig.resource_ids.length > 0) {
       return viewConfig.resource_ids;
     }
-    // Default: show all active resources
     return allResources.filter(r => r.is_active).map(r => r.id);
   }, [viewConfig?.resource_ids, allResources]);
 
   const viewResources = useMemo(() => {
     return allResources.filter(r => viewResourceIds.includes(r.id));
   }, [allResources, viewResourceIds]);
+
+  // Calculate overlap data for all resources
+  const resourceLaneData = useMemo(() => {
+    return groupBookingsByResourceWithLanes(bookings, startDate, endDate);
+  }, [bookings, startDate, endDate]);
+
+  // Identify overbooked resources
+  const overbookedResourceIds = useMemo(() => {
+    const ids = new Set<string>();
+    resourceLaneData.forEach((data, resourceId) => {
+      if (data.hasOverlaps) {
+        ids.add(resourceId);
+      }
+    });
+    return ids;
+  }, [resourceLaneData]);
+
+  // Apply filters to bookings
+  const filteredBookings = useMemo(() => {
+    let filtered = [...bookings];
+
+    // Filter by role (resource's role)
+    if (filters.roles.length > 0) {
+      const resourceIdsWithRole = new Set(
+        allResources
+          .filter(r => r.role_code && filters.roles.includes(r.role_code))
+          .map(r => r.id)
+      );
+      filtered = filtered.filter(b => resourceIdsWithRole.has(b.resource_id));
+    }
+
+    // Filter by type
+    if (filters.types.length > 0) {
+      filtered = filtered.filter(b => filters.types.includes(b.booking_type));
+    }
+
+    // Filter by status
+    if (filters.statuses.length > 0) {
+      filtered = filtered.filter(b => b.status && filters.statuses.includes(b.status));
+    }
+
+    // Filter by priority
+    if (filters.priorities.length > 0) {
+      filtered = filtered.filter(b => b.priority && filters.priorities.includes(b.priority));
+    }
+
+    // Filter by overbooked only
+    if (filters.overbookedOnly) {
+      filtered = filtered.filter(b => overbookedResourceIds.has(b.resource_id));
+    }
+
+    // Filter by date match mode
+    if (filters.dateMatchMode === 'inside') {
+      filtered = filtered.filter(b => {
+        const bStart = startOfDay(new Date(b.start_date));
+        const bEnd = startOfDay(new Date(b.end_date));
+        const rangeStart = startOfDay(startDate);
+        const rangeEnd = startOfDay(endDate);
+        return !isBefore(bStart, rangeStart) && !isAfter(bEnd, rangeEnd);
+      });
+    }
+
+    return filtered;
+  }, [bookings, filters, allResources, overbookedResourceIds, startDate, endDate]);
+
+  // Filter resources based on filtered bookings and overbooked filter
+  const filteredResources = useMemo(() => {
+    let resources = viewResources;
+
+    // If filtering by roles, only show resources with those roles
+    if (filters.roles.length > 0) {
+      resources = resources.filter(r => r.role_code && filters.roles.includes(r.role_code));
+    }
+
+    // If overbooked only, filter to only overbooked resources
+    if (filters.overbookedOnly) {
+      resources = resources.filter(r => overbookedResourceIds.has(r.id));
+    }
+
+    return resources;
+  }, [viewResources, filters, overbookedResourceIds]);
 
   // Handlers
   const handleViewModeChange = useCallback((mode: 'list' | 'gantt') => {
@@ -139,7 +226,6 @@ export function CapacityPlanning() {
     setSelectedItems(new Set());
   }, [selectedItems, deleteBooking]);
 
-  // Save View handler - saves current view configuration explicitly
   const handleSaveView = useCallback(() => {
     saveViewConfig.mutate({
       resource_ids: viewResourceIds,
@@ -173,6 +259,9 @@ export function CapacityPlanning() {
         onSaveView={handleSaveView}
         isSaving={saveViewConfig.isPending}
         saveDisabled={!viewDirty}
+        filters={filters}
+        onFiltersChange={setFilters}
+        resources={viewResources}
       />
 
       {/* Bulk Actions Bar */}
@@ -192,8 +281,8 @@ export function CapacityPlanning() {
           </div>
         ) : viewMode === 'gantt' ? (
           <GanttView
-            resources={viewResources}
-            bookings={bookings}
+            resources={filteredResources}
+            bookings={filteredBookings}
             startDate={startDate}
             timeSpan={timeSpan}
             searchQuery={searchQuery}
@@ -202,11 +291,12 @@ export function CapacityPlanning() {
             onBookingClick={handleBookingClick}
             onCreateBooking={handleCreateBooking}
             onAssign={() => setAssignModalOpen(true)}
+            resourceLaneData={resourceLaneData}
           />
         ) : (
           <ListView
-            resources={viewResources}
-            bookings={bookings}
+            resources={filteredResources}
+            bookings={filteredBookings}
             groupBy={groupBy}
             searchQuery={searchQuery}
             selectedItems={selectedItems}
@@ -216,11 +306,11 @@ export function CapacityPlanning() {
           />
         )}
 
-        {/* Insights Panel - only visible when showInsights is true */}
+        {/* Insights Panel */}
         {showInsights && (
           <InsightsPanel
-            resources={viewResources}
-            bookings={bookings}
+            resources={filteredResources}
+            bookings={filteredBookings}
             visible={true}
           />
         )}
@@ -253,8 +343,8 @@ export function CapacityPlanning() {
       <ExportModal
         open={exportModalOpen}
         onClose={() => setExportModalOpen(false)}
-        resources={viewResources}
-        bookings={bookings}
+        resources={filteredResources}
+        bookings={filteredBookings}
       />
     </div>
   );

@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { format, addDays } from 'date-fns';
-import { Search } from 'lucide-react';
+import { Search, X, Info } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,7 +9,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { CapacityBooking } from '../hooks/useCapacityBookings';
 
@@ -19,7 +21,7 @@ interface BusinessRequest {
   title: string;
   planned_quarter?: string | null;
   rank?: number | null;
-  impl_start_date?: string | null; // Kickoff date from business request
+  impl_start_date?: string | null;
 }
 
 interface ResourceItem {
@@ -35,7 +37,7 @@ interface AssignModalProps {
   resourceId?: string;
   initialDate?: Date;
   businessRequests: BusinessRequest[];
-  viewResources: ResourceItem[]; // All resources in current view
+  viewResources: ResourceItem[];
   onSave: (data: {
     resource_id: string;
     booking_type: 'ticket' | 'task' | 'leave';
@@ -43,9 +45,6 @@ interface AssignModalProps {
     summary?: string;
     start_date: string;
     end_date: string;
-    quarter?: string;
-    rank?: number;
-    kickoff_date?: string;
   }) => void;
   onDelete?: () => void;
 }
@@ -68,35 +67,28 @@ export function AssignModal({
 
   // Form state
   const [selectedResourceId, setSelectedResourceId] = useState<string>('');
-  const [selectedTicketId, setSelectedTicketId] = useState<string>('');
+  const [selectedTicketIds, setSelectedTicketIds] = useState<string[]>([]);
   const [summary, setSummary] = useState('');
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [endDate, setEndDate] = useState<Date | undefined>();
-  const [quarter, setQuarter] = useState('');
-  const [rank, setRank] = useState<number | undefined>();
-  const [kickoffDate, setKickoffDate] = useState<Date | undefined>();
 
-  // Get selected resource from viewResources
-  const selectedResource = useMemo(() => 
-    viewResources.find(r => r.id === selectedResourceId), 
-    [viewResources, selectedResourceId]
+  // Get selected requests
+  const selectedRequests = useMemo(() => 
+    businessRequests.filter(br => selectedTicketIds.includes(br.id)),
+    [businessRequests, selectedTicketIds]
   );
 
-  // Get selected business request
-  const selectedRequest = useMemo(() => 
-    businessRequests.find(br => br.id === selectedTicketId),
-    [businessRequests, selectedTicketId]
-  );
-
-  // Filter business requests based on search
+  // Filter business requests based on search (exclude already selected)
   const filteredRequests = useMemo(() => {
-    if (!searchQuery) return businessRequests;
+    if (!searchQuery) return [];
     const query = searchQuery.toLowerCase();
-    return businessRequests.filter(br => 
-      br.request_key?.toLowerCase().includes(query) ||
-      br.title.toLowerCase().includes(query)
-    );
-  }, [businessRequests, searchQuery]);
+    return businessRequests
+      .filter(br => !selectedTicketIds.includes(br.id))
+      .filter(br => 
+        br.request_key?.toLowerCase().includes(query) ||
+        br.title.toLowerCase().includes(query)
+      );
+  }, [businessRequests, searchQuery, selectedTicketIds]);
 
   // Initialize form when booking changes
   useEffect(() => {
@@ -104,64 +96,70 @@ export function AssignModal({
       setTab(booking.booking_type === 'leave' ? 'task' : booking.booking_type);
       setIsLeave(booking.booking_type === 'leave');
       setSelectedResourceId(booking.resource_id || resourceId || '');
-      setSelectedTicketId(booking.business_request_id || '');
+      setSelectedTicketIds(booking.business_request_id ? [booking.business_request_id] : []);
       setSummary(booking.summary || '');
       setStartDate(new Date(booking.start_date));
       setEndDate(new Date(booking.end_date));
-      setQuarter(booking.quarter || '');
-      setRank(booking.rank || undefined);
-      setKickoffDate(booking.kickoff_date ? new Date(booking.kickoff_date) : undefined);
     } else {
-      // Reset for new booking
       setTab('ticket');
       setIsLeave(false);
       setSelectedResourceId(resourceId || '');
-      setSelectedTicketId('');
+      setSelectedTicketIds([]);
       setSummary('');
       setSearchQuery('');
       setStartDate(initialDate || new Date());
       setEndDate(addDays(initialDate || new Date(), 4));
-      setQuarter('');
-      setRank(undefined);
-      setKickoffDate(undefined);
     }
   }, [booking, initialDate, open, resourceId]);
 
-  // Update quarter, rank, and kickoff date when ticket is selected (from business_requests table)
-  useEffect(() => {
-    if (selectedRequest) {
-      setQuarter(selectedRequest.planned_quarter || '');
-      setRank(selectedRequest.rank || undefined);
-      setKickoffDate(selectedRequest.impl_start_date ? new Date(selectedRequest.impl_start_date) : undefined);
-    } else {
-      setQuarter('');
-      setRank(undefined);
-      setKickoffDate(undefined);
-    }
-  }, [selectedRequest]);
+  const handleAddTicket = (ticketId: string) => {
+    setSelectedTicketIds(prev => [...prev, ticketId]);
+    setSearchQuery('');
+  };
+
+  const handleRemoveTicket = (ticketId: string) => {
+    setSelectedTicketIds(prev => prev.filter(id => id !== ticketId));
+  };
 
   const handleSave = () => {
     if (!startDate || !endDate || !selectedResourceId) return;
 
     const bookingType = isLeave ? 'leave' : tab;
 
-    onSave({
-      resource_id: selectedResourceId,
-      booking_type: bookingType,
-      business_request_id: tab === 'ticket' && !isLeave ? selectedTicketId || null : null,
-      summary: (tab === 'task' || isLeave) ? summary : undefined,
-      start_date: format(startDate, 'yyyy-MM-dd'),
-      end_date: format(endDate, 'yyyy-MM-dd'),
-      quarter: quarter || undefined,
-      rank,
-      kickoff_date: kickoffDate ? format(kickoffDate, 'yyyy-MM-dd') : undefined,
-    });
+    // For multi-ticket selection, create one booking per request
+    if (tab === 'ticket' && !isLeave && selectedTicketIds.length > 0) {
+      selectedTicketIds.forEach(ticketId => {
+        onSave({
+          resource_id: selectedResourceId,
+          booking_type: bookingType,
+          business_request_id: ticketId,
+          start_date: format(startDate, 'yyyy-MM-dd'),
+          end_date: format(endDate, 'yyyy-MM-dd'),
+        });
+      });
+    } else {
+      onSave({
+        resource_id: selectedResourceId,
+        booking_type: bookingType,
+        business_request_id: null,
+        summary: (tab === 'task' || isLeave) ? summary : undefined,
+        start_date: format(startDate, 'yyyy-MM-dd'),
+        end_date: format(endDate, 'yyyy-MM-dd'),
+      });
+    }
 
     onClose();
   };
 
-  // Generate task ID for display
   const taskId = booking?.id ? `T${booking.id.slice(0, 3).toUpperCase()}` : 'T001';
+
+  const formatMetadata = (request: BusinessRequest) => {
+    const parts: string[] = [];
+    if (request.planned_quarter) parts.push(`Q: ${request.planned_quarter}`);
+    if (request.rank) parts.push(`Rank: ${request.rank}`);
+    if (request.impl_start_date) parts.push(`Kickoff: ${format(new Date(request.impl_start_date), 'MMM d')}`);
+    return parts.join(' • ');
+  };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -173,7 +171,7 @@ export function AssignModal({
         </DialogHeader>
 
         <div className="space-y-5 py-4">
-          {/* Resource Selector - List of all resources in view */}
+          {/* Resource Selector */}
           <div className="space-y-2">
             <Label className="text-sm font-medium">
               Resource <span className="text-destructive">*</span>
@@ -213,7 +211,7 @@ export function AssignModal({
             </Select>
           </div>
 
-          {/* Leave Checkbox - De-emphasized */}
+          {/* Leave Checkbox */}
           <div 
             className="flex items-center gap-2 cursor-pointer"
             onClick={() => setIsLeave(!isLeave)}
@@ -247,88 +245,97 @@ export function AssignModal({
               </TabsList>
 
               <TabsContent value="ticket" className="space-y-4 mt-4">
-                {/* Request Search with auto-complete dropdown */}
+                {/* Request Search - Multi-select */}
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Request</Label>
+                  <Label className="text-sm font-medium">Request(s)</Label>
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                       value={searchQuery}
-                      onChange={(e) => {
-                        setSearchQuery(e.target.value);
-                        // Clear selection when searching
-                        if (e.target.value === '') {
-                          setSelectedTicketId('');
-                        }
-                      }}
-                      placeholder="Search by ID or title..."
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search and add multiple requests..."
                       className="pl-9 h-10"
                     />
-                    {/* Search Results Dropdown - positioned below input */}
-                    {searchQuery && filteredRequests.length > 0 && !selectedRequest && (
-                      <div className="absolute left-0 right-0 top-full mt-1 border rounded-md bg-background shadow-lg max-h-[180px] overflow-y-auto z-50">
-                        {filteredRequests.slice(0, 6).map(br => (
-                          <button
-                            key={br.id}
-                            type="button"
-                            onClick={() => {
-                              setSelectedTicketId(br.id);
-                              setSearchQuery('');
-                            }}
-                            className="w-full text-left px-3 py-2.5 hover:bg-muted/50 text-sm border-b last:border-b-0 flex items-center gap-2"
-                          >
-                            <span className="font-medium text-secondary-green shrink-0">{br.request_key || br.id.slice(0, 8)}</span>
-                            <span className="text-muted-foreground">—</span>
-                            <span className="truncate text-foreground">{br.title}</span>
-                          </button>
+                    {/* Search Results Dropdown */}
+                    {searchQuery && filteredRequests.length > 0 && (
+                      <div className="absolute left-0 right-0 top-full mt-1 border rounded-md bg-background shadow-lg max-h-[200px] overflow-y-auto z-50">
+                        {filteredRequests.slice(0, 8).map(br => (
+                          <TooltipProvider key={br.id}>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button
+                                  type="button"
+                                  onClick={() => handleAddTicket(br.id)}
+                                  className="w-full text-left px-3 py-2.5 hover:bg-muted/50 text-sm border-b last:border-b-0"
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-medium text-secondary-green shrink-0">
+                                      {br.request_key || br.id.slice(0, 8)}
+                                    </span>
+                                    <span className="text-muted-foreground">—</span>
+                                    <span className="truncate text-foreground">{br.title}</span>
+                                  </div>
+                                  {/* Metadata as secondary line */}
+                                  <div className="text-[10px] text-muted-foreground mt-0.5">
+                                    {formatMetadata(br) || 'No metadata'}
+                                  </div>
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent side="right" className="max-w-xs">
+                                <div className="space-y-1">
+                                  <div className="font-medium">{br.title}</div>
+                                  <div className="text-xs text-muted-foreground">
+                                    {formatMetadata(br) || 'No additional metadata'}
+                                  </div>
+                                </div>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
                         ))}
                       </div>
                     )}
                   </div>
-                  {/* Selected Request Display */}
-                  {selectedRequest && (
-                    <div className="text-sm p-2.5 bg-muted/30 rounded-md flex items-center justify-between border border-border">
-                      <span className="flex items-center gap-2 truncate">
-                        <span className="font-medium text-secondary-green shrink-0">{selectedRequest.request_key}</span>
-                        <span className="text-muted-foreground">—</span>
-                        <span className="truncate">{selectedRequest.title}</span>
-                      </span>
-                      <button 
-                        type="button"
-                        onClick={() => {
-                          setSelectedTicketId('');
-                          setSearchQuery('');
-                        }}
-                        className="text-muted-foreground hover:text-foreground text-xs ml-2 shrink-0"
-                      >
-                        ✕
-                      </button>
+
+                  {/* Selected Requests as chips */}
+                  {selectedRequests.length > 0 && (
+                    <div className="space-y-2">
+                      {selectedRequests.map(request => (
+                        <TooltipProvider key={request.id}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="flex items-center justify-between p-2.5 bg-muted/30 rounded-md border border-border group">
+                                <span className="flex items-center gap-2 truncate">
+                                  <span className="font-medium text-secondary-green shrink-0">
+                                    {request.request_key}
+                                  </span>
+                                  <span className="text-muted-foreground">—</span>
+                                  <span className="truncate text-sm">{request.title}</span>
+                                </span>
+                                <button 
+                                  type="button"
+                                  onClick={() => handleRemoveTicket(request.id)}
+                                  className="text-muted-foreground hover:text-destructive ml-2 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                  <X className="h-4 w-4" />
+                                </button>
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <div className="text-xs">{formatMetadata(request)}</div>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      ))}
                     </div>
                   )}
-                </div>
 
-                {/* Quarter & Rank - Read Only from Business Request */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-xs text-muted-foreground">Quarter</Label>
-                    <div className="text-sm font-medium py-2 px-3 bg-muted/30 rounded-md border border-border">
-                      {quarter || '—'}
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-xs text-muted-foreground">Rank</Label>
-                    <div className="text-sm font-medium py-2 px-3 bg-muted/30 rounded-md border border-border">
-                      {rank || '—'}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Kick-off Date - Read Only from Business Request */}
-                <div className="space-y-2">
-                  <Label className="text-xs text-muted-foreground">Kick-off Date</Label>
-                  <div className="text-sm font-medium py-2 px-3 bg-muted/30 rounded-md border border-border">
-                    {kickoffDate ? format(kickoffDate, 'dd/MM/yyyy') : '—'}
-                  </div>
+                  {/* Help text */}
+                  {selectedRequests.length > 1 && (
+                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                      <Info className="h-3 w-3" />
+                      {selectedRequests.length} requests selected. One booking will be created per request.
+                    </p>
+                  )}
                 </div>
               </TabsContent>
 
@@ -409,10 +416,16 @@ export function AssignModal({
           </Button>
           <Button 
             onClick={handleSave}
-            disabled={!selectedResourceId || !startDate || !endDate || ((tab === 'task' || isLeave) && !summary)}
+            disabled={
+              !selectedResourceId || 
+              !startDate || 
+              !endDate || 
+              ((tab === 'task' || isLeave) && !summary) ||
+              (tab === 'ticket' && !isLeave && selectedTicketIds.length === 0)
+            }
             className="bg-brand-gold hover:bg-brand-gold-hover text-white"
           >
-            {isEdit ? 'Save' : 'Save'}
+            {isEdit ? 'Save' : selectedTicketIds.length > 1 ? `Create ${selectedTicketIds.length} Bookings` : 'Save'}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -9,6 +9,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenu
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
+import { CapacityFilter, CapacityFilters, DEFAULT_FILTERS } from './CapacityFilter';
+import { ResourceInventoryItem } from '@/hooks/useResourceInventory';
 
 interface CapacityHeaderProps {
   viewMode: 'list' | 'gantt';
@@ -16,21 +18,21 @@ interface CapacityHeaderProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   onExport: () => void;
-  // Gantt controls
   startDate: Date;
   onStartDateChange: (date: Date) => void;
   timeSpan: '2weeks' | '5weeks';
   onTimeSpanChange: (span: '2weeks' | '5weeks') => void;
-  // Group by
   groupBy: string;
   onGroupByChange: (group: string) => void;
-  // Insights panel
   showInsights: boolean;
   onToggleInsights: () => void;
-  // Save View
   onSaveView: () => void;
   isSaving?: boolean;
   saveDisabled?: boolean;
+  // Filter props
+  filters: CapacityFilters;
+  onFiltersChange: (filters: CapacityFilters) => void;
+  resources: ResourceInventoryItem[];
 }
 
 export function CapacityHeader({
@@ -50,10 +52,12 @@ export function CapacityHeader({
   onSaveView,
   isSaving,
   saveDisabled,
+  filters,
+  onFiltersChange,
+  resources,
 }: CapacityHeaderProps) {
   const [calendarOpen, setCalendarOpen] = useState(false);
   
-  // Calculate end date based on time span
   const weeksCount = timeSpan === '2weeks' ? 2 : 5;
   const endDate = addDays(addWeeks(startDate, weeksCount), -1);
 
@@ -63,10 +67,6 @@ export function CapacityHeader({
 
   const handleNext = () => {
     onStartDateChange(addWeeks(startDate, weeksCount));
-  };
-
-  const handleToday = () => {
-    onStartDateChange(getGCCWeekStart(new Date()));
   };
 
   const handleDateSelect = (date: Date | undefined) => {
@@ -88,7 +88,7 @@ export function CapacityHeader({
         className="h-[52px] flex items-center justify-between px-6 border-b"
         style={{ borderColor: 'hsl(var(--border))' }}
       >
-        {/* Left: View Toggle + Search */}
+        {/* Left: View Toggle + Search + Filter */}
         <div className="flex items-center gap-3">
           {/* View Toggle */}
           <div className="flex items-center rounded-md border bg-background p-0.5">
@@ -121,7 +121,7 @@ export function CapacityHeader({
           </div>
 
           {/* Search */}
-          <div className="relative w-[280px]">
+          <div className="relative w-[240px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search requests..."
@@ -129,21 +129,25 @@ export function CapacityHeader({
               onChange={(e) => onSearchChange(e.target.value)}
               className="pl-9 h-9"
             />
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
-              ⌘K
-            </div>
           </div>
+
+          {/* Filter */}
+          <CapacityFilter
+            filters={filters}
+            onFiltersChange={onFiltersChange}
+            resources={resources}
+            viewMode={viewMode}
+          />
         </div>
 
         {/* Right: Date Navigation + Export */}
         <div className="flex items-center gap-3">
-          {/* Timeline Navigation: < DateRange > */}
+          {/* Timeline Navigation */}
           <div className="flex items-center">
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handlePrev}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
 
-            {/* Date Range Display with Calendar Popover */}
             <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
               <PopoverTrigger asChild>
                 <Button variant="ghost" size="sm" className="h-8 px-3 gap-2 text-foreground font-medium">
