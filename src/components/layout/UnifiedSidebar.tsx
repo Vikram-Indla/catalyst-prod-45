@@ -164,32 +164,43 @@ export function UnifiedSidebar({
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: expanded ? 'flex-start' : 'center',
-            borderBottom: expanded ? '1px solid #e5e7eb' : 'none',
             flexShrink: 0,
           }}
         >
           {expanded ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ width: '100%' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div 
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '6px',
+                    background: 'linear-gradient(135deg, #5c7c5c 0%, #6d8d6d 100%)',
+                    color: '#ffffff',
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}
+                >
+                  {entity?.name?.substring(0, 2).toUpperCase() || entityLabel.substring(0, 2).toUpperCase()}
+                </div>
+                {/* Section label - always green when expanded */}
+                <span style={{ fontSize: '14px', fontWeight: 700, color: '#5c7c5c' }}>
+                  {entity?.name || entityLabel}
+                </span>
+              </div>
+              {/* Mini divider - only visible when expanded */}
               <div 
                 style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '6px',
-                  background: 'linear-gradient(135deg, #5c7c5c 0%, #6d8d6d 100%)',
-                  color: '#ffffff',
-                  fontSize: '11px',
-                  fontWeight: 700,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
+                  marginTop: '8px',
+                  width: '100%',
+                  height: '1px',
+                  backgroundColor: '#e5e7eb',
                 }}
-              >
-                {entity?.name?.substring(0, 2).toUpperCase() || entityLabel.substring(0, 2).toUpperCase()}
-              </div>
-              <span style={{ fontSize: '14px', fontWeight: 700, color: '#1f2937' }}>
-                {entity?.name || entityLabel}
-              </span>
+              />
             </div>
           ) : (
             <div 

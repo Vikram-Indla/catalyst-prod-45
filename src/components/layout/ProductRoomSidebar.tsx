@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useUserRole } from '@/hooks/useUserRole';
-import { Separator } from '@/components/ui/separator';
+import { SidebarSectionHeader } from './SidebarSectionHeader';
 
 interface ProductRoomSidebarProps {
   expanded: boolean;
@@ -49,30 +49,12 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
           {expanded ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
         </button>
 
-        {/* Header - 44px per spec */}
-        <div 
-          className={cn("px-3 flex items-center shrink-0", expanded && "border-b")}
-          style={{ height: '44px', borderColor: '#f3f4f6' }}
-        >
-          {expanded ? (
-            <div className="flex items-center gap-2.5">
-              <div 
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-[11px] font-bold"
-                style={{ background: 'linear-gradient(135deg, #5c7c5c 0%, #6d8d6d 100%)' }}
-              >
-                PR
-              </div>
-              <span className="text-[13px] font-bold text-foreground truncate">Product</span>
-            </div>
-          ) : (
-            <div 
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-[11px] font-bold mx-auto"
-              style={{ background: 'linear-gradient(135deg, #5c7c5c 0%, #6d8d6d 100%)' }}
-            >
-              PR
-            </div>
-          )}
-        </div>
+        {/* Section Header */}
+        <SidebarSectionHeader
+          badge="PR"
+          label="Product"
+          expanded={expanded}
+        />
 
         {/* Navigation Menu */}
         <nav className="p-2 space-y-1">

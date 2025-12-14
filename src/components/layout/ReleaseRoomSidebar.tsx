@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils';
 import { ChevronLeft, ChevronRight, LayoutDashboard, AlertCircle, Tag, Calendar, Settings, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { SidebarSectionHeader } from './SidebarSectionHeader';
 
 interface ReleaseRoomSidebarProps {
   expanded: boolean;
@@ -45,24 +46,13 @@ export function ReleaseRoomSidebar({ expanded, onToggle, className }: ReleaseRoo
           {expanded ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
         </button>
 
-        {/* Header - fixed height to align with page header (72px) */}
-        <div className={cn("h-[72px] px-4 flex items-center shrink-0", expanded && "border-b border-border")}>
-          {expanded ? (
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center font-semibold text-sm text-white" style={{ background: 'linear-gradient(135deg, #5c7c5c 0%, #6d8d6d 100%)' }}>
-                RL
-              </div>
-              <div className="flex flex-col">
-                <span className="font-semibold text-foreground">Release</span>
-                <span className="text-xs text-muted-foreground">Industry</span>
-              </div>
-            </div>
-          ) : (
-            <div className="w-10 h-10 rounded-lg flex items-center justify-center font-semibold text-sm mx-auto text-white" style={{ background: 'linear-gradient(135deg, #5c7c5c 0%, #6d8d6d 100%)' }}>
-              RL
-            </div>
-          )}
-        </div>
+        {/* Section Header */}
+        <SidebarSectionHeader
+          badge="RL"
+          label="Release"
+          expanded={expanded}
+          height={52}
+        />
 
         {/* Navigation Menu */}
         <nav className="p-2 space-y-1">

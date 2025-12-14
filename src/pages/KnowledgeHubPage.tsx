@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Plus, Search, FolderOpen, FileText, Clock, Star } from 'lucide-react';
+import { Plus, Search, FolderOpen, FileText, Clock, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,6 +11,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { CreateDocumentDialog } from '@/components/knowledge-hub/CreateDocumentDialog';
 import { CreateSpaceDialog } from '@/components/knowledge-hub/CreateSpaceDialog';
 import { DocumentFavorite, useFavoriteDocuments } from '@/components/knowledge-hub/DocumentFavorite';
+import { PageHeader } from '@/components/layout/PageHeader';
 
 export default function KnowledgeHubPage() {
   const navigate = useNavigate();
@@ -66,38 +67,35 @@ export default function KnowledgeHubPage() {
     d.title.toLowerCase().includes(search.toLowerCase())
   );
 
+  // Toolbar content with search and actions
+  const toolbar = (
+    <div className="flex items-center justify-between w-full">
+      <div className="relative w-[280px]">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Search spaces and documents..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="pl-9 h-9"
+        />
+      </div>
+      <div className="flex items-center gap-2">
+        <Button variant="outline" size="sm" onClick={() => setCreateSpaceOpen(true)}>
+          <FolderOpen className="h-4 w-4 mr-2" />
+          New Space
+        </Button>
+        <Button size="sm" className="gap-1.5 bg-brand-gold hover:bg-brand-gold-hover text-white" onClick={() => setCreateDocOpen(true)}>
+          <Plus className="h-4 w-4" />
+          New Document
+        </Button>
+      </div>
+    </div>
+  );
+
   return (
     <div className="h-full flex flex-col bg-background">
-      {/* Header */}
-      <div className="h-[72px] border-b bg-card px-6 flex items-center">
-        <div className="flex items-center justify-between w-full">
-          <div className="flex items-center gap-3 min-w-0">
-            <BookOpen className="h-6 w-6 text-brand-gold flex-shrink-0" />
-            <h1 className="text-xl font-semibold truncate">Knowledge Hub</h1>
-          </div>
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <Button variant="outline" onClick={() => setCreateSpaceOpen(true)}>
-              <FolderOpen className="h-4 w-4 mr-2" />
-              New Space
-            </Button>
-            <Button onClick={() => setCreateDocOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              New Document
-            </Button>
-        </div>
-      </div>
-        <div className="mt-4 max-w-md">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search spaces and documents..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-9"
-            />
-          </div>
-        </div>
-      </div>
+      {/* Standardized Header */}
+      <PageHeader title="Knowledge Hub" toolbar={toolbar} />
 
       {/* Content */}
       <div className="flex-1 overflow-auto p-6">
