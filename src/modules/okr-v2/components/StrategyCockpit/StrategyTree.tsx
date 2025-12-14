@@ -143,7 +143,7 @@ export function StrategyTree({
         className="grid items-center px-3 py-2 bg-muted/50 border-b-2 border-border text-xs font-semibold text-muted-foreground uppercase tracking-wider"
         style={{ gridTemplateColumns: GRID_COLUMNS }}
       >
-        <span className="truncate">Strategy Item</span>
+        <span className="truncate">OKRs</span>
         <span className="truncate">Status</span>
         <span className="truncate">Progress</span>
         <span className="truncate">Risks</span>
