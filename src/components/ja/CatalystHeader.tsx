@@ -138,7 +138,7 @@ export function CatalystHeader() {
         className="sticky top-0 z-[100] flex items-center"
         style={{ 
           height: '56px', 
-          borderBottom: '1px solid var(--nav-border)',
+          borderBottom: '1px solid var(--divider)',
           padding: '0 16px',
           fontFamily: "var(--font-sans, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif)",
           backgroundColor: 'var(--nav-bg)',
@@ -205,27 +205,28 @@ export function CatalystHeader() {
               // Check if this nav item is active
               const isActive = item.label === activeNavItem;
               
-              // TopNav item styles matching reference exactly
-              // Active nav items use olive green for consistency
+              // TopNav item styles - executive grade
+              // Active nav items use brand-active (evergreen) for underline
               const navButtonStyle: React.CSSProperties = {
                 height: '36px',
                 padding: '0 14px',
                 fontSize: '14px',
                 fontWeight: isActive ? 600 : 500,
-                color: isActive ? 'hsl(var(--secondary-green))' : 'var(--nav-text)',
+                color: isActive ? 'var(--nav-text-active)' : 'var(--nav-text)',
                 borderRadius: '6px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '4px',
                 cursor: 'pointer',
-                transition: 'all 0.15s ease',
+                transition: 'background 0.15s ease, color 0.15s ease',
                 border: 'none',
                 background: 'transparent',
                 position: 'relative' as const,
                 fontFamily: 'inherit',
+                outline: 'none',
               };
               
-              // Active underline indicator - positioned under text (olive green)
+              // Active underline indicator - 2px evergreen underline
               const activeUnderline = isActive ? (
                 <span 
                   style={{
@@ -234,7 +235,7 @@ export function CatalystHeader() {
                     left: '14px',
                     right: '14px',
                     height: '2px',
-                    background: 'hsl(var(--secondary-green))',
+                    background: 'var(--brand-active)',
                     borderRadius: '1px',
                   }}
                 />
@@ -362,7 +363,7 @@ export function CatalystHeader() {
                       <button
                         style={{
                           ...navButtonStyle,
-                          color: location.pathname.startsWith('/release') ? 'hsl(var(--secondary-green))' : navButtonStyle.color,
+                          color: location.pathname.startsWith('/release') ? 'var(--nav-text-active)' : navButtonStyle.color,
                           fontWeight: location.pathname.startsWith('/release') ? 600 : navButtonStyle.fontWeight,
                         }}
                         onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
@@ -378,7 +379,7 @@ export function CatalystHeader() {
                               left: '14px',
                               right: '14px',
                               height: '2px',
-                              background: 'hsl(var(--secondary-green))',
+                              background: 'var(--brand-active)',
                               borderRadius: '1px',
                             }}
                           />
@@ -393,7 +394,7 @@ export function CatalystHeader() {
                           <button 
                             style={{
                               ...navButtonStyle,
-                              color: location.pathname.startsWith('/release') ? 'hsl(var(--secondary-green))' : navButtonStyle.color,
+                              color: location.pathname.startsWith('/release') ? 'var(--nav-text-active)' : navButtonStyle.color,
                               fontWeight: location.pathname.startsWith('/release') ? 600 : navButtonStyle.fontWeight,
                             }}
                             onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
@@ -409,7 +410,7 @@ export function CatalystHeader() {
                                   left: '14px',
                                   right: '14px',
                                   height: '2px',
-                                  background: 'hsl(var(--secondary-green))',
+                                  background: 'var(--brand-active)',
                                   borderRadius: '1px',
                                 }}
                               />

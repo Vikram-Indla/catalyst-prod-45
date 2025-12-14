@@ -10,7 +10,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import type { IncidentFormData } from "@/components/incidents/CreateIncidentModal";
 import { workItemConfig, getWorkItemsByCategory } from "@/config/workItemConfig";
@@ -160,17 +159,48 @@ export function CreateDropdown() {
     <>
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger asChild>
-          <Button
-            size="sm"
-            className="h-8 px-2.5 bg-brand-gold hover:bg-brand-gold-hover text-white"
+          <button
+            style={{
+              height: '32px',
+              padding: '0 12px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              fontSize: '14px',
+              fontWeight: 600,
+              color: 'var(--text-inverse)',
+              background: 'var(--accent-color)',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              transition: 'background 0.15s ease',
+              outline: 'none',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--accent-hover)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--accent-color)'; }}
+            onFocus={(e) => {
+              if (e.target.matches(':focus-visible')) {
+                e.currentTarget.style.boxShadow = '0 0 0 3px var(--focus-ring-color)';
+              }
+            }}
+            onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
           >
-            <Plus className="h-4 w-4 mr-1" />
+            <Plus style={{ width: '16px', height: '16px' }} />
             Create
-          </Button>
+          </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="end"
-          className="w-64 max-h-[600px] overflow-y-auto bg-popover z-[300]"
+          style={{
+            width: '256px',
+            maxHeight: '600px',
+            overflowY: 'auto',
+            background: 'var(--surface-1)',
+            border: '1px solid var(--border-color)',
+            borderRadius: '8px',
+            boxShadow: 'var(--card-shadow)',
+          }}
+          className="z-[300]"
         >
           {renderSection('Enterprise', filteredEnterpriseItems)}
           

@@ -433,6 +433,40 @@ html, body, #root {
 }
 
 /* ============================================
+   FOCUS STATES - Only show on keyboard focus
+   ============================================ */
+*:focus {
+  outline: none;
+}
+
+*:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--focus-ring-color);
+}
+
+/* Remove default focus rings on interactive elements */
+button:focus,
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+}
+
+/* Show focus ring only on keyboard navigation */
+button:focus-visible,
+a:focus-visible {
+  box-shadow: 0 0 0 3px var(--focus-ring-color);
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px var(--focus-ring-color);
+}
+
+/* ============================================
    CATALYST UTILITY CLASSES
    ============================================ */
 
