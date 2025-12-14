@@ -1,16 +1,18 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // CATALYST OBJECTIVE ANALYTICS DRAWER
 // Executive-ready analytics panel for strategic objectives
+// Shows Performance & Timing, Risks with origin breakdown, Coverage, Insights
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { useState } from 'react';
-import { X, Shield, Link2, Lightbulb, ChevronDown, ChevronUp, AlertTriangle, ArrowRight } from 'lucide-react';
+import { X, Shield, Link2, Lightbulb, ChevronDown, ChevronUp, AlertTriangle, ArrowRight, TrendingUp, TrendingDown, Clock, Target } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { useObjectiveAnalytics } from '../../hooks/useObjectiveAnalytics';
-import type { ObjectiveAnalyticsData, InsightSeverity } from '../../lib/objectiveAnalytics';
+import type { ObjectiveAnalyticsData, InsightSeverity, BaselineInfo, KrStatusCounts, TrendDirection } from '../../lib/objectiveAnalytics';
+import type { AnalyticsRiskSummary } from '../../lib/okrRiskTypes';
 
 interface ObjectiveAnalyticsDrawerProps {
   objectiveId: string | null;
@@ -55,6 +57,31 @@ function StatusPill({ status }: { status: string }) {
   );
 }
 
+function TrendPill({ trend }: { trend: TrendDirection }) {
+  const getConfig = () => {
+    switch (trend) {
+      case 'ahead':
+        return { label: 'Ahead of plan', icon: TrendingUp, className: 'bg-secondary-green/10 text-secondary-green border-secondary-green/30' };
+      case 'on-plan':
+        return { label: 'On plan', icon: null, className: 'bg-brand-gold/10 text-brand-gold border-brand-gold/30' };
+      case 'behind':
+        return { label: 'Behind plan', icon: TrendingDown, className: 'bg-destructive/10 text-destructive border-destructive/30' };
+      default:
+        return { label: 'No baseline', icon: null, className: 'bg-muted text-muted-foreground border-border' };
+    }
+  };
+
+  const config = getConfig();
+  const Icon = config.icon;
+
+  return (
+    <span className={cn('inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium border', config.className)}>
+      {Icon && <Icon className="h-3 w-3" />}
+      {config.label}
+    </span>
+  );
+}
+
 function ThemeChip({ name, color }: { name: string; color: string }) {
   return (
     <div 
@@ -89,32 +116,34 @@ function MetricCard({
   highlight = false, 
   highlightType = 'risk' 
 }: { 
-  value: number; 
+  value: number | string; 
   label: string; 
   highlight?: boolean; 
-  highlightType?: 'risk' | 'warning';
+  highlightType?: 'risk' | 'warning' | 'success';
 }) {
   const getHighlightStyle = () => {
     if (!highlight) return 'bg-muted/50 border-border';
     if (highlightType === 'risk') return 'bg-destructive/10 border-destructive/30';
+    if (highlightType === 'success') return 'bg-secondary-green/10 border-secondary-green/30';
     return 'bg-amber-500/10 border-amber-500/30';
   };
 
   const getValueColor = () => {
     if (!highlight) return 'text-foreground';
     if (highlightType === 'risk') return 'text-destructive';
+    if (highlightType === 'success') return 'text-secondary-green';
     return 'text-amber-600';
   };
 
   return (
     <div className={cn(
-      'flex-1 flex flex-col items-center justify-center p-5 rounded-lg border transition-all',
+      'flex-1 flex flex-col items-center justify-center p-4 rounded-lg border transition-all min-w-0',
       getHighlightStyle()
     )}>
-      <span className={cn('text-3xl font-bold leading-none mb-1.5', getValueColor())}>
+      <span className={cn('text-2xl font-bold leading-none mb-1', getValueColor())}>
         {value}
       </span>
-      <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground text-center">
+      <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground text-center">
         {label}
       </span>
     </div>
@@ -197,6 +226,145 @@ function AlignmentBreadcrumb({ themeName, themeColor, objectiveName }: { themeNa
 }
 
 // ─────────────────────────────────────────────────────────────────────────────────
+// PERFORMANCE & TIMING SECTION
+// ─────────────────────────────────────────────────────────────────────────────────
+
+function PerformanceTimingCard({ baseline, krStatus }: { baseline: BaselineInfo; krStatus: KrStatusCounts }) {
+  const deltaDisplay = baseline.delta !== null ? `${baseline.delta > 0 ? '+' : ''}${baseline.delta}pp` : '—';
+  
+  return (
+    <div className="p-4 bg-card rounded-xl border border-border space-y-4">
+      {/* Progress row */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex flex-col">
+            <span className="text-2xl font-bold text-foreground">{baseline.actual}%</span>
+            <span className="text-[10px] uppercase text-muted-foreground font-medium">Progress</span>
+          </div>
+          {baseline.expected !== null && (
+            <>
+              <span className="text-muted-foreground">/</span>
+              <div className="flex flex-col">
+                <span className="text-lg font-semibold text-muted-foreground">{baseline.expected}%</span>
+                <span className="text-[10px] uppercase text-muted-foreground font-medium">Expected</span>
+              </div>
+            </>
+          )}
+        </div>
+        <div className="flex flex-col items-end gap-1">
+          <TrendPill trend={baseline.trend} />
+          {baseline.delta !== null && (
+            <span className={cn(
+              'text-xs font-medium',
+              baseline.delta >= 0 ? 'text-secondary-green' : 'text-destructive'
+            )}>
+              {deltaDisplay}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Timing row */}
+      <div className="flex items-center gap-2 pt-2 border-t border-border">
+        <Clock className="h-4 w-4 text-muted-foreground" />
+        <span className={cn(
+          'text-sm font-medium',
+          baseline.daysToTarget !== null && baseline.daysToTarget < 0 ? 'text-destructive' : 'text-foreground'
+        )}>
+          {baseline.timingLabel}
+        </span>
+      </div>
+
+      {/* KR status distribution */}
+      <div className="flex items-center gap-2 pt-2 border-t border-border">
+        <Target className="h-4 w-4 text-muted-foreground" />
+        <div className="flex items-center gap-3 text-xs">
+          <span className="text-muted-foreground">{krStatus.total} KRs:</span>
+          {krStatus.completed > 0 && <span className="text-secondary-green">{krStatus.completed} done</span>}
+          {krStatus.onTrack > 0 && <span className="text-secondary-green">{krStatus.onTrack} on track</span>}
+          {krStatus.inProgress > 0 && <span className="text-brand-gold">{krStatus.inProgress} in progress</span>}
+          {krStatus.atRisk > 0 && <span className="text-destructive">{krStatus.atRisk} at risk</span>}
+          {krStatus.blocked > 0 && <span className="text-destructive">{krStatus.blocked} blocked</span>}
+          {krStatus.pending > 0 && <span className="text-muted-foreground">{krStatus.pending} pending</span>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────────
+// RISKS SECTION WITH ORIGIN BREAKDOWN
+// ─────────────────────────────────────────────────────────────────────────────────
+
+function RisksWithBreakdown({ risks }: { risks: AnalyticsRiskSummary }) {
+  const hasNoRisks = risks.totals.high === 0 && risks.blockedItems === 0 && risks.delayedItems === 0;
+
+  if (hasNoRisks) {
+    return (
+      <div className="p-4 bg-muted/50 rounded-lg border border-border text-center">
+        <span className="text-sm text-muted-foreground">No active risks logged</span>
+      </div>
+    );
+  }
+
+  // Build origin breakdown text
+  const originLines: string[] = [];
+  if (risks.breakdown.workItemLevel.high > 0) {
+    const firstItem = risks.breakdown.workItemsWithHighRisk[0];
+    originLines.push(`${risks.breakdown.workItemLevel.high} high risk at Work item level${firstItem ? ` (${firstItem.name})` : ''}`);
+  }
+  if (risks.breakdown.krLevel.high > 0) {
+    originLines.push(`${risks.breakdown.krLevel.high} at KR level`);
+  }
+  if (risks.breakdown.objectiveLevel.high > 0) {
+    originLines.push(`${risks.breakdown.objectiveLevel.high} at Objective level`);
+  }
+
+  return (
+    <div className="p-4 bg-card rounded-xl border border-border space-y-4">
+      {/* Main metrics */}
+      <div className="flex gap-3">
+        <MetricCard 
+          value={risks.totals.high} 
+          label="High Risks" 
+          highlight={risks.totals.high > 0}
+          highlightType="risk"
+        />
+        <MetricCard 
+          value={risks.blockedItems} 
+          label="Blocked Items" 
+          highlight={risks.blockedItems > 0}
+          highlightType="warning"
+        />
+        <MetricCard 
+          value={risks.delayedItems} 
+          label="Delayed Items" 
+          highlight={risks.delayedItems > 0}
+          highlightType="warning"
+        />
+      </div>
+
+      {/* Origin breakdown */}
+      {originLines.length > 0 && (
+        <div className="pt-3 border-t border-border">
+          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 block">
+            Risk Origin
+          </span>
+          <div className="space-y-1">
+            {originLines.map((line, idx) => (
+              <div key={idx} className="flex items-center gap-2 text-sm text-foreground">
+                <span className="w-1.5 h-1.5 rounded-full bg-destructive" />
+                {line}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────────
 // LOADING STATE
 // ─────────────────────────────────────────────────────────────────────────────────
 
@@ -223,9 +391,7 @@ function DrawerSkeleton() {
 // ─────────────────────────────────────────────────────────────────────────────────
 
 function DrawerContent({ analytics }: { analytics: ObjectiveAnalyticsData }) {
-  const { baseline, risks, coverage, insights, alignment } = analytics;
-
-  const hasNoRisks = risks.high === 0 && risks.blockedItems === 0 && risks.delayedItems === 0;
+  const { baseline, risks, coverage, insights, alignment, krStatus } = analytics;
 
   return (
     <div className="flex flex-col h-full">
@@ -247,38 +413,16 @@ function DrawerContent({ analytics }: { analytics: ObjectiveAnalyticsData }) {
 
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto p-6">
+        {/* Performance & Timing */}
+        <div className="mb-7">
+          <SectionHeader icon={TrendingUp} title="Performance & Timing" />
+          <PerformanceTimingCard baseline={baseline} krStatus={krStatus} />
+        </div>
+
         {/* Risks & Delivery Health */}
         <div className="mb-7">
           <SectionHeader icon={Shield} title="Risks & Delivery Health" />
-          
-          {hasNoRisks ? (
-            <div className="p-4 bg-muted/50 rounded-lg border border-border text-center">
-              <span className="text-sm text-muted-foreground">No active risks logged</span>
-            </div>
-          ) : (
-            <div className="p-4 bg-card rounded-xl border border-border">
-              <div className="flex gap-3">
-                <MetricCard 
-                  value={risks.high} 
-                  label="High Risks" 
-                  highlight={risks.high > 0}
-                  highlightType="risk"
-                />
-                <MetricCard 
-                  value={risks.blockedItems} 
-                  label="Blocked Items" 
-                  highlight={risks.blockedItems > 0}
-                  highlightType="warning"
-                />
-                <MetricCard 
-                  value={risks.delayedItems} 
-                  label="Delayed Items" 
-                  highlight={risks.delayedItems > 0}
-                  highlightType="warning"
-                />
-              </div>
-            </div>
-          )}
+          <RisksWithBreakdown risks={risks} />
         </div>
 
         {/* Linked Work & Coverage */}
@@ -353,7 +497,7 @@ export function ObjectiveAnalyticsDrawer({
     <Sheet open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <SheetContent 
         side="right" 
-        className="w-screen sm:w-[440px] sm:max-w-[440px] p-0 flex flex-col border-l-4 border-l-brand-gold"
+        className="w-screen sm:w-[480px] sm:max-w-[480px] p-0 flex flex-col border-l-4 border-l-brand-gold"
       >
         <SheetHeader className="sr-only">
           <SheetTitle>Objective Analytics</SheetTitle>

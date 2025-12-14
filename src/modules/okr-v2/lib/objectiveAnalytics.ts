@@ -1,6 +1,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // OKR Hub V2 — Objective-Level Analytics
 // Computes executive metrics for a single objective
+// Implements separated risk model (own vs cascaded)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { Theme, Objective, KeyResult, WorkItem, StatusCode } from './okrTypes';
@@ -8,10 +9,17 @@ import {
   computeObjectiveProgress,
   computeProgressBaseline,
   getDaysUntilDue,
-  aggregateRisks,
   clamp,
 } from './okrMetrics';
 import { TREND_THRESHOLDS } from './okrConfig';
+import {
+  RiskCounts,
+  RiskOriginBreakdown,
+  AnalyticsRiskSummary,
+  EMPTY_RISK_COUNTS,
+  addRiskCounts,
+  toRiskCounts,
+} from './okrRiskTypes';
 
 // ─────────────────────────────────────────────────────────────────────────────────
 // TYPES
@@ -26,6 +34,7 @@ export interface BaselineInfo {
   delta: number | null;
   trend: TrendDirection;
   daysToTarget: number | null;
+  timingLabel: string; // "X days to target" / "Due today" / "Overdue by X days"
 }
 
 export interface KrStatusCounts {
@@ -36,15 +45,6 @@ export interface KrStatusCounts {
   blocked: number;
   completed: number;
   pending: number;
-}
-
-export interface RiskSummary {
-  high: number;
-  medium: number;
-  low: number;
-  blockedItems: number;
-  delayedItems: number;
-  avgDaysLate: number;
 }
 
 export interface CoverageSummary {
@@ -74,7 +74,7 @@ export interface ObjectiveAnalyticsData {
   statusLabel: string;
   baseline: BaselineInfo;
   krStatus: KrStatusCounts;
-  risks: RiskSummary;
+  risks: AnalyticsRiskSummary;
   coverage: CoverageSummary;
   insights: ExecutiveInsight[];
   alignment: AlignmentPath;
@@ -102,6 +102,17 @@ const STATUS_LABELS: Record<string, string> = {
 
 function getStatusLabel(status: string): string {
   return STATUS_LABELS[status] || status;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────────
+// HELPER: Compute timing label
+// ─────────────────────────────────────────────────────────────────────────────────
+
+function getTimingLabel(daysToTarget: number | null): string {
+  if (daysToTarget === null) return 'No target date';
+  if (daysToTarget === 0) return 'Due today';
+  if (daysToTarget > 0) return `${daysToTarget} days to target`;
+  return `Overdue by ${Math.abs(daysToTarget)} days`;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────────
@@ -138,6 +149,7 @@ function computeBaselineInfo(
     delta: roundedDelta,
     trend,
     daysToTarget,
+    timingLabel: getTimingLabel(daysToTarget),
   };
 }
 
@@ -183,17 +195,42 @@ function countKrsByStatus(keyResults: KeyResult[]): KrStatusCounts {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────────
-// HELPER: Compute risk summary
+// HELPER: Compute risk summary with origin breakdown (NO CASCADING IN DISPLAY)
 // ─────────────────────────────────────────────────────────────────────────────────
 
-function computeRiskSummary(objective: Objective): RiskSummary {
+function computeRiskSummaryWithBreakdown(objective: Objective): AnalyticsRiskSummary {
   const keyResults = objective.keyResults || [];
   const allWorkItems = keyResults.flatMap(kr => kr.workItems || []);
 
-  // Aggregate risks from objective + KRs + work items
-  const objRisks = objective.risks || { high: 0, medium: 0, low: 0 };
-  const krRisks = aggregateRisks(keyResults.map(kr => ({ risks: kr.risks || { high: 0, medium: 0, low: 0 } })));
-  const wiRisks = aggregateRisks(allWorkItems.map(wi => ({ risks: wi.risks || { high: 0, medium: 0, low: 0 } })));
+  // Get OWN risks at each level (not cascaded)
+  const objectiveOwnRisks = toRiskCounts(objective.risks);
+  
+  // Sum KR own risks
+  const krLevelRisks = keyResults.reduce(
+    (acc, kr) => addRiskCounts(acc, toRiskCounts(kr.risks)),
+    EMPTY_RISK_COUNTS
+  );
+
+  // Sum work item own risks
+  const workItemLevelRisks = allWorkItems.reduce(
+    (acc, wi) => addRiskCounts(acc, toRiskCounts(wi.risks)),
+    EMPTY_RISK_COUNTS
+  );
+
+  // Total is sum of all levels
+  const totals = addRiskCounts(
+    addRiskCounts(objectiveOwnRisks, krLevelRisks),
+    workItemLevelRisks
+  );
+
+  // Build lists of items with high risks for origin display
+  const workItemsWithHighRisk = allWorkItems
+    .filter(wi => (wi.risks?.high || 0) > 0)
+    .map(wi => ({ id: wi.id, name: wi.name, type: wi.workItemType || 'work item' }));
+
+  const krsWithHighRisk = keyResults
+    .filter(kr => (kr.risks?.high || 0) > 0)
+    .map(kr => ({ id: kr.id, name: kr.name }));
 
   // Blocked items
   const blockedItems = allWorkItems.filter(wi => wi.status === 'blocked').length;
@@ -213,9 +250,14 @@ function computeRiskSummary(objective: Objective): RiskSummary {
   const avgDaysLate = delayedItems.length > 0 ? Math.round(totalDaysLate / delayedItems.length) : 0;
 
   return {
-    high: objRisks.high + krRisks.high + wiRisks.high,
-    medium: objRisks.medium + krRisks.medium + wiRisks.medium,
-    low: objRisks.low + krRisks.low + wiRisks.low,
+    totals,
+    breakdown: {
+      objectiveLevel: objectiveOwnRisks,
+      krLevel: krLevelRisks,
+      workItemLevel: workItemLevelRisks,
+      workItemsWithHighRisk,
+      krsWithHighRisk,
+    },
     blockedItems,
     delayedItems: delayedItems.length,
     avgDaysLate,
@@ -255,7 +297,7 @@ function computeCoverageSummary(objective: Objective): CoverageSummary {
 
 function buildExecutiveInsights(
   baseline: BaselineInfo,
-  risks: RiskSummary,
+  risks: AnalyticsRiskSummary,
   coverage: CoverageSummary
 ): ExecutiveInsight[] {
   const insights: ExecutiveInsight[] = [];
@@ -276,10 +318,22 @@ function buildExecutiveInsights(
     });
   }
 
-  // Priority 3: High risks
-  if (risks.high > 0) {
+  // Priority 3: High risks with origin
+  if (risks.totals.high > 0) {
+    const originParts: string[] = [];
+    if (risks.breakdown.workItemLevel.high > 0) {
+      const firstWorkItem = risks.breakdown.workItemsWithHighRisk[0];
+      originParts.push(`${risks.breakdown.workItemLevel.high} at Work item level${firstWorkItem ? ` (${firstWorkItem.name})` : ''}`);
+    }
+    if (risks.breakdown.krLevel.high > 0) {
+      originParts.push(`${risks.breakdown.krLevel.high} at KR level`);
+    }
+    if (risks.breakdown.objectiveLevel.high > 0) {
+      originParts.push(`${risks.breakdown.objectiveLevel.high} at Objective level`);
+    }
+    
     insights.push({
-      text: `There ${risks.high === 1 ? 'is' : 'are'} ${risks.high} open high-severity risk${risks.high > 1 ? 's' : ''} requiring active mitigation and periodic review.`,
+      text: `There ${risks.totals.high === 1 ? 'is' : 'are'} ${risks.totals.high} open high-severity risk${risks.totals.high > 1 ? 's' : ''} requiring active mitigation and periodic review.`,
       severity: 'high',
     });
   }
@@ -304,7 +358,7 @@ function buildExecutiveInsights(
   }
 
   // Priority 6: Positive outlook (if no concerns)
-  if (insights.length === 0 && baseline.actual >= 50 && risks.high === 0 && risks.blockedItems === 0) {
+  if (insights.length === 0 && baseline.actual >= 50 && risks.totals.high === 0 && risks.blockedItems === 0) {
     insights.push({
       text: 'Objective is broadly on track with low delivery risk at this stage.',
       severity: 'low',
@@ -359,8 +413,8 @@ export function computeObjectiveAnalytics(
   // KR status counts
   const krStatus = countKrsByStatus(objective.keyResults || []);
 
-  // Risk summary
-  const risks = computeRiskSummary(objective);
+  // Risk summary with breakdown
+  const risks = computeRiskSummaryWithBreakdown(objective);
 
   // Coverage summary
   const coverage = computeCoverageSummary(objective);

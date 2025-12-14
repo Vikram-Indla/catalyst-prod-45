@@ -1,12 +1,13 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // OKR Hub V2 — Strategy Tree Component (Proper Tabular View)
 // HTML table structure with aligned columns and expandable hierarchy
-// Respects column visibility from OKRColumnChooser
+// Type-aware rows: Objective (circle icon), KR (diamond icon), Work Item (hexagon)
+// Risks column shows ONLY own risks (not cascaded from children)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { useMemo } from 'react';
 import { cn } from '@/lib/utils';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronDown, ChevronRight, Target, Diamond, Hexagon } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { format } from 'date-fns';
 import type { Theme, Objective, KeyResult, WorkItem, TreeItem } from '../../lib/okrTypes';
@@ -15,8 +16,8 @@ import type { OKRColumn } from '../OKRColumnChooser';
 import { 
   getObjectiveProgressBaseline, 
   getKeyResultProgressBaseline,
-  getObjectiveRiskSummary,
-  getKeyResultRiskSummary,
+  getObjectiveOwnRiskSummary,
+  getKeyResultOwnRiskSummary,
   getWorkItemRiskSummary,
 } from '../../lib/okrMetrics';
 
@@ -43,7 +44,7 @@ interface StrategyTreeProps {
 // Column configuration with widths and labels
 const COLUMN_CONFIG: Record<string, { label: string; width: string }> = {
   type: { label: 'Type', width: '100px' },
-  objective: { label: 'OKRs', width: '320px' },
+  objective: { label: 'OKRs', width: '340px' },
   theme: { label: 'Theme Name', width: '120px' },
   owner: { label: 'Owner', width: '120px' },
   status: { label: 'Status', width: '100px' },
@@ -108,21 +109,25 @@ function TableRow({
     } else if (item.type === 'keyResult') {
       return getKeyResultProgressBaseline(item as KeyResult);
     }
+    // Work items use their own execution progress, not KR formula
+    const workItem = item as WorkItem;
     return {
-      actual: item.progress ?? null,
+      actual: workItem.progress ?? null,
       expected: null,
       variance: null,
       trend: 'none' as const,
     };
   };
 
-  // Get risk summary based on item type
+  // Get OWN risk summary based on item type (NOT cascaded)
+  // This ensures same risk doesn't appear 3 times in tree
   const getRiskSummary = () => {
     if (item.type === 'objective') {
-      return getObjectiveRiskSummary(item as Objective);
+      return getObjectiveOwnRiskSummary(item as Objective);
     } else if (item.type === 'keyResult') {
-      return getKeyResultRiskSummary(item as KeyResult);
+      return getKeyResultOwnRiskSummary(item as KeyResult);
     }
+    // Work items show their own risks (they have no children)
     return getWorkItemRiskSummary(item as WorkItem);
   };
 
@@ -167,19 +172,38 @@ function TableRow({
 
   const children = getChildren();
 
-  // Get type label for the item
-  const getTypeLabel = () => {
-    if (item.type === 'objective') return 'Objective';
-    if (item.type === 'keyResult') return 'Key Result';
+  // Get type configuration with icon and label
+  const getTypeConfig = () => {
+    if (item.type === 'objective') {
+      return { 
+        label: 'Objective', 
+        Icon: Target,
+        className: 'bg-brand-gold/10 text-brand-gold border-brand-gold/20'
+      };
+    }
+    if (item.type === 'keyResult') {
+      return { 
+        label: 'Key Result', 
+        Icon: Diamond,
+        className: 'bg-secondary-green/10 text-secondary-green border-secondary-green/20'
+      };
+    }
     if (item.type === 'workItem') {
       const workItem = item as WorkItem;
-      if (workItem.workItemType === 'epic') return 'Epic';
-      if (workItem.workItemType === 'feature') return 'Feature';
-      if (workItem.workItemType === 'story') return 'Story';
-      return 'Work Item';
+      let label = 'Work Item';
+      if (workItem.workItemType === 'epic') label = 'Epic';
+      else if (workItem.workItemType === 'feature') label = 'Feature';
+      else if (workItem.workItemType === 'story') label = 'Story';
+      return { 
+        label, 
+        Icon: Hexagon,
+        className: 'bg-secondary-bronze/10 text-secondary-bronze border-secondary-bronze/20'
+      };
     }
-    return '—';
+    return { label: '—', Icon: null, className: 'bg-muted text-muted-foreground' };
   };
+
+  const typeConfig = getTypeConfig();
 
   // Render a single cell based on column key
   const renderCell = (colKey: string, isLast: boolean) => {
@@ -188,12 +212,11 @@ function TableRow({
         return (
           <td key={colKey} className="py-3 px-4" style={{ width: COLUMN_CONFIG[colKey].width }}>
             <span className={cn(
-              "text-[10px] font-medium px-1.5 py-0.5 rounded",
-              item.type === 'objective' && "bg-brand-gold/10 text-brand-gold",
-              item.type === 'keyResult' && "bg-secondary-green/10 text-secondary-green",
-              item.type === 'workItem' && "bg-secondary-bronze/10 text-secondary-bronze"
+              "inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded border",
+              typeConfig.className
             )}>
-              {getTypeLabel()}
+              {typeConfig.Icon && <typeConfig.Icon className="h-3 w-3" />}
+              {typeConfig.label}
             </span>
           </td>
         );
