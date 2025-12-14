@@ -103,6 +103,7 @@ import UseTrend from "./pages/admin/UseTrend";
 import UsageTrends from "./pages/admin/UsageTrends";
 import ChangesLog from "./pages/admin/ChangesLog";
 import { DesignAuditPage } from "./pages/admin/DesignAuditPage";
+import ThemeAuditPage from "./pages/admin/ThemeAuditPage";
 import ProgressBarsConfig from "./pages/admin/ProgressBarsConfig";
 import GeneralConfig from "./pages/admin/GeneralConfig";
 import WorkCodes from "./pages/admin/WorkCodes";
@@ -674,6 +675,7 @@ const App = () => (
                 <Route path="product-settings" element={<ProductSettings />} />
                 <Route path="import-data" element={<ImportData />} />
                 <Route path="design-audit" element={<DesignAuditPage />} />
+                <Route path="theme-audit" element={<ThemeAuditPage />} />
                 <Route path="kanban-settings" element={<KanbanSettings />} />
                 <Route path="resourceinventory" element={<ResourceInventory />} />
                 <Route path="developmentinventory" element={<DevelopmentInventory />} />

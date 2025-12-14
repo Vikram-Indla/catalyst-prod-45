@@ -72,19 +72,25 @@ export function WorkspaceEmptyState({
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center">
-        <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-6">
-          <Icon className="w-8 h-8 text-muted-foreground" />
+      <div 
+        className="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center"
+        style={{ backgroundColor: 'var(--bg)' }}
+      >
+        <div 
+          className="w-16 h-16 rounded-full flex items-center justify-center mb-6"
+          style={{ backgroundColor: 'var(--surface-2)' }}
+        >
+          <Icon className="w-8 h-8" style={{ color: 'var(--text-2)' }} />
         </div>
         
-        <h2 className="text-xl font-semibold text-foreground mb-2">
+        <h2 className="text-xl font-semibold mb-2" style={{ color: 'var(--text-1)' }}>
           {config.title}
         </h2>
         
-        <p className="text-sm text-muted-foreground max-w-md mb-8">
+        <p className="text-sm max-w-md mb-8" style={{ color: 'var(--text-2)' }}>
           {config.subtitle}
           {contextName && (
-            <span className="block mt-1 text-foreground font-medium">
+            <span className="block mt-1 font-medium" style={{ color: 'var(--text-1)' }}>
               {contextName}
             </span>
           )}
@@ -92,7 +98,7 @@ export function WorkspaceEmptyState({
 
         <Button 
           onClick={handleCreateClick}
-          className="bg-brand-gold hover:bg-brand-gold-hover text-background"
+          className="bg-brand-gold hover:bg-brand-gold-hover text-white"
         >
           <Plus className="w-4 h-4 mr-2" />
           {config.ctaLabel}
