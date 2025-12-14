@@ -549,6 +549,69 @@ export function getLinkedWorkItemCountForObjective(objective: Objective): number
   );
 }
 
+/**
+ * Get full risk summary for an Objective (for OkrRisksCell)
+ */
+export function getObjectiveRiskSummary(objective: Objective): {
+  highRiskCount: number;
+  mediumRiskCount: number;
+  blockedWorkCount: number;
+  delayedWorkCount: number;
+} {
+  const aggregated = aggregateRisks(objective.keyResults || []);
+  return {
+    highRiskCount: aggregated.high,
+    mediumRiskCount: aggregated.medium,
+    blockedWorkCount: getBlockedWorkCountForObjective(objective),
+    delayedWorkCount: getDelayedWorkCountForObjective(objective),
+  };
+}
+
+/**
+ * Get full risk summary for a Key Result (for OkrRisksCell)
+ */
+export function getKeyResultRiskSummary(kr: KeyResult): {
+  highRiskCount: number;
+  mediumRiskCount: number;
+  blockedWorkCount: number;
+  delayedWorkCount: number;
+} {
+  const workItems = kr.workItems || [];
+  const blockedCount = workItems.filter(wi => wi.status === 'blocked').length;
+  const delayedCount = workItems.filter(wi => {
+    const variance = (wi as any).daysVariance || (wi as any).scheduleVariance || 0;
+    return variance > 0 && wi.status !== 'blocked';
+  }).length;
+
+  return {
+    highRiskCount: kr.risks?.high || 0,
+    mediumRiskCount: kr.risks?.medium || 0,
+    blockedWorkCount: blockedCount,
+    delayedWorkCount: delayedCount,
+  };
+}
+
+/**
+ * Get full risk summary for a Work Item (for OkrRisksCell)
+ */
+export function getWorkItemRiskSummary(wi: WorkItem): {
+  highRiskCount: number;
+  mediumRiskCount: number;
+  blockedWorkCount: number;
+  delayedWorkCount: number;
+} {
+  const isBlocked = wi.status === 'blocked' ? 1 : 0;
+  const variance = (wi as any).daysVariance || (wi as any).scheduleVariance || 0;
+  const isDelayed = variance > 0 && wi.status !== 'blocked' ? 1 : 0;
+
+  return {
+    highRiskCount: wi.risks?.high || 0,
+    mediumRiskCount: wi.risks?.medium || 0,
+    blockedWorkCount: isBlocked,
+    delayedWorkCount: isDelayed,
+  };
+}
+
 // ─────────────────────────────────────────────────────────────────────────────────
 // SMART FILTERS
 // ─────────────────────────────────────────────────────────────────────────────────

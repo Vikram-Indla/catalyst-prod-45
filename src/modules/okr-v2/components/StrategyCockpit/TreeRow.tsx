@@ -1,22 +1,28 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // OKR Hub V2 — Tree Row Component
 // Expandable row for Objective/KR/WorkItem hierarchy with baseline progress & trend
+// Uses shared presentational components for visual parity with V1
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { ChevronDown, ChevronRight } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import type { TreeItem, StatusCode, OkrRiskSummary, Objective, KeyResult } from '../../lib/okrTypes';
+import type { TreeItem, Objective, KeyResult, WorkItem } from '../../lib/okrTypes';
 import { 
-  getStatusLabel, 
-  getTotalRiskCount,
   getObjectiveProgressBaseline,
   getKeyResultProgressBaseline,
+  getObjectiveRiskSummary,
+  getKeyResultRiskSummary,
+  getWorkItemRiskSummary,
 } from '../../lib/okrMetrics';
-import { TrendIcon } from '../TrendIcon';
 import { format } from 'date-fns';
+
+// Shared presentational components
+import { OkrStatusPill } from '../shared/OkrStatusPill';
+import { OkrProgressCell } from '../shared/OkrProgressCell';
+import { OkrRisksCell } from '../shared/OkrRisksCell';
+import { OkrLinkedCell } from '../shared/OkrLinkedCell';
+import { OkrThemeDot } from '../shared/OkrThemeDot';
 
 // Indentation per level (inside first column only)
 const INDENT_PX: Record<number, number> = {
@@ -45,106 +51,6 @@ const TYPE_ICONS: Record<string, string> = {
   workItem: '↳',
 };
 
-function getStatusVariant(status: StatusCode): 'default' | 'secondary' | 'destructive' | 'outline' {
-  switch (status) {
-    case 'completed':
-      return 'default';
-    case 'on-track':
-    case 'in-progress':
-      return 'secondary';
-    case 'at-risk':
-    case 'off-track':
-    case 'blocked':
-      return 'destructive';
-    default:
-      return 'outline';
-  }
-}
-
-function RiskChip({ risks }: { risks: OkrRiskSummary }) {
-  const total = getTotalRiskCount(risks);
-  if (total === 0) {
-    return <span className="text-xs text-muted-foreground text-right">—</span>;
-  }
-
-  // Compact format: "2H / 1M" or just "3H"
-  const parts: string[] = [];
-  if (risks.high > 0) parts.push(`${risks.high}H`);
-  if (risks.medium > 0) parts.push(`${risks.medium}M`);
-  if (risks.low > 0) parts.push(`${risks.low}L`);
-
-  const hasHigh = (risks.high || 0) > 0;
-  
-  return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <span className={cn(
-            'text-xs font-medium whitespace-nowrap text-right block',
-            hasHigh ? 'text-destructive' : 'text-muted-foreground'
-          )}>
-            {parts.join(' / ')}
-          </span>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>High: {risks.high}, Medium: {risks.medium}, Low: {risks.low}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
-  );
-}
-
-function LinkedChip({ item }: { item: TreeItem }) {
-  let label: string | null = null;
-  if (item.type === 'objective' && 'keyResults' in item) {
-    label = `${item.keyResults?.length || 0} KRs`;
-  } else if (item.type === 'keyResult' && 'workItems' in item) {
-    label = `${item.workItems?.length || 0} items`;
-  }
-
-  if (!label) return null;
-
-  return (
-    <Badge variant="outline" className="text-xs font-medium whitespace-nowrap">
-      {label}
-    </Badge>
-  );
-}
-
-function ProgressWithTrend({ item }: { item: TreeItem }) {
-  // Calculate baseline and trend based on item type
-  let actual = item.progress;
-  let trend: 'ahead' | 'on-plan' | 'behind' | 'none' = 'none';
-  let variance: number | null = null;
-
-  if (item.type === 'objective') {
-    const baseline = getObjectiveProgressBaseline(item as Objective);
-    actual = baseline.actual;
-    trend = baseline.trend;
-    variance = baseline.variance;
-  } else if (item.type === 'keyResult') {
-    const baseline = getKeyResultProgressBaseline(item as KeyResult);
-    actual = baseline.actual;
-    trend = baseline.trend;
-    variance = baseline.variance;
-  }
-
-  // Only show dash if actual is null/undefined (not just 0)
-  if (actual == null) {
-    return <span className="text-xs text-muted-foreground text-right block">—</span>;
-  }
-
-  return (
-    <div className="flex items-center justify-end gap-2 overflow-hidden">
-      <Progress value={Math.min(actual, 100)} className="h-2 flex-1 min-w-0 max-w-20" />
-      <span className="text-xs font-semibold text-foreground flex-shrink-0 w-8 text-right">
-        {Math.round(actual)}%
-      </span>
-      {trend !== 'none' && <TrendIcon trend={trend} variance={variance} size="sm" />}
-    </div>
-  );
-}
-
 export function TreeRow({
   item,
   level,
@@ -159,6 +65,34 @@ export function TreeRow({
   gridTemplateColumns,
 }: TreeRowProps) {
   const indentPx = INDENT_PX[level] ?? level * 24;
+
+  // Get baseline and risk summary based on item type
+  const getProgressBaseline = () => {
+    if (item.type === 'objective') {
+      return getObjectiveProgressBaseline(item as Objective);
+    } else if (item.type === 'keyResult') {
+      return getKeyResultProgressBaseline(item as KeyResult);
+    }
+    // Work items: simple progress, no baseline trend
+    return {
+      actual: item.progress ?? null,
+      expected: null,
+      variance: null,
+      trend: 'none' as const,
+    };
+  };
+
+  const getRiskSummary = () => {
+    if (item.type === 'objective') {
+      return getObjectiveRiskSummary(item as Objective);
+    } else if (item.type === 'keyResult') {
+      return getKeyResultRiskSummary(item as KeyResult);
+    }
+    return getWorkItemRiskSummary(item as WorkItem);
+  };
+
+  const baseline = getProgressBaseline();
+  const riskSummary = getRiskSummary();
 
   // Render a column cell based on column key
   const renderColumn = (colKey: string, isLast: boolean) => {
@@ -184,13 +118,9 @@ export function TreeRow({
               <span className="w-5 flex-shrink-0" />
             )}
 
-            {/* Theme color dot for objectives */}
+            {/* Theme color dot for objectives using shared component */}
             {item.type === 'objective' && (
-              <span
-                className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                style={{ backgroundColor: themeColor }}
-                title={themeName}
-              />
+              <OkrThemeDot color={themeColor} themeName={themeName} size="md" />
             )}
 
             {/* Type icon */}
@@ -246,16 +176,14 @@ export function TreeRow({
       case 'status':
         return (
           <div key={colKey} className="overflow-hidden whitespace-nowrap">
-            <Badge variant="outline" className="text-xs capitalize">
-              {getStatusLabel(item.status)}
-            </Badge>
+            <OkrStatusPill status={item.status} size="sm" />
           </div>
         );
 
       case 'progress':
         return (
           <div key={colKey} className="overflow-hidden">
-            <ProgressWithTrend item={item} />
+            <OkrProgressCell baseline={baseline} compact />
           </div>
         );
 
@@ -282,14 +210,25 @@ export function TreeRow({
       case 'risks':
         return (
           <div key={colKey} className="overflow-hidden whitespace-nowrap text-right">
-            <RiskChip risks={item.risks} />
+            <OkrRisksCell summary={riskSummary} compact />
           </div>
         );
 
       case 'krs':
+        const krCount = item.type === 'objective' ? ((item as Objective).keyResults?.length || 0) : 0;
+        const workItemCount = item.type === 'objective' 
+          ? ((item as Objective).keyResults || []).reduce((sum, kr) => sum + (kr.workItems?.length || 0), 0)
+          : item.type === 'keyResult'
+            ? ((item as KeyResult).workItems?.length || 0)
+            : 0;
+        
         return (
           <div key={colKey} className={cn("overflow-hidden whitespace-nowrap", isLast && "text-right")}>
-            <LinkedChip item={item} />
+            <OkrLinkedCell 
+              krCount={krCount} 
+              workItemCount={workItemCount}
+              itemType={item.type as 'objective' | 'keyResult' | 'workItem'}
+            />
           </div>
         );
 
