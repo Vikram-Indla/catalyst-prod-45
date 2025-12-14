@@ -1,11 +1,12 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { ChevronLeft, ChevronRight, Box, ListTree, Map, Lock, Users, Columns3 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useUserRole } from '@/hooks/useUserRole';
 import { SidebarSectionHeader } from './SidebarSectionHeader';
+import { PRODUCT_ROOM_NAV_ICONS } from '@/components/icons/ProductRoomNavIcons';
 
 interface ProductRoomSidebarProps {
   expanded: boolean;
@@ -14,11 +15,11 @@ interface ProductRoomSidebarProps {
 }
 
 const menuItems = [
-  { title: 'Product Room', path: '/product/room', icon: Box, exact: true },
-  { title: 'Product Backlog', path: '/industry/backlog', icon: ListTree, exact: true },
-  { title: 'Product Kanban', path: '/industry/kanban', icon: Columns3, exact: true },
-  { title: 'Product Roadmap', path: '/industry/roadmaps', icon: Map, exact: false },
-  { title: 'Product Capacity', path: '/product/capacity', icon: Users, exact: true },
+  { title: 'Product Room', path: '/product/room', exact: true },
+  { title: 'Product Backlog', path: '/industry/backlog', exact: false },
+  { title: 'Product Kanban', path: '/industry/kanban', exact: true },
+  { title: 'Product Roadmap', path: '/industry/roadmaps', exact: false },
+  { title: 'Product Capacity', path: '/product/capacity', exact: true },
 ];
 
 export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoomSidebarProps) {
@@ -59,7 +60,7 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
         {/* Navigation Menu */}
         <nav className="p-2 space-y-1">
         {menuItems.map(item => {
-            const Icon = item.icon;
+            const CustomIcon = PRODUCT_ROOM_NAV_ICONS[item.title];
             const active = isActive(item.path, item.exact);
 
             if (!expanded) {
@@ -69,7 +70,7 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
                     <button
                       onClick={() => navigate(item.path)}
                       className={cn(
-                        'w-full h-10 flex items-center justify-center rounded-md transition-all relative',
+                        'w-full h-10 flex items-center justify-center rounded-md transition-all relative group',
                         active && 'bg-[rgba(92,124,92,0.08)]'
                       )}
                       style={active ? { color: '#5c7c5c' } : { color: '#4b5563' }}
@@ -81,7 +82,7 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
                           style={{ backgroundColor: '#5c7c5c' }}
                         />
                       )}
-                      <Icon className="h-5 w-5" />
+                      {CustomIcon && <CustomIcon className="h-5 w-5 group-hover:text-brand-gold-hover" />}
                     </button>
                   </TooltipTrigger>
                   <TooltipContent side="right" className="bg-popover border">
@@ -99,7 +100,7 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
                   onToggle(); // Collapse sidebar on click
                 }}
                 className={cn(
-                  'w-full h-10 flex items-center gap-3 px-3 rounded-md transition-all relative text-left',
+                  'w-full h-10 flex items-center gap-3 px-3 rounded-md transition-all relative text-left group',
                   active && 'bg-[rgba(92,124,92,0.08)] font-semibold'
                 )}
                 style={active ? { color: '#5c7c5c' } : { color: '#4b5563' }}
@@ -111,7 +112,7 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
                     style={{ backgroundColor: '#5c7c5c' }}
                   />
                 )}
-                <Icon className="h-5 w-5" />
+                {CustomIcon && <CustomIcon className="h-5 w-5 group-hover:text-brand-gold-hover" />}
                 <span className="text-[13px] font-medium">{item.title}</span>
               </button>
             );
