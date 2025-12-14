@@ -1,12 +1,11 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // OKR Hub V2 — Strategy Tree Component
-// Hierarchical tree view of Themes → Objectives → KRs → Work Items
+// Hierarchical tree view of Objectives → KRs → Work Items (themes are filters only)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { useMemo } from 'react';
 import { TreeRow } from './TreeRow';
-import { matchesSearch } from '../../lib/okrMetrics';
-import type { Theme, TreeItem } from '../../lib/okrTypes';
+import type { Theme, Objective, TreeItem } from '../../lib/okrTypes';
 
 interface StrategyTreeProps {
   themes: Theme[];
@@ -27,105 +26,105 @@ export function StrategyTree({
   onToggle,
   onSelect,
 }: StrategyTreeProps) {
-  // Filter themes based on selected theme IDs and search query
-  const filteredThemes = useMemo(() => {
-    let result = themes;
-
-    // Filter by selected theme IDs
+  // Build flat list of objectives from themes, respecting theme filter
+  const filteredObjectives = useMemo(() => {
+    // Filter themes based on selected theme IDs
+    let filteredThemes = themes;
     if (selectedThemeIds.length > 0) {
-      result = result.filter((t) => selectedThemeIds.includes(t.id));
+      filteredThemes = themes.filter((t) => selectedThemeIds.includes(t.id));
     }
 
-    // Filter by search query (deep search through hierarchy)
+    // Flatten objectives from filtered themes, attaching theme info
+    const objectivesWithTheme: Array<{
+      objective: Objective;
+      themeColor: string;
+      themeName: string;
+    }> = [];
+
+    filteredThemes.forEach((theme) => {
+      theme.objectives?.forEach((obj) => {
+        objectivesWithTheme.push({
+          objective: obj,
+          themeColor: theme.color || 'hsl(var(--brand-gold))',
+          themeName: theme.name,
+        });
+      });
+    });
+
+    // Apply search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      result = result.filter((theme) => {
-        if (theme.name.toLowerCase().includes(query)) return true;
-        return theme.objectives?.some((obj) => {
-          if (obj.name.toLowerCase().includes(query)) return true;
-          return obj.keyResults?.some((kr) => {
-            if (kr.name.toLowerCase().includes(query)) return true;
-            return kr.workItems?.some((wi) => wi.name.toLowerCase().includes(query));
-          });
+      return objectivesWithTheme.filter(({ objective }) => {
+        // Match objective name
+        if (objective.name.toLowerCase().includes(query)) return true;
+        // Match KR names
+        return objective.keyResults?.some((kr) => {
+          if (kr.name.toLowerCase().includes(query)) return true;
+          // Match work item names
+          return kr.workItems?.some((wi) => wi.name.toLowerCase().includes(query));
         });
       });
     }
 
-    return result;
+    return objectivesWithTheme;
   }, [themes, selectedThemeIds, searchQuery]);
 
   // Build flat list of rows for rendering
   const renderTree = () => {
     const rows: React.ReactNode[] = [];
 
-    filteredThemes.forEach((theme) => {
-      // Theme row
+    filteredObjectives.forEach(({ objective, themeColor, themeName }) => {
+      // Objective row (level 0)
       rows.push(
         <TreeRow
-          key={theme.id}
-          item={theme}
+          key={objective.id}
+          item={objective}
           level={0}
-          isExpanded={expandedIds.includes(theme.id)}
-          isSelected={selectedItem?.id === theme.id}
-          hasChildren={(theme.objectives?.length || 0) > 0}
+          isExpanded={expandedIds.includes(objective.id)}
+          isSelected={selectedItem?.id === objective.id}
+          hasChildren={(objective.keyResults?.length || 0) > 0}
           onToggle={onToggle}
           onSelect={onSelect}
-          themeColor={theme.color}
+          themeColor={themeColor}
+          themeName={themeName}
         />
       );
 
-      // Objective rows (if theme is expanded)
-      if (expandedIds.includes(theme.id)) {
-        theme.objectives?.forEach((obj) => {
+      // Key Result rows (if objective is expanded)
+      if (expandedIds.includes(objective.id)) {
+        objective.keyResults?.forEach((kr) => {
           rows.push(
             <TreeRow
-              key={obj.id}
-              item={obj}
+              key={kr.id}
+              item={kr}
               level={1}
-              isExpanded={expandedIds.includes(obj.id)}
-              isSelected={selectedItem?.id === obj.id}
-              hasChildren={(obj.keyResults?.length || 0) > 0}
+              isExpanded={expandedIds.includes(kr.id)}
+              isSelected={selectedItem?.id === kr.id}
+              hasChildren={(kr.workItems?.length || 0) > 0}
               onToggle={onToggle}
               onSelect={onSelect}
-              themeColor={theme.color}
+              themeColor={themeColor}
+              themeName={themeName}
             />
           );
 
-          // Key Result rows (if objective is expanded)
-          if (expandedIds.includes(obj.id)) {
-            obj.keyResults?.forEach((kr) => {
+          // Work Item rows (if KR is expanded)
+          if (expandedIds.includes(kr.id)) {
+            kr.workItems?.forEach((wi) => {
               rows.push(
                 <TreeRow
-                  key={kr.id}
-                  item={kr}
+                  key={wi.id}
+                  item={wi}
                   level={2}
-                  isExpanded={expandedIds.includes(kr.id)}
-                  isSelected={selectedItem?.id === kr.id}
-                  hasChildren={(kr.workItems?.length || 0) > 0}
+                  isExpanded={false}
+                  isSelected={selectedItem?.id === wi.id}
+                  hasChildren={false}
                   onToggle={onToggle}
                   onSelect={onSelect}
-                  themeColor={theme.color}
+                  themeColor={themeColor}
+                  themeName={themeName}
                 />
               );
-
-              // Work Item rows (if KR is expanded)
-              if (expandedIds.includes(kr.id)) {
-                kr.workItems?.forEach((wi) => {
-                  rows.push(
-                    <TreeRow
-                      key={wi.id}
-                      item={wi}
-                      level={3}
-                      isExpanded={false}
-                      isSelected={selectedItem?.id === wi.id}
-                      hasChildren={false}
-                      onToggle={onToggle}
-                      onSelect={onSelect}
-                      themeColor={theme.color}
-                    />
-                  );
-                });
-              }
             });
           }
         });
@@ -148,9 +147,9 @@ export function StrategyTree({
 
       {/* Tree Content */}
       <div className="flex-1 overflow-y-auto">
-        {filteredThemes.length === 0 ? (
+        {filteredObjectives.length === 0 ? (
           <div className="flex items-center justify-center h-32 text-muted-foreground text-sm">
-            No themes found
+            No objectives found
           </div>
         ) : (
           renderTree()

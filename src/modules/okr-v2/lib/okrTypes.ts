@@ -149,13 +149,15 @@ export interface RollupMetrics {
   totalRealizedValue: number;
 }
 
-// Tree item for unified tree rendering
-export type TreeItem = Theme | Objective | KeyResult | WorkItem;
+// Tree item for unified tree rendering (no theme level in tree)
+export type TreeItem = Objective | KeyResult | WorkItem;
+export type TreeItemLevel = 'objective' | 'keyResult' | 'workItem';
 
 export interface TreeNodeData {
   item: TreeItem;
   level: number;
   themeColor: string;
+  themeName: string;
   hasChildren: boolean;
   isExpanded: boolean;
   isSelected: boolean;
