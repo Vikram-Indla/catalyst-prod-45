@@ -31,16 +31,18 @@ interface BusinessRequestsKanbanViewProps {
   onExpandedChange?: (expanded: boolean) => void;
 }
 
-import { PROCESS_STEPS } from '@/types/business-request';
-
-// Use the centralized PROCESS_STEPS as Kanban columns - no colors (neutral styling)
-const KANBAN_COLUMNS = PROCESS_STEPS.map(step => ({
-  id: step.value,
-  label: step.label,
-}));
+import { useActiveDemandProcessSteps } from '@/hooks/useDemandProcessSteps';
 
 export function BusinessRequestsKanbanView({ requests, onRequestSelect, allExpanded, onExpandedChange }: BusinessRequestsKanbanViewProps) {
   const queryClient = useQueryClient();
+  const { data: processSteps = [] } = useActiveDemandProcessSteps();
+  
+  // Use the dynamic process steps as Kanban columns - no colors (neutral styling)
+  const KANBAN_COLUMNS = processSteps.map(step => ({
+    id: step.value,
+    label: step.label,
+  }));
+  
   // All columns collapsed by default except 'in_progress'
   const [collapsedColumns, setCollapsedColumns] = useState<Set<string>>(
     new Set(['request_received', 'under_study', 'awaiting_business_response', 'reopen', 'on_hold', 'closed', 'completed'])

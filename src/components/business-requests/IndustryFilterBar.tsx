@@ -4,7 +4,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { ChevronDown, Check, X, Filter } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useCatalystContext } from '@/contexts/CatalystContext';
-import { PROCESS_STEPS, DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
+import { DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
+import { useActiveDemandProcessSteps } from '@/hooks/useDemandProcessSteps';
 
 const quarterOptions = [
   { value: 'Q1-2025', label: 'Q1 2025' },
@@ -19,6 +20,7 @@ const quarterOptions = [
 
 export function IndustryFilterBar() {
   const { industryFilters, setIndustryFilters } = useCatalystContext();
+  const { data: demandProcessSteps = [] } = useActiveDemandProcessSteps();
   const [deliveryPlatformOpen, setDeliveryPlatformOpen] = useState(false);
   const [processStepOpen, setProcessStepOpen] = useState(false);
   const [quarterOpen, setQuarterOpen] = useState(false);
@@ -63,7 +65,7 @@ export function IndustryFilterBar() {
   const getProcessStepDisplayText = () => {
     if (processSteps.length === 0) return 'Status';
     if (processSteps.length === 1) {
-      return PROCESS_STEPS.find(s => s.value === processSteps[0])?.label || processSteps[0];
+      return demandProcessSteps.find(s => s.value === processSteps[0])?.label || processSteps[0];
     }
     return `${processSteps.length} statuses`;
   };
@@ -147,7 +149,7 @@ export function IndustryFilterBar() {
         </PopoverTrigger>
         <PopoverContent className="w-52 p-0 bg-popover border shadow-lg z-50" align="start">
           <div className="max-h-60 overflow-auto">
-            {PROCESS_STEPS.map(step => (
+            {demandProcessSteps.map(step => (
               <div
                 key={step.value}
                 className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-muted/50"

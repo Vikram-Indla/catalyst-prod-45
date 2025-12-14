@@ -15,9 +15,9 @@ import {
   COMPLEXITY_OPTIONS, 
   URGENCY_OPTIONS, 
   TRACK_OPTIONS,
-  PROCESS_STEPS,
   HEALTH_OPTIONS
 } from '@/types/business-request';
+import { useDemandProcessStepOptions } from '@/hooks/useDemandProcessSteps';
 
 interface OverviewTabProps {
   data: Partial<BusinessRequest>;
@@ -27,6 +27,8 @@ interface OverviewTabProps {
 }
 
 export function OverviewTab({ data, isEditMode, onChange, hideProcessStepHealth = false }: OverviewTabProps) {
+  const { options: processStepOptions } = useDemandProcessStepOptions();
+  
   return (
     <div className="space-y-6 p-5">
       {/* Classification Section */}
@@ -47,7 +49,7 @@ export function OverviewTab({ data, isEditMode, onChange, hideProcessStepHealth 
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {PROCESS_STEPS.map((step) => (
+                    {processStepOptions.map((step) => (
                       <SelectItem key={step.value} value={step.value}>
                         <span className="text-sm">
                           {step.label}

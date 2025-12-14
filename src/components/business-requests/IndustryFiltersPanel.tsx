@@ -5,7 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { PROCESS_STEPS } from '@/types/business-request';
+import { useActiveDemandProcessSteps } from '@/hooks/useDemandProcessSteps';
 import { cn } from '@/lib/utils';
 
 interface FilterOption {
@@ -39,6 +39,8 @@ export function IndustryFiltersPanel({
   deliveryPlatformOptions,
   quarterOptions
 }: IndustryFiltersPanelProps) {
+  const { data: demandProcessSteps = [] } = useActiveDemandProcessSteps();
+  
   const handleDeliveryPlatformChange = (value: string) => {
     onFiltersChange({ ...filters, deliveryPlatform: value });
   };
@@ -124,7 +126,7 @@ export function IndustryFiltersPanel({
             Process Step
           </Label>
           <div className="space-y-1.5 max-h-48 overflow-auto border border-border rounded-md p-2 bg-background">
-            {PROCESS_STEPS.map(step => (
+            {demandProcessSteps.map(step => (
               <label
                 key={step.value}
                 className="flex items-center gap-2 py-1 px-1 rounded hover:bg-muted/50 cursor-pointer"
