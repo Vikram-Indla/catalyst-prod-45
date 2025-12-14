@@ -15,12 +15,8 @@ export function ProgressBar({
   showLabel = false,
   className 
 }: ProgressBarProps) {
-  const getColor = () => {
-    if (score === null || score === undefined) return "bg-brand-gold";
-    if (score >= 0.7) return "bg-success";
-    if (score >= 0.4) return "bg-warning";
-    return "bg-destructive";
-  };
+  // Progress bar is always gold - trend icon shows status
+  const getColor = () => "bg-brand-gold";
 
   const heightClass = height === "sm" ? "h-1.5" : height === "lg" ? "h-3" : "h-2";
   const clampedProgress = Math.min(100, Math.max(0, progress));

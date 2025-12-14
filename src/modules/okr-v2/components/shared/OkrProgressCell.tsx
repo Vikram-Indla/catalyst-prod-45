@@ -13,30 +13,9 @@ interface OkrProgressCellProps {
   compact?: boolean;
 }
 
-// Get progress bar color based on status
-function getProgressBarColor(status?: string, progress?: number): string {
-  const normalizedStatus = status?.toLowerCase().replace(/\s+/g, '-') || '';
-  
-  switch (normalizedStatus) {
-    case 'on-track':
-    case 'completed':
-      return 'bg-secondary-green';
-    case 'in-progress':
-      return 'bg-brand-gold';
-    case 'at-risk':
-      return 'bg-[#e07830]';
-    case 'off-track':
-    case 'blocked':
-      return 'bg-[#c44536]';
-    default:
-      // Fallback based on progress value
-      if (progress !== undefined) {
-        if (progress >= 70) return 'bg-secondary-green';
-        if (progress >= 40) return 'bg-brand-gold';
-        return 'bg-[#c44536]';
-      }
-      return 'bg-muted-foreground';
-  }
+// Progress bar is always gold - trend icon shows status
+function getProgressBarColor(): string {
+  return 'bg-brand-gold';
 }
 
 // Trend icon component
@@ -84,7 +63,7 @@ export function OkrProgressCell({ baseline, status, compact = false }: OkrProgre
     return <span className="text-sm text-muted-foreground text-right block">—</span>;
   }
 
-  const barColor = getProgressBarColor(status, actual);
+  const barColor = getProgressBarColor();
 
   return (
     <div className="flex items-center justify-start gap-3 w-full">
