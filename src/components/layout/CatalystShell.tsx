@@ -84,8 +84,8 @@ function CatalystShellContent() {
         }
         // Show empty state if no program selected
         return (
-          <div className="w-14 h-full border-r bg-card flex items-center justify-center p-2 text-center">
-            <div className="text-muted-foreground text-xs">
+          <div className="w-14 h-full flex items-center justify-center p-2 text-center" style={{ borderRight: '1px solid var(--border)', backgroundColor: 'var(--surface-1)' }}>
+            <div style={{ color: 'var(--text-3)' }} className="text-xs">
               <p className="font-medium">No Program</p>
             </div>
           </div>
@@ -106,8 +106,8 @@ function CatalystShellContent() {
         }
         // Show empty state if no project selected
         return (
-          <div className="w-14 h-full border-r bg-card flex items-center justify-center p-2 text-center">
-            <div className="text-muted-foreground text-xs">
+          <div className="w-14 h-full flex items-center justify-center p-2 text-center" style={{ borderRight: '1px solid var(--border)', backgroundColor: 'var(--surface-1)' }}>
+            <div style={{ color: 'var(--text-3)' }} className="text-xs">
               <p className="font-medium">No Project</p>
             </div>
           </div>
@@ -125,7 +125,7 @@ function CatalystShellContent() {
   };
 
   return (
-    <div className="h-screen flex flex-col" style={{ backgroundColor: 'var(--surface-0)' }}>
+    <div className="h-screen flex flex-col" style={{ backgroundColor: 'var(--bg)' }}>
       {/* Global Header - Catalyst Native */}
       <CatalystHeader />
 
