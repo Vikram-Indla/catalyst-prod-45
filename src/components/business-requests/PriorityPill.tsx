@@ -7,18 +7,23 @@ interface PriorityPillProps {
 }
 
 export function PriorityPill({ tier, className }: PriorityPillProps) {
-  const { label, color, bgColor } = getTierDisplayInfo(tier);
+  const tierInfo = getTierDisplayInfo(tier);
+
+  // Don't render pill for rejected tier or hidden tiers
+  if (tierInfo.hidden) {
+    return null;
+  }
 
   return (
     <span
       className={cn(
         'inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide border',
-        bgColor,
-        color,
+        tierInfo.bgColor,
+        tierInfo.color,
         className
       )}
     >
-      {label}
+      {tierInfo.label}
     </span>
   );
 }

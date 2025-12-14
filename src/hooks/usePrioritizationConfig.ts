@@ -138,7 +138,7 @@ export function getPriorityTier(score: number | null, config: PrioritizationConf
   return 'unscored';
 }
 
-export function getTierDisplayInfo(tier: PriorityTier): { label: string; color: string; bgColor: string } {
+export function getTierDisplayInfo(tier: PriorityTier): { label: string; color: string; bgColor: string; hidden?: boolean } {
   switch (tier) {
     case 'high':
       return { label: 'HIGH', color: 'text-green-700', bgColor: 'bg-green-50 border-green-200' };
@@ -147,7 +147,8 @@ export function getTierDisplayInfo(tier: PriorityTier): { label: string; color: 
     case 'low':
       return { label: 'LOW', color: 'text-orange-700', bgColor: 'bg-orange-50 border-orange-200' };
     case 'rejected':
-      return { label: 'REJECTED', color: 'text-red-700', bgColor: 'bg-red-50 border-red-200' };
+      // Hide rejected tier from priority pill display
+      return { label: 'REJECTED', color: 'text-red-700', bgColor: 'bg-red-50 border-red-200', hidden: true };
     default:
       return { label: 'UNSCORED', color: 'text-muted-foreground', bgColor: 'bg-muted border-border' };
   }

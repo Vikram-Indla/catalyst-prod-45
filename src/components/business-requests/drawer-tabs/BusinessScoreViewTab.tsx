@@ -152,6 +152,8 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
   const [pendingRank, setPendingRank] = useState<number | null>(null);
   const [isBreakdownOpen, setIsBreakdownOpen] = useState(false);
   const [isOverrideOpen, setIsOverrideOpen] = useState(isForceRanked);
+  const [isScoreSummaryOpen, setIsScoreSummaryOpen] = useState(false);
+  const [isWhyPriorityOpen, setIsWhyPriorityOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isSavingRank, setIsSavingRank] = useState(false);
   const [isRescoringMode, setIsRescoringMode] = useState(false);
@@ -735,35 +737,49 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
               )}
             </div>
 
-            {/* Score Summary */}
-            <div className="pt-3 border-t border-border/40">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-secondary-bronze mb-2">
-                Score Summary
-              </p>
-              <ul className="text-xs text-muted-foreground space-y-1 pl-4 list-disc">
-                {savedTier !== 'unscored' ? (
-                  <>
-                    <li>Score: {data.business_score ? (data.business_score / 100).toFixed(2) : '—'} out of 5.00</li>
-                    <li>Priority Tier: {tierInfo.label}</li>
-                    <li>Calculated from 4 weighted criteria</li>
-                  </>
-                ) : (
-                  <li className="italic">Complete all criteria and save to see summary</li>
-                )}
-              </ul>
-            </div>
+            {/* Score Summary - Collapsible */}
+            <Collapsible open={isScoreSummaryOpen} onOpenChange={setIsScoreSummaryOpen}>
+              <div className="pt-3 border-t border-border/40">
+                <CollapsibleTrigger className="flex items-center justify-between w-full group">
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-secondary-bronze">
+                    Score Summary
+                  </span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pt-2">
+                  <ul className="text-xs text-muted-foreground space-y-1 pl-4 list-disc">
+                    {savedTier !== 'unscored' ? (
+                      <>
+                        <li>Score: {data.business_score ? (data.business_score / 100).toFixed(2) : '—'} out of 5.00</li>
+                        <li>Priority Tier: {tierInfo.label}</li>
+                        <li>Calculated from 4 weighted criteria</li>
+                      </>
+                    ) : (
+                      <li className="italic">Complete all criteria and save to see summary</li>
+                    )}
+                  </ul>
+                </CollapsibleContent>
+              </div>
+            </Collapsible>
 
-            {/* Why this priority? */}
-            <div className="pt-3 border-t border-border/40">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-secondary-bronze mb-2">
-                Why this priority?
-              </p>
-              <ul className="text-xs text-muted-foreground space-y-1 pl-4 list-disc">
-                {whyBullets.map((bullet, idx) => (
-                  <li key={idx}>{bullet}</li>
-                ))}
-              </ul>
-            </div>
+            {/* Why this priority? - Collapsible */}
+            <Collapsible open={isWhyPriorityOpen} onOpenChange={setIsWhyPriorityOpen}>
+              <div className="pt-3 border-t border-border/40">
+                <CollapsibleTrigger className="flex items-center justify-between w-full group">
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-secondary-bronze">
+                    Why this priority?
+                  </span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pt-2">
+                  <ul className="text-xs text-muted-foreground space-y-1 pl-4 list-disc">
+                    {whyBullets.map((bullet, idx) => (
+                      <li key={idx}>{bullet}</li>
+                    ))}
+                  </ul>
+                </CollapsibleContent>
+              </div>
+            </Collapsible>
 
             {/* Override Rank Section */}
             {canAccessForcedRank && (
