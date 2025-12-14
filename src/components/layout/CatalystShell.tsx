@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useLocation, useParams, Outlet } from 'react-router-dom';
 import { CatalystHeader } from '@/components/ja/CatalystHeader';
 import { UnifiedSidebar } from './UnifiedSidebar';
-import { LeftContextPanel } from './LeftContextPanel';
+import { EnterpriseSidebar } from './EnterpriseSidebar';
 import { ProductRoomSidebar } from './ProductRoomSidebar';
 import { ReleaseRoomSidebar } from './ReleaseRoomSidebar';
 import { CatalystContextProvider, useCatalystContext } from '@/contexts/CatalystContext';
@@ -115,7 +115,12 @@ function CatalystShellContent() {
 
       case 'enterprise':
         if (isModuleEnabled('ENTERPRISE')) {
-          return <LeftContextPanel />;
+          return (
+            <EnterpriseSidebar
+              expanded={sidebarExpanded}
+              onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+            />
+          );
         }
         return null;
 
