@@ -49,7 +49,9 @@ export interface WorkItem {
   progress: number; // 0–100
   releaseDate?: string;
   daysVariance?: number; // +ve late, -ve early, 0 on-time
-  risks: OkrRiskSummary;
+  ownRisks: OkrRiskSummary;      // Direct risks attached to this work item
+  cascadedRisks: OkrRiskSummary; // Same as ownRisks (leaf node)
+  risks: OkrRiskSummary;         // Alias for compatibility (= ownRisks)
   value: OkrValue;
   dependencies: string[]; // ids of other WorkItems
 }
@@ -68,7 +70,9 @@ export interface KeyResult {
   unit?: string;
   weight: number; // 0–1; we will normalise per objective
   dueDate?: string;
-  risks: OkrRiskSummary;
+  ownRisks: OkrRiskSummary;      // Direct risks attached to this KR (usually empty)
+  cascadedRisks: OkrRiskSummary; // Sum of work item ownRisks
+  risks: OkrRiskSummary;         // Alias for analytics (= cascadedRisks)
   value: OkrValue;
   workItems: WorkItem[];
   direction?: 'increase' | 'decrease' | 'maintain';
@@ -84,7 +88,9 @@ export interface Objective {
   themeId: string;
   status: StatusCode;
   progress: number; // derived from KR roll-up
-  risks: OkrRiskSummary;
+  ownRisks: OkrRiskSummary;      // Direct risks attached to this objective (usually empty)
+  cascadedRisks: OkrRiskSummary; // Sum of KR cascadedRisks
+  risks: OkrRiskSummary;         // Alias for analytics (= cascadedRisks)
   value: OkrValue;
   keyResults: KeyResult[];
   ownerId?: string;
@@ -100,7 +106,9 @@ export interface Theme {
   color: string;
   status: StatusCode;
   progress: number; // derived from Objectives
-  risks: OkrRiskSummary;
+  ownRisks: OkrRiskSummary;      // Direct risks attached to this theme (usually empty)
+  cascadedRisks: OkrRiskSummary; // Sum of objective cascadedRisks
+  risks: OkrRiskSummary;         // Alias for analytics (= cascadedRisks)
   value: OkrValue;
   sectors: string[];
   strategicPillar?: string;

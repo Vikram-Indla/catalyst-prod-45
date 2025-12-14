@@ -13,9 +13,6 @@ import {
   getStatusLabel,
   getObjectiveProgressBaseline,
   getKeyResultProgressBaseline,
-  getObjectiveOwnRiskSummary,
-  getKeyResultOwnRiskSummary,
-  getWorkItemRiskSummary,
   getLinkedWorkItemCountForObjective,
 } from '../lib/okrMetrics';
 import type { Objective, KeyResult, WorkItem, Theme, WorkItemKind } from '../lib/okrTypes';
@@ -111,20 +108,20 @@ export function OKRHubV1({ snapshotId }: OKRHubV1Props) {
     // Build hierarchical rows
     return items.map(({ objective, theme }): OkrObjectiveRow => {
       const baseline = getObjectiveProgressBaseline(objective);
-      // Use OWN risks only for tree display (no cascading = no double counting)
-      const objOwnRisks = getObjectiveOwnRiskSummary(objective);
+      // Use ownRisks directly from data model (no cascading = no double counting)
+      const objOwnRisks = objective.ownRisks || { high: 0, medium: 0, low: 0 };
       const hasBaseline = baseline.expected !== null;
 
       // Build KR children
       const krChildren: OkrObjectiveRow[] = (objective.keyResults || []).map((kr): OkrObjectiveRow => {
         const krBaseline = getKeyResultProgressBaseline(kr);
-        // Use OWN risks only for KR (no cascading from work items)
-        const krOwnRisks = getKeyResultOwnRiskSummary(kr);
+        // Use ownRisks directly from data model (no cascading from work items)
+        const krOwnRisks = kr.ownRisks || { high: 0, medium: 0, low: 0 };
         
         // Build work item children for this KR
         const workItemChildren: OkrObjectiveRow[] = (kr.workItems || []).map((wi): OkrObjectiveRow => {
-          // Work items show their own risks (they have no children)
-          const wiRisks = getWorkItemRiskSummary(wi);
+          // Work items show their ownRisks (from data model)
+          const wiOwnRisks = wi.ownRisks || { high: 0, medium: 0, low: 0 };
           return {
             id: wi.id,
             name: wi.name,
@@ -135,10 +132,10 @@ export function OKRHubV1({ snapshotId }: OKRHubV1Props) {
             progressTrend: 'none',
             progressVariance: null,
             hasBaseline: false,
-            highRiskCount: wiRisks.highRiskCount,
-            mediumRiskCount: wiRisks.mediumRiskCount,
-            blockedWorkCount: wiRisks.blockedWorkCount,
-            delayedWorkCount: wiRisks.delayedWorkCount,
+            highRiskCount: wiOwnRisks.high || 0,
+            mediumRiskCount: wiOwnRisks.medium || 0,
+            blockedWorkCount: wi.status === 'blocked' ? 1 : 0,
+            delayedWorkCount: 0,
             linkedKrCount: 0,
             linkedWorkItemCount: 0,
             level: 2,
@@ -158,10 +155,10 @@ export function OKRHubV1({ snapshotId }: OKRHubV1Props) {
           progressTrend: krBaseline.trend,
           progressVariance: krBaseline.variance,
           hasBaseline: true,
-          highRiskCount: krOwnRisks.highRiskCount,
-          mediumRiskCount: krOwnRisks.mediumRiskCount,
-          blockedWorkCount: krOwnRisks.blockedWorkCount,
-          delayedWorkCount: krOwnRisks.delayedWorkCount,
+          highRiskCount: krOwnRisks.high || 0,
+          mediumRiskCount: krOwnRisks.medium || 0,
+          blockedWorkCount: 0,
+          delayedWorkCount: 0,
           linkedKrCount: 0,
           linkedWorkItemCount: kr.workItems?.length || 0,
           level: 1,
@@ -181,11 +178,11 @@ export function OKRHubV1({ snapshotId }: OKRHubV1Props) {
         progressTrend: baseline.trend,
         progressVariance: baseline.variance,
         hasBaseline,
-        // Use OWN risks only (no cascading = no double counting in tree)
-        highRiskCount: objOwnRisks.highRiskCount,
-        mediumRiskCount: objOwnRisks.mediumRiskCount,
-        blockedWorkCount: objOwnRisks.blockedWorkCount,
-        delayedWorkCount: objOwnRisks.delayedWorkCount,
+        // Use ownRisks directly from data model (no cascading = no double counting in tree)
+        highRiskCount: objOwnRisks.high || 0,
+        mediumRiskCount: objOwnRisks.medium || 0,
+        blockedWorkCount: 0,
+        delayedWorkCount: 0,
         linkedKrCount: objective.keyResults?.length || 0,
         linkedWorkItemCount: getLinkedWorkItemCountForObjective(objective),
         level: 0,

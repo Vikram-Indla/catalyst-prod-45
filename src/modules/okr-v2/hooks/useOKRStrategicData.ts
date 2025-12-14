@@ -243,6 +243,7 @@ export function useOKRStrategicData(snapshotId?: string) {
             workItemName = featureNameMap.get(workItemId) || 'Feature';
           }
           
+          // Work items: ownRisks = direct DB risks, cascadedRisks = same (leaf node)
           return {
             id: workItemId,
             type: 'workItem' as const,
@@ -253,21 +254,26 @@ export function useOKRStrategicData(snapshotId?: string) {
             themeId: '', // Will be set later
             status: 'in-progress' as StatusCode,
             progress: 50,
-            risks: workItemRisks,
+            ownRisks: workItemRisks,      // Direct risks from DB
+            cascadedRisks: workItemRisks, // Same as ownRisks (leaf node)
+            risks: workItemRisks,         // Compatibility alias
             value: { estimated: c.value_contribution || 0, realized: 0 },
             dependencies: [],
           };
         });
 
-        // Aggregate risks from work items for the KR
-        const krRisks = workItems.reduce(
+        // Cascade risks from work items (sum of work item ownRisks)
+        const cascadedRisksFromWorkItems = workItems.reduce(
           (acc, wi) => ({
-            high: acc.high + (wi.risks?.high || 0),
-            medium: acc.medium + (wi.risks?.medium || 0),
-            low: acc.low + (wi.risks?.low || 0),
+            high: acc.high + (wi.ownRisks?.high || 0),
+            medium: acc.medium + (wi.ownRisks?.medium || 0),
+            low: acc.low + (wi.ownRisks?.low || 0),
           }),
           { high: 0, medium: 0, low: 0 }
         );
+
+        // KR: ownRisks = empty (no direct KR risks in current schema)
+        const krOwnRisks = emptyRiskSummary();
 
         const kr: KeyResult = {
           id: dbKr.id,
@@ -284,7 +290,9 @@ export function useOKRStrategicData(snapshotId?: string) {
           weight: 1,
           dueDate: dbKr.due_date,
           direction: (dbKr.direction as 'increase' | 'decrease' | 'maintain') || 'increase',
-          risks: krRisks,
+          ownRisks: krOwnRisks,                    // Direct KR risks (empty)
+          cascadedRisks: cascadedRisksFromWorkItems, // Sum of work item ownRisks
+          risks: cascadedRisksFromWorkItems,       // For analytics compatibility
           value: { 
             estimated: contributions.reduce((sum: number, c: any) => sum + (c.value_contribution || 0), 0), 
             realized: 0 
@@ -316,6 +324,19 @@ export function useOKRStrategicData(snapshotId?: string) {
           });
         });
 
+        // Cascade risks from KRs (sum of KR cascadedRisks)
+        const cascadedRisksFromKRs = krs.reduce(
+          (acc, kr) => ({
+            high: acc.high + (kr.cascadedRisks?.high || 0),
+            medium: acc.medium + (kr.cascadedRisks?.medium || 0),
+            low: acc.low + (kr.cascadedRisks?.low || 0),
+          }),
+          { high: 0, medium: 0, low: 0 }
+        );
+
+        // Objective: ownRisks = empty (no direct objective risks in current schema)
+        const objOwnRisks = emptyRiskSummary();
+
         const objective: Objective = {
           id: dbObj.id,
           type: 'objective',
@@ -324,7 +345,9 @@ export function useOKRStrategicData(snapshotId?: string) {
           themeId: dbObj.theme_id || '',
           status: mapDbStatusToStatusCode(dbObj.status),
           progress: 0,
-          risks: aggregateRisks(krs),
+          ownRisks: objOwnRisks,           // Direct objective risks (empty)
+          cascadedRisks: cascadedRisksFromKRs, // Sum of KR cascadedRisks
+          risks: cascadedRisksFromKRs,     // For analytics compatibility
           value: aggregateValue(krs),
           keyResults: krs,
           ownerId: dbObj.owner_id || undefined,
@@ -348,6 +371,19 @@ export function useOKRStrategicData(snapshotId?: string) {
       const themes: Theme[] = dbThemes.map((dbTheme, index) => {
         const objectives = objectivesByTheme.get(dbTheme.id) || [];
 
+        // Cascade risks from objectives (sum of objective cascadedRisks)
+        const cascadedRisksFromObjectives = objectives.reduce(
+          (acc, obj) => ({
+            high: acc.high + (obj.cascadedRisks?.high || 0),
+            medium: acc.medium + (obj.cascadedRisks?.medium || 0),
+            low: acc.low + (obj.cascadedRisks?.low || 0),
+          }),
+          { high: 0, medium: 0, low: 0 }
+        );
+
+        // Theme: ownRisks = empty (no direct theme risks)
+        const themeOwnRisks = emptyRiskSummary();
+
         const theme: Theme = {
           id: dbTheme.id,
           type: 'theme',
@@ -355,7 +391,9 @@ export function useOKRStrategicData(snapshotId?: string) {
           color: getThemeColor(dbTheme.color_tag, index),
           status: mapDbStatusToStatusCode(dbTheme.status),
           progress: 0,
-          risks: aggregateRisks(objectives),
+          ownRisks: themeOwnRisks,              // Direct theme risks (empty)
+          cascadedRisks: cascadedRisksFromObjectives, // Sum of objective cascadedRisks
+          risks: cascadedRisksFromObjectives,   // For analytics compatibility
           value: aggregateValue(objectives),
           sectors: [],
           strategicPillar: undefined,
