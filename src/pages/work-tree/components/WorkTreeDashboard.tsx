@@ -83,13 +83,13 @@ export function WorkTreeDashboard({
     <div className="flex flex-wrap gap-4">
       {/* PI Days Left Card - Only show in Team View */}
       {view === 'team' && (
-        <Card className="border-l-4 border-l-brand-gold min-w-[200px] flex-shrink-0">
+        <Card className="min-w-[200px] flex-shrink-0" style={{ borderLeft: '3px solid var(--accent-color)' }}>
           <CardContent className="p-4">
             <div className="mb-3">
-              <span className="text-xs font-semibold text-brand-gold uppercase tracking-wide">
+              <span className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--accent-color)' }}>
                 PROGRAM INCREMENT:
               </span>
-              <div className="text-sm font-medium text-brand-gold mt-0.5">
+              <div className="text-sm font-medium mt-0.5" style={{ color: 'var(--accent-color)' }}>
                 {currentPI?.name || 'N/A'}
               </div>
             </div>

@@ -36,9 +36,9 @@ export function OkrHeatmap({ selectedSnapshot, programIncrements, onCellClick }:
 
   if (isLoading) {
     return (
-      <Card className="border-l-4 border-l-brand-gold">
+      <Card style={{ borderLeft: '3px solid var(--accent-color)' }}>
         <CardHeader>
-          <CardTitle className="text-xl font-semibold">OKR Heatmap</CardTitle>
+          <CardTitle className="text-xl font-semibold" style={{ color: 'var(--text-1)' }}>OKR Heatmap</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-12 text-muted-foreground">
@@ -51,9 +51,9 @@ export function OkrHeatmap({ selectedSnapshot, programIncrements, onCellClick }:
 
   if (!heatmapData || !heatmapData.rows || heatmapData.rows.length === 0) {
     return (
-      <Card className="border-l-4 border-l-brand-gold">
+      <Card style={{ borderLeft: '3px solid var(--accent-color)' }}>
         <CardHeader>
-          <CardTitle className="text-xl font-semibold">OKR Heatmap</CardTitle>
+          <CardTitle className="text-xl font-semibold" style={{ color: 'var(--text-1)' }}>OKR Heatmap</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-12 text-muted-foreground">
@@ -77,10 +77,10 @@ export function OkrHeatmap({ selectedSnapshot, programIncrements, onCellClick }:
   const totalObjectives = heatmapData.rows.reduce((sum, row) => sum + row.itemCount, 0);
 
   return (
-    <Card className="border-l-4 border-l-brand-gold">
+    <Card style={{ borderLeft: '3px solid var(--accent-color)' }}>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-xl font-semibold">OKR Heatmap</CardTitle>
+          <CardTitle className="text-xl font-semibold" style={{ color: 'var(--text-1)' }}>OKR Heatmap</CardTitle>
           <Button
             variant="outline"
             size="sm"
