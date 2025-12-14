@@ -42,6 +42,7 @@ interface StrategyTreeProps {
 
 // Column configuration with widths and labels
 const COLUMN_CONFIG: Record<string, { label: string; width: string }> = {
+  type: { label: 'Type', width: '100px' },
   objective: { label: 'OKRs', width: '320px' },
   theme: { label: 'Theme Name', width: '120px' },
   owner: { label: 'Owner', width: '120px' },
@@ -166,9 +167,37 @@ function TableRow({
 
   const children = getChildren();
 
+  // Get type label for the item
+  const getTypeLabel = () => {
+    if (item.type === 'objective') return 'Objective';
+    if (item.type === 'keyResult') return 'Key Result';
+    if (item.type === 'workItem') {
+      const workItem = item as WorkItem;
+      if (workItem.workItemType === 'epic') return 'Epic';
+      if (workItem.workItemType === 'feature') return 'Feature';
+      if (workItem.workItemType === 'story') return 'Story';
+      return 'Work Item';
+    }
+    return '—';
+  };
+
   // Render a single cell based on column key
   const renderCell = (colKey: string, isLast: boolean) => {
     switch (colKey) {
+      case 'type':
+        return (
+          <td key={colKey} className="py-3 px-4" style={{ width: COLUMN_CONFIG[colKey].width }}>
+            <span className={cn(
+              "text-xs font-medium px-2 py-1 rounded-md",
+              item.type === 'objective' && "bg-brand-gold/10 text-brand-gold",
+              item.type === 'keyResult' && "bg-secondary-green/10 text-secondary-green",
+              item.type === 'workItem' && "bg-secondary-bronze/10 text-secondary-bronze"
+            )}>
+              {getTypeLabel()}
+            </span>
+          </td>
+        );
+
       case 'objective':
         return (
           <td key={colKey} className="py-3 px-4" style={{ width: COLUMN_CONFIG[colKey].width }}>
@@ -356,9 +385,13 @@ export function StrategyTree({
   // Compute visible column keys from the columns prop
   const visibleColumnKeys = useMemo(() => {
     const visible = columns.filter(c => c.visible).map(c => c.key);
-    // If no columns defined or all hidden, show default set
+    // If no columns defined or all hidden, show default set (type always first)
     if (visible.length === 0) {
-      return ['objective', 'status', 'progress', 'risks', 'krs'];
+      return ['type', 'objective', 'status', 'progress', 'risks', 'krs'];
+    }
+    // Ensure type is always included and first
+    if (!visible.includes('type')) {
+      return ['type', ...visible];
     }
     return visible;
   }, [columns]);

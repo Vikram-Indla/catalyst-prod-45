@@ -21,7 +21,8 @@ interface OKRColumnChooserProps {
 }
 
 export const DEFAULT_OKR_COLUMNS: OKRColumn[] = [
-  { key: 'objective', label: 'Objective', visible: true, locked: true },
+  { key: 'type', label: 'Type', visible: true, locked: true },
+  { key: 'objective', label: 'OKRs', visible: true, locked: true },
   { key: 'theme', label: 'Theme', visible: true },
   { key: 'owner', label: 'Owner', visible: false },
   { key: 'status', label: 'Status', visible: true },
@@ -29,7 +30,7 @@ export const DEFAULT_OKR_COLUMNS: OKRColumn[] = [
   { key: 'startDate', label: 'Start Date', visible: false },
   { key: 'dueDate', label: 'Due Date', visible: false },
   { key: 'risks', label: 'Risks', visible: true },
-  { key: 'krs', label: 'KRs', visible: true },
+  { key: 'krs', label: 'Linked', visible: true },
 ];
 
 export function OKRColumnChooser({ columns, onColumnsChange }: OKRColumnChooserProps) {
