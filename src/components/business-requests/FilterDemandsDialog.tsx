@@ -5,7 +5,8 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { PROCESS_STEPS, DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
+import { DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
+import { useActiveDemandProcessSteps } from '@/hooks/useDemandProcessSteps';
 import { useDepartments } from '@/hooks/useDepartmentsAndOwners';
 import { ChevronUp, X, CalendarIcon } from 'lucide-react';
 import { format, subDays, addQuarters } from 'date-fns';
@@ -271,6 +272,7 @@ export function FilterDemandsDialog({
   onFiltersChange,
 }: FilterDemandsDialogProps) {
   const { user } = useAuth();
+  const { data: demandProcessSteps = [] } = useActiveDemandProcessSteps();
   const [localFilters, setLocalFilters] = useState<SmartFilters>(filters);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     people: true,
@@ -282,6 +284,7 @@ export function FilterDemandsDialog({
   // Fetch departments from admin-configured data (ZERO-SEED policy)
   const { data: departments = [] } = useDepartments();
   const getDepartmentOptions = () => departments.map(d => ({ value: d.id, label: d.name }));
+  const getProcessStepOptions = () => demandProcessSteps.map(s => ({ value: s.value, label: s.label }));
 
   // Reset local state when dialog opens
   useEffect(() => {
@@ -307,7 +310,7 @@ export function FilterDemandsDialog({
           ...newFilters,
           reporterIds: user?.id ? [user.id] : [],
           assigneeIds: user?.id ? [user.id] : [],
-          processStep: PROCESS_STEPS.filter(s => s.value !== 'closed').map(s => s.value),
+          processStep: demandProcessSteps.filter(s => s.value !== 'closed').map(s => s.value),
         };
         break;
       case 'highPriority':
@@ -329,7 +332,7 @@ export function FilterDemandsDialog({
         newFilters = {
           ...newFilters,
           targetDateTo: subDays(today, 1),
-          processStep: PROCESS_STEPS.filter(s => s.value !== 'closed').map(s => s.value),
+          processStep: demandProcessSteps.filter(s => s.value !== 'closed').map(s => s.value),
         };
         break;
       case 'currentQuarter':
@@ -492,7 +495,7 @@ export function FilterDemandsDialog({
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Process Step</label>
                 <MultiSelectDropdown
-                  options={PROCESS_STEPS.map(s => ({ value: s.value, label: s.label }))}
+                  options={getProcessStepOptions()}}
                   selected={localFilters.processStep || []}
                   onChange={(values) => updateFilter('processStep', values.length > 0 ? values : undefined)}
                   placeholder="Select..."

@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils';
 import { Maximize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { BusinessRequestsKanbanView } from './BusinessRequestsKanbanView';
+import { useActiveDemandProcessSteps } from '@/hooks/useDemandProcessSteps';
 
 interface BusinessRequest {
   id: string;
@@ -22,20 +23,18 @@ interface StatusSummaryKanbanViewProps {
   onRequestSelect: (id: string) => void;
 }
 
-// Status columns with colors matching production exactly
-const STATUS_COLUMNS = [
-  { id: 'new_request', label: 'New Request', color: 'bg-neutral-400' },
-  { id: 'analyse', label: 'Analyse', color: 'bg-neutral-300' },
-  { id: 'approved', label: 'Approved', color: 'bg-violet-500' },
-  { id: 'implement', label: 'Implement', color: 'bg-emerald-600' },
-  { id: 'closed', label: 'Closed', color: 'bg-neutral-500' },
-  { id: 'rejected', label: 'Rejected', color: 'bg-red-500' },
-  { id: 'on_hold', label: 'On-Hold', color: 'bg-amber-400' },
-];
-
 export function StatusSummaryKanbanView({ requests, onRequestSelect }: StatusSummaryKanbanViewProps) {
   const [expandedColumn, setExpandedColumn] = useState<string | null>(null);
   const [allExpanded, setAllExpanded] = useState(false);
+  const { data: processSteps = [] } = useActiveDemandProcessSteps();
+
+  // Use dynamic process steps as columns
+  const STATUS_COLUMNS = useMemo(() => 
+    processSteps.map(step => ({
+      id: step.value,
+      label: step.label,
+      color: 'bg-muted', // Neutral styling
+    })), [processSteps]);
 
   // Calculate counts per status
   const statusCounts = useMemo(() => {
@@ -44,7 +43,7 @@ export function StatusSummaryKanbanView({ requests, onRequestSelect }: StatusSum
       counts[col.id] = requests.filter(r => r.process_step === col.id).length;
     });
     return counts;
-  }, [requests]);
+  }, [requests, STATUS_COLUMNS]);
 
   // If a column is expanded or all expanded, show full Kanban
   if (allExpanded || expandedColumn) {
