@@ -182,7 +182,7 @@ import EnterpriseIdeation from "./pages/enterprise/EnterpriseIdeation";
 import EnterpriseImpediments from "./pages/enterprise/EnterpriseImpediments";
 import EnterpriseComingSoon from "./pages/enterprise/ComingSoon";
 import SkillsInventory from "./pages/SkillsInventory";
-import { CapacityPlanningPage } from "./components/capacity/CapacityPlanningPage";
+
 
 import BusinessRequests from "./pages/enterprise/BusinessRequests";
 import MiningComingSoon from "./pages/enterprise/MiningComingSoon";
@@ -190,7 +190,7 @@ import IndustryPage from "./pages/enterprise/DemandIntakeCatalyst";
 import IndustryComingSoon from "./pages/enterprise/IndustryComingSoon";
 import DemandSummaryPage from "./pages/enterprise/DemandSummaryPage";
 import ProductRoomPage from "./pages/ProductRoomPage";
-import CapacityPage from "./pages/product/CapacityPage";
+import CapacityPlanningPage from "./pages/CapacityPlanningPage";
 import ExecutiveRoadmapPage from "./pages/enterprise/ExecutiveRoadmapPage";
 import BusinessRequestsKanbanPage from "./modules/kanban/pages/BusinessRequestsKanbanPage";
 import ProductBacklogPage from "./modules/product-backlog/pages/ProductBacklogPage";
@@ -325,7 +325,7 @@ const App = () => (
 {/* Product (Industry routes moved outside CatalystShell) */}
 <Route path="/product/room" element={<ProductRoomPage />} />
 <Route path="/product/:productId/room" element={<ProductRoomPage />} />
-<Route path="/product/capacity" element={<CapacityPage />} />
+<Route path="/product/capacity" element={<CapacityPlanningPage />} />
               
               {/* Enterprise More Items */}
               <Route path="/enterprise/ideation" element={<EnterpriseIdeation />} />
