@@ -218,11 +218,10 @@ export function CapacityHeader({
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button 
-                  variant="outline" 
                   size="sm"
                   onClick={onSaveView}
                   disabled={isSaving}
-                  className="gap-1.5"
+                  className="gap-1.5 bg-brand-gold hover:bg-brand-gold-hover text-white border-brand-gold"
                 >
                   <Save className="h-4 w-4" />
                   Save View
