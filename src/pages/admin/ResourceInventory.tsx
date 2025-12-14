@@ -46,7 +46,7 @@ export default function ResourceInventory() {
   const [formName, setFormName] = useState('');
   const [formRoleCode, setFormRoleCode] = useState('');
   const [formRoleName, setFormRoleName] = useState('');
-  const [formCapacity, setFormCapacity] = useState<number>(100);
+  
   const [formNotes, setFormNotes] = useState('');
 
   const { data: resources = [], isLoading } = useResourceInventory();
@@ -71,7 +71,6 @@ export default function ResourceInventory() {
     setFormName('');
     setFormRoleCode('');
     setFormRoleName('');
-    setFormCapacity(100);
     setFormNotes('');
     setEditingResource(null);
   };
@@ -86,7 +85,6 @@ export default function ResourceInventory() {
     setFormName(resource.name);
     setFormRoleCode(resource.role_code || '');
     setFormRoleName(resource.role_name || '');
-    setFormCapacity(resource.default_capacity_percent);
     setFormNotes(resource.notes || '');
     setIsDialogOpen(true);
   };
@@ -98,7 +96,6 @@ export default function ResourceInventory() {
       name: formName.trim(),
       role_code: formRoleCode.trim() || null,
       role_name: formRoleName.trim() || null,
-      default_capacity_percent: Math.max(0, Math.min(100, formCapacity)),
       notes: formNotes.trim() || null,
     };
 
@@ -152,7 +149,7 @@ export default function ResourceInventory() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Resources</CardTitle>
@@ -169,22 +166,6 @@ export default function ResourceInventory() {
             <CardContent>
               <div className="text-2xl font-bold">
                 {resources.filter(r => r.is_active).length}
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Avg Capacity</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {resources.length > 0
-                  ? Math.round(
-                      resources.reduce((sum, r) => sum + r.default_capacity_percent, 0) /
-                        resources.length
-                    )
-                  : 0}
-                %
               </div>
             </CardContent>
           </Card>
@@ -247,7 +228,6 @@ export default function ResourceInventory() {
                     <th className="text-left p-3 text-sm font-medium">Name</th>
                     <th className="text-left p-3 text-sm font-medium">Role Key</th>
                     <th className="text-left p-3 text-sm font-medium">Role Name</th>
-                    <th className="text-left p-3 text-sm font-medium">Capacity</th>
                     <th className="text-left p-3 text-sm font-medium">Notes</th>
                     <th className="text-left p-3 text-sm font-medium">Active</th>
                     <th className="text-right p-3 text-sm font-medium">Actions</th>
@@ -256,13 +236,13 @@ export default function ResourceInventory() {
                 <tbody>
                   {isLoading ? (
                     <tr>
-                      <td colSpan={7} className="p-3 text-center text-muted-foreground">
+                      <td colSpan={6} className="p-3 text-center text-muted-foreground">
                         Loading...
                       </td>
                     </tr>
                   ) : filteredResources.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="p-3 text-center text-muted-foreground">
+                      <td colSpan={6} className="p-3 text-center text-muted-foreground">
                         No resources found
                       </td>
                     </tr>
@@ -282,7 +262,6 @@ export default function ResourceInventory() {
                         <td className="p-3 text-sm text-muted-foreground">
                           {resource.role_name || '—'}
                         </td>
-                        <td className="p-3 text-sm">{resource.default_capacity_percent}%</td>
                         <td className="p-3 text-sm text-muted-foreground max-w-[200px] truncate">
                           {resource.notes || '—'}
                         </td>
@@ -360,17 +339,6 @@ export default function ResourceInventory() {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="capacity">Default Capacity (%)</Label>
-                <Input
-                  id="capacity"
-                  type="number"
-                  min={0}
-                  max={100}
-                  value={formCapacity}
-                  onChange={e => setFormCapacity(Number(e.target.value))}
-                />
-              </div>
 
               <div className="space-y-2">
                 <Label htmlFor="notes">Notes</Label>
