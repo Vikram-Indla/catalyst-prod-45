@@ -7,6 +7,7 @@ import { useState, useCallback, useRef } from 'react';
 import { exportAnalyticsReportToPDF } from '../lib/exportAnalyticsReportToPDF';
 import { X, TrendingUp, TrendingDown, Minus, AlertTriangle, Clock, Link, Download, BarChart3, Target, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { RISK_COLORS } from '@/config/riskColors';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 // Dialog import removed - using custom inline modal for z-index control
@@ -485,7 +486,7 @@ const RisksBlockersSummary = ({ riskMetrics, onDrillDown }: RisksBlockersSummary
         <RiskCard
           icon={<AlertTriangle className="h-[18px] w-[18px]" />}
           title="High-Risk Items"
-          accentColor="#b85c38"
+          accentColor={RISK_COLORS.high}
           items={[
             {
               label: 'Objectives with high risks',
@@ -510,7 +511,7 @@ const RisksBlockersSummary = ({ riskMetrics, onDrillDown }: RisksBlockersSummary
         <RiskCard
           icon={<Clock className="h-[18px] w-[18px]" />}
           title="Schedule Slippage"
-          accentColor="#b8860b"
+          accentColor={RISK_COLORS.medium}
           items={[
             {
               label: 'Delayed work items',
@@ -534,7 +535,7 @@ const RisksBlockersSummary = ({ riskMetrics, onDrillDown }: RisksBlockersSummary
         <RiskCard
           icon={<Link className="h-[18px] w-[18px]" />}
           title="Coverage & Dependencies"
-          accentColor="#8b7355"
+          accentColor={RISK_COLORS.low}
           items={[
             {
               label: 'KRs with no delivery work',

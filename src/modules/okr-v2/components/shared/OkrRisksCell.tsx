@@ -1,13 +1,16 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // OKR Risks Cell — Shared Presentational Component
-// Risk chip with severity + blocked/delayed text below
+// Uses RiskBadge for severity display with blocked/delayed text below
 // ═══════════════════════════════════════════════════════════════════════════════
 
-import { cn } from '@/lib/utils';
+import { RiskBadge } from '@/components/risks/RiskBadge';
+import type { RiskCounts } from '@/config/riskColors';
 
 export interface RiskSummary {
+  critical?: number;
   highRiskCount: number;
   mediumRiskCount: number;
+  lowRiskCount?: number;
   blockedWorkCount: number;
   delayedWorkCount: number;
 }
@@ -18,39 +21,25 @@ interface OkrRisksCellProps {
 }
 
 export function OkrRisksCell({ summary, compact = false }: OkrRisksCellProps) {
-  const { highRiskCount, mediumRiskCount, blockedWorkCount, delayedWorkCount } = summary;
-  const totalRisks = highRiskCount + mediumRiskCount;
+  const { 
+    critical = 0,
+    highRiskCount, 
+    mediumRiskCount, 
+    lowRiskCount = 0,
+    blockedWorkCount, 
+    delayedWorkCount 
+  } = summary;
+
+  const totalRisks = critical + highRiskCount + mediumRiskCount + lowRiskCount;
   const totalIssues = blockedWorkCount + delayedWorkCount;
 
-  if (totalRisks === 0 && totalIssues === 0) {
-    return (
-      <span className="flex items-center justify-end w-full text-sm text-muted-foreground">
-        —
-      </span>
-    );
-  }
-
-  // Build risk chip text and color
-  let chipText = '';
-  let chipBg = '';
-  let chipText_color = '';
-
-  if (highRiskCount > 0 && mediumRiskCount > 0) {
-    // Mixed: "XH / XM" - more compact
-    chipText = `${highRiskCount}H/${mediumRiskCount}M`;
-    chipBg = 'bg-[#c44536]';
-    chipText_color = 'text-white';
-  } else if (highRiskCount > 0) {
-    // High only - compact "XH" format
-    chipText = `${highRiskCount}H`;
-    chipBg = 'bg-[#c44536]';
-    chipText_color = 'text-white';
-  } else if (mediumRiskCount > 0) {
-    // Medium only - compact "XM" format
-    chipText = `${mediumRiskCount}M`;
-    chipBg = 'bg-[#e07830]';
-    chipText_color = 'text-white';
-  }
+  // Build risk counts for RiskBadge
+  const riskCounts: RiskCounts = {
+    critical: critical > 0 ? critical : undefined,
+    high: highRiskCount > 0 ? highRiskCount : undefined,
+    medium: mediumRiskCount > 0 ? mediumRiskCount : undefined,
+    low: lowRiskCount > 0 ? lowRiskCount : undefined,
+  };
 
   // Build issues text (blocked, delayed)
   const issuesParts: string[] = [];
@@ -60,18 +49,11 @@ export function OkrRisksCell({ summary, compact = false }: OkrRisksCellProps) {
 
   return (
     <div className="flex flex-col items-end gap-0.5">
-      {chipText && (
-        <span
-          className={cn(
-            'inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-            chipBg,
-            chipText_color
-          )}
-        >
-          {chipText}
-        </span>
-      )}
-      {issuesText && (
+      <RiskBadge 
+        counts={riskCounts} 
+        size={compact ? 'sm' : 'md'} 
+      />
+      {issuesText && totalRisks > 0 && (
         <span className="text-[10px] text-muted-foreground">
           {issuesText}
         </span>
