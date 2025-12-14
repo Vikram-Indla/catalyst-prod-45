@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { format } from 'date-fns';
-import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ResourceInventoryItem } from '@/hooks/useResourceInventory';
 import { CapacityBooking } from '../hooks/useCapacityBookings';
@@ -189,7 +189,26 @@ export function GanttView({
                     className="flex-shrink-0 border-r flex items-center justify-between px-2 bg-background group-hover:bg-muted/30 transition-all duration-200"
                     style={{ width: resourceColWidth, borderColor: 'hsl(var(--border) / 0.3)' }}
                   >
-                    <div className={cn("flex items-center gap-2 min-w-0", isResourceColumnExpanded ? "flex-1" : "justify-center w-full")}>
+                  <div className={cn("flex items-center gap-2 min-w-0", isResourceColumnExpanded ? "flex-1" : "justify-center w-full")}>
+                      {/* Remove from View button (X) */}
+                      {isResourceColumnExpanded && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onRemoveResource(resource.id);
+                              }}
+                              className="w-5 h-5 rounded-full flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors opacity-0 group-hover:opacity-100"
+                              aria-label="Remove from view"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent side="top">Remove from view</TooltipContent>
+                        </Tooltip>
+                      )}
+                      
                       <div 
                         className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-semibold text-white flex-shrink-0"
                         style={{ 

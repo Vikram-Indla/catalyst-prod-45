@@ -9,11 +9,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { cn } from '@/lib/utils';
 import { CapacityBooking } from '../hooks/useCapacityBookings';
-import { useResourceInventory } from '@/hooks/useResourceInventory';
 
 interface BusinessRequest {
   id: string;
@@ -23,6 +21,12 @@ interface BusinessRequest {
   rank?: number | null;
 }
 
+interface ResourceItem {
+  id: string;
+  name: string;
+  role_code?: string | null;
+}
+
 interface AssignModalProps {
   open: boolean;
   onClose: () => void;
@@ -30,7 +34,9 @@ interface AssignModalProps {
   resourceId?: string;
   initialDate?: Date;
   businessRequests: BusinessRequest[];
+  viewResources: ResourceItem[]; // All resources in current view
   onSave: (data: {
+    resource_id: string;
     booking_type: 'ticket' | 'task' | 'leave';
     business_request_id?: string | null;
     summary?: string;
@@ -50,6 +56,7 @@ export function AssignModal({
   resourceId,
   initialDate,
   businessRequests,
+  viewResources,
   onSave,
   onDelete,
 }: AssignModalProps) {
@@ -59,6 +66,7 @@ export function AssignModal({
   const [searchQuery, setSearchQuery] = useState('');
 
   // Form state
+  const [selectedResourceId, setSelectedResourceId] = useState<string>('');
   const [selectedTicketId, setSelectedTicketId] = useState<string>('');
   const [summary, setSummary] = useState('');
   const [startDate, setStartDate] = useState<Date | undefined>();
@@ -67,11 +75,10 @@ export function AssignModal({
   const [rank, setRank] = useState<number | undefined>();
   const [kickoffDate, setKickoffDate] = useState<Date | undefined>();
 
-  // Get resource info
-  const { data: resources = [] } = useResourceInventory();
-  const resource = useMemo(() => 
-    resources.find(r => r.id === resourceId), 
-    [resources, resourceId]
+  // Get selected resource from viewResources
+  const selectedResource = useMemo(() => 
+    viewResources.find(r => r.id === selectedResourceId), 
+    [viewResources, selectedResourceId]
   );
 
   // Get selected business request
@@ -95,6 +102,7 @@ export function AssignModal({
     if (booking) {
       setTab(booking.booking_type === 'leave' ? 'task' : booking.booking_type);
       setIsLeave(booking.booking_type === 'leave');
+      setSelectedResourceId(booking.resource_id || resourceId || '');
       setSelectedTicketId(booking.business_request_id || '');
       setSummary(booking.summary || '');
       setStartDate(new Date(booking.start_date));
@@ -106,6 +114,7 @@ export function AssignModal({
       // Reset for new booking
       setTab('ticket');
       setIsLeave(false);
+      setSelectedResourceId(resourceId || '');
       setSelectedTicketId('');
       setSummary('');
       setSearchQuery('');
@@ -115,7 +124,7 @@ export function AssignModal({
       setRank(undefined);
       setKickoffDate(undefined);
     }
-  }, [booking, initialDate, open]);
+  }, [booking, initialDate, open, resourceId]);
 
   // Update quarter and rank when ticket is selected (from business_requests table)
   useEffect(() => {
@@ -129,11 +138,12 @@ export function AssignModal({
   }, [selectedRequest]);
 
   const handleSave = () => {
-    if (!startDate || !endDate) return;
+    if (!startDate || !endDate || !selectedResourceId) return;
 
     const bookingType = isLeave ? 'leave' : tab;
 
     onSave({
+      resource_id: selectedResourceId,
       booking_type: bookingType,
       business_request_id: tab === 'ticket' && !isLeave ? selectedTicketId || null : null,
       summary: (tab === 'task' || isLeave) ? summary : undefined,
@@ -160,29 +170,45 @@ export function AssignModal({
         </DialogHeader>
 
         <div className="space-y-5 py-4">
-          {/* Resource Card */}
-          {resource && (
-            <div className="flex items-center gap-3 p-3 border rounded-lg bg-muted/20">
-              <Avatar className="h-12 w-12">
-                <AvatarFallback 
-                  className="text-sm font-bold text-white"
-                  style={{ 
-                    background: resource.role_code === 'PO' 
-                      ? 'hsl(var(--secondary-green))' 
-                      : resource.role_code === 'BA' 
-                        ? 'hsl(var(--brand-gold))' 
-                        : 'hsl(var(--secondary-bronze))'
-                  }}
-                >
-                  {resource.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="font-semibold text-foreground">{resource.name}</p>
-                <p className="text-sm text-muted-foreground">{resource.role_code || 'Team Member'}</p>
-              </div>
-            </div>
-          )}
+          {/* Resource Selector - List of all resources in view */}
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">
+              Resource <span className="text-destructive">*</span>
+            </Label>
+            <Select value={selectedResourceId} onValueChange={setSelectedResourceId}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a resource..." />
+              </SelectTrigger>
+              <SelectContent className="z-[400] bg-background max-h-[200px]">
+                {viewResources.length === 0 ? (
+                  <div className="p-2 text-sm text-muted-foreground text-center">
+                    No resources in view
+                  </div>
+                ) : (
+                  viewResources.map(r => (
+                    <SelectItem key={r.id} value={r.id}>
+                      <div className="flex items-center gap-2">
+                        <div 
+                          className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-semibold text-white flex-shrink-0"
+                          style={{ 
+                            background: r.role_code === 'PO' 
+                              ? 'hsl(var(--secondary-green))' 
+                              : r.role_code === 'BA' 
+                                ? 'hsl(var(--brand-gold))' 
+                                : 'hsl(var(--secondary-bronze))'
+                          }}
+                        >
+                          {r.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                        </div>
+                        <span className="font-medium">{r.name}</span>
+                        <span className="text-muted-foreground text-xs">({r.role_code || 'N/A'})</span>
+                      </div>
+                    </SelectItem>
+                  ))
+                )}
+              </SelectContent>
+            </Select>
+          </div>
 
           {/* Leave Checkbox */}
           <div 
@@ -357,7 +383,7 @@ export function AssignModal({
           </Button>
           <Button 
             onClick={handleSave}
-            disabled={!startDate || !endDate || ((tab === 'task' || isLeave) && !summary)}
+            disabled={!selectedResourceId || !startDate || !endDate || ((tab === 'task' || isLeave) && !summary)}
             className="bg-brand-gold hover:bg-brand-gold-hover text-white"
           >
             {isEdit ? 'Save' : 'Save'}

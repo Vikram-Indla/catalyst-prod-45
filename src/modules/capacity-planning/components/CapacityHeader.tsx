@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Download, List, LayoutGrid, ChevronLeft, ChevronRight, Info, Layers, CalendarIcon } from 'lucide-react';
+import { Search, Download, List, LayoutGrid, ChevronLeft, ChevronRight, Info, Layers, CalendarIcon, Save } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -27,6 +27,9 @@ interface CapacityHeaderProps {
   // Insights panel
   showInsights: boolean;
   onToggleInsights: () => void;
+  // Save View
+  onSaveView: () => void;
+  isSaving?: boolean;
 }
 
 export function CapacityHeader({
@@ -43,6 +46,8 @@ export function CapacityHeader({
   onGroupByChange,
   showInsights,
   onToggleInsights,
+  onSaveView,
+  isSaving,
 }: CapacityHeaderProps) {
   const [calendarOpen, setCalendarOpen] = useState(false);
   
@@ -205,6 +210,25 @@ export function CapacityHeader({
                 </Button>
               </TooltipTrigger>
               <TooltipContent>{showInsights ? 'Hide details' : 'Show details'}</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          {/* Save View Button */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={onSaveView}
+                  disabled={isSaving}
+                  className="gap-1.5"
+                >
+                  <Save className="h-4 w-4" />
+                  Save View
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Save current view configuration</TooltipContent>
             </Tooltip>
           </TooltipProvider>
 
