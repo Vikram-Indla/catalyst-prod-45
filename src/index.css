@@ -300,58 +300,58 @@
    Executive dark palette with subtle alpha borders
    ============================================ */
 html[data-theme="dark"] {
-  /* Semantic Surfaces (Dark) */
+  /* Semantic Surfaces (Dark) - Professional flat backgrounds */
   --bg: #0B1220;
   --surface-0: #0B1220;
   --surface-1: #0F172A;
   --surface-2: #121E33;
-  --surface-3: #162746;
+  --surface-3: #1A2742;
   
-  /* Semantic Text (Dark) */
-  --text-1: #EAF0FF;
-  --text-2: #B9C6E4;
+  /* Semantic Text (Dark) - Improved contrast for legibility */
+  --text-1: #F0F4FF;
+  --text-2: #CBD5EA;
   --text-3: #8EA0C9;
   --text-muted: #8EA0C9;
   --text-inverse: #0B1220;
   
-  /* Semantic Borders (Dark) */
-  --border-color: rgba(255, 255, 255, 0.08);
-  --border-light: rgba(255, 255, 255, 0.04);
-  --border-strong: rgba(255, 255, 255, 0.12);
-  --divider: rgba(255, 255, 255, 0.06);
+  /* Semantic Borders (Dark) - Increased alpha for visibility */
+  --border-color: rgba(255, 255, 255, 0.12);
+  --border-light: rgba(255, 255, 255, 0.06);
+  --border-strong: rgba(255, 255, 255, 0.18);
+  --divider: rgba(255, 255, 255, 0.10);
   
   /* Semantic Icons (Dark) */
-  --icon-default: #B9C6E4;
+  --icon-default: #CBD5EA;
   --icon-muted: #8EA0C9;
   --icon-hover: var(--brand-accent);
   --icon-active: var(--brand-accent);
   
   /* Semantic Navigation (Dark) */
   --nav-bg: var(--surface-1);
-  --nav-border: rgba(255, 255, 255, 0.08);
+  --nav-border: rgba(255, 255, 255, 0.10);
   --nav-text: var(--text-2);
   --nav-text-hover: var(--text-1);
   --nav-text-active: var(--text-1);
-  --nav-hover-bg: rgba(94, 124, 99, 0.10);
-  --nav-active-bg: rgba(94, 124, 99, 0.16);
+  --nav-hover-bg: rgba(94, 124, 99, 0.12);
+  --nav-active-bg: rgba(94, 124, 99, 0.18);
   --nav-indicator: var(--brand-accent);
   
   /* Semantic Interactive (Dark) */
   --accent-color: var(--brand-accent);
   --accent-hover: var(--brand-accent-hover);
-  --accent-muted: rgba(200, 162, 106, 0.16);
+  --accent-muted: rgba(200, 162, 106, 0.18);
   --focus-ring-color: rgba(200, 162, 106, 0.40);
   
   /* Semantic Cards (Dark) */
   --card-bg: var(--surface-1);
-  --card-border: rgba(255, 255, 255, 0.08);
+  --card-border: rgba(255, 255, 255, 0.10);
   --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   
   /* Semantic Inputs (Dark) */
   --input-bg: rgba(255, 255, 255, 0.04);
-  --input-border: rgba(255, 255, 255, 0.12);
-  --input-text: #EAF0FF;
-  --input-placeholder: rgba(185, 198, 228, 0.70);
+  --input-border: rgba(255, 255, 255, 0.14);
+  --input-text: #F0F4FF;
+  --input-placeholder: rgba(203, 213, 234, 0.70);
   
   /* Toggle (Dark) */
   --toggle-track: rgba(255, 255, 255, 0.12);
@@ -389,22 +389,22 @@ html[data-theme="dark"] {
 /* .dark class for Tailwind compatibility */
 .dark {
   --background: 222 47% 8%;
-  --foreground: 224 100% 96%;
+  --foreground: 224 100% 97%;
   --card: 222 47% 11%;
-  --card-foreground: 224 100% 96%;
+  --card-foreground: 224 100% 97%;
   --popover: 222 47% 11%;
-  --popover-foreground: 224 100% 96%;
+  --popover-foreground: 224 100% 97%;
   --primary: 35 46% 60%;
   --primary-foreground: 0 0% 100%;
   --secondary: 222 47% 13%;
-  --secondary-foreground: 224 100% 96%;
+  --secondary-foreground: 224 100% 97%;
   --muted: 222 47% 13%;
-  --muted-foreground: 222 35% 66%;
+  --muted-foreground: 222 35% 72%;
   --accent: 222 47% 17%;
-  --accent-foreground: 224 100% 96%;
+  --accent-foreground: 224 100% 97%;
   --destructive: 0 63% 45%;
   --destructive-foreground: 0 0% 100%;
-  --border: 222 47% 20%;
+  --border: 222 47% 22%;
   --input: 222 47% 13%;
   --ring: 35 46% 60%;
 }
