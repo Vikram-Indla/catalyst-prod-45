@@ -38,10 +38,18 @@ function FocusWidget({
 }) {
   return (
     <div 
-      className="p-3.5 rounded-lg transition-all cursor-pointer hover:bg-[var(--surface-3)] hover:shadow-sm"
+      className="p-3.5 rounded-lg transition-all cursor-pointer group"
       style={{ 
         backgroundColor: 'var(--surface-2)',
-        border: '1px solid var(--border-color)',
+        border: '1px solid var(--divider)',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.backgroundColor = 'var(--surface-3)';
+        e.currentTarget.style.borderColor = 'var(--border-color)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.backgroundColor = 'var(--surface-2)';
+        e.currentTarget.style.borderColor = 'var(--divider)';
       }}
     >
       <div className="flex items-start justify-between gap-3">
@@ -52,22 +60,22 @@ function FocusWidget({
               accent ? "bg-[var(--accent-muted)]" : "bg-[var(--surface-3)]"
             )}
           >
-            <Icon className="w-4.5 h-4.5" style={{ color: accent ? 'var(--accent-color)' : 'var(--icon-default)' }} />
+            <Icon className="w-4 h-4" style={{ color: accent ? 'var(--accent-color)' : 'var(--icon-default)' }} />
           </div>
           <div>
             <div className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>{title}</div>
             {subtitle && (
-              <div className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>{subtitle}</div>
+              <div className="text-xs mt-0.5" style={{ color: 'var(--text-2)' }}>{subtitle}</div>
             )}
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           {secondaryLabel && secondaryCount !== undefined && (
             <div className="text-right">
-              <div className="text-lg font-semibold tabular-nums" style={{ color: 'var(--text-2)' }}>
+              <div className="text-lg font-semibold tabular-nums" style={{ color: 'var(--text-1)' }}>
                 {secondaryCount}
               </div>
-              <div className="text-[10px] uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>
+              <div className="text-[10px] uppercase tracking-wide font-medium" style={{ color: 'var(--text-2)' }}>
                 {secondaryLabel}
               </div>
             </div>
@@ -79,7 +87,7 @@ function FocusWidget({
             >
               {primaryCount}
             </div>
-            <div className="text-[10px] uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>
+            <div className="text-[10px] uppercase tracking-wide font-medium" style={{ color: 'var(--text-2)' }}>
               Open
             </div>
           </div>
@@ -99,15 +107,15 @@ function ProjectTile({ project }: { project: Project }) {
     <div 
       className="flex-shrink-0 w-[220px] rounded-lg overflow-hidden transition-all cursor-pointer group"
       style={{ 
-        border: '1px solid var(--border-color)',
+        border: '1px solid var(--divider)',
         backgroundColor: isHovered ? 'var(--surface-3)' : 'var(--surface-2)',
-        boxShadow: isHovered ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
+        boxShadow: isHovered ? '0 4px 12px rgba(0,0,0,0.1)' : 'none',
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Header accent bar - thinner 4px */}
-      <div className="h-1" style={{ backgroundColor: project.color }} />
+      {/* Header accent bar - 5px */}
+      <div className="h-[5px]" style={{ backgroundColor: project.color }} />
       
       {/* Card content */}
       <div className="p-3.5 relative">
@@ -157,20 +165,20 @@ function ProjectTile({ project }: { project: Project }) {
           <span>Last opened: 2h ago</span>
         </div>
         
-        {/* Stats row */}
+        {/* Stats row - improved dark mode readability */}
         <div className="flex items-center gap-2 mt-3">
           <span 
             className="inline-flex items-center gap-1.5 px-2 py-1 rounded text-xs font-medium"
-            style={{ backgroundColor: 'var(--accent-muted)', color: 'var(--accent-color)' }}
+            style={{ backgroundColor: 'var(--accent-muted)', color: 'var(--text-1)' }}
           >
             <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--accent-color)' }} />
             {project.openCount} open
           </span>
           <span 
             className="inline-flex items-center gap-1.5 px-2 py-1 rounded text-xs font-medium"
-            style={{ backgroundColor: 'var(--nav-active-bg)', color: 'var(--brand-active)' }}
+            style={{ backgroundColor: 'var(--nav-active-bg)', color: 'var(--text-1)' }}
           >
-            <CheckCircle className="w-3 h-3" />
+            <CheckCircle className="w-3 h-3" style={{ color: 'var(--brand-active)' }} />
             {project.doneCount} done
           </span>
         </div>
@@ -217,7 +225,7 @@ function FeedRow({ item }: { item: ActivityItem }) {
       style={{ 
         gridTemplateColumns: FEED_GRID_COLS,
         backgroundColor: isHovered ? 'var(--surface-3)' : 'transparent',
-        borderBottom: '1px solid var(--border-color)',
+        borderBottom: '1px solid var(--divider)',
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -501,12 +509,15 @@ export function HomeContent() {
                     </TabsTrigger>
                   </TabsList>
 
-                  {/* Controls - Right aligned in tabs row */}
-                  <div className="flex items-center gap-1 ml-4 shrink-0 pb-2.5 pt-1">
+                  {/* Subtle divider before controls */}
+                  <div className="h-5 w-px mx-3 shrink-0" style={{ backgroundColor: 'var(--divider)' }} />
+                  
+                  {/* Controls - Right aligned in tabs row, same baseline */}
+                  <div className="flex items-center gap-1 shrink-0 pb-2.5 pt-1">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <button 
-                          className="h-7 px-2 gap-1.5 flex items-center rounded text-sm transition-colors hover:bg-[var(--nav-hover-bg)]"
+                          className="h-7 px-2.5 gap-1.5 flex items-center rounded text-sm font-medium transition-colors hover:bg-[var(--nav-hover-bg)]"
                           style={{ color: 'var(--text-2)', background: 'transparent' }}
                         >
                           <ArrowUpDown className="w-3.5 h-3.5" style={{ color: 'currentColor' }} />
@@ -540,7 +551,7 @@ export function HomeContent() {
                     </DropdownMenu>
 
                     <button 
-                      className="h-7 px-2 gap-1.5 flex items-center rounded text-sm transition-colors hover:bg-[var(--nav-hover-bg)]"
+                      className="h-7 px-2.5 gap-1.5 flex items-center rounded text-sm font-medium transition-colors hover:bg-[var(--nav-hover-bg)]"
                       style={{ color: 'var(--text-2)', background: 'transparent' }}
                     >
                       <Filter className="w-3.5 h-3.5" style={{ color: 'currentColor' }} />
