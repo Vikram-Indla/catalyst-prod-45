@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useQuery } from "@tanstack/react-query";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useEnabledModules } from "@/hooks/useModules";
+import { useSingleItemNavigation } from "@/hooks/useSingleItemNavigation";
 import { Button } from "@/components/ui/button";
 import { CreateDropdown } from "./CreateDropdown";
 import { SearchOverlay } from "./SearchOverlay";
@@ -47,6 +48,7 @@ export function CatalystHeader() {
   const { isAdmin, canAccessEnterprise } = useUserRole();
   const { isModuleEnabled, isLoading: modulesLoading } = useEnabledModules();
   const { workspaceType } = useCatalystContext();
+  const singleItemNav = useSingleItemNavigation();
   
   // Get active nav item based on workspace context
   const activeNavItem = getActiveNavItem(workspaceType);
@@ -236,118 +238,186 @@ export function CatalystHeader() {
               return (
                 <div key={item.label} className="inline-flex items-center relative">
                   {item.label === "Product" ? (
-                    <Popover
-                      open={activeDropdown === item.label}
-                      onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
-                    >
-                      <PopoverTrigger asChild>
-                        <button 
-                          style={navButtonStyle}
-                          onMouseEnter={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
-                          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
-                        >
-                          {item.label}
-                          <ChevronDown style={{ width: '16px', height: '16px' }} />
-                          {activeUnderline}
-                        </button>
-                      </PopoverTrigger>
-                      {activeDropdown === item.label && (
-                        <PopoverContent className="p-0 w-auto" align="start">
-                          <ProductSelectorDropdown 
-                            onClose={() => setActiveDropdown(null)} 
-                            onCreateClick={() => setCreateDialogType('product')}
-                          />
-                        </PopoverContent>
-                      )}
-                    </Popover>
-                  ) : item.label === "Program" ? (
-                    <Popover
-                      open={activeDropdown === item.label}
-                      onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
-                    >
-                      <PopoverTrigger asChild>
-                        <button 
-                          style={navButtonStyle}
-                          onMouseEnter={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
-                          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
-                        >
-                          {item.label}
-                          <ChevronDown style={{ width: '16px', height: '16px' }} />
-                          {activeUnderline}
-                        </button>
-                      </PopoverTrigger>
-                      {activeDropdown === item.label && (
-                        <PopoverContent className="p-0 w-auto" align="start">
-                          <ProgramSelectorDropdown 
-                            onClose={() => setActiveDropdown(null)} 
-                            onCreateClick={() => setCreateDialogType('program')}
-                          />
-                        </PopoverContent>
-                      )}
-                    </Popover>
-                  ) : item.label === "Project" ? (
-                    <Popover
-                      open={activeDropdown === item.label}
-                      onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
-                    >
-                      <PopoverTrigger asChild>
-                        <button 
-                          style={navButtonStyle}
-                          onMouseEnter={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
-                          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
-                        >
-                          {item.label}
-                          <ChevronDown style={{ width: '16px', height: '16px' }} />
-                          {activeUnderline}
-                        </button>
-                      </PopoverTrigger>
-                      {activeDropdown === item.label && (
-                        <PopoverContent className="p-0 w-auto" align="start">
-                          <ProjectSelectorDropdown 
-                            onClose={() => setActiveDropdown(null)} 
-                            onCreateClick={() => setCreateDialogType('project')}
-                          />
-                        </PopoverContent>
-                      )}
-                    </Popover>
-                  ) : item.label === "Release" ? (
-                    <Popover
-                      open={activeDropdown === item.label}
-                      onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
-                    >
-                      <PopoverTrigger asChild>
-                        <button 
-                          style={{
-                            ...navButtonStyle,
-                            color: location.pathname.startsWith('/release') ? '#5c7c5c' : navButtonStyle.color,
-                            fontWeight: location.pathname.startsWith('/release') ? 600 : navButtonStyle.fontWeight,
-                          }}
-                          onMouseEnter={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
-                          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
-                        >
-                          {item.label}
-                          <ChevronDown style={{ width: '16px', height: '16px' }} />
-                          {location.pathname.startsWith('/release') && (
-                            <span 
-                              style={{
-                                position: 'absolute',
-                                bottom: '-10px',
-                                left: '14px',
-                                right: '14px',
-                                height: '2px',
-                                background: '#5c7c5c',
-                                borderRadius: '1px',
-                              }}
+                    // Product: Direct navigation if single active product line
+                    singleItemNav.product.hasSingleItem && singleItemNav.product.directPath ? (
+                      <button
+                        style={navButtonStyle}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                        onClick={() => navigate(singleItemNav.product.directPath!)}
+                      >
+                        {item.label}
+                        {activeUnderline}
+                      </button>
+                    ) : (
+                      <Popover
+                        open={activeDropdown === item.label}
+                        onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
+                      >
+                        <PopoverTrigger asChild>
+                          <button 
+                            style={navButtonStyle}
+                            onMouseEnter={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                          >
+                            {item.label}
+                            <ChevronDown style={{ width: '16px', height: '16px' }} />
+                            {activeUnderline}
+                          </button>
+                        </PopoverTrigger>
+                        {activeDropdown === item.label && (
+                          <PopoverContent className="p-0 w-auto" align="start">
+                            <ProductSelectorDropdown 
+                              onClose={() => setActiveDropdown(null)} 
+                              onCreateClick={() => setCreateDialogType('product')}
                             />
-                          )}
-                        </button>
-                      </PopoverTrigger>
-                      {activeDropdown === item.label && (
-                        <PopoverContent className="p-0 w-auto" align="start">
-                          <ReleaseDropdown onClose={() => setActiveDropdown(null)} />
-                        </PopoverContent>
-                      )}
-                    </Popover>
+                          </PopoverContent>
+                        )}
+                      </Popover>
+                    )
+                  ) : item.label === "Program" ? (
+                    // Program: Direct navigation if single accessible program
+                    singleItemNav.program.hasSingleItem && singleItemNav.program.directPath ? (
+                      <button
+                        style={navButtonStyle}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                        onClick={() => navigate(singleItemNav.program.directPath!)}
+                      >
+                        {item.label}
+                        {activeUnderline}
+                      </button>
+                    ) : (
+                      <Popover
+                        open={activeDropdown === item.label}
+                        onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
+                      >
+                        <PopoverTrigger asChild>
+                          <button 
+                            style={navButtonStyle}
+                            onMouseEnter={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                          >
+                            {item.label}
+                            <ChevronDown style={{ width: '16px', height: '16px' }} />
+                            {activeUnderline}
+                          </button>
+                        </PopoverTrigger>
+                        {activeDropdown === item.label && (
+                          <PopoverContent className="p-0 w-auto" align="start">
+                            <ProgramSelectorDropdown 
+                              onClose={() => setActiveDropdown(null)} 
+                              onCreateClick={() => setCreateDialogType('program')}
+                            />
+                          </PopoverContent>
+                        )}
+                      </Popover>
+                    )
+                  ) : item.label === "Project" ? (
+                    // Project: Direct navigation if single accessible project
+                    singleItemNav.project.hasSingleItem && singleItemNav.project.directPath ? (
+                      <button
+                        style={navButtonStyle}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                        onClick={() => navigate(singleItemNav.project.directPath!)}
+                      >
+                        {item.label}
+                        {activeUnderline}
+                      </button>
+                    ) : (
+                      <Popover
+                        open={activeDropdown === item.label}
+                        onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
+                      >
+                        <PopoverTrigger asChild>
+                          <button 
+                            style={navButtonStyle}
+                            onMouseEnter={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                          >
+                            {item.label}
+                            <ChevronDown style={{ width: '16px', height: '16px' }} />
+                            {activeUnderline}
+                          </button>
+                        </PopoverTrigger>
+                        {activeDropdown === item.label && (
+                          <PopoverContent className="p-0 w-auto" align="start">
+                            <ProjectSelectorDropdown 
+                              onClose={() => setActiveDropdown(null)} 
+                              onCreateClick={() => setCreateDialogType('project')}
+                            />
+                          </PopoverContent>
+                        )}
+                      </Popover>
+                    )
+                  ) : item.label === "Release" ? (
+                    // Release: Direct navigation for non-admins (no dropdown options)
+                    singleItemNav.release.hasSingleItem && singleItemNav.release.directPath ? (
+                      <button
+                        style={{
+                          ...navButtonStyle,
+                          color: location.pathname.startsWith('/release') ? '#5c7c5c' : navButtonStyle.color,
+                          fontWeight: location.pathname.startsWith('/release') ? 600 : navButtonStyle.fontWeight,
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                        onClick={() => navigate(singleItemNav.release.directPath!)}
+                      >
+                        {item.label}
+                        {location.pathname.startsWith('/release') && (
+                          <span 
+                            style={{
+                              position: 'absolute',
+                              bottom: '-10px',
+                              left: '14px',
+                              right: '14px',
+                              height: '2px',
+                              background: '#5c7c5c',
+                              borderRadius: '1px',
+                            }}
+                          />
+                        )}
+                      </button>
+                    ) : (
+                      <Popover
+                        open={activeDropdown === item.label}
+                        onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
+                      >
+                        <PopoverTrigger asChild>
+                          <button 
+                            style={{
+                              ...navButtonStyle,
+                              color: location.pathname.startsWith('/release') ? '#5c7c5c' : navButtonStyle.color,
+                              fontWeight: location.pathname.startsWith('/release') ? 600 : navButtonStyle.fontWeight,
+                            }}
+                            onMouseEnter={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                          >
+                            {item.label}
+                            <ChevronDown style={{ width: '16px', height: '16px' }} />
+                            {location.pathname.startsWith('/release') && (
+                              <span 
+                                style={{
+                                  position: 'absolute',
+                                  bottom: '-10px',
+                                  left: '14px',
+                                  right: '14px',
+                                  height: '2px',
+                                  background: '#5c7c5c',
+                                  borderRadius: '1px',
+                                }}
+                              />
+                            )}
+                          </button>
+                        </PopoverTrigger>
+                        {activeDropdown === item.label && (
+                          <PopoverContent className="p-0 w-auto" align="start">
+                            <ReleaseDropdown onClose={() => setActiveDropdown(null)} />
+                          </PopoverContent>
+                        )}
+                      </Popover>
+                    )
                   ) : (
                     <button
                       style={navButtonStyle}
