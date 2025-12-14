@@ -42,7 +42,7 @@ interface StrategyTreeProps {
 
 // Column configuration with widths and labels
 const COLUMN_CONFIG: Record<string, { label: string; width: string }> = {
-  objective: { label: 'Theme', width: '320px' },
+  objective: { label: 'OKRs', width: '320px' },
   theme: { label: 'Theme Name', width: '120px' },
   owner: { label: 'Owner', width: '120px' },
   status: { label: 'Status', width: '100px' },
