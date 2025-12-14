@@ -128,57 +128,35 @@ export function CapacityHeader({
           </div>
         </div>
 
-        {/* Right: Date Navigation + Time Span + Export */}
+        {/* Right: Date Navigation + Export */}
         <div className="flex items-center gap-3">
-          {/* Timeline Navigation: < Today > Date | 2 Weeks | 5 Weeks */}
+          {/* Timeline Navigation: < DateRange > */}
           <div className="flex items-center">
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handlePrev}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="sm" className="h-8 px-3" onClick={handleToday}>
-              Today
-            </Button>
+
+            {/* Date Range Display with Calendar Popover */}
+            <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 px-3 gap-2 text-foreground font-medium">
+                  <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+                  {format(startDate, 'MMM d')} – {format(endDate, 'MMM d, yyyy')}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 z-[400]" align="center">
+                <Calendar
+                  mode="single"
+                  selected={startDate}
+                  onSelect={handleDateSelect}
+                  initialFocus
+                  className="p-3 pointer-events-auto"
+                />
+              </PopoverContent>
+            </Popover>
+
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleNext}>
               <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-
-          {/* Date Range Display with Calendar Popover */}
-          <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-            <PopoverTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 px-3 gap-2 text-foreground font-medium">
-                <CalendarIcon className="h-4 w-4 text-muted-foreground" />
-                {format(startDate, 'MMM d')} – {format(endDate, 'MMM d, yyyy')}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0 z-[400]" align="center">
-              <Calendar
-                mode="single"
-                selected={startDate}
-                onSelect={handleDateSelect}
-                initialFocus
-                className="p-3 pointer-events-auto"
-              />
-            </PopoverContent>
-          </Popover>
-
-          {/* Time Span Toggle */}
-          <div className="flex items-center">
-            <Button
-              variant={timeSpan === '2weeks' ? 'secondary' : 'ghost'}
-              size="sm"
-              className="h-8 px-3"
-              onClick={() => onTimeSpanChange('2weeks')}
-            >
-              2 Weeks
-            </Button>
-            <Button
-              variant={timeSpan === '5weeks' ? 'secondary' : 'ghost'}
-              size="sm"
-              className="h-8 px-3"
-              onClick={() => onTimeSpanChange('5weeks')}
-            >
-              5 Weeks
             </Button>
           </div>
 
