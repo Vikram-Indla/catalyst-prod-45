@@ -24,6 +24,8 @@ import { AnalyticsDrawerContent } from './AnalyticsDrawerContent';
 import { CreateObjectiveDialogV2 } from '../CreateObjectiveDialogV2';
 import { ObjectiveDrawerV2 } from '../ObjectiveDrawerV2';
 import { ObjectiveAnalyticsDrawer } from '../ObjectiveAnalyticsDrawer';
+import { KeyResultAnalyticsDrawer } from '../KeyResultAnalyticsDrawer';
+import { WorkItemAnalyticsDrawer } from '../WorkItemAnalyticsDrawer';
 import { OKRSmartFiltersDialog, OKRSmartFilters, countActiveFilters } from '../OKRSmartFiltersDialog';
 import { OKRColumnChooser, DEFAULT_OKR_COLUMNS, type OKRColumn } from '../OKRColumnChooser';
 import { OkrSummaryCards, type OkrSummaryMetrics } from '../shared/OkrSummaryCards';
@@ -113,13 +115,11 @@ export function StrategyCockpit({ snapshotId }: StrategyCockpitProps) {
   };
 
   const handleSelect = (item: TreeItem) => {
-    // For objectives, open the dedicated ObjectiveAnalyticsDrawer
+    // Open the appropriate analytics drawer based on item type
+    setSelectedItem(item);
     if (item.type === 'objective') {
       setSelectedObjectiveId(item.id);
-      setSelectedItem(null);
     } else {
-      // For KRs and work items, use the existing analytics drawer
-      setSelectedItem(item);
       setSelectedObjectiveId(null);
     }
   };
@@ -317,29 +317,27 @@ export function StrategyCockpit({ snapshotId }: StrategyCockpitProps) {
         onFiltersChange={setFilters}
       />
 
-      {/* Slide-in Analytics Drawer */}
-      <Sheet open={!!selectedItem} onOpenChange={(open) => !open && handleCloseDrawer()}>
-        <SheetContent 
-          side="right" 
-          className="w-screen sm:w-[500px] sm:max-w-[500px] p-0 flex flex-col"
-        >
-          <SheetHeader className="sr-only">
-            <SheetTitle>{getDrawerTitle()}</SheetTitle>
-          </SheetHeader>
-          {selectedItem && (
-            <AnalyticsDrawerContent
-              selectedItem={selectedItem}
-              themes={strategicData?.themes || []}
-            />
-          )}
-        </SheetContent>
-      </Sheet>
-
-      {/* Objective Analytics Drawer - opens when clicking an objective row */}
+      {/* Objective Analytics Drawer */}
       <ObjectiveAnalyticsDrawer
-        objectiveId={selectedObjectiveId}
-        open={!!selectedObjectiveId}
-        onClose={handleCloseObjectiveAnalytics}
+        objectiveId={selectedItem?.type === 'objective' ? selectedItem.id : null}
+        open={selectedItem?.type === 'objective'}
+        onClose={handleCloseDrawer}
+        snapshotId={snapshotId}
+      />
+
+      {/* Key Result Analytics Drawer */}
+      <KeyResultAnalyticsDrawer
+        keyResultId={selectedItem?.type === 'keyResult' ? selectedItem.id : null}
+        open={selectedItem?.type === 'keyResult'}
+        onClose={handleCloseDrawer}
+        snapshotId={snapshotId}
+      />
+
+      {/* Work Item Analytics Drawer */}
+      <WorkItemAnalyticsDrawer
+        workItemId={selectedItem?.type === 'workItem' ? selectedItem.id : null}
+        open={selectedItem?.type === 'workItem'}
+        onClose={handleCloseDrawer}
         snapshotId={snapshotId}
       />
 
