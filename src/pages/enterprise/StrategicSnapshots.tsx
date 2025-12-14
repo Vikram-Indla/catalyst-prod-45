@@ -82,30 +82,6 @@ export default function StrategicSnapshots() {
       {/* Header Row 2: Toolbar - with divider AFTER */}
       <div className="h-[52px] px-6 flex items-center justify-between border-b" style={{ borderColor: 'hsl(var(--border))' }}>
         <div className="flex items-center gap-3">
-          <div className="relative w-80">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search by name or description..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 h-9"
-            />
-          </div>
-          
-          <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
-            <SelectTrigger className="w-[180px] h-9">
-              <ArrowUpDown className="h-3.5 w-3.5 mr-2" />
-              <SelectValue placeholder="Sort by..." />
-            </SelectTrigger>
-            <SelectContent className="z-[400]">
-              <SelectItem value="created_desc">Newest first</SelectItem>
-              <SelectItem value="created_asc">Oldest first</SelectItem>
-              <SelectItem value="name_asc">Name A-Z</SelectItem>
-              <SelectItem value="name_desc">Name Z-A</SelectItem>
-              <SelectItem value="status">Status</SelectItem>
-            </SelectContent>
-          </Select>
-          
           <div className="flex items-center gap-2">
             <Switch
               id="show-archived"
@@ -115,6 +91,16 @@ export default function StrategicSnapshots() {
             <Label htmlFor="show-archived" className="text-sm cursor-pointer">
               Show archived
             </Label>
+          </div>
+          
+          <div className="relative w-80">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search by name or description..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 h-9"
+            />
           </div>
         </div>
         
