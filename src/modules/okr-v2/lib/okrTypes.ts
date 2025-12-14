@@ -162,3 +162,13 @@ export interface TreeNodeData {
   isExpanded: boolean;
   isSelected: boolean;
 }
+
+// Progress baseline for trend analysis
+export type TrendCode = 'ahead' | 'on-plan' | 'behind' | 'none';
+
+export interface ProgressBaseline {
+  actual: number;           // 0–100
+  expected: number | null;  // 0–100, null if dates missing
+  variance: number | null;  // actual - expected
+  trend: TrendCode;
+}

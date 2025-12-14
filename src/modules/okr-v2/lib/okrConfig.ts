@@ -85,3 +85,10 @@ export const DEFAULT_THEME_COLORS = [
 // Maximum progress for over-achievement display
 export const MAX_PROGRESS_DISPLAY = 100; // Cap at 100% for progress bars
 export const MAX_PROGRESS_CALCULATION = 120; // Allow up to 120% for analytics
+
+// Baseline progress trend thresholds (percentage points)
+export const TREND_THRESHOLDS = {
+  AHEAD_PP: 10, // >= +10pp = ahead of plan
+  BEHIND_PP: -10, // <= -10pp = behind plan
+  // Between -10 and +10 = on plan
+} as const;
