@@ -27,6 +27,7 @@ import {
   STATUS_LABELS,
   MAX_PROGRESS_CALCULATION,
   MAX_PROGRESS_DISPLAY,
+  TREND_THRESHOLDS,
 } from './okrConfig';
 
 // ─────────────────────────────────────────────────────────────────────────────────
@@ -38,6 +39,17 @@ import {
  */
 export function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));
+}
+
+/**
+ * Get days between two dates
+ */
+export function daysBetween(startDateStr: string, endDateStr: string): number {
+  const start = new Date(startDateStr);
+  start.setHours(0, 0, 0, 0);
+  const end = new Date(endDateStr);
+  end.setHours(0, 0, 0, 0);
+  return Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
 }
 
 /**
@@ -213,6 +225,78 @@ export function computeThemeProgress(theme: Theme): number {
   }, 0);
 
   return Math.round(clamp(weightedProgress, 0, MAX_PROGRESS_DISPLAY));
+}
+
+// ─────────────────────────────────────────────────────────────────────────────────
+// BASELINE PROGRESS & TREND CALCULATIONS
+// ─────────────────────────────────────────────────────────────────────────────────
+
+import type { ProgressBaseline, TrendCode } from './okrTypes';
+
+/**
+ * Calculate expected (baseline) progress and trend for an item with start/due dates
+ */
+export function computeProgressBaseline(
+  actual: number,
+  startDate?: string,
+  dueDate?: string
+): ProgressBaseline {
+  const today = new Date().toISOString().split('T')[0];
+  
+  // If no dates, cannot compute expected
+  if (!startDate || !dueDate) {
+    return {
+      actual,
+      expected: null,
+      variance: null,
+      trend: 'none',
+    };
+  }
+  
+  const totalDays = daysBetween(startDate, dueDate);
+  if (totalDays <= 0) {
+    return {
+      actual,
+      expected: null,
+      variance: null,
+      trend: 'none',
+    };
+  }
+  
+  const elapsedDays = clamp(daysBetween(startDate, today), 0, totalDays);
+  const expected = (elapsedDays / totalDays) * 100;
+  const variance = actual - expected;
+  
+  let trend: TrendCode = 'on-plan';
+  if (variance >= TREND_THRESHOLDS.AHEAD_PP) {
+    trend = 'ahead';
+  } else if (variance <= TREND_THRESHOLDS.BEHIND_PP) {
+    trend = 'behind';
+  }
+  
+  return {
+    actual,
+    expected: Math.round(expected),
+    variance: Math.round(variance),
+    trend,
+  };
+}
+
+/**
+ * Get progress baseline for an Objective
+ */
+export function getObjectiveProgressBaseline(objective: Objective): ProgressBaseline {
+  const actualProgress = computeObjectiveProgress(objective);
+  return computeProgressBaseline(actualProgress, objective.startDate, objective.dueDate);
+}
+
+/**
+ * Get progress baseline for a Key Result
+ */
+export function getKeyResultProgressBaseline(kr: KeyResult): ProgressBaseline {
+  const actualProgress = computeKeyResultProgress(kr);
+  // KR uses dueDate only - startDate comes from parent objective
+  return computeProgressBaseline(actualProgress, undefined, kr.dueDate);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────────
