@@ -167,7 +167,7 @@ export interface TreeNodeData {
 }
 
 // Progress baseline for trend analysis
-export type TrendCode = 'ahead' | 'on-plan' | 'behind' | 'none';
+export type TrendCode = 'ahead' | 'on-track' | 'at-risk' | 'off-track' | 'none';
 
 export interface ProgressBaseline {
   actual: number;           // 0–100

@@ -45,22 +45,35 @@ function TrendArrow({ trend, variance }: { trend: TrendCode; variance?: number |
     return null;
   }
 
+  // Ahead of plan - green up arrow
   if (trend === 'ahead') {
     return (
       <TrendingUp className="h-3.5 w-3.5 text-secondary-green flex-shrink-0" />
     );
   }
 
-  if (trend === 'behind') {
+  // On track (within 10%) - green up arrow
+  if (trend === 'on-track') {
+    return (
+      <TrendingUp className="h-3.5 w-3.5 text-secondary-green flex-shrink-0" />
+    );
+  }
+
+  // At risk (10-20% behind) - orange down arrow
+  if (trend === 'at-risk') {
+    return (
+      <TrendingDown className="h-3.5 w-3.5 text-[#e07830] flex-shrink-0" />
+    );
+  }
+
+  // Off track (>20% behind) - red down arrow
+  if (trend === 'off-track') {
     return (
       <TrendingDown className="h-3.5 w-3.5 text-[#c44536] flex-shrink-0" />
     );
   }
 
-  // on-plan
-  return (
-    <Minus className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-  );
+  return null;
 }
 
 export function OkrProgressCell({ baseline, status, compact = false }: OkrProgressCellProps) {
