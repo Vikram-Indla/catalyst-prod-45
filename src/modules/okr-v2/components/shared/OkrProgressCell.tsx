@@ -74,11 +74,11 @@ export function OkrProgressCell({ baseline, status, compact = false }: OkrProgre
   const barColor = getProgressBarColor(status, actual);
 
   return (
-    <div className="flex items-center justify-end gap-3 overflow-hidden">
-      {/* Progress bar */}
+    <div className="flex items-center gap-3 w-full">
+      {/* Progress bar - fixed width, left aligned */}
       <div className={cn(
-        "flex-1 h-2 rounded-full overflow-hidden",
-        compact ? 'max-w-20' : 'max-w-28',
+        "h-2 rounded-full overflow-hidden flex-shrink-0",
+        compact ? 'w-20' : 'w-28',
         'bg-[#f0ebe3]'
       )}>
         <div
@@ -88,7 +88,7 @@ export function OkrProgressCell({ baseline, status, compact = false }: OkrProgre
       </div>
       
       {/* Percentage */}
-      <span className="text-sm font-semibold text-foreground flex-shrink-0 min-w-[40px] text-right">
+      <span className="text-sm font-semibold text-foreground flex-shrink-0 min-w-[36px]">
         {Math.round(actual)}%
       </span>
       
