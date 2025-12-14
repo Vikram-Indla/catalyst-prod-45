@@ -140,18 +140,17 @@ export function CapacityPlanning() {
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         onExport={() => setExportModalOpen(true)}
-      />
-
-      {/* Controls Bar */}
-      <ControlsBar
-        viewMode={viewMode}
-        timeSpan={timeSpan}
-        onTimeSpanChange={handleTimeSpanChange}
-        groupBy={groupBy}
-        onGroupByChange={handleGroupByChange}
         startDate={startDate}
         onStartDateChange={setStartDate}
-        onAddResource={() => setAddResourceOpen(true)}
+        timeSpan={timeSpan}
+        onTimeSpanChange={handleTimeSpanChange}
+      />
+
+      {/* Controls Bar (List view only) */}
+      <ControlsBar
+        viewMode={viewMode}
+        groupBy={groupBy}
+        onGroupByChange={handleGroupByChange}
       />
 
       {/* Bulk Actions Bar */}
