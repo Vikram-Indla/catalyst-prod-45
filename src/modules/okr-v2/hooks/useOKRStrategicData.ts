@@ -146,6 +146,27 @@ export function useOKRStrategicData(snapshotId?: string) {
       
       if (contribError) throw contribError;
 
+      // 4b. Fetch actual work item names from epics and features tables
+      const epicIds = (dbContributions || [])
+        .filter((c: any) => c.work_item_type?.toLowerCase() === 'epic' && c.work_item_id)
+        .map((c: any) => c.work_item_id);
+      
+      const featureIds = (dbContributions || [])
+        .filter((c: any) => c.work_item_type?.toLowerCase() === 'feature' && c.work_item_id)
+        .map((c: any) => c.work_item_id);
+
+      const { data: epicsData } = epicIds.length > 0 
+        ? await supabase.from('epics').select('id, name').in('id', epicIds)
+        : { data: [] };
+      
+      const { data: featuresData } = featureIds.length > 0
+        ? await supabase.from('features').select('id, name').in('id', featureIds)
+        : { data: [] };
+
+      // Build name lookup maps
+      const epicNameMap = new Map((epicsData || []).map((e: any) => [e.id, e.name]));
+      const featureNameMap = new Map((featuresData || []).map((f: any) => [f.id, f.name]));
+
       // 5. Collect all work item IDs to fetch their risks
       const allWorkItemIds = (dbContributions || [])
         .map((c: any) => c.work_item_id)
@@ -214,11 +235,19 @@ export function useOKRStrategicData(snapshotId?: string) {
           else if (rawType === 'feature') workItemType = 'feature';
           else if (rawType === 'story') workItemType = 'story';
           
+          // Get actual work item name from the lookup maps
+          let workItemName = 'Unknown Work Item';
+          if (rawType === 'epic' && workItemId) {
+            workItemName = epicNameMap.get(workItemId) || 'Epic';
+          } else if (rawType === 'feature' && workItemId) {
+            workItemName = featureNameMap.get(workItemId) || 'Feature';
+          }
+          
           return {
             id: workItemId,
             type: 'workItem' as const,
             workItemType,
-            name: c.work_item_name || c.summary || 'Linked Work',
+            name: workItemName,
             krId: dbKr.id,
             objectiveId: dbKr.objective_id,
             themeId: '', // Will be set later
