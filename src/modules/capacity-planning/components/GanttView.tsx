@@ -1,12 +1,14 @@
 import { useMemo, useState, useEffect } from 'react';
-import { format, startOfDay } from 'date-fns';
-import { ChevronLeft, ChevronRight, Plus, X, UserPlus } from 'lucide-react';
+import { format, startOfDay, addDays, addWeeks } from 'date-fns';
+import { ChevronLeft, ChevronRight, Plus, X, UserPlus, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ResourceInventoryItem } from '@/hooks/useResourceInventory';
 import { CapacityBooking } from '../hooks/useCapacityBookings';
 import { generateDateColumns, isGCCWeekend, isToday, getDayPosition, getDaysBetween, groupDatesByMonth, isPast } from '../utils/dateUtils';
+import { ResourceWithLanes, LaneBooking, calculateAvailability } from '../utils/laneAllocation';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Badge } from '@/components/ui/badge';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,12 +30,15 @@ interface GanttViewProps {
   onAddResource: () => void;
   onBookingClick: (booking: CapacityBooking) => void;
   onCreateBooking: (resourceId: string, date: Date) => void;
-  onAssign: () => void; // Single global assign
+  onAssign: () => void;
+  resourceLaneData: Map<string, ResourceWithLanes>;
 }
 
 const COLUMN_WIDTH = 36;
-const ROW_HEIGHT = 48;
-const RESOURCE_COL_WIDTH_EXPANDED = 260; // Wider to show full names
+const ROW_HEIGHT_BASE = 48;
+const LANE_HEIGHT = 32;
+const MAX_VISIBLE_LANES = 3;
+const RESOURCE_COL_WIDTH_EXPANDED = 280;
 const RESOURCE_COL_WIDTH_COLLAPSED = 56;
 
 export function GanttView({
@@ -47,20 +52,35 @@ export function GanttView({
   onBookingClick,
   onCreateBooking,
   onAssign,
+  resourceLaneData,
 }: GanttViewProps) {
   const [isResourceColumnExpanded, setIsResourceColumnExpanded] = useState(true);
   const [resourceToRemove, setResourceToRemove] = useState<ResourceInventoryItem | null>(null);
+  const [expandedResources, setExpandedResources] = useState<Set<string>>(new Set());
   const resourceColWidth = isResourceColumnExpanded ? RESOURCE_COL_WIDTH_EXPANDED : RESOURCE_COL_WIDTH_COLLAPSED;
   
   const weeks = timeSpan === '2weeks' ? 2 : 5;
   const dateColumns = useMemo(() => generateDateColumns(startDate, weeks), [startDate, weeks]);
   const monthGroups = useMemo(() => groupDatesByMonth(dateColumns), [dateColumns]);
+  const endDate = addDays(addWeeks(startDate, weeks), -1);
 
   const handleConfirmRemove = () => {
     if (resourceToRemove) {
       onRemoveResource(resourceToRemove.id);
       setResourceToRemove(null);
     }
+  };
+
+  const toggleResourceExpanded = (resourceId: string) => {
+    setExpandedResources(prev => {
+      const next = new Set(prev);
+      if (next.has(resourceId)) {
+        next.delete(resourceId);
+      } else {
+        next.add(resourceId);
+      }
+      return next;
+    });
   };
 
   const filteredResources = useMemo(() => {
@@ -72,11 +92,12 @@ export function GanttView({
     );
   }, [resources, searchQuery]);
 
-  const getBookingsForResource = (resourceId: string) => {
-    return bookings.filter(b => b.resource_id === resourceId);
+  const getBookingsForResource = (resourceId: string): LaneBooking[] => {
+    const laneData = resourceLaneData.get(resourceId);
+    return laneData?.bookings || [];
   };
 
-  const getBarStyle = (booking: CapacityBooking) => {
+  const getBarStyle = (booking: LaneBooking, lane: number, visibleLanes: number) => {
     const bookingStart = new Date(booking.start_date);
     const bookingEnd = new Date(booking.end_date);
     
@@ -87,6 +108,13 @@ export function GanttView({
     const width = Math.min(duration, dateColumns.length - Math.max(0, startPos)) * COLUMN_WIDTH;
 
     if (width <= 0 || startPos >= dateColumns.length) return null;
+
+    // Calculate vertical position within row
+    const laneTop = 8 + (lane * LANE_HEIGHT);
+
+    // Clipping indicators
+    const isClippedLeft = startPos < 0;
+    const isClippedRight = startPos + duration > dateColumns.length;
 
     // Color based on type
     let background = 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary)/0.8) 100%)';
@@ -99,21 +127,24 @@ export function GanttView({
     return {
       left: `${left}px`,
       width: `${width - 4}px`,
+      top: `${laneTop}px`,
+      height: `${LANE_HEIGHT - 6}px`,
       background,
+      isClippedLeft,
+      isClippedRight,
     };
   };
 
-  // Dynamic today tracking - recalculates when day changes
+  // Dynamic today tracking
   const [todayKey, setTodayKey] = useState(() => format(new Date(), 'yyyy-MM-dd'));
   
   useEffect(() => {
-    // Check if day has changed every minute
     const interval = setInterval(() => {
       const currentDay = format(new Date(), 'yyyy-MM-dd');
       if (currentDay !== todayKey) {
         setTodayKey(currentDay);
       }
-    }, 60000); // Check every minute
+    }, 60000);
     
     return () => clearInterval(interval);
   }, [todayKey]);
@@ -124,6 +155,16 @@ export function GanttView({
     if (pos < 0 || pos >= dateColumns.length) return null;
     return pos * COLUMN_WIDTH + COLUMN_WIDTH / 2;
   }, [startDate, dateColumns.length, todayKey]);
+
+  const getRowHeight = (resourceId: string) => {
+    const laneData = resourceLaneData.get(resourceId);
+    if (!laneData) return ROW_HEIGHT_BASE;
+    
+    const isExpanded = expandedResources.has(resourceId);
+    const visibleLanes = isExpanded ? laneData.laneCount : Math.min(laneData.laneCount, MAX_VISIBLE_LANES);
+    
+    return Math.max(ROW_HEIGHT_BASE, 16 + visibleLanes * LANE_HEIGHT);
+  };
 
   return (
     <TooltipProvider>
@@ -208,7 +249,6 @@ export function GanttView({
                   </span>
                 </div>
               ))}
-              {/* Today Label - only once in header */}
               {todayPosition !== null && (
                 <div 
                   className="absolute top-full left-0 text-[9px] font-bold text-destructive/70 uppercase pointer-events-none"
@@ -223,20 +263,30 @@ export function GanttView({
           {/* Resource Rows */}
           {filteredResources.length > 0 ? (
             filteredResources.map((resource) => {
+              const laneData = resourceLaneData.get(resource.id);
               const resourceBookings = getBookingsForResource(resource.id);
+              const isExpanded = expandedResources.has(resource.id);
+              const totalLanes = laneData?.laneCount || 1;
+              const visibleLanes = isExpanded ? totalLanes : Math.min(totalLanes, MAX_VISIBLE_LANES);
+              const hasHiddenLanes = totalLanes > MAX_VISIBLE_LANES && !isExpanded;
+              const rowHeight = getRowHeight(resource.id);
+              
+              // Availability calculation
+              const resourceOnlyBookings = bookings.filter(b => b.resource_id === resource.id);
+              const availability = calculateAvailability(resourceOnlyBookings, startDate, 14);
 
               return (
                 <div 
                   key={resource.id} 
                   className="flex border-b hover:bg-muted/30 group"
-                  style={{ height: ROW_HEIGHT, borderColor: 'hsl(var(--border) / 0.3)' }}
+                  style={{ height: rowHeight, borderColor: 'hsl(var(--border) / 0.3)' }}
                 >
                   {/* Resource Cell */}
                   <div 
-                    className="flex-shrink-0 border-r flex items-center justify-between px-2 bg-background group-hover:bg-muted/30 transition-all duration-200"
+                    className="flex-shrink-0 border-r flex flex-col justify-start px-2 pt-2 bg-background group-hover:bg-muted/30 transition-all duration-200"
                     style={{ width: resourceColWidth, borderColor: 'hsl(var(--border) / 0.3)' }}
                   >
-                  <div className={cn("flex items-center gap-2 min-w-0", isResourceColumnExpanded ? "flex-1" : "justify-center w-full")}>
+                    <div className={cn("flex items-start gap-2 min-w-0", isResourceColumnExpanded ? "flex-1" : "justify-center w-full")}>
                       {/* Remove from View button (X) */}
                       {isResourceColumnExpanded && (
                         <Tooltip>
@@ -246,7 +296,7 @@ export function GanttView({
                                 e.stopPropagation();
                                 setResourceToRemove(resource);
                               }}
-                              className="w-5 h-5 rounded-full flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors opacity-0 group-hover:opacity-100"
+                              className="w-5 h-5 rounded-full flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors opacity-0 group-hover:opacity-100 mt-1"
                               aria-label="Remove from view"
                             >
                               <X className="h-3 w-3" />
@@ -256,24 +306,99 @@ export function GanttView({
                         </Tooltip>
                       )}
                       
-                      <div 
-                        className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-semibold text-white flex-shrink-0"
-                        style={{ 
-                          background: resource.role_code === 'PO' 
-                            ? 'hsl(var(--secondary-green))' 
-                            : resource.role_code === 'BA' 
-                              ? 'hsl(var(--brand-gold))' 
-                              : 'hsl(var(--secondary-bronze))'
-                        }}
-                        title={!isResourceColumnExpanded ? `${resource.name} (${resource.role_code || 'N/A'})` : undefined}
-                      >
-                        {resource.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                      </div>
-                      {isResourceColumnExpanded && (
-                          <div className="min-w-0 flex-1">
-                            <div className="text-sm font-medium">{resource.name}</div>
-                            <div className="text-[10px] text-muted-foreground uppercase">{resource.role_code || '—'}</div>
+                      {/* Avatar with hover analytics */}
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div 
+                            className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-semibold text-white flex-shrink-0 cursor-help"
+                            style={{ 
+                              background: resource.role_code === 'PO' 
+                                ? 'hsl(var(--secondary-green))' 
+                                : resource.role_code === 'BA' 
+                                  ? 'hsl(var(--brand-gold))' 
+                                  : 'hsl(var(--secondary-bronze))'
+                            }}
+                            title={!isResourceColumnExpanded ? `${resource.name} (${resource.role_code || 'N/A'})` : undefined}
+                          >
+                            {resource.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                           </div>
+                        </TooltipTrigger>
+                        <TooltipContent side="right" className="max-w-xs">
+                          <div className="space-y-1.5">
+                            <div className="font-semibold">{resource.name}</div>
+                            <div className="text-xs space-y-1">
+                              <div className="flex justify-between gap-4">
+                                <span className="text-muted-foreground">Utilization (14d):</span>
+                                <span className="font-medium">{availability.utilizationPercent}%</span>
+                              </div>
+                              <div className="flex justify-between gap-4">
+                                <span className="text-muted-foreground">Free days:</span>
+                                <span className="font-medium">{availability.freeDays}d</span>
+                              </div>
+                              <div className="flex justify-between gap-4">
+                                <span className="text-muted-foreground">Largest free window:</span>
+                                <span className="font-medium">{availability.largestFreeWindow}d</span>
+                              </div>
+                              {laneData?.hasOverlaps && (
+                                <div className="flex justify-between gap-4 text-amber-600">
+                                  <span>Conflicts:</span>
+                                  <span className="font-medium">{laneData.overlapCount}</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
+
+                      {isResourceColumnExpanded && (
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium">{resource.name}</span>
+                            {/* Overbooked Badge */}
+                            {laneData?.hasOverlaps && (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Badge 
+                                    variant="outline" 
+                                    className="h-5 px-1.5 text-[10px] border-amber-400 bg-amber-50 text-amber-700 gap-0.5"
+                                  >
+                                    <AlertTriangle className="h-3 w-3" />
+                                    {laneData.overlapCount}
+                                  </Badge>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  {laneData.overlapCount} overlapping assignment{laneData.overlapCount > 1 ? 's' : ''}
+                                </TooltipContent>
+                              </Tooltip>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <span className="text-[10px] text-muted-foreground uppercase">{resource.role_code || '—'}</span>
+                            {/* Availability Chip */}
+                            <span className="text-[9px] text-secondary-green bg-secondary-green/10 px-1.5 py-0.5 rounded">
+                              Free: {availability.freeDays}d
+                            </span>
+                          </div>
+                          {/* Expand/Collapse for hidden lanes */}
+                          {hasHiddenLanes && (
+                            <button
+                              onClick={() => toggleResourceExpanded(resource.id)}
+                              className="text-[10px] text-brand-gold hover:text-brand-gold-hover mt-1 flex items-center gap-0.5"
+                            >
+                              <ChevronDown className="h-3 w-3" />
+                              +{totalLanes - MAX_VISIBLE_LANES} more
+                            </button>
+                          )}
+                          {isExpanded && totalLanes > MAX_VISIBLE_LANES && (
+                            <button
+                              onClick={() => toggleResourceExpanded(resource.id)}
+                              className="text-[10px] text-brand-gold hover:text-brand-gold-hover mt-1 flex items-center gap-0.5"
+                            >
+                              <ChevronUp className="h-3 w-3" />
+                              Collapse
+                            </button>
+                          )}
+                        </div>
                       )}
                     </div>
                   </div>
@@ -289,59 +414,74 @@ export function GanttView({
                         )}
                         style={{ 
                           width: COLUMN_WIDTH, 
-                          height: ROW_HEIGHT,
+                          height: rowHeight,
                           borderColor: 'hsl(var(--border) / 0.2)'
                         }}
                         onClick={() => onCreateBooking(resource.id, date)}
                       />
                     ))}
 
-                    {/* Booking Bars */}
-                    {resourceBookings.map((booking) => {
-                      const style = getBarStyle(booking);
-                      if (!style) return null;
+                    {/* Booking Bars with Lane Stacking */}
+                    {resourceBookings
+                      .filter(b => b.lane < visibleLanes)
+                      .map((booking) => {
+                        const style = getBarStyle(booking, booking.lane, visibleLanes);
+                        if (!style) return null;
 
-                      const isReadOnly = isPast(new Date(booking.end_date));
+                        const isReadOnly = isPast(new Date(booking.end_date));
 
-                      return (
-                        <Tooltip key={booking.id}>
-                          <TooltipTrigger asChild>
-                            <div
-                              className={cn(
-                                'absolute top-1/2 -translate-y-1/2 h-7 rounded flex items-center px-2 text-white text-xs font-medium shadow-sm',
-                                !isReadOnly && 'cursor-grab hover:shadow-md hover:scale-[1.02] transition-all'
-                              )}
-                              style={style}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                onBookingClick(booking);
-                              }}
-                            >
-                              <span className="truncate">
-                                {booking.booking_type === 'ticket' 
-                                  ? booking.business_request?.request_key || booking.business_request?.title
-                                  : booking.summary || 'Leave'}
-                              </span>
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent className="max-w-xs">
-                            <div className="space-y-1">
-                              <div className="font-medium">
-                                {booking.booking_type === 'ticket' 
-                                  ? booking.business_request?.title
-                                  : booking.summary || 'Leave'}
+                        return (
+                          <Tooltip key={booking.id}>
+                            <TooltipTrigger asChild>
+                              <div
+                                className={cn(
+                                  'absolute rounded flex items-center px-2 text-white text-xs font-medium shadow-sm',
+                                  !isReadOnly && 'cursor-grab hover:shadow-md hover:scale-[1.02] transition-all'
+                                )}
+                                style={{
+                                  left: style.left,
+                                  width: style.width,
+                                  top: style.top,
+                                  height: style.height,
+                                  background: style.background,
+                                }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onBookingClick(booking);
+                                }}
+                              >
+                                {/* Clip indicators */}
+                                {style.isClippedLeft && (
+                                  <span className="absolute left-0 top-0 bottom-0 w-1 bg-white/30 rounded-l" />
+                                )}
+                                {style.isClippedRight && (
+                                  <span className="absolute right-0 top-0 bottom-0 w-1 bg-white/30 rounded-r" />
+                                )}
+                                <span className="truncate">
+                                  {booking.booking_type === 'ticket' 
+                                    ? booking.business_request?.request_key || booking.business_request?.title
+                                    : booking.summary || 'Leave'}
+                                </span>
                               </div>
-                              <div className="text-xs text-muted-foreground">
-                                {format(new Date(booking.start_date), 'MMM d')} — {format(new Date(booking.end_date), 'MMM d, yyyy')}
+                            </TooltipTrigger>
+                            <TooltipContent className="max-w-xs">
+                              <div className="space-y-1">
+                                <div className="font-medium">
+                                  {booking.booking_type === 'ticket' 
+                                    ? booking.business_request?.title
+                                    : booking.summary || 'Leave'}
+                                </div>
+                                <div className="text-xs text-muted-foreground">
+                                  {format(new Date(booking.start_date), 'MMM d')} — {format(new Date(booking.end_date), 'MMM d, yyyy')}
+                                </div>
+                                <div className="text-xs capitalize">{booking.booking_type}</div>
                               </div>
-                              <div className="text-xs capitalize">{booking.booking_type}</div>
-                            </div>
-                          </TooltipContent>
-                        </Tooltip>
-                      );
-                    })}
+                            </TooltipContent>
+                          </Tooltip>
+                        );
+                      })}
 
-                    {/* Today Line - no label here, lighter color */}
+                    {/* Today Line */}
                     {todayPosition !== null && (
                       <div 
                         className="absolute top-0 bottom-0 w-0.5 bg-destructive/30 z-10 pointer-events-none"
@@ -361,7 +501,7 @@ export function GanttView({
           {/* Add Resource Row */}
           <div 
             className="flex border-b border-dashed hover:bg-brand-gold/5 cursor-pointer group"
-            style={{ height: ROW_HEIGHT, borderColor: 'hsl(var(--border) / 0.4)' }}
+            style={{ height: ROW_HEIGHT_BASE, borderColor: 'hsl(var(--border) / 0.4)' }}
             onClick={onAddResource}
           >
             <div 
