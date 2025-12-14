@@ -537,7 +537,8 @@ export function ObjectiveAnalyticsDrawer({
     <Sheet open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <SheetContent 
         side="right" 
-        className="w-screen sm:w-[480px] sm:max-w-[480px] p-0 flex flex-col border-l-4 border-l-brand-gold"
+        className="w-screen sm:w-[480px] sm:max-w-[480px] p-0 flex flex-col"
+        style={{ borderLeft: '3px solid var(--accent-color)' }}
       >
         <SheetHeader className="sr-only">
           <SheetTitle>Objective Analytics</SheetTitle>

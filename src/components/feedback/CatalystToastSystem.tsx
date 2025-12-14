@@ -53,7 +53,7 @@ const typeStyles: Record<ToastType, { bg: string; border: string; icon: string }
   },
   info: {
     bg: 'bg-card',
-    border: 'border-l-4 border-l-brand-gold',
+    border: 'border-l-[3px] border-l-[var(--accent-color)]',
     icon: 'text-brand-gold',
   },
   loading: {
