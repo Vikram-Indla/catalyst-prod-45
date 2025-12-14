@@ -1,26 +1,31 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // OKR Hub V2 — Strategy Cockpit (Main Component)
-// Enterprise-grade OKR dashboard with hierarchical tree view and analytics drawer
+// Enterprise-grade OKR dashboard with hierarchical tree view and slide-in analytics drawer
 // ═══════════════════════════════════════════════════════════════════════════════
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, BarChart3, Download, Plus, X, Target, Filter } from 'lucide-react';
+import { Search, BarChart3, Download, Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
 import { toast } from 'sonner';
 
 import { ThemeFilterBar } from './ThemeFilterBar';
 import { StrategyTree } from './StrategyTree';
-import { AnalyticsDrawer } from './AnalyticsDrawer';
+import { AnalyticsDrawerContent } from './AnalyticsDrawerContent';
 import { CreateObjectiveDialogV2 } from '../CreateObjectiveDialogV2';
 import { ObjectiveDrawerV2 } from '../ObjectiveDrawerV2';
 
 import { useOKRStrategicData, useOKRThemes } from '../../hooks/useOKRStrategicData';
-import type { Theme, TreeItem } from '../../lib/okrTypes';
-import { exportOkrViewToCsv } from '../../lib/okrMetrics';
+import type { TreeItem } from '../../lib/okrTypes';
+import { exportOkrViewToCsv, getStatusLabel } from '../../lib/okrMetrics';
 
 interface StrategyCockpitProps {
   snapshotId?: string;
@@ -81,12 +86,10 @@ export function StrategyCockpit({ snapshotId }: StrategyCockpitProps) {
 
   const handleSelect = (item: TreeItem) => {
     setSelectedItem(item);
-    
-    // If it's an objective, also set selectedObjectiveId for drawer
-    if (item.type === 'objective') {
-      // Optionally open the objective drawer
-      // setSelectedObjectiveId(item.id);
-    }
+  };
+
+  const handleCloseDrawer = () => {
+    setSelectedItem(null);
   };
 
   const handleExport = () => {
@@ -109,8 +112,16 @@ export function StrategyCockpit({ snapshotId }: StrategyCockpitProps) {
   };
 
   const handleAnalyticsClick = () => {
-    // TODO: Open analytics modal
     toast.info('Analytics modal coming soon');
+  };
+
+  // Get drawer title based on selected item type
+  const getDrawerTitle = () => {
+    if (!selectedItem) return '';
+    if (selectedItem.type === 'objective') return 'Objective Analytics';
+    if (selectedItem.type === 'keyResult') return 'Key Result Analytics';
+    if (selectedItem.type === 'workItem') return 'Delivery Item Analytics';
+    return 'Analytics';
   };
 
   // Error state
@@ -196,42 +207,44 @@ export function StrategyCockpit({ snapshotId }: StrategyCockpitProps) {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex overflow-hidden">
+      {/* Main Content - Full width tree */}
+      <div className="flex-1 overflow-hidden">
         {isLoading ? (
-          <>
-            {/* Loading skeleton for tree */}
-            <div className="flex-1 p-4 space-y-2 min-w-[580px]">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <Skeleton key={i} className="h-12 w-full" />
-              ))}
-            </div>
-            {/* Loading skeleton for drawer */}
-            <div className="flex-[0_0_420px] p-4">
-              <Skeleton className="h-full w-full" />
-            </div>
-          </>
+          <div className="p-4 space-y-2">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <Skeleton key={i} className="h-12 w-full" />
+            ))}
+          </div>
         ) : (
-          <>
-            {/* Strategy Tree */}
-            <StrategyTree
-              themes={strategicData?.themes || []}
-              selectedThemeIds={selectedThemeIds}
-              expandedIds={expandedIds}
-              selectedItem={selectedItem}
-              searchQuery={searchQuery}
-              onToggle={handleToggle}
-              onSelect={handleSelect}
-            />
-
-            {/* Analytics Drawer */}
-            <AnalyticsDrawer
-              selectedItem={selectedItem}
-              themes={strategicData?.themes || []}
-            />
-          </>
+          <StrategyTree
+            themes={strategicData?.themes || []}
+            selectedThemeIds={selectedThemeIds}
+            expandedIds={expandedIds}
+            selectedItem={selectedItem}
+            searchQuery={searchQuery}
+            onToggle={handleToggle}
+            onSelect={handleSelect}
+          />
         )}
       </div>
+
+      {/* Slide-in Analytics Drawer */}
+      <Sheet open={!!selectedItem} onOpenChange={(open) => !open && handleCloseDrawer()}>
+        <SheetContent 
+          side="right" 
+          className="w-screen sm:w-[500px] sm:max-w-[500px] p-0 flex flex-col"
+        >
+          <SheetHeader className="sr-only">
+            <SheetTitle>{getDrawerTitle()}</SheetTitle>
+          </SheetHeader>
+          {selectedItem && (
+            <AnalyticsDrawerContent
+              selectedItem={selectedItem}
+              themes={strategicData?.themes || []}
+            />
+          )}
+        </SheetContent>
+      </Sheet>
 
       {/* Dialogs */}
       <CreateObjectiveDialogV2

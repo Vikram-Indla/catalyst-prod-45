@@ -135,7 +135,7 @@ export function StrategyTree({
   };
 
   return (
-    <div className="flex-1 flex flex-col bg-card border-r border-border min-w-[580px]">
+    <div className="flex-1 flex flex-col bg-card">
       {/* Tree Header */}
       <div className="grid grid-cols-[1fr_100px_120px_90px_80px] items-center gap-3 px-4 py-3 bg-muted/50 border-b-2 border-border text-xs font-semibold text-muted-foreground uppercase tracking-wider">
         <span>Strategy Item</span>

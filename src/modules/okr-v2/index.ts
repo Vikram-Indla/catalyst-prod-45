@@ -1,6 +1,6 @@
 // OKR v2 Module - Unified Objectives (no Portfolio/Program tiers)
 export { OKRHubV2 } from './components/OKRHubV2';
-export { StrategyCockpit, ThemeFilterBar, StrategyTree, AnalyticsDrawer } from './components/StrategyCockpit';
+export { StrategyCockpit, ThemeFilterBar, StrategyTree, AnalyticsDrawerContent } from './components/StrategyCockpit';
 export { CreateObjectiveDialogV2 } from './components/CreateObjectiveDialogV2';
 export { ObjectiveDrawerV2 } from './components/ObjectiveDrawerV2';
 export { OKRSmartFiltersDialog, countActiveFilters } from './components/OKRSmartFiltersDialog';

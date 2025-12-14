@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════════════════════
-// OKR Hub V2 — Analytics Drawer Component
-// Contextual analytics panel for Objective/KR/Work Item (no theme level)
+// OKR Hub V2 — Analytics Drawer Content Component
+// Renders the analytics content inside the unified drawer shell
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { Target, TrendingUp, Shield, Link2, DollarSign, GitBranch, AlertTriangle, X, Calendar } from 'lucide-react';
@@ -19,8 +19,8 @@ import {
   calculateValueRealization,
 } from '../../lib/okrMetrics';
 
-interface AnalyticsDrawerProps {
-  selectedItem: TreeItem | null;
+interface AnalyticsDrawerContentProps {
+  selectedItem: TreeItem;
   themes: Theme[];
 }
 
@@ -86,21 +86,10 @@ function StatusBreakdown({ byStatus, label }: { byStatus: Record<StatusCode, num
 }
 
 // ─────────────────────────────────────────────────────────────────────────────────
-// MAIN ANALYTICS DRAWER
+// MAIN ANALYTICS DRAWER CONTENT
 // ─────────────────────────────────────────────────────────────────────────────────
 
-export function AnalyticsDrawer({ selectedItem, themes }: AnalyticsDrawerProps) {
-  if (!selectedItem) {
-    return (
-      <div className="flex-[0_0_420px] flex items-center justify-center bg-muted/30 p-10">
-        <div className="text-center text-muted-foreground">
-          <Target className="h-12 w-12 mb-4 mx-auto opacity-40" />
-          <p className="text-sm">Select an objective, KR, or work item to view analytics</p>
-        </div>
-      </div>
-    );
-  }
-
+export function AnalyticsDrawerContent({ selectedItem, themes }: AnalyticsDrawerContentProps) {
   // Find parent theme for color
   const getTheme = (): Theme | undefined => {
     return themes.find((t) => t.id === (selectedItem as any).themeId);
@@ -175,9 +164,9 @@ export function AnalyticsDrawer({ selectedItem, themes }: AnalyticsDrawerProps) 
   };
 
   return (
-    <div className="flex-[0_0_420px] flex flex-col bg-muted/30 border-l border-border overflow-y-auto">
+    <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="p-5 bg-card border-b border-border">
+      <div className="p-5 bg-card border-b border-brand-gold">
         <div className="flex items-center gap-2.5 mb-3">
           <span
             className="px-2.5 py-1 rounded text-xs font-semibold uppercase tracking-wider"
@@ -217,8 +206,8 @@ export function AnalyticsDrawer({ selectedItem, themes }: AnalyticsDrawerProps) 
         )}
       </div>
 
-      {/* Analytics Content */}
-      <div className="p-5">
+      {/* Analytics Content - Scrollable */}
+      <div className="flex-1 overflow-y-auto p-5">
         {/* Performance Section */}
         <DrawerSection title="Performance" icon={TrendingUp}>
           <div className="space-y-3">
@@ -402,29 +391,19 @@ export function AnalyticsDrawer({ selectedItem, themes }: AnalyticsDrawerProps) 
 
               {selectedItem.type === 'workItem' && (
                 <div className="flex-1 p-2.5 rounded-md bg-muted text-center">
-                  <div className="text-xl font-bold text-foreground">
-                    {(selectedItem as WorkItem).dependencies?.length || 0}
+                  <div className="text-sm text-muted-foreground">
+                    This is a delivery item linked to a Key Result
                   </div>
-                  <div className="text-[10px] text-muted-foreground uppercase">Dependencies</div>
                 </div>
               )}
             </div>
 
-            {/* Coverage Gaps */}
-            {selectedItem.type === 'objective' && (metrics.krsWithoutWork || 0) > 0 && (
+            {/* Coverage Warnings */}
+            {metrics.krsWithoutWork && metrics.krsWithoutWork > 0 && (
               <div className="flex items-center gap-2 p-2.5 rounded-md bg-brand-gold/10 border border-brand-gold/30">
                 <AlertTriangle className="h-4 w-4 text-brand-gold" />
                 <span className="text-xs text-brand-gold">
-                  {metrics.krsWithoutWork} Key Result(s) have no linked delivery work
-                </span>
-              </div>
-            )}
-
-            {selectedItem.type === 'keyResult' && (metrics.krsWithoutWork || 0) > 0 && (
-              <div className="flex items-center gap-2 p-2.5 rounded-md bg-destructive/10 border border-destructive/30">
-                <AlertTriangle className="h-4 w-4 text-destructive" />
-                <span className="text-xs text-destructive">
-                  KR may be unimplemented — no delivery work linked
+                  {metrics.krsWithoutWork} KR{metrics.krsWithoutWork > 1 ? 's' : ''} without linked work items
                 </span>
               </div>
             )}
@@ -435,48 +414,28 @@ export function AnalyticsDrawer({ selectedItem, themes }: AnalyticsDrawerProps) 
         <DrawerSection title="Value & Outcomes" icon={DollarSign}>
           <div className="p-4 bg-card rounded-lg border border-border">
             <div className="grid grid-cols-2 gap-3 mb-4">
-              <div className="p-3 rounded-md bg-muted text-center">
-                <div className="text-xs text-muted-foreground mb-1">Estimated Value</div>
+              <div className="p-2.5 rounded-md bg-muted text-center">
+                <div className="text-[10px] text-muted-foreground uppercase mb-1">Estimated Value</div>
                 <div className="text-base font-bold text-foreground">
-                  {formatCurrency(selectedItem.value?.estimated || 0)}
+                  {selectedItem.value?.estimated ? formatCurrency(selectedItem.value.estimated) : '—'}
                 </div>
               </div>
-              <div className="p-3 rounded-md bg-secondary-green/10 text-center">
-                <div className="text-xs text-secondary-green mb-1">Realized Value</div>
+              <div className="p-2.5 rounded-md bg-muted text-center">
+                <div className="text-[10px] text-muted-foreground uppercase mb-1">Realized Value</div>
                 <div className="text-base font-bold text-secondary-green">
-                  {formatCurrency(selectedItem.value?.realized || 0)}
+                  {selectedItem.value?.realized ? formatCurrency(selectedItem.value.realized) : '—'}
                 </div>
               </div>
             </div>
 
             {/* Value Realization */}
-            <div className="mb-3">
-              <div className="flex justify-between mb-1.5">
-                <span className="text-xs text-muted-foreground">Value Realization</span>
-                <span className="text-xs font-semibold text-foreground">{valueRealization}%</span>
-              </div>
-              <Progress value={valueRealization} className="h-1.5" />
-            </div>
-
-            {/* Value at Risk */}
-            {selectedItem.value?.valueAtRisk !== undefined ? (
-              <div className={cn(
-                "p-2.5 rounded-md border",
-                riskScore > 3 ? "bg-brand-gold/10 border-brand-gold/30" : "bg-muted border-border"
-              )}>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-muted-foreground">Value at Risk</span>
-                  <span className={cn("text-sm font-semibold", riskScore > 3 ? "text-brand-gold" : "text-foreground")}>
-                    {formatCurrency(selectedItem.value.valueAtRisk)}
-                  </span>
+            {valueRealization > 0 && (
+              <div className="p-3 bg-muted/50 rounded-md">
+                <div className="flex justify-between items-center mb-1.5">
+                  <span className="text-xs text-muted-foreground">Value Realization</span>
+                  <span className="text-sm font-semibold text-foreground">{valueRealization.toFixed(0)}%</span>
                 </div>
-              </div>
-            ) : (
-              <div className="p-2.5 rounded-md bg-muted border border-border">
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-muted-foreground">Value at Risk</span>
-                  <span className="text-xs text-muted-foreground italic">Not yet calculated</span>
-                </div>
+                <Progress value={Math.min(valueRealization, 100)} className="h-1.5" />
               </div>
             )}
           </div>
@@ -485,24 +444,21 @@ export function AnalyticsDrawer({ selectedItem, themes }: AnalyticsDrawerProps) 
         {/* Alignment & Context Section */}
         <DrawerSection title="Alignment & Context" icon={GitBranch}>
           <div className="p-4 bg-card rounded-lg border border-border">
-            {/* Alignment Path */}
-            <div>
-              <div className="text-xs text-muted-foreground mb-2.5">Alignment Path</div>
-              <div className="flex flex-col gap-1.5">
-                {alignmentPath.map((item, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center gap-2"
-                    style={{ paddingLeft: `${index * 16}px` }}
-                  >
-                    {index > 0 && <span className="text-muted-foreground text-sm">↳</span>}
-                    <span className="text-[10px] text-muted-foreground uppercase min-w-[70px]">
-                      {item.type}
-                    </span>
-                    <span className="text-xs text-foreground truncate">{item.name}</span>
-                  </div>
-                ))}
-              </div>
+            <div className="text-xs text-muted-foreground mb-3">Hierarchy Path</div>
+            <div className="space-y-2">
+              {alignmentPath.map((item, index) => (
+                <div
+                  key={index}
+                  className="flex items-center gap-2"
+                  style={{ paddingLeft: `${index * 12}px` }}
+                >
+                  {index > 0 && <span className="text-muted-foreground/50">└</span>}
+                  <span className="text-xs text-muted-foreground">{item.type}:</span>
+                  <span className="text-xs text-foreground font-medium truncate">
+                    {item.name}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         </DrawerSection>
