@@ -171,7 +171,7 @@ export default function BusinessRequestsKanbanPage() {
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: KANBAN_COLORS.bgPage, overflow: 'hidden' }}>
       {/* Unified Header Toolbar */}
       <IndustryHeaderToolbarV2
-        title="Business Requests"
+        title="Product Kanban"
         countText={`${filteredTickets.length}`}
         activeView="board"
         searchValue={searchQuery}
