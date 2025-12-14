@@ -52,6 +52,10 @@ export interface KeyResultAnalyticsData {
   target?: number;
   baselineValue?: number;
   unit?: string;
+  // Timeframe fields
+  startDate?: string;
+  endDate?: string;
+  hasTimeframe: boolean;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────────
@@ -208,8 +212,9 @@ export function computeKeyResultAnalytics(
   // Compute progress
   const actualProgress = Math.round(computeKeyResultProgress(kr) * 10) / 10;
 
-  // Compute baseline (KR uses due date only)
-  const baseline = computeBaselineInfo(actualProgress, undefined, kr.dueDate);
+  // Compute baseline using KR's own dates (startDate and endDate) for time-based trend
+  const baseline = computeBaselineInfo(actualProgress, kr.startDate, kr.endDate || kr.dueDate);
+  const hasTimeframe = !!(kr.startDate && kr.endDate);
 
   // Work item status counts
   const workItemStatus = countWorkItemsByStatus(workItems);
@@ -256,5 +261,8 @@ export function computeKeyResultAnalytics(
     target: kr.target,
     baselineValue: kr.baseline,
     unit: kr.unit,
+    startDate: kr.startDate,
+    endDate: kr.endDate,
+    hasTimeframe,
   };
 }

@@ -70,6 +70,8 @@ export interface KeyResult {
   unit?: string;
   weight: number; // 0–1; we will normalise per objective
   dueDate?: string;
+  startDate?: string;  // KR timeframe start
+  endDate?: string;    // KR timeframe end
   ownRisks: OkrRiskSummary;      // Direct risks attached to this KR (usually empty)
   cascadedRisks: OkrRiskSummary; // Sum of work item ownRisks
   risks: OkrRiskSummary;         // Alias for analytics (= cascadedRisks)
