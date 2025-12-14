@@ -226,188 +226,210 @@
   --secondary-grey: 210 8% 80%;                /* #c8ccd0 - Muted elements */
 
   /* ============================================
-     DARK THEME CSS VARIABLES (data-theme)
+     LIGHT THEME SEMANTIC TOKENS (data-theme)
      ============================================ */
-  /* Surfaces */
-  --surface-0: #FAF7F1;
+  /* Brand Constants */
+  --brand-accent: #C8A26A;
+  --brand-accent-hover: #B99057;
+  --brand-active: #5E7C63;
+  
+  /* Semantic Surfaces (Light) */
+  --bg: #F6F8FC;
+  --surface-0: #F6F8FC;
   --surface-1: #FFFFFF;
-  --surface-2: #F5F5F4;
-  --surface-3: #FAFAF9;
+  --surface-2: #FFFFFF;
+  --surface-3: #F1F5FF;
   
-  /* Text */
-  --text-1: #1A1A1A;
-  --text-2: #4B5563;
-  --text-3: #6B7280;
-  --text-muted: #9CA3AF;
-  --text-inverse: #FFFFFF;
+  /* Semantic Text (Light) */
+  --text-1: #0F172A;
+  --text-2: #334155;
+  --text-3: #64748B;
+  --text-muted: #64748B;
+  --text-inverse: #0B1220;
   
-  /* Borders */
-  --border-color: #E5E7EB;
-  --border-light: #F3F4F6;
-  --border-strong: #D1D5DB;
+  /* Semantic Borders (Light) */
+  --border-color: rgba(15, 23, 42, 0.10);
+  --border-light: rgba(15, 23, 42, 0.06);
+  --border-strong: rgba(15, 23, 42, 0.14);
+  --divider: rgba(15, 23, 42, 0.08);
   
-  /* Icons - CRITICAL */
-  --icon-default: #4B5563;
-  --icon-muted: #6B7280;
-  --icon-hover: #B8905F;
-  --icon-active: #5C7C5C;
+  /* Semantic Icons (Light) */
+  --icon-default: #334155;
+  --icon-muted: #64748B;
+  --icon-hover: #B99057;
+  --icon-active: #5E7C63;
   
-  /* Navigation */
-  --nav-bg: #FFFFFF;
-  --nav-border: #E5E7EB;
-  --nav-text: #4B5563;
-  --nav-text-hover: #1A1A1A;
-  --nav-text-active: #C69C6D;
-  --nav-hover-bg: rgba(198, 156, 109, 0.08);
-  --nav-active-bg: rgba(212, 184, 150, 0.18);
-  --nav-indicator: #C69C6D;
+  /* Semantic Navigation (Light) */
+  --nav-bg: var(--surface-1);
+  --nav-border: rgba(15, 23, 42, 0.10);
+  --nav-text: var(--text-2);
+  --nav-text-hover: var(--text-1);
+  --nav-text-active: var(--text-1);
+  --nav-hover-bg: rgba(94, 124, 99, 0.08);
+  --nav-active-bg: rgba(94, 124, 99, 0.12);
+  --nav-indicator: var(--brand-accent);
   
-  /* Interactive */
-  --focus-ring-color: rgba(198, 156, 109, 0.5);
-  --accent-color: #C69C6D;
-  --accent-hover: #B8905F;
-  --accent-muted: rgba(198, 156, 109, 0.15);
+  /* Semantic Interactive (Light) */
+  --accent-color: var(--brand-accent);
+  --accent-hover: var(--brand-accent-hover);
+  --accent-muted: rgba(200, 162, 106, 0.14);
+  --focus-ring-color: rgba(200, 162, 106, 0.40);
   
-  /* Cards */
+  /* Semantic Cards (Light) */
   --card-bg: #FFFFFF;
-  --card-border: #E5E7EB;
+  --card-border: rgba(15, 23, 42, 0.10);
   --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   
-  /* Inputs */
+  /* Semantic Inputs (Light) */
   --input-bg: #FFFFFF;
-  --input-border: #D1D5DB;
-  --input-text: #1A1A1A;
-  --input-placeholder: #9CA3AF;
+  --input-border: rgba(15, 23, 42, 0.14);
+  --input-text: #0F172A;
+  --input-placeholder: rgba(100, 116, 139, 0.90);
   
-  /* Toggle */
+  /* Toggle (Light) */
   --toggle-track: #E5E7EB;
-  --toggle-track-active: #C69C6D;
+  --toggle-track-active: var(--brand-accent);
   --toggle-thumb: #FFFFFF;
   
-  /* Overlay */
+  /* Overlay (Light) */
   --overlay-bg: rgba(0, 0, 0, 0.5);
 }
 
-/* DARK THEME via data-theme attribute */
+/* ============================================
+   DARK THEME via data-theme="dark"
+   Executive dark palette with subtle alpha borders
+   ============================================ */
 html[data-theme="dark"] {
-  /* Surfaces */
-  --surface-0: #0F0F0F;
-  --surface-1: #1A1A1A;
-  --surface-2: #252525;
-  --surface-3: #2A2A2A;
+  /* Semantic Surfaces (Dark) */
+  --bg: #0B1220;
+  --surface-0: #0B1220;
+  --surface-1: #0F172A;
+  --surface-2: #121E33;
+  --surface-3: #162746;
   
-  /* Text */
-  --text-1: #F9FAFB;
-  --text-2: #D1D5DB;
-  --text-3: #9CA3AF;
-  --text-muted: #6B7280;
-  --text-inverse: #1A1A1A;
+  /* Semantic Text (Dark) */
+  --text-1: #EAF0FF;
+  --text-2: #B9C6E4;
+  --text-3: #8EA0C9;
+  --text-muted: #8EA0C9;
+  --text-inverse: #0B1220;
   
-  /* Borders */
-  --border-color: #374151;
-  --border-light: #2D2D2D;
-  --border-strong: #4B5563;
+  /* Semantic Borders (Dark) */
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-light: rgba(255, 255, 255, 0.04);
+  --border-strong: rgba(255, 255, 255, 0.12);
+  --divider: rgba(255, 255, 255, 0.06);
   
-  /* Icons - CRITICAL: Brighter for dark backgrounds */
-  --icon-default: #9CA3AF;
-  --icon-muted: #6B7280;
-  --icon-hover: #C69C6D;
-  --icon-active: #C69C6D;
+  /* Semantic Icons (Dark) */
+  --icon-default: #B9C6E4;
+  --icon-muted: #8EA0C9;
+  --icon-hover: var(--brand-accent);
+  --icon-active: var(--brand-accent);
   
-  /* Navigation */
-  --nav-bg: #1A1A1A;
-  --nav-border: #374151;
-  --nav-text: #9CA3AF;
-  --nav-text-hover: #F9FAFB;
-  --nav-text-active: #C69C6D;
-  --nav-hover-bg: rgba(198, 156, 109, 0.12);
-  --nav-active-bg: rgba(198, 156, 109, 0.15);
-  --nav-indicator: #C69C6D;
+  /* Semantic Navigation (Dark) */
+  --nav-bg: var(--surface-1);
+  --nav-border: rgba(255, 255, 255, 0.08);
+  --nav-text: var(--text-2);
+  --nav-text-hover: var(--text-1);
+  --nav-text-active: var(--text-1);
+  --nav-hover-bg: rgba(94, 124, 99, 0.10);
+  --nav-active-bg: rgba(94, 124, 99, 0.16);
+  --nav-indicator: var(--brand-accent);
   
-  /* Interactive */
-  --focus-ring-color: rgba(198, 156, 109, 0.6);
-  --accent-color: #C69C6D;
-  --accent-hover: #B8905F;
-  --accent-muted: rgba(198, 156, 109, 0.2);
+  /* Semantic Interactive (Dark) */
+  --accent-color: var(--brand-accent);
+  --accent-hover: var(--brand-accent-hover);
+  --accent-muted: rgba(200, 162, 106, 0.16);
+  --focus-ring-color: rgba(200, 162, 106, 0.40);
   
-  /* Cards */
-  --card-bg: #1A1A1A;
-  --card-border: #374151;
+  /* Semantic Cards (Dark) */
+  --card-bg: var(--surface-1);
+  --card-border: rgba(255, 255, 255, 0.08);
   --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   
-  /* Inputs */
-  --input-bg: #252525;
-  --input-border: #374151;
-  --input-text: #F9FAFB;
-  --input-placeholder: #6B7280;
+  /* Semantic Inputs (Dark) */
+  --input-bg: rgba(255, 255, 255, 0.04);
+  --input-border: rgba(255, 255, 255, 0.12);
+  --input-text: #EAF0FF;
+  --input-placeholder: rgba(185, 198, 228, 0.70);
   
-  /* Toggle */
-  --toggle-track: #374151;
-  --toggle-track-active: #C69C6D;
+  /* Toggle (Dark) */
+  --toggle-track: rgba(255, 255, 255, 0.12);
+  --toggle-track-active: var(--brand-accent);
   --toggle-thumb: #FFFFFF;
   
-  /* Overlay */
+  /* Overlay (Dark) */
   --overlay-bg: rgba(0, 0, 0, 0.7);
   
-  /* Override semantic Tailwind colors for dark mode */
-  --background: 0 0% 6%;                        /* #0F0F0F */
-  --foreground: 210 20% 98%;                    /* #F9FAFB */
-  --card: 0 0% 10%;                             /* #1A1A1A */
-  --card-foreground: 210 20% 98%;
-  --popover: 0 0% 10%;
-  --popover-foreground: 210 20% 98%;
+  /* Override Tailwind semantic colors for dark mode */
+  --background: 222 47% 8%;                       /* #0B1220 */
+  --foreground: 224 100% 96%;                     /* #EAF0FF */
+  --card: 222 47% 11%;                            /* #0F172A */
+  --card-foreground: 224 100% 96%;
+  --popover: 222 47% 11%;
+  --popover-foreground: 224 100% 96%;
   
   /* Primary stays as brand gold in dark mode */
-  --primary: 35 46% 60%;                        /* #C69C6D */
+  --primary: 35 46% 60%;                          /* #C8A26A */
   --primary-foreground: 0 0% 100%;
   
-  --secondary: 0 0% 15%;                        /* #252525 */
-  --secondary-foreground: 210 20% 98%;
-  --muted: 0 0% 15%;
-  --muted-foreground: 217 10% 64%;
-  --accent: 0 0% 15%;
-  --accent-foreground: 210 20% 98%;
+  --secondary: 222 47% 13%;                       /* #121E33 */
+  --secondary-foreground: 224 100% 96%;
+  --muted: 222 47% 13%;
+  --muted-foreground: 222 35% 66%;                /* #8EA0C9 */
+  --accent: 222 47% 17%;                          /* #162746 */
+  --accent-foreground: 224 100% 96%;
   --destructive: 0 63% 45%;
   --destructive-foreground: 0 0% 100%;
-  --border: 217 19% 27%;                        /* #374151 */
-  --input: 0 0% 15%;
+  --border: 222 47% 20%;
+  --input: 222 47% 13%;
   --ring: 35 46% 60%;
 }
 
+/* .dark class for Tailwind compatibility */
 .dark {
-  --background: 0 0% 6%;                        /* #0F0F0F */
-  --foreground: 210 20% 98%;                    /* #F9FAFB */
-  --card: 0 0% 10%;                             /* #1A1A1A */
-  --card-foreground: 210 20% 98%;
-  --popover: 0 0% 10%;
-  --popover-foreground: 210 20% 98%;
-  
-  /* Primary stays as brand gold in dark mode */
-  --primary: 35 46% 60%;                        /* #C69C6D */
+  --background: 222 47% 8%;
+  --foreground: 224 100% 96%;
+  --card: 222 47% 11%;
+  --card-foreground: 224 100% 96%;
+  --popover: 222 47% 11%;
+  --popover-foreground: 224 100% 96%;
+  --primary: 35 46% 60%;
   --primary-foreground: 0 0% 100%;
-  
-  --secondary: 0 0% 15%;                        /* #252525 */
-  --secondary-foreground: 210 20% 98%;
-  --muted: 0 0% 15%;
-  --muted-foreground: 217 10% 64%;
-  --accent: 0 0% 15%;
-  --accent-foreground: 210 20% 98%;
+  --secondary: 222 47% 13%;
+  --secondary-foreground: 224 100% 96%;
+  --muted: 222 47% 13%;
+  --muted-foreground: 222 35% 66%;
+  --accent: 222 47% 17%;
+  --accent-foreground: 224 100% 96%;
   --destructive: 0 63% 45%;
   --destructive-foreground: 0 0% 100%;
-  --border: 217 19% 27%;                        /* #374151 */
-  --input: 0 0% 15%;
+  --border: 222 47% 20%;
+  --input: 222 47% 13%;
   --ring: 35 46% 60%;
 }
 
 /* ============================================
-   BASE ELEMENT STYLING (Tailwind @apply)
+   BASE ELEMENT STYLING
    ============================================ */
 * {
   @apply border-border;
 }
 
 body {
-  @apply bg-background text-foreground antialiased;
+  background-color: var(--bg);
+  color: var(--text-1);
+  @apply antialiased;
+}
+
+/* Ensure html/body inherit theme correctly */
+html {
+  background-color: var(--bg);
+}
+
+/* Theme transition for smooth switching */
+html, body, #root {
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* ============================================
