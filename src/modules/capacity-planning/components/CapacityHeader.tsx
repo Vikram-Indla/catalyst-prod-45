@@ -112,14 +112,14 @@ export function CapacityHeader({
           </div>
         </div>
 
-        {/* Right: Date Navigation + Export */}
-        <div className="flex items-center gap-2">
-          {/* Timeline Navigation */}
-          <div className="flex items-center gap-1">
+        {/* Right: Date Navigation + Time Span + Export */}
+        <div className="flex items-center gap-3">
+          {/* Timeline Navigation: < Today > Date | 2 Weeks | 5 Weeks */}
+          <div className="flex items-center">
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handlePrev}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="sm" className="h-8" onClick={handleToday}>
+            <Button variant="ghost" size="sm" className="h-8 px-3" onClick={handleToday}>
               Today
             </Button>
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleNext}>
@@ -127,17 +127,17 @@ export function CapacityHeader({
             </Button>
           </div>
 
-          {/* Date Range Display */}
-          <span className="text-sm text-muted-foreground">
+          {/* Date Display */}
+          <span className="text-sm text-foreground font-medium">
             {format(startDate, 'MMM d, yyyy')}
           </span>
 
           {/* Time Span Toggle */}
-          <div className="flex items-center gap-1 ml-2">
+          <div className="flex items-center">
             <Button
               variant={timeSpan === '2weeks' ? 'secondary' : 'ghost'}
               size="sm"
-              className="h-8"
+              className="h-8 px-3"
               onClick={() => onTimeSpanChange('2weeks')}
             >
               2 Weeks
@@ -145,7 +145,7 @@ export function CapacityHeader({
             <Button
               variant={timeSpan === '5weeks' ? 'secondary' : 'ghost'}
               size="sm"
-              className="h-8"
+              className="h-8 px-3"
               onClick={() => onTimeSpanChange('5weeks')}
             >
               5 Weeks
