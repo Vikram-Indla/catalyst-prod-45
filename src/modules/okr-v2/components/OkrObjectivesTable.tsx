@@ -8,7 +8,7 @@ import { useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { ChevronRight, ChevronDown } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import type { TrendCode } from '../lib/okrTypes';
+import type { TrendCode, WorkItemKind } from '../lib/okrTypes';
 import type { OKRColumn } from './OKRColumnChooser';
 
 // Shared presentational components
@@ -17,6 +17,7 @@ import { OkrProgressCell } from './shared/OkrProgressCell';
 import { OkrRisksCell } from './shared/OkrRisksCell';
 import { OkrLinkedCell } from './shared/OkrLinkedCell';
 import { OkrThemeDot } from './shared/OkrThemeDot';
+import { OkrWorkItemBadge } from './shared/OkrWorkItemBadge';
 
 // ─────────────────────────────────────────────────────────────────────────────────
 // TYPE DEFINITIONS
@@ -45,6 +46,9 @@ export interface OkrObjectiveRow {
   hasChildren?: boolean;
   level?: number;
   children?: OkrObjectiveRow[];
+  // New fields for hierarchical display
+  itemType?: 'objective' | 'keyResult' | 'workItem';
+  workItemType?: WorkItemKind;
 }
 
 interface OkrObjectivesTableProps {
@@ -123,23 +127,34 @@ function TableRow({ row, level, visibleColumnKeys, onRowClick, onToggleExpand, e
               ) : (
                 <span className="w-5 flex-shrink-0" />
               )}
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span className={cn(
-                      "text-sm truncate max-w-[240px]",
-                      level === 0 && "font-semibold text-foreground",
-                      level === 1 && "text-foreground",
-                      level === 2 && "italic text-muted-foreground"
-                    )}>
-                      {row.name}
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="max-w-md">
-                    <p>{row.name}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              
+              {/* Work items show badge with type icon + name */}
+              {row.itemType === 'workItem' ? (
+                <OkrWorkItemBadge 
+                  type={row.workItemType || 'unknown'}
+                  name={row.name}
+                  compact
+                />
+              ) : (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className={cn(
+                        "text-sm truncate max-w-[240px]",
+                        level === 0 && "font-semibold text-foreground",
+                        level === 1 && "text-foreground",
+                        level === 2 && "italic text-muted-foreground"
+                      )}>
+                        {row.name}
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="max-w-md bg-popover border border-border z-[400]">
+                      <p>{row.name}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
+              
               {level === 0 && (
                 <span className="text-xs text-muted-foreground ml-1 truncate hidden lg:inline">
                   {row.themeName}
