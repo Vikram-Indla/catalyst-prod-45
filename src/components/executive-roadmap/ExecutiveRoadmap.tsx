@@ -722,33 +722,33 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
 
       {/* Toolbar Row */}
       <div 
-        className="h-[52px] flex items-center justify-end px-6 print:hidden shrink-0 relative z-[100]"
+        className="h-[52px] flex items-center justify-between px-6 print:hidden shrink-0 relative z-[100]"
         style={{ 
           backgroundColor: 'hsl(var(--background))',
           borderBottom: '1px solid hsl(var(--border))'
         }}
       >
+        {/* Left - Search Input */}
+        <div className="relative flex items-center">
+          <Search className="absolute left-3 w-4 h-4 text-muted-foreground pointer-events-none" />
+          <Input
+            ref={searchInputRef}
+            type="text"
+            placeholder={isRTL ? 'بحث...' : 'Search...'}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="h-9 w-[200px] text-xs bg-white pl-9 pr-3"
+            style={{ border: '1px solid hsl(var(--roadmap-sandstone))', borderRadius: '10px' }}
+            onKeyDown={(e) => {
+              if (e.key === 'Escape') {
+                setSearchQuery('');
+              }
+            }}
+          />
+        </div>
 
-        {/* Toolbar */}
+        {/* Right - Toolbar */}
         <div className="inline-flex items-center gap-1.5 relative z-[100]" style={{ direction: 'ltr' }}>
-          {/* Search Input */}
-          <div className="relative flex items-center">
-            <Search className="absolute left-3 w-4 h-4 text-muted-foreground pointer-events-none" />
-            <Input
-              ref={searchInputRef}
-              type="text"
-              placeholder={isRTL ? 'بحث...' : 'Search...'}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-9 w-[180px] text-xs bg-white pl-9 pr-3"
-              style={{ border: '1px solid hsl(var(--roadmap-sandstone))', borderRadius: '10px' }}
-              onKeyDown={(e) => {
-                if (e.key === 'Escape') {
-                  setSearchQuery('');
-                }
-              }}
-            />
-          </div>
 
           {/* Milestones Toggle */}
           <TooltipProvider delayDuration={200}>
