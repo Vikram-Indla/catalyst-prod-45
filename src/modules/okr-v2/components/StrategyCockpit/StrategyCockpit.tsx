@@ -47,6 +47,7 @@ export function StrategyCockpit({ snapshotId }: StrategyCockpitProps) {
   const [selectedObjectiveId, setSelectedObjectiveId] = useState<string | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [filters, setFilters] = useState<OKRSmartFilters>({});
+  const [columns, setColumns] = useState<OKRColumn[]>(DEFAULT_OKR_COLUMNS);
 
   // Data fetching
   const { data: strategicData, isLoading, error } = useOKRStrategicData(snapshotId);
@@ -240,6 +241,12 @@ export function StrategyCockpit({ snapshotId }: StrategyCockpitProps) {
               </Badge>
             )}
           </Button>
+
+          {/* Column Chooser */}
+          <OKRColumnChooser 
+            columns={columns} 
+            onColumnsChange={setColumns} 
+          />
 
           {/* Clear all filters */}
           {hasActiveFilters && (

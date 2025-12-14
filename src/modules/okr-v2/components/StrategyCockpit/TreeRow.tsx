@@ -64,10 +64,10 @@ function getStatusVariant(status: StatusCode): 'default' | 'secondary' | 'destru
 function RiskChip({ risks }: { risks: OkrRiskSummary }) {
   const total = getTotalRiskCount(risks);
   if (total === 0) {
-    return <span className="text-xs text-muted-foreground">—</span>;
+    return <span className="text-xs text-muted-foreground text-right">—</span>;
   }
 
-  // Compact format: "2H / 1M" or just "3 High"
+  // Compact format: "2H / 1M" or just "3H"
   const parts: string[] = [];
   if (risks.high > 0) parts.push(`${risks.high}H`);
   if (risks.medium > 0) parts.push(`${risks.medium}M`);
@@ -80,7 +80,7 @@ function RiskChip({ risks }: { risks: OkrRiskSummary }) {
       <Tooltip>
         <TooltipTrigger asChild>
           <span className={cn(
-            'text-xs font-medium whitespace-nowrap',
+            'text-xs font-medium whitespace-nowrap text-right block',
             hasHigh ? 'text-destructive' : 'text-muted-foreground'
           )}>
             {parts.join(' / ')}
@@ -129,10 +129,15 @@ function ProgressWithTrend({ item }: { item: TreeItem }) {
     variance = baseline.variance;
   }
 
+  // Only show dash if actual is null/undefined (not just 0)
+  if (actual == null) {
+    return <span className="text-xs text-muted-foreground text-right block">—</span>;
+  }
+
   return (
-    <div className="flex items-center gap-2 overflow-hidden">
-      <Progress value={Math.min(actual, 100)} className="h-2 flex-1 min-w-0" />
-      <span className="text-xs font-semibold text-muted-foreground flex-shrink-0 w-8 text-right">
+    <div className="flex items-center justify-end gap-2 overflow-hidden">
+      <Progress value={Math.min(actual, 100)} className="h-2 flex-1 min-w-0 max-w-20" />
+      <span className="text-xs font-semibold text-foreground flex-shrink-0 w-8 text-right">
         {Math.round(actual)}%
       </span>
       {trend !== 'none' && <TrendIcon trend={trend} variance={variance} size="sm" />}
@@ -231,16 +236,18 @@ export function TreeRow({
 
       {/* Status Column */}
       <div className="overflow-hidden whitespace-nowrap">
-        <Badge variant={getStatusVariant(item.status)} className="text-xs capitalize">
+        <Badge variant="outline" className="text-xs capitalize">
           {getStatusLabel(item.status)}
         </Badge>
       </div>
 
-      {/* Progress Column with Trend */}
-      <ProgressWithTrend item={item} />
+      {/* Progress Column with Trend - right-aligned */}
+      <div className="overflow-hidden">
+        <ProgressWithTrend item={item} />
+      </div>
 
-      {/* Risks Column */}
-      <div className="overflow-hidden whitespace-nowrap">
+      {/* Risks Column - right-aligned */}
+      <div className="overflow-hidden whitespace-nowrap text-right">
         <RiskChip risks={item.risks} />
       </div>
 
