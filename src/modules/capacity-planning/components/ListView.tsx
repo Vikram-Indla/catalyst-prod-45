@@ -231,25 +231,13 @@ export function ListView({
     return quarter;
   };
 
-  if (filteredBookings.length === 0) {
-    return (
-      <div className="flex-1 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-muted-foreground">
-            {searchQuery ? 'No bookings match your search' : 'No bookings yet'}
-          </p>
-          <p className="text-sm text-muted-foreground mt-1">
-            Switch to Gantt view to create bookings
-          </p>
-        </div>
-      </div>
-    );
-  }
+  // Show table even if no bookings - just show empty state within table
+  const hasData = filteredBookings.length > 0 || resources.length > 0;
 
   return (
     <div className="flex-1 overflow-auto">
       <table className="w-full">
-        <thead className="sticky top-0 z-10 bg-background border-b" style={{ borderColor: 'hsl(var(--border))' }}>
+        <thead className="sticky top-0 z-10 bg-background border-b" style={{ borderColor: 'hsl(var(--border) / 0.5)' }}>
           <tr className="text-xs font-semibold text-muted-foreground uppercase">
             <th className="w-10 px-3 py-3 text-center">
               <Checkbox
@@ -299,7 +287,7 @@ export function ListView({
                       'border-b hover:bg-muted/30 cursor-pointer transition-colors',
                       selectedItems.has(booking.id) && 'bg-brand-gold/5'
                     )}
-                    style={{ borderColor: 'hsl(var(--border))' }}
+                    style={{ borderColor: 'hsl(var(--border) / 0.4)' }}
                     onClick={() => onBookingClick(booking)}
                   >
                     {/* Checkbox */}
