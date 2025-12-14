@@ -22,6 +22,8 @@ import {
 import { Target, Plus, Trash2, Pencil, AlertCircle, ChevronDown, ChevronRight } from 'lucide-react';
 import { KRWorkAlignmentDrawer } from './KRWorkAlignmentDrawer';
 import { KeyResultV2 } from '@/hooks/useKeyResultsV2';
+import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
+import { FeatureDetailsPanel } from '@/components/items/features/FeatureDetailsPanel';
 
 interface LinkedWorkTabV2Props {
   objectiveId: string;
@@ -56,6 +58,7 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
   const [editingItem, setEditingItem] = useState<{ id: string; value: number } | null>(null);
   const [unlinkConfirm, setUnlinkConfirm] = useState<{ id: string; krId: string; name: string } | null>(null);
   const [alignDrawerKR, setAlignDrawerKR] = useState<KeyResultV2 | null>(null);
+  const [selectedWorkItem, setSelectedWorkItem] = useState<{ id: string; type: 'epic' | 'feature' | 'story' } | null>(null);
 
   const krIds = keyResults?.map(kr => kr.id) || [];
 
@@ -287,7 +290,12 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
                                   <td className="py-2.5">
                                     <div className="flex items-center gap-2">
                                       <Target className="h-3.5 w-3.5 text-brand-gold flex-shrink-0" />
-                                      <span className="truncate">{item.name}</span>
+                                      <button
+                                        onClick={() => setSelectedWorkItem({ id: item.work_item_id, type: item.type })}
+                                        className="truncate text-left hover:text-brand-gold hover:underline transition-colors cursor-pointer"
+                                      >
+                                        {item.name}
+                                      </button>
                                     </div>
                                   </td>
                                   <td className="py-2.5 text-center">
@@ -411,6 +419,23 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
         }}
         objectiveId={objectiveId}
       />
+
+      {/* Work item detail drawers */}
+      {selectedWorkItem?.type === 'epic' && (
+        <EpicDetailsPanel
+          epic={{ id: selectedWorkItem.id } as any}
+          open={true}
+          onClose={() => setSelectedWorkItem(null)}
+        />
+      )}
+
+      {selectedWorkItem?.type === 'feature' && (
+        <FeatureDetailsPanel
+          feature={{ id: selectedWorkItem.id } as any}
+          open={true}
+          onClose={() => setSelectedWorkItem(null)}
+        />
+      )}
     </div>
   );
 }
