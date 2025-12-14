@@ -16,7 +16,13 @@ const ITEMS_PER_PAGE = 10;
 
 function RecentProjectCard({ project }: { project: Project }) {
   return (
-    <div className="w-[200px] min-w-[200px] border border-border rounded bg-card overflow-hidden">
+    <div 
+      className="w-[200px] min-w-[200px] rounded overflow-hidden"
+      style={{ 
+        border: '1px solid var(--border)',
+        backgroundColor: 'var(--surface-2)'
+      }}
+    >
       {/* Header accent bar */}
       <div className="h-2" style={{ backgroundColor: project.color }} />
       
@@ -31,44 +37,46 @@ function RecentProjectCard({ project }: { project: Project }) {
             {project.key.slice(0, 2)}
           </div>
           <div className="min-w-0">
-            <div className="text-sm font-semibold text-foreground leading-5 truncate">
+            <div className="text-sm font-semibold leading-5 truncate" style={{ color: 'var(--text-1)' }}>
               {project.name}
             </div>
-            <div className="text-xs text-muted-foreground leading-4">
+            <div className="text-xs leading-4" style={{ color: 'var(--text-3)' }}>
               {project.type}
             </div>
           </div>
         </div>
 
         {/* Quick links label */}
-        <div className="text-[11px] text-muted-foreground mb-1 leading-[14px]">
+        <div className="text-[11px] mb-1 leading-[14px]" style={{ color: 'var(--text-3)' }}>
           Quick links
         </div>
         
         {/* Quick link items */}
         <div className="flex flex-col">
-          <a href="#" className="flex items-center justify-between text-sm text-foreground no-underline py-1.5 leading-5">
+          <a href="#" className="flex items-center justify-between text-sm no-underline py-1.5 leading-5" style={{ color: 'var(--text-1)' }}>
             <span>My open work items</span>
             {project.openCount > 0 && (
-              <span className="bg-muted rounded px-1.5 text-xs font-semibold min-w-[20px] h-5 leading-5 inline-flex items-center justify-center">
+              <span 
+                className="rounded px-1.5 text-xs font-semibold min-w-[20px] h-5 leading-5 inline-flex items-center justify-center"
+                style={{ backgroundColor: 'var(--surface-3)', color: 'var(--text-2)' }}
+              >
                 {project.openCount}
               </span>
             )}
           </a>
-          <a href="#" className="flex items-center justify-between text-sm text-foreground no-underline py-1.5 leading-5">
+          <a href="#" className="flex items-center justify-between text-sm no-underline py-1.5 leading-5" style={{ color: 'var(--text-1)' }}>
             <span>Done work items</span>
           </a>
         </div>
       </div>
 
       {/* Boards footer */}
-      <div className="px-3 py-2 border-t border-border">
+      <div className="px-3 py-2" style={{ borderTop: '1px solid var(--border)' }}>
         <DropdownMenu>
           <DropdownMenuTrigger asChild disabled={project.boardsCount === 0}>
             <button
-              className={`flex items-center gap-0.5 text-sm bg-transparent border-none cursor-pointer p-0 leading-5 ${
-                project.boardsCount > 0 ? 'text-foreground' : 'text-muted-foreground'
-              }`}
+              className="flex items-center gap-0.5 text-sm bg-transparent border-none cursor-pointer p-0 leading-5"
+              style={{ color: project.boardsCount > 0 ? 'var(--text-1)' : 'var(--text-3)' }}
               disabled={project.boardsCount === 0}
             >
               {project.boardsCount} {project.boardsCount === 1 ? 'board' : 'boards'}
@@ -88,22 +96,22 @@ function ActivityRow({ item }: { item: ActivityItem }) {
   return (
     <div className="grid grid-cols-[24px_1fr_60px_72px] items-center py-2.5 gap-3">
       {/* Icon column */}
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-center" style={{ color: 'var(--icon-default)' }}>
         <WorkItemTypeIcon type={item.type} size={16} />
       </div>
 
       {/* Main content */}
       <div className="min-w-0">
-        <div className="text-sm text-foreground leading-5 truncate">
+        <div className="text-sm leading-5 truncate" style={{ color: 'var(--text-1)' }}>
           {item.key} — {item.summary}
         </div>
-        <div className="text-xs text-muted-foreground leading-4 mt-0.5">
+        <div className="text-xs leading-4 mt-0.5" style={{ color: 'var(--text-3)' }}>
           {item.id} · {item.project}
         </div>
       </div>
 
       {/* Activity type label */}
-      <div className="text-xs text-muted-foreground leading-4">
+      <div className="text-xs leading-4" style={{ color: 'var(--text-3)' }}>
         {item.activityType}
       </div>
 
@@ -142,7 +150,7 @@ function GroupedActivityList({ items, visibleCount, onLoadMore }: {
 
         return (
           <div key={groupIndex}>
-            <div className={`text-[11px] font-bold text-muted-foreground uppercase mb-1 leading-4 ${groupIndex > 0 ? 'mt-4' : ''}`}>
+            <div className={`text-[11px] font-bold uppercase mb-1 leading-4 ${groupIndex > 0 ? 'mt-4' : ''}`} style={{ color: 'var(--text-3)' }}>
               {group.label}
             </div>
             {itemsToShow.map((item, index) => (
@@ -177,22 +185,22 @@ export function HomeContent() {
   };
 
   return (
-    <div className="p-6 px-10 bg-card min-h-screen font-sans">
+    <div className="p-6 px-10 min-h-screen font-sans" style={{ backgroundColor: 'var(--surface-1)' }}>
       {/* Page title */}
-      <h1 className="text-2xl font-semibold text-foreground leading-7 tracking-tight m-0">
+      <h1 className="text-2xl font-semibold leading-7 tracking-tight m-0" style={{ color: 'var(--text-1)' }}>
         For you
       </h1>
 
       {/* Divider */}
-      <div className="h-px bg-border mt-6 mb-5" />
+      <div className="h-px mt-6 mb-5" style={{ backgroundColor: 'var(--divider)' }} />
 
       {/* Recent Projects Section */}
       <div className="mb-8">
         <div className="flex justify-between items-center mb-3">
-          <div className="text-sm text-foreground leading-5">
+          <div className="text-sm leading-5" style={{ color: 'var(--text-1)' }}>
             Recent projects
           </div>
-          <a href="#" className="text-sm text-primary no-underline leading-5">
+          <a href="#" className="text-sm no-underline leading-5" style={{ color: 'var(--accent-color)' }}>
             View all projects
           </a>
         </div>
@@ -206,7 +214,7 @@ export function HomeContent() {
 
       {/* Tabs */}
       <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-        <TabsList className="bg-transparent border-b border-border rounded-none p-0 h-auto gap-0">
+        <TabsList className="bg-transparent rounded-none p-0 h-auto gap-0" style={{ borderBottom: '1px solid var(--border)' }}>
           <TabsTrigger 
             value="worked-on"
             className="text-sm px-0 mr-6 pb-3 pt-2 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:font-semibold data-[state=active]:shadow-none bg-transparent"
