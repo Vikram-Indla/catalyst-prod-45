@@ -521,20 +521,11 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
         </div>
       </div>
 
-      {/* Header */}
+      {/* Header - Toolbar only */}
       <div 
-        className="h-[72px] flex items-center justify-between px-4 sm:px-6 border-b print:hidden shrink-0 relative z-[100]"
+        className="h-[52px] flex items-center justify-end px-4 sm:px-6 border-b print:hidden shrink-0 relative z-[100]"
         style={{ backgroundColor: 'white', borderColor: 'hsl(var(--roadmap-sandstone))' }}
       >
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-[10px] flex items-center justify-center text-white font-bold text-sm shadow-sm" style={{ background: config.header.iconGradient }}>
-            {config.header.icon}
-          </div>
-          <div>
-            <div className="text-xs font-medium tracking-wider" style={{ color: 'hsl(var(--roadmap-status-new))' }}>{t.roadmapTitle}</div>
-            <div className="text-base font-semibold" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>{t.roadmapSubtitle}</div>
-          </div>
-        </div>
 
         {/* Toolbar */}
         <div className="inline-flex items-center gap-1.5 relative z-[100]" style={{ direction: 'ltr' }}>
