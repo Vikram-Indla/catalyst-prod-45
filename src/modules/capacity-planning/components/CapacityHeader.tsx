@@ -30,6 +30,7 @@ interface CapacityHeaderProps {
   // Save View
   onSaveView: () => void;
   isSaving?: boolean;
+  saveDisabled?: boolean;
 }
 
 export function CapacityHeader({
@@ -48,6 +49,7 @@ export function CapacityHeader({
   onToggleInsights,
   onSaveView,
   isSaving,
+  saveDisabled,
 }: CapacityHeaderProps) {
   const [calendarOpen, setCalendarOpen] = useState(false);
   
@@ -220,8 +222,8 @@ export function CapacityHeader({
                 <Button 
                   size="sm"
                   onClick={onSaveView}
-                  disabled={isSaving}
-                  className="gap-1.5 bg-brand-gold hover:bg-brand-gold-hover text-white border-brand-gold"
+                  disabled={isSaving || saveDisabled}
+                  className="gap-1.5 bg-brand-gold hover:bg-brand-gold-hover text-white border-brand-gold disabled:opacity-50"
                 >
                   <Save className="h-4 w-4" />
                   Save View

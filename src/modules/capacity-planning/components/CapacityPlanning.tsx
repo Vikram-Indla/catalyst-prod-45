@@ -46,6 +46,7 @@ export function CapacityPlanning() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showInsights, setShowInsights] = useState(true);
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
+  const [viewDirty, setViewDirty] = useState(false); // Track unsaved view changes
 
   // Modal state
   const [addResourceOpen, setAddResourceOpen] = useState(false);
@@ -87,11 +88,13 @@ export function CapacityPlanning() {
   const handleAddResources = useCallback((resourceIds: string[]) => {
     const newIds = [...new Set([...viewResourceIds, ...resourceIds])];
     saveViewConfig.mutate({ resource_ids: newIds });
+    setViewDirty(true);
   }, [viewResourceIds, saveViewConfig]);
 
   const handleRemoveResource = useCallback((resourceId: string) => {
     const newIds = viewResourceIds.filter(id => id !== resourceId);
     saveViewConfig.mutate({ resource_ids: newIds });
+    setViewDirty(true);
   }, [viewResourceIds, saveViewConfig]);
 
   const handleCreateBooking = useCallback((resourceId: string, date?: Date) => {
@@ -143,6 +146,8 @@ export function CapacityPlanning() {
       view_mode: viewMode,
       time_span: timeSpan,
       group_by: groupBy,
+    }, {
+      onSuccess: () => setViewDirty(false),
     });
   }, [saveViewConfig, viewResourceIds, viewMode, timeSpan, groupBy]);
 
@@ -167,6 +172,7 @@ export function CapacityPlanning() {
         onToggleInsights={() => setShowInsights(!showInsights)}
         onSaveView={handleSaveView}
         isSaving={saveViewConfig.isPending}
+        saveDisabled={!viewDirty}
       />
 
       {/* Bulk Actions Bar */}
