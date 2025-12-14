@@ -93,10 +93,10 @@ export function GanttView({
       <div className="flex-1 overflow-auto">
         <div className="min-w-max">
           {/* Month Headers */}
-          <div className="flex sticky top-0 z-20 bg-background border-b" style={{ borderColor: 'hsl(var(--border))' }}>
+          <div className="flex sticky top-0 z-20 bg-background border-b" style={{ borderColor: 'hsl(var(--border) / 0.4)' }}>
             <div 
               className="flex-shrink-0 border-r bg-muted/30"
-              style={{ width: RESOURCE_COL_WIDTH, borderColor: 'hsl(var(--border))' }}
+              style={{ width: RESOURCE_COL_WIDTH, borderColor: 'hsl(var(--border) / 0.4)' }}
             />
             <div className="flex relative">
               {Array.from(monthGroups.entries()).map(([month, dates]) => (
@@ -105,7 +105,7 @@ export function GanttView({
                   className="text-xs font-semibold text-muted-foreground px-2 py-1 border-r bg-muted/30"
                   style={{ 
                     width: dates.length * COLUMN_WIDTH,
-                    borderColor: 'hsl(var(--border))'
+                    borderColor: 'hsl(var(--border) / 0.4)'
                   }}
                 >
                   {month}
@@ -115,10 +115,10 @@ export function GanttView({
           </div>
 
           {/* Day Headers */}
-          <div className="flex sticky top-[25px] z-20 bg-background border-b" style={{ borderColor: 'hsl(var(--border))' }}>
+          <div className="flex sticky top-[25px] z-20 bg-background border-b" style={{ borderColor: 'hsl(var(--border) / 0.4)' }}>
             <div 
               className="flex-shrink-0 border-r bg-muted/30 flex items-center px-3"
-              style={{ width: RESOURCE_COL_WIDTH, height: 32, borderColor: 'hsl(var(--border))' }}
+              style={{ width: RESOURCE_COL_WIDTH, height: 32, borderColor: 'hsl(var(--border) / 0.4)' }}
             >
               <span className="text-xs font-semibold text-muted-foreground uppercase">Resource</span>
             </div>
@@ -134,7 +134,7 @@ export function GanttView({
                   style={{ 
                     width: COLUMN_WIDTH, 
                     height: 32,
-                    borderColor: 'hsl(var(--border))'
+                    borderColor: 'hsl(var(--border) / 0.3)'
                   }}
                 >
                   <span className={cn(
@@ -156,12 +156,12 @@ export function GanttView({
                 <div 
                   key={resource.id} 
                   className="flex border-b hover:bg-muted/30 group"
-                  style={{ height: ROW_HEIGHT, borderColor: 'hsl(var(--border))' }}
+                  style={{ height: ROW_HEIGHT, borderColor: 'hsl(var(--border) / 0.3)' }}
                 >
                   {/* Resource Cell */}
                   <div 
                     className="flex-shrink-0 border-r flex items-center justify-between px-3 bg-background group-hover:bg-muted/30"
-                    style={{ width: RESOURCE_COL_WIDTH, borderColor: 'hsl(var(--border))' }}
+                    style={{ width: RESOURCE_COL_WIDTH, borderColor: 'hsl(var(--border) / 0.3)' }}
                   >
                     <div className="flex items-center gap-2 min-w-0 flex-1">
                       <div 
@@ -206,7 +206,7 @@ export function GanttView({
                         style={{ 
                           width: COLUMN_WIDTH, 
                           height: ROW_HEIGHT,
-                          borderColor: 'hsl(var(--border))'
+                          borderColor: 'hsl(var(--border) / 0.2)'
                         }}
                         onClick={() => onCreateBooking(resource.id, date)}
                       />
@@ -281,7 +281,7 @@ export function GanttView({
           {/* Add Resource Row */}
           <div 
             className="flex border-b border-dashed hover:bg-brand-gold/5 cursor-pointer group"
-            style={{ height: ROW_HEIGHT, borderColor: 'hsl(var(--border))' }}
+            style={{ height: ROW_HEIGHT, borderColor: 'hsl(var(--border) / 0.4)' }}
             onClick={onAddResource}
           >
             <div 
