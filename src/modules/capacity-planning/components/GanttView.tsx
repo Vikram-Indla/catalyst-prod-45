@@ -1,12 +1,22 @@
 import { useMemo, useState } from 'react';
 import { format } from 'date-fns';
-import { ChevronLeft, ChevronRight, Plus, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, X, UserPlus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ResourceInventoryItem } from '@/hooks/useResourceInventory';
 import { CapacityBooking } from '../hooks/useCapacityBookings';
 import { generateDateColumns, isGCCWeekend, isToday, getDayPosition, getDaysBetween, groupDatesByMonth, isPast } from '../utils/dateUtils';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 interface GanttViewProps {
   resources: ResourceInventoryItem[];
@@ -18,12 +28,12 @@ interface GanttViewProps {
   onAddResource: () => void;
   onBookingClick: (booking: CapacityBooking) => void;
   onCreateBooking: (resourceId: string, date: Date) => void;
-  onAssignResource: (resourceId: string) => void;
+  onAssign: () => void; // Single global assign
 }
 
 const COLUMN_WIDTH = 36;
 const ROW_HEIGHT = 48;
-const RESOURCE_COL_WIDTH_EXPANDED = 200;
+const RESOURCE_COL_WIDTH_EXPANDED = 260; // Wider to show full names
 const RESOURCE_COL_WIDTH_COLLAPSED = 56;
 
 export function GanttView({
@@ -36,14 +46,22 @@ export function GanttView({
   onAddResource,
   onBookingClick,
   onCreateBooking,
-  onAssignResource,
+  onAssign,
 }: GanttViewProps) {
   const [isResourceColumnExpanded, setIsResourceColumnExpanded] = useState(true);
+  const [resourceToRemove, setResourceToRemove] = useState<ResourceInventoryItem | null>(null);
   const resourceColWidth = isResourceColumnExpanded ? RESOURCE_COL_WIDTH_EXPANDED : RESOURCE_COL_WIDTH_COLLAPSED;
   
   const weeks = timeSpan === '2weeks' ? 2 : 5;
   const dateColumns = useMemo(() => generateDateColumns(startDate, weeks), [startDate, weeks]);
   const monthGroups = useMemo(() => groupDatesByMonth(dateColumns), [dateColumns]);
+
+  const handleConfirmRemove = () => {
+    if (resourceToRemove) {
+      onRemoveResource(resourceToRemove.id);
+      setResourceToRemove(null);
+    }
+  };
 
   const filteredResources = useMemo(() => {
     if (!searchQuery) return resources;
@@ -125,7 +143,21 @@ export function GanttView({
               style={{ width: resourceColWidth, height: 32, borderColor: 'hsl(var(--border) / 0.4)' }}
             >
               {isResourceColumnExpanded && (
-                <span className="text-xs font-semibold text-muted-foreground uppercase">Resource</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold text-muted-foreground uppercase">Resource</span>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="h-6 px-2 text-xs bg-secondary-green hover:bg-secondary-green/90 text-white"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onAssign();
+                    }}
+                  >
+                    <UserPlus className="h-3 w-3 mr-1" />
+                    Assign
+                  </Button>
+                </div>
               )}
               <button
                 onClick={() => setIsResourceColumnExpanded(!isResourceColumnExpanded)}
@@ -197,7 +229,7 @@ export function GanttView({
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                onRemoveResource(resource.id);
+                                setResourceToRemove(resource);
                               }}
                               className="w-5 h-5 rounded-full flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors opacity-0 group-hover:opacity-100"
                               aria-label="Remove from view"
@@ -223,23 +255,10 @@ export function GanttView({
                         {resource.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                       </div>
                       {isResourceColumnExpanded && (
-                        <>
                           <div className="min-w-0 flex-1">
-                            <div className="text-sm font-medium truncate max-w-[60px]">{resource.name}</div>
+                            <div className="text-sm font-medium">{resource.name}</div>
                             <div className="text-[10px] text-muted-foreground uppercase">{resource.role_code || '—'}</div>
                           </div>
-                          <Button
-                            variant="default"
-                            size="sm"
-                            className="h-6 px-3 text-xs bg-secondary-green hover:bg-secondary-green/90 text-white"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onAssignResource(resource.id);
-                            }}
-                          >
-                            Assign
-                          </Button>
-                        </>
                       )}
                     </div>
                   </div>
@@ -342,6 +361,28 @@ export function GanttView({
           </div>
         </div>
       </div>
+
+      {/* Remove Confirmation Dialog */}
+      <AlertDialog open={!!resourceToRemove} onOpenChange={() => setResourceToRemove(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove from View?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove <strong>{resourceToRemove?.name}</strong> from the current view? 
+              This will not delete the resource from the inventory.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleConfirmRemove}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </TooltipProvider>
   );
 }
