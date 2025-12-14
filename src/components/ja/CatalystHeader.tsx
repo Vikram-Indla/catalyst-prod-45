@@ -21,6 +21,8 @@ import { catalystToast } from "@/lib/catalystToast";
 import { CreateEntityDialog } from "@/components/dialogs/CreateEntityDialog";
 import { useCatalystContext } from "@/contexts/CatalystContext";
 import { getActiveNavItem } from "@/lib/workspaceContext";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { useTheme } from "@/hooks/useTheme";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -127,16 +129,19 @@ export function CatalystHeader() {
         : isModuleEnabled(item.moduleCode),
   }));
 
+  const { isDark } = useTheme();
+
   return (
     <>
-      {/* TopNav: 56px fixed height, white bg, 1px bottom border */}
+      {/* TopNav: 56px fixed height, theme-aware bg, 1px bottom border */}
       <header 
-        className="sticky top-0 z-[100] flex items-center bg-white"
+        className="sticky top-0 z-[100] flex items-center"
         style={{ 
           height: '56px', 
-          borderBottom: '1px solid #e5e7eb',
+          borderBottom: '1px solid var(--border)',
           padding: '0 16px',
-          fontFamily: "var(--font-sans, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif)"
+          fontFamily: "var(--font-sans, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif)",
+          backgroundColor: 'var(--nav-bg)',
         }}
       >
         {/* ===== LOGO ZONE - Split color treatment ===== */}
@@ -527,6 +532,9 @@ export function CatalystHeader() {
                 <p>Search (Ctrl+K)</p>
               </TooltipContent>
             </Tooltip>
+
+            {/* Theme Toggle - between Search and Avatar */}
+            <ThemeToggle />
 
             {/* User Avatar */}
             <DropdownMenu>

@@ -51,6 +51,24 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@Lovable" />
     <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    
+    <!-- No-flash theme initialization - MUST run before React -->
+    <script>
+      (function() {
+        var isAdmin = window.location.pathname.indexOf('/admin') === 0;
+        if (isAdmin) {
+          document.documentElement.setAttribute('data-theme', 'light');
+        } else {
+          var stored = localStorage.getItem('catalyst_theme');
+          var system = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          var theme = stored || system;
+          document.documentElement.setAttribute('data-theme', theme);
+          if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+          }
+        }
+      })();
+    </script>
   </head>
 
   <body>

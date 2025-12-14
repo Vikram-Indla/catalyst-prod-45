@@ -224,36 +224,179 @@
   --secondary-bronze: 28 26% 44%;              /* #8b7355 - Accents in body */
   --secondary-champagne: 35 42% 71%;           /* #d4b896 - Light accents */
   --secondary-grey: 210 8% 80%;                /* #c8ccd0 - Muted elements */
+
+  /* ============================================
+     DARK THEME CSS VARIABLES (data-theme)
+     ============================================ */
+  /* Surfaces */
+  --surface-0: #FAF7F1;
+  --surface-1: #FFFFFF;
+  --surface-2: #F5F5F4;
+  --surface-3: #FAFAF9;
+  
+  /* Text */
+  --text-1: #1A1A1A;
+  --text-2: #4B5563;
+  --text-3: #6B7280;
+  --text-muted: #9CA3AF;
+  --text-inverse: #FFFFFF;
+  
+  /* Borders */
+  --border-color: #E5E7EB;
+  --border-light: #F3F4F6;
+  --border-strong: #D1D5DB;
+  
+  /* Icons - CRITICAL */
+  --icon-default: #4B5563;
+  --icon-muted: #6B7280;
+  --icon-hover: #B8905F;
+  --icon-active: #5C7C5C;
+  
+  /* Navigation */
+  --nav-bg: #FFFFFF;
+  --nav-border: #E5E7EB;
+  --nav-text: #4B5563;
+  --nav-text-hover: #1A1A1A;
+  --nav-text-active: #C69C6D;
+  --nav-hover-bg: rgba(198, 156, 109, 0.08);
+  --nav-active-bg: rgba(212, 184, 150, 0.18);
+  --nav-indicator: #C69C6D;
+  
+  /* Interactive */
+  --focus-ring-color: rgba(198, 156, 109, 0.5);
+  --accent-color: #C69C6D;
+  --accent-hover: #B8905F;
+  --accent-muted: rgba(198, 156, 109, 0.15);
+  
+  /* Cards */
+  --card-bg: #FFFFFF;
+  --card-border: #E5E7EB;
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  
+  /* Inputs */
+  --input-bg: #FFFFFF;
+  --input-border: #D1D5DB;
+  --input-text: #1A1A1A;
+  --input-placeholder: #9CA3AF;
+  
+  /* Toggle */
+  --toggle-track: #E5E7EB;
+  --toggle-track-active: #C69C6D;
+  --toggle-thumb: #FFFFFF;
+  
+  /* Overlay */
+  --overlay-bg: rgba(0, 0, 0, 0.5);
+}
+
+/* DARK THEME via data-theme attribute */
+html[data-theme="dark"] {
+  /* Surfaces */
+  --surface-0: #0F0F0F;
+  --surface-1: #1A1A1A;
+  --surface-2: #252525;
+  --surface-3: #2A2A2A;
+  
+  /* Text */
+  --text-1: #F9FAFB;
+  --text-2: #D1D5DB;
+  --text-3: #9CA3AF;
+  --text-muted: #6B7280;
+  --text-inverse: #1A1A1A;
+  
+  /* Borders */
+  --border-color: #374151;
+  --border-light: #2D2D2D;
+  --border-strong: #4B5563;
+  
+  /* Icons - CRITICAL: Brighter for dark backgrounds */
+  --icon-default: #9CA3AF;
+  --icon-muted: #6B7280;
+  --icon-hover: #C69C6D;
+  --icon-active: #C69C6D;
+  
+  /* Navigation */
+  --nav-bg: #1A1A1A;
+  --nav-border: #374151;
+  --nav-text: #9CA3AF;
+  --nav-text-hover: #F9FAFB;
+  --nav-text-active: #C69C6D;
+  --nav-hover-bg: rgba(198, 156, 109, 0.12);
+  --nav-active-bg: rgba(198, 156, 109, 0.15);
+  --nav-indicator: #C69C6D;
+  
+  /* Interactive */
+  --focus-ring-color: rgba(198, 156, 109, 0.6);
+  --accent-color: #C69C6D;
+  --accent-hover: #B8905F;
+  --accent-muted: rgba(198, 156, 109, 0.2);
+  
+  /* Cards */
+  --card-bg: #1A1A1A;
+  --card-border: #374151;
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  
+  /* Inputs */
+  --input-bg: #252525;
+  --input-border: #374151;
+  --input-text: #F9FAFB;
+  --input-placeholder: #6B7280;
+  
+  /* Toggle */
+  --toggle-track: #374151;
+  --toggle-track-active: #C69C6D;
+  --toggle-thumb: #FFFFFF;
+  
+  /* Overlay */
+  --overlay-bg: rgba(0, 0, 0, 0.7);
+  
+  /* Override semantic Tailwind colors for dark mode */
+  --background: 0 0% 6%;                        /* #0F0F0F */
+  --foreground: 210 20% 98%;                    /* #F9FAFB */
+  --card: 0 0% 10%;                             /* #1A1A1A */
+  --card-foreground: 210 20% 98%;
+  --popover: 0 0% 10%;
+  --popover-foreground: 210 20% 98%;
+  
+  /* Primary stays as brand gold in dark mode */
+  --primary: 35 46% 60%;                        /* #C69C6D */
+  --primary-foreground: 0 0% 100%;
+  
+  --secondary: 0 0% 15%;                        /* #252525 */
+  --secondary-foreground: 210 20% 98%;
+  --muted: 0 0% 15%;
+  --muted-foreground: 217 10% 64%;
+  --accent: 0 0% 15%;
+  --accent-foreground: 210 20% 98%;
+  --destructive: 0 63% 45%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 217 19% 27%;                        /* #374151 */
+  --input: 0 0% 15%;
+  --ring: 35 46% 60%;
 }
 
 .dark {
-  --background: 217 19% 16%;                  /* #111827 dark background */
-  --foreground: 0 0% 100%;                    /* White text */
-  --card: 217 17% 21%;                        /* Slightly lighter than bg */
-  --card-foreground: 0 0% 100%;
-  --popover: 217 17% 21%;
-  --popover-foreground: 0 0% 100%;
+  --background: 0 0% 6%;                        /* #0F0F0F */
+  --foreground: 210 20% 98%;                    /* #F9FAFB */
+  --card: 0 0% 10%;                             /* #1A1A1A */
+  --card-foreground: 210 20% 98%;
+  --popover: 0 0% 10%;
+  --popover-foreground: 210 20% 98%;
   
   /* Primary stays as brand gold in dark mode */
-  --primary: 35 46% 60%;                      /* #C69C6D */
+  --primary: 35 46% 60%;                        /* #C69C6D */
   --primary-foreground: 0 0% 100%;
   
-  --secondary: 217 17% 21%;
-  --secondary-foreground: 0 0% 100%;
-  --muted: 217 17% 21%;
-  --muted-foreground: 217 10% 65%;
-  --accent: 217 17% 21%;
-  --accent-foreground: 0 0% 100%;
-  --destructive: 0 63% 31%;
+  --secondary: 0 0% 15%;                        /* #252525 */
+  --secondary-foreground: 210 20% 98%;
+  --muted: 0 0% 15%;
+  --muted-foreground: 217 10% 64%;
+  --accent: 0 0% 15%;
+  --accent-foreground: 210 20% 98%;
+  --destructive: 0 63% 45%;
   --destructive-foreground: 0 0% 100%;
-  --border: 217 17% 21%;
-  --input: 217 17% 21%;
-  --ring: 35 46% 60%;                         /* Brand gold for focus */
-  --chart-1: 220 70% 50%;
-  --chart-2: 160 60% 45%;
-  --chart-3: 30 80% 55%;
-  --chart-4: 280 65% 60%;
-  --chart-5: 340 75% 55%;
+  --border: 217 19% 27%;                        /* #374151 */
+  --input: 0 0% 15%;
+  --ring: 35 46% 60%;
 }
 
 /* ============================================
