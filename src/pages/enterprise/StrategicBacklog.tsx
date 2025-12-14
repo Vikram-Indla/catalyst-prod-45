@@ -6,11 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Plus, ChevronDown, Archive, CheckCircle2, LayoutGrid, ListTree, Boxes } from 'lucide-react';
+import { Plus, ChevronDown, Archive, CheckCircle2, LayoutGrid, ListTree, Boxes, Target } from 'lucide-react';
 import { OverviewTab } from '@/components/strategic-backlog/OverviewTab';
 import { ThemesTab } from '@/components/strategic-backlog/ThemesTab';
 import { EpicsTab } from '@/components/strategic-backlog/EpicsTab';
 import { CreateThemeDialog } from '@/components/strategic-backlog/CreateThemeDialog';
+import { OKRHubV2 } from '@/modules/okr-v2';
 import {
   useStrategyMissions,
   useStrategyVisions,
@@ -129,6 +130,13 @@ export default function StrategicBacklog() {
                 {themes.length === 0 && <Badge variant="destructive" className="text-[10px] px-1.5 py-0 h-4 ml-1 rounded-full">!</Badge>}
               </TabsTrigger>
               <TabsTrigger 
+                value="objectives"
+                className="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=active]:shadow-sm flex items-center gap-1.5 hover:bg-muted/50 transition-colors"
+              >
+                <Target className="h-3.5 w-3.5" />
+                Objectives
+              </TabsTrigger>
+              <TabsTrigger 
                 value="epics"
                 className="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=active]:shadow-sm flex items-center gap-1.5 hover:bg-muted/50 transition-colors"
               >
@@ -156,6 +164,10 @@ export default function StrategicBacklog() {
                 snapshotId={snapshotId}
                 isArchived={isArchived}
               />
+            </TabsContent>
+
+            <TabsContent value="objectives" className="mt-6">
+              <OKRHubV2 snapshotId={snapshotId} />
             </TabsContent>
 
             <TabsContent value="epics" className="mt-6">
