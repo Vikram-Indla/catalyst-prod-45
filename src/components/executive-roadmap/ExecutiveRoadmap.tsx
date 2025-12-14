@@ -2,6 +2,7 @@
 // This component wraps the RoadmapEngine with demand-specific configuration
 
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { BusinessRequestRoadmapItem, RoadmapStatus, PLATFORM_INFO, STAGE_NAMES, STAGE_NAMES_AR } from '@/types/roadmapTypes';
 import { RoadmapLegend } from './RoadmapLegend';
@@ -316,6 +317,21 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
   const containerRef = useRef<HTMLDivElement>(null);
   const timelineScrollRef = useRef<HTMLDivElement>(null);
   const leftPanelRef = useRef<HTMLDivElement>(null);
+  
+  // Dynamic today tracking - recalculates when day changes
+  const [todayKey, setTodayKey] = useState(() => format(new Date(), 'yyyy-MM-dd'));
+  
+  useEffect(() => {
+    // Check if day has changed every minute
+    const interval = setInterval(() => {
+      const currentDay = format(new Date(), 'yyyy-MM-dd');
+      if (currentDay !== todayKey) {
+        setTodayKey(currentDay);
+      }
+    }, 60000); // Check every minute
+    
+    return () => clearInterval(interval);
+  }, [todayKey]);
 
   const t = TRANSLATIONS[language];
   const isRTL = language === 'ar';
@@ -527,16 +543,15 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
     return cols;
   }, [timeScale, isRTL, visibleRange]);
 
-  // Calculate today line position
-  const getTodayPosition = useCallback(() => {
+  // Calculate today line position - uses todayKey to trigger recalculation when day changes
+  const todayPosition = useMemo(() => {
+    // todayKey dependency ensures recalculation when day changes
     const today = new Date();
     if (today < visibleRange.start || today > visibleRange.end) return null;
     const totalDays = (visibleRange.end.getTime() - visibleRange.start.getTime()) / (1000 * 60 * 60 * 24);
     const daysSinceStart = (today.getTime() - visibleRange.start.getTime()) / (1000 * 60 * 60 * 24);
     return (daysSinceStart / totalDays) * 100;
-  }, [visibleRange]);
-
-  const todayPosition = getTodayPosition();
+  }, [visibleRange, todayKey]);
 
   // Calculate bar position with continuation indicators
   const getBarPosition = useCallback((item: BusinessRequestRoadmapItem) => {
