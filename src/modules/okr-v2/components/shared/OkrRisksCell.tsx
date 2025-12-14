@@ -36,18 +36,18 @@ export function OkrRisksCell({ summary, compact = false }: OkrRisksCellProps) {
   let chipText_color = '';
 
   if (highRiskCount > 0 && mediumRiskCount > 0) {
-    // Mixed: "XH / XM"
-    chipText = `${highRiskCount}H / ${mediumRiskCount}M`;
+    // Mixed: "XH / XM" - more compact
+    chipText = `${highRiskCount}H/${mediumRiskCount}M`;
     chipBg = 'bg-[#c44536]';
     chipText_color = 'text-white';
   } else if (highRiskCount > 0) {
-    // High only
-    chipText = `${highRiskCount} High`;
+    // High only - compact "XH" format
+    chipText = `${highRiskCount}H`;
     chipBg = 'bg-[#c44536]';
     chipText_color = 'text-white';
   } else if (mediumRiskCount > 0) {
-    // Medium only
-    chipText = `${mediumRiskCount} Medium`;
+    // Medium only - compact "XM" format
+    chipText = `${mediumRiskCount}M`;
     chipBg = 'bg-[#e07830]';
     chipText_color = 'text-white';
   }
