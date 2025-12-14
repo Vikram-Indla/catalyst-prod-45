@@ -118,74 +118,78 @@ export default function ReportsDiscovery() {
 
   return (
     <AdminGuard>
-      <div className="p-6 space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Reports Discovery</h1>
-          <p className="text-muted-foreground mt-1">
-            Explore and run SAFe-aligned reports and analytics
-          </p>
+      <div className="flex flex-col h-full bg-background">
+        {/* Row 1: Title */}
+        <div className="h-[44px] flex items-center px-6">
+          <h1 className="text-xl font-semibold text-secondary-green">Reports Discovery</h1>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search reports..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
+        {/* Row 2: Controls */}
+        <div 
+          className="h-[52px] flex items-center justify-between px-6 border-b"
+          style={{ borderColor: 'hsl(var(--border))' }}
+        >
+          <div className="flex items-center gap-3">
+            <div className="relative w-[280px]">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search reports..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9 h-9"
+              />
+            </div>
           </div>
+          <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
+            <TabsList>
+              {categories.map((cat) => (
+                <TabsTrigger key={cat.value} value={cat.value}>
+                  {cat.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
         </div>
 
-        <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
-          <TabsList>
-            {categories.map((cat) => (
-              <TabsTrigger key={cat.value} value={cat.value}>
-                {cat.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-
-          <TabsContent value={selectedCategory} className="mt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredReports.map((report, index) => (
-                <Card key={index} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 bg-primary/10 rounded-lg text-primary">
-                          {renderReportIcon(report.report_type)}
-                        </div>
-                        <div>
-                          <CardTitle className="text-base">{report.name}</CardTitle>
-                          <Badge variant="secondary" className="mt-1">
-                            {report.category}
-                          </Badge>
-                        </div>
+        {/* Page Content */}
+        <div className="flex-1 overflow-auto p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredReports.map((report, index) => (
+              <Card key={index} className="hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-primary/10 rounded-lg text-primary">
+                        {renderReportIcon(report.report_type)}
+                      </div>
+                      <div>
+                        <CardTitle className="text-base">{report.name}</CardTitle>
+                        <Badge variant="secondary" className="mt-1">
+                          {report.category}
+                        </Badge>
                       </div>
                     </div>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="mb-4">
-                      {report.description}
-                    </CardDescription>
-                    <Button className="w-full" size="sm">
-                      <PlayCircle className="h-4 w-4 mr-2" />
-                      Run Report
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="mb-4">
+                    {report.description}
+                  </CardDescription>
+                  <Button className="w-full" size="sm">
+                    <PlayCircle className="h-4 w-4 mr-2" />
+                    Run Report
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
 
-            {filteredReports.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground">No reports found matching your criteria</p>
-              </div>
-            )}
-          </TabsContent>
-        </Tabs>
+          {filteredReports.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">No reports found matching your criteria</p>
+            </div>
+          )}
+        </div>
       </div>
     </AdminGuard>
   );
