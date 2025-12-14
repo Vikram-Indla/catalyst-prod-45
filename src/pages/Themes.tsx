@@ -17,6 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import { CommentsSection } from '@/components/shared/CommentsSection';
 import { useUserRole } from '@/hooks/useUserRole';
 import { PermissionGuard } from '@/components/shared/PermissionGuard';
+import { PageHeader } from '@/components/layout/PageHeader';
 
 export default function Themes() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -121,51 +122,44 @@ export default function Themes() {
     importThemesMutation.mutate(data);
   };
 
+  // Toolbar content
+  const toolbar = (
+    <div className="flex items-center justify-between w-full">
+      <div className="relative w-[280px]">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Search themes..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-9 h-9"
+        />
+      </div>
+      <div className="flex items-center gap-3">
+        <ListScreenToolbar
+          selectedCount={selectedRows.length}
+          onColumnChooser={() => {}}
+          onBulkEdit={() => {}}
+          onExport={handleExport}
+          onImport={() => setImportDialogOpen(true)}
+        />
+        <PermissionGuard requiredRole="team_lead" showMessage={false}>
+          <Button onClick={handleCreate} size="sm" className="gap-1.5 bg-brand-gold hover:bg-brand-gold-hover text-white">
+            <Plus className="h-4 w-4" />
+            New Theme
+          </Button>
+        </PermissionGuard>
+      </div>
+    </div>
+  );
+
   return (
     <div className="h-full flex flex-col bg-background overflow-hidden">
-      {/* Header */}
-      <div className="border-b bg-card">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-[var(--s4)] sm:px-[var(--s6)] h-14 gap-[var(--s3)]">
-          <div className="flex items-center gap-[var(--s3)]">
-            <h1 className="text-lg font-semibold">Strategic Themes</h1>
-          </div>
-          <div className="flex items-center gap-[var(--s2)]">
-            <PermissionGuard requiredRole="team_lead" showMessage={false}>
-              <Button onClick={handleCreate} size="sm">
-                <Plus className="h-4 w-4 mr-2" />
-                New Theme
-              </Button>
-            </PermissionGuard>
-          </div>
-        </div>
-      </div>
+      {/* Standardized Header */}
+      <PageHeader title="Strategic Themes" toolbar={toolbar} />
 
-      <div className="flex-1 overflow-auto px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s6)] space-y-[var(--s4)]">
-        {/* Search and Toolbar in one row */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-[var(--s3)]">
-          <div className="relative w-full sm:w-auto sm:min-w-[280px]">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search themes..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 border-border bg-card shadow-sm"
-            />
-          </div>
-          <ListScreenToolbar
-            selectedCount={selectedRows.length}
-            onColumnChooser={() => {}}
-            onBulkEdit={() => {}}
-            onExport={handleExport}
-            onImport={() => setImportDialogOpen(true)}
-          />
-        </div>
-
+      <div className="flex-1 overflow-auto px-6 py-6">
         {/* Data Grid */}
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">Themes List</CardTitle>
-          </CardHeader>
           <CardContent className="p-0">
             <Table>
               <TableHeader>
