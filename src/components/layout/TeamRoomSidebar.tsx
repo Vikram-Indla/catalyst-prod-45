@@ -349,6 +349,7 @@ export function TeamRoomSidebar({
                   </div>
                 )}
 
+                {isMorePages && morePagesExpanded && expanded && (
                   <div style={{ background: 'var(--surface-3)' }}>
                     {morePagesSubMenu.map((subItem) => (
                       <button
