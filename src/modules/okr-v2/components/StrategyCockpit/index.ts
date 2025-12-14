@@ -1,14 +1,9 @@
 // ═══════════════════════════════════════════════════════════════════════════════
-// OKR Hub V2 — Main Entry Point
-// Wraps the Strategy Cockpit with real data-driven engine
+// OKR Hub V2 — Strategy Cockpit Module Barrel Export
 // ═══════════════════════════════════════════════════════════════════════════════
 
-import { StrategyCockpit } from './StrategyCockpit';
-
-interface OKRHubV2Props {
-  snapshotId?: string;
-}
-
-export function OKRHubV2({ snapshotId }: OKRHubV2Props = {}) {
-  return <StrategyCockpit snapshotId={snapshotId} />;
-}
+export { StrategyCockpit } from './StrategyCockpit';
+export { ThemeFilterBar } from './ThemeFilterBar';
+export { StrategyTree } from './StrategyTree';
+export { TreeRow } from './TreeRow';
+export { AnalyticsDrawer } from './AnalyticsDrawer';
