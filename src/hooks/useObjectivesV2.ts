@@ -321,7 +321,6 @@ export function useCreateObjectiveV2() {
           tier: null,
           parent_objective_id: null,
           portfolio_id: null,
-          program_id: null,
         })
         .select()
         .single();
