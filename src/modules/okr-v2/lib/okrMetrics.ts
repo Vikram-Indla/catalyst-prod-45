@@ -563,7 +563,27 @@ export function getLinkedWorkItemCountForObjective(objective: Objective): number
 }
 
 /**
- * Get full risk summary for an Objective (for OkrRisksCell)
+ * Get OWN risk summary for an Objective (for OkrRisksCell in tree)
+ * Shows ONLY risks directly attached to the objective, NOT cascaded from children
+ */
+export function getObjectiveOwnRiskSummary(objective: Objective): {
+  highRiskCount: number;
+  mediumRiskCount: number;
+  blockedWorkCount: number;
+  delayedWorkCount: number;
+} {
+  // Own risks only - do NOT aggregate from KRs/work items
+  return {
+    highRiskCount: objective.risks?.high || 0,
+    mediumRiskCount: objective.risks?.medium || 0,
+    blockedWorkCount: 0, // Blocked items are at work item level
+    delayedWorkCount: 0, // Delayed items are at work item level
+  };
+}
+
+/**
+ * Get CASCADED risk summary for an Objective (for analytics/rollups)
+ * Aggregates risks from objective + KRs + work items
  */
 export function getObjectiveRiskSummary(objective: Objective): {
   highRiskCount: number;
@@ -571,17 +591,44 @@ export function getObjectiveRiskSummary(objective: Objective): {
   blockedWorkCount: number;
   delayedWorkCount: number;
 } {
-  const aggregated = aggregateRisks(objective.keyResults || []);
+  // Include objective's own risks
+  const ownRisks = objective.risks || { high: 0, medium: 0, low: 0 };
+  
+  // Aggregate from KRs
+  const krRisks = aggregateRisks(objective.keyResults || []);
+  
+  // Aggregate from work items
+  const allWorkItems = (objective.keyResults || []).flatMap(kr => kr.workItems || []);
+  const wiRisks = aggregateRisks(allWorkItems);
+  
   return {
-    highRiskCount: aggregated.high,
-    mediumRiskCount: aggregated.medium,
+    highRiskCount: ownRisks.high + krRisks.high + wiRisks.high,
+    mediumRiskCount: ownRisks.medium + krRisks.medium + wiRisks.medium,
     blockedWorkCount: getBlockedWorkCountForObjective(objective),
     delayedWorkCount: getDelayedWorkCountForObjective(objective),
   };
 }
 
 /**
- * Get full risk summary for a Key Result (for OkrRisksCell)
+ * Get OWN risk summary for a Key Result (for OkrRisksCell in tree)
+ * Shows ONLY risks directly attached to the KR, NOT from work items
+ */
+export function getKeyResultOwnRiskSummary(kr: KeyResult): {
+  highRiskCount: number;
+  mediumRiskCount: number;
+  blockedWorkCount: number;
+  delayedWorkCount: number;
+} {
+  return {
+    highRiskCount: kr.risks?.high || 0,
+    mediumRiskCount: kr.risks?.medium || 0,
+    blockedWorkCount: 0, // Blocked items are at work item level
+    delayedWorkCount: 0, // Delayed items are at work item level
+  };
+}
+
+/**
+ * Get full risk summary for a Key Result (for analytics - includes work items)
  */
 export function getKeyResultRiskSummary(kr: KeyResult): {
   highRiskCount: number;
@@ -596,9 +643,12 @@ export function getKeyResultRiskSummary(kr: KeyResult): {
     return variance > 0 && wi.status !== 'blocked';
   }).length;
 
+  // Include own risks + cascaded from work items
+  const wiRisks = aggregateRisks(workItems);
+
   return {
-    highRiskCount: kr.risks?.high || 0,
-    mediumRiskCount: kr.risks?.medium || 0,
+    highRiskCount: (kr.risks?.high || 0) + wiRisks.high,
+    mediumRiskCount: (kr.risks?.medium || 0) + wiRisks.medium,
     blockedWorkCount: blockedCount,
     delayedWorkCount: delayedCount,
   };
@@ -606,6 +656,7 @@ export function getKeyResultRiskSummary(kr: KeyResult): {
 
 /**
  * Get full risk summary for a Work Item (for OkrRisksCell)
+ * Work items show their OWN risks (they have no children)
  */
 export function getWorkItemRiskSummary(wi: WorkItem): {
   highRiskCount: number;
