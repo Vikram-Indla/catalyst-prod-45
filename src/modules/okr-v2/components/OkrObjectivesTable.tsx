@@ -1,15 +1,20 @@
 // ═══════════════════════════════════════════════════════════════════════════════
-// CATALYST OKR OBJECTIVES TABLE — Presentational Component
+// CATALYST OKR OBJECTIVES TABLE — Presentational Component (V1)
 // Enterprise-grade table with brand tokens, baseline progress, and risk indicators
+// Uses shared components for visual parity with V2 Strategy Cockpit
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { cn } from '@/lib/utils';
 import { ChevronRight } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { TrendIcon } from './TrendIcon';
 import type { TrendCode } from '../lib/okrTypes';
+
+// Shared presentational components
+import { OkrStatusPill } from './shared/OkrStatusPill';
+import { OkrProgressCell } from './shared/OkrProgressCell';
+import { OkrRisksCell } from './shared/OkrRisksCell';
+import { OkrLinkedCell } from './shared/OkrLinkedCell';
+import { OkrThemeDot } from './shared/OkrThemeDot';
 
 // ─────────────────────────────────────────────────────────────────────────────────
 // TYPE DEFINITIONS
@@ -36,169 +41,6 @@ export interface OkrObjectiveRow {
 interface OkrObjectivesTableProps {
   rows: OkrObjectiveRow[];
   onRowClick: (row: OkrObjectiveRow) => void;
-}
-
-// ─────────────────────────────────────────────────────────────────────────────────
-// STATUS PILL COMPONENT
-// ─────────────────────────────────────────────────────────────────────────────────
-
-const STATUS_STYLES: Record<string, { bg: string; text: string; border: string }> = {
-  'pending': { bg: 'bg-muted', text: 'text-muted-foreground', border: 'border-border' },
-  'in-progress': { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200' },
-  'on-track': { bg: 'bg-secondary-green/10', text: 'text-secondary-green', border: 'border-secondary-green/30' },
-  'at-risk': { bg: 'bg-orange-50', text: 'text-orange-600', border: 'border-orange-200' },
-  'off-track': { bg: 'bg-red-50', text: 'text-red-600', border: 'border-red-200' },
-  'blocked': { bg: 'bg-red-100', text: 'text-red-700', border: 'border-red-300' },
-  'completed': { bg: 'bg-secondary-green/10', text: 'text-secondary-green', border: 'border-secondary-green/30' },
-};
-
-function StatusPill({ status }: { status: string }) {
-  const normalizedStatus = status.toLowerCase().replace(/\s+/g, '-');
-  const styles = STATUS_STYLES[normalizedStatus] || STATUS_STYLES['pending'];
-  
-  // Convert status to display format
-  const displayStatus = status
-    .split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-
-  return (
-    <span
-      className={cn(
-        'inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-medium border whitespace-nowrap',
-        styles.bg,
-        styles.text,
-        styles.border
-      )}
-    >
-      {displayStatus}
-    </span>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────────
-// PROGRESS BAR COMPONENT
-// ─────────────────────────────────────────────────────────────────────────────────
-
-function ProgressBar({ 
-  progress, 
-  trend, 
-  variance 
-}: { 
-  progress: number; 
-  trend: TrendCode;
-  variance: number | null;
-}) {
-  return (
-    <div className="flex items-center justify-end gap-2.5 w-full">
-      {/* Progress bar */}
-      <Progress 
-        value={Math.min(progress, 100)} 
-        className="h-1.5 flex-1 max-w-24"
-      />
-      
-      {/* Percentage */}
-      <span className="text-sm font-semibold text-foreground min-w-[36px] text-right">
-        {Math.round(progress)}%
-      </span>
-      
-      {/* Trend icon */}
-      {trend !== 'none' && <TrendIcon trend={trend} variance={variance} />}
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────────
-// RISKS DISPLAY COMPONENT
-// ─────────────────────────────────────────────────────────────────────────────────
-
-function RisksDisplay({ 
-  highRiskCount, 
-  mediumRiskCount, 
-  blockedWorkCount, 
-  delayedWorkCount 
-}: { 
-  highRiskCount: number;
-  mediumRiskCount: number;
-  blockedWorkCount: number;
-  delayedWorkCount: number;
-}) {
-  const totalRisks = highRiskCount + mediumRiskCount;
-  const totalIssues = blockedWorkCount + delayedWorkCount;
-
-  if (totalRisks === 0 && totalIssues === 0) {
-    return (
-      <span className="flex items-center justify-end w-full text-sm text-muted-foreground">
-        —
-      </span>
-    );
-  }
-
-  // Build risk text
-  let riskText = '';
-  if (highRiskCount > 0 && mediumRiskCount > 0) {
-    riskText = `${highRiskCount}H / ${mediumRiskCount}M`;
-  } else if (highRiskCount > 0) {
-    riskText = `${highRiskCount} High`;
-  } else if (mediumRiskCount > 0) {
-    riskText = `${mediumRiskCount} Medium`;
-  }
-
-  // Build issues text
-  const issuesParts: string[] = [];
-  if (blockedWorkCount > 0) issuesParts.push(`${blockedWorkCount} blocked`);
-  if (delayedWorkCount > 0) issuesParts.push(`${delayedWorkCount} delayed`);
-  const issuesText = issuesParts.join(', ');
-
-  const hasHighRisk = highRiskCount > 0;
-
-  return (
-    <div className="flex flex-col items-end gap-0.5">
-      {riskText && (
-        <span
-          className={cn(
-            'inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium',
-            hasHighRisk
-              ? 'bg-red-50 text-red-600'
-              : 'bg-orange-50 text-orange-600'
-          )}
-        >
-          {riskText}
-        </span>
-      )}
-      {issuesText && (
-        <span className="text-[10px] text-muted-foreground tracking-wide">
-          {issuesText}
-        </span>
-      )}
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────────
-// LINKED CHIP COMPONENT
-// ─────────────────────────────────────────────────────────────────────────────────
-
-function LinkedChip({ 
-  linkedKrCount, 
-  linkedWorkItemCount 
-}: { 
-  linkedKrCount: number;
-  linkedWorkItemCount: number;
-}) {
-  const text =
-    linkedWorkItemCount > 0
-      ? `${linkedKrCount} KRs · ${linkedWorkItemCount} Work`
-      : `${linkedKrCount} KRs`;
-
-  return (
-    <Badge 
-      variant="outline" 
-      className="text-[11px] font-medium bg-muted/50 border-border whitespace-nowrap"
-    >
-      {text}
-    </Badge>
-  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────────
@@ -254,14 +96,12 @@ export function OkrObjectivesTable({ rows, onRowClick }: OkrObjectivesTableProps
           >
             {/* OKRs Column */}
             <div className="flex items-center gap-2.5 min-w-0">
-              {/* Theme color dot */}
-              <span
-                className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                style={{ 
-                  backgroundColor: row.themeColor,
-                  boxShadow: `0 0 0 2px ${row.themeColor}25`
-                }}
-                title={row.themeName}
+              {/* Theme color dot using shared component */}
+              <OkrThemeDot 
+                color={row.themeColor} 
+                themeName={row.themeName} 
+                size="md" 
+                showGlow 
               />
 
               {/* Chevron */}
@@ -289,7 +129,7 @@ export function OkrObjectivesTable({ rows, onRowClick }: OkrObjectivesTableProps
 
             {/* Status Column */}
             <div className="flex items-center justify-center">
-              <StatusPill status={row.status} />
+              <OkrStatusPill status={row.status} />
             </div>
 
             {/* Progress vs Plan Column */}
@@ -297,29 +137,34 @@ export function OkrObjectivesTable({ rows, onRowClick }: OkrObjectivesTableProps
               {row.progressActual === null || !row.hasBaseline ? (
                 <span className="text-sm text-muted-foreground">—</span>
               ) : (
-                <ProgressBar 
-                  progress={row.progressActual} 
-                  trend={row.progressTrend}
-                  variance={row.progressVariance}
+                <OkrProgressCell 
+                  baseline={{
+                    actual: row.progressActual,
+                    expected: null,
+                    variance: row.progressVariance,
+                    trend: row.progressTrend,
+                  }}
                 />
               )}
             </div>
 
             {/* Risks Column */}
             <div className="flex items-center justify-end">
-              <RisksDisplay
-                highRiskCount={row.highRiskCount}
-                mediumRiskCount={row.mediumRiskCount}
-                blockedWorkCount={row.blockedWorkCount}
-                delayedWorkCount={row.delayedWorkCount}
+              <OkrRisksCell
+                summary={{
+                  highRiskCount: row.highRiskCount,
+                  mediumRiskCount: row.mediumRiskCount,
+                  blockedWorkCount: row.blockedWorkCount,
+                  delayedWorkCount: row.delayedWorkCount,
+                }}
               />
             </div>
 
             {/* Linked Column */}
             <div className="flex items-center justify-end">
-              <LinkedChip
-                linkedKrCount={row.linkedKrCount}
-                linkedWorkItemCount={row.linkedWorkItemCount}
+              <OkrLinkedCell
+                krCount={row.linkedKrCount}
+                workItemCount={row.linkedWorkItemCount}
               />
             </div>
           </div>
