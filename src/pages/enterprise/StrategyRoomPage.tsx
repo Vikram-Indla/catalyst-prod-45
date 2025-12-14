@@ -123,11 +123,7 @@ export default function StrategyRoomPage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 flex-shrink-0">
-          {effectiveSelectedSnapshotId && (
-            <CreateStrategyItemDropdown snapshotId={effectiveSelectedSnapshotId} />
-          )}
-        </div>
+        {/* Plus button removed per user request */}
       </div>
 
       {/* Content Area */}
