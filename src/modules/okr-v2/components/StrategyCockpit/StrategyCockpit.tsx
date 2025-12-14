@@ -1,13 +1,15 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // OKR Hub V2 — Strategy Cockpit (Main Component)
-// Enterprise-grade OKR dashboard with hierarchical tree view and slide-in analytics drawer
+// Enterprise-grade OKR dashboard with hierarchical tree view, smart filters,
+// baseline progress with trend, and slide-in analytics drawer
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, BarChart3, Download, Plus, X } from 'lucide-react';
+import { Search, BarChart3, Download, Plus, X, Filter, Settings2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Sheet,
@@ -22,6 +24,8 @@ import { StrategyTree } from './StrategyTree';
 import { AnalyticsDrawerContent } from './AnalyticsDrawerContent';
 import { CreateObjectiveDialogV2 } from '../CreateObjectiveDialogV2';
 import { ObjectiveDrawerV2 } from '../ObjectiveDrawerV2';
+import { OKRSmartFiltersDialog, OKRSmartFilters, countActiveFilters } from '../OKRSmartFiltersDialog';
+import { OKRColumnChooser, DEFAULT_OKR_COLUMNS, type OKRColumn } from '../OKRColumnChooser';
 
 import { useOKRStrategicData, useOKRThemes } from '../../hooks/useOKRStrategicData';
 import type { TreeItem } from '../../lib/okrTypes';
@@ -41,10 +45,14 @@ export function StrategyCockpit({ snapshotId }: StrategyCockpitProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [selectedObjectiveId, setSelectedObjectiveId] = useState<string | null>(null);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filters, setFilters] = useState<OKRSmartFilters>({});
 
   // Data fetching
   const { data: strategicData, isLoading, error } = useOKRStrategicData(snapshotId);
   const { data: themeChips } = useOKRThemes(snapshotId);
+
+  const activeFilterCount = countActiveFilters(filters);
 
   // Open create dialog when ?create=true is in URL
   useEffect(() => {
@@ -115,6 +123,12 @@ export function StrategyCockpit({ snapshotId }: StrategyCockpitProps) {
     toast.info('Analytics modal coming soon');
   };
 
+  const handleClearFilters = () => {
+    setFilters({});
+    setSelectedThemeIds([]);
+    setSearchQuery('');
+  };
+
   // Get drawer title based on selected item type
   const getDrawerTitle = () => {
     if (!selectedItem) return '';
@@ -123,6 +137,9 @@ export function StrategyCockpit({ snapshotId }: StrategyCockpitProps) {
     if (selectedItem.type === 'workItem') return 'Delivery Item Analytics';
     return 'Analytics';
   };
+
+  // Check if any filters are active
+  const hasActiveFilters = activeFilterCount > 0 || selectedThemeIds.length > 0 || searchQuery.trim().length > 0;
 
   // Error state
   if (error) {
@@ -185,24 +202,56 @@ export function StrategyCockpit({ snapshotId }: StrategyCockpitProps) {
         />
       )}
 
-      {/* Search Bar */}
+      {/* Search & Filter Bar */}
       <div className="px-6 py-3 bg-card border-b border-border">
-        <div className="flex items-center gap-2.5 px-4 py-2.5 bg-muted/50 rounded-lg border border-border">
-          <Search className="h-4 w-4 text-muted-foreground" />
-          <Input
-            type="text"
-            placeholder="Search objectives, KRs, work items…"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1 border-0 bg-transparent shadow-none focus-visible:ring-0 h-auto p-0 text-sm"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery('')}
-              className="flex items-center justify-center w-5 h-5 bg-muted-foreground/20 rounded-full hover:bg-muted-foreground/30"
+        <div className="flex items-center gap-3">
+          {/* Search */}
+          <div className="flex items-center gap-2.5 flex-1 max-w-md px-4 py-2.5 bg-muted/50 rounded-lg border border-border">
+            <Search className="h-4 w-4 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Search objectives, KRs, work items…"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="flex-1 border-0 bg-transparent shadow-none focus-visible:ring-0 h-auto p-0 text-sm"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="flex items-center justify-center w-5 h-5 bg-muted-foreground/20 rounded-full hover:bg-muted-foreground/30"
+              >
+                <X className="h-3 w-3 text-muted-foreground" />
+              </button>
+            )}
+          </div>
+
+          {/* Filters */}
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-10 gap-1.5"
+            onClick={() => setFiltersOpen(true)}
+          >
+            <Filter className="h-4 w-4" />
+            Filters
+            {activeFilterCount > 0 && (
+              <Badge variant="secondary" className="ml-1 bg-brand-gold/20 text-brand-gold">
+                {activeFilterCount}
+              </Badge>
+            )}
+          </Button>
+
+          {/* Clear all filters */}
+          {hasActiveFilters && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-10 text-muted-foreground hover:text-foreground"
+              onClick={handleClearFilters}
             >
-              <X className="h-3 w-3 text-muted-foreground" />
-            </button>
+              <X className="h-4 w-4 mr-1" />
+              Clear all
+            </Button>
           )}
         </div>
       </div>
@@ -222,11 +271,20 @@ export function StrategyCockpit({ snapshotId }: StrategyCockpitProps) {
             expandedIds={expandedIds}
             selectedItem={selectedItem}
             searchQuery={searchQuery}
+            filters={filters}
             onToggle={handleToggle}
             onSelect={handleSelect}
           />
         )}
       </div>
+
+      {/* Smart Filters Dialog */}
+      <OKRSmartFiltersDialog
+        open={filtersOpen}
+        onOpenChange={setFiltersOpen}
+        filters={filters}
+        onFiltersChange={setFilters}
+      />
 
       {/* Slide-in Analytics Drawer */}
       <Sheet open={!!selectedItem} onOpenChange={(open) => !open && handleCloseDrawer()}>
