@@ -261,37 +261,37 @@ export function AssignModal({
                           setSelectedTicketId('');
                         }
                       }}
-                      placeholder="Search requests..."
-                      className="pl-9"
+                      placeholder="Search by ID or title..."
+                      className="pl-9 h-10"
                     />
+                    {/* Search Results Dropdown - positioned below input */}
+                    {searchQuery && filteredRequests.length > 0 && !selectedRequest && (
+                      <div className="absolute left-0 right-0 top-full mt-1 border rounded-md bg-background shadow-lg max-h-[180px] overflow-y-auto z-50">
+                        {filteredRequests.slice(0, 6).map(br => (
+                          <button
+                            key={br.id}
+                            type="button"
+                            onClick={() => {
+                              setSelectedTicketId(br.id);
+                              setSearchQuery('');
+                            }}
+                            className="w-full text-left px-3 py-2.5 hover:bg-muted/50 text-sm border-b last:border-b-0 flex items-center gap-2"
+                          >
+                            <span className="font-medium text-secondary-green shrink-0">{br.request_key || br.id.slice(0, 8)}</span>
+                            <span className="text-muted-foreground">—</span>
+                            <span className="truncate text-foreground">{br.title}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                  {/* Search Results Dropdown */}
-                  {searchQuery && filteredRequests.length > 0 && !selectedRequest && (
-                    <div className="border rounded-md bg-background shadow-md max-h-[160px] overflow-y-auto">
-                      {filteredRequests.slice(0, 5).map(br => (
-                        <button
-                          key={br.id}
-                          type="button"
-                          onClick={() => {
-                            setSelectedTicketId(br.id);
-                            setSearchQuery(`${br.request_key || br.id.slice(0, 8)} — ${br.title}`);
-                          }}
-                          className="w-full text-left px-3 py-2 hover:bg-muted/50 text-sm border-b last:border-b-0"
-                        >
-                          <span className="font-medium text-secondary-green">{br.request_key || br.id.slice(0, 8)}</span>
-                          <span className="text-muted-foreground mx-1">—</span>
-                          <span className="truncate">{br.title}</span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
                   {/* Selected Request Display */}
                   {selectedRequest && (
-                    <div className="text-sm p-2 bg-muted/30 rounded-md flex items-center justify-between">
-                      <span>
-                        <span className="font-medium text-secondary-green">{selectedRequest.request_key}</span>
-                        <span className="text-muted-foreground mx-1">—</span>
-                        <span>{selectedRequest.title}</span>
+                    <div className="text-sm p-2.5 bg-muted/30 rounded-md flex items-center justify-between border border-border">
+                      <span className="flex items-center gap-2 truncate">
+                        <span className="font-medium text-secondary-green shrink-0">{selectedRequest.request_key}</span>
+                        <span className="text-muted-foreground">—</span>
+                        <span className="truncate">{selectedRequest.title}</span>
                       </span>
                       <button 
                         type="button"
@@ -299,9 +299,9 @@ export function AssignModal({
                           setSelectedTicketId('');
                           setSearchQuery('');
                         }}
-                        className="text-muted-foreground hover:text-foreground text-xs"
+                        className="text-muted-foreground hover:text-foreground text-xs ml-2 shrink-0"
                       >
-                        Clear
+                        ✕
                       </button>
                     </div>
                   )}
