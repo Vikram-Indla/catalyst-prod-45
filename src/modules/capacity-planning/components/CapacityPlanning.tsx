@@ -118,12 +118,12 @@ export function CapacityPlanning() {
   const handleSaveBooking = useCallback((data: any) => {
     if (editingBooking) {
       updateBooking.mutate({ id: editingBooking.id, ...data });
-    } else if (newBookingResourceId) {
-      createBooking.mutate({ resource_id: newBookingResourceId, ...data });
+    } else {
+      createBooking.mutate(data);
     }
     setAssignModalOpen(false);
     setEditingBooking(null);
-  }, [editingBooking, newBookingResourceId, createBooking, updateBooking]);
+  }, [editingBooking, createBooking, updateBooking]);
 
   const handleDeleteBooking = useCallback((bookingId: string) => {
     deleteBooking.mutate(bookingId);
@@ -135,6 +135,16 @@ export function CapacityPlanning() {
     selectedItems.forEach(id => deleteBooking.mutate(id));
     setSelectedItems(new Set());
   }, [selectedItems, deleteBooking]);
+
+  // Save View handler - saves current view configuration explicitly
+  const handleSaveView = useCallback(() => {
+    saveViewConfig.mutate({
+      resource_ids: viewResourceIds,
+      view_mode: viewMode,
+      time_span: timeSpan,
+      group_by: groupBy,
+    });
+  }, [saveViewConfig, viewResourceIds, viewMode, timeSpan, groupBy]);
 
   const isLoading = loadingResources || loadingBookings;
 
@@ -155,6 +165,8 @@ export function CapacityPlanning() {
         onGroupByChange={handleGroupByChange}
         showInsights={showInsights}
         onToggleInsights={() => setShowInsights(!showInsights)}
+        onSaveView={handleSaveView}
+        isSaving={saveViewConfig.isPending}
       />
 
       {/* Bulk Actions Bar */}
@@ -227,6 +239,7 @@ export function CapacityPlanning() {
         resourceId={newBookingResourceId}
         initialDate={newBookingDate}
         businessRequests={businessRequests}
+        viewResources={viewResources}
         onSave={handleSaveBooking}
         onDelete={editingBooking ? () => handleDeleteBooking(editingBooking.id) : undefined}
       />
