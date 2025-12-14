@@ -710,20 +710,21 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
         </div>
       </div>
 
-      {/* Header */}
+      {/* Header - Title Row */}
       <div 
-        className="h-[72px] flex items-center justify-between px-4 sm:px-6 border-b print:hidden shrink-0 relative z-[100]"
-        style={{ backgroundColor: 'white', borderColor: 'hsl(var(--roadmap-sandstone))' }}
+        className="h-12 flex items-center px-6 print:hidden shrink-0 relative z-[100]"
+        style={{ backgroundColor: 'hsl(var(--background))' }}
       >
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-[10px] flex items-center justify-center text-white font-bold text-sm shadow-sm" style={{ background: 'linear-gradient(135deg, #C69C6D, #E8D5C0)' }}>
-            MIM
-          </div>
-          <div>
-            <div className="text-xs font-medium tracking-wider" style={{ color: 'hsl(var(--roadmap-status-new))' }}>{t.executiveRoadmap}</div>
-            <div className="text-base font-semibold" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>{t.industryRequests}</div>
-          </div>
-        </div>
+        <h1 className="text-xl font-bold m-0 leading-tight" style={{ color: 'hsl(var(--secondary-green))' }}>
+          Product Roadmap
+        </h1>
+      </div>
+
+      {/* Toolbar Row */}
+      <div 
+        className="h-[52px] flex items-center justify-end px-6 border-b print:hidden shrink-0 relative z-[100]"
+        style={{ backgroundColor: 'hsl(var(--background))', borderColor: 'hsl(var(--border))' }}
+      >
 
         {/* Toolbar */}
         <div className="inline-flex items-center gap-1.5 relative z-[100]" style={{ direction: 'ltr' }}>
