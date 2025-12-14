@@ -51,34 +51,26 @@ function buildGridColumns(columns: OKRColumn[]): string {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────────
-// STATUS BADGE
+// STATUS BADGE - Consistent chip styling for all statuses
 // ─────────────────────────────────────────────────────────────────────────────────
 
 function StatusBadge({ status }: { status: StatusCode }) {
-  const color = getStatusColor(status);
   return (
-    <span
-      className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border whitespace-nowrap"
-      style={{
-        backgroundColor: `${color}10`,
-        borderColor: `${color}40`,
-        color: color,
-      }}
-    >
+    <Badge variant="outline" className="text-xs capitalize whitespace-nowrap">
       {getStatusLabel(status)}
-    </span>
+    </Badge>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────────
-// RISKS DISPLAY
+// RISKS DISPLAY - Right-aligned compact format
 // ─────────────────────────────────────────────────────────────────────────────────
 
 function RisksDisplay({ risks }: { risks: OkrRiskSummary }) {
   const total = getTotalRiskCount(risks);
   
   if (total === 0) {
-    return <span className="text-muted-foreground">—</span>;
+    return <span className="text-muted-foreground text-right block">—</span>;
   }
   
   const parts: string[] = [];
@@ -93,7 +85,7 @@ function RisksDisplay({ risks }: { risks: OkrRiskSummary }) {
       <Tooltip>
         <TooltipTrigger asChild>
           <span className={cn(
-            'text-xs font-medium',
+            'text-xs font-medium text-right block',
             hasHigh ? 'text-destructive' : 'text-muted-foreground'
           )}>
             {parts.join(' / ')}
@@ -108,14 +100,19 @@ function RisksDisplay({ risks }: { risks: OkrRiskSummary }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────────
-// PROGRESS WITH TREND
+// PROGRESS WITH TREND - Right-aligned with consistent formatting
 // ─────────────────────────────────────────────────────────────────────────────────
 
 function ProgressWithTrend({ actual, trend, variance }: { 
-  actual: number; 
+  actual: number | null | undefined; 
   trend: 'ahead' | 'on-plan' | 'behind' | 'none';
   variance: number | null;
 }) {
+  // Only show dash if actual is null/undefined (not just 0)
+  if (actual == null) {
+    return <span className="text-xs text-muted-foreground text-right block">—</span>;
+  }
+
   return (
     <div className="flex items-center gap-2 justify-end">
       <Progress value={Math.min(actual, 100)} className="h-1.5 flex-1 max-w-16" />
@@ -182,10 +179,14 @@ function KeyResultRow({ kr, columns, gridColumns }: KeyResultRowProps) {
           <span className="text-xs text-muted-foreground">—</span>
         );
       case 'risks':
-        return <RisksDisplay risks={kr.risks} />;
+        return (
+          <div className="text-right">
+            <RisksDisplay risks={kr.risks} />
+          </div>
+        );
       case 'krs':
         return (
-          <span className="text-xs text-muted-foreground text-center">
+          <span className="text-xs text-muted-foreground text-right block">
             {kr.workItems?.length || 0} items
           </span>
         );
@@ -327,12 +328,18 @@ function ObjectiveRow({
           <span className="text-xs text-muted-foreground">—</span>
         );
       case 'risks':
-        return <RisksDisplay risks={aggregatedRisks} />;
+        return (
+          <div className="text-right">
+            <RisksDisplay risks={aggregatedRisks} />
+          </div>
+        );
       case 'krs':
         return (
-          <Badge variant="outline" className="text-xs">
-            {krCount} KRs
-          </Badge>
+          <div className="text-right">
+            <Badge variant="outline" className="text-xs">
+              {krCount} KRs
+            </Badge>
+          </div>
         );
       default:
         return null;
