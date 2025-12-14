@@ -19,7 +19,7 @@ import {
   getLinkedWorkItemCountForObjective,
 } from '../lib/okrMetrics';
 import type { Objective, KeyResult, WorkItem, Theme, WorkItemKind } from '../lib/okrTypes';
-import { ObjectiveDrawerV2 } from './ObjectiveDrawerV2';
+import { ObjectiveAnalyticsDrawer } from './ObjectiveAnalyticsDrawer';
 import { OKRColumnChooser, DEFAULT_OKR_COLUMNS, type OKRColumn } from './OKRColumnChooser';
 import { OKRSmartFiltersDialog, OKRSmartFilters, countActiveFilters } from './OKRSmartFiltersDialog';
 import { OkrObjectivesTable, type OkrObjectiveRow } from './OkrObjectivesTable';
@@ -190,8 +190,11 @@ export function OKRHubV1({ snapshotId }: OKRHubV1Props) {
   }, [data?.themes, searchQuery, filters]);
 
   const handleRowClick = (row: OkrObjectiveRow) => {
-    setSelectedObjectiveId(row.id);
-    setIsDrawerOpen(true);
+    // Only open analytics drawer for objective-level rows
+    if (row.itemType === 'objective') {
+      setSelectedObjectiveId(row.id);
+      setIsDrawerOpen(true);
+    }
   };
 
   const handleCloseDrawer = () => {
@@ -260,11 +263,12 @@ export function OKRHubV1({ snapshotId }: OKRHubV1Props) {
         onFiltersChange={setFilters}
       />
 
-      {/* Objective Drawer V2 */}
-      <ObjectiveDrawerV2
+      {/* Objective Analytics Drawer */}
+      <ObjectiveAnalyticsDrawer
         objectiveId={selectedObjectiveId}
         open={isDrawerOpen}
         onClose={handleCloseDrawer}
+        snapshotId={snapshotId}
       />
     </>
   );

@@ -23,6 +23,7 @@ import { StrategyTree } from './StrategyTree';
 import { AnalyticsDrawerContent } from './AnalyticsDrawerContent';
 import { CreateObjectiveDialogV2 } from '../CreateObjectiveDialogV2';
 import { ObjectiveDrawerV2 } from '../ObjectiveDrawerV2';
+import { ObjectiveAnalyticsDrawer } from '../ObjectiveAnalyticsDrawer';
 import { OKRSmartFiltersDialog, OKRSmartFilters, countActiveFilters } from '../OKRSmartFiltersDialog';
 import { OKRColumnChooser, DEFAULT_OKR_COLUMNS, type OKRColumn } from '../OKRColumnChooser';
 import { OkrSummaryCards, type OkrSummaryMetrics } from '../shared/OkrSummaryCards';
@@ -112,11 +113,23 @@ export function StrategyCockpit({ snapshotId }: StrategyCockpitProps) {
   };
 
   const handleSelect = (item: TreeItem) => {
-    setSelectedItem(item);
+    // For objectives, open the dedicated ObjectiveAnalyticsDrawer
+    if (item.type === 'objective') {
+      setSelectedObjectiveId(item.id);
+      setSelectedItem(null);
+    } else {
+      // For KRs and work items, use the existing analytics drawer
+      setSelectedItem(item);
+      setSelectedObjectiveId(null);
+    }
   };
 
   const handleCloseDrawer = () => {
     setSelectedItem(null);
+  };
+
+  const handleCloseObjectiveAnalytics = () => {
+    setSelectedObjectiveId(null);
   };
 
   const handleExport = () => {
@@ -322,17 +335,18 @@ export function StrategyCockpit({ snapshotId }: StrategyCockpitProps) {
         </SheetContent>
       </Sheet>
 
+      {/* Objective Analytics Drawer - opens when clicking an objective row */}
+      <ObjectiveAnalyticsDrawer
+        objectiveId={selectedObjectiveId}
+        open={!!selectedObjectiveId}
+        onClose={handleCloseObjectiveAnalytics}
+        snapshotId={snapshotId}
+      />
+
       {/* Dialogs */}
       <CreateObjectiveDialogV2
         open={showCreateDialog}
         onOpenChange={setShowCreateDialog}
-      />
-
-      <ObjectiveDrawerV2
-        objectiveId={selectedObjectiveId}
-        open={!!selectedObjectiveId}
-        onClose={() => setSelectedObjectiveId(null)}
-        onDuplicated={(newId) => setSelectedObjectiveId(newId)}
       />
 
       {/* Strategy Analytics Modal */}
