@@ -359,7 +359,7 @@ export function RichTextEditor({ value, onChange, placeholder, className, minHei
       <div
         ref={editorRef}
         contentEditable
-        className="overflow-y-auto p-3 text-sm focus:outline-none prose prose-sm max-w-none [&_blockquote]:border-l-4 [&_blockquote]:border-brand-gold/50 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-muted-foreground [&_a]:text-brand-gold [&_a]:underline [&_code]:bg-muted [&_code]:px-1 [&_code]:rounded [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-1 [&_img]:max-w-full [&_img]:h-auto [&_img]:rounded"
+        className="overflow-y-auto p-3 text-sm focus:outline-none prose prose-sm max-w-none [&_blockquote]:border-l-[3px] [&_blockquote]:border-[var(--accent-color)] [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-muted-foreground [&_a]:text-[var(--accent-color)] [&_a]:underline [&_code]:bg-muted [&_code]:px-1 [&_code]:rounded [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-1 [&_img]:max-w-full [&_img]:h-auto [&_img]:rounded"
         onInput={handleInput}
         onKeyDown={handleKeyDown}
         data-placeholder={placeholder}

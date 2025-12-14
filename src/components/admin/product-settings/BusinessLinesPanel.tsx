@@ -219,7 +219,7 @@ export function BusinessLinesPanel({ onChanges }: BusinessLinesPanelProps = {}) 
       </DragDropContext>
 
       {/* Info Note */}
-      <div className="bg-muted/50 border-l-4 border-brand-gold p-4 rounded-r-lg">
+      <div className="bg-muted/50 p-4 rounded-lg" style={{ borderLeft: '3px solid var(--accent-color)' }}>
         <p className="text-sm text-muted-foreground">
           <strong>Note:</strong> Inactive business lines are hidden from the Product dropdown but existing demands remain accessible via direct URL or admin views.
         </p>

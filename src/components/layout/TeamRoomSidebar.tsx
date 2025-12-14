@@ -125,21 +125,42 @@ export function TeamRoomSidebar({
 
   return (
     <aside 
-      className={cn(
-        "h-full border-r bg-card transition-all duration-300 flex-shrink-0 relative",
-        expanded ? "w-[280px]" : "w-16"
-      )}
+      style={{
+        width: expanded ? '220px' : '60px',
+        height: '100%',
+        background: 'var(--surface-1)',
+        borderRight: '1px solid var(--divider)',
+        transition: 'all 0.3s ease',
+        flexShrink: 0,
+        position: 'relative',
+      }}
     >
       {/* Toggle Handle */}
       <button
         onClick={onToggle}
-        className="absolute -right-3 top-6 z-50 w-6 h-6 rounded-full bg-card border shadow-sm flex items-center justify-center hover:bg-accent transition-transform"
+        style={{
+          position: 'absolute',
+          right: '-12px',
+          top: '24px',
+          zIndex: 50,
+          width: '24px',
+          height: '24px',
+          borderRadius: '9999px',
+          background: 'var(--surface-1)',
+          border: '1px solid var(--divider)',
+          boxShadow: 'var(--card-shadow)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          color: 'var(--icon-default)',
+        }}
         aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
       >
         {expanded ? (
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft style={{ width: '16px', height: '16px' }} />
         ) : (
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight style={{ width: '16px', height: '16px' }} />
         )}
       </button>
 
@@ -194,25 +215,57 @@ export function TeamRoomSidebar({
 
             return (
               <div key={item.id}>
-                <button
-                  onClick={() => {
-                    if ('expandable' in item && item.expandable) {
-                      if (isMoreItems) setMoreItemsExpanded(!moreItemsExpanded);
-                      if (isReports) setReportsExpanded(!reportsExpanded);
-                      if (isMorePages) setMorePagesExpanded(!morePagesExpanded);
-                    } else if ('path' in item && item.path) {
-                      handleNavigation(item.path);
-                    }
-                  }}
-                  className={cn(
-                    "w-full flex items-center gap-3 px-4 py-2.5 text-sm font-normal transition-colors",
-                    "hover:bg-accent/50",
-                    active && "bg-accent text-primary font-medium",
-                    !expanded && "justify-center px-2"
-                  )}
-                  title={!expanded ? item.label : undefined}
-                >
-                  <Icon className="h-5 w-5 flex-shrink-0 text-muted-foreground" />
+                  <button
+                    onClick={() => {
+                      if ('expandable' in item && item.expandable) {
+                        if (isMoreItems) setMoreItemsExpanded(!moreItemsExpanded);
+                        if (isReports) setReportsExpanded(!reportsExpanded);
+                        if (isMorePages) setMorePagesExpanded(!morePagesExpanded);
+                      } else if ('path' in item && item.path) {
+                        handleNavigation(item.path);
+                      }
+                    }}
+                    style={{
+                      width: '100%',
+                      height: '40px',
+                      padding: expanded ? '0 12px' : '0',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      borderRadius: '6px',
+                      border: 'none',
+                      cursor: 'pointer',
+                      transition: 'background 0.15s ease',
+                      marginBottom: '2px',
+                      position: 'relative',
+                      justifyContent: expanded ? 'flex-start' : 'center',
+                      background: active ? 'var(--nav-active-bg)' : 'transparent',
+                      color: active ? 'var(--text-1)' : 'var(--text-2)',
+                      fontWeight: active ? 600 : 500,
+                      fontSize: '14px',
+                      fontFamily: 'inherit',
+                      outline: 'none',
+                    }}
+                    onMouseEnter={(e) => { 
+                      if (!active) e.currentTarget.style.background = 'var(--nav-hover-bg)'; 
+                    }}
+                    onMouseLeave={(e) => { 
+                      e.currentTarget.style.background = active ? 'var(--nav-active-bg)' : 'transparent'; 
+                    }}
+                    title={!expanded ? item.label : undefined}
+                  >
+                    {active && (
+                      <span style={{
+                        position: 'absolute',
+                        left: 0,
+                        top: '8px',
+                        bottom: '8px',
+                        width: '2px',
+                        background: 'var(--brand-active)',
+                        borderRadius: '0 1px 1px 0',
+                      }} />
+                    )}
+                    <Icon style={{ width: '20px', height: '20px', flexShrink: 0, color: active ? 'var(--text-1)' : 'var(--icon-default)' }} />
                   {expanded && (
                     <>
                       <span className="truncate text-left flex-1">{item.label}</span>
@@ -237,42 +290,89 @@ export function TeamRoomSidebar({
 
                 {/* Submenu rendering */}
                 {isMoreItems && moreItemsExpanded && expanded && (
-                  <div className="bg-accent/20">
+                  <div style={{ background: 'var(--surface-3)' }}>
                     {moreItemsSubMenu.map((subItem) => (
                       <button
                         key={subItem.id}
                         onClick={() => handleNavigation(subItem.path)}
-                        className="w-full flex items-center gap-3 px-8 py-2 text-sm font-normal hover:bg-accent/30 transition-colors"
+                        style={{
+                          width: '100%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '12px',
+                          padding: '8px 32px',
+                          fontSize: '14px',
+                          fontWeight: 400,
+                          border: 'none',
+                          background: 'transparent',
+                          color: 'var(--text-2)',
+                          cursor: 'pointer',
+                          transition: 'background 0.15s ease',
+                          fontFamily: 'inherit',
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                       >
-                        <span className="truncate text-left">{subItem.label}</span>
+                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'left' }}>{subItem.label}</span>
                       </button>
                     ))}
                   </div>
                 )}
 
                 {isReports && reportsExpanded && expanded && (
-                  <div className="bg-accent/20">
+                  <div style={{ background: 'var(--surface-3)' }}>
                     {reportsSubMenu.map((subItem) => (
                       <button
                         key={subItem.id}
                         onClick={() => handleNavigation(subItem.path)}
-                        className="w-full flex items-center gap-3 px-8 py-2 text-sm font-normal hover:bg-accent/30 transition-colors"
+                        style={{
+                          width: '100%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '12px',
+                          padding: '8px 32px',
+                          fontSize: '14px',
+                          fontWeight: 400,
+                          border: 'none',
+                          background: 'transparent',
+                          color: 'var(--text-2)',
+                          cursor: 'pointer',
+                          transition: 'background 0.15s ease',
+                          fontFamily: 'inherit',
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                       >
-                        <span className="truncate text-left">{subItem.label}</span>
+                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'left' }}>{subItem.label}</span>
                       </button>
                     ))}
                   </div>
                 )}
 
-                {isMorePages && morePagesExpanded && expanded && (
-                  <div className="bg-accent/20">
+                  <div style={{ background: 'var(--surface-3)' }}>
                     {morePagesSubMenu.map((subItem) => (
                       <button
                         key={subItem.id}
                         onClick={() => handleNavigation(subItem.path)}
-                        className="w-full flex items-center gap-3 px-8 py-2 text-sm font-normal hover:bg-accent/30 transition-colors"
+                        style={{
+                          width: '100%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '12px',
+                          padding: '8px 32px',
+                          fontSize: '14px',
+                          fontWeight: 400,
+                          border: 'none',
+                          background: 'transparent',
+                          color: 'var(--text-2)',
+                          cursor: 'pointer',
+                          transition: 'background 0.15s ease',
+                          fontFamily: 'inherit',
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                       >
-                        <span className="truncate text-left">{subItem.label}</span>
+                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'left' }}>{subItem.label}</span>
                       </button>
                     ))}
                   </div>
@@ -284,16 +384,34 @@ export function TeamRoomSidebar({
 
         {/* Footer */}
         {expanded && (
-          <div className="border-t">
+          <div style={{ borderTop: '1px solid var(--divider)', padding: '8px' }}>
             <button 
-              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-normal hover:bg-accent/50 transition-colors"
+              style={{
+                width: '100%',
+                height: '40px',
+                padding: '0 12px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                borderRadius: '6px',
+                border: 'none',
+                background: 'transparent',
+                color: 'var(--text-2)',
+                fontSize: '14px',
+                fontWeight: 500,
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+                fontFamily: 'inherit',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               onClick={() => {
-                onToggle(); // Collapse sidebar when navigating to settings
+                onToggle();
                 navigate('/admin/team-settings');
               }}
             >
-              <Settings className="h-5 w-5 text-muted-foreground" />
-              <span className="text-left">Team Settings</span>
+              <Settings style={{ width: '20px', height: '20px', color: 'var(--icon-default)' }} />
+              <span style={{ textAlign: 'left' }}>Team Settings</span>
             </button>
           </div>
         )}

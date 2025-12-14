@@ -240,7 +240,7 @@ export function AccessControlPanel() {
       </div>
 
       {/* Info Note */}
-      <div className="bg-muted/50 border-l-4 border-brand-gold p-4 rounded-r-lg">
+      <div className="bg-muted/50 p-4 rounded-lg" style={{ borderLeft: '3px solid var(--accent-color)' }}>
         <p className="text-sm text-muted-foreground">
           <strong>Note:</strong> Product module permissions are managed through the global 
           System Roles configuration. Changes made there will affect access across all modules.

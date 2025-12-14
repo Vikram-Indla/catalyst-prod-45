@@ -107,7 +107,7 @@ export function VacancyCards({
       case 'high':
         return 'border-l-warning';
       case 'medium':
-        return 'border-l-brand-gold';
+        return 'border-l-[var(--accent-color)]';
       default:
         return 'border-l-muted-foreground';
     }
