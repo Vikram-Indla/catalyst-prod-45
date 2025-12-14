@@ -535,7 +535,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
               onClick={() => setWorkflowModalOpen(true)}
               className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
             >
-              <span>Status:</span>
+              <span className="font-bold text-foreground">Status:</span>
               <span className="text-brand-gold capitalize underline underline-offset-2">
                 {formData.process_step?.replace(/_/g, ' ') || 'New Request'}
               </span>

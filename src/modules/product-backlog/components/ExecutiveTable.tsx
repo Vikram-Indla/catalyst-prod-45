@@ -918,7 +918,7 @@ export function ExecutiveTable({
             e.stopPropagation();
             onOpenFullView(row.id);
           }}
-          className="font-medium font-mono text-xs cursor-pointer hover:underline transition-colors text-foreground"
+          className="font-medium font-mono text-xs cursor-pointer hover:underline transition-colors text-secondary-green"
         >
           {value}
         </span>
