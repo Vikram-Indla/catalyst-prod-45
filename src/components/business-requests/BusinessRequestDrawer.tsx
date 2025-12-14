@@ -587,7 +587,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
 
             <div className="executive-drawer-content flex-1 flex flex-col min-h-0 overflow-y-auto">
               <TabsContent value="demand-details" className="m-0 focus-visible:outline-none flex-1 p-4 md:p-5 pb-6">
-                <DemandDetailsViewTab data={formData} onChange={handleFieldChange} />
+                <DemandDetailsViewTab data={formData} onChange={handleFieldChange} onNavigateToTab={setActiveTab} />
               </TabsContent>
               <TabsContent value="business-score" className="m-0 focus-visible:outline-none">
                 <BusinessScoreViewTab 

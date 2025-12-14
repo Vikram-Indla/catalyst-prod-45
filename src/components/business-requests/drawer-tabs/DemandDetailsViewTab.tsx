@@ -23,9 +23,10 @@ import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings, getOwner
 interface DemandDetailsViewTabProps {
   data: Partial<BusinessRequest> & Record<string, any>;
   onChange: (field: string, value: any) => void;
+  onNavigateToTab?: (tabKey: string) => void;
 }
 
-export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabProps) {
+export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: DemandDetailsViewTabProps) {
   const [targetDateLocked, setTargetDateLocked] = useState(false);
   const [lockedByUser, setLockedByUser] = useState<string | null>(null);
   const currentUser = 'Current User';
@@ -125,6 +126,26 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
             />
           </div>
 
+          {/* Auto Priority - Read-only derived field */}
+          <div>
+            <Label className="text-xs font-medium text-muted-foreground">Auto Priority</Label>
+            <div className="mt-1 px-3 py-2 bg-muted/50 rounded-md border border-border text-sm text-muted-foreground italic flex items-center gap-2">
+              <Lock className="h-3.5 w-3.5" />
+              {(() => {
+                const tier = (data.priority_tier as PriorityTier) || 'unscored';
+                const { label } = getTierDisplayInfo(tier);
+                return label.charAt(0) + label.slice(1).toLowerCase();
+              })()}
+              <button
+                type="button"
+                onClick={() => onNavigateToTab?.('business-score')}
+                className="ml-auto text-xs text-secondary-green hover:underline"
+              >
+                Click for info
+              </button>
+            </div>
+          </div>
+
           {/* Description */}
           <div>
             <Label className="text-xs font-medium">Description</Label>
@@ -181,18 +202,6 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
               </div>
             </div>
 
-            {/* Auto Priority - Read-only derived field */}
-            <div className="pt-3 border-t border-border/30 mt-3">
-              <Label className="text-xs font-medium text-muted-foreground">Auto Priority</Label>
-              <div className="mt-1 px-3 py-2 bg-muted/50 rounded-md border border-border text-sm text-muted-foreground italic flex items-center gap-2">
-                <Lock className="h-3.5 w-3.5" />
-                {(() => {
-                  const tier = (data.priority_tier as PriorityTier) || 'unscored';
-                  const { label } = getTierDisplayInfo(tier);
-                  return label.charAt(0) + label.slice(1).toLowerCase();
-                })()}
-              </div>
-            </div>
           </div>
         </div>
 
