@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
-import { format } from 'date-fns';
+import { useMemo, useState, useEffect } from 'react';
+import { format, startOfDay } from 'date-fns';
 import { ChevronLeft, ChevronRight, Plus, X, UserPlus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ResourceInventoryItem } from '@/hooks/useResourceInventory';
@@ -103,12 +103,27 @@ export function GanttView({
     };
   };
 
+  // Dynamic today tracking - recalculates when day changes
+  const [todayKey, setTodayKey] = useState(() => format(new Date(), 'yyyy-MM-dd'));
+  
+  useEffect(() => {
+    // Check if day has changed every minute
+    const interval = setInterval(() => {
+      const currentDay = format(new Date(), 'yyyy-MM-dd');
+      if (currentDay !== todayKey) {
+        setTodayKey(currentDay);
+      }
+    }, 60000); // Check every minute
+    
+    return () => clearInterval(interval);
+  }, [todayKey]);
+
   const todayPosition = useMemo(() => {
-    const today = new Date();
-    const pos = getDayPosition(today, startDate);
+    const today = startOfDay(new Date());
+    const pos = getDayPosition(today, startOfDay(startDate));
     if (pos < 0 || pos >= dateColumns.length) return null;
     return pos * COLUMN_WIDTH + COLUMN_WIDTH / 2;
-  }, [startDate, dateColumns.length]);
+  }, [startDate, dateColumns.length, todayKey]);
 
   return (
     <TooltipProvider>
