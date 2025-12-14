@@ -161,6 +161,15 @@ export function GanttView({
                   </span>
                 </div>
               ))}
+              {/* Today Label - only once in header */}
+              {todayPosition !== null && (
+                <div 
+                  className="absolute top-full left-0 text-[9px] font-bold text-destructive/70 uppercase pointer-events-none"
+                  style={{ left: todayPosition, transform: 'translateX(-50%)' }}
+                >
+                  Today
+                </div>
+              )}
             </div>
           </div>
 
@@ -279,16 +288,12 @@ export function GanttView({
                       );
                     })}
 
-                    {/* Today Line */}
+                    {/* Today Line - no label here, lighter color */}
                     {todayPosition !== null && (
                       <div 
-                        className="absolute top-0 bottom-0 w-0.5 bg-destructive z-10 pointer-events-none"
+                        className="absolute top-0 bottom-0 w-0.5 bg-destructive/30 z-10 pointer-events-none"
                         style={{ left: todayPosition }}
-                      >
-                        <div className="absolute -top-5 left-1/2 -translate-x-1/2 text-[9px] font-bold text-destructive uppercase">
-                          Today
-                        </div>
-                      </div>
+                      />
                     )}
                   </div>
                 </div>
