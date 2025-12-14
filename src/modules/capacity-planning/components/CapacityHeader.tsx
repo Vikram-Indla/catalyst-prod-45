@@ -1,7 +1,9 @@
-import { Search, Download, List, LayoutGrid } from 'lucide-react';
+import { Search, Download, List, LayoutGrid, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { format, addWeeks, subWeeks } from 'date-fns';
+import { getGCCWeekStart } from '../utils/dateUtils';
 
 interface CapacityHeaderProps {
   viewMode: 'list' | 'gantt';
@@ -9,6 +11,11 @@ interface CapacityHeaderProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   onExport: () => void;
+  // Gantt controls
+  startDate: Date;
+  onStartDateChange: (date: Date) => void;
+  timeSpan: '2weeks' | '5weeks';
+  onTimeSpanChange: (span: '2weeks' | '5weeks') => void;
 }
 
 export function CapacityHeader({
@@ -17,7 +24,23 @@ export function CapacityHeader({
   searchQuery,
   onSearchChange,
   onExport,
+  startDate,
+  onStartDateChange,
+  timeSpan,
+  onTimeSpanChange,
 }: CapacityHeaderProps) {
+  const handlePrev = () => {
+    onStartDateChange(subWeeks(startDate, timeSpan === '2weeks' ? 2 : 5));
+  };
+
+  const handleNext = () => {
+    onStartDateChange(addWeeks(startDate, timeSpan === '2weeks' ? 2 : 5));
+  };
+
+  const handleToday = () => {
+    onStartDateChange(getGCCWeekStart(new Date()));
+  };
+
   return (
     <div className="space-y-0">
       {/* Row 1: Title */}
@@ -77,8 +100,48 @@ export function CapacityHeader({
           </div>
         </div>
 
-        {/* Right: Actions */}
+        {/* Right: Date Navigation + Export */}
         <div className="flex items-center gap-2">
+          {/* Timeline Navigation */}
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handlePrev}>
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="sm" className="h-8" onClick={handleToday}>
+              Today
+            </Button>
+            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleNext}>
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+
+          {/* Date Range Display */}
+          <span className="text-sm text-muted-foreground">
+            {format(startDate, 'MMM d, yyyy')}
+          </span>
+
+          {/* Time Span Toggle */}
+          <div className="flex items-center gap-1 ml-2">
+            <Button
+              variant={timeSpan === '2weeks' ? 'secondary' : 'ghost'}
+              size="sm"
+              className="h-8"
+              onClick={() => onTimeSpanChange('2weeks')}
+            >
+              2 Weeks
+            </Button>
+            <Button
+              variant={timeSpan === '5weeks' ? 'secondary' : 'ghost'}
+              size="sm"
+              className="h-8"
+              onClick={() => onTimeSpanChange('5weeks')}
+            >
+              5 Weeks
+            </Button>
+          </div>
+
+          <div className="w-px h-6 bg-border mx-2" />
+
           <Button 
             variant="outline" 
             size="sm"
