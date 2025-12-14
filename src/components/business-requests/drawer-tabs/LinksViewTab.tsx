@@ -1239,14 +1239,50 @@ export function LinksViewTab({ requestId, onNavigateToEpic }: LinksViewTabProps)
           </ScrollArea>
         </div>
       ) : (
-        <div className="border border-dashed border-border rounded-lg p-10 text-center">
+        <div 
+          className="flex flex-col items-center justify-center py-12 px-6 rounded-lg text-center"
+          style={{ 
+            backgroundColor: 'var(--surface-2)',
+            border: '1px dashed var(--border-color)'
+          }}
+        >
+          <div 
+            className="w-12 h-12 rounded-full flex items-center justify-center mb-4"
+            style={{ backgroundColor: 'var(--surface-3)' }}
+          >
+            <LinkIcon className="h-6 w-6" style={{ color: 'var(--text-3)' }} />
+          </div>
           {typeFilters.length > 0 || statusFilters.length > 0 ? (
             <>
-              <p className="text-[14px] text-muted-foreground mb-3">No matching links found</p>
+              <h4 
+                className="text-sm font-medium mb-1"
+                style={{ color: 'var(--text-1)' }}
+              >
+                No matching links found
+              </h4>
+              <p 
+                className="text-xs max-w-[280px] mb-4"
+                style={{ color: 'var(--text-2)' }}
+              >
+                Try adjusting your filters to see more results.
+              </p>
               <Button variant="outline" size="sm" onClick={clearFilters}>Clear Filters</Button>
             </>
           ) : (
-            <p className="text-[14px] text-muted-foreground">No links yet. Use the tiles above to add links.</p>
+            <>
+              <h4 
+                className="text-sm font-medium mb-1"
+                style={{ color: 'var(--text-1)' }}
+              >
+                No links yet
+              </h4>
+              <p 
+                className="text-xs max-w-[280px]"
+                style={{ color: 'var(--text-2)' }}
+              >
+                Use the tiles above to add implementation links, documents, or external references.
+              </p>
+            </>
           )}
         </div>
       )}
