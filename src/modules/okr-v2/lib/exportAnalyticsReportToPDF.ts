@@ -1,0 +1,173 @@
+// ═══════════════════════════════════════════════════════════════════════════════
+// Export Analytics Report to PDF
+// Multi-page PDF generation with full content capture
+// ═══════════════════════════════════════════════════════════════════════════════
+
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
+
+interface ExportOptions {
+  filename?: string;
+  title?: string;
+  subtitle?: string;
+  filterLabel?: string;
+}
+
+/**
+ * Exports a DOM element to a multi-page PDF
+ * Temporarily expands the element to capture full content, then restores
+ */
+export async function exportAnalyticsReportToPDF(
+  contentElement: HTMLElement,
+  options: ExportOptions = {}
+): Promise<void> {
+  const {
+    filename = `strategy-analytics-${new Date().toISOString().split('T')[0]}.pdf`,
+    title = 'Strategy Analytics Overview',
+    subtitle = 'Executive Strategy Report',
+    filterLabel = 'All Themes',
+  } = options;
+
+  // Store original styles to restore later
+  const originalStyles = {
+    maxHeight: contentElement.style.maxHeight,
+    height: contentElement.style.height,
+    overflow: contentElement.style.overflow,
+    overflowY: contentElement.style.overflowY,
+  };
+
+  try {
+    // Step 1: Temporarily expand the container to show all content
+    contentElement.style.maxHeight = 'none';
+    contentElement.style.height = 'auto';
+    contentElement.style.overflow = 'visible';
+    contentElement.style.overflowY = 'visible';
+
+    // Wait for reflow
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    // Step 2: Capture with full dimensions
+    const canvas = await html2canvas(contentElement, {
+      scale: 2, // 2x for sharp output
+      useCORS: true,
+      backgroundColor: '#faf7f1',
+      logging: false,
+      windowWidth: contentElement.scrollWidth,
+      windowHeight: contentElement.scrollHeight,
+      width: contentElement.scrollWidth,
+      height: contentElement.scrollHeight,
+    });
+
+    // Step 3: Calculate PDF dimensions
+    const imgWidth = 210; // A4 width in mm
+    const pageHeight = 297; // A4 height in mm
+    const margin = 10; // mm
+    const headerHeight = 25; // mm for title/subtitle
+    const footerHeight = 10; // mm for page numbers
+    const contentWidth = imgWidth - (margin * 2);
+    
+    // Calculate content area per page
+    const availableHeight = pageHeight - headerHeight - footerHeight - (margin * 2);
+    
+    // Calculate image dimensions scaled to fit width
+    const imgHeight = (canvas.height * contentWidth) / canvas.width;
+    
+    // Step 4: Create PDF
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4',
+    });
+
+    // Calculate number of pages needed
+    const totalPages = Math.ceil(imgHeight / availableHeight);
+    
+    // Generate date string
+    const dateStr = new Date().toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+
+    // Step 5: Generate pages
+    for (let page = 0; page < totalPages; page++) {
+      if (page > 0) {
+        pdf.addPage();
+      }
+
+      // Add header on each page
+      pdf.setFontSize(14);
+      pdf.setTextColor(26, 26, 26); // brand-dark
+      pdf.text(title, margin, margin + 6);
+      
+      pdf.setFontSize(9);
+      pdf.setTextColor(100, 100, 100);
+      pdf.text(`${subtitle} • ${filterLabel} • ${dateStr}`, margin, margin + 12);
+      
+      // Horizontal line under header
+      pdf.setDrawColor(200, 200, 200);
+      pdf.line(margin, margin + 16, imgWidth - margin, margin + 16);
+
+      // Calculate slice of canvas to render
+      const sourceY = page * (availableHeight * canvas.width / contentWidth);
+      const sourceHeight = Math.min(
+        availableHeight * canvas.width / contentWidth,
+        canvas.height - sourceY
+      );
+
+      // Create a temporary canvas for this page slice
+      const pageCanvas = document.createElement('canvas');
+      pageCanvas.width = canvas.width;
+      pageCanvas.height = sourceHeight;
+      
+      const ctx = pageCanvas.getContext('2d');
+      if (ctx) {
+        ctx.drawImage(
+          canvas,
+          0, sourceY, // source x, y
+          canvas.width, sourceHeight, // source width, height
+          0, 0, // dest x, y
+          canvas.width, sourceHeight // dest width, height
+        );
+      }
+
+      // Add the sliced image to PDF
+      const sliceHeight = (sourceHeight * contentWidth) / canvas.width;
+      pdf.addImage(
+        pageCanvas.toDataURL('image/png'),
+        'PNG',
+        margin,
+        headerHeight + margin,
+        contentWidth,
+        sliceHeight
+      );
+
+      // Add footer with page number
+      pdf.setFontSize(8);
+      pdf.setTextColor(128, 128, 128);
+      pdf.text(
+        `Page ${page + 1} of ${totalPages}`,
+        imgWidth / 2,
+        pageHeight - margin,
+        { align: 'center' }
+      );
+      
+      // Add branding
+      pdf.text(
+        'Generated by Catalyst',
+        imgWidth - margin,
+        pageHeight - margin,
+        { align: 'right' }
+      );
+    }
+
+    // Step 6: Save the PDF
+    pdf.save(filename);
+  } finally {
+    // Step 7: Restore original styles
+    contentElement.style.maxHeight = originalStyles.maxHeight;
+    contentElement.style.height = originalStyles.height;
+    contentElement.style.overflow = originalStyles.overflow;
+    contentElement.style.overflowY = originalStyles.overflowY;
+  }
+}
