@@ -6,6 +6,7 @@
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import type { TreeItem, StatusCode, OkrRiskSummary } from '../../lib/okrTypes';
 import { getStatusLabel, getTotalRiskCount } from '../../lib/okrMetrics';
@@ -155,24 +156,26 @@ export function TreeRow({
           {TYPE_ICONS[item.type] || '•'}
         </span>
 
-        {/* Item name - truncates */}
-        <span
-          className={cn(
-            "text-sm truncate",
-            item.type === 'objective' && 'font-medium text-foreground',
-            item.type === 'keyResult' && 'text-foreground',
-            item.type === 'workItem' && 'italic text-muted-foreground'
-          )}
-        >
-          {item.name}
-        </span>
-
-        {/* Theme label for objectives (muted) - truncates */}
-        {item.type === 'objective' && themeName && (
-          <span className="text-xs text-muted-foreground truncate flex-shrink-0 ml-1">
-            ({themeName})
-          </span>
-        )}
+        {/* Item name with tooltip for truncated text */}
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span
+                className={cn(
+                  "text-sm truncate",
+                  item.type === 'objective' && 'font-medium text-foreground',
+                  item.type === 'keyResult' && 'text-foreground',
+                  item.type === 'workItem' && 'italic text-muted-foreground'
+                )}
+              >
+                {item.name}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-md">
+              <p>{item.name}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
 
       {/* Status Column */}
