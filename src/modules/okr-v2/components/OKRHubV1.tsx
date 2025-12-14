@@ -4,15 +4,14 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { useState, useMemo } from 'react';
-import { ChevronRight, ChevronDown, User, X } from 'lucide-react';
+import { ChevronRight, ChevronDown, User } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetClose } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { useOKRStrategicData } from '../hooks/useOKRStrategicData';
 import { getStatusLabel, getStatusColor } from '../lib/okrMetrics';
 import type { Objective, KeyResult, Theme, StatusCode } from '../lib/okrTypes';
-import { AnalyticsDrawerContent } from './StrategyCockpit/AnalyticsDrawerContent';
+import { ObjectiveDrawerV2 } from './ObjectiveDrawerV2';
 
 interface OKRHubV1Props {
   snapshotId?: string;
@@ -202,7 +201,7 @@ function ObjectiveRow({ objective, theme, isExpanded, onToggle, onSelect }: Obje
 export function OKRHubV1({ snapshotId }: OKRHubV1Props) {
   const { data, isLoading, error } = useOKRStrategicData(snapshotId);
   const [expandedObjectives, setExpandedObjectives] = useState<Set<string>>(new Set());
-  const [selectedObjective, setSelectedObjective] = useState<Objective | null>(null);
+  const [selectedObjectiveId, setSelectedObjectiveId] = useState<string | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   // Flatten objectives from all themes
@@ -229,14 +228,14 @@ export function OKRHubV1({ snapshotId }: OKRHubV1Props) {
     });
   };
 
-  const handleSelectObjective = (objective: Objective) => {
-    setSelectedObjective(objective);
+  const handleSelectObjective = (objectiveId: string) => {
+    setSelectedObjectiveId(objectiveId);
     setIsDrawerOpen(true);
   };
 
   const handleCloseDrawer = () => {
     setIsDrawerOpen(false);
-    setSelectedObjective(null);
+    setSelectedObjectiveId(null);
   };
 
   if (isLoading) {
@@ -289,26 +288,18 @@ export function OKRHubV1({ snapshotId }: OKRHubV1Props) {
               theme={theme}
               isExpanded={expandedObjectives.has(objective.id)}
               onToggle={() => toggleExpanded(objective.id)}
-              onSelect={() => handleSelectObjective(objective)}
+              onSelect={() => handleSelectObjective(objective.id)}
             />
           ))}
         </div>
       </div>
 
-      {/* Objective Drawer */}
-      <Sheet open={isDrawerOpen} onOpenChange={(open) => !open && handleCloseDrawer()}>
-        <SheetContent side="right" className="w-screen sm:w-[540px] sm:max-w-[540px] p-0">
-          <SheetHeader className="sr-only">
-            <SheetTitle>Objective Details</SheetTitle>
-          </SheetHeader>
-          {selectedObjective && data?.themes && (
-            <AnalyticsDrawerContent
-              selectedItem={selectedObjective}
-              themes={data.themes}
-            />
-          )}
-        </SheetContent>
-      </Sheet>
+      {/* Objective Drawer V2 */}
+      <ObjectiveDrawerV2
+        objectiveId={selectedObjectiveId}
+        open={isDrawerOpen}
+        onClose={handleCloseDrawer}
+      />
     </>
   );
 }
