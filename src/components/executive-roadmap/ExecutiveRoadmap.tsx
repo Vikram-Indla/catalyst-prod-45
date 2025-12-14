@@ -1124,7 +1124,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
 
       {/* Main Content Area - Sticky Left Panel + Scrollable Timeline */}
       <div 
-        className="flex-1 flex overflow-hidden print:overflow-visible"
+        className="flex-1 flex overflow-hidden print:overflow-visible mt-2"
         style={{ borderTop: '1px solid hsl(var(--border))' }}
       >
         {/* STICKY LEFT PANEL - Never scrolls horizontally */}
