@@ -474,9 +474,9 @@ export function filterThemes(themes: Theme[], filters: OKRSmartFiltersV2): Theme
 }
 
 /**
- * Filter any tree item (for search)
+ * Filter any item with a name (for search)
  */
-export function matchesSearch(item: TreeItem, query: string): boolean {
+export function matchesSearch(item: { name: string }, query: string): boolean {
   if (!query) return true;
   const lowerQuery = query.toLowerCase();
   return item.name.toLowerCase().includes(lowerQuery);

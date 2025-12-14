@@ -1,16 +1,15 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // OKR Hub V2 — Analytics Drawer Component
-// Contextual analytics panel showing metrics for selected tree item
+// Contextual analytics panel for Objective/KR/Work Item (no theme level)
 // ═══════════════════════════════════════════════════════════════════════════════
 
-import { Target, TrendingUp, Shield, Link2, DollarSign, GitBranch, AlertTriangle, X, Zap, Calendar } from 'lucide-react';
+import { Target, TrendingUp, Shield, Link2, DollarSign, GitBranch, AlertTriangle, X, Calendar } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import type { Theme, Objective, KeyResult, WorkItem, TreeItem, StatusCode, RollupMetrics } from '../../lib/okrTypes';
 import {
   calculateRiskScore,
-  getThemeRollupMetrics,
   getObjectiveRollupMetrics,
   getStatusLabel,
   getStatusColor,
@@ -96,7 +95,7 @@ export function AnalyticsDrawer({ selectedItem, themes }: AnalyticsDrawerProps) 
       <div className="flex-[0_0_420px] flex items-center justify-center bg-muted/30 p-10">
         <div className="text-center text-muted-foreground">
           <Target className="h-12 w-12 mb-4 mx-auto opacity-40" />
-          <p className="text-sm">Select a theme, objective, KR, or work item to view analytics</p>
+          <p className="text-sm">Select an objective, KR, or work item to view analytics</p>
         </div>
       </div>
     );
@@ -104,7 +103,6 @@ export function AnalyticsDrawer({ selectedItem, themes }: AnalyticsDrawerProps) 
 
   // Find parent theme for color
   const getTheme = (): Theme | undefined => {
-    if (selectedItem.type === 'theme') return selectedItem as Theme;
     return themes.find((t) => t.id === (selectedItem as any).themeId);
   };
 
@@ -135,9 +133,6 @@ export function AnalyticsDrawer({ selectedItem, themes }: AnalyticsDrawerProps) 
 
   // Get rollup metrics
   const metrics: Partial<RollupMetrics> = (() => {
-    if (selectedItem.type === 'theme') {
-      return getThemeRollupMetrics(selectedItem as Theme);
-    }
     if (selectedItem.type === 'objective') {
       return getObjectiveRollupMetrics(selectedItem as Objective);
     }
@@ -154,7 +149,7 @@ export function AnalyticsDrawer({ selectedItem, themes }: AnalyticsDrawerProps) 
   // Build alignment path
   const alignmentPath: { type: string; name: string }[] = [];
   if (theme) alignmentPath.push({ type: 'Theme', name: theme.name });
-  if (objective && selectedItem.type !== 'theme') {
+  if (objective) {
     alignmentPath.push({ type: 'Objective', name: objective.name });
   }
   if (keyResult && (selectedItem.type === 'keyResult' || selectedItem.type === 'workItem')) {
@@ -171,6 +166,14 @@ export function AnalyticsDrawer({ selectedItem, themes }: AnalyticsDrawerProps) 
     selectedItem.value?.realized || 0
   );
 
+  // Get header label based on type
+  const getHeaderLabel = () => {
+    if (selectedItem.type === 'objective') return 'OBJECTIVE';
+    if (selectedItem.type === 'keyResult') return 'KEY RESULT';
+    if (selectedItem.type === 'workItem') return 'DELIVERY ITEM';
+    return 'ITEM';
+  };
+
   return (
     <div className="flex-[0_0_420px] flex flex-col bg-muted/30 border-l border-border overflow-y-auto">
       {/* Header */}
@@ -183,7 +186,7 @@ export function AnalyticsDrawer({ selectedItem, themes }: AnalyticsDrawerProps) 
               color: themeColor,
             }}
           >
-            {selectedItem.type === 'keyResult' ? 'Key Result' : selectedItem.type === 'workItem' ? 'Work Item' : selectedItem.type}
+            {getHeaderLabel()}
           </span>
           <Badge variant={selectedItem.status === 'on-track' || selectedItem.status === 'completed' ? 'secondary' : 'destructive'}>
             {getStatusLabel(selectedItem.status)}
@@ -194,7 +197,8 @@ export function AnalyticsDrawer({ selectedItem, themes }: AnalyticsDrawerProps) 
           {selectedItem.name}
         </h3>
 
-        {selectedItem.type !== 'theme' && theme && (
+        {/* Theme chip */}
+        {theme && (
           <div
             className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border"
             style={{
@@ -254,13 +258,7 @@ export function AnalyticsDrawer({ selectedItem, themes }: AnalyticsDrawerProps) 
               </div>
             )}
 
-            {/* Status breakdown for Theme/Objective */}
-            {selectedItem.type === 'theme' && metrics.objectivesByStatus && (
-              <StatusBreakdown
-                byStatus={metrics.objectivesByStatus}
-                label="Objectives by Status"
-              />
-            )}
+            {/* Status breakdown for Objective */}
             {selectedItem.type === 'objective' && metrics.krsByStatus && (
               <StatusBreakdown
                 byStatus={metrics.krsByStatus}
@@ -382,23 +380,6 @@ export function AnalyticsDrawer({ selectedItem, themes }: AnalyticsDrawerProps) 
         <DrawerSection title="Linked Work & Coverage" icon={Link2}>
           <div className="p-4 bg-card rounded-lg border border-border">
             <div className="flex gap-3 mb-4">
-              {selectedItem.type === 'theme' && (
-                <>
-                  <div className="flex-1 p-2.5 rounded-md bg-muted text-center">
-                    <div className="text-xl font-bold text-foreground">{metrics.objectiveCount || 0}</div>
-                    <div className="text-[10px] text-muted-foreground uppercase">Objectives</div>
-                  </div>
-                  <div className="flex-1 p-2.5 rounded-md bg-muted text-center">
-                    <div className="text-xl font-bold text-foreground">{metrics.krCount || 0}</div>
-                    <div className="text-[10px] text-muted-foreground uppercase">Key Results</div>
-                  </div>
-                  <div className="flex-1 p-2.5 rounded-md bg-muted text-center">
-                    <div className="text-xl font-bold text-foreground">{metrics.workItemCount || 0}</div>
-                    <div className="text-[10px] text-muted-foreground uppercase">Work Items</div>
-                  </div>
-                </>
-              )}
-
               {selectedItem.type === 'objective' && (
                 <>
                   <div className="flex-1 p-2.5 rounded-md bg-muted text-center">
@@ -505,7 +486,7 @@ export function AnalyticsDrawer({ selectedItem, themes }: AnalyticsDrawerProps) 
         <DrawerSection title="Alignment & Context" icon={GitBranch}>
           <div className="p-4 bg-card rounded-lg border border-border">
             {/* Alignment Path */}
-            <div className="mb-4">
+            <div>
               <div className="text-xs text-muted-foreground mb-2.5">Alignment Path</div>
               <div className="flex flex-col gap-1.5">
                 {alignmentPath.map((item, index) => (
@@ -523,38 +504,6 @@ export function AnalyticsDrawer({ selectedItem, themes }: AnalyticsDrawerProps) 
                 ))}
               </div>
             </div>
-
-            {/* Theme sectors and strategic pillar */}
-            {selectedItem.type === 'theme' && (selectedItem as Theme).sectors?.length > 0 && (
-              <div className="mb-3">
-                <div className="text-xs text-muted-foreground mb-2">Impacted Sectors</div>
-                <div className="flex gap-1.5 flex-wrap">
-                  {(selectedItem as Theme).sectors.map((sector, idx) => (
-                    <span key={idx} className="px-2.5 py-1 rounded bg-muted text-xs text-foreground">
-                      {sector}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {selectedItem.type === 'theme' && (selectedItem as Theme).strategicPillar && (
-              <div>
-                <div className="text-xs text-muted-foreground mb-2">Strategic Pillar</div>
-                <div
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border"
-                  style={{
-                    backgroundColor: `${themeColor}10`,
-                    borderColor: `${themeColor}30`,
-                  }}
-                >
-                  <Zap className="h-3.5 w-3.5" style={{ color: themeColor }} />
-                  <span className="text-xs font-medium" style={{ color: themeColor }}>
-                    {(selectedItem as Theme).strategicPillar}
-                  </span>
-                </div>
-              </div>
-            )}
           </div>
         </DrawerSection>
       </div>

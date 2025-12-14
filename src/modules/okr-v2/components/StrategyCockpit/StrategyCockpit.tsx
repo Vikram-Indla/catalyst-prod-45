@@ -50,10 +50,13 @@ export function StrategyCockpit({ snapshotId }: StrategyCockpitProps) {
     }
   }, [searchParams, setSearchParams]);
 
-  // Auto-expand first theme when data loads
+  // Auto-expand first objective when data loads
   useEffect(() => {
     if (strategicData?.themes?.length && expandedIds.length === 0) {
-      setExpandedIds([strategicData.themes[0].id]);
+      const firstObjective = strategicData.themes[0]?.objectives?.[0];
+      if (firstObjective) {
+        setExpandedIds([firstObjective.id]);
+      }
     }
   }, [strategicData?.themes]);
 
@@ -177,7 +180,7 @@ export function StrategyCockpit({ snapshotId }: StrategyCockpitProps) {
           <Search className="h-4 w-4 text-muted-foreground" />
           <Input
             type="text"
-            placeholder="Search themes, objectives, KRs…"
+            placeholder="Search objectives, KRs, work items…"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="flex-1 border-0 bg-transparent shadow-none focus-visible:ring-0 h-auto p-0 text-sm"

@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // OKR Hub V2 — Tree Row Component
-// Expandable row for Theme/Objective/KR/WorkItem hierarchy
+// Expandable row for Objective/KR/WorkItem hierarchy (no theme rows)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { ChevronDown, ChevronRight } from 'lucide-react';
@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import type { TreeItem, StatusCode, OkrRiskSummary } from '../../lib/okrTypes';
-import { getStatusLabel, getTotalRiskCount, calculateRiskScore } from '../../lib/okrMetrics';
+import { getStatusLabel, getTotalRiskCount } from '../../lib/okrMetrics';
 
 interface TreeRowProps {
   item: TreeItem;
@@ -19,10 +19,10 @@ interface TreeRowProps {
   onToggle: (id: string) => void;
   onSelect: (item: TreeItem) => void;
   themeColor?: string;
+  themeName?: string;
 }
 
 const TYPE_ICONS: Record<string, string> = {
-  theme: '◉',
   objective: '▸',
   keyResult: '•',
   workItem: '↳',
@@ -63,12 +63,10 @@ function RiskChip({ risks }: { risks: OkrRiskSummary }) {
 
 function LinkedChip({ item }: { item: TreeItem }) {
   let label: string | null = null;
-  if (item.type === 'theme' && 'objectives' in item) {
-    label = `${item.objectives?.length || 0} obj`;
-  } else if (item.type === 'objective' && 'keyResults' in item) {
+  if (item.type === 'objective' && 'keyResults' in item) {
     label = `${item.keyResults?.length || 0} KRs`;
   } else if (item.type === 'keyResult' && 'workItems' in item) {
-    label = `${item.workItems?.length || 0} epics`;
+    label = `${item.workItems?.length || 0} items`;
   }
 
   if (!label) return null;
@@ -89,6 +87,7 @@ export function TreeRow({
   onToggle,
   onSelect,
   themeColor = 'hsl(var(--brand-gold))',
+  themeName,
 }: TreeRowProps) {
   const indentPx = level * 24;
 
@@ -122,24 +121,43 @@ export function TreeRow({
           <span className="w-5" />
         )}
 
+        {/* Theme color dot for objectives */}
+        {item.type === 'objective' && (
+          <span
+            className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+            style={{ backgroundColor: themeColor }}
+            title={themeName}
+          />
+        )}
+
+        {/* Type icon */}
         <span
           className={cn(
-            item.type === 'theme' ? 'text-base font-semibold' : 'text-sm'
+            "text-sm flex-shrink-0",
+            item.type === 'workItem' && 'text-muted-foreground italic'
           )}
-          style={{ color: themeColor }}
+          style={{ color: item.type !== 'workItem' ? themeColor : undefined }}
         >
           {TYPE_ICONS[item.type] || '•'}
         </span>
 
+        {/* Item name */}
         <span
           className={cn(
             "text-sm truncate text-foreground",
-            item.type === 'theme' && 'font-semibold',
-            item.type === 'objective' && 'font-medium'
+            item.type === 'objective' && 'font-medium',
+            item.type === 'workItem' && 'italic text-muted-foreground'
           )}
         >
           {item.name}
         </span>
+
+        {/* Theme label for objectives (muted) */}
+        {item.type === 'objective' && themeName && (
+          <span className="text-xs text-muted-foreground truncate ml-1">
+            ({themeName})
+          </span>
+        )}
       </div>
 
       {/* Status Column */}
