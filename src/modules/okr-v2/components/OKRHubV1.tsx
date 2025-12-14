@@ -185,9 +185,10 @@ export function OKRHubV1({ snapshotId }: OKRHubV1Props) {
         <OKRColumnChooser columns={columns} onColumnsChange={setColumns} />
       </div>
 
-      {/* Table - Using new OkrObjectivesTable */}
+      {/* Table - Using new OkrObjectivesTable with column visibility */}
       <OkrObjectivesTable 
-        rows={tableRows} 
+        rows={tableRows}
+        columns={columns}
         onRowClick={handleRowClick}
       />
 
