@@ -219,8 +219,8 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
       style={{
         width: expanded ? '220px' : '60px',
         height: '100%',
-        background: '#ffffff',
-        borderRight: '1px solid #e5e7eb',
+        background: 'var(--surface-1)',
+        borderRight: '1px solid var(--border-color)',
         transition: 'all 0.3s ease',
         flexShrink: 0,
         position: 'relative',
@@ -240,13 +240,14 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
           width: '24px',
           height: '24px',
           borderRadius: '9999px',
-          background: '#ffffff',
-          border: '1px solid #e5e7eb',
-          boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+          background: 'var(--surface-1)',
+          border: '1px solid var(--border-color)',
+          boxShadow: 'var(--card-shadow)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           cursor: 'pointer',
+          color: 'var(--icon-default)',
         }}
         aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
       >
@@ -266,7 +267,7 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
             display: 'flex', 
             alignItems: 'center',
             justifyContent: expanded ? 'space-between' : 'center',
-            borderBottom: expanded ? '1px solid #e5e7eb' : 'none',
+            borderBottom: expanded ? '1px solid var(--border-color)' : 'none',
             flexShrink: 0,
           }}
         >
@@ -307,8 +308,8 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                 EN
               </div>
               <div>
-                <div style={{ fontSize: '14px', fontWeight: 700, color: '#5c7c5c' }}>Enterprise</div>
-                <div style={{ fontSize: '12px', color: '#6b7280' }}>Strategy</div>
+                <div style={{ fontSize: '14px', fontWeight: 700, color: 'hsl(var(--secondary-green))' }}>Enterprise</div>
+                <div style={{ fontSize: '12px', color: 'var(--text-2)' }}>Strategy</div>
               </div>
             </div>
           )}
@@ -332,8 +333,8 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                 {currentPortfolio.abbr}
               </div>
               <div style={{ flex: 1, textAlign: 'left', minWidth: 0 }}>
-                <div style={{ fontSize: '14px', fontWeight: 500, color: '#1f2937', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{currentPortfolio.name}</div>
-                <div style={{ fontSize: '12px', color: '#6b7280' }}>Portfolio</div>
+                <div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--text-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{currentPortfolio.name}</div>
+                <div style={{ fontSize: '12px', color: 'var(--text-2)' }}>Portfolio</div>
               </div>
             </div>
           )}
@@ -404,8 +405,8 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                     marginBottom: '2px',
                     position: 'relative',
                     justifyContent: expanded ? 'flex-start' : 'center',
-                    background: active ? 'rgba(92, 124, 92, 0.08)' : 'transparent',
-                    color: active ? '#5c7c5c' : '#4b5563',
+                    background: active ? 'var(--accent-muted)' : 'transparent',
+                    color: active ? 'hsl(var(--secondary-green))' : 'var(--text-2)',
                     fontWeight: active ? 600 : 500,
                     fontSize: '14px',
                     fontFamily: 'inherit',
@@ -420,15 +421,15 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                         top: '8px',
                         bottom: '8px',
                         width: '3px',
-                        background: '#5c7c5c',
+                        background: 'hsl(var(--secondary-green))',
                         borderRadius: '0 2px 2px 0',
                       }}
                     />
                   )}
                   {CustomIcon ? (
-                    <CustomIcon className="w-5 h-5 flex-shrink-0" style={{ color: active ? '#5c7c5c' : '#6b7280' }} />
+                    <CustomIcon className="w-5 h-5 flex-shrink-0" style={{ color: active ? 'hsl(var(--secondary-green))' : 'var(--icon-default)' }} />
                   ) : (
-                    <LucideIcon style={{ width: '20px', height: '20px', flexShrink: 0, color: active ? '#5c7c5c' : '#6b7280' }} />
+                    <LucideIcon style={{ width: '20px', height: '20px', flexShrink: 0, color: active ? 'hsl(var(--secondary-green))' : 'var(--icon-default)' }} />
                   )}
                   {expanded && <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'left', flex: 1 }}>{item.label}</span>}
                   {expanded && item.expandable && (
