@@ -41,15 +41,13 @@ function FocusWidget({
       className="p-3.5 rounded-lg transition-all cursor-pointer group"
       style={{ 
         backgroundColor: 'var(--surface-2)',
-        border: '1px solid var(--divider)',
+        border: '1px solid var(--border-color)',
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.backgroundColor = 'var(--surface-3)';
-        e.currentTarget.style.borderColor = 'var(--border-color)';
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.backgroundColor = 'var(--surface-2)';
-        e.currentTarget.style.borderColor = 'var(--divider)';
       }}
     >
       <div className="flex items-start justify-between gap-3">
@@ -105,9 +103,9 @@ function ProjectTile({ project }: { project: Project }) {
   
   return (
     <div 
-      className="flex-shrink-0 w-[220px] rounded-lg overflow-hidden transition-all cursor-pointer group"
+      className="rounded-lg overflow-hidden transition-all cursor-pointer group"
       style={{ 
-        border: '1px solid var(--divider)',
+        border: '1px solid var(--border-color)',
         backgroundColor: isHovered ? 'var(--surface-3)' : 'var(--surface-2)',
         boxShadow: isHovered ? '0 4px 12px rgba(0,0,0,0.1)' : 'none',
       }}
@@ -431,23 +429,11 @@ export function HomeContent() {
 
   return (
     <div 
-      className="min-h-screen font-sans relative"
-      style={{ 
-        backgroundColor: 'var(--bg)',
-        backgroundImage: 'radial-gradient(ellipse 80% 50% at 50% 0%, var(--surface-1), transparent)',
-      }}
+      className="min-h-screen font-sans"
+      style={{ backgroundColor: 'var(--bg)' }}
     >
-      {/* Subtle side vignette for dark mode - gives intentional framing */}
-      <div 
-        className="absolute inset-0 pointer-events-none hidden dark:block"
-        style={{
-          background: 'linear-gradient(90deg, var(--surface-1) 0%, transparent 8%, transparent 92%, var(--surface-1) 100%)',
-          opacity: 0.4,
-        }}
-      />
-      
-      {/* Constrained container - increased to 1440px */}
-      <div className="max-w-[1440px] mx-auto px-6 md:px-8 py-6 relative z-[1]">
+      {/* Constrained container - 1440px max */}
+      <div className="max-w-[1440px] mx-auto px-4 md:px-8 py-6">
         {/* Page title */}
         <h1 
           className="text-2xl font-semibold leading-7 tracking-tight m-0"
@@ -467,17 +453,48 @@ export function HomeContent() {
             </div>
             <a 
               href="#" 
-              className="text-sm no-underline hover:underline" 
+              className="text-sm no-underline transition-colors"
               style={{ color: 'var(--text-2)' }}
+              onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-1)'}
+              onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-2)'}
             >
-              View all projects
+              View all projects →
             </a>
           </div>
 
-          <div className="flex gap-3 overflow-x-auto pb-2 -mb-2 scrollbar-thin">
+          {/* 4-column grid on large screens */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
             {projects.map((project) => (
               <ProjectTile key={project.id} project={project} />
             ))}
+            {/* Placeholder tile when fewer than 4 projects */}
+            {projects.length < 4 && (
+              <div 
+                className="w-full min-h-[180px] rounded-lg overflow-hidden transition-all cursor-pointer flex flex-col items-center justify-center gap-2"
+                style={{ 
+                  border: '1px dashed var(--border-color)',
+                  backgroundColor: 'var(--surface-1)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--surface-2)';
+                  e.currentTarget.style.borderStyle = 'solid';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--surface-1)';
+                  e.currentTarget.style.borderStyle = 'dashed';
+                }}
+              >
+                <div 
+                  className="w-10 h-10 rounded-lg flex items-center justify-center"
+                  style={{ backgroundColor: 'var(--surface-3)' }}
+                >
+                  <ExternalLink className="w-5 h-5" style={{ color: 'var(--icon-muted)' }} />
+                </div>
+                <span className="text-sm font-medium" style={{ color: 'var(--text-2)' }}>
+                  Browse projects
+                </span>
+              </div>
+            )}
           </div>
         </div>
 
