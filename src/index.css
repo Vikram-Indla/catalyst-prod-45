@@ -847,15 +847,21 @@ textarea:focus-visible {
 
 /* Tab Navigation */
 .executive-tabs-list {
-  background-color: hsl(var(--background));
+  background-color: var(--surface-1);
   padding: 0 12px;
   gap: 0;
   height: 40px;
   min-height: 40px;
+  border-bottom: 1px solid var(--divider);
+  overflow-x: auto;
+}
+
+html[data-theme="dark"] .executive-tabs-list {
+  background-color: var(--surface-2);
 }
 
 .executive-tab {
-  color: hsl(var(--muted-foreground));
+  color: var(--text-2);
   font-weight: 500;
   font-size: 13px;
   padding: 8px 12px;
@@ -865,32 +871,38 @@ textarea:focus-visible {
   transition: color 150ms ease, border-color 150ms ease, background-color 150ms ease;
   margin-bottom: -1px;
   height: 40px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .executive-tab:hover {
-  color: hsl(var(--foreground));
-  background-color: hsl(var(--secondary-champagne) / 0.3);
+  color: var(--text-1);
+  background-color: var(--surface-3);
 }
 
 .executive-tab[data-state="active"] {
-  color: hsl(var(--secondary-bronze));
+  color: var(--text-1);
   font-weight: 600;
-  border-bottom: 2px solid hsl(var(--secondary-bronze));
+  border-bottom: 2px solid var(--accent-color);
   background: transparent;
 }
 
 /* Content Area */
 .executive-drawer-content {
-  background-color: hsl(var(--n10));
+  background-color: var(--bg);
   padding: 0;
   overflow-y: auto;
 }
 
+html[data-theme="dark"] .executive-drawer-content {
+  background-color: var(--surface-0);
+}
+
 /* Form Cards */
 .executive-card {
-  background-color: hsl(var(--background));
+  background-color: var(--surface-1);
   border-radius: 8px;
-  border: 1px solid hsl(var(--border));
+  border: 1px solid var(--border-color);
   box-shadow: none;
   padding: 12px 16px;
   margin-bottom: 12px;
@@ -898,24 +910,28 @@ textarea:focus-visible {
 
 /* Input Fields */
 .executive-input {
-  background-color: hsl(var(--n10));
-  border: 2px solid hsl(var(--border));
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
   border-radius: 4px;
   padding: 8px 12px;
   font-size: 14px;
   line-height: 1.42857;
-  color: hsl(var(--foreground));
+  color: var(--input-text);
   transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
 }
 
+.executive-input::placeholder {
+  color: var(--input-placeholder);
+}
+
 .executive-input:hover {
-  background-color: hsl(var(--n20));
+  background-color: var(--surface-3);
 }
 
 .executive-input:focus {
-  background-color: hsl(var(--background));
-  border-color: hsl(var(--secondary-bronze));
-  box-shadow: 0 0 0 2px hsl(var(--secondary-bronze) / 0.2);
+  background-color: var(--surface-1);
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px var(--focus-ring-color);
   outline: none;
 }
 
