@@ -443,7 +443,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
               {/* Left side: Request ID + Title + Priority Pill */}
               <div className="flex items-center gap-2.5 flex-1 min-w-0">
                 <div className="flex items-center gap-2 shrink-0">
-                  <span className="text-sm font-medium text-brand-gold">{request?.request_key || '...'}</span>
+                  <span className="text-sm font-medium text-secondary-green">{request?.request_key || '...'}</span>
                   <button
                     onClick={handleCopyLink}
                     className="text-muted-foreground/60 hover:text-brand-gold transition-colors p-0.5"
@@ -479,9 +479,6 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                     </>
                   )}
                 </div>
-
-                {/* Priority Pill - After title */}
-                <PriorityPill tier={((request as any)?.priority_tier as PriorityTier) || 'unscored'} />
               </div>
               
               {/* Right side: Save button + action icons all inline */}
