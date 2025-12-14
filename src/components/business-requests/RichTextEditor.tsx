@@ -154,7 +154,13 @@ export function RichTextEditor({ value, onChange, placeholder, className, minHei
   };
 
   return (
-    <div className={cn("border border-border rounded-md bg-background", className)}>
+    <div 
+      className={cn("rounded-md", className)}
+      style={{ 
+        border: '1px solid var(--border-color)',
+        background: 'var(--surface-1)'
+      }}
+    >
       {/* Hidden file input for image upload */}
       <input
         ref={fileInputRef}
@@ -165,7 +171,13 @@ export function RichTextEditor({ value, onChange, placeholder, className, minHei
       />
 
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-0.5 p-2 border-b border-border/60 bg-muted/30">
+      <div 
+        className="flex flex-wrap items-center gap-0.5 p-2"
+        style={{
+          borderBottom: '1px solid var(--border-color)',
+          background: 'var(--surface-2)'
+        }}
+      >
         {/* Text Format Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -174,6 +186,7 @@ export function RichTextEditor({ value, onChange, placeholder, className, minHei
               variant="ghost"
               size="sm"
               className="h-8 px-2 gap-1 text-xs"
+              style={{ color: 'var(--text-2)' }}
             >
               <Type className="h-3.5 w-3.5" />
               <ChevronDown className="h-3 w-3" />
@@ -195,14 +208,15 @@ export function RichTextEditor({ value, onChange, placeholder, className, minHei
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <div className="w-px h-5 bg-border mx-1" />
+        <div className="w-px h-5 mx-1" style={{ background: 'var(--border-color)' }} />
 
         {/* Basic Formatting */}
         <Button
           type="button"
           variant="ghost"
           size="sm"
-          className="h-8 w-8 p-0"
+          className="h-8 w-8 p-0 hover:bg-[var(--surface-3)]"
+          style={{ color: 'var(--text-2)' }}
           onClick={() => execCommand('bold')}
           title="Bold (Ctrl+B)"
         >
@@ -212,7 +226,8 @@ export function RichTextEditor({ value, onChange, placeholder, className, minHei
           type="button"
           variant="ghost"
           size="sm"
-          className="h-8 w-8 p-0"
+          className="h-8 w-8 p-0 hover:bg-[var(--surface-3)]"
+          style={{ color: 'var(--text-2)' }}
           onClick={() => execCommand('italic')}
           title="Italic (Ctrl+I)"
         >
@@ -222,7 +237,8 @@ export function RichTextEditor({ value, onChange, placeholder, className, minHei
           type="button"
           variant="ghost"
           size="sm"
-          className="h-8 w-8 p-0"
+          className="h-8 w-8 p-0 hover:bg-[var(--surface-3)]"
+          style={{ color: 'var(--text-2)' }}
           onClick={() => execCommand('underline')}
           title="Underline (Ctrl+U)"
         >
@@ -232,21 +248,23 @@ export function RichTextEditor({ value, onChange, placeholder, className, minHei
           type="button"
           variant="ghost"
           size="sm"
-          className="h-8 w-8 p-0"
+          className="h-8 w-8 p-0 hover:bg-[var(--surface-3)]"
+          style={{ color: 'var(--text-2)' }}
           onClick={() => execCommand('strikeThrough')}
           title="Strikethrough"
         >
           <Strikethrough className="h-4 w-4" />
         </Button>
 
-        <div className="w-px h-5 bg-border mx-1" />
+        <div className="w-px h-5 mx-1" style={{ background: 'var(--border-color)' }} />
 
         {/* Lists */}
         <Button
           type="button"
           variant="ghost"
           size="sm"
-          className="h-8 w-8 p-0"
+          className="h-8 w-8 p-0 hover:bg-[var(--surface-3)]"
+          style={{ color: 'var(--text-2)' }}
           onClick={toggleBulletList}
           title="Bullet List"
         >
@@ -256,14 +274,15 @@ export function RichTextEditor({ value, onChange, placeholder, className, minHei
           type="button"
           variant="ghost"
           size="sm"
-          className="h-8 w-8 p-0"
+          className="h-8 w-8 p-0 hover:bg-[var(--surface-3)]"
+          style={{ color: 'var(--text-2)' }}
           onClick={toggleNumberedList}
           title="Numbered List"
         >
           <ListOrdered className="h-4 w-4" />
         </Button>
 
-        <div className="w-px h-5 bg-border mx-1" />
+        <div className="w-px h-5 mx-1" style={{ background: 'var(--border-color)' }} />
 
         {/* Link */}
         <Popover open={linkPopoverOpen} onOpenChange={setLinkPopoverOpen}>
@@ -272,7 +291,8 @@ export function RichTextEditor({ value, onChange, placeholder, className, minHei
               type="button"
               variant="ghost"
               size="sm"
-              className="h-8 w-8 p-0"
+              className="h-8 w-8 p-0 hover:bg-[var(--surface-3)]"
+              style={{ color: 'var(--text-2)' }}
               title="Insert Link"
             >
               <Link className="h-4 w-4" />
@@ -280,7 +300,7 @@ export function RichTextEditor({ value, onChange, placeholder, className, minHei
           </PopoverTrigger>
           <PopoverContent className="w-72 p-3" align="start">
             <div className="space-y-3">
-              <Label className="text-xs font-medium">Link URL</Label>
+              <Label className="text-xs font-medium" style={{ color: 'var(--text-2)' }}>Link URL</Label>
               <Input
                 type="url"
                 placeholder="https://example.com"
@@ -304,25 +324,27 @@ export function RichTextEditor({ value, onChange, placeholder, className, minHei
           type="button"
           variant="ghost"
           size="sm"
-          className="h-8 w-8 p-0"
+          className="h-8 w-8 p-0 hover:bg-[var(--surface-3)]"
+          style={{ color: 'var(--text-2)' }}
           onClick={triggerImageUpload}
           title="Upload Image"
         >
           <Image className="h-4 w-4" />
         </Button>
 
-        <div className="w-px h-5 bg-border mx-1" />
+        <div className="w-px h-5 mx-1" style={{ background: 'var(--border-color)' }} />
 
         {/* Code */}
         <Button
           type="button"
           variant="ghost"
           size="sm"
-          className="h-8 w-8 p-0"
+          className="h-8 w-8 p-0 hover:bg-[var(--surface-3)]"
+          style={{ color: 'var(--text-2)' }}
           onClick={() => {
             const selection = window.getSelection();
             if (selection && selection.toString()) {
-              execCommand('insertHTML', `<code style="background: #f0f0f0; padding: 2px 4px; border-radius: 3px; font-family: monospace;">${selection.toString()}</code>`);
+              execCommand('insertHTML', `<code style="background: var(--surface-3); padding: 2px 4px; border-radius: 3px; font-family: monospace;">${selection.toString()}</code>`);
             }
           }}
           title="Inline Code"
@@ -333,21 +355,23 @@ export function RichTextEditor({ value, onChange, placeholder, className, minHei
           type="button"
           variant="ghost"
           size="sm"
-          className="h-8 w-8 p-0"
+          className="h-8 w-8 p-0 hover:bg-[var(--surface-3)]"
+          style={{ color: 'var(--text-2)' }}
           onClick={() => formatBlock('blockquote')}
           title="Quote"
         >
           <Quote className="h-4 w-4" />
         </Button>
 
-        <div className="w-px h-5 bg-border mx-1" />
+        <div className="w-px h-5 mx-1" style={{ background: 'var(--border-color)' }} />
 
         {/* Clear Formatting */}
         <Button
           type="button"
           variant="ghost"
           size="sm"
-          className="h-8 w-8 p-0"
+          className="h-8 w-8 p-0 hover:bg-[var(--surface-3)]"
+          style={{ color: 'var(--text-2)' }}
           onClick={clearFormatting}
           title="Clear Formatting"
         >
@@ -359,15 +383,33 @@ export function RichTextEditor({ value, onChange, placeholder, className, minHei
       <div
         ref={editorRef}
         contentEditable
-        className="overflow-y-auto p-3 text-sm focus:outline-none prose prose-sm max-w-none [&_blockquote]:border-l-[3px] [&_blockquote]:border-[var(--accent-color)] [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-muted-foreground [&_a]:text-[var(--accent-color)] [&_a]:underline [&_code]:bg-muted [&_code]:px-1 [&_code]:rounded [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-1 [&_img]:max-w-full [&_img]:h-auto [&_img]:rounded"
+        className="overflow-y-auto p-3 text-sm focus:outline-none prose prose-sm max-w-none [&_blockquote]:border-l-[3px] [&_blockquote]:border-[var(--accent-color)] [&_blockquote]:pl-4 [&_blockquote]:italic [&_a]:text-[var(--accent-color)] [&_a]:underline [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-1 [&_img]:max-w-full [&_img]:h-auto [&_img]:rounded"
         onInput={handleInput}
         onKeyDown={handleKeyDown}
         data-placeholder={placeholder}
         style={{
           minHeight,
           maxHeight: '400px',
+          background: 'var(--surface-1)',
+          color: 'var(--text-1)',
+          caretColor: 'var(--text-1)',
         }}
       />
+      <style>{`
+        [contentEditable]:empty:before {
+          content: attr(data-placeholder);
+          color: var(--text-3);
+          pointer-events: none;
+        }
+        [contentEditable] code {
+          background: var(--surface-3);
+          padding: 2px 4px;
+          border-radius: 3px;
+        }
+        [contentEditable] blockquote {
+          color: var(--text-2);
+        }
+      `}</style>
     </div>
   );
 }

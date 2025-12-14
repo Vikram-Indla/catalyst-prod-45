@@ -108,14 +108,14 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
   };
 
   return (
-    <div className="flex flex-col h-full space-y-5 bg-muted/30 p-1">
+    <div className="flex flex-col h-full space-y-5 p-1" style={{ background: 'var(--bg)' }}>
       {/* DETAILS Section - Consolidated Basic Info + Assignment */}
-      <div className="border border-border rounded-xl bg-white p-5 space-y-5 shadow-sm">
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-gold">Details</h3>
+      <div className="border rounded-xl p-5 space-y-5 shadow-sm" style={{ borderColor: 'var(--border-color)', background: 'var(--surface-1)' }}>
+        <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--accent-color)' }}>Details</h3>
           
           {/* Summary */}
           <div>
-            <Label className="text-xs font-medium">
+            <Label className="text-xs font-medium" style={{ color: 'var(--text-2)' }}>
               Summary <span className="text-destructive">*</span>
             </Label>
             <Input
@@ -128,8 +128,8 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
 
           {/* Auto Priority - Read-only derived field */}
           <div>
-            <Label className="text-xs font-medium text-muted-foreground">Auto Priority</Label>
-            <div className="mt-1 px-3 py-2 bg-muted/50 rounded-md border border-border text-sm text-muted-foreground italic flex items-center gap-2">
+            <Label className="text-xs font-medium" style={{ color: 'var(--text-3)' }}>Auto Priority</Label>
+            <div className="mt-1 px-3 py-2 rounded-md text-sm italic flex items-center gap-2" style={{ background: 'var(--surface-2)', border: '1px solid var(--border-color)', color: 'var(--text-2)' }}>
               <Lock className="h-3.5 w-3.5" />
               {(() => {
                 const tier = (data.priority_tier as PriorityTier) || 'unscored';
@@ -148,7 +148,7 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
 
           {/* Description */}
           <div>
-            <Label className="text-xs font-medium">Description</Label>
+            <Label className="text-xs font-medium" style={{ color: 'var(--text-2)' }}>Description</Label>
             <div className="mt-1">
               <RichTextEditor
                 value={data.description || ''}
@@ -159,9 +159,9 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
           </div>
 
           {/* People - 2x2 compact grid */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <Label className="text-xs font-medium">Reporter</Label>
+              <Label className="text-xs font-medium" style={{ color: 'var(--text-2)' }}>Reporter</Label>
               <div className="mt-1">
                 <UserPicker
                   value={data.requestor || null}
@@ -171,7 +171,7 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
               </div>
             </div>
             <div>
-              <Label className="text-xs font-medium">Assignee</Label>
+              <Label className="text-xs font-medium" style={{ color: 'var(--text-2)' }}>Assignee</Label>
               <div className="mt-1">
                 <UserPicker
                   value={data.assignee || null}
@@ -181,7 +181,7 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
               </div>
             </div>
             <div>
-              <Label className="text-xs font-medium">Department</Label>
+              <Label className="text-xs font-medium" style={{ color: 'var(--text-2)' }}>Department</Label>
               <div className="mt-1">
                 <DepartmentSelect
                   value={data.department_id || null}
@@ -191,7 +191,7 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
               </div>
             </div>
             <div>
-              <Label className="text-xs font-medium">Business Owner</Label>
+              <Label className="text-xs font-medium" style={{ color: 'var(--text-2)' }}>Business Owner</Label>
               <div className="mt-1">
                 <BusinessOwnerSelect
                   value={data.business_owner_id || null}
@@ -206,13 +206,13 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
         </div>
 
       {/* PLANNING & DELIVERY Section - Consolidated Timeline + Delivery Context */}
-      <div className="border border-border rounded-xl bg-white p-5 space-y-5 shadow-sm flex-1">
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-gold">Planning & Delivery</h3>
+      <div className="border rounded-xl p-5 space-y-5 shadow-sm flex-1" style={{ borderColor: 'var(--border-color)', background: 'var(--surface-1)' }}>
+        <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--accent-color)' }}>Planning & Delivery</h3>
           
           {/* Dates - 3-column compact grid */}
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <Label className="text-xs font-medium mb-1.5 block">Business Ask</Label>
+              <Label className="text-xs font-medium mb-1.5 block" style={{ color: 'var(--text-2)' }}>Business Ask</Label>
               <CatalystDatePicker
                 value={data.start_date || null}
                 onChange={(date) => onChange('start_date', date ? format(date, 'yyyy-MM-dd') : null)}
@@ -221,7 +221,7 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
             </div>
 
             <div>
-              <Label className="text-xs font-medium mb-1.5 block">Kickoff</Label>
+              <Label className="text-xs font-medium mb-1.5 block" style={{ color: 'var(--text-2)' }}>Kickoff</Label>
               <CatalystDatePicker
                 value={data.impl_start_date || null}
                 onChange={(date) => onChange('impl_start_date', date ? format(date, 'yyyy-MM-dd') : null)}
@@ -230,7 +230,7 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
             </div>
 
             <div>
-              <Label className="text-xs font-medium mb-1.5 block">Target Complete</Label>
+              <Label className="text-xs font-medium mb-1.5 block" style={{ color: 'var(--text-2)' }}>Target Complete</Label>
               <div className="flex gap-1.5">
                 <div className="flex-1">
                   <CatalystDatePicker
@@ -257,9 +257,9 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
           </div>
 
           {/* Delivery context - 3-column compact grid */}
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <Label className="text-xs font-medium">Delivery Track</Label>
+              <Label className="text-xs font-medium" style={{ color: 'var(--text-2)' }}>Delivery Track</Label>
               <div className="mt-1">
                 <DeliveryTrackSelect
                   value={data.delivery_track || data.track || null}
@@ -269,7 +269,7 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
             </div>
             
             <div>
-              <Label className="text-xs font-medium">Delivery Platform</Label>
+              <Label className="text-xs font-medium" style={{ color: 'var(--text-2)' }}>Delivery Platform</Label>
               <div className="mt-1">
                 <DeliveryPlatformSelect
                   value={data.delivery_platform || null}
@@ -279,7 +279,7 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
             </div>
             
             <div>
-              <Label className="text-xs font-medium">Quarter</Label>
+              <Label className="text-xs font-medium" style={{ color: 'var(--text-2)' }}>Quarter</Label>
               <div className="mt-1">
                 <PlannedQuarterSelect
                   value={data.planned_quarter || null}
