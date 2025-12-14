@@ -73,7 +73,8 @@ interface OkrStatusPillProps {
 }
 
 export function OkrStatusPill({ status, size = 'md' }: OkrStatusPillProps) {
-  const normalizedStatus = status.toLowerCase().replace(/\s+/g, '-');
+  // Normalize status: lowercase, replace spaces and underscores with hyphens
+  const normalizedStatus = status.toLowerCase().replace(/[\s_]+/g, '-');
   const styles = STATUS_STYLES[normalizedStatus] || STATUS_STYLES['pending'];
   const displayLabel = STATUS_LABELS[normalizedStatus] || status;
 
