@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { format, differenceInDays } from 'date-fns';
-import { ArrowUpDown, MoreHorizontal, Trash2, Edit2 } from 'lucide-react';
+import { ArrowUpDown, MoreHorizontal, Trash2, Edit2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
@@ -67,6 +67,7 @@ export function ListView({
 }: ListViewProps) {
   const [sortColumn, setSortColumn] = useState<SortColumn>('kickoff');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+  const [isResourceColumnExpanded, setIsResourceColumnExpanded] = useState(true);
 
   const resourceMap = useMemo(() => {
     const map = new Map<string, ResourceInventoryItem>();
@@ -260,7 +261,22 @@ export function ListView({
               <SortableHeader column="quarter">Quarter</SortableHeader>
             </th>
             <th className="w-24 px-3 py-3 text-left">Kick-Off</th>
-            <th className="w-16 px-3 py-3 text-center">Res</th>
+            <th className={cn("px-3 py-3 transition-all duration-200", isResourceColumnExpanded ? "w-48" : "w-16")}>
+              <div className="flex items-center justify-between">
+                {isResourceColumnExpanded && <span>Resource</span>}
+                <button
+                  onClick={() => setIsResourceColumnExpanded(!isResourceColumnExpanded)}
+                  className="p-1 rounded hover:bg-muted transition-colors"
+                  title={isResourceColumnExpanded ? 'Collapse' : 'Expand'}
+                >
+                  {isResourceColumnExpanded ? (
+                    <ChevronLeft className="h-3 w-3 text-muted-foreground" />
+                  ) : (
+                    <ChevronRight className="h-3 w-3 text-muted-foreground" />
+                  )}
+                </button>
+              </div>
+            </th>
             <th className="w-12 px-3 py-3 text-center"></th>
           </tr>
         </thead>
@@ -382,23 +398,32 @@ export function ListView({
                         : format(new Date(booking.start_date), 'MMM d')}
                     </td>
 
-                    {/* Resource Avatar */}
-                    <td className="px-3 py-3 text-center">
+                    {/* Resource */}
+                    <td className={cn("px-3 py-3 transition-all duration-200", isResourceColumnExpanded ? "" : "text-center")}>
                       {resource ? (
-                        <Avatar className="h-7 w-7 mx-auto">
-                          <AvatarFallback 
-                            className="text-[10px] font-semibold text-white"
-                            style={{ 
-                              background: resource.role_code === 'PO' 
-                                ? 'hsl(var(--secondary-green))' 
-                                : resource.role_code === 'BA' 
-                                  ? 'hsl(var(--brand-gold))' 
-                                  : 'hsl(var(--secondary-bronze))'
-                            }}
-                          >
-                            {resource.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                          </AvatarFallback>
-                        </Avatar>
+                        <div className={cn("flex items-center", isResourceColumnExpanded ? "gap-2" : "justify-center")}>
+                          <Avatar className="h-7 w-7 flex-shrink-0">
+                            <AvatarFallback 
+                              className="text-[10px] font-semibold text-white"
+                              style={{ 
+                                background: resource.role_code === 'PO' 
+                                  ? 'hsl(var(--secondary-green))' 
+                                  : resource.role_code === 'BA' 
+                                    ? 'hsl(var(--brand-gold))' 
+                                    : 'hsl(var(--secondary-bronze))'
+                              }}
+                              title={!isResourceColumnExpanded ? `${resource.name} (${resource.role_code || 'N/A'})` : undefined}
+                            >
+                              {resource.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                            </AvatarFallback>
+                          </Avatar>
+                          {isResourceColumnExpanded && (
+                            <div className="min-w-0">
+                              <div className="text-sm font-medium truncate">{resource.name}</div>
+                              <div className="text-[10px] text-muted-foreground uppercase">{resource.role_code || '—'}</div>
+                            </div>
+                          )}
+                        </div>
                       ) : (
                         <span className="text-muted-foreground">—</span>
                       )}
