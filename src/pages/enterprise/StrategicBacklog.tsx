@@ -11,7 +11,7 @@ import { OverviewTab } from '@/components/strategic-backlog/OverviewTab';
 import { ThemesTab } from '@/components/strategic-backlog/ThemesTab';
 import { EpicsTab } from '@/components/strategic-backlog/EpicsTab';
 import { CreateThemeDialog } from '@/components/strategic-backlog/CreateThemeDialog';
-import { OKRHubV2 } from '@/modules/okr-v2';
+import { OKRHubV1 } from '@/modules/okr-v2/components/OKRHubV1';
 import {
   useStrategyMissions,
   useStrategyVisions,
@@ -167,7 +167,7 @@ export default function StrategicBacklog() {
             </TabsContent>
 
             <TabsContent value="objectives" className="mt-6">
-              <OKRHubV2 snapshotId={snapshotId} />
+              <OKRHubV1 snapshotId={snapshotId} />
             </TabsContent>
 
             <TabsContent value="epics" className="mt-6">
