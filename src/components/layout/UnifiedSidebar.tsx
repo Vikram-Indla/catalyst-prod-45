@@ -188,8 +188,8 @@ export function UnifiedSidebar({
                 >
                   {entity?.name?.substring(0, 2).toUpperCase() || entityLabel.substring(0, 2).toUpperCase()}
                 </div>
-                {/* Section label - always green when expanded */}
-                <span style={{ fontSize: '14px', fontWeight: 700, color: 'hsl(var(--secondary-green))' }}>
+                {/* Section label */}
+                <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-1)' }}>
                   {entity?.name || entityLabel}
                 </span>
               </div>
@@ -243,26 +243,27 @@ export function UnifiedSidebar({
                   borderRadius: '6px',
                   border: 'none',
                   cursor: 'pointer',
-                  transition: 'all 0.15s ease',
+                  transition: 'background 0.15s ease, color 0.15s ease',
                   marginBottom: '2px',
                   position: 'relative',
                   justifyContent: expanded ? 'flex-start' : 'center',
-                  // Active state styling - olive green
-                  background: active ? 'var(--accent-muted)' : 'transparent',
-                  color: active ? 'hsl(var(--secondary-green))' : 'var(--text-2)',
+                  // Active state: use nav-active-bg, text-1 for text
+                  background: active ? 'var(--nav-active-bg)' : 'transparent',
+                  color: active ? 'var(--text-1)' : 'var(--text-2)',
                   fontWeight: active ? 600 : 500,
                   fontSize: '14px',
                   fontFamily: 'inherit',
+                  outline: 'none',
                 }}
                 onMouseEnter={(e) => { 
                   if (!active) e.currentTarget.style.background = 'var(--nav-hover-bg)'; 
                 }}
                 onMouseLeave={(e) => { 
-                  e.currentTarget.style.background = active ? 'var(--accent-muted)' : 'transparent'; 
+                  e.currentTarget.style.background = active ? 'var(--nav-active-bg)' : 'transparent'; 
                 }}
                 title={!expanded ? item.label : undefined}
               >
-                {/* Olive left bar indicator for active state */}
+                {/* Left indicator bar for active state - 2px brand-active */}
                 {active && (
                   <span 
                     style={{
@@ -270,23 +271,23 @@ export function UnifiedSidebar({
                       left: 0,
                       top: '8px',
                       bottom: '8px',
-                      width: '3px',
-                      background: 'hsl(var(--secondary-green))',
-                      borderRadius: '0 2px 2px 0',
+                      width: '2px',
+                      background: 'var(--brand-active)',
+                      borderRadius: '0 1px 1px 0',
                     }}
                   />
                 )}
-                <Icon style={{ width: '20px', height: '20px', flexShrink: 0, color: active ? 'hsl(var(--secondary-green))' : 'var(--icon-default)' }} />
+                <Icon style={{ width: '20px', height: '20px', flexShrink: 0, color: active ? 'var(--text-1)' : 'var(--icon-default)' }} />
                 {expanded && (
                   <>
                     <span style={{ textAlign: 'left', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.label}</span>
                     {item.badge && (
                       <span style={{ 
                         padding: '2px 6px', 
-                        fontSize: '10px', 
+                        fontSize: '11px', 
                         fontWeight: 600, 
-                        background: 'hsl(var(--secondary-green))', 
-                        color: 'var(--text-inverse)',
+                        background: 'var(--brand-active)', 
+                        color: '#ffffff',
                         borderRadius: '4px',
                         textTransform: 'uppercase',
                       }}>
