@@ -26,8 +26,10 @@ import { ObjectiveDrawerV2 } from '../ObjectiveDrawerV2';
 import { OKRSmartFiltersDialog, OKRSmartFilters, countActiveFilters } from '../OKRSmartFiltersDialog';
 import { OKRColumnChooser, DEFAULT_OKR_COLUMNS, type OKRColumn } from '../OKRColumnChooser';
 import { OkrSummaryCards, type OkrSummaryMetrics } from '../shared/OkrSummaryCards';
+import { StrategyAnalyticsModal } from '../StrategyAnalyticsModal';
 
 import { useOKRStrategicData, useOKRThemes } from '../../hooks/useOKRStrategicData';
+import { useOKRAnalytics } from '../../hooks/useOKRAnalytics';
 import type { TreeItem, Objective } from '../../lib/okrTypes';
 import { exportOkrViewToCsv, getStatusLabel } from '../../lib/okrMetrics';
 
@@ -48,10 +50,10 @@ export function StrategyCockpit({ snapshotId }: StrategyCockpitProps) {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [filters, setFilters] = useState<OKRSmartFilters>({});
   const [columns, setColumns] = useState<OKRColumn[]>(DEFAULT_OKR_COLUMNS);
-
-  // Data fetching
+  const [analyticsOpen, setAnalyticsOpen] = useState(false);
   const { data: strategicData, isLoading, error } = useOKRStrategicData(snapshotId);
   const { data: themeChips } = useOKRThemes(snapshotId);
+  const { analytics, isLoading: analyticsLoading, themeCount, totalThemeCount } = useOKRAnalytics(snapshotId, selectedThemeIds.length > 0 ? selectedThemeIds : undefined);
 
   const activeFilterCount = countActiveFilters(filters);
 
@@ -137,7 +139,7 @@ export function StrategyCockpit({ snapshotId }: StrategyCockpitProps) {
   };
 
   const handleAnalyticsClick = () => {
-    toast.info('Analytics modal coming soon');
+    setAnalyticsOpen(true);
   };
 
   const handleClearFilters = () => {
@@ -331,6 +333,17 @@ export function StrategyCockpit({ snapshotId }: StrategyCockpitProps) {
         open={!!selectedObjectiveId}
         onClose={() => setSelectedObjectiveId(null)}
         onDuplicated={(newId) => setSelectedObjectiveId(newId)}
+      />
+
+      {/* Strategy Analytics Modal */}
+      <StrategyAnalyticsModal
+        isOpen={analyticsOpen}
+        onClose={() => setAnalyticsOpen(false)}
+        analytics={analytics}
+        isLoading={analyticsLoading}
+        filterLabel={selectedThemeIds.length > 0 ? `${selectedThemeIds.length} Themes` : 'All Themes'}
+        themeCount={themeCount}
+        totalThemeCount={totalThemeCount}
       />
     </div>
   );
