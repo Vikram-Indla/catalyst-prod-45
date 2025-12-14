@@ -109,11 +109,16 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
 
   return (
     <>
-      <Card style={{ borderLeft: '3px solid var(--accent-color)' }}>
-        <CardHeader className="pb-2">
+      <Card 
+        style={{ 
+          borderLeft: '3px solid var(--accent-color)',
+          backgroundColor: 'var(--surface-2)',
+        }}
+      >
+        <CardHeader className="pb-2" style={{ backgroundColor: 'var(--surface-3)', borderRadius: '8px 8px 0 0' }}>
           <div className="flex items-start justify-between">
             <div className="space-y-1">
-              <CardTitle className="text-base flex items-center gap-2">
+              <CardTitle className="text-base flex items-center gap-2" style={{ color: 'var(--text-1)' }}>
                 Strategy Pyramid
               </CardTitle>
               <CardDescription className="text-xs">

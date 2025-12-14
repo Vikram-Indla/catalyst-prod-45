@@ -96,11 +96,17 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
 
   return (
     <>
-      <Card className="h-full" style={{ borderLeft: '3px solid var(--accent-color)' }}>
-        <CardHeader className="pb-3">
+      <Card 
+        className="h-full" 
+        style={{ 
+          borderLeft: '3px solid var(--accent-color)',
+          backgroundColor: 'var(--surface-2)',
+        }}
+      >
+        <CardHeader className="pb-3" style={{ backgroundColor: 'var(--surface-3)', borderRadius: '8px 8px 0 0' }}>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Target className="h-4 w-4 text-brand-gold" />
+            <CardTitle className="text-base flex items-center gap-2" style={{ color: 'var(--text-1)' }}>
+              <Target className="h-4 w-4" style={{ color: 'var(--accent-color)' }} />
               Execution Against Outcomes
             </CardTitle>
             <TooltipProvider>
