@@ -239,7 +239,7 @@ export function MilestonesTab({ entityId, entityType, hideCategory = false }: Mi
   }
 
   return (
-    <div className="flex flex-col h-full space-y-4 bg-white">
+    <div className="flex flex-col h-full space-y-4" style={{ backgroundColor: 'var(--surface-1)' }}>
       {/* Header with Sort and Add button */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -316,9 +316,18 @@ export function MilestonesTab({ entityId, entityType, hideCategory = false }: Mi
           return (
             <div
               key={milestone.id}
-              className="border border-border rounded-xl bg-white overflow-hidden shadow-sm"
+              className="border rounded-xl overflow-hidden shadow-sm"
+              style={{ 
+                borderColor: 'var(--border-color)', 
+                backgroundColor: 'var(--surface-1)' 
+              }}
             >
-              <div className="p-4 hover:bg-muted/30 transition-colors">
+              <div 
+                className="p-4 transition-colors"
+                style={{ backgroundColor: 'var(--surface-1)' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--surface-2)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--surface-1)'}
+              >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
                     <h4 className="text-sm font-medium text-foreground">{milestone.title}</h4>
@@ -368,7 +377,14 @@ export function MilestonesTab({ entityId, entityType, hideCategory = false }: Mi
         })}
 
         {sortedMilestones.length === 0 && !showAddForm && (
-          <div className="text-center py-8 text-xs text-muted-foreground">
+          <div 
+            className="text-center py-8 text-sm rounded-lg"
+            style={{ 
+              backgroundColor: 'var(--surface-2)',
+              color: 'var(--text-2)',
+              border: '1px dashed var(--border-color)'
+            }}
+          >
             No milestones defined yet. Click "Add milestone" to create one.
           </div>
         )}
@@ -419,7 +435,13 @@ function MilestoneForm({
   hideCategory?: boolean;
 }) {
   return (
-    <div className="border border-border rounded-xl bg-white p-5 space-y-5 shadow-sm">
+    <div 
+      className="border rounded-xl p-5 space-y-5 shadow-sm"
+      style={{ 
+        borderColor: 'var(--border-color)', 
+        backgroundColor: 'var(--surface-1)' 
+      }}
+    >
       {/* Name Field */}
       <div>
         <label className="text-xs font-medium">

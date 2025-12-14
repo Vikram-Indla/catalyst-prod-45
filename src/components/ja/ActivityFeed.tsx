@@ -9,11 +9,12 @@ interface ActivityFeedProps {
   loading: boolean;
 }
 
-const typeConfig: Record<ActivityType, { icon: React.ElementType; bgClass: string; iconClass: string }> = {
-  epic: { icon: Briefcase, bgClass: "bg-purple-100", iconClass: "text-purple-700" },
-  feature: { icon: GitBranch, bgClass: "bg-amber-100", iconClass: "text-amber-700" },
-  story: { icon: BookOpen, bgClass: "bg-emerald-100", iconClass: "text-emerald-700" },
-  demand: { icon: FileText, bgClass: "bg-blue-100", iconClass: "text-blue-700" },
+// Token-based type config - using CSS variables for theme compatibility
+const typeConfig: Record<ActivityType, { icon: React.ElementType; bgStyle: React.CSSProperties; iconStyle: React.CSSProperties }> = {
+  epic: { icon: Briefcase, bgStyle: { backgroundColor: 'var(--surface-3)' }, iconStyle: { color: 'hsl(248 48% 61%)' } },
+  feature: { icon: GitBranch, bgStyle: { backgroundColor: 'var(--surface-3)' }, iconStyle: { color: 'var(--accent-color)' } },
+  story: { icon: BookOpen, bgStyle: { backgroundColor: 'var(--surface-3)' }, iconStyle: { color: 'hsl(158 68% 47%)' } },
+  demand: { icon: FileText, bgStyle: { backgroundColor: 'var(--surface-3)' }, iconStyle: { color: 'var(--text-2)' } },
 };
 
 const avatarColors = ["#C69C6D", "#5243AA", "#00875A", "#8b7355", "#FF5630"];
@@ -57,8 +58,8 @@ function FeedRow({ item }: { item: ActivityItem }) {
       }}
     >
       {/* Icon */}
-      <div className={`feed-row-icon ${config.bgClass}`}>
-        <Icon className={`h-3 w-3 ${config.iconClass}`} />
+      <div className="feed-row-icon" style={config.bgStyle}>
+        <Icon className="h-3 w-3" style={config.iconStyle} />
       </div>
 
       {/* Content */}
@@ -133,10 +134,16 @@ export function ActivityFeed({ items, loading }: ActivityFeedProps) {
 
   if (items.length === 0) {
     return (
-      <div className="empty-state">
-        <FileText className="h-8 w-8 empty-state-icon mx-auto" />
-        <p className="empty-state-title">No activity found</p>
-        <p className="empty-state-subtitle">Your activity will appear here</p>
+      <div 
+        className="flex flex-col items-center justify-center py-12 px-4 text-center rounded-lg"
+        style={{ 
+          backgroundColor: 'var(--surface-1)', 
+          border: '1px dashed var(--border-color)' 
+        }}
+      >
+        <FileText className="h-8 w-8 mx-auto mb-3" style={{ color: 'var(--text-3)' }} />
+        <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-1)' }}>No activity found</p>
+        <p className="text-xs" style={{ color: 'var(--text-2)' }}>Your activity will appear here</p>
       </div>
     );
   }
