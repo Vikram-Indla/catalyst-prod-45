@@ -24,7 +24,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+
 import {
   useResourceInventory,
   useResourceRoles,
@@ -47,7 +47,7 @@ export default function ResourceInventory() {
   const [formRoleCode, setFormRoleCode] = useState('');
   const [formRoleName, setFormRoleName] = useState('');
   
-  const [formNotes, setFormNotes] = useState('');
+  
 
   const { data: resources = [], isLoading } = useResourceInventory();
   const { data: roles = [] } = useResourceRoles();
@@ -71,7 +71,6 @@ export default function ResourceInventory() {
     setFormName('');
     setFormRoleCode('');
     setFormRoleName('');
-    setFormNotes('');
     setEditingResource(null);
   };
 
@@ -85,7 +84,6 @@ export default function ResourceInventory() {
     setFormName(resource.name);
     setFormRoleCode(resource.role_code || '');
     setFormRoleName(resource.role_name || '');
-    setFormNotes(resource.notes || '');
     setIsDialogOpen(true);
   };
 
@@ -96,7 +94,6 @@ export default function ResourceInventory() {
       name: formName.trim(),
       role_code: formRoleCode.trim() || null,
       role_name: formRoleName.trim() || null,
-      notes: formNotes.trim() || null,
     };
 
     if (editingResource) {
@@ -228,7 +225,6 @@ export default function ResourceInventory() {
                     <th className="text-left p-3 text-sm font-medium">Name</th>
                     <th className="text-left p-3 text-sm font-medium">Role Key</th>
                     <th className="text-left p-3 text-sm font-medium">Role Name</th>
-                    <th className="text-left p-3 text-sm font-medium">Notes</th>
                     <th className="text-left p-3 text-sm font-medium">Active</th>
                     <th className="text-right p-3 text-sm font-medium">Actions</th>
                   </tr>
@@ -236,13 +232,13 @@ export default function ResourceInventory() {
                 <tbody>
                   {isLoading ? (
                     <tr>
-                      <td colSpan={6} className="p-3 text-center text-muted-foreground">
+                      <td colSpan={5} className="p-3 text-center text-muted-foreground">
                         Loading...
                       </td>
                     </tr>
                   ) : filteredResources.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="p-3 text-center text-muted-foreground">
+                      <td colSpan={5} className="p-3 text-center text-muted-foreground">
                         No resources found
                       </td>
                     </tr>
@@ -261,9 +257,6 @@ export default function ResourceInventory() {
                         </td>
                         <td className="p-3 text-sm text-muted-foreground">
                           {resource.role_name || '—'}
-                        </td>
-                        <td className="p-3 text-sm text-muted-foreground max-w-[200px] truncate">
-                          {resource.notes || '—'}
                         </td>
                         <td className="p-3 text-sm">
                           <Switch
@@ -339,17 +332,6 @@ export default function ResourceInventory() {
                 </div>
               </div>
 
-
-              <div className="space-y-2">
-                <Label htmlFor="notes">Notes</Label>
-                <Textarea
-                  id="notes"
-                  value={formNotes}
-                  onChange={e => setFormNotes(e.target.value)}
-                  placeholder="Optional notes..."
-                  rows={3}
-                />
-              </div>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
