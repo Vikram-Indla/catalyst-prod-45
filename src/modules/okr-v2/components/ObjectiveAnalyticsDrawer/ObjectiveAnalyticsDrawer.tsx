@@ -6,6 +6,8 @@
 
 import { useState } from 'react';
 import { X, Shield, Link2, Lightbulb, ChevronDown, ChevronUp, AlertTriangle, ArrowRight, TrendingUp, TrendingDown, Clock, Target } from 'lucide-react';
+import { RiskBadge } from '@/components/risks/RiskBadge';
+import { RISK_COLORS } from '@/config/riskColors';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -297,31 +299,66 @@ function PerformanceTimingCard({ baseline, krStatus }: { baseline: BaselineInfo;
 // ─────────────────────────────────────────────────────────────────────────────────
 
 function RisksWithBreakdown({ risks }: { risks: AnalyticsRiskSummary }) {
-  const hasNoRisks = risks.totals.high === 0 && risks.blockedItems === 0 && risks.delayedItems === 0;
+  const hasNoRisks = 
+    risks.totals.high === 0 && 
+    risks.totals.medium === 0 && 
+    risks.totals.low === 0 && 
+    risks.blockedItems === 0 && 
+    risks.delayedItems === 0;
 
   if (hasNoRisks) {
     return (
-      <div className="p-4 bg-muted/50 rounded-lg border border-border text-center">
-        <span className="text-sm text-muted-foreground">No active risks logged</span>
+      <div className="p-4 bg-muted/50 rounded-lg border border-border">
+        <RiskBadge counts={{}} />
       </div>
     );
   }
 
-  // Build origin breakdown text
-  const originLines: string[] = [];
+  // Build origin breakdown text with color-coded dots
+  const originLines: { text: string; severity: 'critical' | 'high' | 'medium' | 'low' }[] = [];
   if (risks.breakdown.workItemLevel.high > 0) {
     const firstItem = risks.breakdown.workItemsWithHighRisk[0];
-    originLines.push(`${risks.breakdown.workItemLevel.high} high risk at Work item level${firstItem ? ` (${firstItem.name})` : ''}`);
+    originLines.push({
+      text: `${risks.breakdown.workItemLevel.high} high risk at Work item level${firstItem ? ` (${firstItem.name})` : ''}`,
+      severity: 'high'
+    });
   }
   if (risks.breakdown.krLevel.high > 0) {
-    originLines.push(`${risks.breakdown.krLevel.high} at KR level`);
+    originLines.push({
+      text: `${risks.breakdown.krLevel.high} at KR level`,
+      severity: 'high'
+    });
   }
   if (risks.breakdown.objectiveLevel.high > 0) {
-    originLines.push(`${risks.breakdown.objectiveLevel.high} at Objective level`);
+    originLines.push({
+      text: `${risks.breakdown.objectiveLevel.high} at Objective level`,
+      severity: 'high'
+    });
   }
 
   return (
     <div className="p-4 bg-card rounded-xl border border-border space-y-4">
+      {/* Risk severity badge */}
+      <div className="flex items-center justify-between">
+        <RiskBadge 
+          counts={{
+            critical: risks.totals.high > 3 ? 1 : undefined, // Example escalation logic
+            high: risks.totals.high,
+            medium: risks.totals.medium,
+            low: risks.totals.low,
+          }}
+        />
+        
+        <div className="flex gap-2 text-xs">
+          {risks.blockedItems > 0 && (
+            <span className="text-amber-600 font-medium">{risks.blockedItems} blocked</span>
+          )}
+          {risks.delayedItems > 0 && (
+            <span className="text-amber-600 font-medium">{risks.delayedItems} delayed</span>
+          )}
+        </div>
+      </div>
+
       {/* Main metrics */}
       <div className="flex gap-3">
         <MetricCard 
@@ -353,8 +390,11 @@ function RisksWithBreakdown({ risks }: { risks: AnalyticsRiskSummary }) {
           <div className="space-y-1">
             {originLines.map((line, idx) => (
               <div key={idx} className="flex items-center gap-2 text-sm text-foreground">
-                <span className="w-1.5 h-1.5 rounded-full bg-destructive" />
-                {line}
+                <span 
+                  className="w-1.5 h-1.5 rounded-full" 
+                  style={{ backgroundColor: RISK_COLORS[line.severity] }}
+                />
+                {line.text}
               </div>
             ))}
           </div>

@@ -34,18 +34,18 @@ export const ROAM_BADGE_COLORS: Record<RoamStatus, { bg: string; text: string }>
   Mitigated: { bg: 'bg-warning/10', text: 'text-warning-600' }         // Yellow (warning)
 };
 
-// Chart colors using Catalyst L9 Gold theme
-// Source: Screenshot-RiskROAMReport
+// Chart colors using Catalyst Risk Colors
+// Source: catalyst-risk-colors-final.html
 export const CHART_COLORS = {
   openVsClosed: {
     Open: '#C69C6D',      // Brand gold
     Closed: '#36B37E'     // Green
   },
   severity: {
-    Critical: '#DE350B',  // Red
-    High: '#FF8B00',      // Orange
-    Medium: '#FFAB00',    // Yellow
-    Low: '#C69C6D'        // Brand gold
+    Critical: '#922b21',  // Dark red - "Stop everything, fix immediately"
+    High: '#cb4335',      // Red - "Needs immediate attention"
+    Medium: '#c69c6d',    // Catalyst Gold - "Monitor closely, plan mitigation"
+    Low: '#5c7c5c'        // Catalyst Olive - "Manageable, track over time"
   }
 };
 
