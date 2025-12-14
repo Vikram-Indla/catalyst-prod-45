@@ -1,15 +1,30 @@
 // ═══════════════════════════════════════════════════════════════════════════════
-// OKR Hub V2 — Strategy Tree Component
-// Hierarchical tree view of Objectives → KRs → Work Items with smart filters
+// OKR Hub V2 — Strategy Tree Component (Proper Tabular View)
+// HTML table structure with aligned columns and expandable hierarchy
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { useMemo } from 'react';
 import { cn } from '@/lib/utils';
-import { TreeRow } from './TreeRow';
-import type { Theme, Objective, TreeItem, StatusCode } from '../../lib/okrTypes';
+import { ChevronDown, ChevronRight } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { format } from 'date-fns';
+import type { Theme, Objective, KeyResult, WorkItem, TreeItem } from '../../lib/okrTypes';
 import type { OKRSmartFilters } from '../OKRSmartFiltersDialog';
 import type { OKRColumn } from '../OKRColumnChooser';
-import { getObjectiveProgressBaseline, aggregateRisks, getTotalRiskCount } from '../../lib/okrMetrics';
+import { 
+  getObjectiveProgressBaseline, 
+  getKeyResultProgressBaseline,
+  getObjectiveRiskSummary,
+  getKeyResultRiskSummary,
+  getWorkItemRiskSummary,
+} from '../../lib/okrMetrics';
+
+// Shared presentational components
+import { OkrStatusPill } from '../shared/OkrStatusPill';
+import { OkrProgressCell } from '../shared/OkrProgressCell';
+import { OkrRisksCell } from '../shared/OkrRisksCell';
+import { OkrLinkedCell } from '../shared/OkrLinkedCell';
+import { OkrThemeDot } from '../shared/OkrThemeDot';
 
 interface StrategyTreeProps {
   themes: Theme[];
@@ -23,18 +38,270 @@ interface StrategyTreeProps {
   onSelect: (item: TreeItem) => void;
 }
 
-// Column key to header label and width mapping
-const COLUMN_CONFIG: Record<string, { label: string; width: string }> = {
-  objective: { label: 'OKRs', width: '1fr' },
-  theme: { label: 'Theme', width: '120px' },
-  owner: { label: 'Owner', width: '120px' },
-  status: { label: 'Status', width: '120px' },
-  progress: { label: 'Progress vs Plan', width: '160px' },
-  startDate: { label: 'Start Date', width: '100px' },
-  dueDate: { label: 'Due Date', width: '100px' },
-  risks: { label: 'Risks', width: '100px' },
-  krs: { label: 'Linked', width: '100px' },
-};
+// ─────────────────────────────────────────────────────────────────────────────────
+// HELPER: Format date
+// ─────────────────────────────────────────────────────────────────────────────────
+function formatDate(dateStr?: string | null): string {
+  if (!dateStr) return '—';
+  try {
+    return format(new Date(dateStr), 'MMM d, yyyy');
+  } catch {
+    return '—';
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────────
+// TABLE ROW COMPONENT
+// ─────────────────────────────────────────────────────────────────────────────────
+
+interface TableRowProps {
+  item: TreeItem;
+  level: number;
+  isExpanded: boolean;
+  isSelected: boolean;
+  hasChildren: boolean;
+  themeColor: string;
+  themeName: string;
+  expandedIds: string[];
+  selectedItem: TreeItem | null;
+  onToggle: (id: string) => void;
+  onSelect: (item: TreeItem) => void;
+}
+
+function TableRow({
+  item,
+  level,
+  isExpanded,
+  isSelected,
+  hasChildren,
+  themeColor,
+  themeName,
+  expandedIds,
+  selectedItem,
+  onToggle,
+  onSelect,
+}: TableRowProps) {
+  const indentPx = level * 24;
+
+  // Get progress baseline based on item type
+  const getProgressBaseline = () => {
+    if (item.type === 'objective') {
+      return getObjectiveProgressBaseline(item as Objective);
+    } else if (item.type === 'keyResult') {
+      return getKeyResultProgressBaseline(item as KeyResult);
+    }
+    return {
+      actual: item.progress ?? null,
+      expected: null,
+      variance: null,
+      trend: 'none' as const,
+    };
+  };
+
+  // Get risk summary based on item type
+  const getRiskSummary = () => {
+    if (item.type === 'objective') {
+      return getObjectiveRiskSummary(item as Objective);
+    } else if (item.type === 'keyResult') {
+      return getKeyResultRiskSummary(item as KeyResult);
+    }
+    return getWorkItemRiskSummary(item as WorkItem);
+  };
+
+  // Calculate linked counts
+  const getLinkedCounts = () => {
+    if (item.type === 'objective') {
+      const obj = item as Objective;
+      const krCount = obj.keyResults?.length || 0;
+      const workItemCount = (obj.keyResults || []).reduce(
+        (sum, kr) => sum + (kr.workItems?.length || 0), 
+        0
+      );
+      return { krCount, workItemCount };
+    } else if (item.type === 'keyResult') {
+      const kr = item as KeyResult;
+      return { krCount: 0, workItemCount: kr.workItems?.length || 0 };
+    }
+    return { krCount: 0, workItemCount: 0 };
+  };
+
+  const baseline = getProgressBaseline();
+  const riskSummary = getRiskSummary();
+  const { krCount, workItemCount } = getLinkedCounts();
+
+  // Get children for recursive rendering
+  const getChildren = (): { item: TreeItem; hasChildren: boolean }[] => {
+    if (item.type === 'objective') {
+      const obj = item as Objective;
+      return (obj.keyResults || []).map(kr => ({
+        item: kr,
+        hasChildren: (kr.workItems?.length || 0) > 0,
+      }));
+    } else if (item.type === 'keyResult') {
+      const kr = item as KeyResult;
+      return (kr.workItems || []).map(wi => ({
+        item: wi,
+        hasChildren: false,
+      }));
+    }
+    return [];
+  };
+
+  const children = getChildren();
+
+  return (
+    <>
+      <tr
+        onClick={() => onSelect(item)}
+        className={cn(
+          'group cursor-pointer transition-colors border-b border-border/40',
+          isSelected ? 'bg-brand-gold/5' : 'hover:bg-[#fcfaf8]',
+          level > 0 && 'bg-muted/20'
+        )}
+        style={{
+          borderLeft: isSelected ? `3px solid ${themeColor}` : '3px solid transparent',
+        }}
+      >
+        {/* THEME/OKR Column */}
+        <td className="py-3 px-4">
+          <div 
+            className="flex items-center gap-2 min-w-0"
+            style={{ paddingLeft: `${indentPx}px` }}
+          >
+            {/* Theme dot for objectives */}
+            {level === 0 && (
+              <OkrThemeDot 
+                color={themeColor} 
+                themeName={themeName} 
+                size="md"
+              />
+            )}
+
+            {/* Expand/Collapse Chevron */}
+            {hasChildren ? (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggle(item.id);
+                }}
+                className="flex items-center justify-center w-5 h-5 text-muted-foreground hover:text-foreground flex-shrink-0"
+              >
+                {isExpanded ? (
+                  <ChevronDown className="h-4 w-4" />
+                ) : (
+                  <ChevronRight className="h-4 w-4" />
+                )}
+              </button>
+            ) : (
+              <span className="w-5 flex-shrink-0" />
+            )}
+
+            {/* Name */}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className={cn(
+                    "text-sm truncate max-w-[280px]",
+                    level === 0 && "font-semibold text-foreground",
+                    level === 1 && "text-foreground",
+                    level === 2 && "italic text-muted-foreground"
+                  )}>
+                    {item.name}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-md">
+                  <p>{item.name}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            {/* Theme name for objectives (hidden on smaller screens) */}
+            {level === 0 && (
+              <span className="text-xs text-muted-foreground ml-1 truncate hidden lg:inline">
+                {themeName}
+              </span>
+            )}
+          </div>
+        </td>
+
+        {/* OWNER Column */}
+        <td className="py-3 px-4">
+          <span className="text-sm text-muted-foreground truncate">
+            {(item as any).ownerName || '—'}
+          </span>
+        </td>
+
+        {/* STATUS Column */}
+        <td className="py-3 px-4">
+          <OkrStatusPill status={item.status} size="sm" />
+        </td>
+
+        {/* PROGRESS VS PLAN Column */}
+        <td className="py-3 px-4">
+          {baseline.actual === null ? (
+            <span className="text-sm text-muted-foreground">—</span>
+          ) : (
+            <OkrProgressCell 
+              baseline={baseline}
+              status={item.status}
+              compact
+            />
+          )}
+        </td>
+
+        {/* START DATE Column */}
+        <td className="py-3 px-4">
+          <span className="text-sm text-muted-foreground">
+            {formatDate((item as any).startDate)}
+          </span>
+        </td>
+
+        {/* DUE DATE Column */}
+        <td className="py-3 px-4">
+          <span className="text-sm text-muted-foreground">
+            {formatDate((item as any).dueDate)}
+          </span>
+        </td>
+
+        {/* RISKS Column */}
+        <td className="py-3 px-4">
+          <OkrRisksCell summary={riskSummary} compact />
+        </td>
+
+        {/* LINKED Column */}
+        <td className="py-3 px-4 text-right">
+          <OkrLinkedCell
+            krCount={krCount}
+            workItemCount={workItemCount}
+            itemType={item.type as 'objective' | 'keyResult' | 'workItem'}
+          />
+        </td>
+      </tr>
+
+      {/* Render children if expanded */}
+      {isExpanded && children.map(({ item: childItem, hasChildren: childHasChildren }) => (
+        <TableRow
+          key={childItem.id}
+          item={childItem}
+          level={level + 1}
+          isExpanded={expandedIds.includes(childItem.id)}
+          isSelected={selectedItem?.id === childItem.id}
+          hasChildren={childHasChildren}
+          themeColor={themeColor}
+          themeName={themeName}
+          expandedIds={expandedIds}
+          selectedItem={selectedItem}
+          onToggle={onToggle}
+          onSelect={onSelect}
+        />
+      ))}
+    </>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────────
+// MAIN STRATEGY TREE COMPONENT
+// ─────────────────────────────────────────────────────────────────────────────────
 
 export function StrategyTree({
   themes,
@@ -47,20 +314,6 @@ export function StrategyTree({
   onToggle,
   onSelect,
 }: StrategyTreeProps) {
-  // Compute visible columns and grid template
-  const visibleColumns = useMemo(() => {
-    // Ensure 'objective' is always first and visible
-    const visible = columns.filter(c => c.visible);
-    // If no columns defined, use default display
-    if (visible.length === 0) {
-      return ['objective', 'status', 'progress', 'risks', 'krs'];
-    }
-    return visible.map(c => c.key);
-  }, [columns]);
-
-  const gridTemplateColumns = useMemo(() => {
-    return visibleColumns.map(key => COLUMN_CONFIG[key]?.width || '100px').join(' ');
-  }, [visibleColumns]);
   // Build flat list of objectives from themes, respecting theme filter and smart filters
   const filteredObjectives = useMemo(() => {
     // Filter themes based on selected theme IDs
@@ -92,12 +345,9 @@ export function StrategyTree({
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       objectivesWithTheme = objectivesWithTheme.filter(({ objective }) => {
-        // Match objective name
         if (objective.name.toLowerCase().includes(query)) return true;
-        // Match KR names
         return objective.keyResults?.some((kr) => {
           if (kr.name.toLowerCase().includes(query)) return true;
-          // Match work item names
           return kr.workItems?.some((wi) => wi.name.toLowerCase().includes(query));
         });
       });
@@ -162,105 +412,66 @@ export function StrategyTree({
     return objectivesWithTheme;
   }, [themes, selectedThemeIds, searchQuery, filters]);
 
-  // Build flat list of rows for rendering
-  const renderTree = () => {
-    const rows: React.ReactNode[] = [];
-
-    filteredObjectives.forEach(({ objective, themeColor, themeName }) => {
-      // Objective row (level 0)
-      rows.push(
-        <TreeRow
-          key={objective.id}
-          item={objective}
-          level={0}
-          isExpanded={expandedIds.includes(objective.id)}
-          isSelected={selectedItem?.id === objective.id}
-          hasChildren={(objective.keyResults?.length || 0) > 0}
-          onToggle={onToggle}
-          onSelect={onSelect}
-          themeColor={themeColor}
-          themeName={themeName}
-          visibleColumns={visibleColumns}
-          gridTemplateColumns={gridTemplateColumns}
-        />
-      );
-
-      // Key Result rows (if objective is expanded)
-      if (expandedIds.includes(objective.id)) {
-        objective.keyResults?.forEach((kr) => {
-          rows.push(
-            <TreeRow
-              key={kr.id}
-              item={kr}
-              level={1}
-              isExpanded={expandedIds.includes(kr.id)}
-              isSelected={selectedItem?.id === kr.id}
-              hasChildren={(kr.workItems?.length || 0) > 0}
-              onToggle={onToggle}
-              onSelect={onSelect}
-              themeColor={themeColor}
-              themeName={themeName}
-              visibleColumns={visibleColumns}
-              gridTemplateColumns={gridTemplateColumns}
-            />
-          );
-
-          // Work Item rows (if KR is expanded)
-          if (expandedIds.includes(kr.id)) {
-            kr.workItems?.forEach((wi) => {
-              rows.push(
-                <TreeRow
-                  key={wi.id}
-                  item={wi}
-                  level={2}
-                  isExpanded={false}
-                  isSelected={selectedItem?.id === wi.id}
-                  hasChildren={false}
-                  onToggle={onToggle}
-                  onSelect={onSelect}
-                  themeColor={themeColor}
-                  themeName={themeName}
-                  visibleColumns={visibleColumns}
-                  gridTemplateColumns={gridTemplateColumns}
-                />
-              );
-            });
-          }
-        });
-      }
-    });
-
-    return rows;
-  };
-
   return (
-    <div className="flex-1 flex flex-col bg-card">
-      {/* Tree Header */}
-      <div
-        className="grid items-center px-3 py-2 bg-muted/50 border-b-2 border-border text-xs font-semibold text-muted-foreground uppercase tracking-wider"
-        style={{ gridTemplateColumns: gridTemplateColumns }}
-      >
-        {visibleColumns.map((colKey, idx) => (
-          <span 
-            key={colKey} 
-            className={cn(
-              "truncate",
-              idx === visibleColumns.length - 1 && "text-right"
-            )}
-          >
-            {COLUMN_CONFIG[colKey]?.label || colKey}
-          </span>
-        ))}
-      </div>
+    <div className="flex-1 flex flex-col bg-card overflow-hidden">
+      <div className="overflow-x-auto flex-1">
+        <table className="w-full min-w-[1000px]">
+          {/* Table Header */}
+          <thead className="sticky top-0 z-10">
+            <tr className="bg-[#faf7f1] border-b-2 border-border">
+              <th className="py-3.5 px-4 text-left text-[11px] font-semibold text-secondary-bronze uppercase tracking-wider w-[320px]">
+                Theme
+              </th>
+              <th className="py-3.5 px-4 text-left text-[11px] font-semibold text-secondary-bronze uppercase tracking-wider w-[120px]">
+                Owner
+              </th>
+              <th className="py-3.5 px-4 text-left text-[11px] font-semibold text-secondary-bronze uppercase tracking-wider w-[100px]">
+                Status
+              </th>
+              <th className="py-3.5 px-4 text-left text-[11px] font-semibold text-secondary-bronze uppercase tracking-wider w-[180px]">
+                Progress vs Plan
+              </th>
+              <th className="py-3.5 px-4 text-left text-[11px] font-semibold text-secondary-bronze uppercase tracking-wider w-[110px]">
+                Start Date
+              </th>
+              <th className="py-3.5 px-4 text-left text-[11px] font-semibold text-secondary-bronze uppercase tracking-wider w-[110px]">
+                Due Date
+              </th>
+              <th className="py-3.5 px-4 text-left text-[11px] font-semibold text-secondary-bronze uppercase tracking-wider w-[100px]">
+                Risks
+              </th>
+              <th className="py-3.5 px-4 text-right text-[11px] font-semibold text-secondary-bronze uppercase tracking-wider w-[120px]">
+                Linked
+              </th>
+            </tr>
+          </thead>
 
-      {/* Tree Content */}
-      <div className="flex-1 overflow-y-auto">
-        {filteredObjectives.length === 0 ? (
+          {/* Table Body */}
+          <tbody>
+            {filteredObjectives.map(({ objective, themeColor, themeName }) => (
+              <TableRow
+                key={objective.id}
+                item={objective}
+                level={0}
+                isExpanded={expandedIds.includes(objective.id)}
+                isSelected={selectedItem?.id === objective.id}
+                hasChildren={(objective.keyResults?.length || 0) > 0}
+                themeColor={themeColor}
+                themeName={themeName}
+                expandedIds={expandedIds}
+                selectedItem={selectedItem}
+                onToggle={onToggle}
+                onSelect={onSelect}
+              />
+            ))}
+          </tbody>
+        </table>
+
+        {/* Empty State */}
+        {filteredObjectives.length === 0 && (
           <div className="flex items-center justify-center h-32 text-muted-foreground text-sm">
             No objectives found
           </div>
-        ) : (
-          renderTree()
         )}
       </div>
     </div>
