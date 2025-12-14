@@ -19,7 +19,6 @@ import {
 } from '@/components/ui/sheet';
 import { toast } from 'sonner';
 
-import { ThemeFilterBar } from './ThemeFilterBar';
 import { StrategyTree } from './StrategyTree';
 import { AnalyticsDrawerContent } from './AnalyticsDrawerContent';
 import { CreateObjectiveDialogV2 } from '../CreateObjectiveDialogV2';
@@ -186,22 +185,6 @@ export function StrategyCockpit({ snapshotId }: StrategyCockpitProps) {
         </div>
       </div>
 
-      {/* Theme Filter Bar */}
-      {isLoading ? (
-        <div className="px-6 py-3 bg-card border-b border-border">
-          <div className="flex gap-2">
-            <Skeleton className="h-8 w-24" />
-            <Skeleton className="h-8 w-32" />
-            <Skeleton className="h-8 w-36" />
-          </div>
-        </div>
-      ) : (
-        <ThemeFilterBar
-          themes={themeChips || []}
-          selectedThemeIds={selectedThemeIds}
-          onThemeToggle={handleThemeToggle}
-        />
-      )}
 
       {/* Search & Filter Bar */}
       <div className="px-6 py-3 bg-card border-b border-border">
@@ -279,6 +262,7 @@ export function StrategyCockpit({ snapshotId }: StrategyCockpitProps) {
             selectedItem={selectedItem}
             searchQuery={searchQuery}
             filters={filters}
+            columns={columns}
             onToggle={handleToggle}
             onSelect={handleSelect}
           />
