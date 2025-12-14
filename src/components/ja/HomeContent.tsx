@@ -17,24 +17,28 @@ import { formatDistanceToNow } from 'date-fns';
 const ITEMS_PER_PAGE = 10;
 
 // ============================================
-// FOCUS WIDGET COMPONENT
+// FOCUS WIDGET COMPONENT (Enhanced with dual stats)
 // ============================================
 function FocusWidget({ 
   title, 
   icon: Icon, 
-  count, 
-  subtitle, 
+  primaryCount, 
+  secondaryLabel,
+  secondaryCount,
+  subtitle,
   accent = false 
 }: { 
   title: string; 
   icon: React.ElementType; 
-  count: number; 
-  subtitle: string;
+  primaryCount: number; 
+  secondaryLabel?: string;
+  secondaryCount?: number;
+  subtitle?: string;
   accent?: boolean;
 }) {
   return (
     <div 
-      className="p-4 rounded-lg transition-colors cursor-pointer hover:bg-[var(--surface-3)]"
+      className="p-3.5 rounded-lg transition-all cursor-pointer hover:bg-[var(--surface-3)] hover:shadow-sm"
       style={{ 
         backgroundColor: 'var(--surface-2)',
         border: '1px solid var(--border-color)',
@@ -44,22 +48,41 @@ function FocusWidget({
         <div className="flex items-center gap-3">
           <div 
             className={cn(
-              "w-10 h-10 rounded-lg flex items-center justify-center",
+              "w-9 h-9 rounded-lg flex items-center justify-center",
               accent ? "bg-[var(--accent-muted)]" : "bg-[var(--surface-3)]"
             )}
           >
-            <Icon className="w-5 h-5" style={{ color: accent ? 'var(--accent-color)' : 'var(--icon-default)' }} />
+            <Icon className="w-4.5 h-4.5" style={{ color: accent ? 'var(--accent-color)' : 'var(--icon-default)' }} />
           </div>
           <div>
             <div className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>{title}</div>
-            <div className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>{subtitle}</div>
+            {subtitle && (
+              <div className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>{subtitle}</div>
+            )}
           </div>
         </div>
-        <div 
-          className="text-2xl font-semibold tabular-nums"
-          style={{ color: accent ? 'var(--accent-color)' : 'var(--text-1)' }}
-        >
-          {count}
+        <div className="flex items-center gap-3">
+          {secondaryLabel && secondaryCount !== undefined && (
+            <div className="text-right">
+              <div className="text-lg font-semibold tabular-nums" style={{ color: 'var(--text-2)' }}>
+                {secondaryCount}
+              </div>
+              <div className="text-[10px] uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>
+                {secondaryLabel}
+              </div>
+            </div>
+          )}
+          <div className="text-right">
+            <div 
+              className="text-xl font-semibold tabular-nums"
+              style={{ color: accent ? 'var(--accent-color)' : 'var(--text-1)' }}
+            >
+              {primaryCount}
+            </div>
+            <div className="text-[10px] uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>
+              Open
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -76,14 +99,15 @@ function ProjectTile({ project }: { project: Project }) {
     <div 
       className="flex-shrink-0 w-[220px] rounded-lg overflow-hidden transition-all cursor-pointer group"
       style={{ 
-        border: isHovered ? '1px solid var(--border-strong)' : '1px solid var(--border-color)',
+        border: '1px solid var(--border-color)',
         backgroundColor: isHovered ? 'var(--surface-3)' : 'var(--surface-2)',
+        boxShadow: isHovered ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Header accent bar */}
-      <div className="h-1.5" style={{ backgroundColor: project.color }} />
+      {/* Header accent bar - thinner 4px */}
+      <div className="h-1" style={{ backgroundColor: project.color }} />
       
       {/* Card content */}
       <div className="p-3.5 relative">
@@ -180,17 +204,20 @@ function ProjectTile({ project }: { project: Project }) {
 // ============================================
 // FEED ROW COMPONENT
 // ============================================
+// Grid template for consistent column widths
+const FEED_GRID_COLS = '100px 1fr 180px 120px 90px 80px';
+
 function FeedRow({ item }: { item: ActivityItem }) {
   const [isHovered, setIsHovered] = useState(false);
   const timeAgo = formatDistanceToNow(item.activityDate, { addSuffix: false });
   
   return (
     <div 
-      className="grid items-center py-2.5 px-3 rounded-md transition-colors cursor-pointer"
+      className="grid items-center py-2.5 px-3 transition-colors cursor-pointer"
       style={{ 
-        gridTemplateColumns: '80px 1fr 140px 90px 80px 32px',
+        gridTemplateColumns: FEED_GRID_COLS,
         backgroundColor: isHovered ? 'var(--surface-3)' : 'transparent',
-        borderBottom: '1px solid var(--divider)',
+        borderBottom: '1px solid var(--border-color)',
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -214,7 +241,7 @@ function FeedRow({ item }: { item: ActivityItem }) {
       </div>
 
       {/* Updated */}
-      <div className="text-sm tabular-nums" style={{ color: 'var(--text-3)' }}>
+      <div className="text-sm tabular-nums" style={{ color: 'var(--text-2)' }}>
         {timeAgo} ago
       </div>
 
@@ -234,14 +261,31 @@ function FeedRow({ item }: { item: ActivityItem }) {
         )}
       </div>
 
-      {/* Quick actions */}
-      <div className={cn("flex items-center gap-1 transition-opacity", isHovered ? "opacity-100" : "opacity-0")}>
+      {/* Quick actions - Star, Open, More */}
+      <div className={cn("flex items-center justify-end gap-0.5 transition-opacity", isHovered ? "opacity-100" : "opacity-0")}>
         <button 
-          className="w-6 h-6 rounded flex items-center justify-center hover:bg-[var(--surface-3)]"
+          className="w-6 h-6 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)]"
           style={{ color: 'var(--icon-muted)' }}
           onClick={(e) => e.stopPropagation()}
+          title="Star"
         >
           <Star className="w-3.5 h-3.5" />
+        </button>
+        <button 
+          className="w-6 h-6 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)]"
+          style={{ color: 'var(--icon-muted)' }}
+          onClick={(e) => e.stopPropagation()}
+          title="Open in new tab"
+        >
+          <ExternalLink className="w-3.5 h-3.5" />
+        </button>
+        <button 
+          className="w-6 h-6 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)]"
+          style={{ color: 'var(--icon-muted)' }}
+          onClick={(e) => e.stopPropagation()}
+          title="More actions"
+        >
+          <MoreHorizontal className="w-3.5 h-3.5" />
         </button>
       </div>
     </div>
@@ -262,12 +306,13 @@ function GroupedActivityList({ items, visibleCount, onLoadMore }: {
 
   return (
     <div className="mt-4">
-      {/* Column Headers */}
+      {/* Sticky Column Headers */}
       <div 
-        className="grid items-center py-2 px-3 text-xs font-medium uppercase tracking-wide"
+        className="grid items-center py-2.5 px-3 text-xs font-semibold uppercase tracking-wide sticky top-0 z-10"
         style={{ 
-          gridTemplateColumns: '80px 1fr 140px 90px 80px 32px',
-          color: 'var(--text-3)',
+          gridTemplateColumns: FEED_GRID_COLS,
+          color: 'var(--text-2)',
+          backgroundColor: 'var(--surface-2)',
           borderBottom: '1px solid var(--divider)',
         }}
       >
@@ -293,7 +338,7 @@ function GroupedActivityList({ items, visibleCount, onLoadMore }: {
                 "text-[11px] font-semibold uppercase tracking-wider py-2 px-3",
                 groupIndex > 0 ? 'mt-4' : 'mt-2'
               )} 
-              style={{ color: 'var(--text-3)' }}
+              style={{ color: 'var(--text-2)' }}
             >
               {group.label}
             </div>
@@ -456,19 +501,17 @@ export function HomeContent() {
                     </TabsTrigger>
                   </TabsList>
 
-                  {/* Controls */}
-                  <div className="flex items-center gap-2 ml-4 shrink-0">
+                  {/* Controls - Right aligned in tabs row */}
+                  <div className="flex items-center gap-1 ml-4 shrink-0 pb-2.5 pt-1">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          className="h-8 px-2.5 gap-1.5"
-                          style={{ color: 'var(--text-2)' }}
+                        <button 
+                          className="h-7 px-2 gap-1.5 flex items-center rounded text-sm transition-colors hover:bg-[var(--nav-hover-bg)]"
+                          style={{ color: 'var(--text-2)', background: 'transparent' }}
                         >
-                          <ArrowUpDown className="w-4 h-4" />
-                          <span className="text-sm">Sort</span>
-                        </Button>
+                          <ArrowUpDown className="w-3.5 h-3.5" style={{ color: 'currentColor' }} />
+                          <span>Sort</span>
+                        </button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent 
                         align="end"
@@ -496,15 +539,13 @@ export function HomeContent() {
                       </DropdownMenuContent>
                     </DropdownMenu>
 
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      className="h-8 px-2.5 gap-1.5"
-                      style={{ color: 'var(--text-2)' }}
+                    <button 
+                      className="h-7 px-2 gap-1.5 flex items-center rounded text-sm transition-colors hover:bg-[var(--nav-hover-bg)]"
+                      style={{ color: 'var(--text-2)', background: 'transparent' }}
                     >
-                      <Filter className="w-4 h-4" />
-                      <span className="text-sm">Filter</span>
-                    </Button>
+                      <Filter className="w-3.5 h-3.5" style={{ color: 'currentColor' }} />
+                      <span>Filter</span>
+                    </button>
                   </div>
                 </div>
 
@@ -550,22 +591,23 @@ export function HomeContent() {
             <FocusWidget 
               title="Assigned to me"
               icon={Clock}
-              count={assignedCount}
-              subtitle={`${dueSoonCount} due soon`}
+              primaryCount={assignedCount}
+              secondaryLabel="Due soon"
+              secondaryCount={dueSoonCount}
               accent
             />
             
             <FocusWidget 
               title="Recently updated"
               icon={Sparkles}
-              count={recentlyUpdatedCount}
+              primaryCount={recentlyUpdatedCount}
               subtitle="Last 7 days"
             />
             
             <FocusWidget 
               title="Starred"
               icon={Star}
-              count={starredCount}
+              primaryCount={starredCount}
               subtitle="Quick access"
             />
           </div>
