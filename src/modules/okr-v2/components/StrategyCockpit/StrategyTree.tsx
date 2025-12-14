@@ -4,9 +4,11 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { useMemo } from 'react';
+import { cn } from '@/lib/utils';
 import { TreeRow } from './TreeRow';
 import type { Theme, Objective, TreeItem, StatusCode } from '../../lib/okrTypes';
 import type { OKRSmartFilters } from '../OKRSmartFiltersDialog';
+import type { OKRColumn } from '../OKRColumnChooser';
 import { getObjectiveProgressBaseline, aggregateRisks, getTotalRiskCount } from '../../lib/okrMetrics';
 
 interface StrategyTreeProps {
@@ -16,11 +18,23 @@ interface StrategyTreeProps {
   selectedItem: TreeItem | null;
   searchQuery: string;
   filters?: OKRSmartFilters;
+  columns?: OKRColumn[];
   onToggle: (id: string) => void;
   onSelect: (item: TreeItem) => void;
 }
 
-const GRID_COLUMNS = "1fr 120px 160px 100px 100px";
+// Column key to header label and width mapping
+const COLUMN_CONFIG: Record<string, { label: string; width: string }> = {
+  objective: { label: 'OKRs', width: '1fr' },
+  theme: { label: 'Theme', width: '120px' },
+  owner: { label: 'Owner', width: '120px' },
+  status: { label: 'Status', width: '120px' },
+  progress: { label: 'Progress vs Plan', width: '160px' },
+  startDate: { label: 'Start Date', width: '100px' },
+  dueDate: { label: 'Due Date', width: '100px' },
+  risks: { label: 'Risks', width: '100px' },
+  krs: { label: 'Linked', width: '100px' },
+};
 
 export function StrategyTree({
   themes,
@@ -29,9 +43,24 @@ export function StrategyTree({
   selectedItem,
   searchQuery,
   filters = {},
+  columns = [],
   onToggle,
   onSelect,
 }: StrategyTreeProps) {
+  // Compute visible columns and grid template
+  const visibleColumns = useMemo(() => {
+    // Ensure 'objective' is always first and visible
+    const visible = columns.filter(c => c.visible);
+    // If no columns defined, use default display
+    if (visible.length === 0) {
+      return ['objective', 'status', 'progress', 'risks', 'krs'];
+    }
+    return visible.map(c => c.key);
+  }, [columns]);
+
+  const gridTemplateColumns = useMemo(() => {
+    return visibleColumns.map(key => COLUMN_CONFIG[key]?.width || '100px').join(' ');
+  }, [visibleColumns]);
   // Build flat list of objectives from themes, respecting theme filter and smart filters
   const filteredObjectives = useMemo(() => {
     // Filter themes based on selected theme IDs
@@ -151,6 +180,8 @@ export function StrategyTree({
           onSelect={onSelect}
           themeColor={themeColor}
           themeName={themeName}
+          visibleColumns={visibleColumns}
+          gridTemplateColumns={gridTemplateColumns}
         />
       );
 
@@ -169,6 +200,8 @@ export function StrategyTree({
               onSelect={onSelect}
               themeColor={themeColor}
               themeName={themeName}
+              visibleColumns={visibleColumns}
+              gridTemplateColumns={gridTemplateColumns}
             />
           );
 
@@ -187,6 +220,8 @@ export function StrategyTree({
                   onSelect={onSelect}
                   themeColor={themeColor}
                   themeName={themeName}
+                  visibleColumns={visibleColumns}
+                  gridTemplateColumns={gridTemplateColumns}
                 />
               );
             });
@@ -203,13 +238,19 @@ export function StrategyTree({
       {/* Tree Header */}
       <div
         className="grid items-center px-3 py-2 bg-muted/50 border-b-2 border-border text-xs font-semibold text-muted-foreground uppercase tracking-wider"
-        style={{ gridTemplateColumns: GRID_COLUMNS }}
+        style={{ gridTemplateColumns: gridTemplateColumns }}
       >
-        <span className="truncate">OKRs</span>
-        <span className="truncate">Status</span>
-        <span className="truncate">Progress vs Plan</span>
-        <span className="truncate">Risks</span>
-        <span className="truncate text-right">Linked</span>
+        {visibleColumns.map((colKey, idx) => (
+          <span 
+            key={colKey} 
+            className={cn(
+              "truncate",
+              idx === visibleColumns.length - 1 && "text-right"
+            )}
+          >
+            {COLUMN_CONFIG[colKey]?.label || colKey}
+          </span>
+        ))}
       </div>
 
       {/* Tree Content */}

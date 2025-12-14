@@ -16,9 +16,7 @@ import {
   getKeyResultProgressBaseline,
 } from '../../lib/okrMetrics';
 import { TrendIcon } from '../TrendIcon';
-
-// Shared grid columns constant - must match StrategyTree header
-const GRID_COLUMNS = "1fr 120px 160px 100px 100px";
+import { format } from 'date-fns';
 
 // Indentation per level (inside first column only)
 const INDENT_PX: Record<number, number> = {
@@ -37,6 +35,8 @@ interface TreeRowProps {
   onSelect: (item: TreeItem) => void;
   themeColor?: string;
   themeName?: string;
+  visibleColumns: string[];
+  gridTemplateColumns: string;
 }
 
 const TYPE_ICONS: Record<string, string> = {
@@ -155,8 +155,148 @@ export function TreeRow({
   onSelect,
   themeColor = 'hsl(var(--brand-gold))',
   themeName,
+  visibleColumns,
+  gridTemplateColumns,
 }: TreeRowProps) {
   const indentPx = INDENT_PX[level] ?? level * 24;
+
+  // Render a column cell based on column key
+  const renderColumn = (colKey: string, isLast: boolean) => {
+    switch (colKey) {
+      case 'objective':
+        return (
+          <div
+            key={colKey}
+            className="flex items-center gap-2 min-w-0 overflow-hidden"
+            style={{ paddingLeft: `${indentPx}px` }}
+          >
+            {hasChildren ? (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggle(item.id);
+                }}
+                className="flex items-center justify-center w-5 h-5 flex-shrink-0 text-muted-foreground hover:text-foreground"
+              >
+                {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+              </button>
+            ) : (
+              <span className="w-5 flex-shrink-0" />
+            )}
+
+            {/* Theme color dot for objectives */}
+            {item.type === 'objective' && (
+              <span
+                className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                style={{ backgroundColor: themeColor }}
+                title={themeName}
+              />
+            )}
+
+            {/* Type icon */}
+            <span
+              className={cn(
+                "text-sm flex-shrink-0",
+                item.type === 'workItem' && 'text-muted-foreground italic'
+              )}
+              style={{ color: item.type !== 'workItem' ? themeColor : undefined }}
+            >
+              {TYPE_ICONS[item.type] || '•'}
+            </span>
+
+            {/* Item name with tooltip for truncated text */}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span
+                    className={cn(
+                      "text-sm truncate",
+                      item.type === 'objective' && 'font-medium text-foreground',
+                      item.type === 'keyResult' && 'text-foreground',
+                      item.type === 'workItem' && 'italic text-muted-foreground'
+                    )}
+                  >
+                    {item.name}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-md">
+                  <p>{item.name}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        );
+
+      case 'theme':
+        return (
+          <div key={colKey} className="overflow-hidden whitespace-nowrap">
+            <span className="text-xs text-muted-foreground truncate">{themeName || '—'}</span>
+          </div>
+        );
+
+      case 'owner':
+        return (
+          <div key={colKey} className="overflow-hidden whitespace-nowrap">
+            <span className="text-xs text-muted-foreground truncate">
+              {(item as any).ownerName || '—'}
+            </span>
+          </div>
+        );
+
+      case 'status':
+        return (
+          <div key={colKey} className="overflow-hidden whitespace-nowrap">
+            <Badge variant="outline" className="text-xs capitalize">
+              {getStatusLabel(item.status)}
+            </Badge>
+          </div>
+        );
+
+      case 'progress':
+        return (
+          <div key={colKey} className="overflow-hidden">
+            <ProgressWithTrend item={item} />
+          </div>
+        );
+
+      case 'startDate':
+        const startDate = (item as any).startDate;
+        return (
+          <div key={colKey} className="overflow-hidden whitespace-nowrap">
+            <span className="text-xs text-muted-foreground">
+              {startDate ? format(new Date(startDate), 'MMM d, yyyy') : '—'}
+            </span>
+          </div>
+        );
+
+      case 'dueDate':
+        const dueDate = (item as any).dueDate;
+        return (
+          <div key={colKey} className="overflow-hidden whitespace-nowrap">
+            <span className="text-xs text-muted-foreground">
+              {dueDate ? format(new Date(dueDate), 'MMM d, yyyy') : '—'}
+            </span>
+          </div>
+        );
+
+      case 'risks':
+        return (
+          <div key={colKey} className="overflow-hidden whitespace-nowrap text-right">
+            <RiskChip risks={item.risks} />
+          </div>
+        );
+
+      case 'krs':
+        return (
+          <div key={colKey} className={cn("overflow-hidden whitespace-nowrap", isLast && "text-right")}>
+            <LinkedChip item={item} />
+          </div>
+        );
+
+      default:
+        return <div key={colKey} className="overflow-hidden">—</div>;
+    }
+  };
 
   return (
     <div
@@ -168,93 +308,14 @@ export function TreeRow({
           : "border-l-[3px] border-l-transparent hover:bg-muted/50"
       )}
       style={{
-        gridTemplateColumns: GRID_COLUMNS,
+        gridTemplateColumns: gridTemplateColumns,
         borderLeftColor: isSelected ? themeColor : 'transparent',
         padding: '8px 12px',
       }}
     >
-      {/* Label Column - indentation applied inside this column only */}
-      <div
-        className="flex items-center gap-2 min-w-0 overflow-hidden"
-        style={{ paddingLeft: `${indentPx}px` }}
-      >
-        {hasChildren ? (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggle(item.id);
-            }}
-            className="flex items-center justify-center w-5 h-5 flex-shrink-0 text-muted-foreground hover:text-foreground"
-          >
-            {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-          </button>
-        ) : (
-          <span className="w-5 flex-shrink-0" />
-        )}
-
-        {/* Theme color dot for objectives */}
-        {item.type === 'objective' && (
-          <span
-            className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-            style={{ backgroundColor: themeColor }}
-            title={themeName}
-          />
-        )}
-
-        {/* Type icon */}
-        <span
-          className={cn(
-            "text-sm flex-shrink-0",
-            item.type === 'workItem' && 'text-muted-foreground italic'
-          )}
-          style={{ color: item.type !== 'workItem' ? themeColor : undefined }}
-        >
-          {TYPE_ICONS[item.type] || '•'}
-        </span>
-
-        {/* Item name with tooltip for truncated text */}
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <span
-                className={cn(
-                  "text-sm truncate",
-                  item.type === 'objective' && 'font-medium text-foreground',
-                  item.type === 'keyResult' && 'text-foreground',
-                  item.type === 'workItem' && 'italic text-muted-foreground'
-                )}
-              >
-                {item.name}
-              </span>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="max-w-md">
-              <p>{item.name}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
-
-      {/* Status Column */}
-      <div className="overflow-hidden whitespace-nowrap">
-        <Badge variant="outline" className="text-xs capitalize">
-          {getStatusLabel(item.status)}
-        </Badge>
-      </div>
-
-      {/* Progress Column with Trend - right-aligned */}
-      <div className="overflow-hidden">
-        <ProgressWithTrend item={item} />
-      </div>
-
-      {/* Risks Column - right-aligned */}
-      <div className="overflow-hidden whitespace-nowrap text-right">
-        <RiskChip risks={item.risks} />
-      </div>
-
-      {/* Linked Column */}
-      <div className="overflow-hidden whitespace-nowrap text-right">
-        <LinkedChip item={item} />
-      </div>
+      {visibleColumns.map((colKey, idx) => 
+        renderColumn(colKey, idx === visibleColumns.length - 1)
+      )}
     </div>
   );
 }
