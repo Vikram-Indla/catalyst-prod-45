@@ -67,25 +67,25 @@ function FocusWidget({
             )}
           </div>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-5">
           {secondaryLabel && secondaryCount !== undefined && (
-            <div className="text-right">
-              <div className="text-lg font-semibold tabular-nums" style={{ color: 'var(--text-1)' }}>
+            <div className="text-right min-w-[52px]">
+              <div className="text-lg font-semibold tabular-nums leading-tight" style={{ color: 'var(--text-1)' }}>
                 {secondaryCount}
               </div>
-              <div className="text-[10px] uppercase tracking-wide font-medium" style={{ color: 'var(--text-2)' }}>
+              <div className="text-[10px] uppercase tracking-wider font-medium mt-0.5" style={{ color: 'var(--text-2)' }}>
                 {secondaryLabel}
               </div>
             </div>
           )}
-          <div className="text-right">
+          <div className="text-right min-w-[52px]">
             <div 
-              className="text-xl font-semibold tabular-nums"
+              className="text-xl font-semibold tabular-nums leading-tight"
               style={{ color: accent ? 'var(--accent-color)' : 'var(--text-1)' }}
             >
               {primaryCount}
             </div>
-            <div className="text-[10px] uppercase tracking-wide font-medium" style={{ color: 'var(--text-2)' }}>
+            <div className="text-[10px] uppercase tracking-wider font-medium mt-0.5" style={{ color: 'var(--text-2)' }}>
               Open
             </div>
           </div>
