@@ -920,6 +920,75 @@ export type Database = {
           },
         ]
       }
+      capacity_bookings: {
+        Row: {
+          booking_type: string
+          business_request_id: string | null
+          created_at: string
+          created_by: string | null
+          end_date: string
+          id: string
+          kickoff_date: string | null
+          priority: string | null
+          quarter: string | null
+          rank: number | null
+          resource_id: string
+          start_date: string
+          status: string | null
+          summary: string | null
+          updated_at: string
+        }
+        Insert: {
+          booking_type: string
+          business_request_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          end_date: string
+          id?: string
+          kickoff_date?: string | null
+          priority?: string | null
+          quarter?: string | null
+          rank?: number | null
+          resource_id: string
+          start_date: string
+          status?: string | null
+          summary?: string | null
+          updated_at?: string
+        }
+        Update: {
+          booking_type?: string
+          business_request_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          end_date?: string
+          id?: string
+          kickoff_date?: string | null
+          priority?: string | null
+          quarter?: string | null
+          rank?: number | null
+          resource_id?: string
+          start_date?: string
+          status?: string | null
+          summary?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "capacity_bookings_business_request_id_fkey"
+            columns: ["business_request_id"]
+            isOneToOne: false
+            referencedRelation: "business_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "capacity_bookings_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "resource_inventory"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       capacity_plans: {
         Row: {
           available_capacity: number
@@ -974,6 +1043,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      capacity_view_config: {
+        Row: {
+          created_at: string
+          group_by: string | null
+          id: string
+          resource_ids: string[] | null
+          time_span: string | null
+          updated_at: string
+          user_id: string
+          view_mode: string | null
+        }
+        Insert: {
+          created_at?: string
+          group_by?: string | null
+          id?: string
+          resource_ids?: string[] | null
+          time_span?: string | null
+          updated_at?: string
+          user_id: string
+          view_mode?: string | null
+        }
+        Update: {
+          created_at?: string
+          group_by?: string | null
+          id?: string
+          resource_ids?: string[] | null
+          time_span?: string | null
+          updated_at?: string
+          user_id?: string
+          view_mode?: string | null
+        }
+        Relationships: []
       }
       certifications: {
         Row: {
