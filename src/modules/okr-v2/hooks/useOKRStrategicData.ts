@@ -304,9 +304,9 @@ export function useOKRStrategicData(snapshotId?: string) {
           ownerName: dbKr.owner_id ? profileMap.get(dbKr.owner_id) : undefined,
         };
 
-        // Recalculate progress from actual/target
+        // Recalculate progress from actual/target (status preserved from database)
         kr.progress = computeKeyResultProgress(kr);
-        kr.status = deriveKeyResultStatus(kr);
+        // Status comes from database - not recalculated
 
         const list = krsByObjective.get(dbKr.objective_id) || [];
         list.push(kr);
@@ -338,6 +338,9 @@ export function useOKRStrategicData(snapshotId?: string) {
 
         // Objective: ownRisks = empty (no direct objective risks in current schema)
         const objOwnRisks = emptyRiskSummary();
+        
+        // Use database status if explicitly set, otherwise derive from progress/risks
+        const dbStatus = mapDbStatusToStatusCode(dbObj.status);
 
         const objective: Objective = {
           id: dbObj.id,
@@ -345,7 +348,7 @@ export function useOKRStrategicData(snapshotId?: string) {
           name: dbObj.name,
           description: dbObj.description || undefined,
           themeId: dbObj.theme_id || '',
-          status: mapDbStatusToStatusCode(dbObj.status),
+          status: dbStatus,
           progress: 0,
           ownRisks: objOwnRisks,           // Direct objective risks (empty)
           cascadedRisks: cascadedRisksFromKRs, // Sum of KR cascadedRisks
@@ -358,9 +361,8 @@ export function useOKRStrategicData(snapshotId?: string) {
           dueDate: dbObj.due_date || undefined,
         };
 
-        // Calculate progress and derive status
-        objective.progress = computeObjectiveProgress(objective);
-        objective.status = deriveObjectiveStatus(objective);
+        // Calculate progress (status is preserved from database)
+        // Status comes from database - not recalculated
 
         if (dbObj.theme_id) {
           const list = objectivesByTheme.get(dbObj.theme_id) || [];
@@ -404,9 +406,9 @@ export function useOKRStrategicData(snapshotId?: string) {
           ownerName: dbTheme.owner_id ? profileMap.get(dbTheme.owner_id) : undefined,
         };
 
-        // Calculate progress and derive status
+        // Calculate progress (status preserved from database)
         theme.progress = computeThemeProgress(theme);
-        theme.status = deriveThemeStatus(theme);
+        // Status comes from database - not recalculated
 
         return theme;
       });
