@@ -35,9 +35,12 @@ export interface OkrValue {
   valueAtRisk?: number; // Backend-provided VaR (optional)
 }
 
+export type WorkItemKind = 'epic' | 'feature' | 'story' | 'unknown';
+
 export interface WorkItem {
   id: string;
   type: 'workItem';
+  workItemType: WorkItemKind; // The actual type (epic, feature, story)
   name: string;
   krId: string;
   objectiveId: string;

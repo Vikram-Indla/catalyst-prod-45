@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════════
-// OKR Hub V1 — Objectives List View with Baseline Progress & Smart Filters
+// OKR Hub V1 — Objectives Hierarchical List View with Baseline Progress & Smart Filters
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { useState, useMemo } from 'react';
@@ -12,12 +12,13 @@ import { useOKRStrategicData } from '../hooks/useOKRStrategicData';
 import {
   getStatusLabel,
   getObjectiveProgressBaseline,
+  getKeyResultProgressBaseline,
   aggregateRisks,
   getBlockedWorkCountForObjective,
   getDelayedWorkCountForObjective,
   getLinkedWorkItemCountForObjective,
 } from '../lib/okrMetrics';
-import type { Objective, Theme } from '../lib/okrTypes';
+import type { Objective, KeyResult, WorkItem, Theme, WorkItemKind } from '../lib/okrTypes';
 import { ObjectiveDrawerV2 } from './ObjectiveDrawerV2';
 import { OKRColumnChooser, DEFAULT_OKR_COLUMNS, type OKRColumn } from './OKRColumnChooser';
 import { OKRSmartFiltersDialog, OKRSmartFilters, countActiveFilters } from './OKRSmartFiltersDialog';
@@ -42,7 +43,7 @@ export function OKRHubV1({ snapshotId }: OKRHubV1Props) {
 
   const activeFilterCount = countActiveFilters(filters);
 
-  // Flatten objectives from all themes and transform to table rows
+  // Build hierarchical rows: Objective → KRs → WorkItems
   const tableRows = useMemo(() => {
     if (!data?.themes) return [];
     
@@ -58,7 +59,11 @@ export function OKRHubV1({ snapshotId }: OKRHubV1Props) {
       const query = searchQuery.toLowerCase();
       items = items.filter(({ objective, theme }) =>
         objective.name.toLowerCase().includes(query) ||
-        theme.name.toLowerCase().includes(query)
+        theme.name.toLowerCase().includes(query) ||
+        objective.keyResults?.some(kr => 
+          kr.name.toLowerCase().includes(query) ||
+          kr.workItems?.some(wi => wi.name.toLowerCase().includes(query))
+        )
       );
     }
 
@@ -103,11 +108,62 @@ export function OKRHubV1({ snapshotId }: OKRHubV1Props) {
       );
     }
 
-    // Transform to OkrObjectiveRow format
+    // Build hierarchical rows
     return items.map(({ objective, theme }): OkrObjectiveRow => {
       const baseline = getObjectiveProgressBaseline(objective);
       const aggregatedRisks = aggregateRisks(objective.keyResults || []);
       const hasBaseline = baseline.expected !== null;
+
+      // Build KR children
+      const krChildren: OkrObjectiveRow[] = (objective.keyResults || []).map((kr): OkrObjectiveRow => {
+        const krBaseline = getKeyResultProgressBaseline(kr);
+        const krRisks = kr.risks || { high: 0, medium: 0, low: 0 };
+        
+        // Build work item children for this KR
+        const workItemChildren: OkrObjectiveRow[] = (kr.workItems || []).map((wi): OkrObjectiveRow => ({
+          id: wi.id,
+          name: wi.name,
+          themeName: theme.name,
+          themeColor: theme.color || 'hsl(var(--brand-gold))',
+          status: getStatusLabel(wi.status),
+          progressActual: wi.progress,
+          progressTrend: 'none',
+          progressVariance: null,
+          hasBaseline: false,
+          highRiskCount: wi.risks?.high || 0,
+          mediumRiskCount: wi.risks?.medium || 0,
+          blockedWorkCount: 0,
+          delayedWorkCount: 0,
+          linkedKrCount: 0,
+          linkedWorkItemCount: 0,
+          level: 2,
+          hasChildren: false,
+          itemType: 'workItem',
+          workItemType: wi.workItemType || 'unknown',
+        }));
+
+        return {
+          id: kr.id,
+          name: kr.name,
+          themeName: theme.name,
+          themeColor: theme.color || 'hsl(var(--brand-gold))',
+          status: getStatusLabel(kr.status),
+          progressActual: krBaseline.actual,
+          progressTrend: krBaseline.trend,
+          progressVariance: krBaseline.variance,
+          hasBaseline: true,
+          highRiskCount: krRisks.high || 0,
+          mediumRiskCount: krRisks.medium || 0,
+          blockedWorkCount: 0,
+          delayedWorkCount: 0,
+          linkedKrCount: 0,
+          linkedWorkItemCount: kr.workItems?.length || 0,
+          level: 1,
+          hasChildren: workItemChildren.length > 0,
+          children: workItemChildren,
+          itemType: 'keyResult',
+        };
+      });
 
       return {
         id: objective.id,
@@ -125,6 +181,10 @@ export function OKRHubV1({ snapshotId }: OKRHubV1Props) {
         delayedWorkCount: getDelayedWorkCountForObjective(objective),
         linkedKrCount: objective.keyResults?.length || 0,
         linkedWorkItemCount: getLinkedWorkItemCountForObjective(objective),
+        level: 0,
+        hasChildren: krChildren.length > 0,
+        children: krChildren,
+        itemType: 'objective',
       };
     });
   }, [data?.themes, searchQuery, filters]);

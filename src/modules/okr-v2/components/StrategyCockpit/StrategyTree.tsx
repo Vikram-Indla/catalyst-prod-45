@@ -26,6 +26,7 @@ import { OkrProgressCell } from '../shared/OkrProgressCell';
 import { OkrRisksCell } from '../shared/OkrRisksCell';
 import { OkrLinkedCell } from '../shared/OkrLinkedCell';
 import { OkrThemeDot } from '../shared/OkrThemeDot';
+import { OkrWorkItemBadge } from '../shared/OkrWorkItemBadge';
 
 interface StrategyTreeProps {
   themes: Theme[];
@@ -191,23 +192,34 @@ function TableRow({
               ) : (
                 <span className="w-5 flex-shrink-0" />
               )}
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span className={cn(
-                      "text-sm truncate max-w-[240px]",
-                      level === 0 && "font-semibold text-foreground",
-                      level === 1 && "text-foreground",
-                      level === 2 && "italic text-muted-foreground"
-                    )}>
-                      {item.name}
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="max-w-md">
-                    <p>{item.name}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              
+              {/* Work items show badge with type icon + name */}
+              {item.type === 'workItem' ? (
+                <OkrWorkItemBadge 
+                  type={(item as WorkItem).workItemType || 'unknown'}
+                  name={item.name}
+                  compact
+                />
+              ) : (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className={cn(
+                        "text-sm truncate max-w-[240px]",
+                        level === 0 && "font-semibold text-foreground",
+                        level === 1 && "text-foreground",
+                        level === 2 && "italic text-muted-foreground"
+                      )}>
+                        {item.name}
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="max-w-md bg-popover border border-border z-[400]">
+                      <p>{item.name}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
+              
               {level === 0 && (
                 <span className="text-xs text-muted-foreground ml-1 truncate hidden lg:inline">
                   {themeName}

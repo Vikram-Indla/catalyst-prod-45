@@ -12,7 +12,8 @@ import {
   WorkItem, 
   OkrRiskSummary,
   StatusCode,
-  StrategicData 
+  StrategicData,
+  WorkItemKind,
 } from '../lib/okrTypes';
 import {
   computeKeyResultProgress,
@@ -206,9 +207,17 @@ export function useOKRStrategicData(snapshotId?: string) {
           const workItemId = c.work_item_id || c.id;
           const workItemRisks = risksByWorkItem.get(workItemId) || emptyRiskSummary();
           
+          // Determine work item type from contribution
+          const rawType = (c.work_item_type || 'unknown').toLowerCase();
+          let workItemType: WorkItemKind = 'unknown';
+          if (rawType === 'epic') workItemType = 'epic';
+          else if (rawType === 'feature') workItemType = 'feature';
+          else if (rawType === 'story') workItemType = 'story';
+          
           return {
             id: workItemId,
             type: 'workItem' as const,
+            workItemType,
             name: c.work_item_name || c.summary || 'Linked Work',
             krId: dbKr.id,
             objectiveId: dbKr.objective_id,
