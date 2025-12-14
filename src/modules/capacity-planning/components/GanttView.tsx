@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { format } from 'date-fns';
-import { X, Plus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ResourceInventoryItem } from '@/hooks/useResourceInventory';
 import { CapacityBooking } from '../hooks/useCapacityBookings';
@@ -23,7 +23,8 @@ interface GanttViewProps {
 
 const COLUMN_WIDTH = 36;
 const ROW_HEIGHT = 48;
-const RESOURCE_COL_WIDTH = 200;
+const RESOURCE_COL_WIDTH_EXPANDED = 200;
+const RESOURCE_COL_WIDTH_COLLAPSED = 56;
 
 export function GanttView({
   resources,
@@ -37,6 +38,9 @@ export function GanttView({
   onCreateBooking,
   onAssignResource,
 }: GanttViewProps) {
+  const [isResourceColumnExpanded, setIsResourceColumnExpanded] = useState(true);
+  const resourceColWidth = isResourceColumnExpanded ? RESOURCE_COL_WIDTH_EXPANDED : RESOURCE_COL_WIDTH_COLLAPSED;
+  
   const weeks = timeSpan === '2weeks' ? 2 : 5;
   const dateColumns = useMemo(() => generateDateColumns(startDate, weeks), [startDate, weeks]);
   const monthGroups = useMemo(() => groupDatesByMonth(dateColumns), [dateColumns]);
@@ -95,8 +99,8 @@ export function GanttView({
           {/* Month Headers */}
           <div className="flex sticky top-0 z-20 bg-background border-b" style={{ borderColor: 'hsl(var(--border) / 0.4)' }}>
             <div 
-              className="flex-shrink-0 border-r bg-muted/30"
-              style={{ width: RESOURCE_COL_WIDTH, borderColor: 'hsl(var(--border) / 0.4)' }}
+              className="flex-shrink-0 border-r bg-muted/30 transition-all duration-200"
+              style={{ width: resourceColWidth, borderColor: 'hsl(var(--border) / 0.4)' }}
             />
             <div className="flex relative">
               {Array.from(monthGroups.entries()).map(([month, dates]) => (
@@ -117,10 +121,23 @@ export function GanttView({
           {/* Day Headers */}
           <div className="flex sticky top-[25px] z-20 bg-background border-b" style={{ borderColor: 'hsl(var(--border) / 0.4)' }}>
             <div 
-              className="flex-shrink-0 border-r bg-muted/30 flex items-center px-3"
-              style={{ width: RESOURCE_COL_WIDTH, height: 32, borderColor: 'hsl(var(--border) / 0.4)' }}
+              className="flex-shrink-0 border-r bg-muted/30 flex items-center justify-between px-2 transition-all duration-200"
+              style={{ width: resourceColWidth, height: 32, borderColor: 'hsl(var(--border) / 0.4)' }}
             >
-              <span className="text-xs font-semibold text-muted-foreground uppercase">Resource</span>
+              {isResourceColumnExpanded && (
+                <span className="text-xs font-semibold text-muted-foreground uppercase">Resource</span>
+              )}
+              <button
+                onClick={() => setIsResourceColumnExpanded(!isResourceColumnExpanded)}
+                className="p-1 rounded hover:bg-muted transition-colors"
+                title={isResourceColumnExpanded ? 'Collapse' : 'Expand'}
+              >
+                {isResourceColumnExpanded ? (
+                  <ChevronLeft className="h-4 w-4 text-muted-foreground" />
+                ) : (
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                )}
+              </button>
             </div>
             <div className="flex relative">
               {dateColumns.map((date, idx) => (
@@ -160,10 +177,10 @@ export function GanttView({
                 >
                   {/* Resource Cell */}
                   <div 
-                    className="flex-shrink-0 border-r flex items-center justify-between px-3 bg-background group-hover:bg-muted/30"
-                    style={{ width: RESOURCE_COL_WIDTH, borderColor: 'hsl(var(--border) / 0.3)' }}
+                    className="flex-shrink-0 border-r flex items-center justify-between px-2 bg-background group-hover:bg-muted/30 transition-all duration-200"
+                    style={{ width: resourceColWidth, borderColor: 'hsl(var(--border) / 0.3)' }}
                   >
-                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <div className={cn("flex items-center gap-2 min-w-0", isResourceColumnExpanded ? "flex-1" : "justify-center w-full")}>
                       <div 
                         className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-semibold text-white flex-shrink-0"
                         style={{ 
@@ -173,24 +190,29 @@ export function GanttView({
                               ? 'hsl(var(--brand-gold))' 
                               : 'hsl(var(--secondary-bronze))'
                         }}
+                        title={!isResourceColumnExpanded ? `${resource.name} (${resource.role_code || 'N/A'})` : undefined}
                       >
                         {resource.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                       </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="text-sm font-medium truncate max-w-[60px]">{resource.name}</div>
-                        <div className="text-[10px] text-muted-foreground uppercase">{resource.role_code || '—'}</div>
-                      </div>
-                      <Button
-                        variant="default"
-                        size="sm"
-                        className="h-6 px-3 text-xs bg-secondary-green hover:bg-secondary-green/90 text-white"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onAssignResource(resource.id);
-                        }}
-                      >
-                        Assign
-                      </Button>
+                      {isResourceColumnExpanded && (
+                        <>
+                          <div className="min-w-0 flex-1">
+                            <div className="text-sm font-medium truncate max-w-[60px]">{resource.name}</div>
+                            <div className="text-[10px] text-muted-foreground uppercase">{resource.role_code || '—'}</div>
+                          </div>
+                          <Button
+                            variant="default"
+                            size="sm"
+                            className="h-6 px-3 text-xs bg-secondary-green hover:bg-secondary-green/90 text-white"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onAssignResource(resource.id);
+                            }}
+                          >
+                            Assign
+                          </Button>
+                        </>
+                      )}
                     </div>
                   </div>
 
@@ -285,13 +307,13 @@ export function GanttView({
             onClick={onAddResource}
           >
             <div 
-              className="flex-shrink-0 flex items-center justify-center gap-2 text-muted-foreground group-hover:text-brand-gold"
-              style={{ width: RESOURCE_COL_WIDTH }}
+              className="flex-shrink-0 flex items-center justify-center gap-2 text-muted-foreground group-hover:text-brand-gold transition-all duration-200"
+              style={{ width: resourceColWidth }}
             >
               <div className="w-7 h-7 rounded-full border-2 border-dashed flex items-center justify-center group-hover:border-brand-gold">
                 <Plus className="h-4 w-4" />
               </div>
-              <span className="text-sm font-medium">Add Resource</span>
+              {isResourceColumnExpanded && <span className="text-sm font-medium">Add Resource</span>}
             </div>
           </div>
         </div>
