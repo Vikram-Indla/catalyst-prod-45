@@ -265,7 +265,7 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
             display: 'flex', 
             alignItems: 'center',
             justifyContent: expanded ? 'space-between' : 'center',
-            borderBottom: '1px solid #e5e7eb',
+            borderBottom: expanded ? '1px solid #e5e7eb' : 'none',
             flexShrink: 0,
           }}
         >
@@ -306,7 +306,7 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                 EN
               </div>
               <div>
-                <div style={{ fontSize: '14px', fontWeight: 700, color: '#1f2937' }}>Enterprise</div>
+                <div style={{ fontSize: '14px', fontWeight: 700, color: '#5c7c5c' }}>Enterprise</div>
                 <div style={{ fontSize: '12px', color: '#6b7280' }}>Strategy</div>
               </div>
             </div>

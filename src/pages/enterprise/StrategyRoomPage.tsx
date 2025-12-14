@@ -94,17 +94,17 @@ export default function StrategyRoomPage() {
 
   return (
     <div className="h-full flex flex-col bg-background min-w-0">
-      {/* Header - single border line */}
-      <div className="h-[72px] border-b bg-card px-4 md:px-6 flex items-center justify-between flex-shrink-0">
+      {/* Header - NO toolbar row so NO divider */}
+      <div className="h-[44px] flex items-center justify-between px-6 flex-shrink-0">
         <div className="flex items-center gap-3 min-w-0">
-          <h1 className="text-xl font-semibold text-[#1e3a5f] truncate">Strategy Room</h1>
+          <h1 className="text-xl font-semibold text-secondary-green truncate">Strategy Room</h1>
           <span className="text-sm text-muted-foreground hidden md:inline">for Snapshot</span>
           <div className="w-56 md:w-64">
             <Select value={effectiveSelectedSnapshotId} onValueChange={handleSnapshotChange}>
               <SelectTrigger className="h-9">
                 <SelectValue placeholder="Select one" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="z-[400]">
                 <div className="p-2">
                   <Input
                     placeholder="Search snapshots..."
