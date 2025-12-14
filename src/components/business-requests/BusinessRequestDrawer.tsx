@@ -33,6 +33,8 @@ import {
   Copy
 } from 'lucide-react';
 import { useBusinessRequest, useUpdateBusinessRequest, useDeleteBusinessRequest, useDuplicateBusinessRequest } from '@/hooks/useBusinessRequests';
+import { PriorityPill } from './PriorityPill';
+import { PriorityTier } from '@/hooks/usePrioritizationConfig';
 import { BusinessRequest } from '@/types/business-request';
 import { DemandDetailsViewTab } from './drawer-tabs/DemandDetailsViewTab';
 import { BusinessScoreViewTab } from './drawer-tabs/BusinessScoreViewTab';
@@ -438,10 +440,11 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
           <SheetHeader className="executive-drawer-header flex-col space-y-0 shrink-0 p-0 bg-white">
             {/* Header row with proper top spacing */}
             <div className="flex items-center justify-between px-4 md:px-5 pt-4 pb-3 border-b border-brand-gold bg-white">
-              {/* Left side: Request ID + Title */}
+              {/* Left side: Request ID + Priority Pill + Title */}
               <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                <div className="flex items-center gap-1 shrink-0">
+                <div className="flex items-center gap-2 shrink-0">
                   <span className="text-sm font-medium text-brand-gold">{request?.request_key || '...'}</span>
+                  <PriorityPill tier={((request as any)?.priority_tier as PriorityTier) || 'unscored'} />
                   <button
                     onClick={handleCopyLink}
                     className="text-muted-foreground/60 hover:text-brand-gold transition-colors p-0.5"

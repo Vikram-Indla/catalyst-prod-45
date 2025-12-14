@@ -585,7 +585,6 @@ export type Database = {
           capacity_risks: string | null
           capacity_status: string | null
           complexity: string | null
-          complexity_score: number | null
           contract_end_date: string | null
           contract_start_date: string | null
           contract_type: string | null
@@ -608,7 +607,6 @@ export type Database = {
           estimation_dependencies: string | null
           estimation_notes: string | null
           estimation_risk_rating: string | null
-          executive_urgency: number | null
           expected_resume_date: string | null
           force_ranked_at: string | null
           force_ranked_by: string | null
@@ -638,6 +636,7 @@ export type Database = {
           portfolio_comments: string | null
           portfolio_decision: string | null
           primary_vendor_name: string | null
+          priority_tier: string | null
           process_step: string | null
           project_manager_user_id: string | null
           proposed_solution: string | null
@@ -649,6 +648,9 @@ export type Database = {
           requestor: string | null
           resolution_category: string | null
           risk_rating: string | null
+          score_resource_feasibility: number | null
+          score_strategic_alignment: number | null
+          score_time_urgency: number | null
           start_date: string | null
           support_owner: string | null
           support_remarks: string | null
@@ -680,7 +682,6 @@ export type Database = {
           capacity_risks?: string | null
           capacity_status?: string | null
           complexity?: string | null
-          complexity_score?: number | null
           contract_end_date?: string | null
           contract_start_date?: string | null
           contract_type?: string | null
@@ -703,7 +704,6 @@ export type Database = {
           estimation_dependencies?: string | null
           estimation_notes?: string | null
           estimation_risk_rating?: string | null
-          executive_urgency?: number | null
           expected_resume_date?: string | null
           force_ranked_at?: string | null
           force_ranked_by?: string | null
@@ -733,6 +733,7 @@ export type Database = {
           portfolio_comments?: string | null
           portfolio_decision?: string | null
           primary_vendor_name?: string | null
+          priority_tier?: string | null
           process_step?: string | null
           project_manager_user_id?: string | null
           proposed_solution?: string | null
@@ -744,6 +745,9 @@ export type Database = {
           requestor?: string | null
           resolution_category?: string | null
           risk_rating?: string | null
+          score_resource_feasibility?: number | null
+          score_strategic_alignment?: number | null
+          score_time_urgency?: number | null
           start_date?: string | null
           support_owner?: string | null
           support_remarks?: string | null
@@ -775,7 +779,6 @@ export type Database = {
           capacity_risks?: string | null
           capacity_status?: string | null
           complexity?: string | null
-          complexity_score?: number | null
           contract_end_date?: string | null
           contract_start_date?: string | null
           contract_type?: string | null
@@ -798,7 +801,6 @@ export type Database = {
           estimation_dependencies?: string | null
           estimation_notes?: string | null
           estimation_risk_rating?: string | null
-          executive_urgency?: number | null
           expected_resume_date?: string | null
           force_ranked_at?: string | null
           force_ranked_by?: string | null
@@ -828,6 +830,7 @@ export type Database = {
           portfolio_comments?: string | null
           portfolio_decision?: string | null
           primary_vendor_name?: string | null
+          priority_tier?: string | null
           process_step?: string | null
           project_manager_user_id?: string | null
           proposed_solution?: string | null
@@ -839,6 +842,9 @@ export type Database = {
           requestor?: string | null
           resolution_category?: string | null
           risk_rating?: string | null
+          score_resource_feasibility?: number | null
+          score_strategic_alignment?: number | null
+          score_time_urgency?: number | null
           start_date?: string | null
           support_owner?: string | null
           support_remarks?: string | null
@@ -7196,6 +7202,66 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      prioritization_config: {
+        Row: {
+          created_at: string | null
+          id: string
+          threshold_high_max: number
+          threshold_high_min: number
+          threshold_low_max: number
+          threshold_low_min: number
+          threshold_medium_max: number
+          threshold_medium_min: number
+          threshold_rejected_max: number
+          threshold_rejected_min: number
+          updated_at: string | null
+          updated_by: string | null
+          version: number
+          weight_business_impact: number
+          weight_resource_feasibility: number
+          weight_strategic_alignment: number
+          weight_time_urgency: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          threshold_high_max?: number
+          threshold_high_min?: number
+          threshold_low_max?: number
+          threshold_low_min?: number
+          threshold_medium_max?: number
+          threshold_medium_min?: number
+          threshold_rejected_max?: number
+          threshold_rejected_min?: number
+          updated_at?: string | null
+          updated_by?: string | null
+          version?: number
+          weight_business_impact?: number
+          weight_resource_feasibility?: number
+          weight_strategic_alignment?: number
+          weight_time_urgency?: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          threshold_high_max?: number
+          threshold_high_min?: number
+          threshold_low_max?: number
+          threshold_low_min?: number
+          threshold_medium_max?: number
+          threshold_medium_min?: number
+          threshold_rejected_max?: number
+          threshold_rejected_min?: number
+          updated_at?: string | null
+          updated_by?: string | null
+          version?: number
+          weight_business_impact?: number
+          weight_resource_feasibility?: number
+          weight_strategic_alignment?: number
+          weight_time_urgency?: number
+        }
+        Relationships: []
       }
       process_flows: {
         Row: {
