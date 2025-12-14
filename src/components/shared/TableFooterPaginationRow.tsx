@@ -27,10 +27,10 @@ export function TableFooterPaginationRow({
   if (totalItems === 0) return null;
 
   return (
-    <TableRow className="border-t border-border hover:bg-transparent">
+    <TableRow className="hover:bg-transparent">
       <TableCell colSpan={columnsCount} className="py-4 px-4">
         <div className="flex items-center justify-between gap-4 flex-wrap min-w-0">
-          <p className="text-sm text-muted-foreground whitespace-nowrap">
+          <p className="text-sm whitespace-nowrap text-[var(--text-3)]">
             Showing {startIndex + 1}-{endIndex} of {totalItems} {itemLabel}
           </p>
           
@@ -40,10 +40,11 @@ export function TableFooterPaginationRow({
               onClick={() => onPageChange(Math.max(1, currentPage - 1))}
               disabled={currentPage === 1}
               className={cn(
-                "flex items-center gap-1 px-3 py-1.5 text-sm border border-border rounded-md transition-colors whitespace-nowrap",
+                "flex items-center gap-1 px-3 py-1.5 text-sm rounded-md transition-colors whitespace-nowrap",
+                "border border-[var(--border-color)]",
                 currentPage === 1 
-                  ? "text-muted-foreground/50 cursor-not-allowed" 
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  ? "text-[var(--text-3)] opacity-50 cursor-not-allowed" 
+                  : "text-[var(--text-2)] hover:bg-[var(--surface-3)] hover:text-[var(--text-1)]"
               )}
             >
               <ChevronLeft className="h-4 w-4" />
@@ -59,7 +60,7 @@ export function TableFooterPaginationRow({
                   "w-8 h-8 text-sm rounded-md transition-colors flex-shrink-0",
                   currentPage === pageNum 
                     ? "bg-brand-gold text-white font-medium" 
-                    : "text-muted-foreground hover:bg-muted border border-border"
+                    : "text-[var(--text-2)] hover:bg-[var(--surface-3)] border border-[var(--border-color)]"
                 )}
               >
                 {pageNum}
@@ -71,10 +72,11 @@ export function TableFooterPaginationRow({
               onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
               disabled={currentPage >= totalPages}
               className={cn(
-                "flex items-center gap-1 px-3 py-1.5 text-sm border border-border rounded-md transition-colors whitespace-nowrap",
+                "flex items-center gap-1 px-3 py-1.5 text-sm rounded-md transition-colors whitespace-nowrap",
+                "border border-[var(--border-color)]",
                 currentPage >= totalPages 
-                  ? "text-muted-foreground/50 cursor-not-allowed" 
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  ? "text-[var(--text-3)] opacity-50 cursor-not-allowed" 
+                  : "text-[var(--text-2)] hover:bg-[var(--surface-3)] hover:text-[var(--text-1)]"
               )}
             >
               Next
