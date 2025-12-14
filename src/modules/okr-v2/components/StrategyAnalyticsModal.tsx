@@ -1,12 +1,15 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // OKR Hub V2 — Strategy Analytics Modal
-// Real data-driven executive analytics dashboard
+// Real data-driven executive analytics dashboard with drill-down capabilities
 // ═══════════════════════════════════════════════════════════════════════════════
 
-import { X, TrendingUp, TrendingDown, Minus, AlertTriangle, Clock, Link, Download, BarChart3 } from 'lucide-react';
+import { useState, useCallback } from 'react';
+import { X, TrendingUp, TrendingDown, Minus, AlertTriangle, Clock, Link, Download, BarChart3, Target, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import type { 
   PerformanceMetrics, 
   ThemeAnalyticsRow, 
@@ -15,6 +18,7 @@ import type {
   OkrAnalyticsResult,
   TrendDirection,
   FocusSeverity,
+  DrillDownItem,
 } from '../lib/okrAnalytics';
 
 // ─────────────────────────────────────────────────────────────────────────────────
@@ -75,6 +79,141 @@ const KPICard = ({ title, children, wide = false }: { title: string; children: R
     {children}
   </div>
 );
+
+// ─────────────────────────────────────────────────────────────────────────────────
+// DRILL-DOWN DIALOG
+// ─────────────────────────────────────────────────────────────────────────────────
+
+interface DrillDownDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  items: DrillDownItem[];
+}
+
+const DrillDownDialog = ({ isOpen, onClose, title, items }: DrillDownDialogProps) => {
+  const getTypeIcon = (type: DrillDownItem['type']) => {
+    switch (type) {
+      case 'objective': return <Target className="h-4 w-4 text-secondary-green" />;
+      case 'keyResult': return <BarChart3 className="h-4 w-4 text-brand-gold" />;
+      case 'workItem': return <div className="w-4 h-4 rounded bg-secondary-bronze/20 flex items-center justify-center text-[10px] font-bold text-secondary-bronze">W</div>;
+      default: return null;
+    }
+  };
+
+  const getStatusColor = (status?: string) => {
+    switch (status) {
+      case 'completed': return 'bg-secondary-green';
+      case 'on-track': return 'bg-secondary-green';
+      case 'in-progress': return 'bg-brand-gold';
+      case 'at-risk': return 'bg-[#b8860b]';
+      case 'off-track': return 'bg-[#b85c38]';
+      case 'blocked': return 'bg-[#b85c38]';
+      default: return 'bg-muted-foreground';
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-[600px] p-0">
+        <DialogHeader className="px-6 py-4 border-b border-border">
+          <DialogTitle className="text-lg font-semibold">{title}</DialogTitle>
+        </DialogHeader>
+        <ScrollArea className="max-h-[400px]">
+          {items.length === 0 ? (
+            <div className="p-6 text-center text-muted-foreground">
+              No items found
+            </div>
+          ) : (
+            <div className="divide-y divide-border">
+              {items.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-center gap-3 px-6 py-3 hover:bg-muted/30 transition-colors cursor-pointer"
+                >
+                  {getTypeIcon(item.type)}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-foreground truncate">
+                        {item.name}
+                      </span>
+                      {item.progress !== undefined && (
+                        <span className="text-xs text-muted-foreground">
+                          {item.progress}%
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      {item.themeName && <span>{item.themeName}</span>}
+                      {item.parentName && (
+                        <>
+                          <ChevronRight className="h-3 w-3" />
+                          <span className="truncate">{item.parentName}</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                  {item.status && (
+                    <span className={cn("w-2 h-2 rounded-full", getStatusColor(item.status))} />
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </ScrollArea>
+        <div className="px-6 py-3 border-t border-border flex justify-end">
+          <Button variant="outline" size="sm" onClick={onClose}>
+            Close
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────────────────────────
+// CLICKABLE METRIC ROW
+// ─────────────────────────────────────────────────────────────────────────────────
+
+interface ClickableMetricRowProps {
+  label: string;
+  value: string | number;
+  highlight?: boolean;
+  accentColor?: string;
+  onClick?: () => void;
+  disabled?: boolean;
+}
+
+const ClickableMetricRow = ({ label, value, highlight, accentColor, onClick, disabled }: ClickableMetricRowProps) => {
+  const isClickable = onClick && !disabled && typeof value === 'number' && value > 0;
+  
+  return (
+    <div
+      className={cn(
+        "flex justify-between items-center py-0.5",
+        isClickable && "cursor-pointer hover:bg-muted/30 -mx-2 px-2 rounded transition-colors"
+      )}
+      onClick={isClickable ? onClick : undefined}
+    >
+      <span className={cn(
+        "text-xs text-muted-foreground",
+        isClickable && "hover:text-foreground"
+      )}>
+        {label}
+      </span>
+      <span
+        className={cn(
+          "text-sm font-semibold",
+          highlight ? "" : "text-foreground",
+          isClickable && "underline decoration-dotted underline-offset-2"
+        )}
+        style={highlight && accentColor ? { color: accentColor } : {}}
+      >
+        {value}
+      </span>
+    </div>
+  );
+};
 
 // ─────────────────────────────────────────────────────────────────────────────────
 // SECTION A: STRATEGY PERFORMANCE OVERVIEW
@@ -272,13 +411,18 @@ const ThemeLevelSnapshot = ({ themes }: { themes: ThemeAnalyticsRow[] }) => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────────
-// SECTION C: RISKS & BLOCKERS SUMMARY
+// SECTION C: RISKS & BLOCKERS SUMMARY (with clickable items)
 // ─────────────────────────────────────────────────────────────────────────────────
 
 interface RiskCardProps {
   icon: React.ReactNode;
   title: string;
-  items: Array<{ label: string; value: string | number; highlight?: boolean }>;
+  items: Array<{
+    label: string;
+    value: string | number;
+    highlight?: boolean;
+    onClick?: () => void;
+  }>;
   accentColor: string;
 }
 
@@ -293,21 +437,25 @@ const RiskCard = ({ icon, title, items, accentColor }: RiskCardProps) => (
     </div>
     <div className="flex flex-col gap-2.5">
       {items.map((item, i) => (
-        <div key={i} className="flex justify-between items-center">
-          <span className="text-xs text-muted-foreground">{item.label}</span>
-          <span className={cn(
-            "text-sm font-semibold",
-            item.highlight ? "" : "text-foreground"
-          )} style={item.highlight ? { color: accentColor } : {}}>
-            {item.value}
-          </span>
-        </div>
+        <ClickableMetricRow
+          key={i}
+          label={item.label}
+          value={item.value}
+          highlight={item.highlight}
+          accentColor={accentColor}
+          onClick={item.onClick}
+        />
       ))}
     </div>
   </div>
 );
 
-const RisksBlockersSummary = ({ riskMetrics }: { riskMetrics: RiskMetrics }) => {
+interface RisksBlockersSummaryProps {
+  riskMetrics: RiskMetrics;
+  onDrillDown: (title: string, items: DrillDownItem[]) => void;
+}
+
+const RisksBlockersSummary = ({ riskMetrics, onDrillDown }: RisksBlockersSummaryProps) => {
   return (
     <div className="mb-8">
       <SectionTitle>Risks & Blockers Summary</SectionTitle>
@@ -318,9 +466,23 @@ const RisksBlockersSummary = ({ riskMetrics }: { riskMetrics: RiskMetrics }) => 
           title="High-Risk Items"
           accentColor="#b85c38"
           items={[
-            { label: 'Objectives with high risks', value: riskMetrics.highRiskObjectives, highlight: riskMetrics.highRiskObjectives > 0 },
-            { label: 'KRs with high risks', value: riskMetrics.highRiskKRs, highlight: riskMetrics.highRiskKRs > 0 },
-            { label: 'Work items with high risks', value: riskMetrics.highRiskWork },
+            {
+              label: 'Objectives with high risks',
+              value: riskMetrics.highRiskObjectives,
+              highlight: riskMetrics.highRiskObjectives > 0,
+              onClick: () => onDrillDown('Objectives with High Risks', riskMetrics.highRiskObjectivesList),
+            },
+            {
+              label: 'KRs with high risks',
+              value: riskMetrics.highRiskKRs,
+              highlight: riskMetrics.highRiskKRs > 0,
+              onClick: () => onDrillDown('Key Results with High Risks', riskMetrics.highRiskKRsList),
+            },
+            {
+              label: 'Work items with high risks',
+              value: riskMetrics.highRiskWork,
+              onClick: () => onDrillDown('Work Items with High Risks', riskMetrics.highRiskWorkList),
+            },
           ]}
         />
 
@@ -329,9 +491,22 @@ const RisksBlockersSummary = ({ riskMetrics }: { riskMetrics: RiskMetrics }) => 
           title="Schedule Slippage"
           accentColor="#b8860b"
           items={[
-            { label: 'Delayed work items', value: riskMetrics.delayedWork, highlight: riskMetrics.delayedWork > 0 },
-            { label: 'Average days late', value: `${riskMetrics.avgDaysLate} days`, highlight: riskMetrics.avgDaysLate > 7 },
-            { label: 'Objectives behind baseline', value: riskMetrics.objectivesBehind },
+            {
+              label: 'Delayed work items',
+              value: riskMetrics.delayedWork,
+              highlight: riskMetrics.delayedWork > 0,
+              onClick: () => onDrillDown('Delayed Work Items', riskMetrics.delayedWorkList),
+            },
+            {
+              label: 'Average days late',
+              value: `${riskMetrics.avgDaysLate} days`,
+              highlight: riskMetrics.avgDaysLate > 7,
+            },
+            {
+              label: 'Objectives behind baseline',
+              value: riskMetrics.objectivesBehind,
+              onClick: () => onDrillDown('Objectives Behind Baseline', riskMetrics.objectivesBehindList),
+            },
           ]}
         />
 
@@ -340,9 +515,22 @@ const RisksBlockersSummary = ({ riskMetrics }: { riskMetrics: RiskMetrics }) => 
           title="Coverage & Dependencies"
           accentColor="#8b7355"
           items={[
-            { label: 'KRs with no delivery work', value: riskMetrics.krsNoWork, highlight: riskMetrics.krsNoWork > 0 },
-            { label: 'Blocked work items', value: riskMetrics.blockedWork, highlight: riskMetrics.blockedWork > 0 },
-            { label: 'Themes with critical deps', value: riskMetrics.criticalDeps },
+            {
+              label: 'KRs with no delivery work',
+              value: riskMetrics.krsNoWork,
+              highlight: riskMetrics.krsNoWork > 0,
+              onClick: () => onDrillDown('KRs with No Delivery Work', riskMetrics.krsNoWorkList),
+            },
+            {
+              label: 'Blocked work items',
+              value: riskMetrics.blockedWork,
+              highlight: riskMetrics.blockedWork > 0,
+              onClick: () => onDrillDown('Blocked Work Items', riskMetrics.blockedWorkList),
+            },
+            {
+              label: 'Themes with critical deps',
+              value: riskMetrics.criticalDeps,
+            },
           ]}
         />
       </div>
@@ -410,6 +598,89 @@ const TopFocusAreas = ({ focusAreas }: { focusAreas: FocusArea[] }) => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────────
+// EXPORT UTILITIES
+// ─────────────────────────────────────────────────────────────────────────────────
+
+function generateExportSummary(analytics: OkrAnalyticsResult, filterLabel: string): string {
+  const { performance, themes, risks, focusAreas } = analytics;
+  const date = new Date().toLocaleDateString('en-US', { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  });
+
+  let content = `STRATEGY ANALYTICS SUMMARY\n`;
+  content += `Generated: ${date}\n`;
+  content += `Filter: ${filterLabel}\n`;
+  content += `${'═'.repeat(60)}\n\n`;
+
+  // Performance Overview
+  content += `STRATEGY PERFORMANCE OVERVIEW\n`;
+  content += `${'-'.repeat(40)}\n`;
+  content += `Overall Progress: ${performance.actualProgress}% (Expected: ${performance.expectedProgress ?? 'N/A'}%)\n`;
+  content += `Trend: ${performance.progressDelta}\n\n`;
+  content += `Objective Health:\n`;
+  content += `  • Ahead of plan: ${performance.objectivesAhead}\n`;
+  content += `  • On plan: ${performance.objectivesOnPlan}\n`;
+  content += `  • Behind: ${performance.objectivesBehind}\n`;
+  content += `  • No baseline: ${performance.objectivesNoBaseline}\n\n`;
+  content += `Coverage Gaps:\n`;
+  content += `  • Objectives with 0 KRs: ${performance.coverageGaps.objectivesNoKRs}\n`;
+  content += `  • KRs with no work items: ${performance.coverageGaps.krsNoWork}\n`;
+  content += `  • Orphan work items: ${performance.coverageGaps.orphanWork}\n\n`;
+
+  // Theme Snapshot
+  content += `THEME-LEVEL SNAPSHOT\n`;
+  content += `${'-'.repeat(40)}\n`;
+  themes.forEach(theme => {
+    content += `${theme.name}\n`;
+    content += `  Progress: ${theme.progress}% | Baseline: ${theme.baseline ?? 'N/A'}%\n`;
+    content += `  High Risks: ${theme.highRisks} | KRs: ${theme.krCount} | Work: ${theme.workCount}\n\n`;
+  });
+
+  // Risks Summary
+  content += `RISKS & BLOCKERS SUMMARY\n`;
+  content += `${'-'.repeat(40)}\n`;
+  content += `High-Risk Items:\n`;
+  content += `  • Objectives with high risks: ${risks.highRiskObjectives}\n`;
+  content += `  • KRs with high risks: ${risks.highRiskKRs}\n`;
+  content += `  • Work items with high risks: ${risks.highRiskWork}\n\n`;
+  content += `Schedule Slippage:\n`;
+  content += `  • Delayed work items: ${risks.delayedWork}\n`;
+  content += `  • Average days late: ${risks.avgDaysLate}\n`;
+  content += `  • Objectives behind baseline: ${risks.objectivesBehind}\n\n`;
+  content += `Coverage & Dependencies:\n`;
+  content += `  • KRs with no delivery work: ${risks.krsNoWork}\n`;
+  content += `  • Blocked work items: ${risks.blockedWork}\n`;
+  content += `  • Themes with critical deps: ${risks.criticalDeps}\n\n`;
+
+  // Focus Areas
+  content += `TOP FOCUS AREAS\n`;
+  content += `${'-'.repeat(40)}\n`;
+  if (focusAreas.length === 0) {
+    content += `No critical focus areas detected.\n`;
+  } else {
+    focusAreas.forEach((area, i) => {
+      content += `${i + 1}. [${area.severity.toUpperCase()}] ${area.text}\n`;
+    });
+  }
+
+  return content;
+}
+
+function downloadTextFile(content: string, filename: string) {
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────────
 // MAIN ANALYTICS MODAL
 // ─────────────────────────────────────────────────────────────────────────────────
 
@@ -432,92 +703,122 @@ export function StrategyAnalyticsModal({
   themeCount,
   totalThemeCount,
 }: StrategyAnalyticsModalProps) {
+  const [drillDownOpen, setDrillDownOpen] = useState(false);
+  const [drillDownTitle, setDrillDownTitle] = useState('');
+  const [drillDownItems, setDrillDownItems] = useState<DrillDownItem[]>([]);
+
+  const handleDrillDown = useCallback((title: string, items: DrillDownItem[]) => {
+    setDrillDownTitle(title);
+    setDrillDownItems(items);
+    setDrillDownOpen(true);
+  }, []);
+
+  const handleExport = useCallback(() => {
+    if (!analytics) return;
+    const content = generateExportSummary(analytics, filterLabel);
+    const timestamp = new Date().toISOString().split('T')[0];
+    downloadTextFile(content, `strategy-analytics-${timestamp}.txt`);
+  }, [analytics, filterLabel]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50">
-      {/* Modal Container */}
-      <div className="w-[95%] max-w-[1100px] max-h-[92vh] bg-[#faf7f1] rounded-2xl shadow-2xl flex flex-col overflow-hidden">
-        
-        {/* Header */}
-        <div className="flex justify-between items-start px-7 py-6 bg-background border-b border-border">
-          <div>
-            <h2 className="text-xl font-semibold text-foreground tracking-tight mb-1">
-              Strategy Analytics Overview
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              Based on all active themes in current strategy
-            </p>
-          </div>
+    <>
+      <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50">
+        {/* Modal Container */}
+        <div className="w-[95%] max-w-[1100px] max-h-[92vh] bg-[#faf7f1] rounded-2xl shadow-2xl flex flex-col overflow-hidden">
           
-          <div className="flex items-center gap-4">
-            {/* Filter Chip */}
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-[#faf7f1] rounded-full border border-border text-xs text-muted-foreground">
-              <BarChart3 className="h-3.5 w-3.5" />
-              <span>{filterLabel}</span>
-              {themeCount !== undefined && totalThemeCount !== undefined && themeCount !== totalThemeCount && (
-                <span className="px-1.5 py-0.5 bg-brand-gold rounded-full text-[10px] font-semibold text-white">
-                  {themeCount}/{totalThemeCount}
-                </span>
-              )}
+          {/* Header */}
+          <div className="flex justify-between items-start px-7 py-6 bg-background border-b border-border">
+            <div>
+              <h2 className="text-xl font-semibold text-foreground tracking-tight mb-1">
+                Strategy Analytics Overview
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                Based on all active themes in current strategy
+              </p>
             </div>
             
-            <button
-              onClick={onClose}
-              className="flex items-center justify-center w-9 h-9 rounded-lg hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors"
-              aria-label="Close modal"
-            >
-              <X className="h-5 w-5" />
-            </button>
+            <div className="flex items-center gap-4">
+              {/* Filter Chip */}
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-[#faf7f1] rounded-full border border-border text-xs text-muted-foreground">
+                <BarChart3 className="h-3.5 w-3.5" />
+                <span>{filterLabel}</span>
+                {themeCount !== undefined && totalThemeCount !== undefined && themeCount !== totalThemeCount && (
+                  <span className="px-1.5 py-0.5 bg-brand-gold rounded-full text-[10px] font-semibold text-white">
+                    {themeCount}/{totalThemeCount}
+                  </span>
+                )}
+              </div>
+              
+              <button
+                onClick={onClose}
+                className="flex items-center justify-center w-9 h-9 rounded-lg hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Close modal"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
           </div>
-        </div>
 
-        {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-7">
-          {isLoading ? (
-            <div className="space-y-8">
-              <div className="grid grid-cols-3 gap-4">
-                {[1, 2, 3].map(i => <Skeleton key={i} className="h-32 rounded-xl" />)}
+          {/* Scrollable Content */}
+          <div className="flex-1 overflow-y-auto p-7">
+            {isLoading ? (
+              <div className="space-y-8">
+                <div className="grid grid-cols-3 gap-4">
+                  {[1, 2, 3].map(i => <Skeleton key={i} className="h-32 rounded-xl" />)}
+                </div>
+                <Skeleton className="h-48 rounded-xl" />
+                <div className="grid grid-cols-3 gap-4">
+                  {[1, 2, 3].map(i => <Skeleton key={i} className="h-32 rounded-xl" />)}
+                </div>
               </div>
-              <Skeleton className="h-48 rounded-xl" />
-              <div className="grid grid-cols-3 gap-4">
-                {[1, 2, 3].map(i => <Skeleton key={i} className="h-32 rounded-xl" />)}
+            ) : analytics ? (
+              <>
+                <StrategyPerformanceOverview metrics={analytics.performance} />
+                <ThemeLevelSnapshot themes={analytics.themes} />
+                <RisksBlockersSummary riskMetrics={analytics.risks} onDrillDown={handleDrillDown} />
+                <TopFocusAreas focusAreas={analytics.focusAreas} />
+              </>
+            ) : (
+              <div className="flex items-center justify-center h-64 text-muted-foreground">
+                No analytics data available. Add objectives and key results to see insights.
               </div>
-            </div>
-          ) : analytics ? (
-            <>
-              <StrategyPerformanceOverview metrics={analytics.performance} />
-              <ThemeLevelSnapshot themes={analytics.themes} />
-              <RisksBlockersSummary riskMetrics={analytics.risks} />
-              <TopFocusAreas focusAreas={analytics.focusAreas} />
-            </>
-          ) : (
-            <div className="flex items-center justify-center h-64 text-muted-foreground">
-              No analytics data available. Add objectives and key results to see insights.
-            </div>
-          )}
-        </div>
+            )}
+          </div>
 
-        {/* Footer */}
-        <div className="flex justify-between items-center px-7 py-4 bg-background border-t border-border">
-          <p className="text-xs text-muted-foreground">
-            Analytics are read-only; metrics update automatically as OKRs change.
-          </p>
-          
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" className="text-brand-gold hover:text-brand-gold-hover hover:bg-brand-gold/10">
-              View full analytics page →
-            </Button>
-            <Button variant="outline" size="sm" className="gap-1.5">
-              <Download className="h-4 w-4" />
-              Export summary
-            </Button>
-            <Button size="sm" onClick={onClose} className="bg-brand-gold hover:bg-brand-gold-hover text-white">
-              Close
-            </Button>
+          {/* Footer */}
+          <div className="flex justify-between items-center px-7 py-4 bg-background border-t border-border">
+            <p className="text-xs text-muted-foreground">
+              Analytics are read-only; metrics update automatically as OKRs change.
+            </p>
+            
+            <div className="flex items-center gap-3">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="gap-1.5"
+                onClick={handleExport}
+                disabled={!analytics}
+              >
+                <Download className="h-4 w-4" />
+                Export summary
+              </Button>
+              <Button size="sm" onClick={onClose} className="bg-brand-gold hover:bg-brand-gold-hover text-white">
+                Close
+              </Button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Drill-down Dialog */}
+      <DrillDownDialog
+        isOpen={drillDownOpen}
+        onClose={() => setDrillDownOpen(false)}
+        title={drillDownTitle}
+        items={drillDownItems}
+      />
+    </>
   );
 }

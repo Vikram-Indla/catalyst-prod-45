@@ -69,6 +69,17 @@ export interface ThemeAnalyticsRow {
   isBehind: boolean;
 }
 
+// Drill-down item structure for clickable metrics
+export interface DrillDownItem {
+  id: string;
+  name: string;
+  type: 'objective' | 'keyResult' | 'workItem' | 'theme';
+  status?: StatusCode;
+  progress?: number;
+  themeName?: string;
+  parentName?: string; // For KRs: objective name; For work items: KR name
+}
+
 export interface RiskMetrics {
   highRiskObjectives: number;
   highRiskKRs: number;
@@ -79,6 +90,14 @@ export interface RiskMetrics {
   krsNoWork: number;
   blockedWork: number;
   criticalDeps: number;
+  // Drill-down lists
+  highRiskObjectivesList: DrillDownItem[];
+  highRiskKRsList: DrillDownItem[];
+  highRiskWorkList: DrillDownItem[];
+  delayedWorkList: DrillDownItem[];
+  objectivesBehindList: DrillDownItem[];
+  krsNoWorkList: DrillDownItem[];
+  blockedWorkList: DrillDownItem[];
 }
 
 export interface FocusArea {
@@ -354,42 +373,146 @@ export function computeOkrAnalytics(input: OkrAnalyticsInput): OkrAnalyticsResul
   });
 
   // ─────────────────────────────────────────────────────────────────────────────
-  // RISK METRICS
+  // RISK METRICS WITH DRILL-DOWN LISTS
   // ─────────────────────────────────────────────────────────────────────────────
 
-  const highRiskObjectives = allObjectives.filter(isObjectiveHighRisk).length;
-  const highRiskKRs = allKRs.filter(isKRHighRisk).length;
-  const highRiskWork = allWorkItems.filter(isWorkItemHighRisk).length;
+  // Build theme name lookup
+  const themeNameMap = new Map(themes.map(t => [t.id, t.name]));
+  
+  // Helper to find objective for a KR/Work item
+  const findObjectiveForKR = (krId: string): Objective | undefined => {
+    return allObjectives.find(o => o.keyResults?.some(kr => kr.id === krId));
+  };
+
+  // High risk objectives with details
+  const highRiskObjectivesFiltered = allObjectives.filter(isObjectiveHighRisk);
+  const highRiskObjectivesList: DrillDownItem[] = highRiskObjectivesFiltered.map(obj => ({
+    id: obj.id,
+    name: obj.name,
+    type: 'objective' as const,
+    status: obj.status,
+    progress: obj.progress,
+    themeName: themeNameMap.get(obj.themeId) || 'Unknown Theme',
+  }));
+
+  // High risk KRs with details
+  const highRiskKRsFiltered = allKRs.filter(isKRHighRisk);
+  const highRiskKRsList: DrillDownItem[] = highRiskKRsFiltered.map(kr => {
+    const parentObj = findObjectiveForKR(kr.id);
+    return {
+      id: kr.id,
+      name: kr.name,
+      type: 'keyResult' as const,
+      status: kr.status,
+      progress: kr.progress,
+      themeName: themeNameMap.get(kr.themeId) || 'Unknown Theme',
+      parentName: parentObj?.name,
+    };
+  });
+
+  // High risk work items with details
+  const highRiskWorkFiltered = allWorkItems.filter(isWorkItemHighRisk);
+  const highRiskWorkList: DrillDownItem[] = highRiskWorkFiltered.map(wi => {
+    const parentKR = allKRs.find(kr => kr.workItems?.some(w => w.id === wi.id));
+    return {
+      id: wi.id,
+      name: wi.name,
+      type: 'workItem' as const,
+      status: wi.status,
+      progress: wi.progress,
+      themeName: themeNameMap.get(wi.themeId) || 'Unknown Theme',
+      parentName: parentKR?.name,
+    };
+  });
 
   // Delayed work items (due date passed and not completed)
-  const delayedWorkItems = allWorkItems.filter(wi => {
+  const delayedWorkItemsFiltered = allWorkItems.filter(wi => {
     if (wi.status === 'completed') return false;
     const daysUntilDue = getDaysUntilDue(wi.releaseDate);
     return daysUntilDue !== null && daysUntilDue < 0;
   });
   
-  const delayedWork = delayedWorkItems.length;
-  const totalDaysLate = delayedWorkItems.reduce((sum, wi) => {
+  const delayedWorkList: DrillDownItem[] = delayedWorkItemsFiltered.map(wi => {
+    const parentKR = allKRs.find(kr => kr.workItems?.some(w => w.id === wi.id));
+    return {
+      id: wi.id,
+      name: wi.name,
+      type: 'workItem' as const,
+      status: wi.status,
+      progress: wi.progress,
+      themeName: themeNameMap.get(wi.themeId) || 'Unknown Theme',
+      parentName: parentKR?.name,
+    };
+  });
+  
+  const totalDaysLate = delayedWorkItemsFiltered.reduce((sum, wi) => {
     const days = getDaysUntilDue(wi.releaseDate);
     return sum + (days !== null ? Math.abs(days) : 0);
   }, 0);
-  const avgDaysLate = delayedWork > 0 ? Math.round(totalDaysLate / delayedWork) : 0;
+  const avgDaysLate = delayedWorkItemsFiltered.length > 0 ? Math.round(totalDaysLate / delayedWorkItemsFiltered.length) : 0;
 
-  const blockedWork = allWorkItems.filter(wi => wi.status === 'blocked').length;
+  // Objectives behind baseline
+  const objectivesBehindFiltered = objectiveBaselines.filter(o => o.baseline.trend === 'behind');
+  const objectivesBehindList: DrillDownItem[] = objectivesBehindFiltered.map(({ obj }) => ({
+    id: obj.id,
+    name: obj.name,
+    type: 'objective' as const,
+    status: obj.status,
+    progress: obj.progress,
+    themeName: themeNameMap.get(obj.themeId) || 'Unknown Theme',
+  }));
+
+  // KRs with no work
+  const krsNoWorkFiltered = allKRs.filter(kr => !kr.workItems || kr.workItems.length === 0);
+  const krsNoWorkList: DrillDownItem[] = krsNoWorkFiltered.map(kr => {
+    const parentObj = findObjectiveForKR(kr.id);
+    return {
+      id: kr.id,
+      name: kr.name,
+      type: 'keyResult' as const,
+      status: kr.status,
+      progress: kr.progress,
+      themeName: themeNameMap.get(kr.themeId) || 'Unknown Theme',
+      parentName: parentObj?.name,
+    };
+  });
+
+  // Blocked work items
+  const blockedWorkFiltered = allWorkItems.filter(wi => wi.status === 'blocked');
+  const blockedWorkList: DrillDownItem[] = blockedWorkFiltered.map(wi => {
+    const parentKR = allKRs.find(kr => kr.workItems?.some(w => w.id === wi.id));
+    return {
+      id: wi.id,
+      name: wi.name,
+      type: 'workItem' as const,
+      status: wi.status,
+      progress: wi.progress,
+      themeName: themeNameMap.get(wi.themeId) || 'Unknown Theme',
+      parentName: parentKR?.name,
+    };
+  });
 
   // Themes with critical dependencies (any theme with high-risk items)
   const criticalDeps = themes.filter(t => countThemeHighRisks(t) > 0).length;
 
   const risks: RiskMetrics = {
-    highRiskObjectives,
-    highRiskKRs,
-    highRiskWork,
-    delayedWork,
+    highRiskObjectives: highRiskObjectivesFiltered.length,
+    highRiskKRs: highRiskKRsFiltered.length,
+    highRiskWork: highRiskWorkFiltered.length,
+    delayedWork: delayedWorkItemsFiltered.length,
     avgDaysLate,
-    objectivesBehind,
-    krsNoWork,
-    blockedWork,
+    objectivesBehind: objectivesBehindFiltered.length,
+    krsNoWork: krsNoWorkFiltered.length,
+    blockedWork: blockedWorkFiltered.length,
     criticalDeps,
+    // Drill-down lists
+    highRiskObjectivesList,
+    highRiskKRsList,
+    highRiskWorkList,
+    delayedWorkList,
+    objectivesBehindList,
+    krsNoWorkList,
+    blockedWorkList,
   };
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -427,7 +550,7 @@ export function computeOkrAnalytics(input: OkrAnalyticsInput): OkrAnalyticsResul
   }
 
   // Delayed work items
-  if (delayedWork > 0 && avgDaysLate > 7) {
+  if (risks.delayedWork > 0 && avgDaysLate > 7) {
     const impactedKRCount = allKRs.filter(kr => 
       (kr.workItems || []).some(wi => {
         const days = getDaysUntilDue(wi.releaseDate);
@@ -435,21 +558,21 @@ export function computeOkrAnalytics(input: OkrAnalyticsInput): OkrAnalyticsResul
       })
     ).length;
     focusAreas.push({
-      text: `${delayedWork} work item${delayedWork > 1 ? 's are' : ' is'} > ${avgDaysLate} days late, impacting ${impactedKRCount} KRs.`,
+      text: `${risks.delayedWork} work item${risks.delayedWork > 1 ? 's are' : ' is'} > ${avgDaysLate} days late, impacting ${impactedKRCount} KRs.`,
       severity: 'medium',
     });
   }
 
   // KRs with no work
-  if (krsNoWork > 0) {
+  if (risks.krsNoWork > 0) {
     focusAreas.push({
-      text: `${krsNoWork} KR${krsNoWork > 1 ? 's' : ''} have no linked delivery work ("paper OKRs").`,
+      text: `${risks.krsNoWork} KR${risks.krsNoWork > 1 ? 's' : ''} have no linked delivery work ("paper OKRs").`,
       severity: 'medium',
     });
   }
 
   // High-risk KR percentage
-  const highRiskPct = totalKRs > 0 ? (highRiskKRs / totalKRs) * 100 : 0;
+  const highRiskPct = totalKRs > 0 ? (risks.highRiskKRs / totalKRs) * 100 : 0;
   if (highRiskPct > 20) {
     focusAreas.push({
       text: `High-risk KRs represent ${Math.round(highRiskPct)}% of all KRs — review mitigation plans.`,
