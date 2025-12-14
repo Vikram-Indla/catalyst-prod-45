@@ -378,14 +378,38 @@ export function MilestonesTab({ entityId, entityType, hideCategory = false }: Mi
 
         {sortedMilestones.length === 0 && !showAddForm && (
           <div 
-            className="text-center py-8 text-sm rounded-lg"
+            className="flex flex-col items-center justify-center py-12 px-6 rounded-lg text-center"
             style={{ 
               backgroundColor: 'var(--surface-2)',
-              color: 'var(--text-2)',
               border: '1px dashed var(--border-color)'
             }}
           >
-            No milestones defined yet. Click "Add milestone" to create one.
+            <div 
+              className="w-12 h-12 rounded-full flex items-center justify-center mb-4"
+              style={{ backgroundColor: 'var(--surface-3)' }}
+            >
+              <Calendar className="h-6 w-6" style={{ color: 'var(--text-3)' }} />
+            </div>
+            <h4 
+              className="text-sm font-medium mb-1"
+              style={{ color: 'var(--text-1)' }}
+            >
+              No milestones yet
+            </h4>
+            <p 
+              className="text-xs max-w-[280px] mb-4"
+              style={{ color: 'var(--text-2)' }}
+            >
+              Create milestones to track delivery checkpoints for this demand.
+            </p>
+            <Button
+              size="sm"
+              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+              onClick={() => { resetForm(); setShowAddForm(true); setEditingId(null); }}
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              Add milestone
+            </Button>
           </div>
         )}
       </div>
