@@ -18,6 +18,7 @@ interface GanttViewProps {
   onAddResource: () => void;
   onBookingClick: (booking: CapacityBooking) => void;
   onCreateBooking: (resourceId: string, date: Date) => void;
+  onAssignResource: (resourceId: string) => void;
 }
 
 const COLUMN_WIDTH = 36;
@@ -34,6 +35,7 @@ export function GanttView({
   onAddResource,
   onBookingClick,
   onCreateBooking,
+  onAssignResource,
 }: GanttViewProps) {
   const weeks = timeSpan === '2weeks' ? 2 : 5;
   const dateColumns = useMemo(() => generateDateColumns(startDate, weeks), [startDate, weeks]);
@@ -161,7 +163,7 @@ export function GanttView({
                     className="flex-shrink-0 border-r flex items-center justify-between px-3 bg-background group-hover:bg-muted/30"
                     style={{ width: RESOURCE_COL_WIDTH, borderColor: 'hsl(var(--border))' }}
                   >
-                    <div className="flex items-center gap-2 min-w-0">
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
                       <div 
                         className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-semibold text-white flex-shrink-0"
                         style={{ 
@@ -174,19 +176,22 @@ export function GanttView({
                       >
                         {resource.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                       </div>
-                      <div className="min-w-0">
-                        <div className="text-sm font-medium truncate">{resource.name}</div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-sm font-medium truncate max-w-[60px]">{resource.name}</div>
                         <div className="text-[10px] text-muted-foreground uppercase">{resource.role_code || '—'}</div>
                       </div>
+                      <Button
+                        variant="default"
+                        size="sm"
+                        className="h-6 px-3 text-xs bg-secondary-green hover:bg-secondary-green/90 text-white"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onAssignResource(resource.id);
+                        }}
+                      >
+                        Assign
+                      </Button>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 hover:text-destructive"
-                      onClick={() => onRemoveResource(resource.id)}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
                   </div>
 
                   {/* Timeline Cells */}
