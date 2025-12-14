@@ -13,9 +13,9 @@ import {
   getStatusLabel,
   getObjectiveProgressBaseline,
   getKeyResultProgressBaseline,
-  aggregateRisks,
-  getBlockedWorkCountForObjective,
-  getDelayedWorkCountForObjective,
+  getObjectiveOwnRiskSummary,
+  getKeyResultOwnRiskSummary,
+  getWorkItemRiskSummary,
   getLinkedWorkItemCountForObjective,
 } from '../lib/okrMetrics';
 import type { Objective, KeyResult, WorkItem, Theme, WorkItemKind } from '../lib/okrTypes';
@@ -111,36 +111,42 @@ export function OKRHubV1({ snapshotId }: OKRHubV1Props) {
     // Build hierarchical rows
     return items.map(({ objective, theme }): OkrObjectiveRow => {
       const baseline = getObjectiveProgressBaseline(objective);
-      const aggregatedRisks = aggregateRisks(objective.keyResults || []);
+      // Use OWN risks only for tree display (no cascading = no double counting)
+      const objOwnRisks = getObjectiveOwnRiskSummary(objective);
       const hasBaseline = baseline.expected !== null;
 
       // Build KR children
       const krChildren: OkrObjectiveRow[] = (objective.keyResults || []).map((kr): OkrObjectiveRow => {
         const krBaseline = getKeyResultProgressBaseline(kr);
-        const krRisks = kr.risks || { high: 0, medium: 0, low: 0 };
+        // Use OWN risks only for KR (no cascading from work items)
+        const krOwnRisks = getKeyResultOwnRiskSummary(kr);
         
         // Build work item children for this KR
-        const workItemChildren: OkrObjectiveRow[] = (kr.workItems || []).map((wi): OkrObjectiveRow => ({
-          id: wi.id,
-          name: wi.name,
-          themeName: theme.name,
-          themeColor: theme.color || 'hsl(var(--brand-gold))',
-          status: getStatusLabel(wi.status),
-          progressActual: wi.progress,
-          progressTrend: 'none',
-          progressVariance: null,
-          hasBaseline: false,
-          highRiskCount: wi.risks?.high || 0,
-          mediumRiskCount: wi.risks?.medium || 0,
-          blockedWorkCount: 0,
-          delayedWorkCount: 0,
-          linkedKrCount: 0,
-          linkedWorkItemCount: 0,
-          level: 2,
-          hasChildren: false,
-          itemType: 'workItem',
-          workItemType: wi.workItemType || 'unknown',
-        }));
+        const workItemChildren: OkrObjectiveRow[] = (kr.workItems || []).map((wi): OkrObjectiveRow => {
+          // Work items show their own risks (they have no children)
+          const wiRisks = getWorkItemRiskSummary(wi);
+          return {
+            id: wi.id,
+            name: wi.name,
+            themeName: theme.name,
+            themeColor: theme.color || 'hsl(var(--brand-gold))',
+            status: getStatusLabel(wi.status),
+            progressActual: wi.progress,
+            progressTrend: 'none',
+            progressVariance: null,
+            hasBaseline: false,
+            highRiskCount: wiRisks.highRiskCount,
+            mediumRiskCount: wiRisks.mediumRiskCount,
+            blockedWorkCount: wiRisks.blockedWorkCount,
+            delayedWorkCount: wiRisks.delayedWorkCount,
+            linkedKrCount: 0,
+            linkedWorkItemCount: 0,
+            level: 2,
+            hasChildren: false,
+            itemType: 'workItem',
+            workItemType: wi.workItemType || 'unknown',
+          };
+        });
 
         return {
           id: kr.id,
@@ -152,10 +158,10 @@ export function OKRHubV1({ snapshotId }: OKRHubV1Props) {
           progressTrend: krBaseline.trend,
           progressVariance: krBaseline.variance,
           hasBaseline: true,
-          highRiskCount: krRisks.high || 0,
-          mediumRiskCount: krRisks.medium || 0,
-          blockedWorkCount: 0,
-          delayedWorkCount: 0,
+          highRiskCount: krOwnRisks.highRiskCount,
+          mediumRiskCount: krOwnRisks.mediumRiskCount,
+          blockedWorkCount: krOwnRisks.blockedWorkCount,
+          delayedWorkCount: krOwnRisks.delayedWorkCount,
           linkedKrCount: 0,
           linkedWorkItemCount: kr.workItems?.length || 0,
           level: 1,
@@ -175,10 +181,11 @@ export function OKRHubV1({ snapshotId }: OKRHubV1Props) {
         progressTrend: baseline.trend,
         progressVariance: baseline.variance,
         hasBaseline,
-        highRiskCount: aggregatedRisks.high,
-        mediumRiskCount: aggregatedRisks.medium,
-        blockedWorkCount: getBlockedWorkCountForObjective(objective),
-        delayedWorkCount: getDelayedWorkCountForObjective(objective),
+        // Use OWN risks only (no cascading = no double counting in tree)
+        highRiskCount: objOwnRisks.highRiskCount,
+        mediumRiskCount: objOwnRisks.mediumRiskCount,
+        blockedWorkCount: objOwnRisks.blockedWorkCount,
+        delayedWorkCount: objOwnRisks.delayedWorkCount,
         linkedKrCount: objective.keyResults?.length || 0,
         linkedWorkItemCount: getLinkedWorkItemCountForObjective(objective),
         level: 0,
