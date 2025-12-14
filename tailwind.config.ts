@@ -56,11 +56,15 @@ export default {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",
         },
-        // FIX A: Surface hierarchy tokens
+        // Surface hierarchy tokens - for layered UI
         surface: {
-          sunken: "hsl(var(--surface-sunken))",
-          raised: "hsl(var(--surface-raised))",
-          backdrop: "hsl(var(--surface-backdrop))",
+          0: "var(--surface-0)",
+          1: "var(--surface-1)",
+          2: "var(--surface-2)",
+          3: "var(--surface-3)",
+          sunken: "var(--surface-sunken)",
+          raised: "var(--surface-raised)",
+          backdrop: "var(--surface-backdrop)",
         },
         accent: {
           DEFAULT: "hsl(var(--accent))",
