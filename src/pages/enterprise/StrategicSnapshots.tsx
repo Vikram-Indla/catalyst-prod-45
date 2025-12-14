@@ -74,76 +74,70 @@ export default function StrategicSnapshots() {
 
   return (
     <div className="h-full flex flex-col bg-background">
-      {/* Header - align header pattern */}
-      <div className="h-[72px] border-b border-border bg-card flex-shrink-0 px-4 md:px-6 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Camera className="h-5 w-5 text-brand-gold" />
-          <h1 className="text-lg font-semibold">Strategic Snapshots</h1>
-        </div>
-        
+      {/* Header Row 1: Title only - NO divider, NO icon */}
+      <div className="h-[44px] flex items-center justify-between px-6 flex-shrink-0">
+        <h1 className="text-xl font-semibold text-secondary-green">Strategic Snapshots</h1>
         <Button onClick={() => setCreateModalOpen(true)} size="sm">
           <Plus className="h-4 w-4" />
         </Button>
       </div>
 
-      {/* Toolbar */}
-      <div className="px-4 md:px-6 py-4 bg-card border-b border-border">
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-            <div className="relative w-full sm:w-80">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search by name or description..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 h-9"
-              />
-            </div>
-            
-            <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
-              <SelectTrigger className="w-[180px] h-9">
-                <ArrowUpDown className="h-3.5 w-3.5 mr-2" />
-                <SelectValue placeholder="Sort by..." />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="created_desc">Newest first</SelectItem>
-                <SelectItem value="created_asc">Oldest first</SelectItem>
-                <SelectItem value="name_asc">Name A-Z</SelectItem>
-                <SelectItem value="name_desc">Name Z-A</SelectItem>
-                <SelectItem value="status">Status</SelectItem>
-              </SelectContent>
-            </Select>
-            
-            <div className="flex items-center gap-2">
-              <Switch
-                id="show-archived"
-                checked={showArchived}
-                onCheckedChange={setShowArchived}
-              />
-              <Label htmlFor="show-archived" className="text-sm cursor-pointer">
-                Show archived
-              </Label>
-            </div>
+      {/* Header Row 2: Toolbar - with divider AFTER */}
+      <div className="h-[52px] px-6 flex items-center justify-between border-b" style={{ borderColor: 'hsl(var(--border))' }}>
+        <div className="flex items-center gap-3">
+          <div className="relative w-80">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search by name or description..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 h-9"
+            />
           </div>
           
+          <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
+            <SelectTrigger className="w-[180px] h-9">
+              <ArrowUpDown className="h-3.5 w-3.5 mr-2" />
+              <SelectValue placeholder="Sort by..." />
+            </SelectTrigger>
+            <SelectContent className="z-[400]">
+              <SelectItem value="created_desc">Newest first</SelectItem>
+              <SelectItem value="created_asc">Oldest first</SelectItem>
+              <SelectItem value="name_asc">Name A-Z</SelectItem>
+              <SelectItem value="name_desc">Name Z-A</SelectItem>
+              <SelectItem value="status">Status</SelectItem>
+            </SelectContent>
+          </Select>
+          
           <div className="flex items-center gap-2">
-            <Button
-              variant={view === 'grid' ? 'default' : 'ghost'}
-              size="icon"
-              className="h-9 w-9"
-              onClick={() => setView('grid')}
-            >
-              <Grid3x3 className="h-4 w-4" />
-            </Button>
-            <Button
-              variant={view === 'list' ? 'default' : 'ghost'}
-              size="icon"
-              className="h-9 w-9"
-              onClick={() => setView('list')}
-            >
-              <List className="h-4 w-4" />
-            </Button>
+            <Switch
+              id="show-archived"
+              checked={showArchived}
+              onCheckedChange={setShowArchived}
+            />
+            <Label htmlFor="show-archived" className="text-sm cursor-pointer">
+              Show archived
+            </Label>
           </div>
+        </div>
+        
+        <div className="flex items-center gap-2">
+          <Button
+            variant={view === 'grid' ? 'default' : 'ghost'}
+            size="icon"
+            className="h-9 w-9"
+            onClick={() => setView('grid')}
+          >
+            <Grid3x3 className="h-4 w-4" />
+          </Button>
+          <Button
+            variant={view === 'list' ? 'default' : 'ghost'}
+            size="icon"
+            className="h-9 w-9"
+            onClick={() => setView('list')}
+          >
+            <List className="h-4 w-4" />
+          </Button>
         </div>
       </div>
 
