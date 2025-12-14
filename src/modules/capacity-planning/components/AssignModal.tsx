@@ -236,9 +236,19 @@ export function AssignModal({
 
           {!isLeave && (
             <Tabs value={tab} onValueChange={(v) => setTab(v as 'ticket' | 'task')}>
-              <TabsList className="grid grid-cols-2 h-10">
-                <TabsTrigger value="ticket" className="font-medium">Ticket</TabsTrigger>
-                <TabsTrigger value="task" className="font-medium">Task</TabsTrigger>
+              <TabsList className="grid grid-cols-2 h-12 bg-muted/50 p-1 rounded-lg">
+                <TabsTrigger 
+                  value="ticket" 
+                  className="font-semibold text-base data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-secondary-green rounded-md"
+                >
+                  Ticket
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="task" 
+                  className="font-semibold text-base data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-secondary-green rounded-md"
+                >
+                  Task
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="ticket" className="space-y-4 mt-4">
