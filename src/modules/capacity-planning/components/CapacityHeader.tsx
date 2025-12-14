@@ -1,11 +1,14 @@
-import { Search, Download, List, LayoutGrid, ChevronLeft, ChevronRight, Info, Layers } from 'lucide-react';
+import { useState } from 'react';
+import { Search, Download, List, LayoutGrid, ChevronLeft, ChevronRight, Info, Layers, CalendarIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { format, addWeeks, subWeeks } from 'date-fns';
+import { format, addWeeks, subWeeks, addDays } from 'date-fns';
 import { getGCCWeekStart } from '../utils/dateUtils';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
 
 interface CapacityHeaderProps {
   viewMode: 'list' | 'gantt';
@@ -41,16 +44,29 @@ export function CapacityHeader({
   showInsights,
   onToggleInsights,
 }: CapacityHeaderProps) {
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  
+  // Calculate end date based on time span
+  const weeksCount = timeSpan === '2weeks' ? 2 : 5;
+  const endDate = addDays(addWeeks(startDate, weeksCount), -1);
+
   const handlePrev = () => {
-    onStartDateChange(subWeeks(startDate, timeSpan === '2weeks' ? 2 : 5));
+    onStartDateChange(subWeeks(startDate, weeksCount));
   };
 
   const handleNext = () => {
-    onStartDateChange(addWeeks(startDate, timeSpan === '2weeks' ? 2 : 5));
+    onStartDateChange(addWeeks(startDate, weeksCount));
   };
 
   const handleToday = () => {
     onStartDateChange(getGCCWeekStart(new Date()));
+  };
+
+  const handleDateSelect = (date: Date | undefined) => {
+    if (date) {
+      onStartDateChange(getGCCWeekStart(date));
+      setCalendarOpen(false);
+    }
   };
 
   return (
@@ -127,10 +143,24 @@ export function CapacityHeader({
             </Button>
           </div>
 
-          {/* Date Display */}
-          <span className="text-sm text-foreground font-medium">
-            {format(startDate, 'MMM d, yyyy')}
-          </span>
+          {/* Date Range Display with Calendar Popover */}
+          <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-8 px-3 gap-2 text-foreground font-medium">
+                <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+                {format(startDate, 'MMM d')} – {format(endDate, 'MMM d, yyyy')}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0 z-[400]" align="center">
+              <Calendar
+                mode="single"
+                selected={startDate}
+                onSelect={handleDateSelect}
+                initialFocus
+                className="p-3 pointer-events-auto"
+              />
+            </PopoverContent>
+          </Popover>
 
           {/* Time Span Toggle */}
           <div className="flex items-center">
