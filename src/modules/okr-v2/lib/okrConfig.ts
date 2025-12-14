@@ -87,8 +87,9 @@ export const MAX_PROGRESS_DISPLAY = 100; // Cap at 100% for progress bars
 export const MAX_PROGRESS_CALCULATION = 120; // Allow up to 120% for analytics
 
 // Baseline progress trend thresholds (percentage points)
+// Green: within ±10pp, Orange: 10-20pp behind, Red: >20pp behind
 export const TREND_THRESHOLDS = {
-  AHEAD_PP: 10, // >= +10pp = ahead of plan
-  BEHIND_PP: -10, // <= -10pp = behind plan
-  // Between -10 and +10 = on plan
+  ON_TRACK_PP: 10, // variance within ±10pp = on track (green)
+  AT_RISK_PP: 20, // variance between -10pp and -20pp = at risk (orange)
+  // variance below -20pp = off track (red)
 } as const;

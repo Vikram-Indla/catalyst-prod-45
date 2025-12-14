@@ -267,11 +267,24 @@ export function computeProgressBaseline(
   const expected = (elapsedDays / totalDays) * 100;
   const variance = actual - expected;
   
-  let trend: TrendCode = 'on-plan';
-  if (variance >= TREND_THRESHOLDS.AHEAD_PP) {
-    trend = 'ahead';
-  } else if (variance <= TREND_THRESHOLDS.BEHIND_PP) {
-    trend = 'behind';
+  // Determine trend based on variance thresholds
+  // Green: ahead or within ±10pp
+  // Orange: 10-20pp behind
+  // Red: >20pp behind
+  let trend: TrendCode = 'on-track';
+  if (variance >= 0) {
+    // Ahead or on target - always green
+    trend = variance > TREND_THRESHOLDS.ON_TRACK_PP ? 'ahead' : 'on-track';
+  } else {
+    // Behind - determine severity
+    const behindBy = Math.abs(variance);
+    if (behindBy <= TREND_THRESHOLDS.ON_TRACK_PP) {
+      trend = 'on-track'; // Within 10pp - green
+    } else if (behindBy <= TREND_THRESHOLDS.AT_RISK_PP) {
+      trend = 'at-risk'; // 10-20pp behind - orange
+    } else {
+      trend = 'off-track'; // >20pp behind - red
+    }
   }
   
   return {
