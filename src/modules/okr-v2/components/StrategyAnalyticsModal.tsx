@@ -8,7 +8,7 @@ import { X, TrendingUp, TrendingDown, Minus, AlertTriangle, Clock, Link, Downloa
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+// Dialog import removed - using custom inline modal for z-index control
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { 
   PerformanceMetrics, 
@@ -113,12 +113,30 @@ const DrillDownDialog = ({ isOpen, onClose, title, items }: DrillDownDialogProps
     }
   };
 
+  if (!isOpen) return null;
+
+  // Custom inline dialog with higher z-index to appear above parent modal (z-[1000])
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[600px] p-0">
-        <DialogHeader className="px-6 py-4 border-b border-border">
-          <DialogTitle className="text-lg font-semibold">{title}</DialogTitle>
-        </DialogHeader>
+    <div 
+      className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/50"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div className="w-[95%] max-w-[600px] bg-background rounded-xl shadow-2xl overflow-hidden animate-in fade-in-0 zoom-in-95 duration-200">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+          <h3 className="text-lg font-semibold text-foreground">{title}</h3>
+          <button
+            onClick={onClose}
+            className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Close"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+        
+        {/* Content */}
         <ScrollArea className="max-h-[400px]">
           {items.length === 0 ? (
             <div className="p-6 text-center text-muted-foreground">
@@ -161,13 +179,15 @@ const DrillDownDialog = ({ isOpen, onClose, title, items }: DrillDownDialogProps
             </div>
           )}
         </ScrollArea>
+        
+        {/* Footer */}
         <div className="px-6 py-3 border-t border-border flex justify-end">
           <Button variant="outline" size="sm" onClick={onClose}>
             Close
           </Button>
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 };
 
