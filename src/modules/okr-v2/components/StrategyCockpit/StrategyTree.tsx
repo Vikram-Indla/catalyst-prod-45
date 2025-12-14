@@ -1,6 +1,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // OKR Hub V2 — Strategy Tree Component (Proper Tabular View)
 // HTML table structure with aligned columns and expandable hierarchy
+// Respects column visibility from OKRColumnChooser
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { useMemo } from 'react';
@@ -38,6 +39,19 @@ interface StrategyTreeProps {
   onSelect: (item: TreeItem) => void;
 }
 
+// Column configuration with widths and labels
+const COLUMN_CONFIG: Record<string, { label: string; width: string }> = {
+  objective: { label: 'Theme', width: '320px' },
+  theme: { label: 'Theme Name', width: '120px' },
+  owner: { label: 'Owner', width: '120px' },
+  status: { label: 'Status', width: '100px' },
+  progress: { label: 'Progress vs Plan', width: '180px' },
+  startDate: { label: 'Start Date', width: '110px' },
+  dueDate: { label: 'Due Date', width: '110px' },
+  risks: { label: 'Risks', width: '100px' },
+  krs: { label: 'Linked', width: '120px' },
+};
+
 // ─────────────────────────────────────────────────────────────────────────────────
 // HELPER: Format date
 // ─────────────────────────────────────────────────────────────────────────────────
@@ -64,6 +78,7 @@ interface TableRowProps {
   themeName: string;
   expandedIds: string[];
   selectedItem: TreeItem | null;
+  visibleColumnKeys: string[];
   onToggle: (id: string) => void;
   onSelect: (item: TreeItem) => void;
 }
@@ -78,6 +93,7 @@ function TableRow({
   themeName,
   expandedIds,
   selectedItem,
+  visibleColumnKeys,
   onToggle,
   onSelect,
 }: TableRowProps) {
@@ -149,6 +165,133 @@ function TableRow({
 
   const children = getChildren();
 
+  // Render a single cell based on column key
+  const renderCell = (colKey: string, isLast: boolean) => {
+    switch (colKey) {
+      case 'objective':
+        return (
+          <td key={colKey} className="py-3 px-4" style={{ width: COLUMN_CONFIG[colKey].width }}>
+            <div 
+              className="flex items-center gap-2 min-w-0"
+              style={{ paddingLeft: `${indentPx}px` }}
+            >
+              {level === 0 && (
+                <OkrThemeDot color={themeColor} themeName={themeName} size="md" />
+              )}
+              {hasChildren ? (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggle(item.id);
+                  }}
+                  className="flex items-center justify-center w-5 h-5 text-muted-foreground hover:text-foreground flex-shrink-0"
+                >
+                  {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                </button>
+              ) : (
+                <span className="w-5 flex-shrink-0" />
+              )}
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className={cn(
+                      "text-sm truncate max-w-[240px]",
+                      level === 0 && "font-semibold text-foreground",
+                      level === 1 && "text-foreground",
+                      level === 2 && "italic text-muted-foreground"
+                    )}>
+                      {item.name}
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-md">
+                    <p>{item.name}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              {level === 0 && (
+                <span className="text-xs text-muted-foreground ml-1 truncate hidden lg:inline">
+                  {themeName}
+                </span>
+              )}
+            </div>
+          </td>
+        );
+
+      case 'theme':
+        return (
+          <td key={colKey} className="py-3 px-4" style={{ width: COLUMN_CONFIG[colKey].width }}>
+            <span className="text-sm text-muted-foreground truncate">{themeName || '—'}</span>
+          </td>
+        );
+
+      case 'owner':
+        return (
+          <td key={colKey} className="py-3 px-4" style={{ width: COLUMN_CONFIG[colKey].width }}>
+            <span className="text-sm text-muted-foreground truncate">
+              {(item as any).ownerName || '—'}
+            </span>
+          </td>
+        );
+
+      case 'status':
+        return (
+          <td key={colKey} className="py-3 px-4" style={{ width: COLUMN_CONFIG[colKey].width }}>
+            <OkrStatusPill status={item.status} size="sm" />
+          </td>
+        );
+
+      case 'progress':
+        return (
+          <td key={colKey} className="py-3 px-4" style={{ width: COLUMN_CONFIG[colKey].width }}>
+            {baseline.actual === null ? (
+              <span className="text-sm text-muted-foreground">—</span>
+            ) : (
+              <OkrProgressCell baseline={baseline} status={item.status} compact />
+            )}
+          </td>
+        );
+
+      case 'startDate':
+        return (
+          <td key={colKey} className="py-3 px-4" style={{ width: COLUMN_CONFIG[colKey].width }}>
+            <span className="text-sm text-muted-foreground">
+              {formatDate((item as any).startDate)}
+            </span>
+          </td>
+        );
+
+      case 'dueDate':
+        return (
+          <td key={colKey} className="py-3 px-4" style={{ width: COLUMN_CONFIG[colKey].width }}>
+            <span className="text-sm text-muted-foreground">
+              {formatDate((item as any).dueDate)}
+            </span>
+          </td>
+        );
+
+      case 'risks':
+        return (
+          <td key={colKey} className="py-3 px-4" style={{ width: COLUMN_CONFIG[colKey].width }}>
+            <OkrRisksCell summary={riskSummary} compact />
+          </td>
+        );
+
+      case 'krs':
+        return (
+          <td key={colKey} className={cn("py-3 px-4", isLast && "text-right")} style={{ width: COLUMN_CONFIG[colKey].width }}>
+            <OkrLinkedCell
+              krCount={krCount}
+              workItemCount={workItemCount}
+              itemType={item.type as 'objective' | 'keyResult' | 'workItem'}
+            />
+          </td>
+        );
+
+      default:
+        return <td key={colKey} className="py-3 px-4">—</td>;
+    }
+  };
+
   return (
     <>
       <tr
@@ -162,120 +305,9 @@ function TableRow({
           borderLeft: isSelected ? `3px solid ${themeColor}` : '3px solid transparent',
         }}
       >
-        {/* THEME/OKR Column */}
-        <td className="py-3 px-4">
-          <div 
-            className="flex items-center gap-2 min-w-0"
-            style={{ paddingLeft: `${indentPx}px` }}
-          >
-            {/* Theme dot for objectives */}
-            {level === 0 && (
-              <OkrThemeDot 
-                color={themeColor} 
-                themeName={themeName} 
-                size="md"
-              />
-            )}
-
-            {/* Expand/Collapse Chevron */}
-            {hasChildren ? (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onToggle(item.id);
-                }}
-                className="flex items-center justify-center w-5 h-5 text-muted-foreground hover:text-foreground flex-shrink-0"
-              >
-                {isExpanded ? (
-                  <ChevronDown className="h-4 w-4" />
-                ) : (
-                  <ChevronRight className="h-4 w-4" />
-                )}
-              </button>
-            ) : (
-              <span className="w-5 flex-shrink-0" />
-            )}
-
-            {/* Name */}
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <span className={cn(
-                    "text-sm truncate max-w-[280px]",
-                    level === 0 && "font-semibold text-foreground",
-                    level === 1 && "text-foreground",
-                    level === 2 && "italic text-muted-foreground"
-                  )}>
-                    {item.name}
-                  </span>
-                </TooltipTrigger>
-                <TooltipContent side="top" className="max-w-md">
-                  <p>{item.name}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-
-            {/* Theme name for objectives (hidden on smaller screens) */}
-            {level === 0 && (
-              <span className="text-xs text-muted-foreground ml-1 truncate hidden lg:inline">
-                {themeName}
-              </span>
-            )}
-          </div>
-        </td>
-
-        {/* OWNER Column */}
-        <td className="py-3 px-4">
-          <span className="text-sm text-muted-foreground truncate">
-            {(item as any).ownerName || '—'}
-          </span>
-        </td>
-
-        {/* STATUS Column */}
-        <td className="py-3 px-4">
-          <OkrStatusPill status={item.status} size="sm" />
-        </td>
-
-        {/* PROGRESS VS PLAN Column */}
-        <td className="py-3 px-4">
-          {baseline.actual === null ? (
-            <span className="text-sm text-muted-foreground">—</span>
-          ) : (
-            <OkrProgressCell 
-              baseline={baseline}
-              status={item.status}
-              compact
-            />
-          )}
-        </td>
-
-        {/* START DATE Column */}
-        <td className="py-3 px-4">
-          <span className="text-sm text-muted-foreground">
-            {formatDate((item as any).startDate)}
-          </span>
-        </td>
-
-        {/* DUE DATE Column */}
-        <td className="py-3 px-4">
-          <span className="text-sm text-muted-foreground">
-            {formatDate((item as any).dueDate)}
-          </span>
-        </td>
-
-        {/* RISKS Column */}
-        <td className="py-3 px-4">
-          <OkrRisksCell summary={riskSummary} compact />
-        </td>
-
-        {/* LINKED Column */}
-        <td className="py-3 px-4 text-right">
-          <OkrLinkedCell
-            krCount={krCount}
-            workItemCount={workItemCount}
-            itemType={item.type as 'objective' | 'keyResult' | 'workItem'}
-          />
-        </td>
+        {visibleColumnKeys.map((colKey, idx) => 
+          renderCell(colKey, idx === visibleColumnKeys.length - 1)
+        )}
       </tr>
 
       {/* Render children if expanded */}
@@ -291,6 +323,7 @@ function TableRow({
           themeName={themeName}
           expandedIds={expandedIds}
           selectedItem={selectedItem}
+          visibleColumnKeys={visibleColumnKeys}
           onToggle={onToggle}
           onSelect={onSelect}
         />
@@ -314,15 +347,23 @@ export function StrategyTree({
   onToggle,
   onSelect,
 }: StrategyTreeProps) {
+  // Compute visible column keys from the columns prop
+  const visibleColumnKeys = useMemo(() => {
+    const visible = columns.filter(c => c.visible).map(c => c.key);
+    // If no columns defined or all hidden, show default set
+    if (visible.length === 0) {
+      return ['objective', 'status', 'progress', 'risks', 'krs'];
+    }
+    return visible;
+  }, [columns]);
+
   // Build flat list of objectives from themes, respecting theme filter and smart filters
   const filteredObjectives = useMemo(() => {
-    // Filter themes based on selected theme IDs
     let filteredThemes = themes;
     if (selectedThemeIds.length > 0) {
       filteredThemes = themes.filter((t) => selectedThemeIds.includes(t.id));
     }
 
-    // Flatten objectives from filtered themes, attaching theme info
     let objectivesWithTheme: Array<{
       objective: Objective;
       themeColor: string;
@@ -384,7 +425,6 @@ export function StrategyTree({
       );
     }
 
-    // Date filters
     if (filters.startDateFrom) {
       objectivesWithTheme = objectivesWithTheme.filter(({ objective }) =>
         objective.startDate && new Date(objective.startDate) >= filters.startDateFrom!
@@ -415,34 +455,22 @@ export function StrategyTree({
   return (
     <div className="flex-1 flex flex-col bg-card overflow-hidden">
       <div className="overflow-x-auto flex-1">
-        <table className="w-full min-w-[1000px]">
-          {/* Table Header */}
+        <table className="w-full min-w-[800px]">
+          {/* Table Header - Dynamic based on visible columns */}
           <thead className="sticky top-0 z-10">
             <tr className="bg-[#faf7f1] border-b-2 border-border">
-              <th className="py-3.5 px-4 text-left text-[11px] font-semibold text-secondary-bronze uppercase tracking-wider w-[320px]">
-                Theme
-              </th>
-              <th className="py-3.5 px-4 text-left text-[11px] font-semibold text-secondary-bronze uppercase tracking-wider w-[120px]">
-                Owner
-              </th>
-              <th className="py-3.5 px-4 text-left text-[11px] font-semibold text-secondary-bronze uppercase tracking-wider w-[100px]">
-                Status
-              </th>
-              <th className="py-3.5 px-4 text-left text-[11px] font-semibold text-secondary-bronze uppercase tracking-wider w-[180px]">
-                Progress vs Plan
-              </th>
-              <th className="py-3.5 px-4 text-left text-[11px] font-semibold text-secondary-bronze uppercase tracking-wider w-[110px]">
-                Start Date
-              </th>
-              <th className="py-3.5 px-4 text-left text-[11px] font-semibold text-secondary-bronze uppercase tracking-wider w-[110px]">
-                Due Date
-              </th>
-              <th className="py-3.5 px-4 text-left text-[11px] font-semibold text-secondary-bronze uppercase tracking-wider w-[100px]">
-                Risks
-              </th>
-              <th className="py-3.5 px-4 text-right text-[11px] font-semibold text-secondary-bronze uppercase tracking-wider w-[120px]">
-                Linked
-              </th>
+              {visibleColumnKeys.map((colKey, idx) => (
+                <th 
+                  key={colKey}
+                  className={cn(
+                    "py-3.5 px-4 text-[11px] font-semibold text-secondary-bronze uppercase tracking-wider",
+                    idx === visibleColumnKeys.length - 1 ? "text-right" : "text-left"
+                  )}
+                  style={{ width: COLUMN_CONFIG[colKey]?.width || '100px' }}
+                >
+                  {COLUMN_CONFIG[colKey]?.label || colKey}
+                </th>
+              ))}
             </tr>
           </thead>
 
@@ -460,6 +488,7 @@ export function StrategyTree({
                 themeName={themeName}
                 expandedIds={expandedIds}
                 selectedItem={selectedItem}
+                visibleColumnKeys={visibleColumnKeys}
                 onToggle={onToggle}
                 onSelect={onSelect}
               />
