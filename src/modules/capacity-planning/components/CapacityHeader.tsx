@@ -1,9 +1,11 @@
-import { Search, Download, List, LayoutGrid, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Download, List, LayoutGrid, ChevronLeft, ChevronRight, Info, Layers } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { format, addWeeks, subWeeks } from 'date-fns';
 import { getGCCWeekStart } from '../utils/dateUtils';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface CapacityHeaderProps {
   viewMode: 'list' | 'gantt';
@@ -16,6 +18,12 @@ interface CapacityHeaderProps {
   onStartDateChange: (date: Date) => void;
   timeSpan: '2weeks' | '5weeks';
   onTimeSpanChange: (span: '2weeks' | '5weeks') => void;
+  // Group by
+  groupBy: string;
+  onGroupByChange: (group: string) => void;
+  // Insights panel
+  showInsights: boolean;
+  onToggleInsights: () => void;
 }
 
 export function CapacityHeader({
@@ -28,6 +36,10 @@ export function CapacityHeader({
   onStartDateChange,
   timeSpan,
   onTimeSpanChange,
+  groupBy,
+  onGroupByChange,
+  showInsights,
+  onToggleInsights,
 }: CapacityHeaderProps) {
   const handlePrev = () => {
     onStartDateChange(subWeeks(startDate, timeSpan === '2weeks' ? 2 : 5));
@@ -141,6 +153,52 @@ export function CapacityHeader({
           </div>
 
           <div className="w-px h-6 bg-border mx-2" />
+
+          {/* Group By Dropdown */}
+          <TooltipProvider>
+            <DropdownMenu>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      variant={groupBy !== 'none' ? 'secondary' : 'ghost'} 
+                      size="icon"
+                      className="h-8 w-8"
+                    >
+                      <Layers className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                </TooltipTrigger>
+                <TooltipContent>Group by</TooltipContent>
+              </Tooltip>
+              <DropdownMenuContent align="end" className="z-[400]">
+                <DropdownMenuRadioGroup value={groupBy} onValueChange={onGroupByChange}>
+                  <DropdownMenuRadioItem value="none">None</DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value="status">Status</DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value="quarter">Quarter</DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value="resource">Resource</DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value="type">Type</DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </TooltipProvider>
+
+          {/* Info/Insights Toggle */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant={showInsights ? 'secondary' : 'ghost'} 
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={onToggleInsights}
+                >
+                  <Info className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{showInsights ? 'Hide details' : 'Show details'}</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
           <Button 
             variant="outline" 
