@@ -308,8 +308,8 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                 EN
               </div>
               <div>
-                <div style={{ fontSize: '14px', fontWeight: 700, color: 'hsl(var(--secondary-green))' }}>Enterprise</div>
-                <div style={{ fontSize: '12px', color: 'var(--text-2)' }}>Strategy</div>
+                <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-1)' }}>Enterprise</div>
+                <div style={{ fontSize: '12px', color: 'var(--text-3)' }}>Strategy</div>
               </div>
             </div>
           )}
@@ -401,18 +401,26 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                     borderRadius: '6px',
                     border: 'none',
                     cursor: 'pointer',
-                    transition: 'all 0.15s ease',
+                    transition: 'background 0.15s ease, color 0.15s ease',
                     marginBottom: '2px',
                     position: 'relative',
                     justifyContent: expanded ? 'flex-start' : 'center',
-                    background: active ? 'var(--accent-muted)' : 'transparent',
-                    color: active ? 'hsl(var(--secondary-green))' : 'var(--text-2)',
+                    // Active state: use nav-active-bg, text-1 for text
+                    background: active ? 'var(--nav-active-bg)' : 'transparent',
+                    color: active ? 'var(--text-1)' : 'var(--text-2)',
                     fontWeight: active ? 600 : 500,
                     fontSize: '14px',
                     fontFamily: 'inherit',
+                    outline: 'none',
+                  }}
+                  onMouseEnter={(e) => { 
+                    if (!active) e.currentTarget.style.background = 'var(--nav-hover-bg)'; 
+                  }}
+                  onMouseLeave={(e) => { 
+                    e.currentTarget.style.background = active ? 'var(--nav-active-bg)' : 'transparent'; 
                   }}
                 >
-                  {/* Olive left bar indicator for active state */}
+                  {/* Left indicator bar for active state - 2px brand-active */}
                   {active && (
                     <span 
                       style={{
@@ -420,16 +428,16 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                         left: 0,
                         top: '8px',
                         bottom: '8px',
-                        width: '3px',
-                        background: 'hsl(var(--secondary-green))',
-                        borderRadius: '0 2px 2px 0',
+                        width: '2px',
+                        background: 'var(--brand-active)',
+                        borderRadius: '0 1px 1px 0',
                       }}
                     />
                   )}
                   {CustomIcon ? (
-                    <CustomIcon className="w-5 h-5 flex-shrink-0" style={{ color: active ? 'hsl(var(--secondary-green))' : 'var(--icon-default)' }} />
+                    <CustomIcon className="w-5 h-5 flex-shrink-0" style={{ color: active ? 'var(--text-1)' : 'var(--icon-default)' }} />
                   ) : (
-                    <LucideIcon style={{ width: '20px', height: '20px', flexShrink: 0, color: active ? 'hsl(var(--secondary-green))' : 'var(--icon-default)' }} />
+                    <LucideIcon style={{ width: '20px', height: '20px', flexShrink: 0, color: active ? 'var(--text-1)' : 'var(--icon-default)' }} />
                   )}
                   {expanded && <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'left', flex: 1 }}>{item.label}</span>}
                   {expanded && item.expandable && (
@@ -437,7 +445,7 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                       style={{
                         width: '16px',
                         height: '16px',
-                        color: '#6b7280',
+                        color: 'var(--icon-muted)',
                         transition: 'transform 0.15s ease',
                         transform: ((isMoreItems && moreItemsExpanded) || 
                          (isReports && reportsExpanded) || 
@@ -465,18 +473,33 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
 
                   {/* More items submenu - only for Enterprise workspace */}
                 {isMoreItems && moreItemsExpanded && expanded && workspaceType === 'enterprise' && (
-                  <div className="bg-accent/20">
+                  <div style={{ background: 'var(--surface-2)' }}>
                     {moreItemsSubMenu.map((subItem) => (
                       <button
                         key={subItem.id}
                         onClick={() => handleNavigation(subItem.path)}
-                        className={cn(
-                          "w-full flex items-center gap-3 pl-12 pr-4 py-2 text-sm font-normal transition-colors",
-                          "hover:bg-accent/50",
-                          isActive(subItem.path) && "bg-accent text-primary font-medium"
-                        )}
+                        style={{
+                          width: '100%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '12px',
+                          paddingLeft: '48px',
+                          paddingRight: '16px',
+                          paddingTop: '8px',
+                          paddingBottom: '8px',
+                          fontSize: '13px',
+                          fontWeight: isActive(subItem.path) ? 600 : 400,
+                          color: isActive(subItem.path) ? 'var(--text-1)' : 'var(--text-2)',
+                          background: isActive(subItem.path) ? 'var(--nav-active-bg)' : 'transparent',
+                          border: 'none',
+                          cursor: 'pointer',
+                          transition: 'background 0.15s ease',
+                          textAlign: 'left',
+                        }}
+                        onMouseEnter={(e) => { if (!isActive(subItem.path)) e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = isActive(subItem.path) ? 'var(--nav-active-bg)' : 'transparent'; }}
                       >
-                        <span className="truncate text-left">{subItem.label}</span>
+                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{subItem.label}</span>
                       </button>
                     ))}
                   </div>
@@ -484,18 +507,33 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
 
                 {/* Reports submenu - only for Enterprise workspace */}
                 {isReports && reportsExpanded && expanded && workspaceType === 'enterprise' && (
-                  <div className="bg-accent/20">
+                  <div style={{ background: 'var(--surface-2)' }}>
                     {reportsSubMenu.map((subItem) => (
                       <button
                         key={subItem.id}
                         onClick={() => handleNavigation(subItem.path)}
-                        className={cn(
-                          "w-full flex items-center gap-3 pl-12 pr-4 py-2 text-sm font-normal transition-colors",
-                          "hover:bg-accent/50",
-                          isActive(subItem.path) && "bg-accent text-primary font-medium"
-                        )}
+                        style={{
+                          width: '100%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '12px',
+                          paddingLeft: '48px',
+                          paddingRight: '16px',
+                          paddingTop: '8px',
+                          paddingBottom: '8px',
+                          fontSize: '13px',
+                          fontWeight: isActive(subItem.path) ? 600 : 400,
+                          color: isActive(subItem.path) ? 'var(--text-1)' : 'var(--text-2)',
+                          background: isActive(subItem.path) ? 'var(--nav-active-bg)' : 'transparent',
+                          border: 'none',
+                          cursor: 'pointer',
+                          transition: 'background 0.15s ease',
+                          textAlign: 'left',
+                        }}
+                        onMouseEnter={(e) => { if (!isActive(subItem.path)) e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = isActive(subItem.path) ? 'var(--nav-active-bg)' : 'transparent'; }}
                       >
-                        <span className="truncate text-left">{subItem.label}</span>
+                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{subItem.label}</span>
                       </button>
                     ))}
                   </div>
@@ -503,18 +541,33 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
 
                 {/* More pages submenu - only for Enterprise workspace */}
                 {isMorePages && morePagesExpanded && expanded && workspaceType === 'enterprise' && (
-                  <div className="bg-accent/20">
+                  <div style={{ background: 'var(--surface-2)' }}>
                     {morePagesSubMenu.map((subItem) => (
                       <button
                         key={subItem.id}
                         onClick={() => handleNavigation(subItem.path)}
-                        className={cn(
-                          "w-full flex items-center gap-3 pl-12 pr-4 py-2 text-sm font-normal transition-colors",
-                          "hover:bg-accent/50",
-                          isActive(subItem.path) && "bg-accent text-primary font-medium"
-                        )}
+                        style={{
+                          width: '100%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '12px',
+                          paddingLeft: '48px',
+                          paddingRight: '16px',
+                          paddingTop: '8px',
+                          paddingBottom: '8px',
+                          fontSize: '13px',
+                          fontWeight: isActive(subItem.path) ? 600 : 400,
+                          color: isActive(subItem.path) ? 'var(--text-1)' : 'var(--text-2)',
+                          background: isActive(subItem.path) ? 'var(--nav-active-bg)' : 'transparent',
+                          border: 'none',
+                          cursor: 'pointer',
+                          transition: 'background 0.15s ease',
+                          textAlign: 'left',
+                        }}
+                        onMouseEnter={(e) => { if (!isActive(subItem.path)) e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = isActive(subItem.path) ? 'var(--nav-active-bg)' : 'transparent'; }}
                       >
-                        <span className="truncate text-left">{subItem.label}</span>
+                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{subItem.label}</span>
                       </button>
                     ))}
                   </div>
@@ -527,13 +580,30 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
 
         {/* Footer */}
         {expanded && (
-          <div className="border-t">
+          <div style={{ borderTop: '1px solid var(--border-color)', padding: '8px' }}>
             <button 
-              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-normal hover:bg-accent/50 transition-colors"
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                padding: '0 12px',
+                height: '40px',
+                fontSize: '14px',
+                fontWeight: 500,
+                color: 'var(--text-2)',
+                background: 'transparent',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                transition: 'background 0.15s ease',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               onClick={() => toast.info('Enterprise Settings coming soon', { icon: <Lock className="h-4 w-4" /> })}
             >
-              <Lock className="h-5 w-5 text-muted-foreground" />
-              <span className="text-left">Enterprise Settings</span>
+              <Lock style={{ width: '20px', height: '20px', color: 'var(--icon-muted)' }} />
+              <span style={{ textAlign: 'left' }}>Enterprise Settings</span>
             </button>
           </div>
         )}
