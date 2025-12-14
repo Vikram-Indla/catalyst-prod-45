@@ -209,6 +209,7 @@ import PortfolioThemeSelfTest from "./pages/dev/PortfolioThemeSelfTest";
 import ProgramBoardSelfTest from "./pages/dev/ProgramBoardSelfTest";
 import SourcesReference from "./pages/dev/SourcesReference";
 import ToastDemo from "./pages/dev/ToastDemo";
+import DarkModeGatePage from "./pages/qa/DarkModeGatePage";
 import UnauthorizedPage from "./pages/UnauthorizedPage";
 import KanbanBoardsPage from "./pages/KanbanBoardsPage";
 import KanbanBoardView from "./pages/KanbanBoardView";
@@ -696,6 +697,9 @@ const App = () => (
               <Route path="/dev/program-board-self-test" element={<ProgramBoardSelfTest />} />
               <Route path="/dev/sources" element={<SourcesReference />} />
               <Route path="/dev/toast-demo" element={<ToastDemo />} />
+              
+              {/* QA Tools */}
+              <Route path="/qa/dark-mode-gate" element={<DarkModeGatePage />} />
             </Route>
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
