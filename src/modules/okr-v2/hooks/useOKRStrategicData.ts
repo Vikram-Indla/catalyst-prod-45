@@ -68,6 +68,21 @@ function getThemeColor(color?: string, index: number = 0): string {
   return DEFAULT_THEME_COLORS[index % DEFAULT_THEME_COLORS.length];
 }
 
+/**
+ * Map risk severity (occurrence/impact) to high/medium/low
+ * Uses the higher of occurrence or impact to determine severity
+ */
+function mapRiskSeverity(occurrence?: string | null, impact?: string | null): 'high' | 'medium' | 'low' {
+  const severityOrder = ['Critical', 'High', 'Medium', 'Low'];
+  const occurrenceIdx = occurrence ? severityOrder.indexOf(occurrence) : 3;
+  const impactIdx = impact ? severityOrder.indexOf(impact) : 3;
+  const maxSeverityIdx = Math.min(occurrenceIdx, impactIdx);
+  
+  if (maxSeverityIdx <= 1) return 'high'; // Critical or High
+  if (maxSeverityIdx === 2) return 'medium';
+  return 'low';
+}
+
 // ─────────────────────────────────────────────────────────────────────────────────
 // MAIN HOOK
 // ─────────────────────────────────────────────────────────────────────────────────
@@ -130,7 +145,33 @@ export function useOKRStrategicData(snapshotId?: string) {
       
       if (contribError) throw contribError;
 
-      // 5. Fetch owner profiles
+      // 5. Collect all work item IDs to fetch their risks
+      const allWorkItemIds = (dbContributions || [])
+        .map((c: any) => c.work_item_id)
+        .filter(Boolean);
+
+      // 6. Fetch risks for linked work items (epics/features)
+      const { data: dbRisks, error: risksError } = await supabase
+        .from('risks')
+        .select('id, related_item_id, occurrence, impact, status')
+        .in('related_item_id', allWorkItemIds.length > 0 ? allWorkItemIds : ['00000000-0000-0000-0000-000000000000'])
+        .eq('status', 'Open');
+      
+      if (risksError) throw risksError;
+
+      // Build risk summary map by work item ID
+      const risksByWorkItem = new Map<string, OkrRiskSummary>();
+      (dbRisks || []).forEach((risk: any) => {
+        const workItemId = risk.related_item_id;
+        if (!workItemId) return;
+        
+        const current = risksByWorkItem.get(workItemId) || { high: 0, medium: 0, low: 0 };
+        const severity = mapRiskSeverity(risk.occurrence, risk.impact);
+        current[severity]++;
+        risksByWorkItem.set(workItemId, current);
+      });
+
+      // 7. Fetch owner profiles
       const allOwnerIds = [
         ...new Set([
           ...(dbThemes?.filter(t => t.owner_id).map(t => t.owner_id) || []),
@@ -146,7 +187,7 @@ export function useOKRStrategicData(snapshotId?: string) {
       
       const profileMap = new Map(profiles?.map(p => [p.id, p.full_name]) || []);
 
-      // 6. Build hierarchical structure
+      // 8. Build hierarchical structure
       // Group contributions by KR
       const contributionsByKr = new Map<string, any[]>();
       (dbContributions || []).forEach((c: any) => {
@@ -160,20 +201,35 @@ export function useOKRStrategicData(snapshotId?: string) {
       dbKeyResults?.forEach(dbKr => {
         const contributions = contributionsByKr.get(dbKr.id) || [];
         
-        // Build work items from contributions
-        const workItems: WorkItem[] = contributions.map((c: any) => ({
-          id: c.work_item_id || c.id,
-          type: 'workItem' as const,
-          name: c.work_item_name || c.summary || 'Linked Work',
-          krId: dbKr.id,
-          objectiveId: dbKr.objective_id,
-          themeId: '', // Will be set later
-          status: 'in-progress' as StatusCode,
-          progress: 50,
-          risks: emptyRiskSummary(),
-          value: { estimated: c.value_contribution || 0, realized: 0 },
-          dependencies: [],
-        }));
+        // Build work items from contributions with their risks
+        const workItems: WorkItem[] = contributions.map((c: any) => {
+          const workItemId = c.work_item_id || c.id;
+          const workItemRisks = risksByWorkItem.get(workItemId) || emptyRiskSummary();
+          
+          return {
+            id: workItemId,
+            type: 'workItem' as const,
+            name: c.work_item_name || c.summary || 'Linked Work',
+            krId: dbKr.id,
+            objectiveId: dbKr.objective_id,
+            themeId: '', // Will be set later
+            status: 'in-progress' as StatusCode,
+            progress: 50,
+            risks: workItemRisks,
+            value: { estimated: c.value_contribution || 0, realized: 0 },
+            dependencies: [],
+          };
+        });
+
+        // Aggregate risks from work items for the KR
+        const krRisks = workItems.reduce(
+          (acc, wi) => ({
+            high: acc.high + (wi.risks?.high || 0),
+            medium: acc.medium + (wi.risks?.medium || 0),
+            low: acc.low + (wi.risks?.low || 0),
+          }),
+          { high: 0, medium: 0, low: 0 }
+        );
 
         const kr: KeyResult = {
           id: dbKr.id,
@@ -190,7 +246,7 @@ export function useOKRStrategicData(snapshotId?: string) {
           weight: 1,
           dueDate: dbKr.due_date,
           direction: (dbKr.direction as 'increase' | 'decrease' | 'maintain') || 'increase',
-          risks: emptyRiskSummary(),
+          risks: krRisks,
           value: { 
             estimated: contributions.reduce((sum: number, c: any) => sum + (c.value_contribution || 0), 0), 
             realized: 0 
