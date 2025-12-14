@@ -96,7 +96,7 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
 
   return (
     <>
-      <Card className="border-l-4 border-l-brand-gold h-full">
+      <Card className="h-full" style={{ borderLeft: '3px solid var(--accent-color)' }}>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="text-base flex items-center gap-2">

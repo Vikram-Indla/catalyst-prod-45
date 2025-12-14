@@ -21,10 +21,10 @@ export function MissionVisionValuesCard({
   onSave,
 }: MissionVisionValuesCardProps) {
   return (
-    <Card className="border-l-4 border-l-brand-gold min-h-[140px] overflow-hidden">
+    <Card className="min-h-[140px] overflow-hidden" style={{ borderLeft: '3px solid var(--accent-color)' }}>
       <CardHeader className="pb-2">
-        <CardTitle className="text-brand-gold text-lg font-medium">{title}</CardTitle>
-        <p className="text-sm text-muted-foreground italic">{subtitle}</p>
+        <CardTitle className="text-base font-medium" style={{ color: 'var(--accent-color)' }}>{title}</CardTitle>
+        <p className="text-sm italic" style={{ color: 'var(--text-2)' }}>{subtitle}</p>
       </CardHeader>
       <CardContent>
         <InlineEditTextarea

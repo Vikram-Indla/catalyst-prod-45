@@ -2,8 +2,18 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("rounded-lg border bg-card text-card-foreground shadow-sm focus:outline-none focus-visible:outline-none", className)} {...props} />
+const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, style, ...props }, ref) => (
+  <div 
+    ref={ref} 
+    className={cn("rounded-lg shadow-sm focus:outline-none focus-visible:outline-none", className)} 
+    style={{
+      backgroundColor: 'var(--card-bg)',
+      border: '1px solid var(--card-border)',
+      color: 'var(--text-1)',
+      ...style,
+    }}
+    {...props} 
+  />
 ));
 Card.displayName = "Card";
 
