@@ -30,10 +30,10 @@ const SheetOverlay = React.forwardRef<
 ));
 SheetOverlay.displayName = SheetPrimitive.Overlay.displayName;
 
-// Side variants
+// Side variants - Using semantic tokens for theme support
 const sheetSideVariants = cva(
   cn(
-    "fixed z-[200] bg-white shadow-2xl transition ease-in-out",
+    "fixed z-[200] shadow-2xl transition ease-in-out",
     "data-[state=open]:animate-in data-[state=closed]:animate-out",
     "data-[state=closed]:duration-200 data-[state=open]:duration-300",
     "focus:outline-none"
@@ -41,10 +41,10 @@ const sheetSideVariants = cva(
   {
     variants: {
       side: {
-        top: "inset-x-0 top-0 border-b border-neutral-200 data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top",
-        bottom: "inset-x-0 bottom-0 border-t border-neutral-200 data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
-        left: "inset-y-0 left-0 h-full border-r-2 border-neutral-300 data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left",
-        right: "inset-y-0 right-0 h-full border-l-2 border-neutral-300 data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right",
+        top: "inset-x-0 top-0 data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top",
+        bottom: "inset-x-0 bottom-0 data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
+        left: "inset-y-0 left-0 h-full data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left",
+        right: "inset-y-0 right-0 h-full data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right",
       },
     },
     defaultVariants: {
@@ -90,7 +90,12 @@ const SheetContent = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Con
             isHorizontal && sheetWidthVariants({ width }),
             "flex flex-col",
             className
-          )} 
+          )}
+          style={{
+            backgroundColor: 'var(--surface-1)',
+            borderColor: 'var(--border-color)',
+            borderWidth: side === 'left' || side === 'right' ? '0 0 0 1px' : '1px 0 0 0',
+          }}
           {...props}
         >
           {children}
@@ -114,18 +119,41 @@ const SheetContent = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Con
 );
 SheetContent.displayName = SheetPrimitive.Content.displayName;
 
-const SheetHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("flex flex-col gap-1 px-6 py-4 border-b shrink-0", className)} {...props} />
+const SheetHeader = ({ className, style, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+  <div 
+    className={cn("flex flex-col gap-1 px-6 py-4 shrink-0", className)} 
+    style={{
+      backgroundColor: 'var(--surface-1)',
+      borderBottom: '1px solid var(--border-color)',
+      ...style,
+    }}
+    {...props} 
+  />
 );
 SheetHeader.displayName = "SheetHeader";
 
-const SheetFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("flex flex-col-reverse sm:flex-row sm:justify-end sm:gap-2 px-6 py-4 border-t mt-auto shrink-0", className)} {...props} />
+const SheetFooter = ({ className, style, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+  <div 
+    className={cn("flex flex-col-reverse sm:flex-row sm:justify-end sm:gap-2 px-6 py-4 mt-auto shrink-0", className)} 
+    style={{
+      backgroundColor: 'var(--surface-1)',
+      borderTop: '1px solid var(--border-color)',
+      ...style,
+    }}
+    {...props} 
+  />
 );
 SheetFooter.displayName = "SheetFooter";
 
-const SheetBody = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("flex-1 overflow-auto px-6 py-4", className)} {...props} />
+const SheetBody = ({ className, style, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+  <div 
+    className={cn("flex-1 overflow-auto px-6 py-4", className)} 
+    style={{
+      backgroundColor: 'var(--surface-1)',
+      ...style,
+    }}
+    {...props} 
+  />
 );
 SheetBody.displayName = "SheetBody";
 
