@@ -113,7 +113,7 @@ export default function StrategicBacklog() {
       ) : (
         <div className="flex-1 overflow-auto p-6">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="h-auto bg-transparent p-0 rounded-none w-full justify-start gap-1">
+            <TabsList className="h-auto bg-transparent p-0 pb-3 rounded-none w-full justify-start gap-1 border-b border-border">
               <TabsTrigger 
                 value="overview" 
                 className="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=active]:shadow-sm flex items-center gap-1.5 hover:bg-muted/50 transition-colors"
