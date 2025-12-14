@@ -125,7 +125,7 @@ function CatalystShellContent() {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-background">
+    <div className="h-screen flex flex-col" style={{ backgroundColor: 'var(--surface-0)' }}>
       {/* Global Header - Catalyst Native */}
       <CatalystHeader />
 
