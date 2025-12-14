@@ -75,11 +75,8 @@ export default function StrategicSnapshots() {
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Header Row 1: Title only - NO divider, NO icon */}
-      <div className="h-[44px] flex items-center justify-between px-6 flex-shrink-0">
+      <div className="h-[44px] flex items-center px-6 flex-shrink-0">
         <h1 className="text-xl font-semibold text-secondary-green">Strategic Snapshots</h1>
-        <Button onClick={() => setCreateModalOpen(true)} size="sm">
-          <Plus className="h-4 w-4" />
-        </Button>
       </div>
 
       {/* Header Row 2: Toolbar - with divider AFTER */}
@@ -137,6 +134,9 @@ export default function StrategicSnapshots() {
             onClick={() => setView('list')}
           >
             <List className="h-4 w-4" />
+          </Button>
+          <Button onClick={() => setCreateModalOpen(true)} size="icon" className="h-9 w-9">
+            <Plus className="h-4 w-4" />
           </Button>
         </div>
       </div>
