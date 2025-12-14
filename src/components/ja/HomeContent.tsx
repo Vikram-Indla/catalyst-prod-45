@@ -236,9 +236,18 @@ function FeedRow({ item }: { item: ActivityItem }) {
         <span className="text-sm font-medium" style={{ color: 'var(--text-2)' }}>{item.id}</span>
       </div>
 
-      {/* Summary */}
-      <div className="min-w-0 pr-4">
-        <div className="text-sm leading-5 truncate" style={{ color: 'var(--text-1)' }}>
+      {/* Summary - clamped to 2 lines max for readability */}
+      <div className="min-w-0 pr-4" style={{ maxWidth: '480px' }}>
+        <div 
+          className="text-sm leading-5"
+          style={{ 
+            color: 'var(--text-1)',
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+          }}
+        >
           {item.summary}
         </div>
       </div>
@@ -422,11 +431,23 @@ export function HomeContent() {
 
   return (
     <div 
-      className="min-h-screen font-sans"
-      style={{ backgroundColor: 'var(--bg)' }}
+      className="min-h-screen font-sans relative"
+      style={{ 
+        backgroundColor: 'var(--bg)',
+        backgroundImage: 'radial-gradient(ellipse 80% 50% at 50% 0%, var(--surface-1), transparent)',
+      }}
     >
-      {/* Constrained container */}
-      <div className="max-w-[1360px] mx-auto px-6 py-6">
+      {/* Subtle side vignette for dark mode - gives intentional framing */}
+      <div 
+        className="absolute inset-0 pointer-events-none hidden dark:block"
+        style={{
+          background: 'linear-gradient(90deg, var(--surface-1) 0%, transparent 8%, transparent 92%, var(--surface-1) 100%)',
+          opacity: 0.4,
+        }}
+      />
+      
+      {/* Constrained container - increased to 1440px */}
+      <div className="max-w-[1440px] mx-auto px-6 md:px-8 py-6 relative z-[1]">
         {/* Page title */}
         <h1 
           className="text-2xl font-semibold leading-7 tracking-tight m-0"
