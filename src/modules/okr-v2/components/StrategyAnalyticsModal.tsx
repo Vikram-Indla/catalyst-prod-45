@@ -3,7 +3,9 @@
 // Real data-driven executive analytics dashboard with drill-down capabilities
 // ═══════════════════════════════════════════════════════════════════════════════
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import { X, TrendingUp, TrendingDown, Minus, AlertTriangle, Clock, Link, Download, BarChart3, Target, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -617,88 +619,7 @@ const TopFocusAreas = ({ focusAreas }: { focusAreas: FocusArea[] }) => {
   );
 };
 
-// ─────────────────────────────────────────────────────────────────────────────────
-// EXPORT UTILITIES
-// ─────────────────────────────────────────────────────────────────────────────────
-
-function generateExportSummary(analytics: OkrAnalyticsResult, filterLabel: string): string {
-  const { performance, themes, risks, focusAreas } = analytics;
-  const date = new Date().toLocaleDateString('en-US', { 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
-  });
-
-  let content = `STRATEGY ANALYTICS SUMMARY\n`;
-  content += `Generated: ${date}\n`;
-  content += `Filter: ${filterLabel}\n`;
-  content += `${'═'.repeat(60)}\n\n`;
-
-  // Performance Overview
-  content += `STRATEGY PERFORMANCE OVERVIEW\n`;
-  content += `${'-'.repeat(40)}\n`;
-  content += `Overall Progress: ${performance.actualProgress}% (Expected: ${performance.expectedProgress ?? 'N/A'}%)\n`;
-  content += `Trend: ${performance.progressDelta}\n\n`;
-  content += `Objective Health:\n`;
-  content += `  • Ahead of plan: ${performance.objectivesAhead}\n`;
-  content += `  • On plan: ${performance.objectivesOnPlan}\n`;
-  content += `  • Behind: ${performance.objectivesBehind}\n`;
-  content += `  • No baseline: ${performance.objectivesNoBaseline}\n\n`;
-  content += `Coverage Gaps:\n`;
-  content += `  • Objectives with 0 KRs: ${performance.coverageGaps.objectivesNoKRs}\n`;
-  content += `  • KRs with no work items: ${performance.coverageGaps.krsNoWork}\n`;
-  content += `  • Orphan work items: ${performance.coverageGaps.orphanWork}\n\n`;
-
-  // Theme Snapshot
-  content += `THEME-LEVEL SNAPSHOT\n`;
-  content += `${'-'.repeat(40)}\n`;
-  themes.forEach(theme => {
-    content += `${theme.name}\n`;
-    content += `  Progress: ${theme.progress}% | Baseline: ${theme.baseline ?? 'N/A'}%\n`;
-    content += `  High Risks: ${theme.highRisks} | KRs: ${theme.krCount} | Work: ${theme.workCount}\n\n`;
-  });
-
-  // Risks Summary
-  content += `RISKS & BLOCKERS SUMMARY\n`;
-  content += `${'-'.repeat(40)}\n`;
-  content += `High-Risk Items:\n`;
-  content += `  • Objectives with high risks: ${risks.highRiskObjectives}\n`;
-  content += `  • KRs with high risks: ${risks.highRiskKRs}\n`;
-  content += `  • Work items with high risks: ${risks.highRiskWork}\n\n`;
-  content += `Schedule Slippage:\n`;
-  content += `  • Delayed work items: ${risks.delayedWork}\n`;
-  content += `  • Average days late: ${risks.avgDaysLate}\n`;
-  content += `  • Objectives behind baseline: ${risks.objectivesBehind}\n\n`;
-  content += `Coverage & Dependencies:\n`;
-  content += `  • KRs with no delivery work: ${risks.krsNoWork}\n`;
-  content += `  • Blocked work items: ${risks.blockedWork}\n`;
-  content += `  • Themes with critical deps: ${risks.criticalDeps}\n\n`;
-
-  // Focus Areas
-  content += `TOP FOCUS AREAS\n`;
-  content += `${'-'.repeat(40)}\n`;
-  if (focusAreas.length === 0) {
-    content += `No critical focus areas detected.\n`;
-  } else {
-    focusAreas.forEach((area, i) => {
-      content += `${i + 1}. [${area.severity.toUpperCase()}] ${area.text}\n`;
-    });
-  }
-
-  return content;
-}
-
-function downloadTextFile(content: string, filename: string) {
-  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-}
+// PDF export utility removed - now using html2canvas + jsPDF inline
 
 // ─────────────────────────────────────────────────────────────────────────────────
 // MAIN ANALYTICS MODAL
@@ -726,6 +647,8 @@ export function StrategyAnalyticsModal({
   const [drillDownOpen, setDrillDownOpen] = useState(false);
   const [drillDownTitle, setDrillDownTitle] = useState('');
   const [drillDownItems, setDrillDownItems] = useState<DrillDownItem[]>([]);
+  const [isExporting, setIsExporting] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const handleDrillDown = useCallback((title: string, items: DrillDownItem[]) => {
     setDrillDownTitle(title);
@@ -733,11 +656,53 @@ export function StrategyAnalyticsModal({
     setDrillDownOpen(true);
   }, []);
 
-  const handleExport = useCallback(() => {
-    if (!analytics) return;
-    const content = generateExportSummary(analytics, filterLabel);
-    const timestamp = new Date().toISOString().split('T')[0];
-    downloadTextFile(content, `strategy-analytics-${timestamp}.txt`);
+  const handleExportPDF = useCallback(async () => {
+    if (!contentRef.current || !analytics) return;
+    
+    setIsExporting(true);
+    try {
+      // Capture the content area as canvas
+      const canvas = await html2canvas(contentRef.current, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#faf7f1',
+        logging: false,
+      });
+      
+      const imgData = canvas.toDataURL('image/png');
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      
+      // Create PDF with appropriate dimensions
+      const pdfWidth = 297; // A4 landscape width in mm
+      const pdfHeight = (imgHeight * pdfWidth) / imgWidth;
+      
+      const pdf = new jsPDF({
+        orientation: pdfHeight > pdfWidth ? 'portrait' : 'landscape',
+        unit: 'mm',
+        format: [pdfWidth, Math.max(pdfHeight, 210)],
+      });
+      
+      // Add header
+      pdf.setFontSize(16);
+      pdf.setTextColor(0, 0, 0);
+      pdf.text('Strategy Analytics Overview', 14, 15);
+      pdf.setFontSize(10);
+      pdf.setTextColor(100, 100, 100);
+      pdf.text(`Generated: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`, 14, 22);
+      pdf.text(`Filter: ${filterLabel}`, 14, 28);
+      
+      // Add the captured image
+      pdf.addImage(imgData, 'PNG', 7, 35, pdfWidth - 14, pdfHeight - 20);
+      
+      // Save the PDF
+      const timestamp = new Date().toISOString().split('T')[0];
+      pdf.save(`strategy-analytics-${timestamp}.pdf`);
+    } catch (error) {
+      console.error('Failed to export PDF:', error);
+    } finally {
+      setIsExporting(false);
+    }
   }, [analytics, filterLabel]);
 
   if (!isOpen) return null;
@@ -781,8 +746,8 @@ export function StrategyAnalyticsModal({
             </div>
           </div>
 
-          {/* Scrollable Content */}
-          <div className="flex-1 overflow-y-auto p-7">
+          {/* Scrollable Content - ref for PDF export */}
+          <div ref={contentRef} className="flex-1 overflow-y-auto p-7">
             {isLoading ? (
               <div className="space-y-8">
                 <div className="grid grid-cols-3 gap-4">
@@ -818,11 +783,11 @@ export function StrategyAnalyticsModal({
                 variant="outline" 
                 size="sm" 
                 className="gap-1.5"
-                onClick={handleExport}
-                disabled={!analytics}
+                onClick={handleExportPDF}
+                disabled={!analytics || isExporting}
               >
                 <Download className="h-4 w-4" />
-                Export summary
+                {isExporting ? 'Exporting...' : 'Export PDF'}
               </Button>
               <Button size="sm" onClick={onClose} className="bg-brand-gold hover:bg-brand-gold-hover text-white">
                 Close
