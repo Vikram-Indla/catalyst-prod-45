@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { toast } from 'sonner';
+import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 
 interface CreateObjectiveDialogV2Props {
   open: boolean;
@@ -34,8 +35,8 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
   const [description, setDescription] = useState('');
   const [themeId, setThemeId] = useState<string>('');
   const [ownerId, setOwnerId] = useState<string>('');
-  const [startDate, setStartDate] = useState('');
-  const [dueDate, setDueDate] = useState('');
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+  const [dueDate, setDueDate] = useState<Date | undefined>(undefined);
   const [status, setStatus] = useState<ObjectiveStatusV2>('pending');
   const [health, setHealth] = useState<ObjectiveHealthV2>('at_risk');
   const [notes, setNotes] = useState('');
@@ -85,8 +86,8 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
       description: description.trim() || undefined,
       theme_id: themeId,
       owner_id: ownerId || undefined,
-      start_date: startDate || undefined,
-      due_date: dueDate || undefined,
+      start_date: startDate ? startDate.toISOString().split('T')[0] : undefined,
+      due_date: dueDate ? dueDate.toISOString().split('T')[0] : undefined,
       status,
     });
 
@@ -95,8 +96,8 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
     setDescription('');
     setThemeId('');
     setOwnerId('');
-    setStartDate('');
-    setDueDate('');
+    setStartDate(undefined);
+    setDueDate(undefined);
     setStatus('pending');
     setHealth('at_risk');
     setNotes('');
@@ -198,23 +199,21 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
           <div className="grid grid-cols-2 gap-4">
             {/* Start Date */}
             <div className="space-y-2">
-              <Label htmlFor="startDate">Start Date</Label>
-              <Input
-                id="startDate"
-                type="date"
+              <Label>Start Date</Label>
+              <CatalystDatePicker
                 value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
+                onChange={setStartDate}
+                placeholder="Select start date"
               />
             </div>
 
             {/* Due Date */}
             <div className="space-y-2">
-              <Label htmlFor="dueDate">Due Date</Label>
-              <Input
-                id="dueDate"
-                type="date"
+              <Label>Due Date</Label>
+              <CatalystDatePicker
                 value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
+                onChange={setDueDate}
+                placeholder="Select due date"
               />
             </div>
           </div>
