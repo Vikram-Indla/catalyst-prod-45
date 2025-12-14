@@ -23,6 +23,7 @@ import { cn } from '@/lib/utils';
 import { format, parseISO } from 'date-fns';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useActiveRiskSeverityLevels } from '@/hooks/useRiskSeverityLevels';
 
 // Risk form data type
 export interface RiskFormDataV2 {
@@ -84,7 +85,8 @@ const RESOLUTION_METHOD_OPTIONS = [
   { value: 'Mitigated', label: 'Mitigated' },
 ];
 
-const SEVERITY_OPTIONS = [
+// Fallback severity options if database is empty
+const FALLBACK_SEVERITY_OPTIONS = [
   { value: 'Low', label: 'Low' },
   { value: 'Medium', label: 'Medium' },
   { value: 'High', label: 'High' },
@@ -115,6 +117,17 @@ export function RiskFormV2({
   // Check if mitigation is required based on resolution_method
   const isMitigationRequired = value.resolution_method === 'Mitigated';
   const showMitigationError = formError === 'mitigation_required';
+
+  // Fetch severity levels from database
+  const { data: severityLevels = [] } = useActiveRiskSeverityLevels();
+  
+  // Use database-driven options or fallback
+  const SEVERITY_OPTIONS = useMemo(() => {
+    if (severityLevels.length > 0) {
+      return severityLevels.map(level => ({ value: level.value, label: level.label }));
+    }
+    return FALLBACK_SEVERITY_OPTIONS;
+  }, [severityLevels]);
 
   // Fetch profiles for owner display
   const { data: profiles = [] } = useQuery({

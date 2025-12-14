@@ -141,6 +141,7 @@ import AuditActivityPage from "./pages/admin/AuditActivityPage";
 import KanbanSettings from "./pages/admin/KanbanSettings";
 import ResourceInventory from "./pages/admin/ResourceInventory";
 import ProcessSteps from "./pages/admin/ProcessSteps";
+import RiskSeverityLevels from "./pages/admin/RiskSeverityLevels";
 import DevelopmentInventory from "./pages/admin/DevelopmentInventory";
 import ValueStreamView from "./pages/ValueStreamView";
 import UserProfile from "./pages/UserProfile";
@@ -665,6 +666,7 @@ const App = () => (
                 <Route path="business-owners" element={<BusinessOwnersAdmin />} />
                 <Route path="business-processes" element={<BusinessProcesses />} />
                 <Route path="business/ProcessStep" element={<ProcessSteps />} />
+                <Route path="business/RiskSeverity" element={<RiskSeverityLevels />} />
                 <Route path="estimation" element={<Estimation />} />
                 <Route path="security" element={<Security />} />
                 <Route path="jira-config" element={<JiraIntegrationConfig />} />
