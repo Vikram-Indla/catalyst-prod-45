@@ -60,6 +60,7 @@ interface OkrObjectivesTableProps {
 
 // Column configuration with widths and labels
 const COLUMN_CONFIG: Record<string, { label: string; width: string }> = {
+  type: { label: 'Type', width: '90px' },
   objective: { label: 'OKRs', width: '320px' },
   theme: { label: 'Theme Name', width: '120px' },
   owner: { label: 'Owner', width: '120px' },
@@ -101,9 +102,36 @@ function TableRow({ row, level, visibleColumnKeys, onRowClick, onToggleExpand, e
   const isExpanded = expandedIds.has(row.id);
   const indentPx = level * 24;
 
+  // Get type label for the item
+  const getTypeLabel = () => {
+    if (row.itemType === 'objective') return 'Objective';
+    if (row.itemType === 'keyResult') return 'Key Result';
+    if (row.itemType === 'workItem') {
+      if (row.workItemType === 'epic') return 'Epic';
+      if (row.workItemType === 'feature') return 'Feature';
+      if (row.workItemType === 'story') return 'Story';
+      return 'Work Item';
+    }
+    return '—';
+  };
+
   // Render a single cell based on column key
   const renderCell = (colKey: string, isLast: boolean) => {
     switch (colKey) {
+      case 'type':
+        return (
+          <td key={colKey} className="py-3 px-4" style={{ width: COLUMN_CONFIG[colKey].width }}>
+            <span className={cn(
+              "text-[10px] font-medium px-1.5 py-0.5 rounded",
+              row.itemType === 'objective' && "bg-brand-gold/10 text-brand-gold",
+              row.itemType === 'keyResult' && "bg-secondary-green/10 text-secondary-green",
+              row.itemType === 'workItem' && "bg-secondary-bronze/10 text-secondary-bronze"
+            )}>
+              {getTypeLabel()}
+            </span>
+          </td>
+        );
+
       case 'objective':
         return (
           <td key={colKey} className="py-3 px-4" style={{ width: COLUMN_CONFIG[colKey].width }}>
@@ -284,9 +312,13 @@ export function OkrObjectivesTable({ rows, columns = [], onRowClick, onToggleExp
   // Compute visible column keys from the columns prop
   const visibleColumnKeys = useMemo(() => {
     const visible = columns.filter(c => c.visible).map(c => c.key);
-    // If no columns defined or all hidden, show default set
+    // If no columns defined or all hidden, show default set (type always first)
     if (visible.length === 0) {
-      return ['objective', 'status', 'progress', 'risks', 'krs'];
+      return ['type', 'objective', 'status', 'progress', 'risks', 'krs'];
+    }
+    // Ensure type is always included and first
+    if (!visible.includes('type')) {
+      return ['type', ...visible];
     }
     return visible;
   }, [columns]);

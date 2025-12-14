@@ -188,7 +188,7 @@ function TableRow({
         return (
           <td key={colKey} className="py-3 px-4" style={{ width: COLUMN_CONFIG[colKey].width }}>
             <span className={cn(
-              "text-xs font-medium px-2 py-1 rounded-md",
+              "text-[10px] font-medium px-1.5 py-0.5 rounded",
               item.type === 'objective' && "bg-brand-gold/10 text-brand-gold",
               item.type === 'keyResult' && "bg-secondary-green/10 text-secondary-green",
               item.type === 'workItem' && "bg-secondary-bronze/10 text-secondary-bronze"
