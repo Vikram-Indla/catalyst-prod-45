@@ -2,9 +2,21 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
+/**
+ * CATALYST DATA TABLE - Token-Based Theme-Aware Table
+ * Uses semantic CSS variables for automatic light/dark mode support
+ * Tokens: --surface-1/2/3, --text-1/2/3, --divider, --border-color
+ */
+
 const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableElement>>(
   ({ className, ...props }, ref) => (
-    <div className="relative w-full overflow-auto">
+    <div 
+      className="relative w-full overflow-auto rounded-xl"
+      style={{ 
+        backgroundColor: 'var(--surface-2)',
+        border: '1px solid var(--border-color)',
+      }}
+    >
       <table ref={ref} className={cn("w-full caption-bottom text-sm", className)} {...props} />
     </div>
   ),
@@ -12,7 +24,14 @@ const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableE
 Table.displayName = "Table";
 
 const TableHeader = React.forwardRef<HTMLTableSectionElement, React.HTMLAttributes<HTMLTableSectionElement>>(
-  ({ className, ...props }, ref) => <thead ref={ref} className={cn("[&_tr]:border-b", className)} {...props} />,
+  ({ className, ...props }, ref) => (
+    <thead 
+      ref={ref} 
+      className={cn("[&_tr]:border-b", className)} 
+      style={{ backgroundColor: 'var(--surface-1)' }}
+      {...props} 
+    />
+  ),
 );
 TableHeader.displayName = "TableHeader";
 
@@ -25,26 +44,35 @@ TableBody.displayName = "TableBody";
 
 const TableFooter = React.forwardRef<HTMLTableSectionElement, React.HTMLAttributes<HTMLTableSectionElement>>(
   ({ className, ...props }, ref) => (
-    <tfoot ref={ref} className={cn("border-t bg-muted/50 font-medium [&>tr]:last:border-b-0", className)} {...props} />
+    <tfoot 
+      ref={ref} 
+      className={cn("font-medium [&>tr]:last:border-b-0", className)} 
+      style={{ 
+        backgroundColor: 'var(--surface-1)',
+        borderTop: '1px solid var(--divider)',
+      }}
+      {...props} 
+    />
   ),
 );
 TableFooter.displayName = "TableFooter";
 
 /**
- * FIX C: Table Density
- * - Row height: 40px (via h-10 and py-2)
- * - Compact row: 32px (via py-1)
- * - Consistent vertical padding
- * - Full-width row separators
+ * Table Density: 40px row height (h-10)
+ * Hover: var(--surface-3)
+ * Selected: var(--nav-active-bg)
  */
 const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTMLTableRowElement>>(
   ({ className, ...props }, ref) => (
     <tr
       ref={ref}
       className={cn(
-        "h-10 border-b transition-colors data-[state=selected]:bg-muted hover:bg-muted/50",
+        "h-10 transition-colors",
+        "data-[state=selected]:bg-[var(--nav-active-bg)]",
+        "hover:bg-[var(--surface-3)]",
         className
       )}
+      style={{ borderBottom: '1px solid var(--divider)' }}
       {...props}
     />
   ),
@@ -56,9 +84,10 @@ const TableHead = React.forwardRef<HTMLTableCellElement, React.ThHTMLAttributes<
     <th
       ref={ref}
       className={cn(
-        "h-10 px-4 py-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0",
+        "h-10 px-4 py-2 text-left align-middle font-medium [&:has([role=checkbox])]:pr-0",
         className,
       )}
+      style={{ color: 'var(--text-2)' }}
       {...props}
     />
   ),
@@ -67,14 +96,24 @@ TableHead.displayName = "TableHead";
 
 const TableCell = React.forwardRef<HTMLTableCellElement, React.TdHTMLAttributes<HTMLTableCellElement>>(
   ({ className, ...props }, ref) => (
-    <td ref={ref} className={cn("px-4 py-2 align-middle [&:has([role=checkbox])]:pr-0", className)} {...props} />
+    <td 
+      ref={ref} 
+      className={cn("px-4 py-2 align-middle [&:has([role=checkbox])]:pr-0", className)} 
+      style={{ color: 'var(--text-1)' }}
+      {...props} 
+    />
   ),
 );
 TableCell.displayName = "TableCell";
 
 const TableCaption = React.forwardRef<HTMLTableCaptionElement, React.HTMLAttributes<HTMLTableCaptionElement>>(
   ({ className, ...props }, ref) => (
-    <caption ref={ref} className={cn("mt-4 text-sm text-muted-foreground", className)} {...props} />
+    <caption 
+      ref={ref} 
+      className={cn("mt-4 text-sm", className)} 
+      style={{ color: 'var(--text-3)' }}
+      {...props} 
+    />
   ),
 );
 TableCaption.displayName = "TableCaption";
