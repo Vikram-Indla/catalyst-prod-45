@@ -128,10 +128,14 @@ function computeBaselineInfo(
     }
   }
 
+  // Round values to 1 decimal place
+  const roundedExpected = baseline.expected !== null ? Math.round(baseline.expected * 10) / 10 : null;
+  const roundedDelta = baseline.variance !== null ? Math.round(baseline.variance * 10) / 10 : null;
+
   return {
-    actual,
-    expected: baseline.expected,
-    delta: baseline.variance,
+    actual: Math.round(actual * 10) / 10,
+    expected: roundedExpected,
+    delta: roundedDelta,
     trend,
     daysToTarget,
   };
@@ -342,8 +346,8 @@ export function computeObjectiveAnalytics(
   const objective = foundObjective;
   const theme = foundTheme;
 
-  // Compute progress
-  const actualProgress = computeObjectiveProgress(objective);
+  // Compute progress (rounded to 1 decimal place)
+  const actualProgress = Math.round(computeObjectiveProgress(objective) * 10) / 10;
 
   // Compute baseline
   const baseline = computeBaselineInfo(
