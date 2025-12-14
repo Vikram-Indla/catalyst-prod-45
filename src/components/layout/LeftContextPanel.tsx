@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEnabledModules } from '@/hooks/useModules';
+import { ENTERPRISE_NAV_ICONS } from '@/components/icons/EnterpriseNavIcons';
 import {
   Select,
   SelectContent,
@@ -372,7 +373,8 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
         <nav className="flex-1 overflow-y-auto py-1">
           <TooltipProvider delayDuration={0}>
             {getFilteredMenuItems().map((item) => {
-              const Icon = item.icon;
+              const CustomIcon = ENTERPRISE_NAV_ICONS[item.id];
+              const LucideIcon = item.icon;
               const active = isActive(item.path);
               const isExpandable = item.expandable;
               const isMoreItems = item.id === 'more-items';
@@ -423,7 +425,11 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                       }}
                     />
                   )}
-                  <Icon style={{ width: '20px', height: '20px', flexShrink: 0, color: active ? '#c69c6d' : '#6b7280' }} />
+                  {CustomIcon ? (
+                    <CustomIcon className="w-5 h-5 flex-shrink-0" style={{ color: active ? '#c69c6d' : '#6b7280' }} />
+                  ) : (
+                    <LucideIcon style={{ width: '20px', height: '20px', flexShrink: 0, color: active ? '#c69c6d' : '#6b7280' }} />
+                  )}
                   {expanded && <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'left', flex: 1 }}>{item.label}</span>}
                   {expanded && item.expandable && (
                     <ChevronRight 
