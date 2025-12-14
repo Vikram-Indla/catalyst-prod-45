@@ -22,7 +22,7 @@ import {
 
 // Score options 1-5 (new model)
 const SCORE_OPTIONS = [
-  { value: '', label: '—' },
+  { value: 'unset', label: '—' },
   { value: '1', label: '1' },
   { value: '2', label: '2' },
   { value: '3', label: '3' },
@@ -189,7 +189,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
   }, [data.score_strategic_alignment, data.business_value, data.score_time_urgency, data.score_resource_feasibility, data.rank, data.is_force_ranked, data.rank_override_justification]);
 
   const handleDraftScoreChange = (key: string, value: string) => {
-    const numValue = value === '' ? null : parseInt(value);
+    const numValue = value === 'unset' ? null : parseInt(value);
     setDraftScores(prev => ({ ...prev, [key]: numValue }));
     onDirtyChange?.(true);
   };
@@ -486,7 +486,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
                   </div>
                   <div className="flex items-center gap-3">
                     <Select
-                      value={value !== null ? String(value) : ''}
+                      value={value !== null ? String(value) : 'unset'}
                       onValueChange={(v) => handleDraftScoreChange(fieldKey, v)}
                       disabled={isForceRanked || isSaving}
                     >
