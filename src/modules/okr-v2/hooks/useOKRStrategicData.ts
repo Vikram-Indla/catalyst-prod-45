@@ -289,6 +289,8 @@ export function useOKRStrategicData(snapshotId?: string) {
           unit: dbKr.metric_type,
           weight: 1,
           dueDate: dbKr.due_date,
+          startDate: dbKr.start_date || undefined,  // KR timeframe start
+          endDate: dbKr.end_date || undefined,      // KR timeframe end
           direction: (dbKr.direction as 'increase' | 'decrease' | 'maintain') || 'increase',
           ownRisks: krOwnRisks,                    // Direct KR risks (empty)
           cascadedRisks: cascadedRisksFromWorkItems, // Sum of work item ownRisks

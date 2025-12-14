@@ -44,6 +44,8 @@ export interface KeyResultV2 {
   updated_at: string;
   owner_name?: string;
   work_contributions_count?: number;
+  start_date?: string | null;
+  end_date?: string | null;
 }
 
 export interface CreateKeyResultInput {
@@ -55,6 +57,8 @@ export interface CreateKeyResultInput {
   goal_value: number;
   direction?: Direction;
   owner_id?: string;
+  start_date?: string | null;
+  end_date?: string | null;
 }
 
 function calculateKRProgress(baseline: number, current: number, goal: number, direction: Direction): number {
@@ -220,6 +224,8 @@ export function useCreateKeyResultV2() {
           direction: direction,
           status: 'pending',
           progress: Math.round(progress), // Store progress in DB
+          start_date: input.start_date || null,
+          end_date: input.end_date || null,
         })
         .select()
         .single();

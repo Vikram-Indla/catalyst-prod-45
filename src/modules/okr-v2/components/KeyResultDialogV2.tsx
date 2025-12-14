@@ -16,9 +16,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
 import { useState, useEffect } from "react";
 import { useCreateKeyResultV2, useUpdateKeyResultV2, MetricType, Direction } from "@/hooks/useKeyResultsV2";
 import { getCurrencyLabel } from "@/lib/currencyConfig";
+import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 
 // V1-style metric type options mapped to v2 types
 // NOTE: DB CHECK constraint allows: 'percentage', 'count', 'cost_currency', 'nps', 'score'
@@ -56,9 +63,28 @@ export function KeyResultDialogV2({
   const [baselineValue, setBaselineValue] = useState<string>("0");
   const [goalValue, setGoalValue] = useState<string>("100");
   const [currentValue, setCurrentValue] = useState<string>("0");
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+  const [dateError, setDateError] = useState<string | null>(null);
 
   const createMutation = useCreateKeyResultV2();
   const updateMutation = useUpdateKeyResultV2();
+
+  // Fetch parent objective to get default dates
+  const { data: parentObjective } = useQuery({
+    queryKey: ['objective-for-kr', objectiveId],
+    queryFn: async () => {
+      if (!objectiveId) return null;
+      const { data, error } = await supabase
+        .from('objectives')
+        .select('start_date, due_date')
+        .eq('id', objectiveId)
+        .single();
+      if (error) return null;
+      return data;
+    },
+    enabled: !!objectiveId && open && !keyResult,
+  });
 
   useEffect(() => {
     if (keyResult) {
@@ -68,6 +94,9 @@ export function KeyResultDialogV2({
       setBaselineValue(String(keyResult.baseline_value ?? 0));
       setGoalValue(String(keyResult.goal_value ?? 100));
       setCurrentValue(String(keyResult.current_value ?? 0));
+      setStartDate(keyResult.start_date ? new Date(keyResult.start_date) : undefined);
+      setEndDate(keyResult.end_date ? new Date(keyResult.end_date) : undefined);
+      setDateError(null);
     } else {
       setSummary("");
       setMetricType("percentage");
@@ -75,8 +104,23 @@ export function KeyResultDialogV2({
       setBaselineValue("0");
       setGoalValue("100");
       setCurrentValue("0");
+      // Default to parent objective dates if available
+      setStartDate(parentObjective?.start_date ? new Date(parentObjective.start_date) : undefined);
+      setEndDate(parentObjective?.due_date ? new Date(parentObjective.due_date) : undefined);
+      setDateError(null);
     }
-  }, [keyResult, open]);
+  }, [keyResult, open, parentObjective]);
+
+  // Validate dates
+  useEffect(() => {
+    if ((startDate && !endDate) || (!startDate && endDate)) {
+      setDateError("Both start and end dates are required if either is set");
+    } else if (startDate && endDate && endDate < startDate) {
+      setDateError("End date must be on or after start date");
+    } else {
+      setDateError(null);
+    }
+  }, [startDate, endDate]);
 
   const parseValue = (val: string): number => {
     const parsed = parseFloat(val);
@@ -92,6 +136,10 @@ export function KeyResultDialogV2({
       return;
     }
 
+    if (dateError) {
+      return;
+    }
+
     if (keyResult) {
       // Update existing KR
       await updateMutation.mutateAsync({
@@ -101,7 +149,7 @@ export function KeyResultDialogV2({
       });
       onClose();
     } else {
-      // Create new KR - include current_value
+      // Create new KR - include dates
       await createMutation.mutateAsync({
         objective_id: objectiveId,
         summary: summary.trim(),
@@ -110,6 +158,8 @@ export function KeyResultDialogV2({
         current_value: currentNum,
         goal_value: goalNum,
         direction,
+        start_date: startDate ? startDate.toISOString().split('T')[0] : null,
+        end_date: endDate ? endDate.toISOString().split('T')[0] : null,
       });
       onClose();
     }
@@ -129,6 +179,8 @@ export function KeyResultDialogV2({
       : ((baselineNum - currentNum) / (baselineNum - goalNum)) * 100;
     return Math.max(0, Math.min(100, progress));
   };
+
+  const isSubmitDisabled = createMutation.isPending || updateMutation.isPending || !summary.trim() || !!dateError;
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
@@ -236,6 +288,71 @@ export function KeyResultDialogV2({
             </div>
           </div>
 
+          {/* Timeframe Section */}
+          <div className="space-y-2">
+            <Label>Timeframe</Label>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <span className="text-xs text-muted-foreground">Start Date</span>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !startDate && "text-muted-foreground"
+                      )}
+                      disabled={!!keyResult}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {startDate ? format(startDate, "PPP") : <span>Pick start date</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 z-[500]" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={startDate}
+                      onSelect={setStartDate}
+                      initialFocus
+                      className="p-3 pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <div className="space-y-1">
+                <span className="text-xs text-muted-foreground">End Date</span>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !endDate && "text-muted-foreground"
+                      )}
+                      disabled={!!keyResult}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {endDate ? format(endDate, "PPP") : <span>Pick end date</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 z-[500]" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={endDate}
+                      onSelect={setEndDate}
+                      initialFocus
+                      className="p-3 pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+            {dateError && (
+              <p className="text-xs text-destructive mt-1">{dateError}</p>
+            )}
+          </div>
+
           <div className="bg-muted p-3 rounded-md">
             <div className="text-sm font-medium mb-2">Progress</div>
             <div className="text-sm text-muted-foreground">
@@ -259,7 +376,7 @@ export function KeyResultDialogV2({
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={createMutation.isPending || updateMutation.isPending || !summary.trim()}
+            disabled={isSubmitDisabled}
           >
             {keyResult ? "Update" : "Create"}
           </Button>

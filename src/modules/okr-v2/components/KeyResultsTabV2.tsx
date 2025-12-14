@@ -4,9 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Plus, Trash2, TrendingUp, TrendingDown, Minus, Edit, ChevronDown, ChevronRight, Link2 } from 'lucide-react';
+import { Plus, Trash2, TrendingUp, TrendingDown, Minus, Edit, ChevronDown, ChevronRight, Link2, Calendar } from 'lucide-react';
 import { KeyResultDialogV2 } from './KeyResultDialogV2';
 import { KRWorkAlignmentDrawer } from './KRWorkAlignmentDrawer';
+import { format } from 'date-fns';
 
 interface KeyResultsTabV2Props {
   objectiveId: string;
@@ -149,6 +150,19 @@ export function KeyResultsTabV2({ objectiveId, onMutation }: KeyResultsTabV2Prop
                       <span className="font-medium">{Math.round(kr.progress)}%</span>
                     </div>
                     <Progress value={kr.progress} className="h-2" />
+                  </div>
+
+                  {/* Timeframe Display */}
+                  <div className="flex items-center gap-2 pt-2 border-t border-border">
+                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Timeframe:</span>
+                    {kr.start_date && kr.end_date ? (
+                      <span className="text-sm font-medium">
+                        {format(new Date(kr.start_date), 'dd MMM yyyy')} → {format(new Date(kr.end_date), 'dd MMM yyyy')}
+                      </span>
+                    ) : (
+                      <span className="text-sm text-muted-foreground italic">Not set</span>
+                    )}
                   </div>
 
                   <div className="flex gap-2 pt-2 border-t border-border flex-wrap">

@@ -304,12 +304,12 @@ export function getObjectiveProgressBaseline(objective: Objective): ProgressBase
 }
 
 /**
- * Get progress baseline for a Key Result
+ * Get progress baseline for a Key Result using its start_date and end_date
  */
 export function getKeyResultProgressBaseline(kr: KeyResult): ProgressBaseline {
   const actualProgress = computeKeyResultProgress(kr);
-  // KR uses dueDate only - startDate comes from parent objective
-  return computeProgressBaseline(actualProgress, undefined, kr.dueDate);
+  // KR now uses its own startDate and endDate for time-based trend
+  return computeProgressBaseline(actualProgress, kr.startDate, kr.endDate || kr.dueDate);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────────

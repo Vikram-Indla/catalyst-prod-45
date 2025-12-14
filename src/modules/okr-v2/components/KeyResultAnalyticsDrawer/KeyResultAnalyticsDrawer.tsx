@@ -5,7 +5,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { useState } from 'react';
-import { X, Shield, Link2, Lightbulb, ChevronDown, ChevronUp, AlertTriangle, ArrowRight, TrendingUp, TrendingDown, Clock, Target, Activity } from 'lucide-react';
+import { X, Shield, Link2, Lightbulb, ChevronDown, ChevronUp, AlertTriangle, ArrowRight, TrendingUp, TrendingDown, Clock, Target, Activity, Calendar } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
@@ -156,8 +156,14 @@ function CollapsibleSection({ title, children, defaultOpen = false }: { title: s
 // ─────────────────────────────────────────────────────────────────────────────────
 
 function PerformanceCard({ analytics }: { analytics: KeyResultAnalyticsData }) {
-  const { baseline, actual, target, baselineValue, unit } = analytics;
+  const { baseline, actual, target, baselineValue, unit, hasTimeframe, startDate, endDate } = analytics;
   const deltaDisplay = baseline.delta !== null ? `${baseline.delta > 0 ? '+' : ''}${baseline.delta}pp` : '—';
+  
+  // Format dates for display
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return null;
+    return new Date(dateStr).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
+  };
   
   return (
     <div className="p-4 bg-card rounded-xl border border-border space-y-4">
@@ -179,6 +185,22 @@ function PerformanceCard({ analytics }: { analytics: KeyResultAnalyticsData }) {
         </div>
       </div>
 
+      {/* Expected vs Actual (time-based) */}
+      {hasTimeframe && baseline.expected !== null && (
+        <div className="flex items-center justify-between pt-2 border-t border-border">
+          <div className="flex flex-col">
+            <span className="text-xs text-muted-foreground">Expected by today</span>
+            <span className="text-sm font-medium">{baseline.expected}%</span>
+          </div>
+          <div className="flex flex-col items-end">
+            <span className="text-xs text-muted-foreground">Δ vs plan</span>
+            <span className={cn('text-sm font-medium', baseline.delta !== null && baseline.delta >= 0 ? 'text-secondary-green' : 'text-destructive')}>
+              {baseline.delta !== null ? `${baseline.delta > 0 ? '+' : ''}${baseline.delta}pp` : '—'}
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* Current vs Target display */}
       {actual !== undefined && target !== undefined && (
         <div className="flex items-center gap-2 pt-2 border-t border-border">
@@ -189,7 +211,19 @@ function PerformanceCard({ analytics }: { analytics: KeyResultAnalyticsData }) {
         </div>
       )}
 
-      {/* Timing row */}
+      {/* Timeframe display */}
+      <div className="flex items-center gap-2 pt-2 border-t border-border">
+        <Calendar className="h-4 w-4 text-muted-foreground" />
+        {hasTimeframe ? (
+          <span className="text-sm text-foreground">
+            {formatDate(startDate)} → {formatDate(endDate)}
+          </span>
+        ) : (
+          <span className="text-sm text-muted-foreground italic">No dates set</span>
+        )}
+      </div>
+
+      {/* Timing row - Days to target */}
       <div className="flex items-center gap-2 pt-2 border-t border-border">
         <Clock className="h-4 w-4 text-muted-foreground" />
         <span className={cn('text-sm font-medium', baseline.daysToTarget !== null && baseline.daysToTarget < 0 ? 'text-destructive' : 'text-foreground')}>
