@@ -160,8 +160,8 @@ function computeBaselineInfo(
 // ─────────────────────────────────────────────────────────────────────────────────
 
 function isWorkItemHighRisk(wi: WorkItem): boolean {
-  // High/critical risks
-  if ((wi.risks?.high || 0) > 0) return true;
+  // Work items use ownRisks (their direct risks)
+  if ((wi.ownRisks?.high || 0) > 0) return true;
   // Blocked status
   if (wi.status === 'blocked') return true;
   // Schedule variance > 14 days
@@ -170,39 +170,34 @@ function isWorkItemHighRisk(wi: WorkItem): boolean {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────────
-// HELPER: Check if KR is high risk (cascading from work items)
+// HELPER: Check if KR is high risk (has own high risks OR any work item is high risk)
 // ─────────────────────────────────────────────────────────────────────────────────
 
 function isKRHighRisk(kr: KeyResult): boolean {
-  // Direct high risks
-  if ((kr.risks?.high || 0) > 0) return true;
+  // Check KR's own high risks (not cascaded)
+  if ((kr.ownRisks?.high || 0) > 0) return true;
   // Any work item is high risk
   return (kr.workItems || []).some(isWorkItemHighRisk);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────────
-// HELPER: Check if Objective is high risk (cascading from KRs)
+// HELPER: Check if Objective is high risk (has own high risks OR any KR is high risk)
 // ─────────────────────────────────────────────────────────────────────────────────
 
 function isObjectiveHighRisk(obj: Objective): boolean {
-  // Direct high risks
-  if ((obj.risks?.high || 0) > 0) return true;
+  // Check Objective's own high risks (not cascaded)
+  if ((obj.ownRisks?.high || 0) > 0) return true;
   // Any KR is high risk
   return (obj.keyResults || []).some(isKRHighRisk);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────────
-// HELPER: Count high risks cascaded from a theme
+// HELPER: Count high risks cascaded from a theme (uses cascadedRisks for total)
 // ─────────────────────────────────────────────────────────────────────────────────
 
 function countThemeHighRisks(theme: Theme): number {
-  let count = 0;
-  for (const obj of theme.objectives || []) {
-    for (const kr of obj.keyResults || []) {
-      if (isKRHighRisk(kr)) count++;
-    }
-  }
-  return count;
+  // Use cascadedRisks for the total count (proper cascading already done in data)
+  return theme.cascadedRisks?.high || 0;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────────

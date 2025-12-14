@@ -16,9 +16,6 @@ import type { OKRColumn } from '../OKRColumnChooser';
 import { 
   getObjectiveProgressBaseline, 
   getKeyResultProgressBaseline,
-  getObjectiveOwnRiskSummary,
-  getKeyResultOwnRiskSummary,
-  getWorkItemRiskSummary,
 } from '../../lib/okrMetrics';
 
 // Shared presentational components
@@ -122,13 +119,14 @@ function TableRow({
   // Get OWN risk summary based on item type (NOT cascaded)
   // This ensures same risk doesn't appear 3 times in tree
   const getRiskSummary = () => {
-    if (item.type === 'objective') {
-      return getObjectiveOwnRiskSummary(item as Objective);
-    } else if (item.type === 'keyResult') {
-      return getKeyResultOwnRiskSummary(item as KeyResult);
-    }
-    // Work items show their own risks (they have no children)
-    return getWorkItemRiskSummary(item as WorkItem);
+    // Use ownRisks directly from the data model - no function call needed
+    const ownRisks = (item as any).ownRisks || { high: 0, medium: 0, low: 0 };
+    return {
+      highRiskCount: ownRisks.high || 0,
+      mediumRiskCount: ownRisks.medium || 0,
+      blockedWorkCount: 0,
+      delayedWorkCount: 0,
+    };
   };
 
   // Calculate linked counts

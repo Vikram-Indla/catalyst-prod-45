@@ -202,34 +202,34 @@ function computeRiskSummaryWithBreakdown(objective: Objective): AnalyticsRiskSum
   const keyResults = objective.keyResults || [];
   const allWorkItems = keyResults.flatMap(kr => kr.workItems || []);
 
-  // Get OWN risks at each level (not cascaded)
-  const objectiveOwnRisks = toRiskCounts(objective.risks);
+  // Get OWN risks at each level (not cascaded) - use ownRisks field
+  const objectiveOwnRisks = toRiskCounts(objective.ownRisks);
   
-  // Sum KR own risks
+  // Sum KR own risks (use ownRisks field, not cascaded risks)
   const krLevelRisks = keyResults.reduce(
-    (acc, kr) => addRiskCounts(acc, toRiskCounts(kr.risks)),
+    (acc, kr) => addRiskCounts(acc, toRiskCounts(kr.ownRisks)),
     EMPTY_RISK_COUNTS
   );
 
-  // Sum work item own risks
+  // Sum work item own risks (leaf nodes, ownRisks = their direct risks)
   const workItemLevelRisks = allWorkItems.reduce(
-    (acc, wi) => addRiskCounts(acc, toRiskCounts(wi.risks)),
+    (acc, wi) => addRiskCounts(acc, toRiskCounts(wi.ownRisks)),
     EMPTY_RISK_COUNTS
   );
 
-  // Total is sum of all levels
+  // Total is sum of all own risks from each level (no double counting)
   const totals = addRiskCounts(
     addRiskCounts(objectiveOwnRisks, krLevelRisks),
     workItemLevelRisks
   );
 
-  // Build lists of items with high risks for origin display
+  // Build lists of items with high own risks for origin display
   const workItemsWithHighRisk = allWorkItems
-    .filter(wi => (wi.risks?.high || 0) > 0)
+    .filter(wi => (wi.ownRisks?.high || 0) > 0)
     .map(wi => ({ id: wi.id, name: wi.name, type: wi.workItemType || 'work item' }));
 
   const krsWithHighRisk = keyResults
-    .filter(kr => (kr.risks?.high || 0) > 0)
+    .filter(kr => (kr.ownRisks?.high || 0) > 0)
     .map(kr => ({ id: kr.id, name: kr.name }));
 
   // Blocked items
