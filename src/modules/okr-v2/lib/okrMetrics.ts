@@ -516,6 +516,40 @@ export function getObjectiveRollupMetrics(objective: Objective): Partial<RollupM
 }
 
 // ─────────────────────────────────────────────────────────────────────────────────
+// WORK ITEM STATUS HELPERS (Blocked/Delayed counts)
+// ─────────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Count blocked work items across all KRs in an Objective
+ */
+export function getBlockedWorkCountForObjective(objective: Objective): number {
+  const allWorkItems = (objective.keyResults || []).flatMap(kr => kr.workItems || []);
+  return allWorkItems.filter(wi => wi.status === 'blocked').length;
+}
+
+/**
+ * Count delayed work items across all KRs in an Objective
+ * Delayed = scheduleVariance > 0 OR daysVariance > 0
+ */
+export function getDelayedWorkCountForObjective(objective: Objective): number {
+  const allWorkItems = (objective.keyResults || []).flatMap(kr => kr.workItems || []);
+  return allWorkItems.filter(wi => {
+    const variance = (wi as any).daysVariance || (wi as any).scheduleVariance || 0;
+    return variance > 0 && wi.status !== 'blocked';
+  }).length;
+}
+
+/**
+ * Get total linked work item count for an Objective
+ */
+export function getLinkedWorkItemCountForObjective(objective: Objective): number {
+  return (objective.keyResults || []).reduce(
+    (sum, kr) => sum + (kr.workItems?.length || 0),
+    0
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────────
 // SMART FILTERS
 // ─────────────────────────────────────────────────────────────────────────────────
 
