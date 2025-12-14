@@ -495,7 +495,7 @@ export function FilterDemandsDialog({
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Process Step</label>
                 <MultiSelectDropdown
-                  options={getProcessStepOptions()}}
+                  options={getProcessStepOptions()}
                   selected={localFilters.processStep || []}
                   onChange={(values) => updateFilter('processStep', values.length > 0 ? values : undefined)}
                   placeholder="Select..."
