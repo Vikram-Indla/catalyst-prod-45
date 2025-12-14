@@ -38,6 +38,7 @@ export default function ProductBacklogPage() {
       summary: br.title || '—',
       processStep: br.process_step?.toLowerCase().replace(/ /g, '_') || 'new_request',
       score: br.business_score ?? null,
+      autoPriority: br.priority_tier || 'unscored',
       rank: br.rank ?? null,
       reporter: br.requestor_name || null,
       assignee: br.assignee_name || null,

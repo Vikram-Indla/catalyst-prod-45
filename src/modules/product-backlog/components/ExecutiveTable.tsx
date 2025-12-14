@@ -89,6 +89,13 @@ const ALL_COLUMNS = [
   { id: 'summary', header: 'Summary', accessor: 'summary', minWidth: 320, sortable: true, editable: true },
   { id: 'processStep', header: 'Status', accessor: 'processStep', minWidth: 160, sortable: true, filterable: true, editable: true, type: 'select', options: STATUS_OPTIONS },
   { id: 'score', header: 'Score', accessor: 'score', minWidth: 120, sortable: true, type: 'number', align: 'right' },
+  { id: 'autoPriority', header: 'Auto Priority', accessor: 'autoPriority', minWidth: 120, sortable: true, filterable: true, type: 'select', options: [
+    { value: 'high', label: 'High' },
+    { value: 'medium', label: 'Medium' },
+    { value: 'low', label: 'Low' },
+    { value: 'rejected', label: 'Rejected' },
+    { value: 'unscored', label: 'Unscored' },
+  ] },
   { id: 'rank', header: 'Rank', accessor: 'rank', minWidth: 100, sortable: true, type: 'number', align: 'center' },
   { id: 'reporter', header: 'Reporter', accessor: 'reporter', minWidth: 140, sortable: true },
   { id: 'assignee', header: 'Assignee', accessor: 'assignee', minWidth: 140, sortable: true },
@@ -108,6 +115,7 @@ interface BusinessRequest {
   summary: string;
   processStep: string;
   score: number | null;
+  autoPriority: string;
   rank: number | null;
   reporter: string | null;
   assignee: string | null;

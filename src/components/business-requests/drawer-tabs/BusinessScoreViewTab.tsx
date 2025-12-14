@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, Lock, Save } from 'lucide-react';
+import { ChevronDown, Lock, Save, AlertCircle, RefreshCw, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { BusinessRequest } from '@/types/business-request';
 import { useToast } from '@/hooks/use-toast';
@@ -17,8 +17,68 @@ import {
   getPriorityTier, 
   getTierDisplayInfo,
   getScoreBadgeColor,
-  PriorityTier 
+  PriorityTier,
+  PrioritizationConfig
 } from '@/hooks/usePrioritizationConfig';
+
+// Helper function to generate deterministic "Why this priority?" bullets
+function generateWhyBullets(
+  draftScores: Record<string, number | null>,
+  config: PrioritizationConfig,
+  tier: PriorityTier
+): string[] {
+  if (tier === 'unscored') {
+    return ['This request is Unscored until all four criteria are saved.'];
+  }
+
+  const bullets: string[] = [];
+  const criteria = [
+    { key: 'score_strategic_alignment', label: 'Strategic Alignment', weight: config.weight_strategic_alignment },
+    { key: 'score_business_impact', label: 'Business Impact', weight: config.weight_business_impact },
+    { key: 'score_time_urgency', label: 'Time & Urgency', weight: config.weight_time_urgency },
+    { key: 'score_resource_feasibility', label: 'Resource & Feasibility', weight: config.weight_resource_feasibility },
+  ];
+
+  // Calculate contributions
+  const contributions = criteria.map(c => ({
+    ...c,
+    rating: draftScores[c.key] ?? 0,
+    contribution: ((c.weight * (draftScores[c.key] ?? 0)) / 100),
+  })).sort((a, b) => b.contribution - a.contribution);
+
+  // Top 2 drivers
+  const top2 = contributions.slice(0, 2);
+  if (top2.length === 2) {
+    bullets.push(`Strongest drivers: ${top2[0].label} and ${top2[1].label} contributed most to the score.`);
+  }
+
+  // Blockers (rating <= 2)
+  const blockers = contributions
+    .filter(c => c.rating !== null && c.rating <= 2)
+    .sort((a, b) => (a.rating ?? 0) - (b.rating ?? 0));
+  
+  blockers.slice(0, 2).forEach(blocker => {
+    bullets.push(`Key blocker: ${blocker.label} rated ${blocker.rating}/5.`);
+  });
+
+  // Tier-specific closing
+  switch (tier) {
+    case 'rejected':
+      bullets.push('Total score is below 2.0, so it is classified as Rejected Priority.');
+      break;
+    case 'high':
+      bullets.push('Total score is 4.0 or above, so it is classified as High Priority.');
+      break;
+    case 'medium':
+      bullets.push('Total score is between 3.0 and 4.0, so it is classified as Medium Priority.');
+      break;
+    case 'low':
+      bullets.push('Total score is between 2.0 and 3.0, so it is classified as Low Priority.');
+      break;
+  }
+
+  return bullets;
+}
 
 // Score options 1-5 (new model)
 const SCORE_OPTIONS = [
@@ -79,6 +139,14 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
     score_resource_feasibility: data.score_resource_feasibility ?? null,
   });
   
+  // Store original saved scores for rescoring cancel
+  const [savedScoresSnapshot, setSavedScoresSnapshot] = useState({
+    score_strategic_alignment: data.score_strategic_alignment ?? null,
+    score_business_impact: data.business_value ?? null,
+    score_time_urgency: data.score_time_urgency ?? null,
+    score_resource_feasibility: data.score_resource_feasibility ?? null,
+  });
+  
   const [justification, setJustification] = useState(data.rank_override_justification || '');
   const [showJustification, setShowJustification] = useState(false);
   const [pendingRank, setPendingRank] = useState<number | null>(null);
@@ -86,6 +154,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
   const [isOverrideOpen, setIsOverrideOpen] = useState(isForceRanked);
   const [isSaving, setIsSaving] = useState(false);
   const [isSavingRank, setIsSavingRank] = useState(false);
+  const [isRescoringMode, setIsRescoringMode] = useState(false);
   const skipNextResetRef = useRef(false);
   const prevRankRef = useRef<number | null>(data.rank);
   const originalRankRef = useRef<number | null>(data.rank);
@@ -168,6 +237,27 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
   }, [allRequests, requestId, savedTier]);
 
   const totalScoredItems = allRequests?.length || 0;
+
+  // Rescoring mode state
+  const hasSavedScore = savedTier !== 'unscored';
+  const isOnHold = data.process_step === 'on_hold';
+  const showRescoringBanner = (hasSavedScore || isOnHold) && !isRescoringMode;
+  
+  // Get tier info for display
+  const tierInfo = getTierDisplayInfo(savedTier);
+  
+  // Generate "Why this priority?" bullets based on SAVED scores
+  const whyBullets = useMemo(() => {
+    if (!config) return [];
+    // Use SAVED scores (from data), not draft scores
+    const savedScoresForBullets = {
+      score_strategic_alignment: data.score_strategic_alignment ?? null,
+      score_business_impact: data.business_value ?? null,
+      score_time_urgency: data.score_time_urgency ?? null,
+      score_resource_feasibility: data.score_resource_feasibility ?? null,
+    };
+    return generateWhyBullets(savedScoresForBullets, config, savedTier);
+  }, [config, data.score_strategic_alignment, data.business_value, data.score_time_urgency, data.score_resource_feasibility, savedTier]);
 
   // Sync draft scores when data changes
   useEffect(() => {
@@ -285,9 +375,25 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
       await queryClient.invalidateQueries({ queryKey: ['all-business-requests-for-rank'] });
       await queryClient.invalidateQueries({ queryKey: ['business-request', requestId] });
 
+      // If we were in rescoring mode and tier improved from rejected, show hint
+      const previousTier = data.priority_tier as PriorityTier;
+      const tierImproved = previousTier === 'rejected' && tier !== 'rejected';
+      
       toast({
         title: 'Score Saved',
-        description: `Priority Score: ${priorityScore?.toFixed(2)} (${tier.charAt(0).toUpperCase() + tier.slice(1)})`,
+        description: tierImproved 
+          ? `Priority Score: ${priorityScore?.toFixed(2)} (${tier.charAt(0).toUpperCase() + tier.slice(1)}). Priority updated. Status remains On Hold—update status if needed.`
+          : `Priority Score: ${priorityScore?.toFixed(2)} (${tier.charAt(0).toUpperCase() + tier.slice(1)})`,
+      });
+      
+      // Exit rescoring mode
+      setIsRescoringMode(false);
+      // Update saved scores snapshot
+      setSavedScoresSnapshot({
+        score_strategic_alignment: draftScores.score_strategic_alignment,
+        score_business_impact: draftScores.score_business_impact,
+        score_time_urgency: draftScores.score_time_urgency,
+        score_resource_feasibility: draftScores.score_resource_feasibility,
       });
     } catch (error) {
       console.error('Failed to save score:', error);
@@ -457,14 +563,75 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
 
   const forceRankEnabled = savedTier !== 'unscored' || isForceRanked;
   const selectDisplayValue = pendingRank !== null ? String(pendingRank) : (isForceRanked ? String(data.rank) : 'auto');
-  const tierInfo = getTierDisplayInfo(savedTier);
 
   if (configLoading) {
     return <div className="p-5 text-center text-muted-foreground">Loading configuration...</div>;
   }
 
+  // Rescoring handlers
+  const handleEnterRescoringMode = () => {
+    // Snapshot current saved scores before entering rescoring mode
+    setSavedScoresSnapshot({
+      score_strategic_alignment: data.score_strategic_alignment ?? null,
+      score_business_impact: data.business_value ?? null,
+      score_time_urgency: data.score_time_urgency ?? null,
+      score_resource_feasibility: data.score_resource_feasibility ?? null,
+    });
+    setIsRescoringMode(true);
+  };
+
+  const handleCancelRescoring = () => {
+    // Revert draft scores to last saved
+    setDraftScores(savedScoresSnapshot);
+    setIsRescoringMode(false);
+  };
+
   return (
     <div className="space-y-5 p-5">
+      {/* Rescoring Banner */}
+      {showRescoringBanner && (
+        <div className="flex items-center justify-between p-3 bg-amber-50 border border-amber-200 rounded-lg">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="h-4 w-4 text-amber-600" />
+            <span className="text-sm text-amber-800">
+              {isOnHold 
+                ? "This request is currently On Hold. If circumstances changed, you can rescore it."
+                : "This request has been previously scored. If circumstances changed, you can rescore it."}
+            </span>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleEnterRescoringMode}
+            className="border-amber-300 text-amber-700 hover:bg-amber-100"
+          >
+            <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
+            Rescore
+          </Button>
+        </div>
+      )}
+      
+      {/* Rescoring Mode Active Banner */}
+      {isRescoringMode && (
+        <div className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="flex items-center gap-2">
+            <RefreshCw className="h-4 w-4 text-blue-600" />
+            <span className="text-sm text-blue-800">
+              Rescoring mode active. Modify scores and click Save Score, or cancel to revert.
+            </span>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleCancelRescoring}
+            className="border-blue-300 text-blue-700 hover:bg-blue-100"
+          >
+            <X className="h-3.5 w-3.5 mr-1.5" />
+            Cancel
+          </Button>
+        </div>
+      )}
+
       <div className="grid grid-cols-2 gap-5">
         {/* Left Card - Scoring Criteria */}
         <Card className="border border-border/50 rounded-lg bg-card">
@@ -566,6 +733,36 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
                   </p>
                 </>
               )}
+            </div>
+
+            {/* Score Summary */}
+            <div className="pt-3 border-t border-border/40">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-secondary-bronze mb-2">
+                Score Summary
+              </p>
+              <ul className="text-xs text-muted-foreground space-y-1 pl-4 list-disc">
+                {savedTier !== 'unscored' ? (
+                  <>
+                    <li>Score: {data.business_score ? (data.business_score / 100).toFixed(2) : '—'} out of 5.00</li>
+                    <li>Priority Tier: {tierInfo.label}</li>
+                    <li>Calculated from 4 weighted criteria</li>
+                  </>
+                ) : (
+                  <li className="italic">Complete all criteria and save to see summary</li>
+                )}
+              </ul>
+            </div>
+
+            {/* Why this priority? */}
+            <div className="pt-3 border-t border-border/40">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-secondary-bronze mb-2">
+                Why this priority?
+              </p>
+              <ul className="text-xs text-muted-foreground space-y-1 pl-4 list-disc">
+                {whyBullets.map((bullet, idx) => (
+                  <li key={idx}>{bullet}</li>
+                ))}
+              </ul>
             </div>
 
             {/* Override Rank Section */}
