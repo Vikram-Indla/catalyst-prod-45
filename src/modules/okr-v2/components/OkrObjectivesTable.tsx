@@ -60,7 +60,7 @@ interface OkrObjectivesTableProps {
 
 // Column configuration with widths and labels
 const COLUMN_CONFIG: Record<string, { label: string; width: string }> = {
-  objective: { label: 'Theme', width: '320px' },
+  objective: { label: 'OKRs', width: '320px' },
   theme: { label: 'Theme Name', width: '120px' },
   owner: { label: 'Owner', width: '120px' },
   status: { label: 'Status', width: '100px' },
@@ -153,12 +153,6 @@ function TableRow({ row, level, visibleColumnKeys, onRowClick, onToggleExpand, e
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
-              )}
-              
-              {level === 0 && (
-                <span className="text-xs text-muted-foreground ml-1 truncate hidden lg:inline">
-                  {row.themeName}
-                </span>
               )}
             </div>
           </td>

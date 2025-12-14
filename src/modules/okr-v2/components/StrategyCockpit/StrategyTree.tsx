@@ -219,12 +219,6 @@ function TableRow({
                   </Tooltip>
                 </TooltipProvider>
               )}
-              
-              {level === 0 && (
-                <span className="text-xs text-muted-foreground ml-1 truncate hidden lg:inline">
-                  {themeName}
-                </span>
-              )}
             </div>
           </td>
         );
