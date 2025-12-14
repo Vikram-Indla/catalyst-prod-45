@@ -4,8 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { useState, useCallback, useRef } from 'react';
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
+import { exportAnalyticsReportToPDF } from '../lib/exportAnalyticsReportToPDF';
 import { X, TrendingUp, TrendingDown, Minus, AlertTriangle, Clock, Link, Download, BarChart3, Target, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -661,43 +660,11 @@ export function StrategyAnalyticsModal({
     
     setIsExporting(true);
     try {
-      // Capture the content area as canvas
-      const canvas = await html2canvas(contentRef.current, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: '#faf7f1',
-        logging: false,
+      await exportAnalyticsReportToPDF(contentRef.current, {
+        title: 'Strategy Analytics Overview',
+        subtitle: 'Executive Strategy Report',
+        filterLabel,
       });
-      
-      const imgData = canvas.toDataURL('image/png');
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
-      
-      // Create PDF with appropriate dimensions
-      const pdfWidth = 297; // A4 landscape width in mm
-      const pdfHeight = (imgHeight * pdfWidth) / imgWidth;
-      
-      const pdf = new jsPDF({
-        orientation: pdfHeight > pdfWidth ? 'portrait' : 'landscape',
-        unit: 'mm',
-        format: [pdfWidth, Math.max(pdfHeight, 210)],
-      });
-      
-      // Add header
-      pdf.setFontSize(16);
-      pdf.setTextColor(0, 0, 0);
-      pdf.text('Strategy Analytics Overview', 14, 15);
-      pdf.setFontSize(10);
-      pdf.setTextColor(100, 100, 100);
-      pdf.text(`Generated: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`, 14, 22);
-      pdf.text(`Filter: ${filterLabel}`, 14, 28);
-      
-      // Add the captured image
-      pdf.addImage(imgData, 'PNG', 7, 35, pdfWidth - 14, pdfHeight - 20);
-      
-      // Save the PDF
-      const timestamp = new Date().toISOString().split('T')[0];
-      pdf.save(`strategy-analytics-${timestamp}.pdf`);
     } catch (error) {
       console.error('Failed to export PDF:', error);
     } finally {
@@ -747,7 +714,12 @@ export function StrategyAnalyticsModal({
           </div>
 
           {/* Scrollable Content - ref for PDF export */}
-          <div ref={contentRef} className="flex-1 overflow-y-auto p-7">
+          <div 
+            ref={contentRef} 
+            id="analytics-report-content"
+            className="flex-1 overflow-y-auto p-7"
+            style={{ backgroundColor: '#faf7f1' }}
+          >
             {isLoading ? (
               <div className="space-y-8">
                 <div className="grid grid-cols-3 gap-4">
