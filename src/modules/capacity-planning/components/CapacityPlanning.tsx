@@ -94,9 +94,16 @@ export function CapacityPlanning() {
     saveViewConfig.mutate({ resource_ids: newIds });
   }, [viewResourceIds, saveViewConfig]);
 
-  const handleCreateBooking = useCallback((resourceId: string, date: Date) => {
+  const handleCreateBooking = useCallback((resourceId: string, date?: Date) => {
     setNewBookingResourceId(resourceId);
     setNewBookingDate(date);
+    setEditingBooking(null);
+    setAssignModalOpen(true);
+  }, []);
+
+  const handleAssignResource = useCallback((resourceId: string) => {
+    setNewBookingResourceId(resourceId);
+    setNewBookingDate(new Date());
     setEditingBooking(null);
     setAssignModalOpen(true);
   }, []);
@@ -179,6 +186,7 @@ export function CapacityPlanning() {
             onAddResource={() => setAddResourceOpen(true)}
             onBookingClick={handleBookingClick}
             onCreateBooking={handleCreateBooking}
+            onAssignResource={handleAssignResource}
           />
         ) : (
           <ListView
