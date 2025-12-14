@@ -138,7 +138,7 @@ export function CatalystHeader() {
         className="sticky top-0 z-[100] flex items-center"
         style={{ 
           height: '56px', 
-          borderBottom: '1px solid var(--border)',
+          borderBottom: '1px solid var(--nav-border)',
           padding: '0 16px',
           fontFamily: "var(--font-sans, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif)",
           backgroundColor: 'var(--nav-bg)',
@@ -159,8 +159,8 @@ export function CatalystHeader() {
               lineHeight: 1
             }}
           >
-            <span style={{ color: '#5c7c5c' }}>Cata</span>
-            <span style={{ color: '#c69c6d' }}>lyst</span>
+            <span style={{ color: 'hsl(var(--secondary-green))' }}>Cata</span>
+            <span style={{ color: 'hsl(var(--brand-gold))' }}>lyst</span>
           </span>
         </a>
         
@@ -180,7 +180,7 @@ export function CatalystHeader() {
                           padding: '0 14px',
                           fontSize: '14px',
                           fontWeight: 500,
-                          color: '#374151',
+                          color: 'var(--nav-text)',
                           borderRadius: '6px',
                           gap: '4px',
                           border: 'none',
@@ -206,13 +206,13 @@ export function CatalystHeader() {
               const isActive = item.label === activeNavItem;
               
               // TopNav item styles matching reference exactly
-              // Active nav items use olive green (#5c7c5c) for consistency
+              // Active nav items use olive green for consistency
               const navButtonStyle: React.CSSProperties = {
                 height: '36px',
                 padding: '0 14px',
                 fontSize: '14px',
                 fontWeight: isActive ? 600 : 500,
-                color: isActive ? '#5c7c5c' : '#374151',
+                color: isActive ? 'hsl(var(--secondary-green))' : 'var(--nav-text)',
                 borderRadius: '6px',
                 display: 'flex',
                 alignItems: 'center',
@@ -234,7 +234,7 @@ export function CatalystHeader() {
                     left: '14px',
                     right: '14px',
                     height: '2px',
-                    background: '#5c7c5c',
+                    background: 'hsl(var(--secondary-green))',
                     borderRadius: '1px',
                   }}
                 />
@@ -247,7 +247,7 @@ export function CatalystHeader() {
                     singleItemNav.product.hasSingleItem && singleItemNav.product.directPath ? (
                       <button
                         style={navButtonStyle}
-                        onMouseEnter={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
                         onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                         onClick={() => navigate(singleItemNav.product.directPath!)}
                       >
@@ -262,7 +262,7 @@ export function CatalystHeader() {
                         <PopoverTrigger asChild>
                           <button 
                             style={navButtonStyle}
-                            onMouseEnter={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
+                            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
                             onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                           >
                             {item.label}
@@ -285,7 +285,7 @@ export function CatalystHeader() {
                     singleItemNav.program.hasSingleItem && singleItemNav.program.directPath ? (
                       <button
                         style={navButtonStyle}
-                        onMouseEnter={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
                         onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                         onClick={() => navigate(singleItemNav.program.directPath!)}
                       >
@@ -300,7 +300,7 @@ export function CatalystHeader() {
                         <PopoverTrigger asChild>
                           <button 
                             style={navButtonStyle}
-                            onMouseEnter={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
+                            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
                             onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                           >
                             {item.label}
@@ -323,7 +323,7 @@ export function CatalystHeader() {
                     singleItemNav.project.hasSingleItem && singleItemNav.project.directPath ? (
                       <button
                         style={navButtonStyle}
-                        onMouseEnter={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
                         onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                         onClick={() => navigate(singleItemNav.project.directPath!)}
                       >
@@ -338,7 +338,7 @@ export function CatalystHeader() {
                         <PopoverTrigger asChild>
                           <button 
                             style={navButtonStyle}
-                            onMouseEnter={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
+                            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
                             onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                           >
                             {item.label}
@@ -362,10 +362,10 @@ export function CatalystHeader() {
                       <button
                         style={{
                           ...navButtonStyle,
-                          color: location.pathname.startsWith('/release') ? '#5c7c5c' : navButtonStyle.color,
+                          color: location.pathname.startsWith('/release') ? 'hsl(var(--secondary-green))' : navButtonStyle.color,
                           fontWeight: location.pathname.startsWith('/release') ? 600 : navButtonStyle.fontWeight,
                         }}
-                        onMouseEnter={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
+                        onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
                         onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                         onClick={() => navigate(singleItemNav.release.directPath!)}
                       >
@@ -378,7 +378,7 @@ export function CatalystHeader() {
                               left: '14px',
                               right: '14px',
                               height: '2px',
-                              background: '#5c7c5c',
+                              background: 'hsl(var(--secondary-green))',
                               borderRadius: '1px',
                             }}
                           />
@@ -393,10 +393,10 @@ export function CatalystHeader() {
                           <button 
                             style={{
                               ...navButtonStyle,
-                              color: location.pathname.startsWith('/release') ? '#5c7c5c' : navButtonStyle.color,
+                              color: location.pathname.startsWith('/release') ? 'hsl(var(--secondary-green))' : navButtonStyle.color,
                               fontWeight: location.pathname.startsWith('/release') ? 600 : navButtonStyle.fontWeight,
                             }}
-                            onMouseEnter={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
+                            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
                             onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                           >
                             {item.label}
@@ -409,7 +409,7 @@ export function CatalystHeader() {
                                   left: '14px',
                                   right: '14px',
                                   height: '2px',
-                                  background: '#5c7c5c',
+                                  background: 'hsl(var(--secondary-green))',
                                   borderRadius: '1px',
                                 }}
                               />
@@ -426,7 +426,7 @@ export function CatalystHeader() {
                   ) : (
                     <button
                       style={navButtonStyle}
-                      onMouseEnter={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
                       onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                       onClick={() => item.path && navigate(item.path)}
                     >
@@ -474,17 +474,17 @@ export function CatalystHeader() {
                     border: 'none',
                     borderRadius: '6px',
                     background: 'transparent',
-                    color: '#6b7280',
+                    color: 'var(--icon-default)',
                     cursor: 'pointer',
                     transition: 'all 0.15s ease',
                   }}
                   onMouseEnter={(e) => { 
-                    e.currentTarget.style.background = '#f3f4f6'; 
-                    e.currentTarget.style.color = '#374151';
+                    e.currentTarget.style.background = 'var(--nav-hover-bg)'; 
+                    e.currentTarget.style.color = 'var(--icon-hover)';
                   }}
                   onMouseLeave={(e) => { 
                     e.currentTarget.style.background = 'transparent'; 
-                    e.currentTarget.style.color = '#6b7280';
+                    e.currentTarget.style.color = 'var(--icon-default)';
                   }}
                   onClick={() => navigate('/admin/activity')}
                   title="Settings"
@@ -510,17 +510,17 @@ export function CatalystHeader() {
                     border: 'none',
                     borderRadius: '6px',
                     background: 'transparent',
-                    color: '#6b7280',
+                    color: 'var(--icon-default)',
                     cursor: 'pointer',
                     transition: 'all 0.15s ease',
                   }}
                   onMouseEnter={(e) => { 
-                    e.currentTarget.style.background = '#f3f4f6'; 
-                    e.currentTarget.style.color = '#374151';
+                    e.currentTarget.style.background = 'var(--nav-hover-bg)'; 
+                    e.currentTarget.style.color = 'var(--icon-hover)';
                   }}
                   onMouseLeave={(e) => { 
                     e.currentTarget.style.background = 'transparent'; 
-                    e.currentTarget.style.color = '#6b7280';
+                    e.currentTarget.style.color = 'var(--icon-default)';
                   }}
                   onClick={() => setIsSearchOpen(true)}
                   title="Search"

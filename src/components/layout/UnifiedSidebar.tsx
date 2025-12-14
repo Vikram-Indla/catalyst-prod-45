@@ -117,8 +117,8 @@ export function UnifiedSidebar({
       style={{
         width: expanded ? '220px' : '60px',
         height: '100%',
-        background: '#ffffff',
-        borderRight: '1px solid #e5e7eb',
+        background: 'var(--surface-1)',
+        borderRight: '1px solid var(--border-color)',
         transition: 'all 0.3s ease',
         flexShrink: 0,
         position: 'relative',
@@ -138,13 +138,14 @@ export function UnifiedSidebar({
           width: '24px',
           height: '24px',
           borderRadius: '9999px',
-          background: '#ffffff',
-          border: '1px solid #e5e7eb',
-          boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+          background: 'var(--surface-1)',
+          border: '1px solid var(--border-color)',
+          boxShadow: 'var(--card-shadow)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           cursor: 'pointer',
+          color: 'var(--icon-default)',
         }}
         aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
       >
@@ -188,7 +189,7 @@ export function UnifiedSidebar({
                   {entity?.name?.substring(0, 2).toUpperCase() || entityLabel.substring(0, 2).toUpperCase()}
                 </div>
                 {/* Section label - always green when expanded */}
-                <span style={{ fontSize: '14px', fontWeight: 700, color: '#5c7c5c' }}>
+                <span style={{ fontSize: '14px', fontWeight: 700, color: 'hsl(var(--secondary-green))' }}>
                   {entity?.name || entityLabel}
                 </span>
               </div>
@@ -198,7 +199,7 @@ export function UnifiedSidebar({
                   marginTop: '8px',
                   width: '100%',
                   height: '1px',
-                  backgroundColor: '#e5e7eb',
+                  backgroundColor: 'var(--border-color)',
                 }}
               />
             </div>
@@ -247,17 +248,17 @@ export function UnifiedSidebar({
                   position: 'relative',
                   justifyContent: expanded ? 'flex-start' : 'center',
                   // Active state styling - olive green
-                  background: active ? 'rgba(92, 124, 92, 0.06)' : 'transparent',
-                  color: active ? '#5c7c5c' : '#4b5563',
+                  background: active ? 'var(--accent-muted)' : 'transparent',
+                  color: active ? 'hsl(var(--secondary-green))' : 'var(--text-2)',
                   fontWeight: active ? 600 : 500,
                   fontSize: '14px',
                   fontFamily: 'inherit',
                 }}
                 onMouseEnter={(e) => { 
-                  if (!active) e.currentTarget.style.background = '#f9fafb'; 
+                  if (!active) e.currentTarget.style.background = 'var(--nav-hover-bg)'; 
                 }}
                 onMouseLeave={(e) => { 
-                  e.currentTarget.style.background = active ? 'rgba(92, 124, 92, 0.06)' : 'transparent'; 
+                  e.currentTarget.style.background = active ? 'var(--accent-muted)' : 'transparent'; 
                 }}
                 title={!expanded ? item.label : undefined}
               >
@@ -270,12 +271,12 @@ export function UnifiedSidebar({
                       top: '8px',
                       bottom: '8px',
                       width: '3px',
-                      background: '#5c7c5c',
+                      background: 'hsl(var(--secondary-green))',
                       borderRadius: '0 2px 2px 0',
                     }}
                   />
                 )}
-                <Icon style={{ width: '20px', height: '20px', flexShrink: 0 }} />
+                <Icon style={{ width: '20px', height: '20px', flexShrink: 0, color: active ? 'hsl(var(--secondary-green))' : 'var(--icon-default)' }} />
                 {expanded && (
                   <>
                     <span style={{ textAlign: 'left', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.label}</span>
@@ -284,8 +285,8 @@ export function UnifiedSidebar({
                         padding: '2px 6px', 
                         fontSize: '10px', 
                         fontWeight: 600, 
-                        background: '#5c7c5c', 
-                        color: '#ffffff',
+                        background: 'hsl(var(--secondary-green))', 
+                        color: 'var(--text-inverse)',
                         borderRadius: '4px',
                         textTransform: 'uppercase',
                       }}>
@@ -301,7 +302,7 @@ export function UnifiedSidebar({
 
         {/* Footer */}
         {expanded && (
-          <div style={{ borderTop: '1px solid #e5e7eb', padding: '12px 8px' }}>
+          <div style={{ borderTop: '1px solid var(--border-color)', padding: '12px 8px' }}>
             <button 
               style={{
                 width: '100%',
@@ -313,21 +314,21 @@ export function UnifiedSidebar({
                 borderRadius: '6px',
                 border: 'none',
                 background: 'transparent',
-                color: '#4b5563',
+                color: 'var(--text-2)',
                 fontSize: '14px',
                 fontWeight: 500,
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
                 fontFamily: 'inherit',
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = '#f9fafb'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               onClick={() => {
                 navigate(settingsPath);
                 onToggle();
               }}
             >
-              <Settings style={{ width: '20px', height: '20px', color: '#6b7280' }} />
+              <Settings style={{ width: '20px', height: '20px', color: 'var(--icon-default)' }} />
               <span style={{ textAlign: 'left' }}>{entityLabel} Settings</span>
             </button>
           </div>
