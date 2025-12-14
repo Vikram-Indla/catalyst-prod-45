@@ -17,8 +17,8 @@ const menuItems = [
   { title: 'Product Room', path: '/product/room', icon: Box, exact: true },
   { title: 'Product Backlog', path: '/industry/backlog', icon: ListTree, exact: true },
   { title: 'Product Kanban', path: '/industry/kanban', icon: Columns3, exact: true },
-  { title: 'Roadmap', path: '/industry/roadmaps', icon: Map, exact: false },
-  { title: 'Capacity', path: '/product/capacity', icon: Users, exact: true },
+  { title: 'Product Roadmap', path: '/industry/roadmaps', icon: Map, exact: false },
+  { title: 'Product Capacity', path: '/product/capacity', icon: Users, exact: true },
 ];
 
 export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoomSidebarProps) {
