@@ -48,10 +48,11 @@ export function OkrRisksCell({ summary, compact = false }: OkrRisksCellProps) {
   const issuesText = issuesParts.join(', ');
 
   return (
-    <div className="flex flex-col items-end gap-0.5">
+    <div className="flex flex-col items-center gap-0.5">
       <RiskBadge 
         counts={riskCounts} 
-        size={compact ? 'sm' : 'md'} 
+        size={compact ? 'sm' : 'md'}
+        hideEmpty
       />
       {issuesText && totalRisks > 0 && (
         <span className="text-[10px] text-muted-foreground">
