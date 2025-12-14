@@ -200,10 +200,15 @@ export function SidebarBase({
                   />
                 )}
                 {CustomIcon && (
-                  <CustomIcon 
-                    className="h-5 w-5" 
-                    style={{ color: active ? 'var(--text-1)' : 'var(--icon-default)' }}
-                  />
+                  <span style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    color: active ? 'var(--text-1)' : 'var(--icon-default)',
+                    flexShrink: 0,
+                  }}>
+                    <CustomIcon className="h-5 w-5" />
+                  </span>
                 )}
                 {expanded && (
                   <span style={{ fontSize: '13px' }}>{item.title}</span>
@@ -287,10 +292,15 @@ export function SidebarBase({
                     />
                   )}
                   {CustomIcon && (
-                    <CustomIcon 
-                      className="h-5 w-5" 
-                      style={{ color: active ? 'var(--text-1)' : 'var(--icon-muted)' }}
-                    />
+                    <span style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center',
+                      color: active ? 'var(--text-1)' : 'var(--icon-muted)',
+                      flexShrink: 0,
+                    }}>
+                      <CustomIcon className="h-5 w-5" />
+                    </span>
                   )}
                   {expanded && (
                     <span style={{ fontSize: '13px' }}>{item.title}</span>
