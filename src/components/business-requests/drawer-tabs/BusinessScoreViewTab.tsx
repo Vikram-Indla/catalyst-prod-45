@@ -11,28 +11,51 @@ import { BusinessRequest } from '@/types/business-request';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { 
+  usePrioritizationConfig, 
+  calculatePriorityScore, 
+  getPriorityTier, 
+  getTierDisplayInfo,
+  getScoreBadgeColor,
+  PriorityTier 
+} from '@/hooks/usePrioritizationConfig';
 
-// Score options 0-10
-const SCORE_OPTIONS = Array.from({ length: 11 }, (_, i) => i);
+// Score options 1-5 (new model)
+const SCORE_OPTIONS = [
+  { value: '', label: '—' },
+  { value: '1', label: '1' },
+  { value: '2', label: '2' },
+  { value: '3', label: '3' },
+  { value: '4', label: '4' },
+  { value: '5', label: '5' },
+];
 
-// Rank options 1-20
-const RANK_OPTIONS = Array.from({ length: 20 }, (_, i) => i + 1);
+// Rank options 1-12
+const RANK_OPTIONS = Array.from({ length: 12 }, (_, i) => i + 1);
 
-// Get rank label based on score - pill badge styling
-const getRankLabel = (score: number): { label: string; color: string } => {
-  if (score >= 90) return { label: 'Must-Do Now', color: 'text-green-800 bg-green-100 border-green-300' };
-  if (score >= 75) return { label: 'High', color: 'text-emerald-800 bg-emerald-100 border-emerald-300' };
-  if (score >= 60) return { label: 'Medium', color: 'text-amber-800 bg-amber-100 border-amber-300' };
-  if (score >= 40) return { label: 'Low', color: 'text-orange-800 bg-orange-100 border-orange-300' };
-  return { label: 'Backlog / Parked', color: 'text-red-800 bg-red-100 border-red-300' };
-};
-
-// Get score circle color - simplified
-const getScoreColor = (score: number): string => {
-  if (score >= 70) return 'text-green-600 border-green-400';
-  if (score >= 40) return 'text-amber-600 border-amber-400';
-  return 'text-red-600 border-red-400';
-};
+// Scoring criteria definition
+const SCORING_CRITERIA = [
+  { 
+    key: 'score_strategic_alignment', 
+    label: 'Strategic Alignment',
+    helper: 'How well does this align with organizational strategy?'
+  },
+  { 
+    key: 'score_business_impact', 
+    label: 'Business Impact',
+    helper: 'Expected impact on business outcomes'
+  },
+  { 
+    key: 'score_time_urgency', 
+    label: 'Time & Urgency',
+    helper: 'Time sensitivity and deadline requirements'
+  },
+  { 
+    key: 'score_resource_feasibility', 
+    label: 'Resource & Feasibility',
+    helper: 'Resource availability and technical feasibility'
+  },
+];
 
 interface BusinessScoreViewTabProps {
   data: Partial<BusinessRequest> & Record<string, any>;
@@ -44,20 +67,24 @@ interface BusinessScoreViewTabProps {
 export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange }: BusinessScoreViewTabProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { data: config, isLoading: configLoading } = usePrioritizationConfig();
   
   const isForceRanked = data.is_force_ranked === true && data.rank !== null && data.rank !== undefined;
   
-  const executiveUrgency = data.executive_urgency ?? 0;
-  const businessValue = data.business_value ?? 0;
-  const complexity = data.complexity_score ?? 0;
-
-  // Check if scoring is complete (all inputs have values > 0)
-  const isScoringComplete = executiveUrgency > 0 && businessValue > 0 && complexity > 0;
-
+  // Draft scores (local state before saving)
+  const [draftScores, setDraftScores] = useState({
+    score_strategic_alignment: data.score_strategic_alignment ?? null,
+    score_business_impact: data.business_value ?? null, // Repurposed field
+    score_time_urgency: data.score_time_urgency ?? null,
+    score_resource_feasibility: data.score_resource_feasibility ?? null,
+  });
+  
   const [justification, setJustification] = useState(data.rank_override_justification || '');
   const [showJustification, setShowJustification] = useState(false);
   const [pendingRank, setPendingRank] = useState<number | null>(null);
-  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isBreakdownOpen, setIsBreakdownOpen] = useState(false);
+  const [isOverrideOpen, setIsOverrideOpen] = useState(isForceRanked);
+  const [isSaving, setIsSaving] = useState(false);
   const [isSavingRank, setIsSavingRank] = useState(false);
   const skipNextResetRef = useRef(false);
   const prevRankRef = useRef<number | null>(data.rank);
@@ -78,177 +105,152 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
     },
   });
 
-  // Fetch all requests for rank position
+  // Fetch all scored requests for rank position
   const { data: allRequests } = useQuery({
     queryKey: ['all-business-requests-for-rank'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('business_requests')
-        .select('id, business_score, is_force_ranked, rank')
+        .select('id, business_score, is_force_ranked, rank, priority_tier')
         .is('deleted_at', null)
+        .not('priority_tier', 'is', null)
+        .neq('priority_tier', 'unscored')
         .order('business_score', { ascending: false });
       if (error) throw error;
       return data || [];
     },
   });
 
-  // Fetch rank change count from audit logs
-  const { data: rankChangeData } = useQuery({
-    queryKey: ['rank-change-count', requestId],
-    queryFn: async () => {
-      if (!requestId) return 0;
-      const { count, error } = await supabase
-        .from('business_request_audit_logs')
-        .select('*', { count: 'exact', head: true })
-        .eq('business_request_id', requestId)
-        .eq('action', 'RANK_OVERRIDE');
-      if (error) throw error;
-      return count || 0;
-    },
-    enabled: !!requestId,
-  });
-  
-  const rankChangeCount = rankChangeData || 0;
-
   const canAccessForcedRank = useMemo(() => {
     if (!userRole) return false;
     return userRole.includes('admin') || userRole.includes('program_manager');
   }, [userRole]);
 
-  // Calculate business score - ONLY when all 3 inputs are > 0
-  const businessScore = useMemo(() => {
-    // Guard: All inputs must be > 0 for a valid score
-    if (!isScoringComplete) return 0;
-    
-    const normalizedUrgency = executiveUrgency / 10;
-    const normalizedBusinessValue = businessValue / 10;
-    const normalizedSimplicity = (10 - complexity) / 10;
-    
-    return Math.round(
-      (0.45 * normalizedBusinessValue + 0.35 * normalizedUrgency + 0.20 * normalizedSimplicity) * 100
+  // Check if all draft scores are filled
+  const isScoringComplete = useMemo(() => {
+    return (
+      draftScores.score_strategic_alignment !== null &&
+      draftScores.score_business_impact !== null &&
+      draftScores.score_time_urgency !== null &&
+      draftScores.score_resource_feasibility !== null
     );
-  }, [isScoringComplete, executiveUrgency, businessValue, complexity]);
+  }, [draftScores]);
 
-  // Calculate rank position
-  const autoRankPosition = useMemo(() => {
+  // Calculate draft score (preview only, not saved yet)
+  const draftPriorityScore = useMemo(() => {
+    if (!config || !isScoringComplete) return null;
+    return calculatePriorityScore({
+      strategic_alignment: draftScores.score_strategic_alignment,
+      business_impact: draftScores.score_business_impact,
+      time_urgency: draftScores.score_time_urgency,
+      resource_feasibility: draftScores.score_resource_feasibility,
+    }, config);
+  }, [draftScores, config, isScoringComplete]);
+
+  // Saved score from data
+  const savedPriorityScore = useMemo(() => {
+    return data.business_score ? data.business_score / 100 * 5 : null; // Convert from 0-100 to 1-5 scale if needed
+  }, [data.business_score]);
+
+  // Get tier based on SAVED score only
+  const savedTier = useMemo<PriorityTier>(() => {
+    if (!config || !data.priority_tier) return 'unscored';
+    return data.priority_tier as PriorityTier;
+  }, [config, data.priority_tier]);
+
+  // Calculate rank position among scored items
+  const rankPosition = useMemo(() => {
     if (!allRequests || allRequests.length === 0 || !requestId) return null;
-    const sortedByScore = [...allRequests].sort((a, b) => (b.business_score ?? 0) - (a.business_score ?? 0));
-    const position = sortedByScore.findIndex(r => r.id === requestId);
+    if (savedTier === 'unscored') return null;
+    
+    const position = allRequests.findIndex(r => r.id === requestId);
     return position >= 0 ? position + 1 : null;
-  }, [allRequests, requestId]);
+  }, [allRequests, requestId, savedTier]);
 
-  const rankInfo = getRankLabel(businessScore);
+  const totalScoredItems = allRequests?.length || 0;
 
-  // Initialize refs when data changes - but skip if we just saved
+  // Sync draft scores when data changes
   useEffect(() => {
-    // Skip reset if we just triggered a save - prevents state from reverting
-    if (skipNextResetRef.current) {
-      skipNextResetRef.current = false;
-      // Still update refs for next comparison, but don't reset UI state
+    if (!skipNextResetRef.current) {
+      setDraftScores({
+        score_strategic_alignment: data.score_strategic_alignment ?? null,
+        score_business_impact: data.business_value ?? null,
+        score_time_urgency: data.score_time_urgency ?? null,
+        score_resource_feasibility: data.score_resource_feasibility ?? null,
+      });
+      setJustification(data.rank_override_justification || '');
+      setShowJustification(data.is_force_ranked === true && !!data.rank_override_justification);
+      setPendingRank(null);
       originalRankRef.current = data.rank;
       originalIsForceRankedRef.current = data.is_force_ranked === true;
       prevRankRef.current = data.rank;
-      return;
     }
-    originalRankRef.current = data.rank;
-    originalIsForceRankedRef.current = data.is_force_ranked === true;
-    prevRankRef.current = data.rank;
-    setJustification(data.rank_override_justification || '');
-    // Only show justification if already force ranked with saved justification
-    setShowJustification(data.is_force_ranked === true && !!data.rank_override_justification);
-    setPendingRank(null);
-  }, [data.rank, data.is_force_ranked, data.rank_override_justification]);
+    skipNextResetRef.current = false;
+  }, [data.score_strategic_alignment, data.business_value, data.score_time_urgency, data.score_resource_feasibility, data.rank, data.is_force_ranked, data.rank_override_justification]);
 
-  const handleInputChange = async (field: string, value: number) => {
-    if (isForceRanked) return;
-    
-    // Update local state immediately for responsive UI
-    onChange(field, value);
-    
-    // Calculate what the new values would be
-    let newUrgency = executiveUrgency;
-    let newBusinessValue = businessValue;
-    let newComplexity = complexity;
-    
-    if (field === 'executive_urgency') newUrgency = value;
-    if (field === 'business_value') newBusinessValue = value;
-    if (field === 'complexity_score') newComplexity = value;
-    
-    // GATED SCORING: Only calculate and persist business_score when ALL 3 inputs > 0
-    const allInputsProvided = newUrgency > 0 && newBusinessValue > 0 && newComplexity > 0;
-    let newScore = 0;
-    
-    if (allInputsProvided) {
-      const normalizedUrg = newUrgency / 10;
-      const normalizedBV = newBusinessValue / 10;
-      const normalizedSimp = (10 - newComplexity) / 10;
-      
-      newScore = Math.round(
-        (0.45 * normalizedBV + 0.35 * normalizedUrg + 0.20 * normalizedSimp) * 100
-      );
-      
-      onChange('business_score', newScore);
-    } else {
-      onChange('business_score', 0);
-    }
-    
-    // Auto-save to database immediately
-    if (requestId) {
-      try {
-        const updateData: Record<string, any> = { [field]: value };
-        
-        // Also update business_score if all inputs are complete
-        if (allInputsProvided) {
-          updateData.business_score = newScore;
-          
-          // Calculate auto-rank position based on score
-          // Only set rank if NOT already force-ranked
-          if (!data.is_force_ranked) {
-            // Fetch all requests to calculate position
-            const { data: allReqs } = await supabase
-              .from('business_requests')
-              .select('id, business_score')
-              .is('deleted_at', null)
-              .order('business_score', { ascending: false });
-            
-            if (allReqs) {
-              // Create a temp list with updated score for current request
-              const tempList = allReqs.map(r => 
-                r.id === requestId ? { ...r, business_score: newScore } : r
-              );
-              // Sort by score descending
-              tempList.sort((a, b) => (b.business_score ?? 0) - (a.business_score ?? 0));
-              // Find position (1-indexed)
-              const position = tempList.findIndex(r => r.id === requestId) + 1;
-              if (position > 0) {
-                updateData.rank = position;
-                onChange('rank', position);
-              }
-            }
-          }
-        }
-        
-        await supabase
-          .from('business_requests')
-          .update(updateData)
-          .eq('id', requestId);
-        
-        // Refresh queries to keep everything in sync
-        queryClient.invalidateQueries({ queryKey: ['business-requests'] });
-        queryClient.invalidateQueries({ queryKey: ['business-request', requestId] });
-        queryClient.invalidateQueries({ queryKey: ['all-business-requests-for-rank'] });
-      } catch (error) {
-        console.error('Failed to auto-save scoring input:', error);
-      }
-    }
-    
-    // Notify parent of dirty state
+  const handleDraftScoreChange = (key: string, value: string) => {
+    const numValue = value === '' ? null : parseInt(value);
+    setDraftScores(prev => ({ ...prev, [key]: numValue }));
     onDirtyChange?.(true);
   };
 
-  const logRankChange = async (oldRank: number | null, newRank: number | null, isAuto: boolean, justificationText?: string) => {
-    if (!requestId) return;
+  const handleSaveScore = async () => {
+    if (!requestId || !config) return;
+    if (!isScoringComplete) {
+      toast({
+        title: 'Incomplete Scores',
+        description: 'Please provide ratings for all four criteria before saving.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsSaving(true);
     try {
+      const priorityScore = calculatePriorityScore({
+        strategic_alignment: draftScores.score_strategic_alignment,
+        business_impact: draftScores.score_business_impact,
+        time_urgency: draftScores.score_time_urgency,
+        resource_feasibility: draftScores.score_resource_feasibility,
+      }, config);
+
+      const tier = getPriorityTier(priorityScore, config);
+
+      // Prepare update data
+      const updateData: Record<string, any> = {
+        score_strategic_alignment: draftScores.score_strategic_alignment,
+        business_value: draftScores.score_business_impact, // Repurposed field
+        score_time_urgency: draftScores.score_time_urgency,
+        score_resource_feasibility: draftScores.score_resource_feasibility,
+        business_score: priorityScore ? Math.round(priorityScore * 100) : null, // Store as 0-500 for compatibility
+        priority_tier: tier,
+      };
+
+      // If tier is 'rejected', auto-set status to Hold
+      if (tier === 'rejected') {
+        updateData.process_step = 'on_hold';
+      }
+
+      const { error } = await supabase
+        .from('business_requests')
+        .update(updateData)
+        .eq('id', requestId);
+
+      if (error) throw error;
+
+      // Update local state
+      onChange('score_strategic_alignment', draftScores.score_strategic_alignment);
+      onChange('business_value', draftScores.score_business_impact);
+      onChange('score_time_urgency', draftScores.score_time_urgency);
+      onChange('score_resource_feasibility', draftScores.score_resource_feasibility);
+      onChange('business_score', priorityScore ? Math.round(priorityScore * 100) : null);
+      onChange('priority_tier', tier);
+
+      if (tier === 'rejected') {
+        onChange('process_step', 'on_hold');
+      }
+
+      // Log audit entry
       const { data: { user } } = await supabase.auth.getUser();
       const { data: profile } = await supabase
         .from('profiles')
@@ -256,37 +258,50 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
         .eq('id', user?.id)
         .single();
 
-      const actorName = profile?.full_name || user?.email || 'Unknown User';
-      const oldValue = oldRank !== null ? `Rank ${oldRank}` : 'Auto';
-      const newValue = isAuto ? 'Auto' : `Rank ${newRank}`;
-
       await supabase.from('business_request_audit_logs').insert({
         business_request_id: requestId,
         actor_id: user?.id,
-        actor_name: actorName,
-        action: 'RANK_OVERRIDE',
-        field_changed: 'Forced Rank',
-        old_value: oldValue,
-        new_value: newValue + (justificationText ? ` - Justification: ${justificationText}` : ''),
+        actor_name: profile?.full_name || user?.email || 'Unknown User',
+        action: 'SCORE_SAVED',
+        field_changed: 'Business Score',
+        old_value: data.business_score ? String(data.business_score / 100) : 'None',
+        new_value: `${priorityScore?.toFixed(2)} (Tier: ${tier.charAt(0).toUpperCase() + tier.slice(1)})`,
+      });
+
+      if (tier === 'rejected') {
+        await supabase.from('business_request_audit_logs').insert({
+          business_request_id: requestId,
+          actor_id: user?.id,
+          actor_name: profile?.full_name || user?.email || 'Unknown User',
+          action: 'STATUS_AUTO_CHANGED',
+          field_changed: 'Process Step',
+          old_value: data.process_step || 'Unknown',
+          new_value: 'Status automatically set to Hold (Rejected tier)',
+        });
+      }
+
+      skipNextResetRef.current = true;
+      await queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+      await queryClient.invalidateQueries({ queryKey: ['all-business-requests-for-rank'] });
+      await queryClient.invalidateQueries({ queryKey: ['business-request', requestId] });
+
+      toast({
+        title: 'Score Saved',
+        description: `Priority Score: ${priorityScore?.toFixed(2)} (${tier.charAt(0).toUpperCase() + tier.slice(1)})`,
       });
     } catch (error) {
-      console.error('Failed to log rank change:', error);
-    }
-  };
-
-  // Handle click on disabled force rank
-  const handleForceRankClick = () => {
-    if (!isScoringComplete && !isForceRanked) {
+      console.error('Failed to save score:', error);
       toast({
-        title: 'Scoring Required',
-        description: 'Complete scoring inputs before applying rank override.',
+        title: 'Error',
+        description: 'Failed to save score.',
         variant: 'destructive',
       });
+    } finally {
+      setIsSaving(false);
     }
   };
 
   const handleRankChange = (value: string) => {
-    // Gate: Don't allow force rank without complete scoring
     if (!isScoringComplete && value !== 'auto') {
       toast({
         title: 'Scoring Required',
@@ -297,28 +312,23 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
     }
     
     if (value === 'auto') {
-      // Switching to auto - persist immediately
       handleSwitchToAuto();
     } else {
-      // User selected a manual rank - show justification panel but don't persist yet
       const newRank = parseInt(value);
       setPendingRank(newRank);
       setShowJustification(true);
-      setJustification(''); // Clear for new entry
+      setJustification('');
     }
   };
 
   const handleSwitchToAuto = async () => {
     const oldRank = prevRankRef.current;
     
-    // Persist to database
     if (requestId) {
       setIsSavingRank(true);
-      skipNextResetRef.current = true; // Prevent useEffect from resetting state
+      skipNextResetRef.current = true;
       try {
-        console.log('Switching to auto rank for:', requestId);
-        
-        const { data: updateData, error: updateError } = await supabase
+        await supabase
           .from('business_requests')
           .update({ 
             rank: null, 
@@ -327,42 +337,40 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
             force_ranked_by: null,
             force_ranked_at: null
           })
-          .eq('id', requestId)
-          .select();
+          .eq('id', requestId);
         
-        console.log('Switch to auto result:', { updateData, updateError });
+        const { data: { user } } = await supabase.auth.getUser();
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('id', user?.id)
+          .single();
+
+        await supabase.from('business_request_audit_logs').insert({
+          business_request_id: requestId,
+          actor_id: user?.id,
+          actor_name: profile?.full_name || user?.email || 'Unknown User',
+          action: 'RANK_OVERRIDE',
+          field_changed: 'Forced Rank',
+          old_value: oldRank ? `Rank ${oldRank}` : 'Auto',
+          new_value: 'Rank override removed, set to Auto',
+        });
         
-        if (updateError) {
-          console.error('Database update error:', updateError);
-          throw updateError;
-        }
-        
-        // Log the change
-        await logRankChange(oldRank, null, true);
-        
-        // Update local state via parent - this updates formData in the drawer
         onChange('rank', null);
         onChange('is_force_ranked', false);
         onChange('rank_override_justification', null);
-        onChange('force_ranked_by', null);
-        onChange('force_ranked_at', null);
         
         setShowJustification(false);
         setPendingRank(null);
         prevRankRef.current = null;
         
-        // Mark dirty so drawer knows there are changes saved
-        onDirtyChange?.(true);
-        
-        // IMPORTANT: Only invalidate the TABLE queries, NOT the single request query
-        // This prevents the useEffect from overwriting formData
         await queryClient.invalidateQueries({ queryKey: ['business-requests'] });
         await queryClient.invalidateQueries({ queryKey: ['all-business-requests-for-rank'] });
         
         toast({ title: 'Rank updated', description: 'Switched to auto-calculated ranking.' });
       } catch (error) {
         console.error('Failed to switch to auto:', error);
-        skipNextResetRef.current = false; // Reset flag on error
+        skipNextResetRef.current = false;
         toast({ title: 'Error', description: 'Failed to update rank.', variant: 'destructive' });
       } finally {
         setIsSavingRank(false);
@@ -387,48 +395,43 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
     
     const oldRank = prevRankRef.current;
     
-    // Persist to database
     if (requestId) {
       setIsSavingRank(true);
-      skipNextResetRef.current = true; // Prevent useEffect from resetting state
+      skipNextResetRef.current = true;
       try {
-        console.log('Saving force rank to database:', { requestId, pendingRank, justification: justification.trim() });
-        
-        const { data: updateData, error: updateError } = await supabase
+        await supabase
           .from('business_requests')
           .update({ 
             rank: pendingRank, 
             is_force_ranked: true,
             rank_override_justification: justification.trim(),
-            force_ranked_by: null, // Will be set by context if needed
             force_ranked_at: new Date().toISOString()
           })
-          .eq('id', requestId)
-          .select();
+          .eq('id', requestId);
         
-        console.log('Supabase update result:', { updateData, updateError });
+        const { data: { user } } = await supabase.auth.getUser();
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('id', user?.id)
+          .single();
+
+        await supabase.from('business_request_audit_logs').insert({
+          business_request_id: requestId,
+          actor_id: user?.id,
+          actor_name: profile?.full_name || user?.email || 'Unknown User',
+          action: 'RANK_OVERRIDE',
+          field_changed: 'Forced Rank',
+          old_value: oldRank ? `Rank ${oldRank}` : 'Auto',
+          new_value: `Rank overridden to #${pendingRank} (justification saved)`,
+        });
         
-        if (updateError) {
-          console.error('Database update error:', updateError);
-          throw updateError;
-        }
-        
-        // Log the change
-        await logRankChange(oldRank, pendingRank, false, justification.trim());
-        
-        // Update local state via parent - this updates formData in the drawer
         onChange('rank', pendingRank);
         onChange('is_force_ranked', true);
         onChange('rank_override_justification', justification.trim());
-        onChange('force_ranked_at', new Date().toISOString());
         
         prevRankRef.current = pendingRank;
         
-        // Mark dirty so drawer knows there are changes saved
-        onDirtyChange?.(true);
-        
-        // IMPORTANT: Only invalidate the TABLE queries, NOT the single request query
-        // This prevents the useEffect from overwriting formData
         await queryClient.invalidateQueries({ queryKey: ['business-requests'] });
         await queryClient.invalidateQueries({ queryKey: ['all-business-requests-for-rank'] });
         
@@ -438,7 +441,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
         });
       } catch (error) {
         console.error('Failed to save rank:', error);
-        skipNextResetRef.current = false; // Reset flag on error
+        skipNextResetRef.current = false;
         toast({ title: 'Error', description: 'Failed to save rank.', variant: 'destructive' });
       } finally {
         setIsSavingRank(false);
@@ -447,223 +450,154 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
   };
 
   const handleCancelRankChange = () => {
-    // Revert to original state - don't persist anything
     setPendingRank(null);
     setShowJustification(isForceRanked && !!data.rank_override_justification);
     setJustification(data.rank_override_justification || '');
   };
 
-  // Force rank is only enabled if scoring is complete (inputs auto-save, so no need to check unsaved)
-  const forceRankEnabled = isScoringComplete || isForceRanked;
-
-  // Determine the display value for the select
+  const forceRankEnabled = savedTier !== 'unscored' || isForceRanked;
   const selectDisplayValue = pendingRank !== null ? String(pendingRank) : (isForceRanked ? String(data.rank) : 'auto');
+  const tierInfo = getTierDisplayInfo(savedTier);
+
+  if (configLoading) {
+    return <div className="p-5 text-center text-muted-foreground">Loading configuration...</div>;
+  }
 
   return (
     <div className="space-y-5 p-5">
       <div className="grid grid-cols-2 gap-5">
-        {/* Left Column - Inputs */}
+        {/* Left Card - Scoring Criteria */}
         <Card className="border border-border/50 rounded-lg bg-card">
-          <CardContent className="p-5 space-y-5">
-            <h3 className="text-[11px] font-semibold uppercase tracking-wider text-brand-gold">
-              Inputs (0–10 Scale)
+          <div className="px-5 py-3 border-b border-border bg-muted/30">
+            <h3 className="text-[11px] font-semibold uppercase tracking-wider text-secondary-bronze">
+              Scoring Criteria (1–5 Scale)
             </h3>
+          </div>
+          <CardContent className="p-5 space-y-4">
+            {SCORING_CRITERIA.map((criterion) => {
+              const fieldKey = criterion.key === 'score_business_impact' ? 'score_business_impact' : criterion.key;
+              const value = draftScores[fieldKey as keyof typeof draftScores];
+              
+              return (
+                <div key={criterion.key} className="flex items-center justify-between py-2 border-b border-border last:border-b-0">
+                  <div className="flex-1">
+                    <Label className="text-sm font-medium text-foreground">{criterion.label}</Label>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">{criterion.helper}</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Select
+                      value={value !== null ? String(value) : ''}
+                      onValueChange={(v) => handleDraftScoreChange(fieldKey, v)}
+                      disabled={isForceRanked || isSaving}
+                    >
+                      <SelectTrigger className={cn("w-20 h-8 text-sm", (isForceRanked || isSaving) && "opacity-50 bg-muted")}>
+                        <SelectValue placeholder="—" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-popover border shadow-lg z-[400]">
+                        {SCORE_OPTIONS.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <div className={cn(
+                      "w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm",
+                      getScoreBadgeColor(value)
+                    )}>
+                      {value ?? '—'}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
 
-            {/* Executive Urgency */}
-            <div className="flex items-center gap-3">
-              <div className="flex-1">
-                <Label className="text-sm font-medium text-foreground">1. Executive Urgency</Label>
-                <p className="text-[10px] text-muted-foreground mt-0.5">
-                  0 = no urgency, 10 = critical
+            {/* Save Score Button */}
+            <div className="pt-4 border-t border-border">
+              <Button
+                onClick={handleSaveScore}
+                disabled={!isScoringComplete || isSaving || isForceRanked}
+                className="w-full bg-brand-gold hover:bg-brand-gold-hover text-white"
+              >
+                <Save className="h-4 w-4 mr-2" />
+                {isSaving ? 'Saving...' : 'Save Score'}
+              </Button>
+              {isForceRanked && (
+                <p className="text-[10px] text-amber-600 italic mt-2 text-center">
+                  Scoring locked while manually ranked.
                 </p>
-                <Select
-                  value={String(executiveUrgency)}
-                  onValueChange={(value) => handleInputChange('executive_urgency', parseInt(value))}
-                  disabled={isForceRanked || isSavingRank}
-                >
-                  <SelectTrigger className={cn("mt-1.5 h-8 text-sm", (isForceRanked || isSavingRank) && "opacity-50 bg-muted")}>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-popover border shadow-lg z-[400]">
-                    {SCORE_OPTIONS.map((opt) => (
-                      <SelectItem key={opt} value={String(opt)}>{opt}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className={cn(
-                "w-10 h-10 rounded-full border-2 flex items-center justify-center font-semibold text-sm shrink-0 bg-transparent",
-                (isForceRanked || isSavingRank) ? "border-muted-foreground/30 text-muted-foreground" : getScoreColor(executiveUrgency * 10)
-              )}>
-                {executiveUrgency}
-              </div>
+              )}
             </div>
-
-            {/* Business Value */}
-            <div className="flex items-center gap-3">
-              <div className="flex-1">
-                <Label className="text-sm font-medium text-foreground">2. Business Value</Label>
-                <p className="text-[10px] text-muted-foreground mt-0.5">
-                  0 = minimal, 10 = very high strategic value
-                </p>
-                <Select
-                  value={String(businessValue)}
-                  onValueChange={(value) => handleInputChange('business_value', parseInt(value))}
-                  disabled={isForceRanked || isSavingRank}
-                >
-                  <SelectTrigger className={cn("mt-1.5 h-8 text-sm", (isForceRanked || isSavingRank) && "opacity-50 bg-muted")}>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-popover border shadow-lg z-[400]">
-                    {SCORE_OPTIONS.map((opt) => (
-                      <SelectItem key={opt} value={String(opt)}>{opt}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className={cn(
-                "w-10 h-10 rounded-full border-2 flex items-center justify-center font-semibold text-sm shrink-0 bg-transparent",
-                (isForceRanked || isSavingRank) ? "border-muted-foreground/30 text-muted-foreground" : getScoreColor(businessValue * 10)
-              )}>
-                {businessValue}
-              </div>
-            </div>
-
-            {/* Complexity */}
-            <div className="flex items-center gap-3">
-              <div className="flex-1">
-                <Label className="text-sm font-medium text-foreground">3. Complexity</Label>
-                <p className="text-[10px] text-muted-foreground mt-0.5">
-                  0 = simple, 10 = very complex
-                </p>
-                <Select
-                  value={String(complexity)}
-                  onValueChange={(value) => handleInputChange('complexity_score', parseInt(value))}
-                  disabled={isForceRanked || isSavingRank}
-                >
-                  <SelectTrigger className={cn("mt-1.5 h-8 text-sm", (isForceRanked || isSavingRank) && "opacity-50 bg-muted")}>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-popover border shadow-lg z-[400]">
-                    {SCORE_OPTIONS.map((opt) => (
-                      <SelectItem key={opt} value={String(opt)}>{opt}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className={cn(
-                "w-10 h-10 rounded-full border-2 flex items-center justify-center font-semibold text-sm shrink-0 bg-transparent",
-                (isForceRanked || isSavingRank) ? "border-muted-foreground/30 text-muted-foreground" : getScoreColor((1 - complexity / 10) * 100)
-              )}>
-                {complexity}
-              </div>
-            </div>
-
-            {isForceRanked && (
-              <p className="text-[10px] text-amber-600 italic pt-2 border-t border-border/40">
-                Scoring inputs locked while manually ranked. You can change the rank below or switch to Auto.
-              </p>
-            )}
           </CardContent>
         </Card>
 
-        {/* Right Column - Results */}
+        {/* Right Card - Score Results */}
         <Card className="border border-border/50 rounded-lg bg-card">
+          <div className="px-5 py-3 border-b border-border bg-muted/30">
+            <h3 className="text-[11px] font-semibold uppercase tracking-wider text-secondary-bronze">
+              Business Score
+            </h3>
+          </div>
           <CardContent className="p-5 space-y-4">
-            {/* Business Score - Primary Display at Top */}
-            <div className="text-center py-2">
-              <h3 className="text-[11px] font-semibold uppercase tracking-wider text-brand-gold mb-2">
-                Business Score
-              </h3>
-              {isScoringComplete ? (
+            {/* Big Score Display */}
+            <div className="text-center py-4">
+              {savedTier !== 'unscored' ? (
                 <>
-                  <div className="text-4xl font-bold text-brand-gold leading-none">
-                    {businessScore}
+                  <div className="text-5xl font-bold text-foreground leading-none">
+                    {data.business_score ? (data.business_score / 100).toFixed(2) : '—'}
                   </div>
-                  {/* Rank - Prominently displayed */}
-                  <div className="mt-3 p-2 bg-muted/30 rounded-md border border-border/50">
-                    <p className="text-xs font-semibold text-foreground">
-                      Rank #{autoRankPosition || '-'} <span className="font-normal text-muted-foreground">of {allRequests?.length || 0}</span>
-                    </p>
-                    {rankChangeCount > 0 && (
-                      <p className="text-[10px] text-muted-foreground mt-0.5">
-                        Changed {rankChangeCount} time{rankChangeCount > 1 ? 's' : ''}
-                      </p>
-                    )}
+                  <div className={cn(
+                    "inline-flex px-4 py-1.5 rounded-full text-xs font-semibold uppercase mt-3 border",
+                    tierInfo.bgColor,
+                    tierInfo.color
+                  )}>
+                    {tierInfo.label} Priority
+                  </div>
+                  <div className="mt-3 text-sm text-muted-foreground">
+                    Rank <span className="font-semibold text-brand-gold">#{rankPosition || '—'}</span> of {totalScoredItems}
                   </div>
                 </>
               ) : (
                 <>
-                  <div className="text-3xl font-bold text-muted-foreground/50 leading-none">
-                    —
+                  <div className="text-4xl font-bold text-muted-foreground/40 leading-none">—</div>
+                  <div className="inline-flex px-4 py-1.5 rounded-full text-xs font-semibold uppercase mt-3 border bg-muted text-muted-foreground border-border">
+                    Unscored
                   </div>
-                  <p className="text-[10px] text-muted-foreground mt-1.5 italic">
-                    Complete all inputs to generate score
+                  <p className="text-[10px] text-muted-foreground mt-3 italic">
+                    Complete all criteria and save to calculate score
                   </p>
                 </>
               )}
             </div>
 
-            {/* Score Threshold Badge */}
-            <div className="flex justify-center">
-              {isScoringComplete ? (
-                <span className={cn(
-                  "inline-flex px-4 py-1.5 rounded-full text-xs font-semibold border shadow-sm",
-                  rankInfo.color
-                )}>
-                  {rankInfo.label}
-                </span>
-              ) : (
-                <span className="inline-flex px-4 py-1.5 rounded-full text-xs font-semibold border border-muted-foreground/20 text-muted-foreground/60 bg-muted/30">
-                  Not Scored
-                </span>
-              )}
-            </div>
-
-            {/* Force Rank - Collapsible Section (Admin/PM only) */}
+            {/* Override Rank Section */}
             {canAccessForcedRank && (
-              <Collapsible defaultOpen={isForceRanked}>
+              <Collapsible open={isOverrideOpen} onOpenChange={setIsOverrideOpen}>
                 <div className="pt-3 border-t border-border/40">
                   <CollapsibleTrigger className="flex items-center justify-between w-full group">
                     <div className="flex items-center gap-1.5">
                       {isForceRanked && <Lock className="h-3 w-3 text-brand-gold" />}
-                      <h3 className="text-[11px] font-semibold uppercase tracking-wider text-brand-gold">
+                      <span className="text-[11px] font-semibold uppercase tracking-wider text-secondary-bronze">
                         Override Rank
-                      </h3>
-                      <span className="text-[9px] text-muted-foreground uppercase tracking-wide ml-1">(Admin)</span>
+                      </span>
                     </div>
                     <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
                   </CollapsibleTrigger>
                   <CollapsibleContent className="pt-3 space-y-3">
-                    <div className="flex items-center gap-2" onClick={!forceRankEnabled ? handleForceRankClick : undefined}>
-                      <Select
-                        value={selectDisplayValue}
-                        onValueChange={handleRankChange}
-                        disabled={!forceRankEnabled || isSavingRank}
-                      >
-                        <SelectTrigger className={cn("h-8 text-sm flex-1", !forceRankEnabled && "opacity-50 cursor-not-allowed")}>
-                          <SelectValue placeholder="Auto" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-popover border shadow-lg z-[400]">
-                          <SelectItem value="auto">Auto</SelectItem>
-                          {RANK_OPTIONS.map((opt) => (
-                            <SelectItem key={opt} value={String(opt)}>#{opt}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      {(isForceRanked || pendingRank !== null) && (
-                        <span className="text-sm font-semibold text-brand-gold">
-                          #{pendingRank ?? data.rank}
-                        </span>
-                      )}
-                    </div>
-                    {!forceRankEnabled && !isForceRanked && (
-                      <p className="text-[9px] text-muted-foreground italic">
-                        Complete all scoring inputs to enable override
-                      </p>
-                    )}
+                    <Select
+                      value={selectDisplayValue}
+                      onValueChange={handleRankChange}
+                      disabled={!forceRankEnabled || isSavingRank}
+                    >
+                      <SelectTrigger className={cn("h-8 text-sm", !forceRankEnabled && "opacity-50 cursor-not-allowed")}>
+                        <SelectValue placeholder="Auto" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-popover border shadow-lg z-[400]">
+                        <SelectItem value="auto">Auto</SelectItem>
+                        {RANK_OPTIONS.map((opt) => (
+                          <SelectItem key={opt} value={String(opt)}>#{opt}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
 
-                    {/* Justification Panel */}
                     {showJustification && (
                       <div className="p-3 bg-amber-50/50 rounded-md border border-amber-200/50 space-y-2">
                         <Label className="text-xs font-medium text-foreground">
@@ -674,43 +608,36 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
                           value={justification}
                           onChange={(e) => setJustification(e.target.value)}
                           placeholder="Provide business justification for overriding the auto-calculated rank..."
-                          className="min-h-[80px] text-sm resize-none"
+                          className="min-h-[70px] text-sm resize-none"
                           disabled={isSavingRank || (isForceRanked && pendingRank === null)}
                         />
                         {pendingRank !== null && (
-                          <div className="space-y-2 pt-1">
-                            <div className="flex gap-2">
-                              <Button
-                                size="sm"
-                                onClick={handleSaveJustificationAndRank}
-                                disabled={isSavingRank}
-                                className="h-7 px-3 text-xs bg-brand-gold hover:bg-brand-gold-hover text-white"
-                              >
-                                <Save className="h-3 w-3 mr-1" />
-                                {isSavingRank ? 'Saving...' : 'Save Rank'}
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={handleCancelRankChange}
-                                disabled={isSavingRank}
-                                className="h-7 px-3 text-xs"
-                              >
-                                Cancel
-                              </Button>
-                            </div>
-                            {!justification.trim() && (
-                              <div className="p-2.5 rounded-md bg-brand-gold/10 border border-brand-gold/20">
-                                <p className="text-[11px] font-medium text-brand-gold">Justification Required</p>
-                                <p className="text-[10px] text-brand-gold/80 mt-0.5">Please provide a business justification for the rank override.</p>
-                              </div>
-                            )}
+                          <div className="flex gap-2 pt-1">
+                            <Button
+                              size="sm"
+                              onClick={handleSaveJustificationAndRank}
+                              disabled={isSavingRank}
+                              className="h-7 px-3 text-xs bg-brand-gold hover:bg-brand-gold-hover text-white"
+                            >
+                              <Save className="h-3 w-3 mr-1" />
+                              {isSavingRank ? 'Saving...' : 'Save Rank'}
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={handleCancelRankChange}
+                              disabled={isSavingRank}
+                              className="h-7 px-3 text-xs"
+                            >
+                              Cancel
+                            </Button>
                           </div>
                         )}
-                        {pendingRank === null && isForceRanked && (
-                          <p className="text-[10px] text-muted-foreground italic">
-                            Current justification saved. Select a new rank to modify.
-                          </p>
+                        {!justification.trim() && pendingRank !== null && (
+                          <div className="p-2 rounded-md bg-red-50 border border-red-200">
+                            <p className="text-[11px] font-medium text-red-700">Justification Required</p>
+                            <p className="text-[10px] text-red-600 mt-0.5">Please provide a business justification for the rank override.</p>
+                          </div>
                         )}
                       </div>
                     )}
@@ -718,87 +645,88 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
                 </div>
               </Collapsible>
             )}
+
+            {/* Score Breakdown Collapsible */}
+            <Collapsible open={isBreakdownOpen} onOpenChange={setIsBreakdownOpen}>
+              <div className="pt-3 border-t border-border/40">
+                <CollapsibleTrigger className="flex items-center justify-between w-full group">
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-secondary-bronze">
+                    Score Breakdown
+                  </span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pt-3">
+                  <table className="w-full text-xs">
+                    <thead>
+                      <tr className="border-b border-border">
+                        <th className="text-left py-2 font-semibold text-secondary-bronze uppercase">Criterion</th>
+                        <th className="text-center py-2 font-semibold text-secondary-bronze uppercase">Weight</th>
+                        <th className="text-center py-2 font-semibold text-secondary-bronze uppercase">Rating</th>
+                        <th className="text-right py-2 font-semibold text-secondary-bronze uppercase">Contrib</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {SCORING_CRITERIA.map((criterion) => {
+                        const fieldKey = criterion.key === 'score_business_impact' ? 'score_business_impact' : criterion.key;
+                        const rating = draftScores[fieldKey as keyof typeof draftScores];
+                        const weight = config ? {
+                          'score_strategic_alignment': config.weight_strategic_alignment,
+                          'score_business_impact': config.weight_business_impact,
+                          'score_time_urgency': config.weight_time_urgency,
+                          'score_resource_feasibility': config.weight_resource_feasibility,
+                        }[fieldKey] || 0 : 0;
+                        const contrib = rating !== null ? ((weight * rating) / 100).toFixed(2) : '—';
+                        
+                        return (
+                          <tr key={criterion.key} className="border-b border-border last:border-b-0">
+                            <td className="py-2 text-foreground">{criterion.label}</td>
+                            <td className="py-2 text-center text-muted-foreground">{weight}%</td>
+                            <td className="py-2 text-center">{rating ?? '—'}</td>
+                            <td className="py-2 text-right font-medium">{contrib}</td>
+                          </tr>
+                        );
+                      })}
+                      <tr className="bg-muted/30">
+                        <td className="py-2 font-semibold text-foreground">Total</td>
+                        <td className="py-2 text-center text-muted-foreground">100%</td>
+                        <td className="py-2 text-center">—</td>
+                        <td className="py-2 text-right font-bold text-brand-gold">
+                          {draftPriorityScore?.toFixed(2) ?? '—'}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </CollapsibleContent>
+              </div>
+            </Collapsible>
+
+            {/* Threshold Legend */}
+            <div className="pt-3 border-t border-border/40">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-secondary-bronze mb-2">
+                Threshold Legend
+              </p>
+              <div className="grid grid-cols-2 gap-1.5 text-[10px]">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                  <span>Rejected: 1.0 – &lt;2.0</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                  <span>Medium: 3.0 – &lt;4.0</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-orange-500"></span>
+                  <span>Low: 2.0 – &lt;3.0</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                  <span>High: 4.0 – 5.0</span>
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
-
-      {/* Score Breakdown Details */}
-      <Collapsible open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
-        <Card className="border border-border/50 rounded-lg bg-card">
-          <CollapsibleTrigger asChild>
-            <CardContent className="p-4 cursor-pointer hover:bg-muted/30 transition-colors">
-              <div className="flex items-center justify-between">
-                <h3 className="text-[11px] font-semibold uppercase tracking-wider text-brand-gold">
-                  Score Breakdown
-                </h3>
-                <ChevronDown className={cn(
-                  "h-4 w-4 text-muted-foreground transition-transform",
-                  isDetailsOpen && "rotate-180"
-                )} />
-              </div>
-            </CardContent>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <CardContent className="pt-0 px-4 pb-4 border-t border-border/30">
-              <div className="space-y-3 pt-3">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Business Value (45%)</span>
-                  <span className="font-medium">
-                    {isScoringComplete ? `${Math.round((businessValue / 10) * 45)}` : '—'}
-                  </span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Executive Urgency (35%)</span>
-                  <span className="font-medium">
-                    {isScoringComplete ? `${Math.round((executiveUrgency / 10) * 35)}` : '—'}
-                  </span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Simplicity Factor (20%)</span>
-                  <span className="font-medium">
-                    {isScoringComplete ? `${Math.round(((10 - complexity) / 10) * 20)}` : '—'}
-                  </span>
-                </div>
-                <div className="flex justify-between text-sm pt-2 border-t border-border/30">
-                  <span className="font-medium text-foreground">Total Score</span>
-                  <span className="font-bold text-brand-gold">
-                    {isScoringComplete ? businessScore : '—'}
-                  </span>
-                </div>
-
-                {/* Score Thresholds */}
-                <div className="pt-3 mt-3 border-t border-border/30">
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-                    Score Thresholds
-                  </p>
-                  <div className="space-y-1.5 text-xs">
-                    <div className="flex justify-between items-center">
-                      <span className="text-green-700">Must-Do Now</span>
-                      <span className="text-muted-foreground">90–100</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-emerald-700">High</span>
-                      <span className="text-muted-foreground">75–89</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-amber-700">Medium</span>
-                      <span className="text-muted-foreground">60–74</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-orange-700">Low</span>
-                      <span className="text-muted-foreground">40–59</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-red-700">Backlog / Parked</span>
-                      <span className="text-muted-foreground">0–39</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </CollapsibleContent>
-        </Card>
-      </Collapsible>
     </div>
   );
 }
