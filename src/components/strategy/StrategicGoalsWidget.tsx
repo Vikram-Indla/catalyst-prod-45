@@ -50,12 +50,17 @@ export function StrategicGoalsWidget({ snapshotId }: StrategicGoalsWidgetProps) 
   const topObjectives = objectives.slice(0, 4);
 
   return (
-    <Card style={{ borderLeft: '3px solid var(--accent-color)' }}>
-      <CardHeader>
+    <Card 
+      style={{ 
+        borderLeft: '3px solid var(--accent-color)',
+        backgroundColor: 'var(--surface-2)',
+      }}
+    >
+      <CardHeader style={{ backgroundColor: 'var(--surface-3)', borderRadius: '8px 8px 0 0' }}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Target className="h-5 w-5 text-primary" />
-            <CardTitle className="text-base">Strategic Objectives</CardTitle>
+            <Target className="h-5 w-5" style={{ color: 'var(--accent-color)' }} />
+            <CardTitle className="text-base" style={{ color: 'var(--text-1)' }}>Strategic Objectives</CardTitle>
           </div>
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1 text-sm">

@@ -281,10 +281,15 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
   const handleDependenciesClick = () => navigate('/dependencies');
 
   return (
-    <Card style={{ borderLeft: '3px solid var(--accent-color)' }}>
-      <CardHeader className="pb-4">
+    <Card 
+      style={{ 
+        borderLeft: '3px solid var(--accent-color)',
+        backgroundColor: 'var(--surface-2)',
+      }}
+    >
+      <CardHeader className="pb-4" style={{ backgroundColor: 'var(--surface-3)', borderRadius: '8px 8px 0 0' }}>
         <div className="flex items-center gap-2">
-          <CardTitle className="text-base flex items-center gap-2">Snapshot Progress</CardTitle>
+          <CardTitle className="text-base flex items-center gap-2" style={{ color: 'var(--text-1)' }}>Snapshot Progress</CardTitle>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>

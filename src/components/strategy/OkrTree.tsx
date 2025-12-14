@@ -195,7 +195,12 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
 
   if (isLoading) {
     return (
-      <Card style={{ borderLeft: '3px solid var(--accent-color)' }}>
+      <Card 
+        style={{ 
+          borderLeft: '3px solid var(--accent-color)',
+          backgroundColor: 'var(--surface-2)',
+        }}
+      >
         <CardContent className="p-8">
           <div className="flex items-center justify-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -206,10 +211,15 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
   }
 
   return (
-    <Card style={{ borderLeft: '3px solid var(--accent-color)' }}>
-      <CardHeader className="pb-3 space-y-3">
-        <CardTitle className="text-base flex items-center gap-2">OKR Tree</CardTitle>
-        <p className="text-sm text-secondary-green italic">
+    <Card 
+      style={{ 
+        borderLeft: '3px solid var(--accent-color)',
+        backgroundColor: 'var(--surface-2)',
+      }}
+    >
+      <CardHeader className="pb-3 space-y-3" style={{ backgroundColor: 'var(--surface-3)', borderRadius: '8px 8px 0 0' }}>
+        <CardTitle className="text-base flex items-center gap-2" style={{ color: 'var(--text-1)' }}>OKR Tree</CardTitle>
+        <p className="text-sm italic" style={{ color: 'var(--text-3)' }}>
           Theme → Objective → Key Results hierarchy for this snapshot
         </p>
         <div className="flex items-center justify-between pt-1">

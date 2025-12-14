@@ -38,24 +38,29 @@ export function MisalignedWorkItems({ snapshotId }: MisalignedWorkItemsProps) {
   const totalMisaligned = misalignedData.themes + misalignedData.epics + misalignedData.features;
 
   return (
-    <Card style={{ borderLeft: '3px solid var(--accent-color)' }}>
-      <CardHeader>
+    <Card 
+      style={{ 
+        borderLeft: '3px solid var(--accent-color)',
+        backgroundColor: 'var(--surface-2)',
+      }}
+    >
+      <CardHeader style={{ backgroundColor: 'var(--surface-3)', borderRadius: '8px 8px 0 0' }}>
         <div className="flex items-center gap-2">
-          <AlertTriangle className="h-4 w-4 text-brand-gold" />
-          <CardTitle className="text-base flex items-center gap-2">Misaligned Work Items</CardTitle>
+          <AlertTriangle className="h-4 w-4" style={{ color: 'var(--accent-color)' }} />
+          <CardTitle className="text-base flex items-center gap-2" style={{ color: 'var(--text-1)' }}>Misaligned Work Items</CardTitle>
         </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          <div className="flex items-center justify-between p-3 bg-muted/50 rounded-md">
-            <span className="text-sm font-semibold">Total Misaligned</span>
-            <span className="text-2xl font-bold text-brand-gold">{totalMisaligned}</span>
+          <div className="flex items-center justify-between p-3 rounded-md" style={{ backgroundColor: 'var(--surface-3)' }}>
+            <span className="text-sm font-semibold" style={{ color: 'var(--text-1)' }}>Total Misaligned</span>
+            <span className="text-2xl font-bold" style={{ color: 'var(--accent-color)' }}>{totalMisaligned}</span>
           </div>
           
           <div className="space-y-2">
             {items.map((item) => (
-              <div key={item.label} className="flex items-center justify-between py-2 border-b last:border-0">
-                <span className="text-sm text-secondary-green">{item.label}</span>
+              <div key={item.label} className="flex items-center justify-between py-2" style={{ borderBottom: '1px solid var(--divider)' }}>
+                <span className="text-sm" style={{ color: 'var(--text-2)' }}>{item.label}</span>
                 <span className={`text-sm font-semibold ${item.color}`}>{item.count}</span>
               </div>
             ))}

@@ -127,13 +127,13 @@ export default function StrategyRoomPage() {
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 overflow-auto p-3 sm:p-4 md:p-6 min-w-0">
-        <div className="space-y-4 sm:space-y-6">
-          {/* Mission/Vision/Values */}
+      <div className="flex-1 overflow-auto p-4 md:p-6 min-w-0">
+        <div className="space-y-6">
+          {/* Mission/Vision/Values - 3-up on desktop, 2-up tablet, 1-up mobile */}
           <MissionVisionValues snapshot={selectedSnapshot} onUpdate={refetchSnapshots} />
 
-          {/* Execution and Goals Widgets */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
+          {/* Execution and Goals Widgets - 2-up on desktop/tablet, 1-up mobile */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             <ExecutionAgainstOutcomesWidget 
               snapshotId={effectiveSelectedSnapshotId}
             />
@@ -142,27 +142,23 @@ export default function StrategyRoomPage() {
             />
           </div>
 
-          {/* Strategy Pyramid and Misaligned Items - Side by side */}
-          <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-3 sm:gap-4">
-            <div className="overflow-x-auto">
-              <div className="min-w-[500px] sm:min-w-0">
-                <StrategyPyramid 
-                  onLayerClick={handlePyramidLayerClick} 
-                  snapshotId={effectiveSelectedSnapshotId}
-                />
-              </div>
-            </div>
+          {/* Strategy Pyramid and Misaligned Items - 2-up on desktop, stacked otherwise */}
+          <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-4 md:gap-6">
+            <StrategyPyramid 
+              onLayerClick={handlePyramidLayerClick} 
+              snapshotId={effectiveSelectedSnapshotId}
+            />
             <MisalignedWorkItems 
               snapshotId={effectiveSelectedSnapshotId}
             />
           </div>
 
-          {/* Snapshot Progress */}
+          {/* Snapshot Progress - Full width */}
           <SnapshotProgress 
             snapshotId={effectiveSelectedSnapshotId}
           />
 
-          {/* OKR Tree */}
+          {/* OKR Tree - Full width */}
           <OkrTree
             selectedSnapshot={effectiveSelectedSnapshotId}
             onObjectiveClick={handleObjectiveClick}
