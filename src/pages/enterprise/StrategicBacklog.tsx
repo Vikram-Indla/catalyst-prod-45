@@ -56,10 +56,10 @@ export default function StrategicBacklog() {
 
   return (
     <div className="h-full flex flex-col bg-background">
-      {/* Header - align header pattern */}
-      <div className="h-[72px] border-b border-border bg-background flex items-center justify-between px-6 flex-shrink-0">
+      {/* Header Row - NO toolbar, so NO divider */}
+      <div className="h-[44px] flex items-center justify-between px-6 flex-shrink-0">
         <div className="flex items-center gap-4">
-          <h1 className="text-lg font-semibold text-foreground">Strategic Backlog</h1>
+          <h1 className="text-xl font-semibold text-secondary-green">Strategic Backlog</h1>
           {currentSnapshot && (
             <Badge variant={isArchived ? 'secondary' : 'outline'} className={!isArchived ? 'bg-brand-gold/10 text-brand-gold border-brand-gold/30' : ''}>
               {isArchived ? <Archive className="h-3 w-3 mr-1" /> : <CheckCircle2 className="h-3 w-3 mr-1" />}
@@ -74,7 +74,7 @@ export default function StrategicBacklog() {
             <SelectTrigger className="w-[220px] h-9">
               <SelectValue placeholder="Select snapshot" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="z-[400]">
               {snapshots.map((snap) => (
                 <SelectItem key={snap.id} value={snap.id}>
                   <div className="flex items-center gap-2">
@@ -95,7 +95,7 @@ export default function StrategicBacklog() {
                   <ChevronDown className="h-4 w-4 ml-1" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-background border-border">
+              <DropdownMenuContent align="end" className="z-[400] bg-background border-border">
                 <DropdownMenuItem onClick={() => setCreateType('theme')}>Theme</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
