@@ -195,7 +195,7 @@ export function CapacityPlanning() {
             onAddResource={() => setAddResourceOpen(true)}
             onBookingClick={handleBookingClick}
             onCreateBooking={handleCreateBooking}
-            onAssignResource={handleAssignResource}
+            onAssign={() => setAssignModalOpen(true)}
           />
         ) : (
           <ListView
