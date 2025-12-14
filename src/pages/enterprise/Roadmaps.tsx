@@ -86,7 +86,7 @@ export default function EnterpriseRoadmapsPage() {
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Page Header - Title only */}
-      <div className="h-[44px] flex items-center px-6 flex-shrink-0 border-b border-border">
+      <div className="h-[44px] flex items-center px-6 flex-shrink-0">
         <h1 className="text-xl font-semibold text-secondary-green">Strategic Roadmap</h1>
       </div>
       
