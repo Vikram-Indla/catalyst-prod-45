@@ -226,6 +226,46 @@
   --secondary-grey: 210 8% 80%;                /* #c8ccd0 - Muted elements */
 
   /* ============================================
+     CIO COCKPIT THEME TOKENS - LIGHT
+     Based on strategy-room-spec.md
+     ============================================ */
+  
+  /* Page Backgrounds */
+  --page-bg: #F7F8FA;
+  --surface-bg: #FFFFFF;
+  --surface-elevated: #FFFFFF;
+  --surface-tinted: rgba(92, 124, 92, 0.03);
+  --surface-gold-tint: rgba(198, 156, 109, 0.04);
+  --surface-hover: rgba(92, 124, 92, 0.06);
+  
+  /* Borders */
+  --border-default: #E8E9EB;
+  --border-subtle: #F0F1F3;
+  --border-accent: rgba(92, 124, 92, 0.2);
+  
+  /* Text Hierarchy */
+  --text-primary: #1A1A1A;
+  --text-secondary: #5A5D63;
+  --text-muted: #8A8D93;
+  --text-faint: #B0B3B8;
+  
+  /* Shadows */
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
+  --card-shadow-hover: 0 4px 12px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.03);
+  
+  /* Progress */
+  --progress-bg: #E8E9EB;
+  --progress-track: rgba(92, 124, 92, 0.15);
+  
+  /* Sidebar */
+  --sidebar-bg: #FFFFFF;
+  --sidebar-hover: rgba(92, 124, 92, 0.08);
+  --sidebar-active: rgba(92, 124, 92, 0.12);
+  
+  /* KPI */
+  --kpi-border: rgba(92, 124, 92, 0.1);
+
+  /* ============================================
      LIGHT THEME SEMANTIC TOKENS (data-theme)
      ============================================ */
   /* Brand Constants */
@@ -234,9 +274,9 @@
   --brand-active: #5E7C63;
   
   /* Semantic Surfaces (Light) - Enterprise grade hierarchy */
-  --bg: #F7F9FC;
-  --surface-0: #F7F9FC;
-  --surface-1: #FFFFFF;
+  --bg: var(--page-bg);
+  --surface-0: var(--page-bg);
+  --surface-1: var(--surface-bg);
   --surface-2: #EEF2F7;
   --surface-3: #E4EAF2;
   --surface-sunken: #F0F3F8;
@@ -244,32 +284,31 @@
   --surface-backdrop: #FFFFFF;
   
   /* Semantic Text (Light) */
-  --text-1: #1A1A1A;
-  --text-2: #5A6B80;
-  --text-3: #7A8A9C;
-  --text-muted: #7A8A9C;
+  --text-1: var(--text-primary);
+  --text-2: var(--text-secondary);
+  --text-3: var(--text-muted);
   --text-inverse: #FFFFFF;
   
-  /* Semantic Borders (Light) - Slightly stronger for visibility */
-  --border-color: rgba(16, 24, 40, 0.10);
-  --border-light: rgba(16, 24, 40, 0.06);
+  /* Semantic Borders (Light) */
+  --border-color: var(--border-default);
+  --border-light: var(--border-subtle);
   --border-strong: rgba(16, 24, 40, 0.16);
   --divider: rgba(16, 24, 40, 0.08);
   
   /* Semantic Icons (Light) */
-  --icon-default: #5A6B80;
-  --icon-muted: #7A8A9C;
-  --icon-hover: #B99057;
-  --icon-active: #5E7C63;
+  --icon-default: var(--text-secondary);
+  --icon-muted: var(--text-muted);
+  --icon-hover: var(--brand-accent-hover);
+  --icon-active: var(--brand-active);
   
   /* Semantic Navigation (Light) */
-  --nav-bg: var(--surface-1);
-  --nav-border: rgba(16, 24, 40, 0.10);
-  --nav-text: var(--text-2);
-  --nav-text-hover: var(--text-1);
-  --nav-text-active: var(--text-1);
-  --nav-hover-bg: rgba(92, 124, 92, 0.08);
-  --nav-active-bg: rgba(92, 124, 92, 0.08);
+  --nav-bg: var(--surface-bg);
+  --nav-border: var(--border-default);
+  --nav-text: var(--text-secondary);
+  --nav-text-hover: var(--text-primary);
+  --nav-text-active: var(--text-primary);
+  --nav-hover-bg: var(--sidebar-hover);
+  --nav-active-bg: var(--sidebar-active);
   --nav-indicator: var(--brand-accent);
   
   /* Semantic Interactive (Light) */
@@ -279,15 +318,14 @@
   --focus-ring-color: rgba(92, 124, 92, 0.35);
   
   /* Semantic Cards (Light) */
-  --card-bg: #FFFFFF;
-  --card-border: rgba(16, 24, 40, 0.10);
-  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --card-bg: var(--surface-bg);
+  --card-border: var(--border-default);
   
   /* Semantic Inputs (Light) */
   --input-bg: #FFFFFF;
   --input-border: rgba(16, 24, 40, 0.14);
-  --input-text: #1A1A1A;
-  --input-placeholder: rgba(90, 107, 128, 0.80);
+  --input-text: var(--text-primary);
+  --input-placeholder: var(--text-muted);
   
   /* Toggle (Light) */
   --toggle-track: #E2E8F0;
@@ -298,116 +336,137 @@
   --overlay-bg: rgba(0, 0, 0, 0.5);
   
   /* Empty State (Light) */
-  --empty-state-bg: var(--surface-2);
-  --empty-state-border: var(--border-color);
-  --empty-state-text: var(--text-2);
+  --empty-state-bg: var(--surface-tinted);
+  --empty-state-border: var(--border-subtle);
+  --empty-state-text: var(--text-secondary);
   
   /* Button States (Light) */
   --btn-primary-bg: var(--brand-accent);
   --btn-primary-hover: var(--brand-accent-hover);
   --btn-primary-text: #FFFFFF;
-  --btn-secondary-bg: var(--surface-1);
-  --btn-secondary-hover: var(--surface-2);
-  --btn-secondary-border: var(--border-color);
-  --btn-secondary-text: var(--text-1);
-  --btn-ghost-hover: var(--surface-2);
+  --btn-secondary-bg: var(--surface-bg);
+  --btn-secondary-hover: var(--surface-hover);
+  --btn-secondary-border: var(--border-default);
+  --btn-secondary-text: var(--text-primary);
+  --btn-ghost-hover: var(--surface-hover);
   --btn-disabled-bg: var(--surface-3);
-  --btn-disabled-text: var(--text-3);
+  --btn-disabled-text: var(--text-muted);
   
   /* Tab States (Light) */
   --tab-default-bg: transparent;
-  --tab-default-text: var(--text-2);
-  --tab-hover-bg: var(--surface-2);
+  --tab-default-text: var(--text-secondary);
+  --tab-hover-bg: var(--surface-hover);
   --tab-active-bg: transparent;
-  --tab-active-text: var(--text-1);
-  --tab-active-border: var(--brand-active);
+  --tab-active-text: var(--text-primary);
+  --tab-active-border: var(--brand-accent);
   
   /* Table Styles (Light) */
-  --table-header-bg: var(--surface-2);
-  --table-header-text: var(--text-2);
-  --table-row-bg: var(--surface-1);
-  --table-row-hover: var(--surface-2);
-  --table-row-selected: rgba(92, 124, 92, 0.08);
-  --table-border: var(--border-color);
+  --table-header-bg: var(--surface-tinted);
+  --table-header-text: var(--text-muted);
+  --table-row-bg: var(--surface-bg);
+  --table-row-hover: var(--surface-hover);
+  --table-row-selected: var(--surface-gold-tint);
+  --table-border: var(--border-subtle);
   
   /* Selection/Bulk Actions (Light) */
-  --selection-bar-bg: var(--surface-1);
-  --selection-bar-border: var(--border-color);
+  --selection-bar-bg: var(--surface-bg);
+  --selection-bar-border: var(--border-default);
   --selection-bar-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
   --selection-bar-accent: var(--brand-accent);
   --selection-badge-bg: var(--surface-2);
-  --selection-badge-text: var(--text-1);
+  --selection-badge-text: var(--text-primary);
   --selection-row-bg: rgba(92, 124, 92, 0.06);
-  --selection-row-border: rgba(92, 124, 92, 0.20);
+  --selection-row-border: var(--border-accent);
   
   /* Form Inputs (Light) */
-  --form-label: var(--text-2);
-  --form-placeholder: var(--text-3);
+  --form-label: var(--text-secondary);
+  --form-placeholder: var(--text-muted);
   --form-focus-border: var(--accent-color);
   --form-focus-ring: var(--focus-ring-color);
   
-  /* Catalyst Spec Tokens (Light) - Strategic Backlog spec alignment */
-  --catalyst-bg: #F8FAFC;
-  --catalyst-surface: #FFFFFF;
-  --catalyst-surface-hover: #F1F5F9;
-  --catalyst-table-header-bg: #F8FAFC;
-  --catalyst-border: #E2E8F0;
-  --catalyst-border-strong: #CBD5E1;
-  --catalyst-text: #1A1A1A;
-  --catalyst-text-secondary: #64748B;
-  --catalyst-text-muted: #94A3B8;
-  --catalyst-green: #5C7C5C;
-  --catalyst-green-tint: rgba(92, 124, 92, 0.08);
-  --catalyst-gold: #C69C6D;
-  --catalyst-gold-hover: #B8905F;
-  --catalyst-status-success: #059669;
-  --catalyst-status-success-bg: #ECFDF5;
-  --catalyst-status-warning: #D97706;
-  --catalyst-status-warning-bg: #FFFBEB;
+  /* Section Accent Colors */
+  --section-accent-green: #5C7C5C;
+  --section-accent-gold: #C69C6D;
+  --section-accent-bronze: #8B7355;
+  --section-accent-champagne: #D4B896;
 }
 
 /* ============================================
-   DARK THEME via data-theme="dark"
-   Executive dark palette - clean, professional, no vignettes
+   CIO COCKPIT THEME TOKENS - DARK
+   Based on strategy-room-spec.md
    ============================================ */
 html[data-theme="dark"] {
-  /* Semantic Surfaces (Dark) - Clean flat backgrounds */
-  --bg: #0B1220;
-  --surface-0: #0B1220;
-  --surface-1: #101B2E;
-  --surface-2: #14213A;
-  --surface-3: #1A2842;
-  --surface-sunken: #0A0F1A;
-  --surface-raised: #162742;
-  --surface-backdrop: #101B2E;
+  /* Page Backgrounds */
+  --page-bg: #0D1117;
+  --surface-bg: #161B22;
+  --surface-elevated: #1C2128;
+  --surface-tinted: rgba(92, 124, 92, 0.05);
+  --surface-gold-tint: rgba(198, 156, 109, 0.06);
+  --surface-hover: rgba(92, 124, 92, 0.1);
   
-  /* Semantic Text (Dark) - High contrast for legibility */
-  --text-1: #EAF0F7;
-  --text-2: #A8B2C1;
-  --text-3: #7A8A9C;
-  --text-muted: #7A8A9C;
-  --text-inverse: #0B1220;
+  /* Borders */
+  --border-default: #30363D;
+  --border-subtle: #21262D;
+  --border-accent: rgba(92, 124, 92, 0.3);
   
-  /* Semantic Borders (Dark) - Visible but subtle */
-  --border-color: rgba(255, 255, 255, 0.10);
-  --border-light: rgba(255, 255, 255, 0.06);
+  /* Text Hierarchy */
+  --text-primary: #E6EDF3;
+  --text-secondary: #8B949E;
+  --text-muted: #6E7681;
+  --text-faint: #484F58;
+  
+  /* Shadows */
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.2), 0 1px 2px rgba(0,0,0,0.1);
+  --card-shadow-hover: 0 4px 12px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.15);
+  
+  /* Progress */
+  --progress-bg: #30363D;
+  --progress-track: rgba(92, 124, 92, 0.25);
+  
+  /* Sidebar */
+  --sidebar-bg: #161B22;
+  --sidebar-hover: rgba(92, 124, 92, 0.08);
+  --sidebar-active: rgba(92, 124, 92, 0.15);
+  
+  /* KPI */
+  --kpi-border: rgba(92, 124, 92, 0.15);
+  
+  /* Semantic Surfaces (Dark) */
+  --bg: var(--page-bg);
+  --surface-0: var(--page-bg);
+  --surface-1: var(--surface-bg);
+  --surface-2: var(--surface-elevated);
+  --surface-3: #242B35;
+  --surface-sunken: #0A0F14;
+  --surface-raised: var(--surface-elevated);
+  --surface-backdrop: var(--surface-bg);
+  
+  /* Semantic Text (Dark) */
+  --text-1: var(--text-primary);
+  --text-2: var(--text-secondary);
+  --text-3: var(--text-muted);
+  --text-inverse: var(--page-bg);
+  
+  /* Semantic Borders (Dark) */
+  --border-color: var(--border-default);
+  --border-light: var(--border-subtle);
   --border-strong: rgba(255, 255, 255, 0.16);
   --divider: rgba(255, 255, 255, 0.08);
   
   /* Semantic Icons (Dark) */
-  --icon-default: #A8B2C1;
-  --icon-muted: #7A8A9C;
+  --icon-default: var(--text-secondary);
+  --icon-muted: var(--text-muted);
   --icon-hover: var(--brand-accent);
   --icon-active: var(--brand-accent);
   
   /* Semantic Navigation (Dark) */
-  --nav-bg: var(--surface-1);
-  --nav-border: rgba(255, 255, 255, 0.08);
-  --nav-text: var(--text-2);
-  --nav-text-hover: var(--text-1);
-  --nav-text-active: var(--text-1);
-  --nav-hover-bg: rgba(92, 124, 92, 0.08);
-  --nav-active-bg: rgba(92, 124, 92, 0.08);
+  --nav-bg: var(--surface-bg);
+  --nav-border: var(--border-default);
+  --nav-text: var(--text-secondary);
+  --nav-text-hover: var(--text-primary);
+  --nav-text-active: var(--text-primary);
+  --nav-hover-bg: var(--sidebar-hover);
+  --nav-active-bg: var(--sidebar-active);
   --nav-indicator: var(--brand-accent);
   
   /* Semantic Interactive (Dark) */
@@ -417,15 +476,14 @@ html[data-theme="dark"] {
   --focus-ring-color: rgba(92, 124, 92, 0.45);
   
   /* Semantic Cards (Dark) */
-  --card-bg: var(--surface-1);
-  --card-border: rgba(255, 255, 255, 0.10);
-  --card-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  --card-bg: var(--surface-bg);
+  --card-border: var(--border-default);
   
   /* Semantic Inputs (Dark) */
-  --input-bg: var(--surface-2);
-  --input-border: rgba(255, 255, 255, 0.12);
-  --input-text: #EAF0F7;
-  --input-placeholder: rgba(168, 178, 193, 0.70);
+  --input-bg: var(--surface-elevated);
+  --input-border: var(--border-default);
+  --input-text: var(--text-primary);
+  --input-placeholder: var(--text-muted);
   
   /* Toggle (Dark) */
   --toggle-track: rgba(255, 255, 255, 0.10);
@@ -436,72 +494,59 @@ html[data-theme="dark"] {
   --overlay-bg: rgba(0, 0, 0, 0.7);
   
   /* Empty State (Dark) */
-  --empty-state-bg: var(--surface-1);
-  --empty-state-border: var(--border-color);
-  --empty-state-text: var(--text-2);
+  --empty-state-bg: var(--surface-tinted);
+  --empty-state-border: var(--border-subtle);
+  --empty-state-text: var(--text-secondary);
   
-  /* Button States (Dark) - More visible */
+  /* Button States (Dark) */
   --btn-primary-bg: var(--brand-accent);
   --btn-primary-hover: var(--brand-accent-hover);
-  --btn-primary-text: #0B1220;
-  --btn-secondary-bg: var(--surface-2);
+  --btn-primary-text: var(--page-bg);
+  --btn-secondary-bg: var(--surface-elevated);
   --btn-secondary-hover: var(--surface-3);
-  --btn-secondary-border: var(--border-color);
-  --btn-secondary-text: var(--text-1);
-  --btn-ghost-hover: var(--surface-2);
+  --btn-secondary-border: var(--border-default);
+  --btn-secondary-text: var(--text-primary);
+  --btn-ghost-hover: var(--surface-hover);
   --btn-disabled-bg: var(--surface-3);
-  --btn-disabled-text: var(--text-3);
+  --btn-disabled-text: var(--text-muted);
   
   /* Tab States (Dark) */
   --tab-default-bg: transparent;
-  --tab-default-text: var(--text-2);
-  --tab-hover-bg: var(--surface-2);
+  --tab-default-text: var(--text-secondary);
+  --tab-hover-bg: var(--surface-hover);
   --tab-active-bg: transparent;
-  --tab-active-text: var(--text-1);
+  --tab-active-text: var(--text-primary);
   --tab-active-border: var(--brand-accent);
   
   /* Table Styles (Dark) */
-  --table-header-bg: var(--surface-2);
-  --table-header-text: var(--text-2);
-  --table-row-bg: var(--surface-1);
-  --table-row-hover: var(--surface-2);
-  --table-row-selected: rgba(92, 124, 92, 0.12);
-  --table-border: var(--border-color);
+  --table-header-bg: var(--surface-tinted);
+  --table-header-text: var(--text-muted);
+  --table-row-bg: var(--surface-bg);
+  --table-row-hover: var(--surface-hover);
+  --table-row-selected: var(--surface-gold-tint);
+  --table-border: var(--border-subtle);
   
   /* Selection/Bulk Actions (Dark) */
-  --selection-bar-bg: var(--surface-2);
-  --selection-bar-border: var(--border-color);
+  --selection-bar-bg: var(--surface-elevated);
+  --selection-bar-border: var(--border-default);
   --selection-bar-shadow: 0 -2px 12px rgba(0, 0, 0, 0.25);
   --selection-bar-accent: var(--brand-accent);
   --selection-badge-bg: var(--surface-3);
-  --selection-badge-text: var(--text-1);
+  --selection-badge-text: var(--text-primary);
   --selection-row-bg: rgba(92, 124, 92, 0.10);
-  --selection-row-border: rgba(92, 124, 92, 0.25);
+  --selection-row-border: var(--border-accent);
   
   /* Form Inputs (Dark) */
-  --form-label: var(--text-2);
-  --form-placeholder: var(--text-3);
+  --form-label: var(--text-secondary);
+  --form-placeholder: var(--text-muted);
   --form-focus-border: var(--accent-color);
   --form-focus-ring: var(--focus-ring-color);
   
-  /* Catalyst Spec Tokens (Dark) - Strategic Backlog spec alignment */
-  --catalyst-bg: #0F1419;
-  --catalyst-surface: #1A1F26;
-  --catalyst-surface-hover: #242B35;
-  --catalyst-table-header-bg: #242B35;
-  --catalyst-border: #2D3640;
-  --catalyst-border-strong: #3D4654;
-  --catalyst-text: #E7E9EA;
-  --catalyst-text-secondary: #8B98A5;
-  --catalyst-text-muted: #6B7280;
-  --catalyst-green: #5C7C5C;
-  --catalyst-green-tint: rgba(92, 124, 92, 0.15);
-  --catalyst-gold: #C69C6D;
-  --catalyst-gold-hover: #B8905F;
-  --catalyst-status-success: #34D399;
-  --catalyst-status-success-bg: rgba(52, 211, 153, 0.1);
-  --catalyst-status-warning: #FBBF24;
-  --catalyst-status-warning-bg: rgba(251, 191, 36, 0.1);
+  /* Section Accent Colors - same in dark */
+  --section-accent-green: #5C7C5C;
+  --section-accent-gold: #C69C6D;
+  --section-accent-bronze: #8B7355;
+  --section-accent-champagne: #D4B896;
   
   /* Override Tailwind semantic colors for dark mode */
   --background: 222 47% 8%;                       /* #0B1220 */
