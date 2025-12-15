@@ -7,12 +7,9 @@ import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Plus, ChevronDown, Archive, CheckCircle2, Palette, Target, Boxes, AlertTriangle } from 'lucide-react';
+import { Archive, CheckCircle2, Palette, Target, Boxes, AlertTriangle } from 'lucide-react';
 import { PageChrome } from '@/components/layout/PageChrome';
-import { CreateThemeDialog } from '@/components/strategic-backlog/CreateThemeDialog';
 import { StrategicBacklogThemesSection } from '@/components/strategic-backlog/StrategicBacklogThemesSection';
 import { StrategicBacklogObjectivesSection } from '@/components/strategic-backlog/StrategicBacklogObjectivesSection';
 import { StrategicBacklogEpicsSection } from '@/components/strategic-backlog/StrategicBacklogEpicsSection';
@@ -20,7 +17,6 @@ import { useStrategicThemes, useSnapshotStrategyLinks } from '@/hooks/useStrateg
 import { cn } from '@/lib/utils';
 
 type SubSection = 'themes' | 'objectives' | 'epics';
-type CreateType = 'theme' | null;
 
 const NAV_ITEMS: { id: SubSection; label: string; icon: React.ElementType }[] = [
   { id: 'themes', label: 'Themes', icon: Palette },
@@ -31,7 +27,6 @@ const NAV_ITEMS: { id: SubSection; label: string; icon: React.ElementType }[] = 
 export default function StrategicBacklog() {
   const [selectedSnapshotId, setSelectedSnapshotId] = useState<string>('');
   const [activeSection, setActiveSection] = useState<SubSection>('themes');
-  const [createType, setCreateType] = useState<CreateType>(null);
 
   // Fetch snapshots
   const { data: snapshots = [] } = useQuery({
@@ -140,24 +135,6 @@ export default function StrategicBacklog() {
           )}
         </Badge>
       )}
-
-      {/* Create Dropdown */}
-      {!isArchived && snapshotId && (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button className="bg-brand-gold hover:bg-brand-gold-hover text-white px-3 h-9">
-              <Plus className="h-4 w-4" />
-              <ChevronDown className="h-4 w-4 ml-1" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="z-[400]">
-            <DropdownMenuItem onClick={() => setCreateType('theme')}>
-              <Palette className="h-4 w-4 mr-2" />
-              Theme
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )}
     </div>
   );
 
@@ -249,15 +226,6 @@ export default function StrategicBacklog() {
             )}
           </div>
         </div>
-      )}
-
-      {/* Create Dialogs */}
-      {createType === 'theme' && (
-        <CreateThemeDialog
-          open={true}
-          onOpenChange={(open) => !open && setCreateType(null)}
-          snapshotId={snapshotId}
-        />
       )}
     </PageChrome>
   );

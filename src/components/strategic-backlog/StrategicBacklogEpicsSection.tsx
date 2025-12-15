@@ -8,7 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Plus, Search, Boxes, ChevronRight, Link as LinkIcon, Palette } from 'lucide-react';
+import { Search, Boxes, ChevronRight, Palette } from 'lucide-react';
 import { EpicDetailsPanel } from '@/components/epic-backlog/EpicDetailsPanel';
 import { format } from 'date-fns';
 import type { StrategicTheme, SnapshotStrategyLinks } from '@/types/strategicBacklog';
@@ -176,41 +176,26 @@ export function StrategicBacklogEpicsSection({ snapshotId, themes, links, isArch
   return (
     <div className="space-y-4">
       {/* Toolbar */}
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="relative flex-1 max-w-xs">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search epics..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 h-9 w-64"
-            />
-          </div>
-
-          {/* Unaligned filter */}
-          <Button
-            variant={showUnalignedOnly ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setShowUnalignedOnly(!showUnalignedOnly)}
-            className={showUnalignedOnly ? 'bg-brand-gold hover:bg-brand-gold-hover text-white' : ''}
-          >
-            Unaligned ({unalignedEpics.length})
-          </Button>
+      <div className="flex items-center gap-3">
+        <div className="relative flex-1 max-w-xs">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search epics..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9 h-9 w-64"
+          />
         </div>
 
-        {!isArchived && (
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm">
-              <LinkIcon className="h-3.5 w-3.5 mr-1" />
-              Link Epic
-            </Button>
-            <Button size="sm" className="bg-brand-gold hover:bg-brand-gold-hover text-white">
-              <Plus className="h-3.5 w-3.5 mr-1" />
-              Create Epic
-            </Button>
-          </div>
-        )}
+        {/* Unaligned filter */}
+        <Button
+          variant={showUnalignedOnly ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setShowUnalignedOnly(!showUnalignedOnly)}
+          className={showUnalignedOnly ? 'bg-brand-gold hover:bg-brand-gold-hover text-white' : ''}
+        >
+          Unaligned ({unalignedEpics.length})
+        </Button>
       </div>
 
       {/* Table */}
@@ -219,25 +204,13 @@ export function StrategicBacklogEpicsSection({ snapshotId, themes, links, isArch
       ) : filteredEpics.length === 0 ? (
         <div className="text-center py-16 border border-dashed border-border rounded-lg bg-surface">
           <Boxes className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />
-          <p className="text-sm text-muted-foreground mb-4">
+          <p className="text-sm text-muted-foreground">
             {searchQuery 
               ? 'No epics match your search.' 
               : showUnalignedOnly 
                 ? 'No unaligned epics found.'
                 : 'No epics linked to themes in this snapshot.'}
           </p>
-          {!isArchived && !searchQuery && (
-            <div className="flex justify-center gap-2">
-              <Button variant="outline" size="sm">
-                <LinkIcon className="h-3.5 w-3.5 mr-1" />
-                Link existing epic
-              </Button>
-              <Button size="sm" className="bg-brand-gold hover:bg-brand-gold-hover text-white">
-                <Plus className="h-3.5 w-3.5 mr-1" />
-                Create epic
-              </Button>
-            </div>
-          )}
         </div>
       ) : (
         <div className="border border-border rounded-lg overflow-hidden bg-surface">
