@@ -145,6 +145,7 @@ import ProcessSteps from "./pages/admin/ProcessSteps";
 import DeliveryPlatforms from "./pages/admin/DeliveryPlatforms";
 import RiskSeverityLevels from "./pages/admin/RiskSeverityLevels";
 import DevelopmentInventory from "./pages/admin/DevelopmentInventory";
+import RoutesComponentsRegistry from "./pages/admin/RoutesComponentsRegistry";
 import UIQARoute from "./pages/UIQARoute";
 import ThemeAuditProbe from "./pages/ThemeAuditProbe";
 import ValueStreamView from "./pages/ValueStreamView";
@@ -683,6 +684,7 @@ const App = () => (
                 <Route path="kanban-settings" element={<KanbanSettings />} />
                 <Route path="resourceinventory" element={<ResourceInventory />} />
                 <Route path="developmentinventory" element={<DevelopmentInventory />} />
+                <Route path="routes-registry" element={<RoutesComponentsRegistry />} />
               </Route>
 
               <Route path="/items/epics/:epicId/status-report" element={<EpicStatusReport />} />
