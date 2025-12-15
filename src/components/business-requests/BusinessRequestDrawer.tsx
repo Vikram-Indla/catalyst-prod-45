@@ -454,30 +454,33 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
             className="enterprise-drawer-header flex-col space-y-0 shrink-0 p-0" 
             style={{ background: 'var(--surface-1)' }}
           >
-            {/* Enterprise Header - Breadcrumb + ID */}
-            <div className="px-4 md:px-5 pt-3 pb-1 flex items-center gap-2">
+          {/* CIO Briefing Header - Compact Breadcrumb */}
+            <div className="px-4 md:px-5 pt-2.5 pb-1 flex items-center gap-1.5">
               <span 
-                className="text-[10px] uppercase tracking-wider font-medium" 
+                className="text-[10px] uppercase tracking-wide" 
                 style={{ color: 'var(--text-3)' }}
               >
                 Product Backlog
               </span>
-              <span style={{ color: 'var(--text-3)' }}>/</span>
-              <span className="text-xs font-semibold text-secondary-green">{request?.request_key || '...'}</span>
+              <span className="text-[10px]" style={{ color: 'var(--text-3)' }}>/</span>
+              <span className="text-[11px] font-medium" style={{ color: 'var(--accent-color)' }}>
+                {request?.request_key || '...'}
+              </span>
               <button
                 onClick={handleCopyLink}
-                className="text-muted-foreground/60 hover:text-brand-gold transition-colors p-0.5"
+                className="p-0.5 rounded hover:bg-[var(--surface-2)] transition-colors"
+                style={{ color: 'var(--text-3)' }}
                 title="Copy link"
               >
                 <LinkIcon className="h-3 w-3" />
               </button>
             </div>
 
-            {/* Main Header Row - Title + Status + Actions */}
-            <div className="flex items-start justify-between px-4 md:px-5 pb-3 gap-4" style={{ background: 'var(--surface-1)' }}>
-              {/* Left side: Title + Status + Metadata chips */}
-              <div className="flex-1 min-w-0 space-y-2">
-                {/* Editable title */}
+            {/* Main Header - Title (Hero) + Actions */}
+            <div className="flex items-start justify-between px-4 md:px-5 pb-2 gap-4">
+              {/* Left: Title + Meta */}
+              <div className="flex-1 min-w-0 space-y-1.5">
+                {/* Title - The Hero */}
                 <div className="flex items-center gap-1.5 group">
                   {isEditingName ? (
                     <Input
@@ -486,30 +489,36 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                       onChange={(e) => setEditedName(e.target.value)}
                       onBlur={handleSaveName}
                       onKeyDown={handleNameKeyDown}
-                      className="text-lg font-semibold h-auto py-1 px-2 border-brand-gold/50 focus:border-brand-gold max-w-[500px]"
+                      className="text-xl font-semibold h-auto py-0.5 px-2 border-[var(--accent-color)]/40 focus:border-[var(--accent-color)] max-w-[480px]"
+                      style={{ background: 'var(--surface-2)' }}
                     />
                   ) : (
                     <>
-                      <SheetTitle className="text-lg font-semibold truncate max-w-[500px]" style={{ color: 'var(--text-1)' }}>
+                      <SheetTitle 
+                        className="text-xl font-semibold truncate max-w-[480px] leading-tight" 
+                        style={{ color: 'var(--text-1)' }}
+                      >
                         {request?.title || 'Loading...'}
                       </SheetTitle>
                       <button
                         onClick={handleStartEditName}
-                        className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-brand-gold transition-all p-0.5"
+                        className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-[var(--surface-2)] transition-all"
+                        style={{ color: 'var(--text-3)' }}
                         title="Rename"
                       >
-                        <Pencil className="h-3.5 w-3.5" />
+                        <Pencil className="h-3 w-3" />
                       </button>
                     </>
                   )}
                 </div>
 
-                {/* Status + Metadata chips row */}
-                <div className="flex items-center gap-3 flex-wrap">
+                {/* Compact Metadata Row - Status + Key Chips */}
+                <div className="flex items-center gap-2 flex-wrap">
                   <EnterpriseStatusControl
                     currentStep={formData.process_step || 'new_request'}
                     onChange={(step) => handleFieldChange('process_step', step)}
                   />
+                  <div className="h-4 w-px" style={{ background: 'var(--border-color)' }} />
                   <DrawerMetadataChips
                     businessOwner={formData.business_owner}
                     department={formData.department}
@@ -594,7 +603,8 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                 </Button>
               </div>
             </div>
-            <div style={{ borderBottom: '2px solid var(--accent-color)' }} />
+            {/* Single subtle divider - no thick gold bar */}
+            <div style={{ borderBottom: '1px solid var(--border-color)' }} />
             <SheetDescription className="sr-only">Business request details panel</SheetDescription>
           </SheetHeader>
 
