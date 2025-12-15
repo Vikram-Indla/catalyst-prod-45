@@ -121,7 +121,7 @@ export function CreateThemeDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[520px] bg-surface border-border">
+      <DialogContent className="sm:max-w-[520px] bg-background border-border shadow-lg">
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold text-foreground">
             Create Theme
