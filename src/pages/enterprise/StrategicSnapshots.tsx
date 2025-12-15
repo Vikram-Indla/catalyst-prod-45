@@ -14,8 +14,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { format, formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
-import { PageShell } from '@/components/shared/PageShell';
+import { PageChrome } from '@/components/layout/PageChrome';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -224,114 +223,130 @@ export default function StrategicSnapshots() {
     }
   };
 
-  // Breadcrumb dynamic based on drawer state
-  const getBreadcrumb = () => {
-    if (selectedSnapshot) {
-      return `ENTERPRISE / Strategic Snapshots / ${selectedSnapshot.name}`;
-    }
-    return undefined; // Use default from GlobalPageHeader
-  };
+  // Create Snapshot CTA - matches Strategy Room primary CTA styling
+  const createSnapshotCta = (
+    <Button 
+      onClick={() => setCreateModalOpen(true)} 
+      className="h-8 bg-[hsl(var(--brand-gold))] hover:bg-[hsl(var(--brand-gold-hover))] text-white"
+    >
+      <Plus className="h-4 w-4 mr-2" />
+      Create Snapshot
+    </Button>
+  );
+
+  // Toolbar - matches Strategy Room control styling
+  const toolbar = (
+    <div className="flex items-center gap-3 w-full">
+      {/* Search */}
+      <div className="relative flex-1 max-w-xs">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Search snapshots..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-9 h-8 text-[13px]"
+          style={{ 
+            backgroundColor: 'var(--input-bg)', 
+            borderColor: 'var(--input-border)',
+            color: 'var(--text-1)'
+          }}
+        />
+      </div>
+
+      {/* Status Filter */}
+      <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as StatusFilter)}>
+        <SelectTrigger 
+          className="w-[120px] h-8 text-[13px]"
+          style={{ 
+            backgroundColor: 'var(--input-bg)', 
+            borderColor: 'var(--input-border)',
+            color: 'var(--text-1)'
+          }}
+        >
+          <SelectValue placeholder="All Status" />
+        </SelectTrigger>
+        <SelectContent className="z-[400]">
+          <SelectItem value="all">All Status</SelectItem>
+          <SelectItem value="draft">Draft</SelectItem>
+          <SelectItem value="active">Active</SelectItem>
+          <SelectItem value="archived">Archived</SelectItem>
+        </SelectContent>
+      </Select>
+
+      {/* Owner Filter */}
+      <Select value="all">
+        <SelectTrigger 
+          className="w-[120px] h-8 text-[13px]"
+          style={{ 
+            backgroundColor: 'var(--input-bg)', 
+            borderColor: 'var(--input-border)',
+            color: 'var(--text-1)'
+          }}
+        >
+          <SelectValue placeholder="All Owners" />
+        </SelectTrigger>
+        <SelectContent className="z-[400]">
+          <SelectItem value="all">All Owners</SelectItem>
+        </SelectContent>
+      </Select>
+
+      {/* Sort */}
+      <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
+        <SelectTrigger 
+          className="w-[130px] h-8 text-[13px]"
+          style={{ 
+            backgroundColor: 'var(--input-bg)', 
+            borderColor: 'var(--input-border)',
+            color: 'var(--text-1)'
+          }}
+        >
+          <SelectValue placeholder="Last Updated" />
+        </SelectTrigger>
+        <SelectContent className="z-[400]">
+          <SelectItem value="updated_desc">Last Updated</SelectItem>
+          <SelectItem value="updated_asc">Oldest Updated</SelectItem>
+          <SelectItem value="name_asc">Name A-Z</SelectItem>
+          <SelectItem value="name_desc">Name Z-A</SelectItem>
+        </SelectContent>
+      </Select>
+
+      {/* View Toggle */}
+      <div className="flex items-center border border-border rounded-md overflow-hidden ml-auto">
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn(
+            "h-8 w-8 rounded-none",
+            view === 'table' && "bg-muted"
+          )}
+          onClick={() => setView('table')}
+          aria-label="Table view"
+        >
+          <List className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn(
+            "h-8 w-8 rounded-none",
+            view === 'cards' && "bg-muted"
+          )}
+          onClick={() => setView('cards')}
+          aria-label="Card view"
+        >
+          <Grid3x3 className="h-4 w-4" />
+        </Button>
+      </div>
+    </div>
+  );
 
   return (
-    <PageShell>
-      {/* Global Page Header - matches Strategy Room */}
-      <GlobalPageHeader
-        sectionLabel="Enterprise"
-        pageTitle="Strategic Snapshots"
-        rightActions={
-          <Button 
-            onClick={() => setCreateModalOpen(true)} 
-            className="h-8 bg-[hsl(var(--brand-gold))] hover:bg-[hsl(var(--brand-gold-hover))] text-white"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Create Snapshot
-          </Button>
-        }
-        toolbar={
-          <div className="flex items-center gap-3 w-full">
-            {/* Search */}
-            <div className="relative flex-1 max-w-xs">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search snapshots..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 h-8 text-[13px]"
-              />
-            </div>
-
-            {/* Status Filter */}
-            <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as StatusFilter)}>
-              <SelectTrigger className="w-[120px] h-8 text-[13px]">
-                <SelectValue placeholder="All Status" />
-              </SelectTrigger>
-              <SelectContent className="z-[400]">
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="draft">Draft</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="archived">Archived</SelectItem>
-              </SelectContent>
-            </Select>
-
-            {/* Owner Filter */}
-            <Select value="all">
-              <SelectTrigger className="w-[120px] h-8 text-[13px]">
-                <SelectValue placeholder="All Owners" />
-              </SelectTrigger>
-              <SelectContent className="z-[400]">
-                <SelectItem value="all">All Owners</SelectItem>
-              </SelectContent>
-            </Select>
-
-            {/* Sort */}
-            <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
-              <SelectTrigger className="w-[130px] h-8 text-[13px]">
-                <SelectValue placeholder="Last Updated" />
-              </SelectTrigger>
-              <SelectContent className="z-[400]">
-                <SelectItem value="updated_desc">Last Updated</SelectItem>
-                <SelectItem value="updated_asc">Oldest Updated</SelectItem>
-                <SelectItem value="name_asc">Name A-Z</SelectItem>
-                <SelectItem value="name_desc">Name Z-A</SelectItem>
-              </SelectContent>
-            </Select>
-
-            {/* View Toggle */}
-            <div className="flex items-center border border-border rounded-md overflow-hidden ml-auto">
-              <Button
-                variant="ghost"
-                size="icon"
-                className={cn(
-                  "h-8 w-8 rounded-none",
-                  view === 'table' && "bg-muted"
-                )}
-                onClick={() => setView('table')}
-                aria-label="Table view"
-              >
-                <List className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className={cn(
-                  "h-8 w-8 rounded-none",
-                  view === 'cards' && "bg-muted"
-                )}
-                onClick={() => setView('cards')}
-                aria-label="Card view"
-              >
-                <Grid3x3 className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        }
-      />
-
-      {/* Content */}
-      <PageShell.Content variant="wide" className="pb-8">
+    <PageChrome rightActions={createSnapshotCta} toolbar={toolbar}>
+      {/* Content - matches Strategy Room padding/spacing */}
+      <div className="px-6 py-4 space-y-5 pb-8 max-w-[1600px] mx-auto">
         {isLoading ? (
           <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[hsl(var(--brand-gold))]"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           </div>
         ) : sortedAndFilteredSnapshots.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 text-center">
@@ -340,7 +355,7 @@ export default function StrategicSnapshots() {
             <p className="text-sm text-muted-foreground mb-4 max-w-sm">
               {searchQuery 
                 ? 'Try adjusting your search or filters.' 
-                : 'Create your first strategic snapshot to start planning.'}
+                : 'Create a snapshot to start planning and link quarters and themes.'}
             </p>
             {!searchQuery && (
               <Button 
@@ -392,7 +407,7 @@ export default function StrategicSnapshots() {
             ))}
           </div>
         )}
-      </PageShell.Content>
+      </div>
 
       {/* Create Modal */}
       <CreateSnapshotModal
@@ -427,6 +442,6 @@ export default function StrategicSnapshots() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </PageShell>
+    </PageChrome>
   );
 }
