@@ -1,6 +1,7 @@
 /**
  * Strategic Backlog - Epics Section
  * Enterprise-grade table for epics alignment
+ * NO duplicate CTAs - only search and filter in toolbar
  */
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -8,7 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Search, ChevronRight, Link as LinkIcon } from 'lucide-react';
+import { Search, ChevronRight } from 'lucide-react';
 import { EpicDetailsPanel } from '@/components/epic-backlog/EpicDetailsPanel';
 import { StrategicBacklogEmptyState } from './StrategicBacklogEmptyState';
 import { format } from 'date-fns';
@@ -180,16 +181,15 @@ export function StrategicBacklogEpicsSection({ snapshotId, themes, links, isArch
         hasSnapshot={!!snapshotId}
         hasThemes={true}
         isArchived={isArchived}
-        onLink={() => {/* TODO: Open link epic dialog */}}
       />
     );
   }
 
   return (
     <div className="space-y-4">
-      {/* Toolbar */}
+      {/* Toolbar - Search + filter only */}
       <div className="flex items-center gap-3">
-        <div className="relative flex-1 max-w-xs">
+        <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search epics..."
@@ -210,13 +210,6 @@ export function StrategicBacklogEpicsSection({ snapshotId, themes, links, isArch
         >
           Unaligned ({unalignedEpics.length})
         </Button>
-
-        {!isArchived && unalignedEpics.length > 0 && (
-          <Button variant="outline" size="sm">
-            <LinkIcon className="h-3.5 w-3.5 mr-1.5" />
-            Link to theme
-          </Button>
-        )}
       </div>
 
       {/* Table */}

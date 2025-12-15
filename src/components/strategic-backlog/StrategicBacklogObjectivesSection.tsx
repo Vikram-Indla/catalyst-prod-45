@@ -1,15 +1,15 @@
 /**
  * Strategic Backlog - Objectives Section
  * Enterprise-grade table for objectives management
+ * NO duplicate CTAs - only search in toolbar
  */
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
-import { Plus, Search, ChevronRight, AlertTriangle } from 'lucide-react';
+import { Search, ChevronRight, AlertTriangle } from 'lucide-react';
 import { ObjectiveDrawerV2 } from '@/modules/okr-v2';
 import { StrategicBacklogEmptyState } from './StrategicBacklogEmptyState';
 import { format } from 'date-fns';
@@ -140,16 +140,15 @@ export function StrategicBacklogObjectivesSection({ snapshotId, themes, isArchiv
         hasSnapshot={!!snapshotId}
         hasThemes={true}
         isArchived={isArchived}
-        onCreate={() => {/* TODO: Open create objective dialog */}}
       />
     );
   }
 
   return (
     <div className="space-y-4">
-      {/* Toolbar */}
-      <div className="flex items-center justify-between gap-4">
-        <div className="relative flex-1 max-w-xs">
+      {/* Toolbar - Search only */}
+      <div className="flex items-center">
+        <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search objectives..."
@@ -158,13 +157,6 @@ export function StrategicBacklogObjectivesSection({ snapshotId, themes, isArchiv
             className="pl-9 h-9"
           />
         </div>
-
-        {!isArchived && (
-          <Button size="sm" className="bg-brand-gold hover:bg-brand-gold-hover text-white">
-            <Plus className="h-3.5 w-3.5 mr-1.5" />
-            Create
-          </Button>
-        )}
       </div>
 
       {/* Table */}

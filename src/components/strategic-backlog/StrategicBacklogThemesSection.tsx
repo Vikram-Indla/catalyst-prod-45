@@ -1,15 +1,13 @@
 /**
  * Strategic Backlog - Themes Section
  * Enterprise-grade table for themes management
+ * NO duplicate CTAs - only search in toolbar
  */
 import { useState, useMemo } from 'react';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Plus, Search, Link as LinkIcon, Target, ChevronRight } from 'lucide-react';
+import { Search, Target, ChevronRight } from 'lucide-react';
 import { ThemeDetailsDrawer } from '@/components/backlog/ThemeDetailsDrawer';
-import { CreateThemeDialog } from './CreateThemeDialog';
-import { LinkExistingThemesDialog } from './LinkExistingThemesDialog';
 import { StrategicBacklogEmptyState } from './StrategicBacklogEmptyState';
 import { useThemesObjectiveCounts } from '@/hooks/useThemeObjectiveLinks';
 import { format } from 'date-fns';
@@ -31,8 +29,6 @@ const STATUS_LABELS: Record<string, { label: string; variant: 'default' | 'secon
 
 export function StrategicBacklogThemesSection({ themes, snapshotId, isArchived }: ThemesSectionProps) {
   const [selectedTheme, setSelectedTheme] = useState<StrategicTheme | null>(null);
-  const [createOpen, setCreateOpen] = useState(false);
-  const [linkOpen, setLinkOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortColumn, setSortColumn] = useState<'name' | 'status' | 'objectives' | 'updated'>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
@@ -114,19 +110,6 @@ export function StrategicBacklogThemesSection({ themes, snapshotId, isArchived }
           hasSnapshot={!!snapshotId}
           hasThemes={true}
           isArchived={isArchived}
-          onCreate={() => setCreateOpen(true)}
-          onLink={() => setLinkOpen(true)}
-        />
-        <CreateThemeDialog
-          open={createOpen}
-          onOpenChange={setCreateOpen}
-          snapshotId={snapshotId}
-        />
-        <LinkExistingThemesDialog
-          open={linkOpen}
-          onOpenChange={setLinkOpen}
-          snapshotId={snapshotId}
-          existingThemeIds={[]}
         />
       </>
     );
@@ -134,9 +117,9 @@ export function StrategicBacklogThemesSection({ themes, snapshotId, isArchived }
 
   return (
     <div className="space-y-4">
-      {/* Toolbar */}
-      <div className="flex items-center justify-between gap-4">
-        <div className="relative flex-1 max-w-xs">
+      {/* Toolbar - Search only */}
+      <div className="flex items-center">
+        <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search themes..."
@@ -145,19 +128,6 @@ export function StrategicBacklogThemesSection({ themes, snapshotId, isArchived }
             className="pl-9 h-9"
           />
         </div>
-
-        {!isArchived && (
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={() => setLinkOpen(true)}>
-              <LinkIcon className="h-3.5 w-3.5 mr-1.5" />
-              Link existing
-            </Button>
-            <Button size="sm" onClick={() => setCreateOpen(true)} className="bg-brand-gold hover:bg-brand-gold-hover text-white">
-              <Plus className="h-3.5 w-3.5 mr-1.5" />
-              Create
-            </Button>
-          </div>
-        )}
       </div>
 
       {/* Table */}
@@ -229,22 +199,11 @@ export function StrategicBacklogThemesSection({ themes, snapshotId, isArchived }
         </div>
       )}
 
-      {/* Dialogs */}
+      {/* Theme Details Drawer */}
       <ThemeDetailsDrawer
         theme={selectedTheme}
         isOpen={!!selectedTheme}
         onClose={() => setSelectedTheme(null)}
-      />
-      <CreateThemeDialog
-        open={createOpen}
-        onOpenChange={setCreateOpen}
-        snapshotId={snapshotId}
-      />
-      <LinkExistingThemesDialog
-        open={linkOpen}
-        onOpenChange={setLinkOpen}
-        snapshotId={snapshotId}
-        existingThemeIds={themes.map(t => t.id)}
       />
     </div>
   );
