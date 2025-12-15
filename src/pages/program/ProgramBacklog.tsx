@@ -11,6 +11,7 @@ import { ChevronDown, ChevronRight, Plus, List, LayoutGrid } from 'lucide-react'
 import { FeatureDetailsPanel } from '@/components/items/features/FeatureDetailsPanel';
 import { StoryDetailPanel } from '@/components/stories/StoryDetailPanel';
 import { FeatureDialog } from '@/components/forms/FeatureDialog';
+import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
 import { cn } from '@/lib/utils';
 
 interface ExpandedFeatures {
@@ -139,65 +140,60 @@ export default function ProgramBacklog() {
   };
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="border-b bg-card px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s4)]">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-[var(--s4)]">
-          <div>
-            <h1 className="text-2xl font-bold">Program Backlog</h1>
-            <p className="text-sm text-muted-foreground">
-              {program?.name || 'Loading...'} - Features with Stories
-            </p>
-          </div>
-          <div className="flex items-center gap-[var(--s2)]">
-            {/* Create Feature Button */}
-            <Button size="sm" className="bg-brand-gold hover:bg-brand-gold-hover" onClick={() => setIsCreateFeatureOpen(true)}>
+    <div className="flex flex-col h-full" style={{ backgroundColor: 'var(--bg)' }}>
+      {/* Global Page Header - Enterprise pattern with breadcrumb */}
+      <GlobalPageHeader
+        sectionLabel="Program"
+        pageTitle="Program Backlog"
+        rightActions={
+          <div className="flex items-center gap-2">
+            <Button size="sm" className="bg-brand-gold hover:bg-brand-gold-hover h-8" onClick={() => setIsCreateFeatureOpen(true)}>
               <Plus className="h-4 w-4 mr-1" />
               Create Feature
             </Button>
             <Button
               variant={viewMode === 'list' ? 'default' : 'outline'}
               size="sm"
+              className="h-8"
               onClick={() => setViewMode('list')}
             >
-              <List className="h-4 w-4 mr-1" />
-              List
+              <List className="h-4 w-4" />
             </Button>
             <Button
               variant={viewMode === 'kanban' ? 'default' : 'outline'}
               size="sm"
+              className="h-8"
               onClick={() => setViewMode('kanban')}
             >
-              <LayoutGrid className="h-4 w-4 mr-1" />
-              Kanban
+              <LayoutGrid className="h-4 w-4" />
             </Button>
           </div>
-        </div>
-
-        {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-[var(--s3)] mt-[var(--s4)]">
-          <Input
-            placeholder="Search features..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="max-w-xs"
-          />
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="All Statuses" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Statuses</SelectItem>
-              <SelectItem value="funnel">Funnel</SelectItem>
-              <SelectItem value="analyzing">Analyzing</SelectItem>
-              <SelectItem value="backlog">Backlog</SelectItem>
-              <SelectItem value="implementing">Implementing</SelectItem>
-              <SelectItem value="validating">Validating</SelectItem>
-              <SelectItem value="deploying">Deploying</SelectItem>
-              <SelectItem value="done">Done</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        }
+      />
+      
+      {/* Filters Toolbar */}
+      <div className="flex items-center gap-3 px-5 py-3 border-b" style={{ borderColor: 'var(--divider)' }}>
+        <Input
+          placeholder="Search features..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="max-w-xs h-8"
+        />
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="w-[160px] h-8">
+            <SelectValue placeholder="All Statuses" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Statuses</SelectItem>
+            <SelectItem value="funnel">Funnel</SelectItem>
+            <SelectItem value="analyzing">Analyzing</SelectItem>
+            <SelectItem value="backlog">Backlog</SelectItem>
+            <SelectItem value="implementing">Implementing</SelectItem>
+            <SelectItem value="validating">Validating</SelectItem>
+            <SelectItem value="deploying">Deploying</SelectItem>
+            <SelectItem value="done">Done</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Content */}

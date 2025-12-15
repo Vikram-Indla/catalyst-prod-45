@@ -7,6 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 
+// Layout
+import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
+
 // Icons
 import { 
   Search, 
@@ -387,11 +390,12 @@ export default function DemandIntakeCatalyst() {
   ], []);
 
   return (
-    <div className="flex flex-col h-full bg-white">
-      {/* Header aligned with sidebar - h-12 to match sidebar header */}
-      <header className="h-12 px-6 border-b border-border flex items-center shrink-0">
-        <h1 className="text-xl font-semibold text-foreground">Product Backlog</h1>
-      </header>
+    <div className="flex flex-col h-full" style={{ backgroundColor: 'var(--bg)' }}>
+      {/* Global Page Header - Enterprise pattern with breadcrumb */}
+      <GlobalPageHeader
+        sectionLabel="Product"
+        pageTitle="Product Backlog"
+      />
 
       {/* Main Content Area */}
       <main className="flex-1 overflow-hidden flex flex-col px-6 py-4">
