@@ -12,6 +12,7 @@ import { ThemesTab } from '@/components/strategic-backlog/ThemesTab';
 import { EpicsTab } from '@/components/strategic-backlog/EpicsTab';
 import { CreateThemeDialog } from '@/components/strategic-backlog/CreateThemeDialog';
 import { OKRHubV1 } from '@/modules/okr-v2/components/OKRHubV1';
+import { PageChrome } from '@/components/layout/PageChrome';
 import {
   useStrategyMissions,
   useStrategyVisions,
@@ -54,56 +55,51 @@ export default function StrategicBacklog() {
   const { data: themes = [] } = useStrategicThemes(snapshotId);
   const { data: links } = useSnapshotStrategyLinks(snapshotId);
 
+  const headerActions = (
+    <div className="flex items-center gap-3">
+      {currentSnapshot && (
+        <Badge variant={isArchived ? 'secondary' : 'outline'} className={!isArchived ? 'bg-brand-gold/10 text-brand-gold border-brand-gold/30' : ''}>
+          {isArchived ? <Archive className="h-3 w-3 mr-1" /> : <CheckCircle2 className="h-3 w-3 mr-1" />}
+          {isArchived ? 'Archived (read-only)' : currentSnapshot.status}
+        </Badge>
+      )}
+      
+      {/* Snapshot Selector */}
+      <Select value={snapshotId} onValueChange={setSelectedSnapshotId}>
+        <SelectTrigger className="w-[220px] h-9">
+          <SelectValue placeholder="Select snapshot" />
+        </SelectTrigger>
+        <SelectContent className="z-[400]">
+          {snapshots.map((snap) => (
+            <SelectItem key={snap.id} value={snap.id}>
+              <div className="flex items-center gap-2">
+                {snap.status === 'ARCHIVED' && <Archive className="h-3 w-3 text-muted-foreground" />}
+                {snap.name}
+              </div>
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      {/* Create Dropdown */}
+      {!isArchived && snapshotId && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button className="bg-brand-gold hover:bg-brand-gold/90 px-3">
+              <Plus className="h-4 w-4" />
+              <ChevronDown className="h-4 w-4 ml-1" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="z-[400] bg-background border-border">
+            <DropdownMenuItem onClick={() => setCreateType('theme')}>Theme</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
+    </div>
+  );
+
   return (
-    <div className="h-full flex flex-col bg-background">
-      {/* Header Row - NO toolbar, so NO divider */}
-      <div className="h-[44px] flex items-center justify-between px-6 flex-shrink-0">
-        <div className="flex items-center gap-4">
-          <h1 className="text-xl font-semibold text-secondary-green">Strategic Backlog</h1>
-          {currentSnapshot && (
-            <Badge variant={isArchived ? 'secondary' : 'outline'} className={!isArchived ? 'bg-brand-gold/10 text-brand-gold border-brand-gold/30' : ''}>
-              {isArchived ? <Archive className="h-3 w-3 mr-1" /> : <CheckCircle2 className="h-3 w-3 mr-1" />}
-              {isArchived ? 'Archived (read-only)' : currentSnapshot.status}
-            </Badge>
-          )}
-        </div>
-
-        <div className="flex items-center gap-3">
-          {/* Snapshot Selector */}
-          <Select value={snapshotId} onValueChange={setSelectedSnapshotId}>
-            <SelectTrigger className="w-[220px] h-9">
-              <SelectValue placeholder="Select snapshot" />
-            </SelectTrigger>
-            <SelectContent className="z-[400]">
-              {snapshots.map((snap) => (
-                <SelectItem key={snap.id} value={snap.id}>
-                  <div className="flex items-center gap-2">
-                    {snap.status === 'ARCHIVED' && <Archive className="h-3 w-3 text-muted-foreground" />}
-                    {snap.name}
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          {/* Create Dropdown */}
-          {!isArchived && snapshotId && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button className="bg-brand-gold hover:bg-brand-gold/90 px-3">
-                  <Plus className="h-4 w-4" />
-                  <ChevronDown className="h-4 w-4 ml-1" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="z-[400] bg-background border-border">
-                <DropdownMenuItem onClick={() => setCreateType('theme')}>Theme</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
-        </div>
-      </div>
-
-      {/* Content */}
+    <PageChrome rightActions={headerActions}>
       {!snapshotId ? (
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
@@ -190,6 +186,6 @@ export default function StrategicBacklog() {
           snapshotId={snapshotId}
         />
       )}
-    </div>
+    </PageChrome>
   );
 }
