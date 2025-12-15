@@ -112,25 +112,25 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
     
     return (
       <div 
-        className="flex items-center gap-2 py-2 cursor-pointer rounded transition-colors hover:bg-[var(--surface-2)] group"
+        className="flex items-center gap-2 py-1.5 cursor-pointer rounded transition-colors hover:bg-[var(--surface-2)] group"
         onClick={onClick}
         style={{ borderBottom: isLast ? 'none' : '1px solid var(--divider)' }}
       >
-        <span className="text-[14px] min-w-[72px]" style={{ color: 'var(--text-1)' }}>
+        <span className="text-[13px] min-w-[68px]" style={{ color: 'var(--text-1)' }}>
           {label}
         </span>
-        <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--surface-3)' }}>
+        <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--surface-3)' }}>
           <div 
             className="h-full rounded-full transition-all duration-300"
             style={{ width: `${percent}%`, backgroundColor: 'hsl(var(--secondary-green))' }}
           />
         </div>
-        <span className="text-[13px] font-semibold min-w-[40px] text-right" style={{ color: 'var(--text-1)' }}>
+        <span className="text-[12px] font-semibold min-w-[36px] text-right" style={{ color: 'var(--text-1)' }}>
           {accepted}/{total}
         </span>
         <ChevronRight 
-          className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" 
-          style={{ color: 'var(--text-2)' }} 
+          className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" 
+          style={{ color: 'var(--text-3)' }} 
         />
       </div>
     );
@@ -144,15 +144,15 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
 
   return (
     <PremiumCard className="h-full flex flex-col">
-      <PremiumCardHeader title="Progress" />
-      <PremiumCardContent className="flex-1">
+      <PremiumCardHeader title="Coverage" />
+      <PremiumCardContent className="flex-1 py-2">
         {isLoading ? (
-          <div className="flex items-center justify-center h-full min-h-[120px]">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+          <div className="flex items-center justify-center h-full min-h-[80px]">
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
           </div>
         ) : !progressData ? (
-          <div className="flex items-center justify-center h-full min-h-[120px]">
-            <span className="text-sm" style={{ color: 'var(--text-3)' }}>Select snapshot</span>
+          <div className="flex items-center justify-center h-full min-h-[80px]">
+            <span className="text-[13px]" style={{ color: 'var(--text-3)' }}>Select snapshot</span>
           </div>
         ) : (
           <div className="space-y-0">
@@ -160,7 +160,7 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
             <ProgressRow label="Epics" accepted={progressData.epics.completed} total={progressData.epics.total} onClick={handleEpicsClick} />
             <ProgressRow label="Features" accepted={progressData.features.completed} total={progressData.features.total} onClick={handleFeaturesClick} />
             <ProgressRow label="Stories" accepted={progressData.stories.completed} total={progressData.stories.total} onClick={handleStoriesClick} />
-            <ProgressRow label="Dependencies" accepted={progressData.dependencies.resolved} total={progressData.dependencies.total} onClick={handleDependenciesClick} isLast />
+            <ProgressRow label="Deps" accepted={progressData.dependencies.resolved} total={progressData.dependencies.total} onClick={handleDependenciesClick} isLast />
           </div>
         )}
       </PremiumCardContent>

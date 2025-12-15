@@ -7,6 +7,11 @@
  * Structure:
  * - Row 1: Breadcrumb (SECTION / Page Title) + optional right actions
  * - Row 2 (optional): Toolbar with controls + single divider below
+ * 
+ * Typography (enterprise contract):
+ * - Section label: 11px, semibold, uppercase, tracking-wider
+ * - Page title: 18px, semibold
+ * - Divider: only ONE, always below header (never above)
  */
 
 import React, { ReactNode } from 'react';
@@ -36,26 +41,34 @@ export function GlobalPageHeader({
   className,
 }: GlobalPageHeaderProps) {
   return (
-    <div className={cn('shrink-0', className)} style={{ backgroundColor: 'var(--bg)' }}>
+    <div 
+      className={cn('shrink-0', className)} 
+      style={{ backgroundColor: 'var(--bg)' }}
+    >
       {/* Row 1: Breadcrumb + Title + Actions */}
       <div
         className="flex items-center justify-between px-6"
         style={{ 
-          height: '48px',
+          height: '52px',
           borderBottom: !toolbar && showDivider ? '1px solid var(--divider)' : undefined,
         }}
       >
         {/* Left: Breadcrumb + Title */}
         <div className="flex items-center gap-2">
           <span
-            className="text-xs font-semibold uppercase tracking-wider"
+            className="text-[11px] font-semibold uppercase tracking-wider"
             style={{ color: 'var(--text-3)' }}
           >
             {sectionLabel}
           </span>
-          <span className="text-sm" style={{ color: 'var(--text-4)' }}>/</span>
+          <span 
+            className="text-[14px]" 
+            style={{ color: 'var(--text-4)' }}
+          >
+            /
+          </span>
           <h1
-            className="text-lg font-semibold"
+            className="text-[18px] font-semibold"
             style={{ color: 'var(--text-1)' }}
           >
             {pageTitle}
@@ -73,10 +86,10 @@ export function GlobalPageHeader({
       {/* Row 2: Toolbar - only rendered if toolbar provided */}
       {toolbar && (
         <div
-          className="flex items-center px-6 border-b"
+          className="flex items-center px-6"
           style={{
-            height: '48px',
-            borderColor: 'var(--divider)',
+            height: '44px',
+            borderBottom: '1px solid var(--divider)',
           }}
         >
           {toolbar}
