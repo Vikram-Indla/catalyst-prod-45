@@ -131,21 +131,21 @@ export default function StrategyRoomPage() {
         }
       />
 
-      {/* Content Area */}
-      <PageShell.Content variant="wide" className="space-y-4">
-        {/* Strategy Context - consolidated M/V/V in one card */}
+      {/* Content Area - consistent vertical rhythm */}
+      <PageShell.Content variant="wide" className="space-y-5 pb-8">
+        {/* Section 1: Strategy Context - Mission/Vision/Values */}
         <StrategyContextCard snapshot={selectedSnapshot} onUpdate={refetchSnapshots} />
 
-        {/* Executive Summary - 4 KPI tiles in one card */}
+        {/* Section 2: Executive Summary - 4 unique KPI tiles */}
         <ExecutiveSummaryCard snapshotId={effectiveSelectedSnapshotId} />
 
-        {/* Strategy Hierarchy - the control center */}
+        {/* Section 3: Strategy Coverage & Alignment - drilldown table */}
         <StrategyStack 
           onLayerClick={handlePyramidLayerClick} 
           snapshotId={effectiveSelectedSnapshotId}
         />
 
-        {/* OKR Tree */}
+        {/* Section 4: OKR Tree - hierarchical list */}
         <OkrTree
           selectedSnapshot={effectiveSelectedSnapshotId}
           onObjectiveClick={handleObjectiveClick}

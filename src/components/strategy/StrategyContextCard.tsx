@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { PremiumCard, PremiumCardHeader, PremiumCardContent } from '@/components/ui/premium-card';
@@ -73,28 +72,42 @@ export function StrategyContextCard({ snapshot, onUpdate }: StrategyContextCardP
     value, 
     field,
     placeholder,
+    isLast = false,
   }: { 
     title: string; 
     helper: string; 
     value: string; 
     field: 'mission' | 'vision' | 'values';
     placeholder: string;
+    isLast?: boolean;
   }) => {
     const displayValue = value || '';
-    const truncatedValue = displayValue.length > 100 ? displayValue.slice(0, 100) + '...' : displayValue;
     
     return (
-      <div className="flex flex-col gap-1 min-w-0">
-        <div className="flex items-center gap-1.5">
-          <span className="text-[12px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-2)' }}>
+      <div 
+        className="flex flex-col gap-2 min-w-0 py-3 px-4"
+        style={{
+          borderRight: isLast ? 'none' : '1px solid var(--divider)',
+        }}
+      >
+        <div className="flex items-baseline gap-1.5">
+          <span 
+            className="text-[11px] font-bold uppercase tracking-wider"
+            style={{ color: 'var(--text-2)' }}
+          >
             {title}
           </span>
-          <span className="text-[11px]" style={{ color: 'var(--text-3)' }}>— {helper}</span>
+          <span 
+            className="text-[11px] italic"
+            style={{ color: 'var(--text-3)' }}
+          >
+            {helper}
+          </span>
         </div>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="min-h-[40px]">
+              <div className="min-h-[48px]">
                 <InlineEditTextarea
                   value={value}
                   onSave={(v) => handleSave(field, v)}
@@ -117,9 +130,12 @@ export function StrategyContextCard({ snapshot, onUpdate }: StrategyContextCardP
 
   return (
     <PremiumCard>
-      <PremiumCardHeader title="Strategy Context" subtitle="Mission, vision, and values guiding this snapshot" />
-      <PremiumCardContent className="py-3">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+      <PremiumCardHeader 
+        title="Strategy Context" 
+        subtitle="Mission, vision, and values guiding this snapshot" 
+      />
+      <PremiumCardContent noPadding>
+        <div className="grid grid-cols-1 md:grid-cols-3">
           <ContextColumn
             title="Mission"
             helper="Why do we exist?"
@@ -140,6 +156,7 @@ export function StrategyContextCard({ snapshot, onUpdate }: StrategyContextCardP
             value={valuesString}
             field="values"
             placeholder="Enter core values (one per line)..."
+            isLast
           />
         </div>
       </PremiumCardContent>
