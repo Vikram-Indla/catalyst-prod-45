@@ -9,13 +9,11 @@ import { SnapshotProgress } from '@/components/strategy/SnapshotProgress';
 import { MisalignedWorkItems } from '@/components/strategy/MisalignedWorkItems';
 import { OkrTree } from '@/components/strategy/OkrTree';
 import { ObjectiveDrawerV2 } from '@/modules/okr-v2';
-import { CreateStrategyItemDropdown } from '@/components/strategy/CreateStrategyItemDropdown';
 import { ThemeDetailsDrawer } from '@/components/backlog/ThemeDetailsDrawer';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
 
-// Type definition - OKR v2 only uses a single Objectives layer
 type ObjectiveLevel = "OBJECTIVES";
 
 export default function StrategyRoomPage() {
@@ -28,7 +26,6 @@ export default function StrategyRoomPage() {
   const [selectedTheme, setSelectedTheme] = useState<any>(null);
   const [themeDrawerOpen, setThemeDrawerOpen] = useState(false);
 
-  // Fetch snapshots from database
   const { data: snapshots = [], isLoading: snapshotsLoading, refetch: refetchSnapshots } = useQuery({
     queryKey: ['strategy-snapshots'],
     queryFn: async () => {
@@ -42,7 +39,6 @@ export default function StrategyRoomPage() {
     },
   });
 
-  // Initialize snapshot ID when data loads
   useEffect(() => {
     if (snapshots.length > 0 && !selectedSnapshotId) {
       const defaultSnapshot = snapshots.find(s => s.name === 'Corporate Strategy 2025') || snapshots[0];
@@ -53,7 +49,6 @@ export default function StrategyRoomPage() {
   }, [snapshots, selectedSnapshotId]);
 
   const effectiveSelectedSnapshotId = selectedSnapshotId || snapshots.find(s => s.name === 'Corporate Strategy 2025')?.id || snapshots[0]?.id || '';
-  
   const selectedSnapshot = snapshots.find((s) => s.id === effectiveSelectedSnapshotId);
 
   const handleSnapshotChange = (newSnapshotId: string) => {
@@ -61,12 +56,10 @@ export default function StrategyRoomPage() {
   };
 
   const handlePyramidLayerClick = (label: string) => {
-    // OKR v2: Single objectives layer, other layers (Themes, Epics, Features) drill down
     if (label === 'Objectives') {
       setFilterLevel('OBJECTIVES');
       setFilterPI(undefined);
     }
-    // For Themes/Epics/Features, the pyramid drilldown drawer handles the display
   };
 
   const handleObjectiveClick = (objective: any) => {
@@ -85,7 +78,7 @@ export default function StrategyRoomPage() {
 
   if (snapshotsLoading || !effectiveSelectedSnapshotId) {
     return (
-      <div className="h-full flex flex-col bg-background">
+      <div className="h-full flex flex-col" style={{ backgroundColor: 'var(--bg)' }}>
         <div className="flex-1 flex items-center justify-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
@@ -95,14 +88,14 @@ export default function StrategyRoomPage() {
 
   return (
     <div className="h-full flex flex-col min-w-0" style={{ backgroundColor: 'var(--bg)' }}>
-      {/* Global Page Header - Enterprise pattern with breadcrumb */}
+      {/* Global Page Header */}
       <GlobalPageHeader
         sectionLabel="Enterprise"
         pageTitle="Strategy Room"
         rightActions={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <span className="text-xs font-medium" style={{ color: 'var(--text-3)' }}>Snapshot:</span>
-            <div className="w-56 md:w-64">
+            <div className="w-60">
               <Select value={effectiveSelectedSnapshotId} onValueChange={handleSnapshotChange}>
                 <SelectTrigger 
                   className="h-8 text-sm"
@@ -140,35 +133,27 @@ export default function StrategyRoomPage() {
         }
       />
 
-      {/* Content Area - Enterprise density: tight gaps, max-width container */}
-      <div className="flex-1 overflow-auto px-5 py-4 min-w-0">
-        <div className="max-w-[1600px] mx-auto space-y-4">
-          {/* Mission/Vision/Values - 3-up on desktop */}
+      {/* Content Area */}
+      <div className="flex-1 overflow-auto px-6 py-5 min-w-0">
+        <div className="max-w-[1600px] mx-auto space-y-5">
+          {/* Mission/Vision/Values - 3-up equal height */}
           <MissionVisionValues snapshot={selectedSnapshot} onUpdate={refetchSnapshots} />
 
-          {/* Execution + Goals + Pyramid + Misaligned - 4-column grid on xl */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4">
-            <ExecutionAgainstOutcomesWidget 
-              snapshotId={effectiveSelectedSnapshotId}
-            />
-            <StrategicGoalsWidget 
-              snapshotId={effectiveSelectedSnapshotId}
-            />
-            <MisalignedWorkItems 
-              snapshotId={effectiveSelectedSnapshotId}
-            />
-            <SnapshotProgress 
-              snapshotId={effectiveSelectedSnapshotId}
-            />
+          {/* KPI Widgets - 4-column grid with equal heights */}
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+            <ExecutionAgainstOutcomesWidget snapshotId={effectiveSelectedSnapshotId} />
+            <StrategicGoalsWidget snapshotId={effectiveSelectedSnapshotId} />
+            <MisalignedWorkItems snapshotId={effectiveSelectedSnapshotId} />
+            <SnapshotProgress snapshotId={effectiveSelectedSnapshotId} />
           </div>
 
-          {/* Strategy Pyramid - Full width */}
+          {/* Strategy Pyramid */}
           <StrategyPyramid 
             onLayerClick={handlePyramidLayerClick} 
             snapshotId={effectiveSelectedSnapshotId}
           />
 
-          {/* OKR Tree - Full width */}
+          {/* OKR Tree */}
           <OkrTree
             selectedSnapshot={effectiveSelectedSnapshotId}
             onObjectiveClick={handleObjectiveClick}
@@ -177,7 +162,7 @@ export default function StrategyRoomPage() {
         </div>
       </div>
 
-      {/* Objective Drawer - OKR v2 */}
+      {/* Drawers */}
       <ObjectiveDrawerV2
         objectiveId={selectedObjective?.id || null}
         open={drawerOpen}
@@ -187,7 +172,6 @@ export default function StrategyRoomPage() {
         }}
       />
 
-      {/* Theme Details Drawer */}
       <ThemeDetailsDrawer
         theme={selectedTheme}
         isOpen={themeDrawerOpen}

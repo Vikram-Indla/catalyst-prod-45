@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PremiumCard, PremiumCardHeader, PremiumCardContent } from '@/components/ui/premium-card';
 import { InlineEditTextarea } from '@/components/ui/InlineEditTextarea';
 
 interface MissionVisionValuesCardProps {
@@ -21,24 +21,9 @@ export function MissionVisionValuesCard({
   onSave,
 }: MissionVisionValuesCardProps) {
   return (
-    <Card 
-      className="overflow-hidden rounded-lg shadow-sm border" 
-      style={{ 
-        borderColor: 'var(--divider)',
-        backgroundColor: 'var(--surface-1)',
-      }}
-    >
-      <CardHeader 
-        className="py-2.5 px-3 border-b" 
-        style={{ 
-          borderColor: 'var(--divider)',
-          backgroundColor: 'var(--surface-1)',
-        }}
-      >
-        <CardTitle className="text-xs font-semibold" style={{ color: 'var(--text-1)' }}>{title}</CardTitle>
-        <p className="text-[10px]" style={{ color: 'var(--text-3)' }}>{subtitle}</p>
-      </CardHeader>
-      <CardContent className="px-3 py-2">
+    <PremiumCard className="h-full flex flex-col">
+      <PremiumCardHeader title={title} subtitle={subtitle} />
+      <PremiumCardContent className="flex-1 min-h-[80px]">
         <InlineEditTextarea
           value={value}
           onSave={onSave}
@@ -46,7 +31,7 @@ export function MissionVisionValuesCard({
           emptyText="None found."
           aria-label={ariaLabel}
         />
-      </CardContent>
-    </Card>
+      </PremiumCardContent>
+    </PremiumCard>
   );
 }
