@@ -2,7 +2,8 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { BusinessRequest, DELIVERY_PLATFORM_OPTIONS, PROCESS_STEPS, HEALTH_OPTIONS, COMPLEXITY_OPTIONS, URGENCY_OPTIONS } from '@/types/business-request';
+import { BusinessRequest, PROCESS_STEPS, HEALTH_OPTIONS, COMPLEXITY_OPTIONS, URGENCY_OPTIONS } from '@/types/business-request';
+import { DeliveryPlatformSelect } from '@/components/ui/lookup-select';
 import { DepartmentSelect } from '@/components/business-requests/DepartmentSelect';
 import { BusinessOwnerSelect } from '@/components/business-requests/BusinessOwnerSelect';
 import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings, getOwnerIdForDepartment } from '@/hooks/useDepartmentsAndOwners';
@@ -191,16 +192,12 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
 
           <div className="space-y-2">
             <Label className="text-sm font-medium">Delivery Platform</Label>
-            <Select value={data.delivery_platform || ''} onValueChange={(v) => handleChange('delivery_platform', v)}>
-              <SelectTrigger className="bg-background">
-                <SelectValue placeholder="Select platform" />
-              </SelectTrigger>
-              <SelectContent>
-                {DELIVERY_PLATFORM_OPTIONS.map((p) => (
-                  <SelectItem key={p.value} value={p.value}>{p.label.en}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <DeliveryPlatformSelect
+              value={data.delivery_platform || null}
+              onChange={(v) => handleChange('delivery_platform', v)}
+              placeholder="Select platform"
+              className="bg-background"
+            />
           </div>
         </div>
       </div>

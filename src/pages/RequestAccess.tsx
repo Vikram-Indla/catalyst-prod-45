@@ -10,7 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { RichTextEditor } from '@/components/business-requests/RichTextEditor';
-import { DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
+import { useActiveOptionValues } from '@/hooks/useOptionSets';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings, getOwnerIdForDepartment } from '@/hooks/useDepartmentsAndOwners';
 import { DepartmentSelect } from '@/components/business-requests/DepartmentSelect';
@@ -213,10 +213,11 @@ export default function RequestAccess() {
     businessOwnerId: '',
   });
 
-  // Fetch departments, owners and mappings from DB
+  // Fetch departments, owners, mappings and delivery platforms from DB
   const { data: departments } = useDepartments();
   const { data: owners } = useBusinessOwners();
   const { data: mappings } = useDepartmentOwnerMappings();
+  const { data: deliveryPlatformOptions = [] } = useActiveOptionValues('DELIVERY_PLATFORM');
   
   // Attachments - now uses unified attachment system
   const [stagedAttachments, setStagedAttachments] = useState<UnifiedAttachment[]>([]);
@@ -731,8 +732,10 @@ export default function RequestAccess() {
                         <SelectValue placeholder={t.platformPlaceholder} />
                       </SelectTrigger>
                       <SelectContent className="z-[400]">
-                        {DELIVERY_PLATFORM_OPTIONS.map((p) => (
-                          <SelectItem key={p.value} value={p.value}>{lang === 'en' ? p.label.en : p.label.ar}</SelectItem>
+                        {deliveryPlatformOptions.map((p) => (
+                          <SelectItem key={p.id} value={p.value_key}>
+                            {lang === 'ar' && p.label_ar ? p.label_ar : p.label}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
