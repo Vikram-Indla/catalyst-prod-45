@@ -1,6 +1,6 @@
 /**
  * Product Backlog Page - Executive Table view for Business Requests
- * Uses unified IndustryHeaderToolbarV2 component
+ * Uses GlobalPageHeader for consistent header + IndustryHeaderToolbarV2 for toolbar
  */
 
 import React, { useState, useMemo } from 'react';
@@ -15,6 +15,7 @@ import { DemandBulkDeleteModal } from '@/components/demand/DemandBulkDeleteModal
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
+import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
 
 export default function ProductBacklogPage() {
   const queryClient = useQueryClient();
@@ -186,8 +187,8 @@ export default function ProductBacklogPage() {
     toast.success(`Deleted ${dbIds.length} request(s)`);
   };
 
-  // Unified header component
-  const headerElement = (
+  // Toolbar content (without title - GlobalPageHeader handles that)
+  const toolbarElement = (
     <IndustryHeaderToolbarV2
       title="Product Backlog"
       countText={`${tableData.length}`}
@@ -224,8 +225,20 @@ export default function ProductBacklogPage() {
     />
   );
 
+  // Combined header with GlobalPageHeader + toolbar
+  const headerElement = (
+    <div className="flex flex-col" style={{ backgroundColor: 'var(--bg)' }}>
+      <GlobalPageHeader
+        sectionLabel="Product"
+        pageTitle="Product Backlog"
+        showDivider={false}
+      />
+      {toolbarElement}
+    </div>
+  );
+
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col" style={{ backgroundColor: 'var(--bg)' }}>
       <ExecutiveTable
         data={tableData}
         isLoading={isLoading}

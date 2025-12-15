@@ -177,13 +177,7 @@ export function IndustryHeaderToolbarV2({
 
   return (
     <div className={styles.toolbarRoot}>
-      {/* Row 1: Title Bar */}
-      <header className={styles.titleBar}>
-        <div className={styles.titleBar__content}>
-          <h1 className={styles.titleBar__title}>{title}</h1>
-        </div>
-      </header>
-
+      {/* Title bar removed - use GlobalPageHeader instead */}
       {/* Row 2: Command Bar */}
       <div className={styles.commandBar}>
         {/* Segmented View Toggle */}
