@@ -1,7 +1,6 @@
 /**
  * Coverage & Gaps Panel for Strategic Backlog
- * READ-ONLY executive insight panel - no action buttons
- * Clicking metrics navigates to filtered views
+ * CLAUDE DESIGN - Token-based styling
  */
 import { cn } from '@/lib/utils';
 import { CheckCircle2, AlertTriangle, Palette, Target, Boxes } from 'lucide-react';
@@ -64,8 +63,8 @@ export function StrategicBacklogCoveragePanel({
   ];
 
   return (
-    <div className="rounded-lg border border-border bg-surface p-4">
-      <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4">
+    <div className="rounded-lg border border-catalyst-border bg-catalyst-surface p-4">
+      <h3 className="text-xs font-semibold text-catalyst-text-muted uppercase tracking-wider mb-4">
         Coverage & Gaps
       </h3>
       
@@ -81,35 +80,35 @@ export function StrategicBacklogCoveragePanel({
               onClick={() => onNavigate(metric.id)}
               className={cn(
                 "w-full flex items-center justify-between p-2.5 rounded-md transition-colors text-left",
-                "hover:bg-[rgba(92,124,92,0.08)]"
+                "hover:bg-catalyst-green-tint"
               )}
             >
               <div className="flex items-center gap-2.5">
                 <div className={cn(
                   "p-1.5 rounded-md",
-                  isComplete ? "bg-secondary-green/10" : "bg-muted"
+                  isComplete ? "bg-emerald-500/10 dark:bg-emerald-500/20" : "bg-catalyst-surface-hover"
                 )}>
                   <Icon className={cn(
                     "h-3.5 w-3.5",
-                    isComplete ? "text-secondary-green" : "text-muted-foreground"
+                    isComplete ? "text-emerald-600 dark:text-emerald-400" : "text-catalyst-text-muted"
                   )} />
                 </div>
                 
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <span className="text-sm font-medium text-foreground">
+                    <span className="text-sm font-medium text-catalyst-text">
                       {metric.label}
                     </span>
                     <span className={cn(
                       "text-sm font-semibold",
-                      isComplete ? "text-secondary-green" : "text-foreground"
+                      isComplete ? "text-emerald-600 dark:text-emerald-400" : "text-catalyst-text"
                     )}>
                       {metric.count}
                     </span>
                   </div>
                   
                   {metric.count > 0 && (
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-catalyst-text-muted">
                       {metric.coverageValue} {metric.coverageLabel} ({metric.coveragePercent}%)
                     </p>
                   )}
@@ -118,7 +117,7 @@ export function StrategicBacklogCoveragePanel({
 
               <div className="flex items-center">
                 {isComplete && (
-                  <CheckCircle2 className="h-4 w-4 text-secondary-green" />
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                 )}
                 {needsAttention && (
                   <AlertTriangle className="h-4 w-4 text-amber-500" />

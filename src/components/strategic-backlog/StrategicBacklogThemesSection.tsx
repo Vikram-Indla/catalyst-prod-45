@@ -1,12 +1,12 @@
 /**
  * Strategic Backlog - Themes Section
- * Enterprise-grade table for themes management
- * NO duplicate CTAs - only search in toolbar
+ * CLAUDE DESIGN - Enterprise table with Owner avatars
  */
 import { useState, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Search, Target, ChevronRight } from 'lucide-react';
+import { Target, ChevronRight } from 'lucide-react';
 import { ThemeDetailsDrawer } from '@/components/backlog/ThemeDetailsDrawer';
 import { StrategicBacklogEmptyState } from './StrategicBacklogEmptyState';
 import { useThemesObjectiveCounts } from '@/hooks/useThemeObjectiveLinks';
@@ -18,22 +18,55 @@ interface ThemesSectionProps {
   themes: StrategicTheme[];
   snapshotId: string;
   isArchived: boolean;
+  searchQuery?: string;
 }
 
-const STATUS_LABELS: Record<string, { label: string; variant: 'default' | 'secondary' | 'outline' }> = {
-  'proposed': { label: 'Draft', variant: 'secondary' },
-  'active': { label: 'Active', variant: 'default' },
-  'done': { label: 'Retired', variant: 'outline' },
-  'cancelled': { label: 'Cancelled', variant: 'outline' },
+const STATUS_STYLES: Record<string, string> = {
+  'proposed': 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-500/20 dark:text-slate-300 dark:border-slate-500/30',
+  'active': 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-400 dark:border-emerald-500/30',
+  'done': 'bg-stone-100 text-stone-500 border-stone-200 dark:bg-stone-500/20 dark:text-stone-400 dark:border-stone-500/30',
+  'cancelled': 'bg-stone-100 text-stone-500 border-stone-200 dark:bg-stone-500/20 dark:text-stone-400 dark:border-stone-500/30',
 };
 
-export function StrategicBacklogThemesSection({ themes, snapshotId, isArchived }: ThemesSectionProps) {
+const STATUS_LABELS: Record<string, string> = {
+  'proposed': 'Draft',
+  'active': 'Active',
+  'done': 'Retired',
+  'cancelled': 'Cancelled',
+};
+
+export function StrategicBacklogThemesSection({ themes, snapshotId, isArchived, searchQuery = '' }: ThemesSectionProps) {
   const [selectedTheme, setSelectedTheme] = useState<StrategicTheme | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
   const [sortColumn, setSortColumn] = useState<'name' | 'status' | 'objectives' | 'updated'>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   const { data: objectiveCounts = {} } = useThemesObjectiveCounts(themes.map(t => t.id));
+
+  // Fetch owner profiles
+  const ownerIds = themes.map(t => t.owner_id).filter(Boolean) as string[];
+  const { data: profiles = [] } = useQuery({
+    queryKey: ['profiles', ownerIds],
+    queryFn: async () => {
+      if (ownerIds.length === 0) return [];
+      const { data } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url')
+        .in('id', ownerIds);
+      return data || [];
+    },
+    enabled: ownerIds.length > 0,
+  });
+
+  const profileMap = useMemo(() => {
+    const map: Record<string, { name: string; avatar: string }> = {};
+    profiles.forEach((p: any) => {
+      map[p.id] = {
+        name: p.full_name || 'Unknown',
+        avatar: p.full_name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase() || 'U'
+      };
+    });
+    return map;
+  }, [profiles]);
 
   const filteredThemes = useMemo(() => {
     let result = themes;
@@ -87,113 +120,135 @@ export function StrategicBacklogThemesSection({ themes, snapshotId, isArchived }
     }
   };
 
-  const getStatusBadge = (status?: string) => {
-    const config = STATUS_LABELS[status || 'proposed'] || STATUS_LABELS['proposed'];
+  const SortIcon = ({ column }: { column: typeof sortColumn }) => {
+    if (sortColumn !== column) {
+      return (
+        <svg className="w-3 h-3 ml-1 opacity-30" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/>
+        </svg>
+      );
+    }
     return (
-      <Badge variant={config.variant} className="text-xs">
-        {config.label}
-      </Badge>
+      <svg className="w-3 h-3 ml-1 text-catalyst-gold" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+        {sortDirection === 'asc' 
+          ? <path d="m18 15-6-6-6 6"/>
+          : <path d="m6 9 6 6 6-6"/>
+        }
+      </svg>
     );
-  };
-
-  const SortIndicator = ({ column }: { column: typeof sortColumn }) => {
-    if (sortColumn !== column) return <span className="text-muted-foreground/30 ml-1">⇅</span>;
-    return <span className="text-brand-gold ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>;
   };
 
   // Empty state
   if (themes.length === 0 && !searchQuery) {
     return (
-      <>
-        <StrategicBacklogEmptyState
-          type="theme"
-          hasSnapshot={!!snapshotId}
-          hasThemes={true}
-          isArchived={isArchived}
-        />
-      </>
+      <StrategicBacklogEmptyState
+        type="theme"
+        hasSnapshot={!!snapshotId}
+        hasThemes={true}
+        isArchived={isArchived}
+      />
     );
   }
 
   return (
     <div className="space-y-4">
-      {/* Toolbar - Search only */}
-      <div className="flex items-center">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search themes..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 h-9"
-          />
-        </div>
-      </div>
-
-      {/* Table */}
+      {/* Table Card */}
       {filteredThemes.length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground">
+        <div className="text-center py-12 text-catalyst-text-muted">
           No themes match your search.
         </div>
       ) : (
-        <div className="border border-border rounded-lg overflow-hidden bg-surface">
+        <div className="border border-catalyst-border rounded-lg overflow-hidden bg-catalyst-surface shadow-sm">
           <table className="w-full">
             <thead>
-              <tr className="bg-brand-gold/5 border-b border-border">
+              <tr className="bg-catalyst-table-header border-b border-catalyst-border">
                 <th 
-                  className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-brand-gold/10 transition-colors"
+                  className="text-left px-4 py-3 text-[11px] font-semibold text-catalyst-text-muted uppercase tracking-wider cursor-pointer hover:bg-catalyst-surface-hover transition-colors"
                   onClick={() => handleSort('name')}
                 >
-                  Theme <SortIndicator column="name" />
+                  <div className="flex items-center">
+                    Theme <SortIcon column="name" />
+                  </div>
                 </th>
                 <th 
-                  className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider w-28 cursor-pointer hover:bg-brand-gold/10 transition-colors"
+                  className="text-left px-4 py-3 text-[11px] font-semibold text-catalyst-text-muted uppercase tracking-wider w-24 cursor-pointer hover:bg-catalyst-surface-hover transition-colors"
                   onClick={() => handleSort('status')}
                 >
-                  State <SortIndicator column="status" />
+                  <div className="flex items-center">
+                    State <SortIcon column="status" />
+                  </div>
                 </th>
                 <th 
-                  className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider w-32 cursor-pointer hover:bg-brand-gold/10 transition-colors"
+                  className="text-left px-4 py-3 text-[11px] font-semibold text-catalyst-text-muted uppercase tracking-wider w-28 cursor-pointer hover:bg-catalyst-surface-hover transition-colors"
                   onClick={() => handleSort('objectives')}
                 >
-                  Objectives <SortIndicator column="objectives" />
+                  <div className="flex items-center">
+                    Objectives <SortIcon column="objectives" />
+                  </div>
+                </th>
+                <th className="text-left px-4 py-3 text-[11px] font-semibold text-catalyst-text-muted uppercase tracking-wider w-36">
+                  Owner
                 </th>
                 <th 
-                  className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider w-32 cursor-pointer hover:bg-brand-gold/10 transition-colors"
+                  className="text-left px-4 py-3 text-[11px] font-semibold text-catalyst-text-muted uppercase tracking-wider w-28 cursor-pointer hover:bg-catalyst-surface-hover transition-colors"
                   onClick={() => handleSort('updated')}
                 >
-                  Updated <SortIndicator column="updated" />
+                  <div className="flex items-center">
+                    Updated <SortIcon column="updated" />
+                  </div>
                 </th>
                 <th className="w-10"></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
-              {filteredThemes.map((theme) => (
-                <tr
-                  key={theme.id}
-                  onClick={() => setSelectedTheme(theme)}
-                  className="cursor-pointer hover:bg-[rgba(92,124,92,0.06)] transition-colors"
-                >
-                  <td className="px-4 py-3">
-                    <span className="font-medium text-foreground">{theme.name}</span>
-                  </td>
-                  <td className="px-4 py-3">
-                    {getStatusBadge(theme.status)}
-                  </td>
-                  <td className="px-4 py-3">
-                    <Badge variant="outline" className="gap-1 text-xs font-medium">
-                      <Target className="h-3 w-3" />
-                      {objectiveCounts[theme.id] || 0}
-                    </Badge>
-                  </td>
-                  <td className="px-4 py-3 text-sm text-muted-foreground">
-                    {theme.updated_at ? format(new Date(theme.updated_at), 'MMM d, yyyy') : '—'}
-                  </td>
-                  <td className="px-4 py-3">
-                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                  </td>
-                </tr>
-              ))}
+            <tbody className="divide-y divide-catalyst-border">
+              {filteredThemes.map((theme) => {
+                const owner = theme.owner_id ? profileMap[theme.owner_id] : null;
+                const statusStyle = STATUS_STYLES[theme.status || 'proposed'] || STATUS_STYLES['proposed'];
+                const statusLabel = STATUS_LABELS[theme.status || 'proposed'] || 'Draft';
+
+                return (
+                  <tr
+                    key={theme.id}
+                    onClick={() => setSelectedTheme(theme)}
+                    className="cursor-pointer hover:bg-catalyst-green-tint transition-colors"
+                  >
+                    <td className="px-4 py-3">
+                      <span className="font-medium text-catalyst-text">{theme.name}</span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <Badge className={cn("text-[11px] font-medium border", statusStyle)}>
+                        {statusLabel}
+                      </Badge>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-1 text-sm text-catalyst-text-secondary">
+                        <Target className="h-3.5 w-3.5" />
+                        {objectiveCounts[theme.id] || 0}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      {owner ? (
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 rounded-full bg-catalyst-gold text-white text-xs font-medium flex items-center justify-center">
+                            {owner.avatar}
+                          </div>
+                          <span className="text-sm text-catalyst-text-secondary truncate max-w-[100px]">
+                            {owner.name}
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-sm text-catalyst-text-muted">—</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-catalyst-text-muted">
+                      {theme.updated_at ? format(new Date(theme.updated_at), 'MMM d, yyyy') : '—'}
+                    </td>
+                    <td className="px-4 py-3">
+                      <ChevronRight className="h-4 w-4 text-catalyst-text-muted" />
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
