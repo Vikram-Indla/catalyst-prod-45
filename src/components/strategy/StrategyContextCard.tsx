@@ -1,7 +1,6 @@
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { PremiumCard, PremiumCardHeader, PremiumCardContent } from '@/components/ui/premium-card';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { InlineEditTextarea } from '@/components/ui/InlineEditTextarea';
 
 interface StrategyContextCardProps {
@@ -81,16 +80,14 @@ export function StrategyContextCard({ snapshot, onUpdate }: StrategyContextCardP
     placeholder: string;
     isLast?: boolean;
   }) => {
-    const displayValue = value || '';
-    
     return (
       <div 
-        className="flex flex-col gap-2 min-w-0 py-3 px-4"
+        className="flex flex-col gap-1.5 min-w-0 py-3 px-4"
         style={{
           borderRight: isLast ? 'none' : '1px solid var(--divider)',
         }}
       >
-        <div className="flex items-baseline gap-1.5">
+        <div className="flex items-baseline gap-1.5 mb-1">
           <span 
             className="text-[11px] font-bold uppercase tracking-wider"
             style={{ color: 'var(--text-2)' }}
@@ -104,26 +101,15 @@ export function StrategyContextCard({ snapshot, onUpdate }: StrategyContextCardP
             {helper}
           </span>
         </div>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="min-h-[48px]">
-                <InlineEditTextarea
-                  value={value}
-                  onSave={(v) => handleSave(field, v)}
-                  placeholder={placeholder}
-                  emptyText="Not set"
-                  aria-label={`Edit ${title}`}
-                />
-              </div>
-            </TooltipTrigger>
-            {displayValue.length > 100 && (
-              <TooltipContent side="bottom" className="max-w-[300px] text-[12px]">
-                {displayValue}
-              </TooltipContent>
-            )}
-          </Tooltip>
-        </TooltipProvider>
+        <div className="min-h-[40px]">
+          <InlineEditTextarea
+            value={value}
+            onSave={(v) => handleSave(field, v)}
+            placeholder={placeholder}
+            emptyText="Not set"
+            aria-label={`Edit ${title}`}
+          />
+        </div>
       </div>
     );
   };

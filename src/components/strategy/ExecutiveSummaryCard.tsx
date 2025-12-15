@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { TrendingUp, AlertTriangle, GitBranch, ShieldAlert } from 'lucide-react';
 import { PremiumCard, PremiumCardHeader, PremiumCardContent } from '@/components/ui/premium-card';
 import { useOKRv2StrategyMetrics } from '@/hooks/useOKRv2StrategyMetrics';
 import { useStrategyPyramidCounts } from '@/hooks/useExecutionMetrics';
@@ -49,10 +48,10 @@ function KPITile({
   return (
     <button
       onClick={onClick}
-      className="relative flex flex-col items-start p-4 transition-colors text-left hover:bg-[var(--surface-2)] group flex-1 border-r last:border-r-0"
-      style={{ borderColor: 'var(--divider)' }}
+      className="relative flex flex-col items-start p-4 transition-colors text-left hover:bg-[var(--surface-2)] group flex-1 min-w-0"
+      aria-label={`${label}: ${value}`}
     >
-      {/* Top accent bar */}
+      {/* Top accent bar - each tile has its own */}
       <div 
         className="absolute top-0 left-0 right-0 h-[2px]"
         style={{ backgroundColor: accentBorder }}
@@ -66,10 +65,15 @@ function KPITile({
       </span>
       
       {isLoading ? (
-        <div className="h-9 w-14 rounded animate-pulse mb-1" style={{ backgroundColor: 'var(--surface-3)' }} />
+        <span 
+          className="text-[28px] font-bold leading-none mb-1"
+          style={{ color: 'var(--text-3)' }}
+        >
+          —
+        </span>
       ) : (
         <span 
-          className="text-[32px] font-bold leading-none mb-1 tabular-nums"
+          className="text-[28px] font-bold leading-none mb-1 tabular-nums"
           style={{ color: isNeutral ? 'var(--text-2)' : accentBorder }}
         >
           {value}
@@ -153,7 +157,7 @@ export function ExecutiveSummaryCard({ snapshotId }: ExecutiveSummaryCardProps) 
   const highestSeverity = riskData?.highestSeverity;
 
   // Card A: Overall Progress
-  const progressValue = hasObjectives ? `${Math.round(overallProgress!)}%` : 'N/A';
+  const progressValue = hasObjectives ? `${Math.round(overallProgress!)}%` : '—';
   const progressSubtext = hasObjectives 
     ? `Across ${objectivesCount} objective${objectivesCount !== 1 ? 's' : ''}` 
     : 'Create objectives to start tracking';
@@ -187,7 +191,7 @@ export function ExecutiveSummaryCard({ snapshotId }: ExecutiveSummaryCardProps) 
         subtitle="Key performance indicators at a glance" 
       />
       <PremiumCardContent noPadding>
-        <div className="grid grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 divide-x" style={{ borderColor: 'var(--divider)' }}>
           <KPITile
             label="Overall Progress"
             value={progressValue}
