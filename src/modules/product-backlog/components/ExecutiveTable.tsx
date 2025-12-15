@@ -388,23 +388,40 @@ function ColumnFilterDropdown({ column, options, selected, onApply, onClear }: {
     <div ref={ref} className="relative inline-flex">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`p-0.5 border-none bg-transparent cursor-pointer flex items-center ${selected.length > 0 ? 'text-brand-gold' : 'text-muted-foreground'}`}
+        className="p-0.5 border-none bg-transparent cursor-pointer flex items-center"
+        style={{ color: selected.length > 0 ? 'var(--accent-color)' : 'var(--text-3)' }}
       >
         <Icons.Filter />
         {selected.length > 0 && (
-          <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-brand-gold text-white text-[9px] font-bold flex items-center justify-center">
+          <span 
+            className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full text-white text-[9px] font-bold flex items-center justify-center"
+            style={{ backgroundColor: 'var(--accent-color)' }}
+          >
             {selected.length}
           </span>
         )}
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1 min-w-[180px] bg-background border border-border rounded-lg shadow-lg z-[200]">
+        <div 
+          className="absolute top-full left-0 mt-1 min-w-[180px] rounded-lg shadow-lg z-[400]"
+          style={{ 
+            backgroundColor: 'var(--surface-1)',
+            border: '1px solid var(--border-color)',
+          }}
+        >
           <div className="p-2 max-h-[200px] overflow-y-auto">
             {options.map(opt => (
               <label
                 key={opt.value}
-                className="flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer text-xs hover:bg-muted"
+                className="flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer text-xs"
+                style={{ color: 'var(--text-1)' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--surface-3)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                }}
               >
                 <input
                   type="checkbox"
@@ -416,10 +433,15 @@ function ColumnFilterDropdown({ column, options, selected, onApply, onClear }: {
               </label>
             ))}
           </div>
-          <div className="p-2 border-t border-border flex gap-2">
+          <div className="p-2 flex gap-2" style={{ borderTop: '1px solid var(--divider)' }}>
             <button
               onClick={() => { onClear(); setIsOpen(false); }}
-              className="flex-1 py-1.5 border border-border rounded bg-background text-[11px] cursor-pointer hover:bg-muted"
+              className="flex-1 py-1.5 rounded text-[11px] cursor-pointer"
+              style={{ 
+                border: '1px solid var(--border-color)',
+                backgroundColor: 'var(--surface-2)',
+                color: 'var(--text-1)',
+              }}
             >
               Clear
             </button>
@@ -459,24 +481,47 @@ function DensitySelector({ value, onChange }: { value: string; onChange: (value:
     <div ref={ref} className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 px-3 py-2 border border-border rounded-md bg-background text-muted-foreground text-xs cursor-pointer hover:bg-muted"
+        className="flex items-center gap-1.5 px-3 py-2 rounded-md text-xs cursor-pointer"
         title="Row Density"
+        style={{ 
+          border: '1px solid var(--border-color)',
+          backgroundColor: 'var(--surface-1)',
+          color: 'var(--text-2)',
+        }}
       >
         <Icons.Density />
       </button>
 
       {isOpen && (
-        <div className="absolute top-full right-0 mt-1 bg-background border border-border rounded-lg shadow-lg z-[100] min-w-[140px]">
+        <div 
+          className="absolute top-full right-0 mt-1 rounded-lg shadow-lg z-[400] min-w-[140px]"
+          style={{ 
+            backgroundColor: 'var(--surface-1)',
+            border: '1px solid var(--border-color)',
+          }}
+        >
           {options.map(opt => (
             <button
               key={opt.value}
               onClick={() => { onChange(opt.value); setIsOpen(false); }}
-              className={`w-full flex flex-col items-start px-3 py-2.5 border-none text-left cursor-pointer hover:bg-muted ${value === opt.value ? 'bg-brand-gold/10' : 'bg-transparent'}`}
+              className="w-full flex flex-col items-start px-3 py-2.5 border-none text-left cursor-pointer"
+              style={{ 
+                backgroundColor: value === opt.value ? 'var(--accent-muted)' : 'transparent',
+              }}
+              onMouseEnter={(e) => {
+                if (value !== opt.value) e.currentTarget.style.backgroundColor = 'var(--surface-3)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = value === opt.value ? 'var(--accent-muted)' : 'transparent';
+              }}
             >
-              <span className={`text-xs ${value === opt.value ? 'font-semibold' : ''} text-foreground`}>
+              <span 
+                className={`text-xs ${value === opt.value ? 'font-semibold' : ''}`}
+                style={{ color: 'var(--text-1)' }}
+              >
                 {opt.label}
               </span>
-              <span className="text-[10px] text-muted-foreground">{opt.desc}</span>
+              <span className="text-[10px]" style={{ color: 'var(--text-3)' }}>{opt.desc}</span>
             </button>
           ))}
         </div>
@@ -519,15 +564,32 @@ function ColumnManager({ columns, visibleColumns, onChange, externalOpen, onExte
   if (hideButton) {
     if (!isOpen) return null;
     return (
-      <div ref={ref} className="fixed top-24 right-6 bg-card border border-border rounded-lg shadow-lg z-[500] min-w-[200px] max-h-[300px] overflow-y-auto">
+      <div 
+        ref={ref} 
+        className="fixed top-24 right-6 rounded-lg shadow-lg z-[500] min-w-[200px] max-h-[300px] overflow-y-auto"
+        style={{ 
+          backgroundColor: 'var(--surface-1)',
+          border: '1px solid var(--border-color)',
+        }}
+      >
         <div className="p-2">
-          <div className="text-[10px] text-muted-foreground px-2 py-1 mb-1 uppercase tracking-wider">
+          <div 
+            className="text-[10px] px-2 py-1 mb-1 uppercase tracking-wider"
+            style={{ color: 'var(--text-3)' }}
+          >
             Toggle Visibility
           </div>
           {columns.map(col => (
             <label
               key={col.id}
-              className="flex items-center gap-2 px-2 py-2 rounded cursor-pointer text-xs hover:bg-muted"
+              className="flex items-center gap-2 px-2 py-2 rounded cursor-pointer text-xs"
+              style={{ color: 'var(--text-1)' }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'var(--surface-3)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+              }}
             >
               <input
                 type="checkbox"
@@ -547,22 +609,43 @@ function ColumnManager({ columns, visibleColumns, onChange, externalOpen, onExte
     <div ref={ref} className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 px-3 py-2 border border-border rounded-md bg-background text-muted-foreground text-xs cursor-pointer hover:bg-muted"
+        className="flex items-center gap-1.5 px-3 py-2 rounded-md text-xs cursor-pointer"
         title="Columns"
+        style={{ 
+          border: '1px solid var(--border-color)',
+          backgroundColor: 'var(--surface-1)',
+          color: 'var(--text-2)',
+        }}
       >
         <Icons.Columns />
       </button>
 
       {isOpen && (
-        <div className="absolute top-full right-0 mt-1 bg-card border border-border rounded-lg shadow-lg z-[500] min-w-[200px] max-h-[300px] overflow-y-auto">
+        <div 
+          className="absolute top-full right-0 mt-1 rounded-lg shadow-lg z-[500] min-w-[200px] max-h-[300px] overflow-y-auto"
+          style={{ 
+            backgroundColor: 'var(--surface-1)',
+            border: '1px solid var(--border-color)',
+          }}
+        >
           <div className="p-2">
-            <div className="text-[10px] text-muted-foreground px-2 py-1 mb-1 uppercase tracking-wider">
+            <div 
+              className="text-[10px] px-2 py-1 mb-1 uppercase tracking-wider"
+              style={{ color: 'var(--text-3)' }}
+            >
               Toggle Visibility
             </div>
             {columns.map(col => (
               <label
                 key={col.id}
-                className="flex items-center gap-2 px-2 py-2 rounded cursor-pointer text-xs hover:bg-muted"
+                className="flex items-center gap-2 px-2 py-2 rounded cursor-pointer text-xs"
+                style={{ color: 'var(--text-1)' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--surface-3)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                }}
               >
                 <input
                   type="checkbox"
@@ -600,23 +683,49 @@ function RowActionsMenu({ onDuplicate, onDelete }: {
     <div ref={ref} className="relative">
       <button
         onClick={(e) => { e.stopPropagation(); setIsOpen(!isOpen); }}
-        className="p-1 border-none bg-transparent cursor-pointer text-muted-foreground rounded hover:bg-muted"
+        className="p-1 border-none bg-transparent cursor-pointer rounded"
+        style={{ color: 'var(--icon-default)' }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = 'var(--surface-3)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = 'transparent';
+        }}
       >
         <Icons.MoreVertical />
       </button>
 
       {isOpen && (
-        <div className="absolute top-full right-0 mt-1 bg-background border border-border rounded-lg shadow-lg z-[100] min-w-[120px]">
+        <div 
+          className="absolute top-full right-0 mt-1 rounded-lg shadow-lg z-[400] min-w-[120px]"
+          style={{ 
+            backgroundColor: 'var(--surface-1)',
+            border: '1px solid var(--border-color)',
+          }}
+        >
           <button
             onClick={(e) => { e.stopPropagation(); onDuplicate(); setIsOpen(false); }}
-            className="w-full flex items-center gap-2 px-3 py-2.5 border-none bg-transparent text-xs cursor-pointer text-left hover:bg-muted text-foreground"
+            className="w-full flex items-center gap-2 px-3 py-2.5 border-none bg-transparent text-xs cursor-pointer text-left"
+            style={{ color: 'var(--text-1)' }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'var(--surface-3)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }}
           >
             <Icons.Copy />
             Duplicate
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); onDelete(); setIsOpen(false); }}
-            className="w-full flex items-center gap-2 px-3 py-2.5 border-none bg-transparent text-xs cursor-pointer text-left hover:bg-muted text-destructive"
+            className="w-full flex items-center gap-2 px-3 py-2.5 border-none bg-transparent text-xs cursor-pointer text-left text-destructive"
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'var(--surface-3)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }}
           >
             <Icons.Trash />
             Delete
@@ -629,7 +738,7 @@ function RowActionsMenu({ onDuplicate, onDelete }: {
 
 // RowDetailPanel removed - clicks go directly to canonical drawer
 
-// Pagination Footer
+// Pagination Footer - Themed with semantic tokens
 function PaginationFooter({ 
   currentPage, 
   totalPages, 
@@ -649,14 +758,25 @@ function PaginationFooter({
   const endItem = Math.min(currentPage * pageSize, totalItems);
 
   return (
-    <div className="flex items-center justify-between px-4 py-3 border-t border-border bg-background">
+    <div 
+      className="flex items-center justify-between px-4 py-3"
+      style={{ 
+        borderTop: '1px solid var(--divider)',
+        backgroundColor: 'var(--surface-2)',
+      }}
+    >
       {/* Left: Rows per page */}
-      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+      <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--text-2)' }}>
         <span>Rows per page:</span>
         <select
           value={pageSize}
           onChange={(e) => onPageSizeChange(Number(e.target.value))}
-          className="px-2 py-1 border border-border rounded bg-background text-xs cursor-pointer"
+          className="px-2 py-1 rounded text-xs cursor-pointer"
+          style={{ 
+            border: '1px solid var(--border-color)',
+            backgroundColor: 'var(--input-bg)',
+            color: 'var(--text-1)',
+          }}
         >
           <option value={25}>25</option>
           <option value={50}>50</option>
@@ -669,24 +789,34 @@ function PaginationFooter({
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="p-1.5 border border-border rounded bg-background disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer hover:bg-muted"
+          className="p-1.5 rounded disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+          style={{ 
+            border: '1px solid var(--border-color)',
+            backgroundColor: 'var(--surface-1)',
+            color: 'var(--text-1)',
+          }}
         >
           <Icons.ChevronLeft />
         </button>
-        <span className="text-xs text-muted-foreground px-2">
+        <span className="text-xs px-2" style={{ color: 'var(--text-2)' }}>
           Page {currentPage} of {totalPages}
         </span>
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="p-1.5 border border-border rounded bg-background disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer hover:bg-muted"
+          className="p-1.5 rounded disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+          style={{ 
+            border: '1px solid var(--border-color)',
+            backgroundColor: 'var(--surface-1)',
+            color: 'var(--text-1)',
+          }}
         >
           <Icons.ChevronRight />
         </button>
       </div>
 
       {/* Right: Showing X-Y of Z */}
-      <div className="text-xs text-muted-foreground">
+      <div className="text-xs" style={{ color: 'var(--text-2)' }}>
         Showing {startItem}–{endItem} of {totalItems}
       </div>
     </div>
@@ -1047,7 +1177,7 @@ export function ExecutiveTable({
   }
 
   return (
-    <div className="flex flex-col h-full bg-background">
+    <div className="flex flex-col h-full" style={{ backgroundColor: 'var(--bg)' }}>
       {/* EXTERNAL HEADER or INTERNAL HEADER */}
       {externalHeader ? (
         <>
@@ -1063,7 +1193,7 @@ export function ExecutiveTable({
           />
         </>
       ) : (
-        <div className="bg-background flex-shrink-0">
+        <div style={{ backgroundColor: 'var(--bg)' }} className="flex-shrink-0">
           {/* Row 1: Title Row - 44px, no border */}
           <div className="h-11 flex items-center px-6">
             <div className="flex items-baseline gap-2.5">
@@ -1161,16 +1291,29 @@ export function ExecutiveTable({
       )}
 
       {/* TABLE CONTAINER - Single boxed card with border, border-radius, horizontal scroll */}
-      {/* margin-top: 12px separates from toolbar divider to avoid double-line effect */}
-      <div className="px-4 pb-4 pt-3 overflow-hidden" style={{ maxHeight: 'calc(100vh - 56px - 44px - 52px - 24px)' }}>
-        <div className="flex flex-col border border-border rounded-xl bg-background overflow-hidden h-full">
+      {/* Proper spacing and full-width content with semantic tokens for dark mode */}
+      <div className="px-4 pb-4 pt-3 flex-1 min-h-0 overflow-hidden">
+        <div 
+          className="flex flex-col rounded-xl overflow-hidden h-full"
+          style={{ 
+            backgroundColor: 'var(--surface-1)',
+            border: '1px solid var(--border-color)',
+          }}
+        >
           {/* Scrollable Table Area - owns horizontal + vertical scroll */}
           <div className="flex-1 overflow-auto min-h-0">
             <table className="w-full border-collapse" style={{ minWidth: columns.reduce((acc, col) => acc + (col.minWidth || 100), 48 + 40) }}>
               <thead className="sticky top-0 z-10">
                 <tr>
                   {/* Checkbox column */}
-                  <th className="w-10 px-3 py-2.5 text-center font-semibold text-[11px] text-muted-foreground uppercase tracking-wider bg-muted/40 border-b border-border whitespace-nowrap">
+                  <th 
+                    className="w-10 px-3 py-2.5 text-center font-semibold text-[11px] uppercase tracking-wider whitespace-nowrap"
+                    style={{ 
+                      backgroundColor: 'var(--surface-2)',
+                      color: 'var(--text-2)',
+                      borderBottom: '1px solid var(--divider)',
+                    }}
+                  >
                     <input
                       type="checkbox"
                       checked={paginatedData.length > 0 && selectedRows.length === paginatedData.length}
@@ -1189,12 +1332,16 @@ export function ExecutiveTable({
                         onDragLeave={() => setDragOverColumn(null)}
                         onDrop={(e) => handleColumnDrop(e, col.id)}
                         onDragEnd={() => { setDraggingColumn(null); setDragOverColumn(null); }}
-                        className={`px-3 py-2.5 text-left font-semibold text-[11px] text-muted-foreground uppercase tracking-wider bg-muted/40 border-b border-border whitespace-nowrap cursor-grab transition-colors ${
+                        className={`px-3 py-2.5 text-left font-semibold text-[11px] uppercase tracking-wider whitespace-nowrap cursor-grab transition-colors ${
                           draggingColumn === col.id ? 'opacity-50' : ''
-                        } ${dragOverColumn === col.id ? 'bg-brand-gold/20 border-l-2 border-l-brand-gold' : ''} ${
-                          isSorted ? 'border-b-2 border-b-brand-gold' : ''
                         }`}
-                        style={{ minWidth: col.minWidth }}
+                        style={{ 
+                          minWidth: col.minWidth,
+                          backgroundColor: dragOverColumn === col.id ? 'var(--accent-muted)' : 'var(--surface-2)',
+                          color: 'var(--text-2)',
+                          borderBottom: isSorted ? '2px solid var(--accent-color)' : '1px solid var(--divider)',
+                          borderLeft: dragOverColumn === col.id ? '2px solid var(--accent-color)' : 'none',
+                        }}
                       >
                         <div className="flex items-center gap-1.5">
                           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0 cursor-grab text-muted-foreground/50">
@@ -1230,21 +1377,40 @@ export function ExecutiveTable({
                     );
                   })}
                   {/* Actions column */}
-                  <th className="w-12 px-3 py-2.5 bg-muted/40 border-b border-border"></th>
+                  {/* Actions column header */}
+                  <th 
+                    className="w-12 px-3 py-2.5"
+                    style={{ 
+                      backgroundColor: 'var(--surface-2)',
+                      borderBottom: '1px solid var(--divider)',
+                    }}
+                  ></th>
                 </tr>
               </thead>
               <tbody>
                 {paginatedData.map((row, index) => (
                   <tr
                     key={row.id}
-                    className={`transition-colors ${
-                      selectedRows.includes(row.id) 
-                        ? 'bg-brand-gold/10' 
-                        : index % 2 === 1 ? 'bg-muted/30' : 'bg-background'
-                    } hover:bg-muted/60`}
-                    style={{ height: `${rowHeight}px` }}
+                    className="transition-colors cursor-pointer"
+                    style={{ 
+                      height: `${rowHeight}px`,
+                      backgroundColor: selectedRows.includes(row.id) 
+                        ? 'var(--accent-muted)' 
+                        : index % 2 === 1 ? 'var(--surface-2)' : 'var(--surface-1)',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--surface-3)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = selectedRows.includes(row.id) 
+                        ? 'var(--accent-muted)' 
+                        : index % 2 === 1 ? 'var(--surface-2)' : 'var(--surface-1)';
+                    }}
                   >
-                    <td className="px-3 py-2 text-center border-b border-border/50">
+                    <td 
+                      className="px-3 py-2 text-center"
+                      style={{ borderBottom: '1px solid var(--divider)' }}
+                    >
                       <input
                         type="checkbox"
                         checked={selectedRows.includes(row.id)}
@@ -1255,16 +1421,21 @@ export function ExecutiveTable({
                     {columns.map(col => (
                       <td 
                         key={col.id} 
-                        className="px-3 py-2 border-b border-border/50 text-sm text-foreground whitespace-nowrap overflow-hidden text-ellipsis"
+                        className="px-3 py-2 text-sm whitespace-nowrap overflow-hidden text-ellipsis"
                         style={{ 
                           minWidth: col.minWidth,
-                          textAlign: (col.align || 'left') as React.CSSProperties['textAlign'] 
+                          textAlign: (col.align || 'left') as React.CSSProperties['textAlign'],
+                          borderBottom: '1px solid var(--divider)',
+                          color: 'var(--text-1)',
                         }}
                       >
                         {renderCellContent(row, col)}
                       </td>
                     ))}
-                    <td className="px-3 py-2 border-b border-border/50">
+                    <td 
+                      className="px-3 py-2"
+                      style={{ borderBottom: '1px solid var(--divider)' }}
+                    >
                       <RowActionsMenu
                         onDuplicate={async () => {
                           if (onDuplicate) {
@@ -1297,22 +1468,34 @@ export function ExecutiveTable({
         </div>
       </div>
 
-      {/* Delete Confirmation Modal */}
+      {/* Delete Confirmation Modal - themed */}
       {deleteConfirmId && (
         <>
           <div
             onClick={() => setDeleteConfirmId(null)}
-            className="fixed inset-0 bg-black/30 z-[250]"
+            style={{ backgroundColor: 'var(--overlay-bg)' }}
+            className="fixed inset-0 z-[250]"
           />
-          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background border border-border rounded-xl shadow-2xl z-[300] p-6 w-[400px]">
-            <h3 className="text-lg font-bold text-foreground mb-2">Delete Business Request?</h3>
-            <p className="text-sm text-muted-foreground mb-6">
+          <div 
+            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-xl shadow-2xl z-[300] p-6 w-[400px]"
+            style={{ 
+              backgroundColor: 'var(--surface-1)',
+              border: '1px solid var(--border-color)',
+            }}
+          >
+            <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--text-1)' }}>Delete Business Request?</h3>
+            <p className="text-sm mb-6" style={{ color: 'var(--text-2)' }}>
               Are you sure you want to delete this business request? This action cannot be undone.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setDeleteConfirmId(null)}
-                className="flex-1 py-2.5 border border-border rounded-lg bg-background text-foreground text-sm font-medium cursor-pointer hover:bg-muted"
+                className="flex-1 py-2.5 rounded-lg text-sm font-medium cursor-pointer"
+                style={{ 
+                  border: '1px solid var(--border-color)',
+                  backgroundColor: 'var(--surface-2)',
+                  color: 'var(--text-1)',
+                }}
               >
                 Cancel
               </button>
