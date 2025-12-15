@@ -1,12 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import { MissionVisionValues } from '@/components/strategy/MissionVisionValues';
-import { ExecutionAgainstOutcomesWidget } from '@/components/strategy/ExecutionAgainstOutcomesWidget';
-import { StrategicGoalsWidget } from '@/components/strategy/StrategicGoalsWidget';
+import { StrategyContextCard } from '@/components/strategy/StrategyContextCard';
+import { ExecutiveSummaryCard } from '@/components/strategy/ExecutiveSummaryCard';
 import { StrategyStack } from '@/components/strategy/StrategyStack';
-import { SnapshotProgress } from '@/components/strategy/SnapshotProgress';
-import { MisalignedWorkItems } from '@/components/strategy/MisalignedWorkItems';
 import { OkrTree } from '@/components/strategy/OkrTree';
 import { ObjectiveDrawerV2 } from '@/modules/okr-v2';
 import { ThemeDetailsDrawer } from '@/components/backlog/ThemeDetailsDrawer';
@@ -136,18 +133,13 @@ export default function StrategyRoomPage() {
 
       {/* Content Area */}
       <PageShell.Content variant="wide" className="space-y-4">
-        {/* Mission/Vision/Values - compact row */}
-        <MissionVisionValues snapshot={selectedSnapshot} onUpdate={refetchSnapshots} />
+        {/* Strategy Context - consolidated M/V/V in one card */}
+        <StrategyContextCard snapshot={selectedSnapshot} onUpdate={refetchSnapshots} />
 
-        {/* KPI Widgets - 4-column grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
-          <ExecutionAgainstOutcomesWidget snapshotId={effectiveSelectedSnapshotId} />
-          <StrategicGoalsWidget snapshotId={effectiveSelectedSnapshotId} />
-          <MisalignedWorkItems snapshotId={effectiveSelectedSnapshotId} />
-          <SnapshotProgress snapshotId={effectiveSelectedSnapshotId} />
-        </div>
+        {/* Executive Summary - 4 KPI tiles in one card */}
+        <ExecutiveSummaryCard snapshotId={effectiveSelectedSnapshotId} />
 
-        {/* Strategy Stack (replaces pyramid) - the centerpiece */}
+        {/* Strategy Hierarchy - the control center */}
         <StrategyStack 
           onLayerClick={handlePyramidLayerClick} 
           snapshotId={effectiveSelectedSnapshotId}
