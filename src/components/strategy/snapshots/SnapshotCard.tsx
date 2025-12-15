@@ -6,6 +6,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { MoreVertical, Eye, Play, Archive, Trash2, Calendar, Clock, Layers, Users, Pencil, Settings, CalendarRange } from 'lucide-react';
 import { StrategicSnapshot, useSnapshotConfiguration } from '@/hooks/useStrategicSnapshots';
 import { useSnapshotStrategyLinks } from '@/hooks/useStrategicBacklog';
+import { useUserRole } from '@/hooks/useUserRole';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
@@ -30,6 +31,7 @@ export function SnapshotCard({ snapshot, onViewDetails, onDelete }: SnapshotCard
   const [archiveModalOpen, setArchiveModalOpen] = useState(false);
   const { data: configuration } = useSnapshotConfiguration(snapshot.id);
   const { data: links } = useSnapshotStrategyLinks(snapshot.id);
+  const { isAdmin } = useUserRole();
 
   const isArchived = snapshot.status === 'ARCHIVED';
   const isActive = snapshot.status === 'ACTIVE';
@@ -187,6 +189,7 @@ export function SnapshotCard({ snapshot, onViewDetails, onDelete }: SnapshotCard
         open={manageQuartersOpen}
         onClose={() => setManageQuartersOpen(false)}
         snapshot={snapshot}
+        isAdmin={isAdmin}
       />
 
       <ActivateSnapshotModal

@@ -146,6 +146,7 @@ import DeliveryPlatforms from "./pages/admin/DeliveryPlatforms";
 import RiskSeverityLevels from "./pages/admin/RiskSeverityLevels";
 import DevelopmentInventory from "./pages/admin/DevelopmentInventory";
 import RoutesComponentsRegistry from "./pages/admin/RoutesComponentsRegistry";
+import SnapshotsAdmin from "./pages/admin/SnapshotsAdmin";
 import UIQARoute from "./pages/UIQARoute";
 import ThemeAuditProbe from "./pages/ThemeAuditProbe";
 import ValueStreamView from "./pages/ValueStreamView";
@@ -685,6 +686,7 @@ const App = () => (
                 <Route path="resourceinventory" element={<ResourceInventory />} />
                 <Route path="developmentinventory" element={<DevelopmentInventory />} />
                 <Route path="routes-registry" element={<RoutesComponentsRegistry />} />
+                <Route path="snapshots" element={<SnapshotsAdmin />} />
               </Route>
 
               <Route path="/items/epics/:epicId/status-report" element={<EpicStatusReport />} />
