@@ -86,12 +86,16 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
     return (
       <div key={item.id}>
         <div
-          className={`grid items-center py-2.5 border-b hover:bg-muted/20 transition-colors focus:outline-none focus:ring-0 ${
+          className={`grid items-center py-2 transition-colors focus:outline-none focus:ring-0 ${
             isObjective || isTheme ? 'cursor-pointer' : ''
-          } ${isTheme ? 'bg-muted/30' : ''}`}
+          }`}
           style={{
-            gridTemplateColumns: '1fr 180px 80px 80px',
+            gridTemplateColumns: '1fr 160px 70px 70px',
+            borderBottom: '1px solid var(--divider)',
+            backgroundColor: isTheme ? 'var(--surface-2)' : 'transparent',
           }}
+          onMouseEnter={(e) => { if (!isTheme) e.currentTarget.style.backgroundColor = 'var(--surface-2)'; }}
+          onMouseLeave={(e) => { if (!isTheme) e.currentTarget.style.backgroundColor = 'transparent'; }}
           onClick={() => {
             if (isTheme && onThemeClick) {
               console.log('🎨 OkrTree: Theme clicked:', { id: item.id, title: item.title });
@@ -196,14 +200,15 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
   if (isLoading) {
     return (
       <Card 
+        className="rounded-lg shadow-sm"
         style={{ 
           borderLeft: '3px solid var(--accent-color)',
-          backgroundColor: 'var(--surface-2)',
+          backgroundColor: 'var(--surface-1)',
         }}
       >
         <CardContent className="p-8">
           <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
           </div>
         </CardContent>
       </Card>
@@ -212,68 +217,79 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
 
   return (
     <Card 
+      className="rounded-lg shadow-sm"
       style={{ 
         borderLeft: '3px solid var(--accent-color)',
-        backgroundColor: 'var(--surface-2)',
+        backgroundColor: 'var(--surface-1)',
       }}
     >
-      <CardHeader className="pb-3 space-y-3" style={{ backgroundColor: 'var(--surface-3)', borderRadius: '8px 8px 0 0' }}>
-        <CardTitle className="text-base flex items-center gap-2" style={{ color: 'var(--text-1)' }}>OKR Tree</CardTitle>
-        <p className="text-sm italic" style={{ color: 'var(--text-3)' }}>
-          Theme → Objective → Key Results hierarchy for this snapshot
-        </p>
-        <div className="flex items-center justify-between pt-1">
-          <div className="relative flex-1 max-w-[280px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      <CardHeader className="py-3 px-4" style={{ backgroundColor: 'var(--surface-2)', borderRadius: '8px 8px 0 0' }}>
+        <div className="flex items-center justify-between mb-2">
+          <CardTitle className="text-sm font-semibold" style={{ color: 'var(--text-1)' }}>OKR Tree</CardTitle>
+          <span className="text-[11px]" style={{ color: 'var(--text-3)' }}>
+            Theme → Objective → Key Results
+          </span>
+        </div>
+        <div className="flex items-center justify-between">
+          <div className="relative flex-1 max-w-[260px]">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5" style={{ color: 'var(--text-3)' }} />
             <Input
               placeholder="Search by title"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 h-9 text-sm"
+              className="pl-8 h-8 text-xs"
+              style={{ 
+                backgroundColor: 'var(--input-bg)', 
+                borderColor: 'var(--input-border)',
+                color: 'var(--input-text)'
+              }}
             />
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-1">
             <Button 
               variant="ghost" 
               size="icon" 
-              className="h-9 w-9"
+              className="h-7 w-7"
               onClick={() => setColumnsDialogOpen(true)}
               title="Configure columns"
             >
-              <Settings className="h-4 w-4" />
+              <Settings className="h-3.5 w-3.5" style={{ color: 'var(--text-3)' }} />
             </Button>
             <Button 
               variant="ghost" 
               size="icon" 
-              className="h-9 w-9"
+              className="h-7 w-7"
               onClick={() => navigate('/enterprise/okr-hub')}
               title="Open OKR Hub"
             >
-              <Maximize2 className="h-4 w-4" />
+              <Maximize2 className="h-3.5 w-3.5" style={{ color: 'var(--text-3)' }} />
             </Button>
           </div>
         </div>
       </CardHeader>
-      <CardContent className="pt-0">
-        <div className="border rounded-md overflow-hidden bg-card">
-          {/* Column Headers */}
+      <CardContent className="pt-0 px-4 pb-4">
+        <div className="border rounded-md overflow-hidden" style={{ backgroundColor: 'var(--surface-1)', borderColor: 'var(--divider)' }}>
+          {/* Column Headers - Enterprise grid style */}
           <div
-            className="grid items-center py-2.5 bg-muted/30 border-b font-semibold text-sm sticky top-0 z-10"
+            className="grid items-center py-2 font-semibold text-xs uppercase tracking-wide sticky top-0 z-10"
             style={{
-              gridTemplateColumns: '1fr 180px 80px 80px',
+              gridTemplateColumns: '1fr 160px 70px 70px',
+              backgroundColor: 'var(--surface-2)',
+              borderBottom: '1px solid var(--divider)',
+              color: 'var(--text-1)',
             }}
           >
-            <div className="text-foreground/90 pl-4">Item</div>
-            <div className="text-foreground/80 text-center">Progress</div>
-            <div className="text-foreground/80 text-center">%</div>
-            <div className="text-foreground/80 text-center">Owner</div>
+            <div className="pl-4">Item</div>
+            <div className="text-center">Progress</div>
+            <div className="text-center">%</div>
+            <div className="text-center">Owner</div>
           </div>
 
           {/* Tree Content */}
           {treeData.length > 0 ? (
             treeData.map((item) => renderTreeItem(item, 0))
           ) : (
-            <div className="p-8 text-center text-muted-foreground">
+            <div className="p-6 text-center text-xs" style={{ color: 'var(--text-3)' }}>
               No themes or objectives found for this snapshot
             </div>
           )}

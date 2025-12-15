@@ -110,24 +110,23 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
   return (
     <>
       <Card 
+        className="rounded-lg shadow-sm"
         style={{ 
           borderLeft: '3px solid var(--accent-color)',
-          backgroundColor: 'var(--surface-2)',
+          backgroundColor: 'var(--surface-1)',
         }}
       >
-        <CardHeader className="pb-2" style={{ backgroundColor: 'var(--surface-3)', borderRadius: '8px 8px 0 0' }}>
-          <div className="flex items-start justify-between">
-            <div className="space-y-1">
-              <CardTitle className="text-base flex items-center gap-2" style={{ color: 'var(--text-1)' }}>
-                Strategy Pyramid
-              </CardTitle>
-              <CardDescription className="text-xs">
-                Click layers to drill down. Misaligned items shown in badges.
-              </CardDescription>
-            </div>
+        <CardHeader className="py-3 px-4" style={{ backgroundColor: 'var(--surface-2)', borderRadius: '8px 8px 0 0' }}>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm font-semibold" style={{ color: 'var(--text-1)' }}>
+              Strategy Pyramid
+            </CardTitle>
+            <span className="text-[11px]" style={{ color: 'var(--text-3)' }}>
+              Click layers to drill down
+            </span>
           </div>
         </CardHeader>
-        <CardContent className="pt-0">
+        <CardContent className="pt-0 px-4 pb-4">
           <div className="flex gap-6">
             {/* SVG Pyramid */}
             <div className="flex-1" style={{ maxWidth: '600px' }}>
