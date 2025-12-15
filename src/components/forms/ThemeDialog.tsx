@@ -47,9 +47,14 @@ export function ThemeDialog({ open, onOpenChange, theme }: ThemeDialogProps) {
           .eq('id', theme.id);
         if (error) throw error;
       } else {
+        // snapshot_id is required - use default strategy snapshot
+        const insertData = {
+          ...data,
+          snapshot_id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', // Default: Digital Strategy 2025
+        };
         const { error } = await supabase
           .from('strategic_themes')
-          .insert([data]);
+          .insert([insertData]);
         if (error) throw error;
       }
     },
