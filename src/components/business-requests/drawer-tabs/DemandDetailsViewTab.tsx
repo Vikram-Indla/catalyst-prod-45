@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
@@ -12,13 +12,9 @@ import { UserPicker } from '@/components/ui/user-picker';
 import { BusinessRequest } from '@/types/business-request';
 import { 
   DeliveryPlatformSelect, 
-  DeliveryTrackSelect, 
   PlannedQuarterSelect 
 } from '@/components/ui/lookup-select';
-import { DepartmentSelect } from '@/components/business-requests/DepartmentSelect';
-import { BusinessOwnerSelect } from '@/components/business-requests/BusinessOwnerSelect';
 import { getTierDisplayInfo, PriorityTier } from '@/hooks/usePrioritizationConfig';
-import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings, getOwnerIdForDepartment } from '@/hooks/useDepartmentsAndOwners';
 
 interface DemandDetailsViewTabProps {
   data: Partial<BusinessRequest> & Record<string, any>;
@@ -30,58 +26,6 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
   const [targetDateLocked, setTargetDateLocked] = useState(false);
   const [lockedByUser, setLockedByUser] = useState<string | null>(null);
   const currentUser = 'Current User';
-
-  const { data: departments } = useDepartments();
-  const { data: owners } = useBusinessOwners();
-  const { data: mappings } = useDepartmentOwnerMappings();
-
-  // Resolve legacy text values to IDs on initial load
-  useEffect(() => {
-    if (departments && !data.department_id && data.department) {
-      const dept = departments.find(d => d.name.toLowerCase() === (data.department || '').toLowerCase());
-      if (dept) {
-        onChange('department_id', dept.id);
-      }
-    }
-  }, [departments, data.department, data.department_id, onChange]);
-
-  useEffect(() => {
-    if (owners && !data.business_owner_id && data.business_owner) {
-      const owner = owners.find(o => o.name.toLowerCase() === (data.business_owner || '').toLowerCase());
-      if (owner) {
-        onChange('business_owner_id', owner.id);
-      }
-    }
-  }, [owners, data.business_owner, data.business_owner_id, onChange]);
-
-  // Handle department change with auto-setting of business owner
-  const handleDepartmentChange = (departmentId: string) => {
-    onChange('department_id', departmentId);
-    // Find department name and set it for legacy field
-    const dept = departments?.find(d => d.id === departmentId);
-    if (dept) {
-      onChange('department', dept.name);
-    }
-    // Auto-set business owner from mapping
-    if (mappings) {
-      const ownerId = getOwnerIdForDepartment(departmentId, mappings);
-      if (ownerId) {
-        onChange('business_owner_id', ownerId);
-        const owner = owners?.find(o => o.id === ownerId);
-        if (owner) {
-          onChange('business_owner', owner.name);
-        }
-      }
-    }
-  };
-
-  const handleBusinessOwnerChange = (ownerId: string) => {
-    onChange('business_owner_id', ownerId);
-    const owner = owners?.find(o => o.id === ownerId);
-    if (owner) {
-      onChange('business_owner', owner.name);
-    }
-  };
 
   const handleLockToggle = () => {
     if (targetDateLocked) {
@@ -109,7 +53,7 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
 
   return (
     <div className="flex flex-col h-full space-y-4" style={{ background: 'var(--bg)' }}>
-      {/* Details Section - Status/Owner/Department shown in header CIO Snapshot */}
+      {/* Details Section - Owner/Dept/Target in Meta Strip above */}
       <div className="border rounded-lg p-4 space-y-4" style={{ borderColor: 'var(--border-color)', background: 'var(--surface-1)' }}>
         <h3 className="text-[11px] font-medium uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>Details</h3>
           
@@ -151,7 +95,7 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
           </div>
         </div>
 
-        {/* Description - Collapsible with reduced chrome */}
+        {/* Description */}
         <div>
           <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>Description</Label>
           <div className="mt-1">
@@ -163,8 +107,8 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
           </div>
         </div>
 
-        {/* People & Governance */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {/* People - Reporter + Assignee only (Owner/Dept in Meta Strip) */}
+        <div className="grid grid-cols-2 gap-3">
           <div>
             <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>Reporter</Label>
             <div className="mt-1">
@@ -185,35 +129,14 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
               />
             </div>
           </div>
-          <div>
-            <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>Department</Label>
-            <div className="mt-1">
-              <DepartmentSelect
-                value={data.department_id || null}
-                onChange={handleDepartmentChange}
-                placeholder="Select..."
-              />
-            </div>
-          </div>
-          <div>
-            <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>Business Owner</Label>
-            <div className="mt-1">
-              <BusinessOwnerSelect
-                value={data.business_owner_id || null}
-                onChange={handleBusinessOwnerChange}
-                departmentId={data.department_id || null}
-                placeholder="Select..."
-              />
-            </div>
-          </div>
         </div>
       </div>
 
-      {/* Planning & Delivery Section */}
+      {/* Planning & Delivery Section - No Delivery Track */}
       <div className="border rounded-lg p-4 space-y-4 flex-1" style={{ borderColor: 'var(--border-color)', background: 'var(--surface-1)' }}>
         <h3 className="text-[11px] font-medium uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>Planning & Delivery</h3>
           
-        {/* Dates - Compact grid */}
+        {/* Dates */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <Label className="text-[11px] font-medium mb-1 block" style={{ color: 'var(--text-2)' }}>Business Ask</Label>
@@ -261,18 +184,8 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
           </div>
         </div>
 
-        {/* Delivery context - Compact grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div>
-            <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>Delivery Track</Label>
-            <div className="mt-1">
-              <DeliveryTrackSelect
-                value={data.delivery_track || data.track || null}
-                onChange={(value) => onChange('delivery_track', value)}
-              />
-            </div>
-          </div>
-          
+        {/* Delivery context - Platform + Quarter only */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>Delivery Platform</Label>
             <div className="mt-1">

@@ -1,10 +1,10 @@
 /**
- * DrawerMetadataChips - CIO Snapshot chips for drawer header
- * Single source of truth for: Business Owner, Department, Priority, Rank, Target Date
+ * DrawerMetadataChips - Non-ownership tags only (Platform, Quarter, Priority, Rank)
+ * Ownership fields (Status, Owner, Dept, Target) are in the Meta Strip above
  */
 
 import { format } from 'date-fns';
-import { User, Building2, Hash, Calendar, TrendingUp } from 'lucide-react';
+import { Layers, CalendarDays, TrendingUp, Hash } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getTierDisplayInfo, PriorityTier } from '@/hooks/usePrioritizationConfig';
 
@@ -16,22 +16,20 @@ interface MetadataChip {
 }
 
 interface DrawerMetadataChipsProps {
-  businessOwner?: string | null;
-  department?: string | null;
-  rank?: number | null;
-  targetDate?: string | null;
+  platform?: string | null;
+  quarter?: string | null;
   priorityTier?: PriorityTier | string | null;
   priorityScore?: number | null;
+  rank?: number | null;
   className?: string;
 }
 
 export function DrawerMetadataChips({
-  businessOwner,
-  department,
-  rank,
-  targetDate,
+  platform,
+  quarter,
   priorityTier,
   priorityScore,
+  rank,
   className
 }: DrawerMetadataChipsProps) {
   // Format priority display
@@ -46,14 +44,14 @@ export function DrawerMetadataChips({
 
   const chips: MetadataChip[] = [
     {
-      icon: User,
-      label: 'Owner',
-      value: businessOwner,
+      icon: Layers,
+      label: 'Platform',
+      value: platform,
     },
     {
-      icon: Building2,
-      label: 'Dept',
-      value: department,
+      icon: CalendarDays,
+      label: 'Quarter',
+      value: quarter,
     },
     {
       icon: TrendingUp,
@@ -65,11 +63,6 @@ export function DrawerMetadataChips({
       label: 'Rank',
       value: rank ? `#${rank}` : null,
       colorClass: rank ? 'text-brand-gold' : undefined,
-    },
-    {
-      icon: Calendar,
-      label: 'Target',
-      value: targetDate ? format(new Date(targetDate), 'MMM d') : null,
     },
   ].filter(chip => chip.value);
 

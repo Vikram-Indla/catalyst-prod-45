@@ -4,6 +4,7 @@
  */
 
 export { DrawerMetadataChips } from './DrawerMetadataChips';
+export { MetaStrip } from './MetaStrip';
 export { CIOPanel } from './CIOPanel';
 export { ExecutiveSummaryPanel } from './ExecutiveSummaryPanel';
 export { SummaryStrip, DemandSummaryStrip, RisksSummaryStrip, MilestonesSummaryStrip, LinksSummaryStrip, BudgetSummaryStrip } from './SummaryStrip';
