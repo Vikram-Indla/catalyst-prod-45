@@ -51,26 +51,23 @@ export function StrategicGoalsWidget({ snapshotId }: StrategicGoalsWidgetProps) 
 
   return (
     <Card 
-      className="rounded-lg shadow-sm"
+      className="rounded-lg shadow-sm h-full"
       style={{ 
-        borderLeft: '3px solid var(--accent-color)',
+        borderLeft: '2px solid var(--accent-color)',
         backgroundColor: 'var(--surface-1)',
       }}
     >
-      <CardHeader className="py-3 px-4" style={{ backgroundColor: 'var(--surface-2)', borderRadius: '8px 8px 0 0' }}>
+      <CardHeader className="py-2.5 px-3" style={{ backgroundColor: 'var(--surface-2)', borderRadius: '8px 8px 0 0' }}>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-sm font-semibold" style={{ color: 'var(--text-1)' }}>
-            Strategic Objectives
+          <CardTitle className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
+            Objectives
           </CardTitle>
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1 text-xs" style={{ color: 'var(--text-2)' }}>
-              <TrendingUp className="h-3.5 w-3.5 text-success" />
-              <span className="font-semibold">{avgProgress}%</span>
-            </div>
+            <span className="text-xs font-bold" style={{ color: 'var(--accent-color)' }}>{avgProgress}%</span>
             <Button
               variant="ghost"
               size="sm"
-              className="h-6 w-6 p-0"
+              className="h-5 w-5 p-0"
               onClick={handleOpenOKRHub}
               title="Open OKR Hub"
             >
@@ -79,41 +76,34 @@ export function StrategicGoalsWidget({ snapshotId }: StrategicGoalsWidgetProps) 
           </div>
         </div>
       </CardHeader>
-      <CardContent className="px-4 pb-4">
+      <CardContent className="px-3 py-2">
         {count === 0 ? (
-          <div className="text-center py-6 text-sm text-muted-foreground">
-            <p>No objectives linked to this snapshot's themes</p>
-            <Button
-              variant="outline"
-              size="sm"
-              className="mt-3"
-              onClick={handleOpenOKRHub}
-            >
+          <div className="py-4 text-center">
+            <p className="text-xs mb-2" style={{ color: 'var(--text-3)' }}>No objectives linked</p>
+            <Button variant="outline" size="sm" className="h-7 text-xs" onClick={handleOpenOKRHub}>
               Open OKR Hub
             </Button>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-2">
             {topObjectives.map((obj) => (
-              <div key={obj.id} className="space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="font-medium truncate flex-1">{obj.name}</span>
-                  <span className="text-muted-foreground ml-2">{Math.round(obj.overall_progress)}%</span>
+              <div key={obj.id} className="space-y-1">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-medium truncate flex-1" style={{ color: 'var(--text-1)' }}>{obj.name}</span>
+                  <span className="ml-2" style={{ color: 'var(--text-3)' }}>{Math.round(obj.overall_progress)}%</span>
                 </div>
                 <Progress 
                   value={obj.overall_progress} 
-                  className="h-2"
-                  style={{ 
-                    '--progress-background': getHealthColor(obj.health) 
-                  } as React.CSSProperties}
+                  className="h-1.5"
+                  style={{ '--progress-background': getHealthColor(obj.health) } as React.CSSProperties}
                 />
               </div>
             ))}
             
-            <div className="pt-3 mt-3 border-t">
-              <div className="flex items-center justify-between text-sm">
-                <span className="font-semibold">Overall Progress ({count} Objectives)</span>
-                <span className="font-bold text-primary">{avgProgress}%</span>
+            <div className="pt-2 mt-2" style={{ borderTop: '1px solid var(--divider)' }}>
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-medium" style={{ color: 'var(--text-2)' }}>Overall ({count})</span>
+                <span className="font-bold" style={{ color: 'var(--accent-color)' }}>{avgProgress}%</span>
               </div>
             </div>
           </div>

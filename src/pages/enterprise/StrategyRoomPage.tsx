@@ -150,35 +150,31 @@ export default function StrategyRoomPage() {
         </div>
       </div>
 
-      {/* Content Area - Tighter grid, consistent spacing */}
-      <div className="flex-1 overflow-auto p-5 min-w-0">
-        <div className="space-y-5">
-          {/* Mission/Vision/Values - 3-up on desktop, 2-up tablet, 1-up mobile */}
+      {/* Content Area - Enterprise density: tight gaps, max-width container */}
+      <div className="flex-1 overflow-auto px-5 py-4 min-w-0">
+        <div className="max-w-[1600px] mx-auto space-y-4">
+          {/* Mission/Vision/Values - 3-up on desktop */}
           <MissionVisionValues snapshot={selectedSnapshot} onUpdate={refetchSnapshots} />
 
-          {/* Execution and Goals Widgets - 2-up on desktop/tablet, 1-up mobile */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {/* Execution + Goals + Pyramid + Misaligned - 4-column grid on xl */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4">
             <ExecutionAgainstOutcomesWidget 
               snapshotId={effectiveSelectedSnapshotId}
             />
             <StrategicGoalsWidget 
               snapshotId={effectiveSelectedSnapshotId}
             />
-          </div>
-
-          {/* Strategy Pyramid and Misaligned Items - 2-up on desktop, stacked otherwise */}
-          <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-5">
-            <StrategyPyramid 
-              onLayerClick={handlePyramidLayerClick} 
-              snapshotId={effectiveSelectedSnapshotId}
-            />
             <MisalignedWorkItems 
               snapshotId={effectiveSelectedSnapshotId}
             />
+            <SnapshotProgress 
+              snapshotId={effectiveSelectedSnapshotId}
+            />
           </div>
 
-          {/* Snapshot Progress - Full width */}
-          <SnapshotProgress 
+          {/* Strategy Pyramid - Full width */}
+          <StrategyPyramid 
+            onLayerClick={handlePyramidLayerClick} 
             snapshotId={effectiveSelectedSnapshotId}
           />
 

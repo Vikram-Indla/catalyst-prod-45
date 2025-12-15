@@ -202,13 +202,13 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
       <Card 
         className="rounded-lg shadow-sm"
         style={{ 
-          borderLeft: '3px solid var(--accent-color)',
+          borderLeft: '2px solid var(--accent-color)',
           backgroundColor: 'var(--surface-1)',
         }}
       >
-        <CardContent className="p-8">
+        <CardContent className="p-6">
           <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
           </div>
         </CardContent>
       </Card>
@@ -219,67 +219,53 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
     <Card 
       className="rounded-lg shadow-sm"
       style={{ 
-        borderLeft: '3px solid var(--accent-color)',
+        borderLeft: '2px solid var(--accent-color)',
         backgroundColor: 'var(--surface-1)',
       }}
     >
-      <CardHeader className="py-3 px-4" style={{ backgroundColor: 'var(--surface-2)', borderRadius: '8px 8px 0 0' }}>
-        <div className="flex items-center justify-between mb-2">
-          <CardTitle className="text-sm font-semibold" style={{ color: 'var(--text-1)' }}>OKR Tree</CardTitle>
-          <span className="text-[11px]" style={{ color: 'var(--text-3)' }}>
-            Theme → Objective → Key Results
-          </span>
-        </div>
+      <CardHeader className="py-2.5 px-3" style={{ backgroundColor: 'var(--surface-2)', borderRadius: '8px 8px 0 0' }}>
         <div className="flex items-center justify-between">
-          <div className="relative flex-1 max-w-[260px]">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5" style={{ color: 'var(--text-3)' }} />
-            <Input
-              placeholder="Search by title"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 h-8 text-xs"
-              style={{ 
-                backgroundColor: 'var(--input-bg)', 
-                borderColor: 'var(--input-border)',
-                color: 'var(--input-text)'
-              }}
-            />
-          </div>
-          <div className="flex gap-1">
+          <CardTitle className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>OKR Tree</CardTitle>
+          <div className="flex items-center gap-2">
+            <div className="relative w-48">
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3" style={{ color: 'var(--text-3)' }} />
+              <Input
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-7 h-7 text-xs"
+                style={{ 
+                  backgroundColor: 'var(--input-bg)', 
+                  borderColor: 'var(--input-border)',
+                  color: 'var(--input-text)'
+                }}
+              />
+            </div>
             <Button 
               variant="ghost" 
               size="icon" 
-              className="h-7 w-7"
-              onClick={() => setColumnsDialogOpen(true)}
-              title="Configure columns"
-            >
-              <Settings className="h-3.5 w-3.5" style={{ color: 'var(--text-3)' }} />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-7 w-7"
+              className="h-6 w-6"
               onClick={() => navigate('/enterprise/okr-hub')}
               title="Open OKR Hub"
             >
-              <Maximize2 className="h-3.5 w-3.5" style={{ color: 'var(--text-3)' }} />
+              <Maximize2 className="h-3 w-3" style={{ color: 'var(--text-3)' }} />
             </Button>
           </div>
         </div>
       </CardHeader>
-      <CardContent className="pt-0 px-4 pb-4">
-        <div className="border rounded-md overflow-hidden" style={{ backgroundColor: 'var(--surface-1)', borderColor: 'var(--divider)' }}>
-          {/* Column Headers - Enterprise grid style */}
+      <CardContent className="pt-0 px-3 pb-3">
+        <div className="border rounded overflow-hidden" style={{ backgroundColor: 'var(--surface-1)', borderColor: 'var(--divider)' }}>
+          {/* Column Headers */}
           <div
-            className="grid items-center py-2 font-semibold text-xs uppercase tracking-wide sticky top-0 z-10"
+            className="grid items-center py-1.5 font-semibold text-[10px] uppercase tracking-wide"
             style={{
-              gridTemplateColumns: '1fr 160px 70px 70px',
+              gridTemplateColumns: '1fr 120px 50px 50px',
               backgroundColor: 'var(--surface-2)',
               borderBottom: '1px solid var(--divider)',
               color: 'var(--text-1)',
             }}
           >
-            <div className="pl-4">Item</div>
+            <div className="pl-3">Item</div>
             <div className="text-center">Progress</div>
             <div className="text-center">%</div>
             <div className="text-center">Owner</div>
@@ -289,8 +275,8 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
           {treeData.length > 0 ? (
             treeData.map((item) => renderTreeItem(item, 0))
           ) : (
-            <div className="p-6 text-center text-xs" style={{ color: 'var(--text-3)' }}>
-              No themes or objectives found for this snapshot
+            <div className="py-4 text-center text-xs" style={{ color: 'var(--text-3)' }}>
+              No items found
             </div>
           )}
         </div>
