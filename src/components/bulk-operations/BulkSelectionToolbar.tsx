@@ -1,6 +1,12 @@
-// Bulk Selection Toolbar - Shows when items are selected
+/**
+ * BulkSelectionToolbar - Enterprise-grade bulk selection toolbar
+ * 
+ * Uses semantic theme tokens for light/dark mode compatibility.
+ * Brand-gold used ONLY as thin accent, not as large background.
+ */
+
+import { useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,41 +30,93 @@ export function BulkSelectionToolbar({
   onAction,
   onClearSelection,
 }: BulkSelectionToolbarProps) {
+  // ESC key to clear selection
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === 'Escape' && selectedCount > 0) {
+      onClearSelection();
+    }
+  }, [selectedCount, onClearSelection]);
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
+
   if (selectedCount === 0) return null;
 
   const { allowedOperations, entityLabelPlural } = config;
 
   return (
-    <div className="flex items-center gap-3 px-4 py-2 bg-brand-gold/10 border border-brand-gold/30 rounded-lg">
-      <Badge variant="secondary" className="bg-brand-gold text-white text-sm px-3 py-1">
+    <div 
+      className="flex items-center gap-3 px-4 py-2.5 rounded-lg border-t-2"
+      style={{
+        backgroundColor: 'var(--selection-bar-bg)',
+        border: '1px solid var(--selection-bar-border)',
+        borderTopColor: 'var(--selection-bar-accent)',
+        borderTopWidth: '2px',
+        boxShadow: 'var(--selection-bar-shadow)',
+      }}
+      role="toolbar"
+      aria-label={`${selectedCount} items selected`}
+    >
+      {/* Selected count badge */}
+      <span
+        className="inline-flex items-center px-2.5 py-1 text-sm font-medium rounded"
+        style={{
+          backgroundColor: 'var(--selection-badge-bg)',
+          color: 'var(--selection-badge-text)',
+        }}
+      >
         {selectedCount} selected
-      </Badge>
+      </span>
       
+      {/* Clear button */}
       <Button
         variant="ghost"
         size="sm"
         onClick={onClearSelection}
-        className="h-7 text-xs text-muted-foreground hover:text-foreground"
+        className="h-8 px-2 gap-1 text-sm hover:bg-[var(--surface-3)]"
+        style={{ color: 'var(--text-2)' }}
       >
-        <X className="h-3 w-3 mr-1" />
+        <X className="h-4 w-4" />
         Clear
       </Button>
 
-      <div className="h-4 w-px bg-border mx-2" />
+      {/* Divider */}
+      <div 
+        className="w-px h-5 mx-1" 
+        style={{ backgroundColor: 'var(--border-color)' }}
+      />
 
+      {/* Actions dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm" className="gap-2 border-brand-gold text-brand-gold hover:bg-brand-gold/10">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="gap-2 h-8"
+            style={{
+              borderColor: 'var(--accent-color)',
+              color: 'var(--accent-color)',
+            }}
+          >
             Bulk Actions
             <ChevronDown className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-56">
+        <DropdownMenuContent 
+          align="start" 
+          className="w-56"
+          style={{
+            backgroundColor: 'var(--surface-1)',
+            border: '1px solid var(--border-color)',
+          }}
+        >
           {allowedOperations.includes('edit') && (
             <DropdownMenuItem onClick={() => onAction('edit')} className="gap-2">
               <Edit className="h-4 w-4" />
               Edit Fields
-              <span className="ml-auto text-xs text-muted-foreground">
+              <span className="ml-auto text-xs" style={{ color: 'var(--text-3)' }}>
                 Update {selectedCount} {selectedCount === 1 ? config.entityLabel : entityLabelPlural}
               </span>
             </DropdownMenuItem>
@@ -68,7 +126,7 @@ export function BulkSelectionToolbar({
             <DropdownMenuItem onClick={() => onAction('transition')} className="gap-2">
               <ArrowRightLeft className="h-4 w-4" />
               Change Status
-              <span className="ml-auto text-xs text-muted-foreground">
+              <span className="ml-auto text-xs" style={{ color: 'var(--text-3)' }}>
                 Transition workflow
               </span>
             </DropdownMenuItem>

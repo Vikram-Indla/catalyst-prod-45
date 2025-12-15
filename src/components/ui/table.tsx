@@ -59,20 +59,31 @@ TableFooter.displayName = "TableFooter";
 
 /**
  * Table Density: 40px row height (h-10)
- * Hover: var(--surface-3)
- * Selected: var(--nav-active-bg)
+ * Hover: var(--table-row-hover)
+ * Selected: var(--selection-row-bg) with accent border
  */
-const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTMLTableRowElement>>(
-  ({ className, ...props }, ref) => (
+const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTMLTableRowElement> & { selected?: boolean }>(
+  ({ className, selected, ...props }, ref) => (
     <tr
       ref={ref}
       className={cn(
         "h-10 transition-colors",
-        "data-[state=selected]:bg-[var(--nav-active-bg)]",
-        "hover:bg-[var(--surface-3)]",
         className
       )}
-      style={{ borderBottom: '1px solid var(--divider)' }}
+      style={{ 
+        borderBottom: '1px solid var(--divider)',
+        backgroundColor: selected ? 'var(--selection-row-bg)' : 'var(--table-row-bg)',
+        borderLeft: selected ? '2px solid var(--selection-bar-accent)' : '2px solid transparent',
+      }}
+      data-state={selected ? 'selected' : undefined}
+      onMouseEnter={(e) => {
+        if (!selected) {
+          (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--table-row-hover)';
+        }
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLElement).style.backgroundColor = selected ? 'var(--selection-row-bg)' : 'var(--table-row-bg)';
+      }}
       {...props}
     />
   ),

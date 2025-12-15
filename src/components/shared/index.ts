@@ -7,7 +7,9 @@
 // Layout & Container Components
 export { PageContainer } from './PageContainer';
 export { PageShell } from './PageShell';
+export { PageHeader } from './PageHeader';
 export { DrawerPanel, DrawerSection } from './DrawerPanel';
+export { SurfaceCard } from './SurfaceCard';
 
 // Empty State Components
 export { CatalystEmptyState } from './CatalystEmptyState';
