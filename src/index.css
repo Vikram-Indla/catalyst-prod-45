@@ -330,6 +330,16 @@
   --table-row-selected: rgba(92, 124, 92, 0.08);
   --table-border: var(--border-color);
   
+  /* Selection/Bulk Actions (Light) */
+  --selection-bar-bg: var(--surface-1);
+  --selection-bar-border: var(--border-color);
+  --selection-bar-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
+  --selection-bar-accent: var(--brand-accent);
+  --selection-badge-bg: var(--surface-2);
+  --selection-badge-text: var(--text-1);
+  --selection-row-bg: rgba(92, 124, 92, 0.06);
+  --selection-row-border: rgba(92, 124, 92, 0.20);
+  
   /* Form Inputs (Light) */
   --form-label: var(--text-2);
   --form-placeholder: var(--text-3);
@@ -438,6 +448,16 @@ html[data-theme="dark"] {
   --table-row-hover: var(--surface-2);
   --table-row-selected: rgba(92, 124, 92, 0.12);
   --table-border: var(--border-color);
+  
+  /* Selection/Bulk Actions (Dark) */
+  --selection-bar-bg: var(--surface-2);
+  --selection-bar-border: var(--border-color);
+  --selection-bar-shadow: 0 -2px 12px rgba(0, 0, 0, 0.25);
+  --selection-bar-accent: var(--brand-accent);
+  --selection-badge-bg: var(--surface-3);
+  --selection-badge-text: var(--text-1);
+  --selection-row-bg: rgba(92, 124, 92, 0.10);
+  --selection-row-border: rgba(92, 124, 92, 0.25);
   
   /* Form Inputs (Dark) */
   --form-label: var(--text-2);

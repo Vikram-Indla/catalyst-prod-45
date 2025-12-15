@@ -16,6 +16,7 @@ export { CatalystEmptyState } from './CatalystEmptyState';
 export { StatusPill } from './StatusPill';
 export { HealthBadge } from './HealthBadge';
 export { TechnicalScoreBadge } from './TechnicalScoreBadge';
+export { BulkSelectionBar } from './BulkSelectionBar';
 
 // Section Components  
 export { CommentsSection } from './CommentsSection';
