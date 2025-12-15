@@ -39,23 +39,23 @@ export function GlobalPageHeader({
     <div className={cn('shrink-0', className)} style={{ backgroundColor: 'var(--bg)' }}>
       {/* Row 1: Breadcrumb + Title + Actions */}
       <div
-        className="flex items-center justify-between px-5"
+        className="flex items-center justify-between px-6"
         style={{ 
-          height: '44px',
+          height: '48px',
           borderBottom: !toolbar && showDivider ? '1px solid var(--divider)' : undefined,
         }}
       >
         {/* Left: Breadcrumb + Title */}
         <div className="flex items-center gap-2">
           <span
-            className="text-xs font-medium uppercase tracking-wide"
+            className="text-xs font-semibold uppercase tracking-wider"
             style={{ color: 'var(--text-3)' }}
           >
             {sectionLabel}
           </span>
-          <span className="text-xs" style={{ color: 'var(--text-3)' }}>/</span>
+          <span className="text-sm" style={{ color: 'var(--text-4)' }}>/</span>
           <h1
-            className="text-base font-semibold"
+            className="text-lg font-semibold"
             style={{ color: 'var(--text-1)' }}
           >
             {pageTitle}
@@ -64,7 +64,7 @@ export function GlobalPageHeader({
 
         {/* Right: Actions slot */}
         {rightActions && (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {rightActions}
           </div>
         )}
@@ -73,7 +73,7 @@ export function GlobalPageHeader({
       {/* Row 2: Toolbar - only rendered if toolbar provided */}
       {toolbar && (
         <div
-          className="flex items-center px-5 border-b"
+          className="flex items-center px-6 border-b"
           style={{
             height: '48px',
             borderColor: 'var(--divider)',

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Maximize2, ChevronRight, ChevronDown, Target, Palette } from 'lucide-react';
+import { Search, Maximize2, ChevronRight, ChevronDown, Target, Palette, Plus } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -57,7 +57,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
   const renderTreeItem = (item: OKRTreeV2Item, depth: number = 0) => {
     const hasChildren = item.children.length > 0;
     const isExpanded = expandedIds.has(item.id);
-    const indentPx = depth * 24;
+    const indentPx = depth * 20;
 
     if (searchQuery) {
       const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase());
@@ -75,11 +75,11 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
     return (
       <div key={item.id}>
         <div
-          className={`grid items-center py-2 transition-colors focus:outline-none ${
+          className={`grid items-center py-2.5 transition-colors focus:outline-none ${
             isObjective || isTheme ? 'cursor-pointer hover:bg-[var(--surface-2)]' : ''
           }`}
           style={{
-            gridTemplateColumns: '1fr 120px 50px 50px',
+            gridTemplateColumns: '1fr 140px 60px 56px',
             borderBottom: '1px solid var(--divider)',
             backgroundColor: isTheme ? 'var(--surface-2)' : 'transparent',
           }}
@@ -92,7 +92,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
           }}
           tabIndex={-1}
         >
-          <div className="flex items-center gap-3" style={{ paddingLeft: `${indentPx + 16}px` }}>
+          <div className="flex items-center gap-2" style={{ paddingLeft: `${indentPx + 16}px` }}>
             {hasChildren ? (
               <button
                 onClick={(e) => {
@@ -112,36 +112,39 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
             )}
             
             {isTheme && (
-              <Badge variant="outline" className="bg-brand-gold/10 text-brand-gold border-brand-gold/30 text-xs">
+              <Badge variant="outline" className="bg-brand-gold/10 text-brand-gold border-brand-gold/30 text-[11px] py-0 h-5">
                 <Palette className="h-3 w-3 mr-1" />
                 Theme
               </Badge>
             )}
             {isObjective && (
-              <Badge variant="outline" className="bg-secondary-green/10 text-secondary-green border-secondary-green/30 text-xs">
+              <Badge variant="outline" className="bg-secondary-green/10 text-secondary-green border-secondary-green/30 text-[11px] py-0 h-5">
                 <Target className="h-3 w-3 mr-1" />
                 Objective
               </Badge>
             )}
             {isKeyResult && (
-              <Badge variant="secondary" className="text-xs">
+              <Badge variant="secondary" className="text-[11px] py-0 h-5">
                 KR
               </Badge>
             )}
             
-            <span className={`text-sm ${isObjective ? 'text-secondary-green hover:underline' : ''} font-medium`} style={{ color: isObjective ? undefined : 'var(--text-1)' }}>
+            <span 
+              className={`text-sm truncate ${isObjective ? 'text-secondary-green hover:underline font-medium' : 'font-medium'}`} 
+              style={{ color: isObjective ? undefined : 'var(--text-1)' }}
+            >
               {item.title}
             </span>
             
             {isObjective && item.health && (
-              <Badge className={`${getHealthBgColor(item.health)} text-xs ml-2`}>
+              <Badge className={`${getHealthBgColor(item.health)} text-[11px] py-0 h-5 ml-1`}>
                 {item.health}
               </Badge>
             )}
           </div>
 
-          <div className="flex justify-center">
-            <div className="w-[100px] h-1.5 bg-muted rounded-full overflow-hidden">
+          <div className="flex items-center justify-center gap-2 px-2">
+            <div className="w-[80px] h-2 bg-muted rounded-full overflow-hidden">
               <div
                 className="h-full rounded-full transition-all"
                 style={{
@@ -153,7 +156,10 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
           </div>
 
           <div className="flex justify-center">
-            <span className="text-xs font-semibold" style={{ color: getProgressColor(item.progress) }}>
+            <span 
+              className="text-sm font-semibold"
+              style={{ color: getProgressColor(item.progress) }}
+            >
               {Math.round(item.progress)}%
             </span>
           </div>
@@ -179,13 +185,13 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
 
   const headerAction = (
     <div className="flex items-center gap-2">
-      <div className="relative w-40">
+      <div className="relative w-44">
         <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5" style={{ color: 'var(--text-3)' }} />
         <Input
-          placeholder="Search..."
+          placeholder="Search items..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-8 h-7 text-xs"
+          className="pl-8 h-8 text-sm"
           style={{ 
             backgroundColor: 'var(--input-bg)', 
             borderColor: 'var(--input-border)',
@@ -196,11 +202,11 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
       <Button 
         variant="ghost" 
         size="icon" 
-        className="h-7 w-7"
+        className="h-8 w-8"
         onClick={() => navigate('/enterprise/okr-hub')}
         title="Open OKR Hub"
       >
-        <Maximize2 className="h-3.5 w-3.5" style={{ color: 'var(--text-3)' }} />
+        <Maximize2 className="h-4 w-4" style={{ color: 'var(--text-3)' }} />
       </Button>
     </div>
   );
@@ -209,8 +215,8 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
     return (
       <PremiumCard>
         <PremiumCardHeader title="OKR Tree" action={headerAction} />
-        <PremiumCardContent className="flex items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
+        <PremiumCardContent className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
         </PremiumCardContent>
       </PremiumCard>
     );
@@ -220,33 +226,68 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
     <PremiumCard>
       <PremiumCardHeader title="OKR Tree" action={headerAction} />
       <PremiumCardContent noPadding>
-        <div className="border-t" style={{ borderColor: 'var(--divider)' }}>
-          {/* Column Headers */}
-          <div
-            className="grid items-center py-2 px-4 font-semibold text-[11px] uppercase tracking-wide"
-            style={{
-              gridTemplateColumns: '1fr 120px 50px 50px',
-              backgroundColor: 'var(--surface-2)',
-              borderBottom: '1px solid var(--divider)',
-              color: 'var(--text-2)',
-            }}
-          >
-            <div>Item</div>
-            <div className="text-center">Progress</div>
-            <div className="text-center">%</div>
-            <div className="text-center">Owner</div>
-          </div>
+        {/* Column Headers - sticky */}
+        <div
+          className="grid items-center py-2.5 px-4 font-semibold text-xs uppercase tracking-wide sticky top-0 z-10"
+          style={{
+            gridTemplateColumns: '1fr 140px 60px 56px',
+            backgroundColor: 'var(--surface-2)',
+            borderBottom: '1px solid var(--divider)',
+            color: 'var(--text-2)',
+          }}
+        >
+          <div>Item</div>
+          <div className="text-center">Progress</div>
+          <div className="text-center">%</div>
+          <div className="text-center">Owner</div>
+        </div>
 
-          {/* Tree Content */}
-          <div style={{ maxHeight: '320px', overflowY: 'auto' }}>
-            {treeData.length > 0 ? (
-              treeData.map((item) => renderTreeItem(item, 0))
-            ) : (
-              <div className="py-8 text-center">
-                <span className="text-xs" style={{ color: 'var(--text-3)' }}>No items found</span>
+        {/* Tree Content */}
+        <div style={{ maxHeight: '360px', overflowY: 'auto' }}>
+          {treeData.length > 0 ? (
+            treeData.map((item) => renderTreeItem(item, 0))
+          ) : (
+            <div className="py-12 px-4 text-center">
+              <div 
+                className="w-12 h-12 rounded-full mx-auto flex items-center justify-center mb-3"
+                style={{ backgroundColor: 'hsl(var(--secondary-green) / 0.1)' }}
+              >
+                <Target className="w-5 h-5" style={{ color: 'hsl(var(--secondary-green))' }} />
               </div>
-            )}
-          </div>
+              <p 
+                className="text-sm font-medium mb-1"
+                style={{ color: 'var(--text-1)' }}
+              >
+                No objectives or themes found
+              </p>
+              <p 
+                className="text-xs mb-4"
+                style={{ color: 'var(--text-3)' }}
+              >
+                Link objectives to this strategy snapshot to see them here
+              </p>
+              <div className="flex items-center justify-center gap-2">
+                <Button 
+                  size="sm" 
+                  className="gap-1.5"
+                  style={{ 
+                    backgroundColor: 'hsl(var(--brand-gold))',
+                    color: 'white',
+                  }}
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  Create Theme
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => navigate('/enterprise/okr-hub')}
+                >
+                  Open OKR Hub
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       </PremiumCardContent>
 
