@@ -30,16 +30,13 @@ export function StrategicGoalsWidget({ snapshotId }: StrategicGoalsWidgetProps) 
 
   if (isLoading) {
     return (
-      <Card style={{ borderLeft: '3px solid var(--accent-color)' }}>
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <Target className="h-5 w-5 text-primary" />
-            <CardTitle className="text-base">Strategic Objectives</CardTitle>
-          </div>
+      <Card className="rounded-lg shadow-sm border" style={{ borderColor: 'var(--divider)', backgroundColor: 'var(--surface-1)' }}>
+        <CardHeader className="py-2 px-3 border-b" style={{ borderColor: 'var(--divider)', backgroundColor: 'var(--surface-1)' }}>
+          <CardTitle className="text-xs font-semibold" style={{ color: 'var(--text-1)' }}>Objectives</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-center py-6">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+        <CardContent className="p-3">
+          <div className="flex items-center justify-center py-4">
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
           </div>
         </CardContent>
       </Card>
@@ -51,18 +48,24 @@ export function StrategicGoalsWidget({ snapshotId }: StrategicGoalsWidgetProps) 
 
   return (
     <Card 
-      className="rounded-lg shadow-sm"
+      className="rounded-lg shadow-sm border"
       style={{ 
-        borderLeft: '2px solid var(--accent-color)',
+        borderColor: 'var(--divider)',
         backgroundColor: 'var(--surface-1)',
       }}
     >
-      <CardHeader className="py-2 px-3" style={{ backgroundColor: 'var(--surface-2)', borderRadius: '8px 8px 0 0' }}>
+      <CardHeader 
+        className="py-2 px-3 border-b" 
+        style={{ 
+          borderColor: 'var(--divider)',
+          backgroundColor: 'var(--surface-1)',
+        }}
+      >
         <div className="flex items-center justify-between">
           <CardTitle className="text-xs font-semibold" style={{ color: 'var(--text-1)' }}>
             Objectives</CardTitle>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold" style={{ color: 'var(--accent-color)' }}>{avgProgress}%</span>
+            <span className="text-xs font-bold" style={{ color: 'var(--text-1)' }}>{avgProgress}%</span>
             <Button
               variant="ghost"
               size="sm"
