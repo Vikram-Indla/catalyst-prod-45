@@ -292,6 +292,8 @@ export default function StrategicBacklog() {
         open={createThemeOpen}
         onOpenChange={setCreateThemeOpen}
         snapshotId={snapshotId}
+        snapshotName={currentSnapshot?.name}
+        snapshots={snapshots}
       />
     </PageChrome>
   );
