@@ -1,6 +1,6 @@
 /**
  * Coverage & Gaps Panel for Strategic Backlog
- * CLAUDE DESIGN - Token-based styling
+ * Executive-grade strategy health metrics
  */
 import { cn } from '@/lib/utils';
 import { CheckCircle2, AlertTriangle, Palette, Target, Boxes } from 'lucide-react';
@@ -39,6 +39,7 @@ export function StrategicBacklogCoveragePanel({
       coverageValue: themesWithObjectives,
       coveragePercent: themesCoverage,
       hasGap: themes > 0 && themesWithObjectives < themes,
+      actionLabel: themes === 0 ? 'Create theme' : themesWithObjectives < themes ? 'Add objective' : null,
     },
     {
       id: 'objectives' as const,
@@ -49,6 +50,7 @@ export function StrategicBacklogCoveragePanel({
       coverageValue: objectivesWithKRs,
       coveragePercent: objectivesCoverage,
       hasGap: objectives > 0 && objectivesWithKRs < objectives,
+      actionLabel: objectives === 0 && themes > 0 ? 'Create objective' : null,
     },
     {
       id: 'epics' as const,
@@ -59,16 +61,17 @@ export function StrategicBacklogCoveragePanel({
       coverageValue: epicsAligned,
       coveragePercent: epicsCoverage,
       hasGap: epics > epicsAligned,
+      actionLabel: epicsAligned === 0 && themes > 0 ? 'Link epic' : null,
     },
   ];
 
   return (
-    <div className="rounded-lg border border-catalyst-border bg-catalyst-surface p-4">
-      <h3 className="text-xs font-semibold text-catalyst-text-muted uppercase tracking-wider mb-4">
+    <div className="rounded-lg border border-border bg-surface p-4">
+      <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4">
         Coverage & Gaps
       </h3>
       
-      <div className="space-y-2">
+      <div className="space-y-3">
         {metrics.map((metric) => {
           const Icon = metric.icon;
           const isComplete = !metric.hasGap && metric.count > 0;
@@ -80,46 +83,52 @@ export function StrategicBacklogCoveragePanel({
               onClick={() => onNavigate(metric.id)}
               className={cn(
                 "w-full flex items-center justify-between p-2.5 rounded-md transition-colors text-left",
-                "hover:bg-catalyst-green-tint"
+                "hover:bg-[rgba(92,124,92,0.08)]",
+                needsAttention && "bg-amber-50/50 dark:bg-amber-950/10"
               )}
             >
               <div className="flex items-center gap-2.5">
                 <div className={cn(
                   "p-1.5 rounded-md",
-                  isComplete ? "bg-emerald-500/10 dark:bg-emerald-500/20" : "bg-catalyst-surface-hover"
+                  isComplete ? "bg-secondary-green/10" : "bg-muted"
                 )}>
                   <Icon className={cn(
                     "h-3.5 w-3.5",
-                    isComplete ? "text-emerald-600 dark:text-emerald-400" : "text-catalyst-text-muted"
+                    isComplete ? "text-secondary-green" : "text-muted-foreground"
                   )} />
                 </div>
                 
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <span className="text-sm font-medium text-catalyst-text">
+                    <span className="text-sm font-medium text-foreground">
                       {metric.label}
                     </span>
                     <span className={cn(
                       "text-sm font-semibold",
-                      isComplete ? "text-emerald-600 dark:text-emerald-400" : "text-catalyst-text"
+                      isComplete ? "text-secondary-green" : "text-foreground"
                     )}>
                       {metric.count}
                     </span>
                   </div>
                   
                   {metric.count > 0 && (
-                    <p className="text-xs text-catalyst-text-muted">
+                    <p className="text-xs text-muted-foreground">
                       {metric.coverageValue} {metric.coverageLabel} ({metric.coveragePercent}%)
                     </p>
                   )}
                 </div>
               </div>
 
-              <div className="flex items-center">
+              <div className="flex items-center gap-2">
                 {isComplete && (
-                  <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                  <CheckCircle2 className="h-4 w-4 text-secondary-green" />
                 )}
-                {needsAttention && (
+                {needsAttention && metric.actionLabel && (
+                  <span className="text-xs text-brand-gold font-medium">
+                    {metric.actionLabel} →
+                  </span>
+                )}
+                {needsAttention && !metric.actionLabel && metric.hasGap && (
                   <AlertTriangle className="h-4 w-4 text-amber-500" />
                 )}
               </div>

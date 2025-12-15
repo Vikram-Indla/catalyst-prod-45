@@ -249,7 +249,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
 
   if (isLoading) {
     return (
-      <PremiumCard accent="champagne">
+      <PremiumCard>
         <PremiumCardHeader title="OKR Tree" action={headerAction} />
         <PremiumCardContent className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-6 w-6 border-b-2" style={{ borderColor: 'hsl(var(--brand-gold))' }}></div>
@@ -259,10 +259,10 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
   }
 
   return (
-    <PremiumCard accent="champagne">
+    <PremiumCard>
       <PremiumCardHeader 
         title="OKR Tree" 
-        subtitle="Theme → Objective → Key Results"
+        subtitle="Theme → Objective → Key Results" 
         action={headerAction} 
       />
       <PremiumCardContent noPadding>

@@ -112,8 +112,8 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
 
   return (
     <>
-      <PremiumCard accent="bronze">
-        <PremiumCardHeader
+      <PremiumCard>
+        <PremiumCardHeader 
           title="Strategy Coverage & Alignment" 
           subtitle="Coverage across strategic layers"
           action={

@@ -1,6 +1,6 @@
 /**
  * Premium Segmented Control for Strategic Backlog
- * CLAUDE DESIGN - Token-based styling
+ * Enterprise-grade selector with brand tokens
  */
 import { cn } from '@/lib/utils';
 import { Palette, Target, Boxes } from 'lucide-react';
@@ -29,7 +29,7 @@ export function StrategicBacklogSegmentedControl({
   counts,
 }: SegmentedControlProps) {
   return (
-    <div className="inline-flex items-center p-1 rounded-lg bg-catalyst-surface border border-catalyst-border">
+    <div className="inline-flex items-center p-1 rounded-lg bg-muted/50 border border-border">
       {SEGMENTS.map((segment) => {
         const Icon = segment.icon;
         const isActive = activeSection === segment.id;
@@ -41,22 +41,22 @@ export function StrategicBacklogSegmentedControl({
             onClick={() => onSectionChange(segment.id)}
             className={cn(
               "relative flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200",
-              "focus:outline-none focus-visible:ring-2 focus-visible:ring-catalyst-gold focus-visible:ring-offset-2",
+              "focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2",
               isActive
-                ? "bg-catalyst-surface-hover text-catalyst-text shadow-sm border border-catalyst-gold/30"
-                : "text-catalyst-text-muted hover:text-catalyst-text hover:bg-catalyst-green-tint"
+                ? "bg-surface text-foreground shadow-sm border border-brand-gold/30"
+                : "text-muted-foreground hover:text-foreground hover:bg-[rgba(92,124,92,0.08)]"
             )}
           >
             <Icon className={cn(
               "h-4 w-4 transition-colors",
-              isActive ? "text-catalyst-gold" : "text-catalyst-text-muted"
+              isActive ? "text-brand-gold" : "text-muted-foreground"
             )} />
             <span>{segment.label}</span>
             <span className={cn(
-              "ml-1 text-xs px-1.5 py-0.5 rounded-full font-medium",
+              "ml-1 text-xs px-1.5 py-0.5 rounded-full",
               isActive 
-                ? "bg-catalyst-gold/15 text-catalyst-gold" 
-                : "bg-catalyst-surface-hover text-catalyst-text-muted"
+                ? "bg-brand-gold/15 text-brand-gold" 
+                : "bg-muted text-muted-foreground"
             )}>
               {count}
             </span>

@@ -1,6 +1,6 @@
 /**
  * Enterprise-grade Empty State for Strategic Backlog
- * CLAUDE DESIGN - Token-based styling
+ * Actionable, not just decorative
  */
 import { Button } from '@/components/ui/button';
 import { Plus, Link as LinkIcon, Palette, Target, Boxes, AlertTriangle } from 'lucide-react';
@@ -29,7 +29,7 @@ const CONFIG: Record<EntityType, {
     title: 'No themes in this snapshot yet',
     description: 'Strategic themes organize your objectives and epics into meaningful business outcomes.',
     noSnapshotMessage: 'Select a Strategic Snapshot to manage themes.',
-    noThemesMessage: '',
+    noThemesMessage: '', // Not applicable for themes
   },
   objective: {
     icon: Target,
@@ -62,10 +62,10 @@ export function StrategicBacklogEmptyState({
   if (!hasSnapshot) {
     return (
       <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
-        <div className="p-4 rounded-full bg-catalyst-surface-hover mb-4">
-          <AlertTriangle className="h-8 w-8 text-catalyst-text-muted" />
+        <div className="p-4 rounded-full bg-muted/50 mb-4">
+          <AlertTriangle className="h-8 w-8 text-muted-foreground/50" />
         </div>
-        <p className="text-sm text-catalyst-text-muted max-w-sm">
+        <p className="text-sm text-muted-foreground max-w-sm">
           {config.noSnapshotMessage}
         </p>
       </div>
@@ -76,13 +76,13 @@ export function StrategicBacklogEmptyState({
   if (type !== 'theme' && !hasThemes) {
     return (
       <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
-        <div className="p-4 rounded-full bg-catalyst-surface-hover mb-4">
-          <Palette className="h-8 w-8 text-catalyst-text-muted" />
+        <div className="p-4 rounded-full bg-muted/50 mb-4">
+          <Palette className="h-8 w-8 text-muted-foreground/50" />
         </div>
-        <h3 className="text-base font-semibold text-catalyst-text mb-2">
+        <h3 className="text-base font-semibold text-foreground mb-2">
           Themes required
         </h3>
-        <p className="text-sm text-catalyst-text-muted max-w-sm">
+        <p className="text-sm text-muted-foreground max-w-sm">
           {config.noThemesMessage}
         </p>
       </div>
@@ -91,19 +91,19 @@ export function StrategicBacklogEmptyState({
 
   // Standard empty state with CTAs
   return (
-    <div className="flex flex-col items-center justify-center py-20 px-6 text-center border border-dashed border-catalyst-border rounded-lg bg-catalyst-surface">
+    <div className="flex flex-col items-center justify-center py-20 px-6 text-center border border-dashed border-border rounded-lg bg-surface">
       <div className={cn(
         "p-4 rounded-full mb-4",
-        "bg-catalyst-gold/10"
+        "bg-brand-gold/10"
       )}>
-        <Icon className="h-8 w-8 text-catalyst-gold/70" />
+        <Icon className="h-8 w-8 text-brand-gold/70" />
       </div>
       
-      <h3 className="text-base font-semibold text-catalyst-text mb-2">
+      <h3 className="text-base font-semibold text-foreground mb-2">
         {config.title}
       </h3>
       
-      <p className="text-sm text-catalyst-text-muted max-w-md mb-6">
+      <p className="text-sm text-muted-foreground max-w-md mb-6">
         {config.description}
       </p>
 
@@ -114,7 +114,7 @@ export function StrategicBacklogEmptyState({
               variant="outline" 
               size="sm" 
               onClick={onLink}
-              className="gap-1.5 border-catalyst-border text-catalyst-text hover:bg-catalyst-surface-hover"
+              className="gap-1.5"
             >
               <LinkIcon className="h-3.5 w-3.5" />
               Link existing {type}
@@ -124,7 +124,7 @@ export function StrategicBacklogEmptyState({
             <Button 
               size="sm" 
               onClick={onCreate}
-              className="gap-1.5 bg-catalyst-gold hover:bg-catalyst-gold-hover text-white"
+              className="gap-1.5 bg-brand-gold hover:bg-brand-gold-hover text-white"
             >
               <Plus className="h-3.5 w-3.5" />
               Create {type}
@@ -134,7 +134,7 @@ export function StrategicBacklogEmptyState({
       )}
 
       {isArchived && (
-        <p className="text-xs text-catalyst-text-muted italic">
+        <p className="text-xs text-muted-foreground italic">
           This snapshot is archived and cannot be modified.
         </p>
       )}

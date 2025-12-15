@@ -329,37 +329,23 @@ export function useCreateTheme() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (input: CreateThemeInput) => {
-      // Validate snapshot_id is present
-      if (!input.snapshot_id) {
-        throw new Error('snapshot_id is required to create a theme');
-      }
-
-      // Map status: 'draft' -> 'proposed', 'active' -> 'active'
-      const dbStatus = input.status === 'draft' ? 'proposed' : input.status === 'archived' ? 'done' : 'active';
-      
+      // Map our status to DB status
       const dbInput = {
-        name: input.name,
-        description: input.description,
-        owner_id: input.owner_id,
-        status: dbStatus,
-        start_date: input.start_date,
-        end_date: input.end_date,
-        snapshot_id: input.snapshot_id,
+        ...input,
+        status: input.status === 'archived' ? 'done' : input.status === 'draft' ? 'proposed' : 'active',
       };
-
       const { data, error } = await supabase
         .from('strategic_themes')
         .insert(dbInput as any)
         .select()
         .single();
-      
       if (error) throw error;
       return data as StrategicTheme;
     },
-    onSuccess: (_, variables) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['strategic-themes'] });
-      queryClient.invalidateQueries({ queryKey: ['strategic-themes', variables.snapshot_id] });
       queryClient.invalidateQueries({ queryKey: ['strategy-pyramid-counts'] });
+      catalystToast.success('Theme Created', 'Strategic theme has been created.');
     },
     onError: (error: any) => {
       catalystToast.error('Error', error.message || 'Failed to create theme.');

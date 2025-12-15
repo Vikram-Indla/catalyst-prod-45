@@ -115,7 +115,7 @@ export function StrategyContextCard({ snapshot, onUpdate }: StrategyContextCardP
   };
 
   return (
-    <PremiumCard accent="green">
+    <PremiumCard>
       <PremiumCardHeader 
         title="Strategy Context" 
         subtitle="Mission, vision, and values guiding this snapshot" 
