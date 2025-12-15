@@ -11,7 +11,8 @@ import {
   Search,
   Pin,
   Boxes,
-  Code2
+  Code2,
+  Map
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
@@ -94,6 +95,15 @@ const adminPockets = [
     children: [
       { label: 'Product Inventory', path: '/admin/resourceinventory' },
       { label: 'Development Inventory', path: '/admin/developmentinventory' },
+    ],
+  },
+  {
+    id: 'developer',
+    label: 'Developer',
+    icon: Map,
+    path: '/admin/routes-registry',
+    children: [
+      { label: 'Routes & Components', path: '/admin/routes-registry' },
     ],
   },
 ];
