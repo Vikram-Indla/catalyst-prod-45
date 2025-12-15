@@ -78,13 +78,8 @@ export function CapacityHeader({
 
   return (
     <div className="space-y-0">
-      {/* Row 1: Title */}
-      <div className="h-[44px] flex items-center px-6">
-        <h1 className="text-xl font-semibold text-secondary-green">Capacity Planning</h1>
-      </div>
-
-      {/* Row 2: Controls */}
-      <div 
+      {/* Controls */}
+      <div
         className="h-[52px] flex items-center justify-between px-6 border-b"
         style={{ borderColor: 'hsl(var(--border))' }}
       >
