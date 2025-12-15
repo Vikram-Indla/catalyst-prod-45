@@ -25,6 +25,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import {
   Select,
   SelectContent,
@@ -624,60 +633,96 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
         </SheetContent>
       </Sheet>
 
-      {/* Link Objective Dialog */}
-      {showLinkObjectiveDialog && (
-        <div className="fixed inset-0 z-[500] flex items-center justify-center bg-black/50">
-          <div className="bg-white dark:bg-surface-2 rounded-lg p-6 w-full max-w-md shadow-xl">
-            <h3 className="text-lg font-semibold mb-4">Link Objective to Theme</h3>
+      {/* Link Objective Dialog - Enterprise Grade */}
+      <Dialog open={showLinkObjectiveDialog} onOpenChange={setShowLinkObjectiveDialog}>
+        <DialogContent className="sm:max-w-md bg-card border-border">
+          <DialogHeader className="border-b border-brand-gold/30 pb-4">
+            <DialogTitle className="text-lg font-semibold">Link Objective to Theme</DialogTitle>
+            <DialogDescription className="text-muted-foreground text-sm">
+              Select an objective to link to this strategic theme
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4">
             {availableObjectives.length > 0 ? (
-              <div className="space-y-2 max-h-[300px] overflow-y-auto">
-                {availableObjectives.map((obj) => (
-                  <button
-                    key={obj.id}
-                    onClick={() => linkObjectiveMutation.mutate(obj.id)}
-                    className="w-full text-left p-3 border rounded-lg hover:bg-muted transition-colors text-sm"
-                  >
-                    {obj.name}
-                  </button>
-                ))}
-              </div>
+              <ScrollArea className="h-[280px] pr-4">
+                <div className="space-y-2">
+                  {availableObjectives.map((obj) => (
+                    <button
+                      key={obj.id}
+                      onClick={() => linkObjectiveMutation.mutate(obj.id)}
+                      className="w-full text-left p-3 border border-border rounded-lg hover:border-brand-gold hover:bg-brand-gold/5 transition-colors text-sm group"
+                    >
+                      <span className="group-hover:text-brand-gold transition-colors">{obj.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </ScrollArea>
             ) : (
-              <p className="text-muted-foreground text-sm py-4 text-center">No unlinked objectives available</p>
+              <div className="py-8 text-center">
+                <p className="text-muted-foreground text-sm">No unlinked objectives available</p>
+                <p className="text-xs text-muted-foreground/60 mt-1">Create objectives first to link them</p>
+              </div>
             )}
-            <div className="flex justify-end mt-4">
-              <Button variant="outline" onClick={() => setShowLinkObjectiveDialog(false)}>Cancel</Button>
-            </div>
           </div>
-        </div>
-      )}
 
-      {/* Link Epic Dialog */}
-      {showLinkEpicDialog && (
-        <div className="fixed inset-0 z-[500] flex items-center justify-center bg-black/50">
-          <div className="bg-white dark:bg-surface-2 rounded-lg p-6 w-full max-w-md shadow-xl">
-            <h3 className="text-lg font-semibold mb-4">Link Epic to Theme</h3>
+          <DialogFooter className="border-t border-border pt-4">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowLinkObjectiveDialog(false)}
+              className="border-border hover:bg-muted"
+            >
+              Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Link Epic Dialog - Enterprise Grade */}
+      <Dialog open={showLinkEpicDialog} onOpenChange={setShowLinkEpicDialog}>
+        <DialogContent className="sm:max-w-md bg-card border-border">
+          <DialogHeader className="border-b border-brand-gold/30 pb-4">
+            <DialogTitle className="text-lg font-semibold">Link Epic to Theme</DialogTitle>
+            <DialogDescription className="text-muted-foreground text-sm">
+              Select an epic to align with this strategic theme
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4">
             {availableEpics.length > 0 ? (
-              <div className="space-y-2 max-h-[300px] overflow-y-auto">
-                {availableEpics.map((epic) => (
-                  <button
-                    key={epic.id}
-                    onClick={() => linkEpicMutation.mutate(epic.id)}
-                    className="w-full text-left p-3 border rounded-lg hover:bg-muted transition-colors text-sm"
-                  >
-                    <span className="font-mono text-xs text-muted-foreground mr-2">{epic.epic_key}</span>
-                    {epic.name}
-                  </button>
-                ))}
-              </div>
+              <ScrollArea className="h-[280px] pr-4">
+                <div className="space-y-2">
+                  {availableEpics.map((epic) => (
+                    <button
+                      key={epic.id}
+                      onClick={() => linkEpicMutation.mutate(epic.id)}
+                      className="w-full text-left p-3 border border-border rounded-lg hover:border-brand-gold hover:bg-brand-gold/5 transition-colors text-sm group"
+                    >
+                      <span className="font-mono text-xs text-brand-gold mr-2">{epic.epic_key}</span>
+                      <span className="group-hover:text-brand-gold transition-colors">{epic.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </ScrollArea>
             ) : (
-              <p className="text-muted-foreground text-sm py-4 text-center">No unlinked epics available</p>
+              <div className="py-8 text-center">
+                <p className="text-muted-foreground text-sm">No unlinked epics available</p>
+                <p className="text-xs text-muted-foreground/60 mt-1">Create epics first to link them</p>
+              </div>
             )}
-            <div className="flex justify-end mt-4">
-              <Button variant="outline" onClick={() => setShowLinkEpicDialog(false)}>Cancel</Button>
-            </div>
           </div>
-        </div>
-      )}
+
+          <DialogFooter className="border-t border-border pt-4">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowLinkEpicDialog(false)}
+              className="border-border hover:bg-muted"
+            >
+              Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Unsaved Changes Dialog */}
       <AlertDialog open={showUnsavedChangesDialog} onOpenChange={setShowUnsavedChangesDialog}>
