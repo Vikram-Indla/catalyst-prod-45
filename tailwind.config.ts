@@ -167,10 +167,24 @@ export default {
           4: "hsl(var(--chart-golden-4))",  // Beginner - Champagne
           5: "hsl(var(--chart-golden-5))",  // None - Grey
         },
-        // Catalyst Toast Colors
+        // Catalyst Spec Tokens (for Strategic Backlog spec alignment)
         catalyst: {
-          black: "#1a1a1a",
+          bg: "var(--catalyst-bg)",
+          surface: "var(--catalyst-surface)",
+          "surface-hover": "var(--catalyst-surface-hover)",
+          "table-header": "var(--catalyst-table-header-bg)",
+          border: "var(--catalyst-border)",
+          "border-strong": "var(--catalyst-border-strong)",
+          text: "var(--catalyst-text)",
+          "text-secondary": "var(--catalyst-text-secondary)",
+          "text-muted": "var(--catalyst-text-muted)",
+          green: "var(--catalyst-green)",
+          "green-tint": "var(--catalyst-green-tint)",
+          gold: "var(--catalyst-gold)",
+          "gold-hover": "var(--catalyst-gold-hover)",
         },
+        // Catalyst Toast Colors
+        "catalyst-black": "#1a1a1a",
         toast: {
           message: "#525252",
           close: "#9ca3af",
