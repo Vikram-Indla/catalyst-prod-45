@@ -13,6 +13,7 @@ import { CreateStrategyItemDropdown } from '@/components/strategy/CreateStrategy
 import { ThemeDetailsDrawer } from '@/components/backlog/ThemeDetailsDrawer';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
 
 // Type definition - OKR v2 only uses a single Objectives layer
 type ObjectiveLevel = "OBJECTIVES";
@@ -94,61 +95,50 @@ export default function StrategyRoomPage() {
 
   return (
     <div className="h-full flex flex-col min-w-0" style={{ backgroundColor: 'var(--bg)' }}>
-      {/* Header Row - Enterprise pattern: title + controls */}
-      <div 
-        className="h-[44px] flex items-center justify-between px-5 flex-shrink-0 border-b"
-        style={{ borderColor: 'var(--divider)' }}
-      >
-        <div className="flex items-center gap-3 min-w-0">
-          {/* Breadcrumb-style prefix */}
-          <span className="text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--text-3)' }}>
-            Enterprise
-          </span>
-          <span style={{ color: 'var(--text-3)' }}>/</span>
-          <h1 className="text-lg font-semibold truncate" style={{ color: 'var(--text-1)' }}>
-            Strategy Room
-          </h1>
-        </div>
-
-        {/* Snapshot Selector - Right aligned */}
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-medium" style={{ color: 'var(--text-3)' }}>Snapshot:</span>
-          <div className="w-56 md:w-64">
-            <Select value={effectiveSelectedSnapshotId} onValueChange={handleSnapshotChange}>
-              <SelectTrigger 
-                className="h-8 text-sm"
-                style={{ 
-                  backgroundColor: 'var(--input-bg)', 
-                  borderColor: 'var(--input-border)',
-                  color: 'var(--text-1)'
-                }}
-              >
-                <SelectValue placeholder="Select snapshot" />
-              </SelectTrigger>
-              <SelectContent className="z-[400]">
-                <div className="p-2">
-                  <Input
-                    placeholder="Search snapshots..."
-                    value={snapshotSearchQuery}
-                    onChange={(e) => setSnapshotSearchQuery(e.target.value)}
-                    className="mb-2 h-8 text-sm"
-                    style={{ 
-                      backgroundColor: 'var(--input-bg)', 
-                      borderColor: 'var(--input-border)',
-                      color: 'var(--input-text)'
-                    }}
-                  />
-                </div>
-                {filteredSnapshots.map((snapshot) => (
-                  <SelectItem key={snapshot.id} value={snapshot.id}>
-                    {snapshot.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+      {/* Global Page Header - Enterprise pattern with breadcrumb */}
+      <GlobalPageHeader
+        sectionLabel="Enterprise"
+        pageTitle="Strategy Room"
+        rightActions={
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium" style={{ color: 'var(--text-3)' }}>Snapshot:</span>
+            <div className="w-56 md:w-64">
+              <Select value={effectiveSelectedSnapshotId} onValueChange={handleSnapshotChange}>
+                <SelectTrigger 
+                  className="h-8 text-sm"
+                  style={{ 
+                    backgroundColor: 'var(--input-bg)', 
+                    borderColor: 'var(--input-border)',
+                    color: 'var(--text-1)'
+                  }}
+                >
+                  <SelectValue placeholder="Select snapshot" />
+                </SelectTrigger>
+                <SelectContent className="z-[400]">
+                  <div className="p-2">
+                    <Input
+                      placeholder="Search snapshots..."
+                      value={snapshotSearchQuery}
+                      onChange={(e) => setSnapshotSearchQuery(e.target.value)}
+                      className="mb-2 h-8 text-sm"
+                      style={{ 
+                        backgroundColor: 'var(--input-bg)', 
+                        borderColor: 'var(--input-border)',
+                        color: 'var(--input-text)'
+                      }}
+                    />
+                  </div>
+                  {filteredSnapshots.map((snapshot) => (
+                    <SelectItem key={snapshot.id} value={snapshot.id}>
+                      {snapshot.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-        </div>
-      </div>
+        }
+      />
 
       {/* Content Area - Enterprise density: tight gaps, max-width container */}
       <div className="flex-1 overflow-auto px-5 py-4 min-w-0">
