@@ -17,14 +17,19 @@ export const CatalystCheckbox = forwardRef<HTMLInputElement, CatalystCheckboxPro
             className="peer sr-only"
             {...props}
           />
-          <div className={cn(
-            "w-4 h-4 rounded-sm border-2 border-surface-gray-200 bg-white",
-            "transition-all duration-150",
-            "peer-checked:bg-brand-gold peer-checked:border-brand-gold",
-            "peer-focus:ring-2 peer-focus:ring-brand-gold-pale",
-            "peer-hover:border-text-muted",
-            className
-          )}>
+          <div 
+            className={cn(
+              "w-4 h-4 rounded-sm border-2",
+              "transition-all duration-150",
+              "peer-checked:bg-brand-gold peer-checked:border-brand-gold",
+              "peer-focus:ring-2 peer-focus:ring-brand-gold/20",
+              className
+            )}
+            style={{ 
+              borderColor: 'var(--input-border)',
+              backgroundColor: 'var(--input-bg)'
+            }}
+          >
             <Check 
               className="w-3 h-3 text-white absolute top-0.5 left-0.5 opacity-0 peer-checked:opacity-100 transition-opacity" 
               strokeWidth={3}
@@ -32,7 +37,7 @@ export const CatalystCheckbox = forwardRef<HTMLInputElement, CatalystCheckboxPro
           </div>
         </div>
         {label && (
-          <span className="text-[13px] text-text-secondary leading-snug">
+          <span className="text-[13px] leading-snug" style={{ color: 'var(--text-2)' }}>
             {label}
           </span>
         )}

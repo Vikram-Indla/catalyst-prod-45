@@ -345,15 +345,15 @@ export default function Auth() {
       </div>
 
       {/* Right Panel - Login/Password Reset Panel */}
-      <div className="relative w-full lg:w-[55%] p-6 sm:p-8 md:p-12 lg:p-16 bg-background">
+      <div className="relative w-full lg:w-[55%] p-6 sm:p-8 md:p-12 lg:p-16 bg-[var(--surface-1)]">
         {/* Subtle background gradients */}
         <div 
           className="absolute top-0 right-0 w-96 h-96 rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle, hsl(var(--brand-gold) / 0.03) 0%, transparent 70%)" }}
+          style={{ background: "radial-gradient(circle, hsl(var(--brand-gold) / 0.05) 0%, transparent 70%)" }}
         />
         <div 
           className="absolute bottom-0 left-0 w-80 h-80 rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle, hsl(var(--brand-gold) / 0.02) 0%, transparent 70%)" }}
+          style={{ background: "radial-gradient(circle, hsl(var(--brand-gold) / 0.03) 0%, transparent 70%)" }}
         />
 
         {/* Catalyst Logo */}
@@ -366,9 +366,9 @@ export default function Auth() {
               letterSpacing: "-0.02em"
             }}
           >
-            <span className="text-brand-dark">Cata</span>
+            <span style={{ color: 'var(--text-1)' }}>Cata</span>
             <span className="text-brand-gold">lyst</span>
-            <sup className="text-brand-dark font-normal ml-0.5" style={{ fontSize: "0.4em" }}>TM</sup>
+            <sup style={{ color: 'var(--text-1)', fontWeight: 400 }} className="ml-0.5 text-[0.4em]">TM</sup>
           </h1>
         </div>
 
@@ -409,14 +409,14 @@ export default function Auth() {
             <>
               {/* User Type Selector */}
               <div className="flex justify-center mb-8">
-                <div className="inline-flex rounded-full p-1 bg-brand-dark/5">
+                <div className="inline-flex rounded-full p-1" style={{ backgroundColor: 'var(--surface-2)' }}>
                   <button
                     type="button"
                     onClick={() => setUserType("existing")}
                     className="font-body transition-all duration-200 px-6 py-2.5 rounded-full text-sm font-medium border-none cursor-pointer"
                     style={{
-                      backgroundColor: userType === "existing" ? "hsl(var(--brand-dark))" : "transparent",
-                      color: userType === "existing" ? "hsl(var(--n0))" : "hsl(var(--brand-dark) / 0.6)",
+                      backgroundColor: userType === "existing" ? "var(--accent-color)" : "transparent",
+                      color: userType === "existing" ? "#fff" : "var(--text-2)",
                     }}
                   >
                     Existing User
@@ -426,8 +426,8 @@ export default function Auth() {
                     onClick={() => setUserType("external")}
                     className="font-body transition-all duration-200 px-6 py-2.5 rounded-full text-sm font-medium border-none cursor-pointer"
                     style={{
-                      backgroundColor: userType === "external" ? "hsl(var(--brand-dark))" : "transparent",
-                      color: userType === "external" ? "hsl(var(--n0))" : "hsl(var(--brand-dark) / 0.6)",
+                      backgroundColor: userType === "external" ? "var(--accent-color)" : "transparent",
+                      color: userType === "external" ? "#fff" : "var(--text-2)",
                     }}
                   >
                     External User
@@ -439,14 +439,14 @@ export default function Auth() {
                 <>
                   {/* Sign In / Sign Up Toggle */}
                   <div className="flex justify-center mb-6">
-                    <div className="inline-flex rounded-lg p-1 bg-brand-dark/5">
+                    <div className="inline-flex rounded-lg p-1" style={{ backgroundColor: 'var(--surface-2)' }}>
                       <button
                         type="button"
                         onClick={() => { setAuthMode("signin"); resetForm(); }}
                         className="font-body transition-all duration-200 px-5 py-2 rounded-md text-sm font-medium border-none cursor-pointer"
                         style={{
                           backgroundColor: authMode === "signin" ? "hsl(var(--brand-gold))" : "transparent",
-                          color: authMode === "signin" ? "hsl(var(--n0))" : "hsl(var(--brand-dark) / 0.6)",
+                          color: authMode === "signin" ? "#fff" : "var(--text-2)",
                         }}
                       >
                         Sign In
@@ -457,7 +457,7 @@ export default function Auth() {
                         className="font-body transition-all duration-200 px-5 py-2 rounded-md text-sm font-medium border-none cursor-pointer"
                         style={{
                           backgroundColor: authMode === "signup" ? "hsl(var(--brand-gold))" : "transparent",
-                          color: authMode === "signup" ? "hsl(var(--n0))" : "hsl(var(--brand-dark) / 0.6)",
+                          color: authMode === "signup" ? "#fff" : "var(--text-2)",
                         }}
                       >
                         Sign Up
@@ -467,12 +467,12 @@ export default function Auth() {
 
                   {/* Header */}
                   <h2 
-                    className="text-center mb-2 font-display text-brand-dark"
-                    style={{ fontSize: "clamp(1.5rem, 3vw, 1.875rem)", fontWeight: 500 }}
+                    className="text-center mb-2 font-display"
+                    style={{ fontSize: "clamp(1.5rem, 3vw, 1.875rem)", fontWeight: 500, color: 'var(--text-1)' }}
                   >
                     {authMode === "signin" ? "Welcome back" : "Create an account"}
                   </h2>
-                  <p className="text-center mb-6 font-body text-muted-foreground" style={{ fontSize: "clamp(0.9rem, 2vw, 1rem)" }}>
+                  <p className="text-center mb-6 font-body" style={{ fontSize: "clamp(0.9rem, 2vw, 1rem)", color: 'var(--text-2)' }}>
                     {authMode === "signin" ? "Enter your credentials to access your account" : "Fill in your details to get started"}
                   </p>
 
@@ -480,7 +480,7 @@ export default function Auth() {
                   <form onSubmit={authMode === "signin" ? handleSignIn : handleSignUp} className="space-y-4">
                     {authMode === "signup" && (
                       <div>
-                        <label htmlFor="fullName" className="block mb-1.5 font-body text-sm font-medium text-brand-dark">
+                        <label htmlFor="fullName" className="block mb-1.5 font-body text-sm font-medium" style={{ color: 'var(--text-1)' }}>
                           Full Name
                         </label>
                         <input 
@@ -490,13 +490,18 @@ export default function Auth() {
                           onChange={e => { setFullName(e.target.value); setLoginError(null); }} 
                           placeholder="John Doe" 
                           required 
-                          className="w-full transition-all outline-none font-body text-base py-3.5 px-4 rounded-[10px] bg-background border-2 border-border focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/10" 
+                          className="w-full transition-all outline-none font-body text-base py-3.5 px-4 rounded-[10px] border-2 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/10"
+                          style={{ 
+                            backgroundColor: 'var(--input-bg)', 
+                            borderColor: 'var(--input-border)', 
+                            color: 'var(--input-text)'
+                          }}
                         />
                       </div>
                     )}
 
                     <div>
-                      <label htmlFor="email" className="block mb-1.5 font-body text-sm font-medium text-brand-dark">
+                      <label htmlFor="email" className="block mb-1.5 font-body text-sm font-medium" style={{ color: 'var(--text-1)' }}>
                         Email Address
                       </label>
                       <input 
@@ -506,12 +511,17 @@ export default function Auth() {
                         onChange={e => { setEmail(e.target.value); setLoginError(null); }} 
                         placeholder="name@company.com" 
                         required 
-                        className={`w-full transition-all outline-none font-body text-base py-3.5 px-4 rounded-[10px] bg-background border-2 ${loginError ? 'border-destructive' : 'border-border'} focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/10`}
+                        className="w-full transition-all outline-none font-body text-base py-3.5 px-4 rounded-[10px] border-2 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/10"
+                        style={{ 
+                          backgroundColor: 'var(--input-bg)', 
+                          borderColor: loginError ? 'hsl(var(--destructive))' : 'var(--input-border)', 
+                          color: 'var(--input-text)'
+                        }}
                       />
                     </div>
 
                     <div>
-                      <label htmlFor="password" className="block mb-1.5 font-body text-sm font-medium text-brand-dark">
+                      <label htmlFor="password" className="block mb-1.5 font-body text-sm font-medium" style={{ color: 'var(--text-1)' }}>
                         Password
                       </label>
                       <PasswordInput
@@ -526,7 +536,7 @@ export default function Auth() {
 
                     {authMode === "signup" && (
                       <div>
-                        <label htmlFor="confirmPassword" className="block mb-1.5 font-body text-sm font-medium text-brand-dark">
+                        <label htmlFor="confirmPassword" className="block mb-1.5 font-body text-sm font-medium" style={{ color: 'var(--text-1)' }}>
                           Confirm Password
                         </label>
                         <PasswordInput
@@ -551,19 +561,21 @@ export default function Auth() {
                             type="checkbox" 
                             checked={rememberMe} 
                             onChange={e => setRememberMe(e.target.checked)} 
-                            className="w-4 h-4 rounded border-2 cursor-pointer appearance-none transition-all border-border checked:bg-brand-gold checked:border-brand-gold"
+                            className="w-4 h-4 rounded border-2 cursor-pointer appearance-none transition-all checked:bg-brand-gold checked:border-brand-gold"
                             style={{
+                              borderColor: 'var(--input-border)',
+                              backgroundColor: rememberMe ? undefined : 'var(--input-bg)',
                               backgroundImage: rememberMe ? "url(\"data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e\")" : "none",
                               backgroundSize: "100% 100%",
                               backgroundPosition: "center",
                               backgroundRepeat: "no-repeat"
                             }}
                           />
-                          <span className="font-body text-sm text-muted-foreground">Remember me</span>
+                          <span className="font-body text-sm" style={{ color: 'var(--text-2)' }}>Remember me</span>
                         </label>
                         <button 
                           type="button" 
-                          className="font-body text-sm font-medium text-brand-gold hover:text-brand-dark transition-colors"
+                          className="font-body text-sm font-medium text-brand-gold hover:text-brand-gold-hover transition-colors"
                         >
                           Forgot password?
                         </button>
@@ -594,22 +606,22 @@ export default function Auth() {
                 <>
                   {/* External User Header */}
                   <h2 
-                    className="text-center mb-2 font-display text-brand-dark"
-                    style={{ fontSize: "clamp(1.5rem, 3vw, 1.875rem)", fontWeight: 500 }}
+                    className="text-center mb-2 font-display"
+                    style={{ fontSize: "clamp(1.5rem, 3vw, 1.875rem)", fontWeight: 500, color: 'var(--text-1)' }}
                   >
                     Submit a Request
                   </h2>
-                  <p className="text-center mb-6 font-body text-muted-foreground" style={{ fontSize: "clamp(0.9rem, 2vw, 1rem)" }}>
+                  <p className="text-center mb-6 font-body" style={{ fontSize: "clamp(0.9rem, 2vw, 1rem)", color: 'var(--text-2)' }}>
                     Log your business demand without an account
                   </p>
 
                   {/* Request Card */}
-                  <div className="flex flex-col items-center p-8 rounded-xl bg-brand-gold/5 border border-brand-gold/15">
+                  <div className="flex flex-col items-center p-8 rounded-xl bg-brand-gold/5 border border-brand-gold/20">
                     <div className="mb-5 p-4 rounded-full bg-brand-gold/10">
                       <FileText className="w-10 h-10 text-brand-gold" />
                     </div>
 
-                    <p className="text-center mb-6 font-body text-base leading-relaxed" style={{ color: "hsl(var(--brand-dark) / 0.65)" }}>
+                    <p className="text-center mb-6 font-body text-base leading-relaxed" style={{ color: 'var(--text-2)' }}>
                       No account needed. Submit your business demand request and our team will review it promptly.
                     </p>
 
@@ -621,7 +633,7 @@ export default function Auth() {
                       Log Demand Request
                     </button>
 
-                    <p className="mt-4 text-center font-body text-xs" style={{ color: "hsl(var(--brand-dark) / 0.4)" }}>
+                    <p className="mt-4 text-center font-body text-xs" style={{ color: 'var(--text-3)' }}>
                       Ticket ID will be generated upon submission
                     </p>
                   </div>
