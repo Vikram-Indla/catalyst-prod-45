@@ -209,17 +209,21 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                   </span>
                 </div>
 
-                {/* Coverage bar */}
+                {/* Coverage bar - hide track entirely when no data */}
                 <div className="flex items-center px-2">
-                  <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--surface-3)' }}>
-                    <div 
-                      className="h-full rounded-full transition-all"
-                      style={{ 
-                        width: `${data.progress}%`,
-                        backgroundColor: layer.color,
-                      }}
-                    />
-                  </div>
+                  {data.count > 0 ? (
+                    <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--surface-3)' }}>
+                      <div 
+                        className="h-full rounded-full transition-all"
+                        style={{ 
+                          width: `${data.progress}%`,
+                          backgroundColor: layer.color,
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-full" />
+                  )}
                 </div>
 
                 {/* Percentage - show dash if no data */}
