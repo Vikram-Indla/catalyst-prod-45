@@ -226,11 +226,11 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
     <PremiumCard>
       <PremiumCardHeader title="OKR Tree" action={headerAction} />
       <PremiumCardContent noPadding>
-        {/* Column Headers - sticky */}
+        {/* Column Headers - sticky, compact */}
         <div
-          className="grid items-center py-2.5 px-4 font-semibold text-xs uppercase tracking-wide sticky top-0 z-10"
+          className="grid items-center py-2 px-4 font-semibold text-[11px] uppercase tracking-wider sticky top-0 z-10"
           style={{
-            gridTemplateColumns: '1fr 140px 60px 56px',
+            gridTemplateColumns: '1fr 120px 50px 48px',
             backgroundColor: 'var(--surface-2)',
             borderBottom: '1px solid var(--divider)',
             color: 'var(--text-2)',
@@ -242,48 +242,46 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
           <div className="text-center">Owner</div>
         </div>
 
-        {/* Tree Content */}
-        <div style={{ maxHeight: '360px', overflowY: 'auto' }}>
+        {/* Tree Content - compact rows */}
+        <div style={{ maxHeight: '320px', overflowY: 'auto' }}>
           {treeData.length > 0 ? (
             treeData.map((item) => renderTreeItem(item, 0))
           ) : (
-            <div className="py-12 px-4 text-center">
+            <div className="py-8 px-4 text-center">
               <div 
-                className="w-12 h-12 rounded-full mx-auto flex items-center justify-center mb-3"
+                className="w-10 h-10 rounded-full mx-auto flex items-center justify-center mb-2"
                 style={{ backgroundColor: 'hsl(var(--secondary-green) / 0.1)' }}
               >
-                <Target className="w-5 h-5" style={{ color: 'hsl(var(--secondary-green))' }} />
+                <Target className="w-4 h-4" style={{ color: 'hsl(var(--secondary-green))' }} />
               </div>
               <p 
-                className="text-sm font-medium mb-1"
+                className="text-[13px] font-medium mb-1"
                 style={{ color: 'var(--text-1)' }}
               >
-                No objectives or themes found
+                No objectives found
               </p>
               <p 
-                className="text-xs mb-4"
+                className="text-[12px] mb-3"
                 style={{ color: 'var(--text-3)' }}
               >
-                Link objectives to this strategy snapshot to see them here
+                Link objectives to this snapshot
               </p>
               <div className="flex items-center justify-center gap-2">
                 <Button 
                   size="sm" 
-                  className="gap-1.5"
-                  style={{ 
-                    backgroundColor: 'hsl(var(--brand-gold))',
-                    color: 'white',
-                  }}
+                  className="gap-1.5 h-7 text-[12px]"
+                  style={{ backgroundColor: 'hsl(var(--brand-gold))', color: 'white' }}
                 >
-                  <Plus className="w-3.5 h-3.5" />
-                  Create Theme
+                  <Plus className="w-3 h-3" />
+                  Create
                 </Button>
                 <Button 
                   variant="outline" 
                   size="sm"
+                  className="h-7 text-[12px]"
                   onClick={() => navigate('/enterprise/okr-hub')}
                 >
-                  Open OKR Hub
+                  OKR Hub
                 </Button>
               </div>
             </div>
