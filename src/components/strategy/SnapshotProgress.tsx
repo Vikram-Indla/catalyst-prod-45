@@ -141,16 +141,15 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
 
   return (
     <Card 
-      className="rounded-lg shadow-sm h-full"
+      className="rounded-lg shadow-sm"
       style={{ 
         borderLeft: '2px solid var(--accent-color)',
         backgroundColor: 'var(--surface-1)',
       }}
     >
-      <CardHeader className="py-2.5 px-3" style={{ backgroundColor: 'var(--surface-2)', borderRadius: '8px 8px 0 0' }}>
-        <CardTitle className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
-          Progress
-        </CardTitle>
+      <CardHeader className="py-2 px-3" style={{ backgroundColor: 'var(--surface-2)', borderRadius: '8px 8px 0 0' }}>
+        <CardTitle className="text-xs font-semibold" style={{ color: 'var(--text-1)' }}>
+          Progress</CardTitle>
       </CardHeader>
       <CardContent className="px-3 py-2">
         {isLoading ? (

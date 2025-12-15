@@ -116,21 +116,18 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
           backgroundColor: 'var(--surface-1)',
         }}
       >
-        <CardHeader className="py-2.5 px-3" style={{ backgroundColor: 'var(--surface-2)', borderRadius: '8px 8px 0 0' }}>
+        <CardHeader className="py-2 px-3" style={{ backgroundColor: 'var(--surface-2)', borderRadius: '8px 8px 0 0' }}>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
-              Strategy Pyramid
-            </CardTitle>
-            <span className="text-[10px]" style={{ color: 'var(--text-3)' }}>
-              Click to drill down
-            </span>
+            <CardTitle className="text-xs font-semibold" style={{ color: 'var(--text-1)' }}>
+              Strategy Pyramid</CardTitle>
+            <span className="text-[10px]" style={{ color: 'var(--text-3)' }}>Click to drill down</span>
           </div>
         </CardHeader>
-        <CardContent className="pt-0 px-3 pb-3">
-          <div className="flex gap-4">
-            {/* SVG Pyramid - more compact */}
-            <div className="flex-1" style={{ maxWidth: '400px' }}>
-              <div className="relative w-full" style={{ paddingBottom: '50%' }}>
+        <CardContent className="pt-0 px-3 pb-2">
+          <div className="flex gap-3 items-start">
+            {/* SVG Pyramid - compact */}
+            <div className="flex-1" style={{ maxWidth: '340px' }}>
+              <div className="relative w-full" style={{ paddingBottom: '45%' }}>
                 <svg 
                   viewBox="0 0 800 400" 
                   className="absolute inset-0 w-full h-full" 
@@ -184,27 +181,24 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
             </div>
 
             {/* Compact legend */}
-            <div className="w-36 space-y-1 py-1">
-              {layers.map((layer) => {
-                const Icon = layer.icon;
-                return (
-                  <button
-                    key={layer.key}
-                    onClick={() => handleLayerClick(layer.label)}
-                    className="w-full flex items-center justify-between py-1.5 px-2 rounded transition-colors text-left"
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--surface-2)'}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                  >
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: layer.color }} />
-                      <span className="text-xs" style={{ color: 'var(--text-2)' }}>{layer.label}</span>
-                    </div>
-                    <span className="text-xs font-semibold" style={{ color: 'var(--accent-color)' }}>
-                      {isLoading ? '...' : layer.count}
-                    </span>
-                  </button>
-                );
-              })}
+            <div className="w-32 space-y-0.5 pt-1">
+              {layers.map((layer) => (
+                <button
+                  key={layer.key}
+                  onClick={() => handleLayerClick(layer.label)}
+                  className="w-full flex items-center justify-between py-1 px-1.5 rounded transition-colors text-left cursor-pointer"
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--surface-2)'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                >
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: layer.color }} />
+                    <span className="text-xs" style={{ color: 'var(--text-2)' }}>{layer.label}</span>
+                  </div>
+                  <span className="text-xs font-semibold" style={{ color: 'var(--accent-color)' }}>
+                    {isLoading ? '...' : layer.count}
+                  </span>
+                </button>
+              ))}
             </div>
           </div>
         </CardContent>

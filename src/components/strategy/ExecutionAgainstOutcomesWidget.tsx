@@ -97,17 +97,16 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
   return (
     <>
       <Card 
-        className="h-full rounded-lg shadow-sm" 
+        className="rounded-lg shadow-sm" 
         style={{ 
           borderLeft: '2px solid var(--accent-color)',
           backgroundColor: 'var(--surface-1)',
         }}
       >
-        <CardHeader className="py-2.5 px-3" style={{ backgroundColor: 'var(--surface-2)', borderRadius: '8px 8px 0 0' }}>
+        <CardHeader className="py-2 px-3" style={{ backgroundColor: 'var(--surface-2)', borderRadius: '8px 8px 0 0' }}>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
-              Execution
-            </CardTitle>
+            <CardTitle className="text-xs font-semibold" style={{ color: 'var(--text-1)' }}>
+              Execution</CardTitle>
             <div className="flex items-center gap-2 text-[10px]" style={{ color: 'var(--text-3)' }}>
               <div className="flex items-center gap-0.5">
                 <div className="w-1.5 h-1.5 rounded-full bg-red-500" />

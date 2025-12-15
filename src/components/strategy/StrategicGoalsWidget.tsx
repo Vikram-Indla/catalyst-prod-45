@@ -51,17 +51,16 @@ export function StrategicGoalsWidget({ snapshotId }: StrategicGoalsWidgetProps) 
 
   return (
     <Card 
-      className="rounded-lg shadow-sm h-full"
+      className="rounded-lg shadow-sm"
       style={{ 
         borderLeft: '2px solid var(--accent-color)',
         backgroundColor: 'var(--surface-1)',
       }}
     >
-      <CardHeader className="py-2.5 px-3" style={{ backgroundColor: 'var(--surface-2)', borderRadius: '8px 8px 0 0' }}>
+      <CardHeader className="py-2 px-3" style={{ backgroundColor: 'var(--surface-2)', borderRadius: '8px 8px 0 0' }}>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
-            Objectives
-          </CardTitle>
+          <CardTitle className="text-xs font-semibold" style={{ color: 'var(--text-1)' }}>
+            Objectives</CardTitle>
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold" style={{ color: 'var(--accent-color)' }}>{avgProgress}%</span>
             <Button
