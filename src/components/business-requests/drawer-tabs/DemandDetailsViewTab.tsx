@@ -163,8 +163,8 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
           </div>
         </div>
 
-        {/* People - Delivery roles only (Governance fields in CIO Snapshot above) */}
-        <div className="grid grid-cols-2 gap-3">
+        {/* People & Governance */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div>
             <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>Reporter</Label>
             <div className="mt-1">
@@ -185,41 +185,28 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
               />
             </div>
           </div>
-        </div>
-
-        {/* Governance - Collapsed, edits sync to CIO Snapshot */}
-        <details className="group">
-          <summary 
-            className="flex items-center gap-2 cursor-pointer text-[11px] font-medium py-2"
-            style={{ color: 'var(--text-3)' }}
-          >
-            <span>Governance (Edit)</span>
-            <span className="text-[10px] italic" style={{ color: 'var(--text-3)' }}>— shown in CIO Snapshot above</span>
-          </summary>
-          <div className="grid grid-cols-2 gap-3 pt-2">
-            <div>
-              <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>Department</Label>
-              <div className="mt-1">
-                <DepartmentSelect
-                  value={data.department_id || null}
-                  onChange={handleDepartmentChange}
-                  placeholder="Select..."
-                />
-              </div>
-            </div>
-            <div>
-              <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>Business Owner</Label>
-              <div className="mt-1">
-                <BusinessOwnerSelect
-                  value={data.business_owner_id || null}
-                  onChange={handleBusinessOwnerChange}
-                  departmentId={data.department_id || null}
-                  placeholder="Select..."
-                />
-              </div>
+          <div>
+            <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>Department</Label>
+            <div className="mt-1">
+              <DepartmentSelect
+                value={data.department_id || null}
+                onChange={handleDepartmentChange}
+                placeholder="Select..."
+              />
             </div>
           </div>
-        </details>
+          <div>
+            <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>Business Owner</Label>
+            <div className="mt-1">
+              <BusinessOwnerSelect
+                value={data.business_owner_id || null}
+                onChange={handleBusinessOwnerChange}
+                departmentId={data.department_id || null}
+                placeholder="Select..."
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Planning & Delivery Section */}
