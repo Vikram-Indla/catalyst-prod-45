@@ -1,0 +1,142 @@
+Category,Route/Component,File Location,Description,Type
+PUBLIC ROUTES,/auth,src/pages/Auth.tsx,Login/signup page,Page
+PUBLIC ROUTES,/request-access,src/pages/RequestAccess.tsx,External user demand submission form,Page
+PUBLIC ROUTES,/reset-password,src/pages/ResetPassword.tsx,Password reset page,Page
+HOME,/home,src/pages/jira-align/Home.tsx,Main dashboard/home page,Page
+ENTERPRISE,/enterprise/strategy-room,src/pages/enterprise/StrategyRoomPage.tsx,Executive strategy dashboard with widgets,Page
+ENTERPRISE,/enterprise/snapshots,src/pages/enterprise/StrategicSnapshots.tsx,Strategy snapshot management,Page
+ENTERPRISE,/enterprise/backlog,src/pages/enterprise/StrategicBacklog.tsx,Strategic backlog with themes/objectives tabs,Page
+ENTERPRISE,/enterprise/okr-heatmap,src/pages/enterprise/OKRHeatmap.tsx,OKR heatmap visualization,Page
+ENTERPRISE,/enterprise/okr-tree,src/pages/enterprise/OKRTree.tsx,OKR tree view,Page
+ENTERPRISE,/enterprise/okr-hub,src/pages/enterprise/OKRHub.tsx,OKR hub v2 with strategy tree,Page
+ENTERPRISE,/enterprise/roadmaps,src/pages/enterprise/Roadmaps.tsx,Theme/epic roadmap with Gantt view,Page
+ENTERPRISE,/enterprise/risks,src/pages/enterprise/EnterpriseRisks.tsx,Enterprise-wide risk management,Page
+ENTERPRISE,/enterprise/skills-inventory,src/pages/SkillsInventory.tsx,Skills inventory matrix,Page
+ENTERPRISE,/enterprise/epics,src/pages/enterprise/EnterpriseEpics.tsx,Enterprise epics list,Page
+ENTERPRISE,/enterprise/features,src/pages/enterprise/EnterpriseFeatures.tsx,Enterprise features list,Page
+ENTERPRISE,/enterprise/stories,src/pages/enterprise/EnterpriseStories.tsx,Enterprise stories list,Page
+ENTERPRISE,/enterprise/defects,src/pages/enterprise/EnterpriseDefects.tsx,Enterprise defects list,Page
+ENTERPRISE,/enterprise/tasks,src/pages/enterprise/EnterpriseTasks.tsx,Enterprise tasks list,Page
+ENTERPRISE,/enterprise/objectives,src/pages/enterprise/EnterpriseObjectives.tsx,Enterprise objectives list,Page
+ENTERPRISE,/enterprise/dependencies,src/pages/enterprise/EnterpriseDependencies.tsx,Cross-program dependencies,Page
+ENTERPRISE,/enterprise/sprints,src/pages/enterprise/EnterpriseSprints.tsx,Enterprise sprints,Page
+ENTERPRISE,/enterprise/program-increments,src/pages/enterprise/EnterpriseProgramIncrements.tsx,PI management,Page
+ENTERPRISE,/enterprise/ideation,src/pages/enterprise/EnterpriseIdeation.tsx,Innovation/ideation management,Page
+ENTERPRISE,/enterprise/impediments,src/pages/enterprise/EnterpriseImpediments.tsx,Enterprise impediments,Page
+ENTERPRISE,/enterprise/kanban-boards,src/pages/KanbanBoardsPage.tsx,Kanban board management,Page
+PRODUCT/INDUSTRY,/industry/backlog,src/modules/product-backlog/pages/ProductBacklogPage.tsx,Product backlog (business requests list),Page
+PRODUCT/INDUSTRY,/industry/kanban,src/modules/kanban/pages/BusinessRequestsKanbanPage.tsx,Business requests Kanban board,Page
+PRODUCT/INDUSTRY,/industry/dashboard,src/pages/enterprise/DemandSummaryPage.tsx,Executive demand dashboard,Page
+PRODUCT/INDUSTRY,/industry/roadmaps,src/pages/enterprise/ExecutiveRoadmapPage.tsx,Demand/product roadmap Gantt,Page
+PRODUCT/INDUSTRY,/product/room,src/pages/ProductRoomPage.tsx,Product room dashboard,Page
+PRODUCT/INDUSTRY,/product/capacity,src/pages/CapacityPlanningPage.tsx,Capacity planning Gantt/list,Page
+PROGRAM,/program/:programId/room,src/pages/ProgramRoom.tsx,Program room dashboard,Page
+PROGRAM,/program/:programId/epic-backlog,src/pages/EpicBacklogWithSidebar.tsx,Epic backlog table,Page
+PROGRAM,/program/:programId/features,src/pages/program/FeaturesWithSidebar.tsx,Features list,Page
+PROGRAM,/program/:programId/program-board,src/pages/ProgramBoardWithSidebar.tsx,PI planning board,Page
+PROGRAM,/program/:programId/dependencies,src/pages/work/Dependencies.tsx,Program dependencies,Page
+PROGRAM,/program/:programId/roadmaps,src/pages/program/RoadmapsWithSidebar.tsx,Epic roadmap Gantt,Page
+PROGRAM,/program/:programId/forecast,src/pages/program/ForecastWithSidebar.tsx,Program forecast,Page
+PROGRAM,/program/:programId/capacity,src/pages/program/CapacityWithSidebar.tsx,Capacity planning,Page
+PROGRAM,/program/:programId/quarters,src/pages/ProgramIncrements.tsx,PI/Quarter management,Page
+PROGRAM,/program/:programId/epic-balancing,src/modules/epic-balancing/EpicBalancingPage.tsx,Epic prioritization bubble chart,Page
+PROGRAM,/program/:programId/okr-hub,src/pages/enterprise/OKRHub.tsx,Program-level OKR hub,Page
+PROGRAM,/program/:programId/work-tree,src/pages/work-tree/index.tsx,Work item hierarchy tree,Page
+PROJECT,/projects,src/pages/ProjectDirectory.tsx,Project directory listing,Page
+PROJECT,/projects/:projectKey,src/pages/projects/ProjectSummaryPage.tsx,Project summary dashboard,Page
+PROJECT,/projects/:projectKey/settings,src/pages/ProjectSettingsPage.tsx,Project settings,Page
+PROJECT,/project/:projectId/work,src/modules/project-work-hub/ProjectWorkHubPage.tsx,Project work hub,Page
+PORTFOLIO,/portfolio/:portfolioId/room,src/pages/PortfolioRoomPage.tsx,Portfolio room dashboard,Page
+PORTFOLIO,/portfolio/:portfolioId/backlog,src/pages/PortfolioBacklog.tsx,Portfolio backlog,Page
+PORTFOLIO,/portfolio/:portfolioId/themes,src/pages/ThemesGrid.tsx,Strategic themes grid,Page
+PORTFOLIO,/portfolio/:portfolioId/epics,src/pages/items/EpicsPage.tsx,Portfolio epics,Page
+PORTFOLIO,/portfolio/:portfolioId/roadmaps,src/pages/Roadmaps.tsx,Portfolio roadmap,Page
+PORTFOLIO,/portfolio/:portfolioId/forecast,src/pages/Forecast.tsx,Portfolio forecast,Page
+PORTFOLIO,/portfolio/:portfolioId/okr-hub,src/pages/enterprise/OKRHub.tsx,Portfolio OKR hub,Page
+PORTFOLIO,/portfolio/:portfolioId/work-tree,src/pages/work-tree/index.tsx,Work tree view,Page
+TEAM,/teams,src/pages/TeamsDirectory.tsx,Teams directory listing,Page
+TEAM,/teams/:teamId/room,src/pages/TeamRoomDetail.tsx,Team room dashboard,Page
+TEAM,/team/:teamId/backlog,src/pages/team/TeamBacklog.tsx,Team backlog,Page
+TEAM,/team/:teamId/stories,src/pages/team/TeamStoriesPage.tsx,Team stories view,Page
+TEAM,/team/:teamId/okr-hub,src/pages/enterprise/OKRHub.tsx,Team-level OKR hub,Page
+TEAM,/team/:teamId/work-tree,src/pages/work-tree/index.tsx,Team work tree,Page
+TEAM,/team/:teamId/kanban-boards,src/pages/KanbanBoardsPage.tsx,Team Kanban boards,Page
+RELEASE,/release/overview,src/pages/release/ReleaseOverview.tsx,Release overview dashboard,Page
+RELEASE,/release/incidents,src/pages/release/IncidentsList.tsx,Incidents list,Page
+RELEASE,/release/incidents/dashboard,src/pages/release/IncidentsDashboard.tsx,Incidents dashboard,Page
+RELEASE,/release/incidents/:id,src/pages/release/IncidentDetail.tsx,Incident detail view,Page
+RELEASE,/release/versions,src/pages/release/VersionsList.tsx,Versions list,Page
+RELEASE,/release/versions/:id,src/pages/release/VersionDetail.tsx,Version detail view,Page
+RELEASE,/release/calendar,src/pages/release/ReleaseCalendar.tsx,Release calendar,Page
+RELEASE,/release/settings,src/pages/release/ReleaseSettings.tsx,Release settings,Page
+INSIGHTS,/insights/portfolio,src/pages/insights/PortfolioInsights.tsx,Portfolio analytics,Page
+INSIGHTS,/insights/program,src/pages/insights/ProgramInsights.tsx,Program analytics,Page
+INSIGHTS,/insights/team,src/pages/insights/TeamInsights.tsx,Team analytics,Page
+INSIGHTS,/insights/predictability,src/pages/insights/Predictability.tsx,Predictability metrics,Page
+INSIGHTS,/insights/dependency-risk,src/pages/insights/DependencyRisk.tsx,Dependency risk analysis,Page
+ADMIN,/admin/overview,src/pages/admin/AdminOverview.tsx,Admin dashboard,Page
+ADMIN,/admin/users,src/pages/admin/Users.tsx,User management,Page
+ADMIN,/admin/roles-permissions,src/pages/admin/RolesPermissions.tsx,Roles & permissions,Page
+ADMIN,/admin/programs,src/pages/admin/Programs.tsx,Program management,Page
+ADMIN,/admin/portfolios,src/pages/admin/Portfolios.tsx,Portfolio management,Page
+ADMIN,/admin/departments,src/pages/admin/Departments.tsx,Department configuration,Page
+ADMIN,/admin/business-owners,src/pages/admin/BusinessOwners.tsx,Business owner configuration,Page
+ADMIN,/admin/business/ProcessStep,src/pages/admin/ProcessSteps.tsx,Process step configuration,Page
+ADMIN,/admin/modules-packages,src/pages/admin/ModulesPackages.tsx,Module enablement,Page
+ADMIN,/admin/product-settings,src/pages/admin/ProductSettings.tsx,Product/business line settings,Page
+ADMIN,/admin/resourceinventory,src/pages/admin/ResourceInventory.tsx,Resource inventory,Page
+ADMIN,/admin/kanban-settings,src/pages/admin/KanbanSettings.tsx,Kanban board settings,Page
+ADMIN,/admin/design-audit,src/pages/admin/DesignAuditPage.tsx,UI design audit tool,Page
+ADMIN,/admin/activity,src/pages/admin/AuditActivityPage.tsx,Audit activity log,Page
+UTILITY,/browse/:key,src/pages/BrowsePage.tsx,Deep-link resolver for work items,Page
+UTILITY,/search,src/pages/SearchPage.tsx,Global search,Page
+UTILITY,/profile,src/pages/UserProfile.tsx,User profile page,Page
+UTILITY,/knowledge-hub,src/pages/KnowledgeHubPage.tsx,Knowledge hub main,Page
+UTILITY,/unauthorized,src/pages/UnauthorizedPage.tsx,Unauthorized access page,Page
+DRAWER,BusinessRequestDrawer,src/components/business-requests/BusinessRequestDrawer.tsx,Full demand/business request detail drawer with tabs (Details Budget Risks Links Discussions Audit),Drawer
+DRAWER,EpicDrawer,src/components/items/epics/EpicDrawer.tsx,Epic detail drawer with Technical Score Budget Features tabs,Drawer
+DRAWER,ObjectiveDrawerV2,src/modules/okr-v2/components/ObjectiveDrawerV2.tsx,Objective detail drawer with Key Results Linked Work tabs,Drawer
+DRAWER,ObjectiveAnalyticsDrawer,src/modules/okr-v2/components/ObjectiveAnalyticsDrawer/,Objective analytics with performance metrics,Drawer
+DRAWER,KeyResultAnalyticsDrawer,src/modules/okr-v2/components/KeyResultAnalyticsDrawer/,Key result analytics drawer,Drawer
+DRAWER,WorkItemAnalyticsDrawer,src/modules/okr-v2/components/WorkItemAnalyticsDrawer/,Work item analytics drawer,Drawer
+DRAWER,ThemeDetailsDrawer,src/components/strategic-backlog/ThemeDetailsDrawer.tsx,Strategic theme detail drawer,Drawer
+DRAWER,GoalDrawer,src/components/strategic-backlog/GoalDrawer.tsx,Strategic goal drawer,Drawer
+DRAWER,StrategicEpicDrawer,src/components/strategic-backlog/StrategicEpicDrawer.tsx,Strategic epic drawer,Drawer
+DRAWER,DependencyDetailsDrawer,src/components/dependencies/DependencyDetailsDrawer.tsx,Dependency detail drawer,Drawer
+DRAWER,RiskDrawer,src/components/risks/RiskDrawer.tsx,Risk detail drawer with RiskFormV2,Drawer
+DRAWER,EpicDetailsDrawer,src/modules/epic-balancing/components/EpicDetailsDrawer.tsx,Epic balancing detail drawer,Drawer
+DRAWER,FeatureDetailsPanel,src/components/backlog/FeatureDetailsPanel.tsx,Feature detail panel,Drawer
+DRAWER,PyramidDrilldownDrawer,src/components/strategy/PyramidDrilldownDrawer.tsx,Strategy pyramid drill-down,Drawer
+DRAWER,ManageQuartersDrawer,src/components/strategy/snapshots/ManageQuartersDrawer.tsx,Quarter management drawer,Drawer
+DRAWER,StrategyRoomFiltersDrawer,src/components/strategy/StrategyRoomFiltersDrawer.tsx,Strategy room filters,Drawer
+DRAWER,CanonicalDrawerShell,src/components/shared/CanonicalDrawerShell.tsx,Reusable drawer shell pattern,Drawer
+DRAWER,FilterDrawer,src/modules/project-work-hub/components/FilterDrawer.tsx,Work hub filter drawer,Drawer
+TABLE/LIST,ExecutiveTable,src/components/business-requests/ExecutiveTable.tsx,Main demand list table with sorting filtering,Table
+TABLE/LIST,EpicBacklogTable,src/components/backlog/EpicBacklogTable.tsx,Epic backlog table with drag-drop,Table
+TABLE/LIST,FeaturesTable,src/components/backlog/FeaturesTable.tsx,Features backlog table,Table
+TABLE/LIST,DependenciesTable,src/components/dependencies/DependenciesTable.tsx,Dependencies list view,Table
+TABLE/LIST,RisksGrid,src/pages/risks/RisksGridPage.tsx,Risks list with ROAM categorization,Table
+TABLE/LIST,OkrTree,src/components/strategy/OkrTree.tsx,OKR hierarchy tree (Objective → KR → Work Item),Table
+TABLE/LIST,StrategyTree,src/modules/okr-v2/components/StrategyCockpit/StrategyTree.tsx,Strategy tree in OKR Hub v2,Table
+TABLE/LIST,ThemesTable,src/components/strategic-backlog/ThemesTable.tsx,Strategic themes list,Table
+TABLE/LIST,AllWorkTicketList,src/modules/work-hub/components/AllWorkTicketList.tsx,Project work hub ticket list,Table
+TABLE/LIST,ListView,src/modules/capacity-planning/components/ListView.tsx,Capacity planning list view,Table
+TABLE/LIST,IncidentsList,src/pages/release/IncidentsList.tsx,Release incidents list,Table
+TABLE/LIST,VersionsList,src/pages/release/VersionsList.tsx,Release versions list,Table
+KANBAN,BusinessRequestsKanbanView,src/modules/kanban/components/BusinessRequestsKanbanView.tsx,Demand Kanban board,Kanban
+KANBAN,KanbanBoardView,src/pages/KanbanBoardView.tsx,Generic Kanban board view,Kanban
+KANBAN,EpicKanbanView,src/components/backlog/EpicKanbanView.tsx,Epic Kanban view,Kanban
+KANBAN,FeatureKanbanView,src/components/backlog/FeatureKanbanView.tsx,Feature Kanban view,Kanban
+KANBAN,ProgramBoardNew,src/pages/ProgramBoardNew.tsx,PI planning program board,Kanban
+DASHBOARD/WIDGET,MissionVisionValuesCard,src/components/strategy/MissionVisionValuesCard.tsx,Mission/Vision/Values editable cards,Widget
+DASHBOARD/WIDGET,ExecutionAgainstOutcomesWidget,src/components/strategy/ExecutionAgainstOutcomesWidget.tsx,Execution vs outcomes widget,Widget
+DASHBOARD/WIDGET,StrategicGoalsWidget,src/components/strategy/StrategicGoalsWidget.tsx,Strategic goals summary,Widget
+DASHBOARD/WIDGET,MisalignedWorkItems,src/components/strategy/MisalignedWorkItems.tsx,Misaligned items list,Widget
+DASHBOARD/WIDGET,SnapshotProgress,src/components/strategy/SnapshotProgress.tsx,Snapshot progress bars,Widget
+DASHBOARD/WIDGET,StrategyPyramid,src/components/strategy/StrategyPyramid.tsx,Strategy pyramid visualization,Widget
+DASHBOARD/WIDGET,DemandSummaryStats,src/components/business-requests/DemandSummaryStats.tsx,Demand dashboard stats,Widget
+LAYOUT,CatalystShell,src/components/layout/CatalystShell.tsx,Main app shell with nav + sidebar,Layout
+LAYOUT,GlobalPageHeader,src/components/layout/GlobalPageHeader.tsx,Unified page header with breadcrumbs,Layout
+LAYOUT,PageShell,src/components/shared/PageShell.tsx,Page container with consistent spacing,Layout
+LAYOUT,AdminLayout,src/pages/admin/AdminLayout.tsx,Admin section layout wrapper,Layout
+LAYOUT,WorkHubLayout,src/modules/work-hub/WorkHubLayout.tsx,Work hub layout wrapper,Layout
