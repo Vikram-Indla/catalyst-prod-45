@@ -1,6 +1,6 @@
 /**
  * Strategic Backlog - Epics Section
- * Displays epics linked to themes in this snapshot
+ * Enterprise-grade table for epics alignment
  */
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -8,8 +8,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Search, Boxes, ChevronRight, Palette } from 'lucide-react';
+import { Search, ChevronRight, Link as LinkIcon } from 'lucide-react';
 import { EpicDetailsPanel } from '@/components/epic-backlog/EpicDetailsPanel';
+import { StrategicBacklogEmptyState } from './StrategicBacklogEmptyState';
 import { format } from 'date-fns';
 import type { StrategicTheme, SnapshotStrategyLinks } from '@/types/strategicBacklog';
 import { cn } from '@/lib/utils';
@@ -56,7 +57,6 @@ export function StrategicBacklogEpicsSection({ snapshotId, themes, links, isArch
     return map;
   }, [themes]);
 
-  // Fetch epics linked to themes in this snapshot
   const { data: epics = [], isLoading } = useQuery({
     queryKey: ['snapshot-epics', snapshotId, themeIds],
     queryFn: async () => {
@@ -72,7 +72,6 @@ export function StrategicBacklogEpicsSection({ snapshotId, themes, links, isArch
     enabled: themeIds.length > 0,
   });
 
-  // Fetch unaligned epics (no theme)
   const { data: unalignedEpics = [] } = useQuery({
     queryKey: ['unaligned-epics'],
     queryFn: async () => {
@@ -86,7 +85,6 @@ export function StrategicBacklogEpicsSection({ snapshotId, themes, links, isArch
     },
   });
 
-  // Combine and filter
   const allEpics = useMemo(() => {
     if (showUnalignedOnly) return unalignedEpics;
     return epics;
@@ -163,13 +161,27 @@ export function StrategicBacklogEpicsSection({ snapshotId, themes, links, isArch
     );
   };
 
+  // Empty states
   if (themes.length === 0) {
     return (
-      <div className="text-center py-16 border border-dashed border-border rounded-lg bg-surface">
-        <Palette className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />
-        <p className="text-sm text-muted-foreground mb-2">No themes in this snapshot yet.</p>
-        <p className="text-xs text-muted-foreground">Create or link themes first to manage epics.</p>
-      </div>
+      <StrategicBacklogEmptyState
+        type="epic"
+        hasSnapshot={!!snapshotId}
+        hasThemes={false}
+        isArchived={isArchived}
+      />
+    );
+  }
+
+  if (epics.length === 0 && unalignedEpics.length === 0 && !searchQuery && !isLoading) {
+    return (
+      <StrategicBacklogEmptyState
+        type="epic"
+        hasSnapshot={!!snapshotId}
+        hasThemes={true}
+        isArchived={isArchived}
+        onLink={() => {/* TODO: Open link epic dialog */}}
+      />
     );
   }
 
@@ -183,7 +195,7 @@ export function StrategicBacklogEpicsSection({ snapshotId, themes, links, isArch
             placeholder="Search epics..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 h-9 w-64"
+            className="pl-9 h-9"
           />
         </div>
 
@@ -192,57 +204,63 @@ export function StrategicBacklogEpicsSection({ snapshotId, themes, links, isArch
           variant={showUnalignedOnly ? 'default' : 'outline'}
           size="sm"
           onClick={() => setShowUnalignedOnly(!showUnalignedOnly)}
-          className={showUnalignedOnly ? 'bg-brand-gold hover:bg-brand-gold-hover text-white' : ''}
+          className={cn(
+            showUnalignedOnly && 'bg-amber-500 hover:bg-amber-600 text-white border-amber-500'
+          )}
         >
           Unaligned ({unalignedEpics.length})
         </Button>
+
+        {!isArchived && unalignedEpics.length > 0 && (
+          <Button variant="outline" size="sm">
+            <LinkIcon className="h-3.5 w-3.5 mr-1.5" />
+            Link to theme
+          </Button>
+        )}
       </div>
 
       {/* Table */}
       {isLoading ? (
         <div className="text-center py-12 text-muted-foreground">Loading epics...</div>
       ) : filteredEpics.length === 0 ? (
-        <div className="text-center py-16 border border-dashed border-border rounded-lg bg-surface">
-          <Boxes className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />
-          <p className="text-sm text-muted-foreground">
-            {searchQuery 
-              ? 'No epics match your search.' 
-              : showUnalignedOnly 
-                ? 'No unaligned epics found.'
-                : 'No epics linked to themes in this snapshot.'}
-          </p>
+        <div className="text-center py-12 text-muted-foreground">
+          {searchQuery 
+            ? 'No epics match your search.' 
+            : showUnalignedOnly 
+              ? 'No unaligned epics found.'
+              : 'No epics linked to themes in this snapshot.'}
         </div>
       ) : (
         <div className="border border-border rounded-lg overflow-hidden bg-surface">
           <table className="w-full">
             <thead>
-              <tr className="bg-muted/30 border-b border-border">
+              <tr className="bg-brand-gold/5 border-b border-border">
                 <th
-                  className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider w-24 cursor-pointer hover:bg-muted/50"
+                  className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider w-24 cursor-pointer hover:bg-brand-gold/10 transition-colors"
                   onClick={() => handleSort('key')}
                 >
                   Key <SortIndicator column="key" />
                 </th>
                 <th
-                  className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/50"
+                  className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-brand-gold/10 transition-colors"
                   onClick={() => handleSort('name')}
                 >
                   Epic <SortIndicator column="name" />
                 </th>
                 <th
-                  className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider w-40 cursor-pointer hover:bg-muted/50"
+                  className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider w-40 cursor-pointer hover:bg-brand-gold/10 transition-colors"
                   onClick={() => handleSort('theme')}
                 >
                   Theme <SortIndicator column="theme" />
                 </th>
                 <th
-                  className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider w-28 cursor-pointer hover:bg-muted/50"
+                  className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider w-28 cursor-pointer hover:bg-brand-gold/10 transition-colors"
                   onClick={() => handleSort('status')}
                 >
                   Status <SortIndicator column="status" />
                 </th>
                 <th
-                  className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider w-28 cursor-pointer hover:bg-muted/50"
+                  className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider w-28 cursor-pointer hover:bg-brand-gold/10 transition-colors"
                   onClick={() => handleSort('updated')}
                 >
                   Updated <SortIndicator column="updated" />
@@ -255,7 +273,7 @@ export function StrategicBacklogEpicsSection({ snapshotId, themes, links, isArch
                 <tr
                   key={epic.id}
                   onClick={() => setSelectedEpicId(epic.id)}
-                  className="cursor-pointer hover:bg-muted/30 transition-colors"
+                  className="cursor-pointer hover:bg-[rgba(92,124,92,0.06)] transition-colors"
                 >
                   <td className="px-4 py-3">
                     <span className="font-mono text-sm text-brand-gold">{epic.epic_key || '—'}</span>
@@ -263,9 +281,15 @@ export function StrategicBacklogEpicsSection({ snapshotId, themes, links, isArch
                   <td className="px-4 py-3">
                     <span className="font-medium text-foreground">{epic.name}</span>
                   </td>
-                  <td className="px-4 py-3 text-sm text-muted-foreground">
-                    {epic.theme_id ? themeLookup[epic.theme_id] || '—' : (
-                      <span className="text-amber-600 dark:text-amber-400">Unaligned</span>
+                  <td className="px-4 py-3 text-sm">
+                    {epic.theme_id ? (
+                      <span className="text-muted-foreground truncate block max-w-[150px]">
+                        {themeLookup[epic.theme_id] || '—'}
+                      </span>
+                    ) : (
+                      <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800/50">
+                        Unaligned
+                      </Badge>
                     )}
                   </td>
                   <td className="px-4 py-3">

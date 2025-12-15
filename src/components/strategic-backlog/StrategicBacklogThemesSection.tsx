@@ -1,18 +1,16 @@
 /**
  * Strategic Backlog - Themes Section
  * Enterprise-grade table for themes management
- * Columns: Theme Name, Status, Objectives, Updated
- * NO Color column per architecture directive
  */
-import { useState, useMemo, useCallback } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Plus, Search, Link as LinkIcon, Target, ChevronRight, AlertTriangle } from 'lucide-react';
+import { Plus, Search, Link as LinkIcon, Target, ChevronRight } from 'lucide-react';
 import { ThemeDetailsDrawer } from '@/components/backlog/ThemeDetailsDrawer';
 import { CreateThemeDialog } from './CreateThemeDialog';
 import { LinkExistingThemesDialog } from './LinkExistingThemesDialog';
+import { StrategicBacklogEmptyState } from './StrategicBacklogEmptyState';
 import { useThemesObjectiveCounts } from '@/hooks/useThemeObjectiveLinks';
 import { format } from 'date-fns';
 import type { StrategicTheme } from '@/types/strategicBacklog';
@@ -24,7 +22,6 @@ interface ThemesSectionProps {
   isArchived: boolean;
 }
 
-// Strategic state labels (maps DB values to clean labels)
 const STATUS_LABELS: Record<string, { label: string; variant: 'default' | 'secondary' | 'outline' }> = {
   'proposed': { label: 'Draft', variant: 'secondary' },
   'active': { label: 'Active', variant: 'default' },
@@ -42,7 +39,6 @@ export function StrategicBacklogThemesSection({ themes, snapshotId, isArchived }
 
   const { data: objectiveCounts = {} } = useThemesObjectiveCounts(themes.map(t => t.id));
 
-  // Filter themes
   const filteredThemes = useMemo(() => {
     let result = themes;
     
@@ -54,7 +50,6 @@ export function StrategicBacklogThemesSection({ themes, snapshotId, isArchived }
       );
     }
 
-    // Sort
     result = [...result].sort((a, b) => {
       let aVal: any, bVal: any;
       
@@ -110,30 +105,35 @@ export function StrategicBacklogThemesSection({ themes, snapshotId, isArchived }
     return <span className="text-brand-gold ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>;
   };
 
+  // Empty state
+  if (themes.length === 0 && !searchQuery) {
+    return (
+      <>
+        <StrategicBacklogEmptyState
+          type="theme"
+          hasSnapshot={!!snapshotId}
+          hasThemes={true}
+          isArchived={isArchived}
+          onCreate={() => setCreateOpen(true)}
+          onLink={() => setLinkOpen(true)}
+        />
+        <CreateThemeDialog
+          open={createOpen}
+          onOpenChange={setCreateOpen}
+          snapshotId={snapshotId}
+        />
+        <LinkExistingThemesDialog
+          open={linkOpen}
+          onOpenChange={setLinkOpen}
+          snapshotId={snapshotId}
+          existingThemeIds={[]}
+        />
+      </>
+    );
+  }
+
   return (
     <div className="space-y-4">
-      {/* Warning when no themes */}
-      {themes.length === 0 && !isArchived && (
-        <div className="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/30 rounded-lg">
-          <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-500 flex-shrink-0 mt-0.5" />
-          <div className="flex-1">
-            <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
-              This snapshot cannot be activated until at least 1 Theme is linked.
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <Button size="sm" variant="outline" onClick={() => setLinkOpen(true)}>
-              <LinkIcon className="h-3.5 w-3.5 mr-1" />
-              Link existing
-            </Button>
-            <Button size="sm" onClick={() => setCreateOpen(true)} className="bg-brand-gold hover:bg-brand-gold-hover text-white">
-              <Plus className="h-3.5 w-3.5 mr-1" />
-              Create Theme
-            </Button>
-          </div>
-        </div>
-      )}
-
       {/* Toolbar */}
       <div className="flex items-center justify-between gap-4">
         <div className="relative flex-1 max-w-xs">
@@ -149,11 +149,12 @@ export function StrategicBacklogThemesSection({ themes, snapshotId, isArchived }
         {!isArchived && (
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={() => setLinkOpen(true)}>
-              <LinkIcon className="h-3.5 w-3.5 mr-1" />
+              <LinkIcon className="h-3.5 w-3.5 mr-1.5" />
               Link existing
             </Button>
             <Button size="sm" onClick={() => setCreateOpen(true)} className="bg-brand-gold hover:bg-brand-gold-hover text-white">
-              <Plus className="h-3.5 w-3.5" />
+              <Plus className="h-3.5 w-3.5 mr-1.5" />
+              Create
             </Button>
           </div>
         )}
@@ -161,49 +162,34 @@ export function StrategicBacklogThemesSection({ themes, snapshotId, isArchived }
 
       {/* Table */}
       {filteredThemes.length === 0 ? (
-        <div className="text-center py-16 border border-dashed border-border rounded-lg bg-surface">
-          <Target className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />
-          <p className="text-sm text-muted-foreground mb-4">
-            {searchQuery ? 'No themes match your search.' : 'No themes in this snapshot yet.'}
-          </p>
-          {!isArchived && !searchQuery && (
-            <div className="flex justify-center gap-2">
-              <Button onClick={() => setLinkOpen(true)} variant="outline" size="sm">
-                <LinkIcon className="h-3.5 w-3.5 mr-1" />
-                Link existing theme
-              </Button>
-              <Button onClick={() => setCreateOpen(true)} size="sm" className="bg-brand-gold hover:bg-brand-gold-hover text-white">
-                <Plus className="h-3.5 w-3.5 mr-1" />
-                Create theme
-              </Button>
-            </div>
-          )}
+        <div className="text-center py-12 text-muted-foreground">
+          No themes match your search.
         </div>
       ) : (
         <div className="border border-border rounded-lg overflow-hidden bg-surface">
           <table className="w-full">
             <thead>
-              <tr className="bg-muted/30 border-b border-border">
+              <tr className="bg-brand-gold/5 border-b border-border">
                 <th 
-                  className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/50"
+                  className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-brand-gold/10 transition-colors"
                   onClick={() => handleSort('name')}
                 >
                   Theme <SortIndicator column="name" />
                 </th>
                 <th 
-                  className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider w-28 cursor-pointer hover:bg-muted/50"
+                  className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider w-28 cursor-pointer hover:bg-brand-gold/10 transition-colors"
                   onClick={() => handleSort('status')}
                 >
-                  Status <SortIndicator column="status" />
+                  State <SortIndicator column="status" />
                 </th>
                 <th 
-                  className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider w-28 cursor-pointer hover:bg-muted/50"
+                  className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider w-32 cursor-pointer hover:bg-brand-gold/10 transition-colors"
                   onClick={() => handleSort('objectives')}
                 >
                   Objectives <SortIndicator column="objectives" />
                 </th>
                 <th 
-                  className="text-left px-4 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider w-32 cursor-pointer hover:bg-muted/50"
+                  className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider w-32 cursor-pointer hover:bg-brand-gold/10 transition-colors"
                   onClick={() => handleSort('updated')}
                 >
                   Updated <SortIndicator column="updated" />
@@ -216,7 +202,7 @@ export function StrategicBacklogThemesSection({ themes, snapshotId, isArchived }
                 <tr
                   key={theme.id}
                   onClick={() => setSelectedTheme(theme)}
-                  className="cursor-pointer hover:bg-muted/30 transition-colors"
+                  className="cursor-pointer hover:bg-[rgba(92,124,92,0.06)] transition-colors"
                 >
                   <td className="px-4 py-3">
                     <span className="font-medium text-foreground">{theme.name}</span>
@@ -225,7 +211,7 @@ export function StrategicBacklogThemesSection({ themes, snapshotId, isArchived }
                     {getStatusBadge(theme.status)}
                   </td>
                   <td className="px-4 py-3">
-                    <Badge variant="outline" className="gap-1 text-xs">
+                    <Badge variant="outline" className="gap-1 text-xs font-medium">
                       <Target className="h-3 w-3" />
                       {objectiveCounts[theme.id] || 0}
                     </Badge>
@@ -243,21 +229,17 @@ export function StrategicBacklogThemesSection({ themes, snapshotId, isArchived }
         </div>
       )}
 
-      {/* Theme Details Drawer */}
+      {/* Dialogs */}
       <ThemeDetailsDrawer
         theme={selectedTheme}
         isOpen={!!selectedTheme}
         onClose={() => setSelectedTheme(null)}
       />
-
-      {/* Create Dialog */}
       <CreateThemeDialog
         open={createOpen}
         onOpenChange={setCreateOpen}
         snapshotId={snapshotId}
       />
-
-      {/* Link Existing Dialog */}
       <LinkExistingThemesDialog
         open={linkOpen}
         onOpenChange={setLinkOpen}
