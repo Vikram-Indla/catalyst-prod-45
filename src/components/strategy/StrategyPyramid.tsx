@@ -112,27 +112,27 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
       <Card 
         className="rounded-lg shadow-sm"
         style={{ 
-          borderLeft: '3px solid var(--accent-color)',
+          borderLeft: '2px solid var(--accent-color)',
           backgroundColor: 'var(--surface-1)',
         }}
       >
-        <CardHeader className="py-3 px-4" style={{ backgroundColor: 'var(--surface-2)', borderRadius: '8px 8px 0 0' }}>
+        <CardHeader className="py-2.5 px-3" style={{ backgroundColor: 'var(--surface-2)', borderRadius: '8px 8px 0 0' }}>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-sm font-semibold" style={{ color: 'var(--text-1)' }}>
+            <CardTitle className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
               Strategy Pyramid
             </CardTitle>
-            <span className="text-[11px]" style={{ color: 'var(--text-3)' }}>
-              Click layers to drill down
+            <span className="text-[10px]" style={{ color: 'var(--text-3)' }}>
+              Click to drill down
             </span>
           </div>
         </CardHeader>
-        <CardContent className="pt-0 px-4 pb-4">
-          <div className="flex gap-6">
-            {/* SVG Pyramid */}
-            <div className="flex-1" style={{ maxWidth: '600px' }}>
-              <div className="relative w-full" style={{ paddingBottom: '55%' }}>
+        <CardContent className="pt-0 px-3 pb-3">
+          <div className="flex gap-4">
+            {/* SVG Pyramid - more compact */}
+            <div className="flex-1" style={{ maxWidth: '400px' }}>
+              <div className="relative w-full" style={{ paddingBottom: '50%' }}>
                 <svg 
-                  viewBox="0 0 800 420" 
+                  viewBox="0 0 800 400" 
                   className="absolute inset-0 w-full h-full" 
                   preserveAspectRatio="xMidYMid meet"
                 >
@@ -143,7 +143,6 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
                     
                     return (
                       <g key={layer.key}>
-                        {/* Layer shape */}
                         <path
                           d={index === 0
                             ? `M ${centerX} ${layer.y1} L ${bottom.left} ${layer.y2} L ${bottom.right} ${layer.y2} Z`
@@ -155,24 +154,22 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
                           className="cursor-pointer hover:opacity-90 transition-opacity"
                           onClick={() => handleLayerClick(layer.label)}
                         />
-                        {/* Count */}
                         <text 
                           x={centerX} 
-                          y={centerY - 5} 
+                          y={centerY - 2} 
                           fill="white" 
-                          fontSize="22" 
+                          fontSize="18" 
                           fontWeight="700"
                           textAnchor="middle"
                           className="pointer-events-none"
                         >
                           {isLoading ? '...' : layer.count}
                         </text>
-                        {/* Label */}
                         <text
                           x={centerX}
-                          y={centerY + 18}
+                          y={centerY + 14}
                           fill="white"
-                          fontSize="13"
+                          fontSize="11"
                           fontWeight="500"
                           textAnchor="middle"
                           className="pointer-events-none"
@@ -186,46 +183,25 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
               </div>
             </div>
 
-            {/* Legend with misaligned badges */}
-            <div className="w-48 space-y-2 py-2">
+            {/* Compact legend */}
+            <div className="w-36 space-y-1 py-1">
               {layers.map((layer) => {
                 const Icon = layer.icon;
                 return (
                   <button
                     key={layer.key}
                     onClick={() => handleLayerClick(layer.label)}
-                    className="w-full flex items-center justify-between p-2 rounded-md hover:bg-muted/50 transition-colors text-left"
+                    className="w-full flex items-center justify-between py-1.5 px-2 rounded transition-colors text-left"
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--surface-2)'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                   >
-                    <div className="flex items-center gap-2">
-                      <Icon className="h-4 w-4" style={{ color: layer.color }} />
-                      <span className="text-sm">{layer.label}</span>
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: layer.color }} />
+                      <span className="text-xs" style={{ color: 'var(--text-2)' }}>{layer.label}</span>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Badge variant="outline" className="text-xs h-5">
-                        {isLoading ? '...' : layer.count}
-                      </Badge>
-                      {layer.misaligned > 0 && (
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Badge 
-                                variant="outline" 
-                                className="text-[10px] h-5 border-amber-300 text-amber-700 bg-amber-50 cursor-pointer"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setDrilldownLayer(`${layer.label} (Misaligned)`);
-                                }}
-                              >
-                                {layer.misaligned}
-                              </Badge>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="text-xs">{layer.misaligned} misaligned items</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      )}
-                    </div>
+                    <span className="text-xs font-semibold" style={{ color: 'var(--accent-color)' }}>
+                      {isLoading ? '...' : layer.count}
+                    </span>
                   </button>
                 );
               })}
@@ -234,7 +210,6 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
         </CardContent>
       </Card>
 
-      {/* Drilldown Drawer */}
       <PyramidDrilldownDrawer
         open={!!drilldownLayer}
         onClose={() => setDrilldownLayer(null)}

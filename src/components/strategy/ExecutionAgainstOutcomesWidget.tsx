@@ -99,188 +99,99 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
       <Card 
         className="h-full rounded-lg shadow-sm" 
         style={{ 
-          borderLeft: '3px solid var(--accent-color)',
+          borderLeft: '2px solid var(--accent-color)',
           backgroundColor: 'var(--surface-1)',
         }}
       >
-        <CardHeader className="py-3 px-4" style={{ backgroundColor: 'var(--surface-2)', borderRadius: '8px 8px 0 0' }}>
+        <CardHeader className="py-2.5 px-3" style={{ backgroundColor: 'var(--surface-2)', borderRadius: '8px 8px 0 0' }}>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2" style={{ color: 'var(--text-1)' }}>
-              Execution Against Outcomes
+            <CardTitle className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
+              Execution
             </CardTitle>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Info className="h-3.5 w-3.5 cursor-help" style={{ color: 'var(--text-3)' }} />
-                </TooltipTrigger>
-                <TooltipContent side="left" className="max-w-xs">
-                  <p className="text-xs">
-                    Shows execution metrics for Objectives and strategic theme progress based on linked objectives' overall progress.
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-          {/* Legend - compact */}
-          <div className="flex items-center gap-3 mt-1.5 text-[11px]" style={{ color: 'var(--text-3)' }}>
-            <div className="flex items-center gap-1">
-              <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
-              <span>≤39%</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-              <span>40-69%</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-              <span>≥70%</span>
+            <div className="flex items-center gap-2 text-[10px]" style={{ color: 'var(--text-3)' }}>
+              <div className="flex items-center gap-0.5">
+                <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
+                <span>≤39</span>
+              </div>
+              <div className="flex items-center gap-0.5">
+                <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                <span>40-69</span>
+              </div>
+              <div className="flex items-center gap-0.5">
+                <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                <span>≥70</span>
+              </div>
             </div>
           </div>
         </CardHeader>
-        <CardContent className="pt-0 px-4 pb-4">
+        <CardContent className="px-3 py-2">
           {isLoading ? (
-            <div className="space-y-3">
-              {[1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} className="h-12 w-full" />
+            <div className="space-y-2">
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} className="h-8 w-full" />
               ))}
             </div>
           ) : !okrMetrics || !snapshotId ? (
-            <div className="text-center py-8 text-sm text-muted-foreground">
-              <AlertCircle className="h-8 w-8 mx-auto mb-2 text-muted-foreground/50" />
-              Select a snapshot to view execution metrics
+            <div className="text-center py-4 text-xs" style={{ color: 'var(--text-3)' }}>
+              Select a snapshot to view metrics
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-1">
               {/* Strategic Objectives Row */}
-              <div className="space-y-2">
-                  <button
-                    onClick={() => setSelectedLevel({
-                      level: 'objectives',
-                      levelLabel: 'Strategic Objectives',
-                      alignedAccepted: acceptedCount,
-                      alignedTotal: okrMetrics.count,
-                      percentage: okrMetrics.avgProgress,
-                      color: objectivesColor,
-                    })}
-                    className="w-full flex items-center justify-between p-3 rounded-lg border border-border hover:border-brand-gold/50 hover:bg-muted/30 transition-colors text-left focus:outline-none focus:ring-0"
+              <button
+                onClick={() => setSelectedLevel({
+                  level: 'objectives',
+                  levelLabel: 'Strategic Objectives',
+                  alignedAccepted: acceptedCount,
+                  alignedTotal: okrMetrics.count,
+                  percentage: okrMetrics.avgProgress,
+                  color: objectivesColor,
+                })}
+                className="w-full flex items-center justify-between py-1.5 rounded transition-colors text-left focus:outline-none"
+                style={{ borderBottom: '1px solid var(--divider)' }}
+              >
+                <div className="flex items-center gap-2 flex-1 min-w-0">
+                  <div className={`w-2 h-2 rounded-full flex-shrink-0 ${getColorClass(objectivesColor)}`} />
+                  <span className="text-xs font-medium truncate" style={{ color: 'var(--text-1)' }}>Objectives</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className={`text-xs font-bold ${getColorText(objectivesColor)}`}>
+                    {okrMetrics.avgProgress}%
+                  </span>
+                  <span className="text-[10px]" style={{ color: 'var(--text-3)' }}>
+                    {acceptedCount}/{okrMetrics.count}
+                  </span>
+                  <ChevronRight className="h-3 w-3" style={{ color: 'var(--text-3)' }} />
+                </div>
+              </button>
+
+              {/* Strategic Themes */}
+              {themes.slice(0, 3).map((theme) => {
+                const color = theme.objectives.length === 0 ? 'na' : getThresholdColor(theme.avgProgress);
+                return (
+                  <div
+                    key={theme.themeId}
+                    className="flex items-center justify-between py-1.5"
+                    style={{ borderBottom: '1px solid var(--divider)' }}
                   >
-                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <div className={`w-3 h-3 rounded-full flex-shrink-0 ${getColorClass(objectivesColor)}`} />
-                    <span className="text-sm font-medium truncate">Strategic Objectives</span>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    {objectivesColor === 'na' ? (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Badge variant="outline" className="text-xs">N/A</Badge>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="text-xs">No objectives linked to this snapshot's themes</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    ) : (
-                      <span className={`text-sm font-bold ${getColorText(objectivesColor)}`}>
-                        {okrMetrics.avgProgress}%
-                      </span>
-                    )}
-
-                    <div className="w-16 h-2 bg-muted rounded-full overflow-hidden hidden sm:block">
-                      <div
-                        className={`h-full transition-all ${getColorClass(objectivesColor)}`}
-                        style={{ width: `${okrMetrics.avgProgress}%` }}
-                      />
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      <div className={`w-2 h-2 rounded-full flex-shrink-0 ${getColorClass(color)}`} />
+                      <span className="text-xs truncate" style={{ color: 'var(--text-2)' }}>{theme.themeName}</span>
                     </div>
-
-                    <Badge variant="outline" className="text-[10px] font-normal">
-                      {acceptedCount}/{okrMetrics.count}
-                    </Badge>
-
-                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                    <div className="flex items-center gap-2">
+                      <span className={`text-xs font-semibold ${getColorText(color)}`}>
+                        {theme.avgProgress}%
+                      </span>
+                      <span className="text-[10px]" style={{ color: 'var(--text-3)' }}>
+                        {theme.objectives.length}
+                      </span>
+                    </div>
                   </div>
-                </button>
-              </div>
-
-              {/* Strategic Themes Progress Section */}
-              {themes.length > 0 && (
-                <div className="space-y-2 pt-2 border-t border-border">
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-                    <Layers className="h-3.5 w-3.5" />
-                    <span className="font-medium">Strategic Themes (KR Progress)</span>
-                  </div>
-                  {themes.map((theme) => {
-                    const color = theme.objectives.length === 0 ? 'na' : getThresholdColor(theme.avgProgress);
-
-                    return (
-                      <div
-                        key={theme.themeId}
-                        className="flex items-center justify-between p-3 rounded-lg border border-border bg-card focus:outline-none focus:ring-0"
-                        tabIndex={-1}
-                      >
-                        <div className="flex items-center gap-3 flex-1 min-w-0">
-                          <div className={`w-3 h-3 rounded-full flex-shrink-0 ${getColorClass(color)}`} />
-                          <span className="text-sm font-medium truncate">{theme.themeName}</span>
-                        </div>
-
-                        <div className="flex items-center gap-3">
-                          {color === 'na' ? (
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Badge variant="outline" className="text-xs">N/S</Badge>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p className="text-xs">No objectives linked to this theme</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          ) : (
-                            <span className={`text-sm font-bold ${getColorText(color)}`}>
-                              {theme.avgProgress}%
-                            </span>
-                          )}
-
-                          <div className="w-16 h-2 bg-muted rounded-full overflow-hidden hidden sm:block">
-                            <div
-                              className={`h-full transition-all ${getColorClass(color)}`}
-                              style={{ width: `${theme.avgProgress}%` }}
-                            />
-                          </div>
-
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Badge variant="outline" className="text-[10px] font-normal">
-                                  {theme.objectives.length} obj
-                                </Badge>
-                              </TooltipTrigger>
-                              <TooltipContent side="left" className="max-w-xs">
-                                <p className="text-xs font-medium mb-1">Linked Objectives:</p>
-                                {theme.objectives.length === 0 ? (
-                                  <p className="text-xs text-muted-foreground">None linked</p>
-                                ) : (
-                                  <ul className="text-xs space-y-0.5">
-                                    {theme.objectives.slice(0, 5).map(obj => (
-                                      <li key={obj.id} className="truncate">
-                                        • {obj.name} ({obj.overall_progress}%)
-                                      </li>
-                                    ))}
-                                    {theme.objectives.length > 5 && (
-                                      <li className="text-muted-foreground">
-                                        +{theme.objectives.length - 5} more...
-                                      </li>
-                                    )}
-                                  </ul>
-                                )}
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        </div>
-                      </div>
-                    );
-                  })}
+                );
+              })}
+              {themes.length > 3 && (
+                <div className="text-center py-1">
+                  <span className="text-[10px]" style={{ color: 'var(--text-3)' }}>+{themes.length - 3} more themes</span>
                 </div>
               )}
             </div>
@@ -288,7 +199,6 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
         </CardContent>
       </Card>
 
-      {/* Drilldown Drawer */}
       <ExecutionDrilldownDrawer
         open={!!selectedLevel}
         onClose={() => setSelectedLevel(null)}

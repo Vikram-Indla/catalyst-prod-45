@@ -1,6 +1,4 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Info } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
@@ -47,36 +45,30 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
     queryFn: async (): Promise<ProgressData | null> => {
       if (!snapshotId) return null;
 
-      // Fetch themes tied to this snapshot
       const { data: themes } = await supabase
         .from('strategic_themes')
         .select('status')
         .eq('snapshot_id', snapshotId);
 
-      // Fetch epics (all active)
       const { data: epics } = await supabase
         .from('epics')
         .select('status, state')
         .is('deleted_at', null);
 
-      // Fetch features (all active)
       const { data: features } = await supabase
         .from('features')
         .select('status')
         .is('deleted_at', null);
 
-      // Fetch stories (all active)
       const { data: stories } = await supabase
         .from('stories')
         .select('status, state')
         .is('deleted_at', null);
 
-      // Fetch dependencies
       const { data: dependencies } = await supabase
         .from('dependencies')
         .select('status, delivered_at');
 
-      // Calculate status counts for each type
       const calcCounts = (items: { status?: string | null; state?: string | null }[] | null): StatusCounts => {
         const list = items || [];
         return {
@@ -103,142 +95,7 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
     enabled: !!snapshotId,
   });
 
-  // Donut chart component matching Jira Align style
-  const DonutDial = ({ 
-    label, 
-    data, 
-    onClick 
-  }: { 
-    label: string; 
-    data: StatusCounts; 
-    onClick?: () => void;
-  }) => {
-    const { total, notStarted, inProgress, completed } = data;
-    const completedPercent = total > 0 ? Math.round((completed / total) * 100) : 0;
-    
-    // Calculate segment percentages for the ring
-    const notStartedPct = total > 0 ? (notStarted / total) * 100 : 100;
-    const inProgressPct = total > 0 ? (inProgress / total) * 100 : 0;
-    const completedPct = total > 0 ? (completed / total) * 100 : 0;
-
-    // SVG parameters
-    const size = 100;
-    const strokeWidth = 8;
-    const radius = (size - strokeWidth) / 2;
-    const circumference = 2 * Math.PI * radius;
-
-    // Calculate stroke offsets for each segment
-    const completedOffset = 0;
-    const inProgressOffset = (completedPct / 100) * circumference;
-    const notStartedOffset = ((completedPct + inProgressPct) / 100) * circumference;
-
-    return (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div 
-              className="flex flex-col items-center cursor-pointer group"
-              onClick={onClick}
-            >
-              <span className="text-sm font-medium text-secondary-green mb-2 group-hover:text-foreground transition-colors">
-                {label}
-              </span>
-              <div className="relative" style={{ width: size, height: size }}>
-                <svg 
-                  width={size} 
-                  height={size} 
-                  className="transform -rotate-90"
-                >
-                  {/* Background ring (gray for empty/no data) */}
-                  <circle
-                    cx={size / 2}
-                    cy={size / 2}
-                    r={radius}
-                    fill="none"
-                    stroke="hsl(var(--muted))"
-                    strokeWidth={strokeWidth}
-                  />
-                  
-                  {total > 0 && (
-                    <>
-                      {/* Not Started segment (secondary-grey) */}
-                      {notStartedPct > 0 && (
-                        <circle
-                          cx={size / 2}
-                          cy={size / 2}
-                          r={radius}
-                          fill="none"
-                          stroke="hsl(var(--secondary-grey))"
-                          strokeWidth={strokeWidth}
-                          strokeDasharray={circumference}
-                          strokeDashoffset={circumference - (notStartedPct / 100) * circumference}
-                          style={{ transform: `rotate(${(completedPct + inProgressPct) * 3.6}deg)`, transformOrigin: 'center' }}
-                        />
-                      )}
-                      
-                      {/* In Progress segment (brand-gold) */}
-                      {inProgressPct > 0 && (
-                        <circle
-                          cx={size / 2}
-                          cy={size / 2}
-                          r={radius}
-                          fill="none"
-                          stroke="hsl(var(--brand-gold))"
-                          strokeWidth={strokeWidth}
-                          strokeDasharray={circumference}
-                          strokeDashoffset={circumference - (inProgressPct / 100) * circumference}
-                          style={{ transform: `rotate(${completedPct * 3.6}deg)`, transformOrigin: 'center' }}
-                        />
-                      )}
-                      
-                      {/* Completed segment (secondary-green) */}
-                      {completedPct > 0 && (
-                        <circle
-                          cx={size / 2}
-                          cy={size / 2}
-                          r={radius}
-                          fill="none"
-                          stroke="hsl(var(--secondary-green))"
-                          strokeWidth={strokeWidth}
-                          strokeDasharray={circumference}
-                          strokeDashoffset={circumference - (completedPct / 100) * circumference}
-                        />
-                      )}
-                    </>
-                  )}
-                </svg>
-                
-                {/* Center percentage */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-xl font-semibold text-muted-foreground">
-                    {completedPercent}%
-                  </span>
-                </div>
-              </div>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent side="bottom" className="text-xs">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-secondary-green" />
-                <span>Completed: {completed} ({completedPct.toFixed(0)}%)</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-brand-gold" />
-                <span>In Progress: {inProgress} ({inProgressPct.toFixed(0)}%)</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-secondary-grey" />
-                <span>Not Started: {notStarted} ({notStartedPct.toFixed(0)}%)</span>
-              </div>
-            </div>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    );
-  };
-
-  // Progress bar row matching Jira Align style
+  // Compact progress row
   const ProgressRow = ({ 
     label, 
     accepted, 
@@ -254,26 +111,28 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
     
     return (
       <div 
-        className="flex items-center gap-4 py-3 cursor-pointer hover:bg-muted/30 px-2 -mx-2 rounded transition-colors"
+        className="flex items-center gap-2 py-1.5 cursor-pointer rounded transition-colors"
         onClick={onClick}
+        style={{ borderBottom: '1px solid var(--divider)' }}
+        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--surface-2)'}
+        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
       >
-        <span className="text-sm text-secondary-green min-w-[100px] hover:text-foreground hover:underline">
+        <span className="text-xs min-w-[70px]" style={{ color: 'var(--text-2)' }}>
           {label}
         </span>
-        <span className="text-sm text-brand-gold min-w-[60px] text-right font-medium">
-          {accepted}/{total}
-        </span>
-        <div className="flex-1 h-2.5 bg-muted rounded-full overflow-hidden">
+        <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--surface-3)' }}>
           <div 
-            className="h-full bg-secondary-green rounded-full transition-all duration-300"
-            style={{ width: `${percent}%` }}
+            className="h-full rounded-full transition-all duration-300"
+            style={{ width: `${percent}%`, backgroundColor: 'hsl(var(--secondary-green))' }}
           />
         </div>
+        <span className="text-xs font-medium min-w-[36px] text-right" style={{ color: 'var(--accent-color)' }}>
+          {accepted}/{total}
+        </span>
       </div>
     );
   };
 
-  // Navigation handlers
   const handleThemesClick = () => navigate('/enterprise/strategic-backlog?tab=themes');
   const handleEpicsClick = () => navigate('/items/epics');
   const handleFeaturesClick = () => navigate('/items/features');
@@ -282,97 +141,30 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
 
   return (
     <Card 
-      className="rounded-lg shadow-sm"
+      className="rounded-lg shadow-sm h-full"
       style={{ 
-        borderLeft: '3px solid var(--accent-color)',
+        borderLeft: '2px solid var(--accent-color)',
         backgroundColor: 'var(--surface-1)',
       }}
     >
-      <CardHeader className="py-3 px-4" style={{ backgroundColor: 'var(--surface-2)', borderRadius: '8px 8px 0 0' }}>
-        <div className="flex items-center gap-2">
-          <CardTitle className="text-sm font-semibold" style={{ color: 'var(--text-1)' }}>
-            Snapshot Progress
-          </CardTitle>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Info className="h-3.5 w-3.5 cursor-help" style={{ color: 'var(--text-3)' }} />
-              </TooltipTrigger>
-              <TooltipContent side="right" className="max-w-xs">
-                <p className="text-xs">
-                  Shows progress of work items tied to the strategic snapshot. 
-                  Dials show completion status breakdown. 
-                  Click any item type to manage in its grid.
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
+      <CardHeader className="py-2.5 px-3" style={{ backgroundColor: 'var(--surface-2)', borderRadius: '8px 8px 0 0' }}>
+        <CardTitle className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>
+          Progress
+        </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-5 px-4 pb-4">
+      <CardContent className="px-3 py-2">
         {isLoading ? (
-          <div className="text-center py-12 text-sm text-muted-foreground">
-            Loading progress data...
-          </div>
+          <div className="py-4 text-center text-xs" style={{ color: 'var(--text-3)' }}>Loading...</div>
         ) : !progressData ? (
-          <div className="text-center py-12 text-sm text-muted-foreground">
-            Select a snapshot to view progress
-          </div>
+          <div className="py-4 text-center text-xs" style={{ color: 'var(--text-3)' }}>Select snapshot</div>
         ) : (
-          <>
-            {/* Four Donut Dials - Themes, Epics, Features (no Capabilities) */}
-            <div className="grid grid-cols-3 gap-4 justify-items-center pb-4 border-b">
-              <DonutDial 
-                label="Themes" 
-                data={progressData.themes} 
-                onClick={handleThemesClick}
-              />
-              <DonutDial 
-                label="Epics" 
-                data={progressData.epics} 
-                onClick={handleEpicsClick}
-              />
-              <DonutDial 
-                label="Features" 
-                data={progressData.features} 
-                onClick={handleFeaturesClick}
-              />
-            </div>
-
-            {/* Progress Bars - Themes, Epics, Features, Stories, Dependencies */}
-            <div className="space-y-1">
-              <ProgressRow 
-                label="Themes" 
-                accepted={progressData.themes.completed} 
-                total={progressData.themes.total}
-                onClick={handleThemesClick}
-              />
-              <ProgressRow 
-                label="Epics" 
-                accepted={progressData.epics.completed} 
-                total={progressData.epics.total}
-                onClick={handleEpicsClick}
-              />
-              <ProgressRow 
-                label="Features" 
-                accepted={progressData.features.completed} 
-                total={progressData.features.total}
-                onClick={handleFeaturesClick}
-              />
-              <ProgressRow 
-                label="Stories" 
-                accepted={progressData.stories.completed} 
-                total={progressData.stories.total}
-                onClick={handleStoriesClick}
-              />
-              <ProgressRow 
-                label="Dependencies" 
-                accepted={progressData.dependencies.resolved} 
-                total={progressData.dependencies.total}
-                onClick={handleDependenciesClick}
-              />
-            </div>
-          </>
+          <div className="space-y-0">
+            <ProgressRow label="Themes" accepted={progressData.themes.completed} total={progressData.themes.total} onClick={handleThemesClick} />
+            <ProgressRow label="Epics" accepted={progressData.epics.completed} total={progressData.epics.total} onClick={handleEpicsClick} />
+            <ProgressRow label="Features" accepted={progressData.features.completed} total={progressData.features.total} onClick={handleFeaturesClick} />
+            <ProgressRow label="Stories" accepted={progressData.stories.completed} total={progressData.stories.total} onClick={handleStoriesClick} />
+            <ProgressRow label="Dependencies" accepted={progressData.dependencies.resolved} total={progressData.dependencies.total} onClick={handleDependenciesClick} />
+          </div>
         )}
       </CardContent>
     </Card>
