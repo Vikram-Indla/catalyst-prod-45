@@ -134,20 +134,20 @@ export default function StrategyRoomPage() {
       />
 
       {/* Content Area */}
-      <div className="flex-1 overflow-auto px-6 py-5 min-w-0">
-        <div className="max-w-[1600px] mx-auto space-y-5">
+      <div className="flex-1 overflow-auto px-6 py-4 min-w-0">
+        <div className="max-w-[1600px] mx-auto space-y-4">
           {/* Mission/Vision/Values - 3-up equal height */}
           <MissionVisionValues snapshot={selectedSnapshot} onUpdate={refetchSnapshots} />
 
           {/* KPI Widgets - 4-column grid with equal heights */}
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
             <ExecutionAgainstOutcomesWidget snapshotId={effectiveSelectedSnapshotId} />
             <StrategicGoalsWidget snapshotId={effectiveSelectedSnapshotId} />
             <MisalignedWorkItems snapshotId={effectiveSelectedSnapshotId} />
             <SnapshotProgress snapshotId={effectiveSelectedSnapshotId} />
           </div>
 
-          {/* Strategy Stack (replaces pyramid) */}
+          {/* Strategy Stack (replaces pyramid) - the centerpiece */}
           <StrategyStack 
             onLayerClick={handlePyramidLayerClick} 
             snapshotId={effectiveSelectedSnapshotId}

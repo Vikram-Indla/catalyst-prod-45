@@ -131,9 +131,9 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
         <PremiumCardContent noPadding>
           {/* Table-like header row */}
           <div 
-            className="grid items-center px-4 py-2 text-xs font-semibold uppercase tracking-wide"
+            className="grid items-center px-4 py-2 text-[11px] font-semibold uppercase tracking-wider"
             style={{
-              gridTemplateColumns: '180px 70px 1fr 180px 24px',
+              gridTemplateColumns: '160px 64px 1fr 160px 28px',
               backgroundColor: 'var(--surface-2)',
               borderBottom: '1px solid var(--divider)',
               color: 'var(--text-2)',
@@ -146,7 +146,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
             <div></div>
           </div>
 
-          <div className="flex" style={{ minHeight: '220px' }}>
+          <div className="flex" style={{ minHeight: '200px' }}>
             {/* Left side: Stack list (70%) */}
             <div className="flex-[7] border-r" style={{ borderColor: 'var(--divider)' }}>
               {layerConfigs.map((layer, index) => {
@@ -159,23 +159,23 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                   <button
                     key={layer.key}
                     onClick={() => handleLayerSelect(layer.key)}
-                    className="w-full grid items-center px-4 py-2.5 transition-colors text-left group hover:bg-[var(--surface-2)]"
+                    className="w-full grid items-center px-4 py-2 transition-colors text-left group hover:bg-[var(--surface-2)]"
                     style={{ 
-                      gridTemplateColumns: '180px 70px 1fr 180px 24px',
+                      gridTemplateColumns: '160px 64px 1fr 160px 28px',
                       backgroundColor: isSelected ? 'var(--surface-2)' : 'transparent',
                       borderBottom: isLast ? 'none' : '1px solid var(--divider)',
                     }}
                   >
                     {/* Icon + Label */}
-                    <div className="flex items-center gap-2.5">
+                    <div className="flex items-center gap-2">
                       <div 
-                        className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0"
+                        className="w-6 h-6 rounded flex items-center justify-center flex-shrink-0"
                         style={{ backgroundColor: layer.bgColor }}
                       >
-                        <Icon className="w-3.5 h-3.5" style={{ color: layer.color }} />
+                        <Icon className="w-3 h-3" style={{ color: layer.color }} />
                       </div>
                       <span 
-                        className="text-sm font-medium"
+                        className="text-[14px] font-medium"
                         style={{ color: 'var(--text-1)' }}
                       >
                         {layer.label}
@@ -185,19 +185,19 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                     {/* Count pill */}
                     <div className="flex justify-center">
                       <div 
-                        className="px-2 py-0.5 rounded-full text-xs font-bold min-w-[32px] text-center"
+                        className="px-2 py-0.5 rounded text-[13px] font-bold min-w-[28px] text-center"
                         style={{ 
                           backgroundColor: layer.bgColor,
                           color: layer.color,
                         }}
                       >
-                        {isLoading || okrLoading ? '...' : data.count}
+                        {isLoading || okrLoading ? '–' : data.count}
                       </div>
                     </div>
 
                     {/* Progress bar + percent */}
                     <div className="flex items-center gap-2 px-2">
-                      <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--surface-3)' }}>
+                      <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--surface-3)' }}>
                         <div 
                           className="h-full rounded-full transition-all"
                           style={{ 
@@ -207,7 +207,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                         />
                       </div>
                       <span 
-                        className="text-xs font-semibold w-10 text-right"
+                        className="text-[13px] font-semibold w-10 text-right"
                         style={{ color: 'var(--text-1)' }}
                       >
                         {data.progress}%
@@ -215,32 +215,32 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                     </div>
 
                     {/* Aligned vs Misaligned as pills */}
-                    <div className="flex items-center justify-center gap-2">
+                    <div className="flex items-center justify-center gap-1.5">
                       <span 
-                        className="px-2 py-0.5 rounded text-xs font-medium"
+                        className="px-1.5 py-0.5 rounded text-[11px] font-semibold"
                         style={{ 
-                          backgroundColor: 'hsl(var(--secondary-green) / 0.1)',
+                          backgroundColor: 'hsl(var(--secondary-green) / 0.15)',
                           color: 'hsl(var(--secondary-green))',
                         }}
                       >
-                        {data.aligned} aligned
+                        {data.aligned}
                       </span>
                       <span 
-                        className="px-2 py-0.5 rounded text-xs font-medium"
+                        className="px-1.5 py-0.5 rounded text-[11px] font-semibold"
                         style={{ 
-                          backgroundColor: data.misaligned > 0 ? 'hsl(var(--destructive) / 0.1)' : 'var(--surface-3)',
-                          color: data.misaligned > 0 ? 'hsl(var(--destructive))' : 'var(--text-3)',
+                          backgroundColor: data.misaligned > 0 ? 'hsl(var(--destructive) / 0.15)' : 'var(--surface-3)',
+                          color: data.misaligned > 0 ? 'hsl(var(--destructive))' : 'var(--text-2)',
                         }}
                       >
-                        {data.misaligned} misaligned
+                        {data.misaligned}
                       </span>
                     </div>
 
                     {/* Drilldown chevron */}
                     <div className="flex justify-center">
                       <ChevronRight 
-                        className="w-4 h-4 opacity-40 group-hover:opacity-100 transition-opacity"
-                        style={{ color: 'var(--text-2)' }}
+                        className="w-4 h-4 opacity-30 group-hover:opacity-100 transition-opacity"
+                        style={{ color: 'var(--text-1)' }}
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDrilldown(layer.label);
@@ -255,113 +255,113 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
             {/* Right side: Selected layer details (30%) */}
             <div className="flex-[3] flex flex-col" style={{ backgroundColor: 'var(--surface-2)' }}>
               <div 
-                className="px-4 py-2.5 border-b flex items-center justify-between"
+                className="px-3 py-2 border-b flex items-center justify-between"
                 style={{ borderColor: 'var(--divider)' }}
               >
                 <div className="flex items-center gap-2">
                   <selectedConfig.icon 
-                    className="w-4 h-4" 
+                    className="w-3.5 h-3.5" 
                     style={{ color: selectedConfig.color }} 
                   />
                   <span 
-                    className="text-sm font-semibold"
+                    className="text-[13px] font-semibold"
                     style={{ color: 'var(--text-1)' }}
                   >
                     {selectedConfig.label}
                   </span>
                 </div>
                 <span 
-                  className="text-xs font-medium"
-                  style={{ color: 'var(--text-2)' }}
+                  className="text-[12px] font-medium"
+                  style={{ color: 'var(--text-1)' }}
                 >
-                  {selectedData.count} items
+                  {selectedData.count}
                 </span>
               </div>
 
-              <div className="flex-1 flex flex-col items-center justify-center p-4">
+              <div className="flex-1 flex flex-col items-center justify-center p-3">
                 {selectedData.count === 0 ? (
-                  <div className="text-center space-y-3">
+                  <div className="text-center space-y-2">
                     <div 
-                      className="w-10 h-10 rounded-full mx-auto flex items-center justify-center"
+                      className="w-8 h-8 rounded-full mx-auto flex items-center justify-center"
                       style={{ backgroundColor: selectedConfig.bgColor }}
                     >
                       <selectedConfig.icon 
-                        className="w-4 h-4" 
+                        className="w-3.5 h-3.5" 
                         style={{ color: selectedConfig.color }} 
                       />
                     </div>
                     <div>
                       <p 
-                        className="text-sm font-medium mb-1"
+                        className="text-[13px] font-medium"
                         style={{ color: 'var(--text-1)' }}
                       >
                         No {selectedConfig.label.toLowerCase()} yet
                       </p>
                       <p 
-                        className="text-xs"
-                        style={{ color: 'var(--text-3)' }}
+                        className="text-[12px] mt-0.5"
+                        style={{ color: 'var(--text-2)' }}
                       >
-                        Create one to start tracking alignment
+                        Create one to start tracking
                       </p>
                     </div>
-                    <div className="flex flex-col gap-2 pt-1">
+                    <div className="flex flex-col gap-1.5 pt-1">
                       <Button 
                         size="sm" 
-                        className="gap-1.5 w-full"
+                        className="gap-1 h-7 text-[12px]"
                         style={{ 
                           backgroundColor: 'hsl(var(--brand-gold))',
                           color: 'white',
                         }}
                       >
-                        <Plus className="w-3.5 h-3.5" />
+                        <Plus className="w-3 h-3" />
                         {getCreateLabel(selectedLayer)}
                       </Button>
                       {selectedLayer === 'objectives' && (
                         <Button 
                           variant="outline" 
                           size="sm" 
-                          className="gap-1.5 w-full"
+                          className="gap-1 h-7 text-[12px]"
                           onClick={handleOpenOKRHub}
                         >
-                          <ExternalLink className="w-3.5 h-3.5" />
+                          <ExternalLink className="w-3 h-3" />
                           Open OKR Hub
                         </Button>
                       )}
                     </div>
                   </div>
                 ) : (
-                  <div className="w-full space-y-3">
+                  <div className="w-full space-y-2">
                     {/* Summary stats */}
                     <div className="grid grid-cols-2 gap-2">
                       <div 
-                        className="p-3 rounded-lg text-center"
+                        className="p-2 rounded text-center"
                         style={{ backgroundColor: 'var(--card-bg)' }}
                       >
                         <div 
-                          className="text-xl font-bold"
+                          className="text-lg font-bold"
                           style={{ color: selectedConfig.color }}
                         >
                           {selectedData.aligned}
                         </div>
                         <div 
-                          className="text-xs font-medium"
+                          className="text-[11px] font-medium"
                           style={{ color: 'var(--text-2)' }}
                         >
                           Aligned
                         </div>
                       </div>
                       <div 
-                        className="p-3 rounded-lg text-center"
+                        className="p-2 rounded text-center"
                         style={{ backgroundColor: 'var(--card-bg)' }}
                       >
                         <div 
-                          className="text-xl font-bold"
+                          className="text-lg font-bold"
                           style={{ color: selectedData.misaligned > 0 ? 'hsl(var(--destructive))' : 'var(--text-2)' }}
                         >
                           {selectedData.misaligned}
                         </div>
                         <div 
-                          className="text-xs font-medium"
+                          className="text-[11px] font-medium"
                           style={{ color: 'var(--text-2)' }}
                         >
                           Misaligned
@@ -373,11 +373,11 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      className="w-full gap-1.5"
+                      className="w-full gap-1 h-7 text-[12px]"
                       onClick={() => handleDrilldown(selectedConfig.label)}
                     >
-                      View All {selectedConfig.label}
-                      <ChevronRight className="w-3.5 h-3.5" />
+                      View All
+                      <ChevronRight className="w-3 h-3" />
                     </Button>
                   </div>
                 )}
