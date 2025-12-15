@@ -1,14 +1,7 @@
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ChevronRight, Target, AlertCircle, Info, Layers } from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { ChevronRight } from "lucide-react";
+import { PremiumCard, PremiumCardHeader, PremiumCardContent } from '@/components/ui/premium-card';
 import { useOKRv2StrategyMetrics } from "@/hooks/useOKRv2StrategyMetrics";
 import { ExecutionDrilldownDrawer } from "./ExecutionDrilldownDrawer";
 import { getThresholdColor, type ExecutionMetrics } from "@/hooks/useExecutionMetrics";
@@ -40,13 +33,11 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
     }
   };
 
-  // Calculate color based on average progress
   const getObjectivesColor = (): 'red' | 'yellow' | 'green' | 'na' => {
     if (!okrMetrics || okrMetrics.count === 0) return 'na';
     return getThresholdColor(okrMetrics.avgProgress);
   };
 
-  // Calculate accepted objectives (completed/accepted status)
   const getAcceptedCount = () => {
     if (!okrMetrics) return 0;
     return okrMetrics.objectives.filter(obj => 
@@ -54,7 +45,6 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
     ).length;
   };
 
-  // Group objectives by theme for theme progress display
   const themeProgressData = () => {
     if (!okrMetrics) return [];
     
@@ -79,7 +69,6 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
       themeMap.get(obj.theme_id)!.objectives.push(obj);
     });
 
-    // Calculate average progress per theme
     themeMap.forEach(theme => {
       if (theme.objectives.length > 0) {
         const total = theme.objectives.reduce((sum, obj) => sum + obj.overall_progress, 0);
@@ -94,42 +83,28 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
   const objectivesColor = getObjectivesColor();
   const acceptedCount = getAcceptedCount();
 
+  const legendAction = (
+    <div className="flex items-center gap-2 text-[10px]" style={{ color: 'var(--text-3)' }}>
+      <div className="flex items-center gap-0.5">
+        <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
+        <span>≤39</span>
+      </div>
+      <div className="flex items-center gap-0.5">
+        <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+        <span>40-69</span>
+      </div>
+      <div className="flex items-center gap-0.5">
+        <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+        <span>≥70</span>
+      </div>
+    </div>
+  );
+
   return (
     <>
-      <Card 
-        className="rounded-lg shadow-sm border" 
-        style={{ 
-          borderColor: 'var(--divider)',
-          backgroundColor: 'var(--surface-1)',
-        }}
-      >
-        <CardHeader 
-          className="py-2 px-3 border-b" 
-          style={{ 
-            borderColor: 'var(--divider)',
-            backgroundColor: 'var(--surface-1)',
-          }}
-        >
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-xs font-semibold" style={{ color: 'var(--text-1)' }}>
-              Execution</CardTitle>
-            <div className="flex items-center gap-2 text-[10px]" style={{ color: 'var(--text-3)' }}>
-              <div className="flex items-center gap-0.5">
-                <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
-                <span>≤39</span>
-              </div>
-              <div className="flex items-center gap-0.5">
-                <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                <span>40-69</span>
-              </div>
-              <div className="flex items-center gap-0.5">
-                <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                <span>≥70</span>
-              </div>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="px-3 py-2">
+      <PremiumCard className="h-full flex flex-col">
+        <PremiumCardHeader title="Execution" action={legendAction} />
+        <PremiumCardContent className="flex-1">
           {isLoading ? (
             <div className="space-y-2">
               {[1, 2, 3].map((i) => (
@@ -137,12 +112,13 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
               ))}
             </div>
           ) : !okrMetrics || !snapshotId ? (
-            <div className="text-center py-4 text-xs" style={{ color: 'var(--text-3)' }}>
-              Select a snapshot to view metrics
+            <div className="flex items-center justify-center h-full min-h-[100px]">
+              <span className="text-xs" style={{ color: 'var(--text-3)' }}>
+                Select a snapshot to view metrics
+              </span>
             </div>
           ) : (
-            <div className="space-y-1">
-              {/* Strategic Objectives Row */}
+            <div className="space-y-0">
               <button
                 onClick={() => setSelectedLevel({
                   level: 'objectives',
@@ -152,7 +128,7 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
                   percentage: okrMetrics.avgProgress,
                   color: objectivesColor,
                 })}
-                className="w-full flex items-center justify-between py-1.5 rounded transition-colors text-left focus:outline-none"
+                className="w-full flex items-center justify-between py-2 rounded transition-colors text-left focus:outline-none hover:bg-[var(--surface-2)]"
                 style={{ borderBottom: '1px solid var(--divider)' }}
               >
                 <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -170,13 +146,12 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
                 </div>
               </button>
 
-              {/* Strategic Themes */}
               {themes.slice(0, 3).map((theme) => {
                 const color = theme.objectives.length === 0 ? 'na' : getThresholdColor(theme.avgProgress);
                 return (
                   <div
                     key={theme.themeId}
-                    className="flex items-center justify-between py-1.5"
+                    className="flex items-center justify-between py-2"
                     style={{ borderBottom: '1px solid var(--divider)' }}
                   >
                     <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -195,14 +170,14 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
                 );
               })}
               {themes.length > 3 && (
-                <div className="text-center py-1">
+                <div className="text-center py-2">
                   <span className="text-[10px]" style={{ color: 'var(--text-3)' }}>+{themes.length - 3} more themes</span>
                 </div>
               )}
             </div>
           )}
-        </CardContent>
-      </Card>
+        </PremiumCardContent>
+      </PremiumCard>
 
       <ExecutionDrilldownDrawer
         open={!!selectedLevel}

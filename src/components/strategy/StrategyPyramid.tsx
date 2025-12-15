@@ -1,15 +1,7 @@
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Info, Maximize2, Target, Palette, Boxes, FileCode } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Target, Palette, Boxes, FileCode } from 'lucide-react';
+import { PremiumCard, PremiumCardHeader, PremiumCardContent } from '@/components/ui/premium-card';
 import { useStrategyPyramidCounts } from '@/hooks/useExecutionMetrics';
 import { useOKRv2StrategyMetrics } from '@/hooks/useOKRv2StrategyMetrics';
 import { PyramidDrilldownDrawer } from './PyramidDrilldownDrawer';
@@ -25,7 +17,7 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
   const { data: counts, isLoading } = useStrategyPyramidCounts(snapshotId);
   const { data: okrMetrics, isLoading: okrLoading } = useOKRv2StrategyMetrics(snapshotId);
 
-  // Pyramid geometry - enlarged for better visibility
+  // Pyramid geometry
   const centerX = 400;
   const topY = 20;
   const bottomY = 380;
@@ -40,18 +32,11 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
     };
   };
 
-  // Layer Y coordinates (4 layers) - taller layers
-  const y1 = 20;   // Objectives top
-  const y2 = 110;  // Objectives base / Themes top
-  const y3 = 200;  // Themes base / Epics top
-  const y4 = 290;  // Epics base / Features top
-  const y5 = 380;  // Features base
-
-  const level1 = getXAtY(y1);
-  const level2 = getXAtY(y2);
-  const level3 = getXAtY(y3);
-  const level4 = getXAtY(y4);
-  const level5 = getXAtY(y5);
+  const y1 = 20;
+  const y2 = 110;
+  const y3 = 200;
+  const y4 = 290;
+  const y5 = 380;
 
   const colors = {
     objectives: 'hsl(var(--secondary-green))',
@@ -65,11 +50,6 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
     onLayerClick(layer);
   };
 
-  const handleOpenFullView = () => {
-    navigate(`/enterprise/backlog?snapshotId=${snapshotId}`);
-  };
-
-  // OKR v2 Objectives count (replaces Strategic Goals)
   const objectivesCount = okrMetrics?.count || 0;
 
   const layers = [
@@ -77,7 +57,6 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
       key: 'objectives', 
       label: 'Objectives', 
       count: objectivesCount,
-      misaligned: 0,
       icon: Target,
       y1: y1, y2: y2, color: colors.objectives,
     },
@@ -85,7 +64,6 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
       key: 'themes', 
       label: 'Themes', 
       count: counts?.themes || 0,
-      misaligned: 0,
       icon: Palette,
       y1: y2, y2: y3, color: colors.themes,
     },
@@ -93,7 +71,6 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
       key: 'epics', 
       label: 'Epics', 
       count: counts?.alignedEpics || 0,
-      misaligned: counts?.misalignedEpics || 0,
       icon: Boxes,
       y1: y3, y2: y4, color: colors.epics,
     },
@@ -101,37 +78,22 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
       key: 'features', 
       label: 'Features', 
       count: counts?.alignedFeatures || 0,
-      misaligned: counts?.misalignedFeatures || 0,
       icon: FileCode,
       y1: y4, y2: y5, color: colors.features,
     },
   ];
 
+  const headerAction = (
+    <span className="text-[10px]" style={{ color: 'var(--text-3)' }}>Click to drill down</span>
+  );
+
   return (
     <>
-      <Card 
-        className="rounded-lg shadow-sm border"
-        style={{ 
-          borderColor: 'var(--divider)',
-          backgroundColor: 'var(--surface-1)',
-        }}
-      >
-        <CardHeader 
-          className="py-2 px-3 border-b" 
-          style={{ 
-            borderColor: 'var(--divider)',
-            backgroundColor: 'var(--surface-1)',
-          }}
-        >
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-xs font-semibold" style={{ color: 'var(--text-1)' }}>
-              Strategy Pyramid</CardTitle>
-            <span className="text-[10px]" style={{ color: 'var(--text-3)' }}>Click to drill down</span>
-          </div>
-        </CardHeader>
-        <CardContent className="pt-0 px-3 pb-2">
-          <div className="flex gap-3 items-start">
-            {/* SVG Pyramid - compact */}
+      <PremiumCard>
+        <PremiumCardHeader title="Strategy Pyramid" action={headerAction} />
+        <PremiumCardContent noPadding>
+          <div className="flex gap-4 items-start p-4">
+            {/* SVG Pyramid */}
             <div className="flex-1" style={{ maxWidth: '340px' }}>
               <div className="relative w-full" style={{ paddingBottom: '45%' }}>
                 <svg 
@@ -187,17 +149,15 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
             </div>
 
             {/* Compact legend */}
-            <div className="w-32 space-y-0.5 pt-1">
+            <div className="w-36 space-y-1 pt-1">
               {layers.map((layer) => (
                 <button
                   key={layer.key}
                   onClick={() => handleLayerClick(layer.label)}
-                  className="w-full flex items-center justify-between py-1 px-1.5 rounded transition-colors text-left cursor-pointer"
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--surface-2)'}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                  className="w-full flex items-center justify-between py-1.5 px-2 rounded transition-colors text-left cursor-pointer hover:bg-[var(--surface-2)]"
                 >
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: layer.color }} />
+                  <div className="flex items-center gap-2">
+                    <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: layer.color }} />
                     <span className="text-xs" style={{ color: 'var(--text-2)' }}>{layer.label}</span>
                   </div>
                   <span className="text-xs font-semibold" style={{ color: 'var(--accent-color)' }}>
@@ -207,8 +167,8 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
               ))}
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </PremiumCardContent>
+      </PremiumCard>
 
       <PyramidDrilldownDrawer
         open={!!drilldownLayer}

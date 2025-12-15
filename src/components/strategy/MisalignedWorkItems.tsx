@@ -1,6 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { PremiumCard, PremiumCardHeader, PremiumCardContent } from '@/components/ui/premium-card';
 
 interface MisalignedWorkItemsProps {
   snapshotId?: string;
@@ -26,24 +25,9 @@ export function MisalignedWorkItems({ snapshotId }: MisalignedWorkItemsProps) {
   const totalMisaligned = misalignedData.themes + misalignedData.epics + misalignedData.features;
 
   return (
-    <Card 
-      className="rounded-lg shadow-sm border"
-      style={{ 
-        borderColor: 'var(--divider)',
-        backgroundColor: 'var(--surface-1)',
-      }}
-    >
-      <CardHeader 
-        className="py-2 px-3 border-b" 
-        style={{ 
-          borderColor: 'var(--divider)',
-          backgroundColor: 'var(--surface-1)',
-        }}
-      >
-        <CardTitle className="text-xs font-semibold" style={{ color: 'var(--text-1)' }}>
-          Misaligned</CardTitle>
-      </CardHeader>
-      <CardContent className="px-3 py-2">
+    <PremiumCard className="h-full flex flex-col">
+      <PremiumCardHeader title="Misaligned" />
+      <PremiumCardContent className="flex-1">
         {/* Total KPI */}
         <div className="flex items-center justify-between py-2 mb-1" style={{ borderBottom: '1px solid var(--divider)' }}>
           <span className="text-[10px] font-medium uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>Total</span>
@@ -52,18 +36,18 @@ export function MisalignedWorkItems({ snapshotId }: MisalignedWorkItemsProps) {
         
         {/* Breakdown */}
         <div className="space-y-0">
-          {items.map((item) => (
+          {items.map((item, index) => (
             <div 
               key={item.label} 
-              className="flex items-center justify-between py-1.5"
-              style={{ borderBottom: '1px solid var(--divider)' }}
+              className="flex items-center justify-between py-2"
+              style={{ borderBottom: index < items.length - 1 ? '1px solid var(--divider)' : 'none' }}
             >
               <span className="text-xs" style={{ color: 'var(--text-2)' }}>{item.label}</span>
               <span className="text-xs font-semibold" style={{ color: 'var(--accent-color)' }}>{item.count}</span>
             </div>
           ))}
         </div>
-      </CardContent>
-    </Card>
+      </PremiumCardContent>
+    </PremiumCard>
   );
 }

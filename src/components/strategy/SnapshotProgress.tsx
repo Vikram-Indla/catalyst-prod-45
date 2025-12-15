@@ -1,7 +1,7 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
+import { PremiumCard, PremiumCardHeader, PremiumCardContent } from '@/components/ui/premium-card';
 
 interface SnapshotProgressProps {
   snapshotId?: string;
@@ -22,7 +22,6 @@ interface ProgressData {
   dependencies: { total: number; resolved: number };
 }
 
-// Status mapping helpers
 const isNotStarted = (status: string | null) => {
   const s = (status || '').toLowerCase();
   return ['not_started', 'proposed', 'funnel', 'backlog', 'new', ''].includes(s) || !status;
@@ -95,29 +94,28 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
     enabled: !!snapshotId,
   });
 
-  // Compact progress row
   const ProgressRow = ({ 
     label, 
     accepted, 
     total, 
-    onClick 
+    onClick,
+    isLast = false,
   }: { 
     label: string; 
     accepted: number; 
     total: number; 
     onClick?: () => void;
+    isLast?: boolean;
   }) => {
     const percent = total > 0 ? (accepted / total) * 100 : 0;
     
     return (
       <div 
-        className="flex items-center gap-2 py-1.5 cursor-pointer rounded transition-colors"
+        className="flex items-center gap-3 py-2 cursor-pointer rounded transition-colors hover:bg-[var(--surface-2)]"
         onClick={onClick}
-        style={{ borderBottom: '1px solid var(--divider)' }}
-        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--surface-2)'}
-        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+        style={{ borderBottom: isLast ? 'none' : '1px solid var(--divider)' }}
       >
-        <span className="text-xs min-w-[70px]" style={{ color: 'var(--text-2)' }}>
+        <span className="text-xs min-w-[72px]" style={{ color: 'var(--text-2)' }}>
           {label}
         </span>
         <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--surface-3)' }}>
@@ -126,7 +124,7 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
             style={{ width: `${percent}%`, backgroundColor: 'hsl(var(--secondary-green))' }}
           />
         </div>
-        <span className="text-xs font-medium min-w-[36px] text-right" style={{ color: 'var(--accent-color)' }}>
+        <span className="text-xs font-medium min-w-[40px] text-right" style={{ color: 'var(--accent-color)' }}>
           {accepted}/{total}
         </span>
       </div>
@@ -140,38 +138,27 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
   const handleDependenciesClick = () => navigate('/dependencies');
 
   return (
-    <Card 
-      className="rounded-lg shadow-sm border"
-      style={{ 
-        borderColor: 'var(--divider)',
-        backgroundColor: 'var(--surface-1)',
-      }}
-    >
-      <CardHeader 
-        className="py-2 px-3 border-b" 
-        style={{ 
-          borderColor: 'var(--divider)',
-          backgroundColor: 'var(--surface-1)',
-        }}
-      >
-        <CardTitle className="text-xs font-semibold" style={{ color: 'var(--text-1)' }}>
-          Progress</CardTitle>
-      </CardHeader>
-      <CardContent className="px-3 py-2">
+    <PremiumCard className="h-full flex flex-col">
+      <PremiumCardHeader title="Progress" />
+      <PremiumCardContent className="flex-1">
         {isLoading ? (
-          <div className="py-4 text-center text-xs" style={{ color: 'var(--text-3)' }}>Loading...</div>
+          <div className="flex items-center justify-center h-full min-h-[100px]">
+            <span className="text-xs" style={{ color: 'var(--text-3)' }}>Loading...</span>
+          </div>
         ) : !progressData ? (
-          <div className="py-4 text-center text-xs" style={{ color: 'var(--text-3)' }}>Select snapshot</div>
+          <div className="flex items-center justify-center h-full min-h-[100px]">
+            <span className="text-xs" style={{ color: 'var(--text-3)' }}>Select snapshot</span>
+          </div>
         ) : (
           <div className="space-y-0">
             <ProgressRow label="Themes" accepted={progressData.themes.completed} total={progressData.themes.total} onClick={handleThemesClick} />
             <ProgressRow label="Epics" accepted={progressData.epics.completed} total={progressData.epics.total} onClick={handleEpicsClick} />
             <ProgressRow label="Features" accepted={progressData.features.completed} total={progressData.features.total} onClick={handleFeaturesClick} />
             <ProgressRow label="Stories" accepted={progressData.stories.completed} total={progressData.stories.total} onClick={handleStoriesClick} />
-            <ProgressRow label="Dependencies" accepted={progressData.dependencies.resolved} total={progressData.dependencies.total} onClick={handleDependenciesClick} />
+            <ProgressRow label="Dependencies" accepted={progressData.dependencies.resolved} total={progressData.dependencies.total} onClick={handleDependenciesClick} isLast />
           </div>
         )}
-      </CardContent>
-    </Card>
+      </PremiumCardContent>
+    </PremiumCard>
   );
 }
