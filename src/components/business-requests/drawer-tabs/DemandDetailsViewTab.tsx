@@ -109,38 +109,7 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
 
   return (
     <div className="flex flex-col h-full space-y-4" style={{ background: 'var(--bg)' }}>
-      {/* CIO Overview Strip - Key metrics at a glance */}
-      <div 
-        className="grid grid-cols-2 md:grid-cols-4 gap-3 p-3 rounded-lg"
-        style={{ background: 'var(--surface-2)', border: '1px solid var(--border-color)' }}
-      >
-        <div className="space-y-0.5">
-          <span className="text-[10px] uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>Status</span>
-          <p className="text-[13px] font-medium capitalize" style={{ color: 'var(--text-1)' }}>
-            {(data.process_step || 'new_request').replace(/_/g, ' ')}
-          </p>
-        </div>
-        <div className="space-y-0.5">
-          <span className="text-[10px] uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>Owner</span>
-          <p className="text-[13px] font-medium truncate" style={{ color: 'var(--text-1)' }}>
-            {data.business_owner || '—'}
-          </p>
-        </div>
-        <div className="space-y-0.5">
-          <span className="text-[10px] uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>Department</span>
-          <p className="text-[13px] font-medium truncate" style={{ color: 'var(--text-1)' }}>
-            {data.department || '—'}
-          </p>
-        </div>
-        <div className="space-y-0.5">
-          <span className="text-[10px] uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>Target</span>
-          <p className="text-[13px] font-medium" style={{ color: 'var(--text-1)' }}>
-            {data.end_date ? format(new Date(data.end_date), 'MMM d, yyyy') : '—'}
-          </p>
-        </div>
-      </div>
-
-      {/* Details Section */}
+      {/* Details Section - Status/Owner/Department shown in header CIO Snapshot */}
       <div className="border rounded-lg p-4 space-y-4" style={{ borderColor: 'var(--border-color)', background: 'var(--surface-1)' }}>
         <h3 className="text-[11px] font-medium uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>Details</h3>
           
@@ -194,8 +163,8 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
           </div>
         </div>
 
-        {/* People - Compact 2x2 grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {/* People - Delivery roles only (Governance fields in CIO Snapshot above) */}
+        <div className="grid grid-cols-2 gap-3">
           <div>
             <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>Reporter</Label>
             <div className="mt-1">
@@ -216,28 +185,41 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
               />
             </div>
           </div>
-          <div>
-            <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>Department</Label>
-            <div className="mt-1">
-              <DepartmentSelect
-                value={data.department_id || null}
-                onChange={handleDepartmentChange}
-                placeholder="Select..."
-              />
-            </div>
-          </div>
-          <div>
-            <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>Business Owner</Label>
-            <div className="mt-1">
-              <BusinessOwnerSelect
-                value={data.business_owner_id || null}
-                onChange={handleBusinessOwnerChange}
-                departmentId={data.department_id || null}
-                placeholder="Select..."
-              />
-            </div>
-          </div>
         </div>
+
+        {/* Governance - Collapsed, edits sync to CIO Snapshot */}
+        <details className="group">
+          <summary 
+            className="flex items-center gap-2 cursor-pointer text-[11px] font-medium py-2"
+            style={{ color: 'var(--text-3)' }}
+          >
+            <span>Governance (Edit)</span>
+            <span className="text-[10px] italic" style={{ color: 'var(--text-3)' }}>— shown in CIO Snapshot above</span>
+          </summary>
+          <div className="grid grid-cols-2 gap-3 pt-2">
+            <div>
+              <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>Department</Label>
+              <div className="mt-1">
+                <DepartmentSelect
+                  value={data.department_id || null}
+                  onChange={handleDepartmentChange}
+                  placeholder="Select..."
+                />
+              </div>
+            </div>
+            <div>
+              <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>Business Owner</Label>
+              <div className="mt-1">
+                <BusinessOwnerSelect
+                  value={data.business_owner_id || null}
+                  onChange={handleBusinessOwnerChange}
+                  departmentId={data.department_id || null}
+                  placeholder="Select..."
+                />
+              </div>
+            </div>
+          </div>
+        </details>
       </div>
 
       {/* Planning & Delivery Section */}

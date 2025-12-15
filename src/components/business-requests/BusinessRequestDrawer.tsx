@@ -518,12 +518,13 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                     currentStep={formData.process_step || 'new_request'}
                     onChange={(step) => handleFieldChange('process_step', step)}
                   />
-                  <div className="h-4 w-px" style={{ background: 'var(--border-color)' }} />
                   <DrawerMetadataChips
                     businessOwner={formData.business_owner}
                     department={formData.department}
                     rank={formData.rank}
                     targetDate={formData.end_date}
+                    priorityTier={formData.priority_tier}
+                    priorityScore={formData.business_score}
                   />
                 </div>
               </div>

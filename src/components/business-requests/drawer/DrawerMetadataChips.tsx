@@ -1,11 +1,12 @@
 /**
- * DrawerMetadataChips - Compact metadata chips for drawer header
- * Shows key information like Business Owner, Department, Rank, Target Date
+ * DrawerMetadataChips - CIO Snapshot chips for drawer header
+ * Single source of truth for: Business Owner, Department, Priority, Rank, Target Date
  */
 
 import { format } from 'date-fns';
-import { User, Building2, Hash, Calendar } from 'lucide-react';
+import { User, Building2, Hash, Calendar, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { getTierDisplayInfo, PriorityTier } from '@/hooks/usePrioritizationConfig';
 
 interface MetadataChip {
   icon: React.ElementType;
@@ -19,6 +20,8 @@ interface DrawerMetadataChipsProps {
   department?: string | null;
   rank?: number | null;
   targetDate?: string | null;
+  priorityTier?: PriorityTier | string | null;
+  priorityScore?: number | null;
   className?: string;
 }
 
@@ -27,8 +30,20 @@ export function DrawerMetadataChips({
   department,
   rank,
   targetDate,
+  priorityTier,
+  priorityScore,
   className
 }: DrawerMetadataChipsProps) {
+  // Format priority display
+  const getPriorityDisplay = () => {
+    if (!priorityTier || priorityTier === 'unscored') {
+      return null;
+    }
+    const { label } = getTierDisplayInfo(priorityTier as PriorityTier);
+    const score = priorityScore ? ` (${priorityScore.toFixed(1)})` : '';
+    return `${label}${score}`;
+  };
+
   const chips: MetadataChip[] = [
     {
       icon: User,
@@ -39,6 +54,11 @@ export function DrawerMetadataChips({
       icon: Building2,
       label: 'Dept',
       value: department,
+    },
+    {
+      icon: TrendingUp,
+      label: 'Priority',
+      value: getPriorityDisplay(),
     },
     {
       icon: Hash,
@@ -69,7 +89,7 @@ export function DrawerMetadataChips({
           title={`${chip.label}: ${chip.value}`}
         >
           <chip.icon className="h-3 w-3 shrink-0" style={{ color: 'var(--text-3)' }} />
-          <span className={cn("truncate max-w-[80px]", chip.colorClass)}>
+          <span className={cn("truncate max-w-[100px]", chip.colorClass)}>
             {chip.value}
           </span>
         </div>
