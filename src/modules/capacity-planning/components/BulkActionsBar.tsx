@@ -1,5 +1,10 @@
-import { Trash2, Download, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+/**
+ * BulkActionsBar - Capacity planning bulk actions
+ * Uses the shared BulkSelectionBar component for enterprise-grade styling
+ */
+
+import { Download } from 'lucide-react';
+import { BulkSelectionBar, BulkAction } from '@/components/shared/BulkSelectionBar';
 
 interface BulkActionsBarProps {
   selectedCount: number;
@@ -14,38 +19,23 @@ export function BulkActionsBar({
   onDelete,
   onExport,
 }: BulkActionsBarProps) {
-  return (
-    <div 
-      className="h-[44px] flex items-center justify-between px-6 bg-indigo-50 border-b"
-      style={{ borderColor: 'hsl(var(--border))' }}
-    >
-      <div className="flex items-center gap-3">
-        <span className="text-sm font-medium text-indigo-700">
-          {selectedCount} item{selectedCount > 1 ? 's' : ''} selected
-        </span>
-        <Button variant="ghost" size="sm" className="h-7 text-indigo-700" onClick={onClear}>
-          <X className="h-3 w-3 mr-1" />
-          Clear
-        </Button>
-      </div>
+  const actions: BulkAction[] = [];
 
-      <div className="flex items-center gap-2">
-        {onExport && (
-          <Button variant="ghost" size="sm" className="h-7 gap-1" onClick={onExport}>
-            <Download className="h-3 w-3" />
-            Export
-          </Button>
-        )}
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="h-7 gap-1 text-destructive hover:bg-destructive/10" 
-          onClick={onDelete}
-        >
-          <Trash2 className="h-3 w-3" />
-          Delete
-        </Button>
-      </div>
-    </div>
+  if (onExport) {
+    actions.push({
+      id: 'export',
+      label: 'Export',
+      onClick: onExport,
+      icon: <Download className="h-4 w-4" />,
+    });
+  }
+
+  return (
+    <BulkSelectionBar
+      selectedCount={selectedCount}
+      onClear={onClear}
+      onDelete={onDelete}
+      actions={actions}
+    />
   );
 }
