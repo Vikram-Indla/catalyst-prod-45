@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { MissionVisionValues } from '@/components/strategy/MissionVisionValues';
 import { ExecutionAgainstOutcomesWidget } from '@/components/strategy/ExecutionAgainstOutcomesWidget';
 import { StrategicGoalsWidget } from '@/components/strategy/StrategicGoalsWidget';
-import { StrategyPyramid } from '@/components/strategy/StrategyPyramid';
+import { StrategyStack } from '@/components/strategy/StrategyStack';
 import { SnapshotProgress } from '@/components/strategy/SnapshotProgress';
 import { MisalignedWorkItems } from '@/components/strategy/MisalignedWorkItems';
 import { OkrTree } from '@/components/strategy/OkrTree';
@@ -147,8 +147,8 @@ export default function StrategyRoomPage() {
             <SnapshotProgress snapshotId={effectiveSelectedSnapshotId} />
           </div>
 
-          {/* Strategy Pyramid */}
-          <StrategyPyramid 
+          {/* Strategy Stack (replaces pyramid) */}
+          <StrategyStack 
             onLayerClick={handlePyramidLayerClick} 
             snapshotId={effectiveSelectedSnapshotId}
           />

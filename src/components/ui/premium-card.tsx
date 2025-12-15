@@ -21,13 +21,13 @@ const PremiumCard = React.forwardRef<HTMLDivElement, PremiumCardProps>(
     <div
       ref={ref}
       className={cn(
-        "rounded-[10px] border overflow-hidden",
-        "bg-[var(--card-bg)]",
+        "rounded-xl border overflow-hidden",
         className
       )}
       style={{
+        backgroundColor: 'var(--card-bg)',
         borderColor: 'var(--card-border)',
-        boxShadow: 'var(--card-shadow)',
+        boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.05)',
       }}
       {...props}
     >
@@ -53,13 +53,13 @@ const PremiumCardHeader = React.forwardRef<HTMLDivElement, PremiumCardHeaderProp
     >
       <div className="flex flex-col gap-0.5">
         <h3 
-          className="text-xs font-semibold uppercase tracking-wide"
+          className="text-[13px] font-semibold uppercase tracking-wide"
           style={{ color: 'var(--text-1)' }}
         >
           {title}
         </h3>
         {subtitle && (
-          <p className="text-[10px]" style={{ color: 'var(--text-3)' }}>
+          <p className="text-xs" style={{ color: 'var(--text-3)' }}>
             {subtitle}
           </p>
         )}
