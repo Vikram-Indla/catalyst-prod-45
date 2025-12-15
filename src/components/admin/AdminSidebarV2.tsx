@@ -73,6 +73,7 @@ const adminPockets = [
       { label: 'Strategic Themes', path: '/admin/theme-groups' },
       { label: 'Process Steps', path: '/admin/business/ProcessStep' },
       { label: 'Risk Severity Levels', path: '/admin/business/RiskSeverity' },
+      { label: 'Delivery Platforms', path: '/admin/business/DeliveryPlatforms' },
     ],
   },
   {
