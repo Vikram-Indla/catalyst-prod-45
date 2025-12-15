@@ -56,6 +56,7 @@ export function ExecutiveDiscussionsTab({ requestId }: ExecutiveDiscussionsTabPr
   const [updateTitle, setUpdateTitle] = useState('');
   const [impact, setImpact] = useState<'low' | 'medium' | 'high' | ''>('');
   const [decisionNeeded, setDecisionNeeded] = useState<'yes' | 'no' | ''>('');
+  const [category, setCategory] = useState<'delivery' | 'budget' | 'risk' | 'scope' | 'stakeholder' | ''>('');
   const [mentionOpen, setMentionOpen] = useState(false);
   const [mentionSearch, setMentionSearch] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -119,15 +120,17 @@ export function ExecutiveDiscussionsTab({ requestId }: ExecutiveDiscussionsTabPr
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Format structured update if fields are filled
+      // Format structured update with metadata JSON
       let formattedMessage = message;
-      if (updateTitle || impact || decisionNeeded) {
-        const parts = [];
-        if (updateTitle) parts.push(`**${updateTitle}**`);
-        parts.push(message);
-        if (impact) parts.push(`\n\n_Impact: ${impact.charAt(0).toUpperCase() + impact.slice(1)}_`);
-        if (decisionNeeded === 'yes') parts.push(`\n⚡ **Decision Required**`);
-        formattedMessage = parts.join('\n');
+      const meta: Record<string, string> = {};
+      if (updateTitle) meta.title = updateTitle;
+      if (impact) meta.impact = impact;
+      if (decisionNeeded) meta.decision = decisionNeeded;
+      if (category) meta.category = category;
+      
+      // Store metadata as JSON prefix for parsing
+      if (Object.keys(meta).length > 0) {
+        formattedMessage = `<!--META:${JSON.stringify(meta)}-->${message}`;
       }
 
       const { error } = await supabase
@@ -146,6 +149,7 @@ export function ExecutiveDiscussionsTab({ requestId }: ExecutiveDiscussionsTabPr
       setUpdateTitle('');
       setImpact('');
       setDecisionNeeded('');
+      setCategory('');
       toast.success('Update posted');
     },
     onError: () => {
@@ -184,8 +188,26 @@ export function ExecutiveDiscussionsTab({ requestId }: ExecutiveDiscussionsTabPr
     );
   });
 
-  // Parse structured updates from messages
+  // Parse structured updates from messages (new JSON format + legacy)
   const parseUpdate = (message: string) => {
+    // Try new JSON metadata format
+    const metaMatch = message.match(/^<!--META:(.+?)-->/);
+    if (metaMatch) {
+      try {
+        const meta = JSON.parse(metaMatch[1]);
+        return {
+          title: meta.title || null,
+          impact: meta.impact || null,
+          hasDecision: meta.decision === 'yes',
+          category: meta.category || null,
+          body: message.replace(/^<!--META:.+?-->/, '').trim()
+        };
+      } catch {
+        // Fall through to legacy parsing
+      }
+    }
+    
+    // Legacy format parsing
     const hasDecision = message.includes('**Decision Required**');
     const impactMatch = message.match(/_Impact: (\w+)_/);
     const titleMatch = message.match(/^\*\*(.+?)\*\*/);
@@ -194,12 +216,24 @@ export function ExecutiveDiscussionsTab({ requestId }: ExecutiveDiscussionsTabPr
       hasDecision,
       impact: impactMatch?.[1]?.toLowerCase() || null,
       title: titleMatch?.[1] || null,
+      category: null,
       body: message
         .replace(/^\*\*(.+?)\*\*\n?/, '')
         .replace(/\n\n_Impact: \w+_/, '')
         .replace(/\n⚡ \*\*Decision Required\*\*/, '')
         .trim()
     };
+  };
+  
+  const getCategoryColor = (cat: string | null) => {
+    switch (cat) {
+      case 'delivery': return 'border-blue-500/50 text-blue-600 bg-blue-500/10';
+      case 'budget': return 'border-emerald-500/50 text-emerald-600 bg-emerald-500/10';
+      case 'risk': return 'border-amber-500/50 text-amber-600 bg-amber-500/10';
+      case 'scope': return 'border-purple-500/50 text-purple-600 bg-purple-500/10';
+      case 'stakeholder': return 'border-pink-500/50 text-pink-600 bg-pink-500/10';
+      default: return '';
+    }
   };
 
   return (
@@ -276,22 +310,33 @@ export function ExecutiveDiscussionsTab({ requestId }: ExecutiveDiscussionsTabPr
                             <span className="text-[12px] font-medium" style={{ color: 'var(--text-1)' }}>
                               {displayName}
                             </span>
-                            {parsed.hasDecision && (
-                              <Badge variant="destructive" className="h-4 text-[9px] px-1.5">
-                                Decision Needed
+                      {parsed.category && (
+                              <Badge 
+                                variant="outline" 
+                                className={cn("h-4 text-[9px] px-1.5 capitalize", getCategoryColor(parsed.category))}
+                              >
+                                {parsed.category}
                               </Badge>
                             )}
                             {parsed.impact && (
                               <Badge 
                                 variant="outline" 
                                 className={cn(
-                                  "h-4 text-[9px] px-1.5",
-                                  parsed.impact === 'high' && "border-amber-500 text-amber-600",
-                                  parsed.impact === 'medium' && "border-blue-500 text-blue-600",
-                                  parsed.impact === 'low' && "border-green-500 text-green-600"
+                                  "h-4 text-[9px] px-1.5 capitalize",
+                                  parsed.impact === 'high' && "border-amber-500/50 text-amber-600 bg-amber-500/10",
+                                  parsed.impact === 'medium' && "border-blue-500/50 text-blue-600 bg-blue-500/10",
+                                  parsed.impact === 'low' && "border-green-500/50 text-green-600 bg-green-500/10"
                                 )}
                               >
-                                {parsed.impact}
+                                {parsed.impact} impact
+                              </Badge>
+                            )}
+                            {parsed.hasDecision && (
+                              <Badge 
+                                variant="outline" 
+                                className="h-4 text-[9px] px-1.5 border-red-500/50 text-red-600 bg-red-500/10"
+                              >
+                                Decision Needed
                               </Badge>
                             )}
                           </div>
@@ -326,32 +371,51 @@ export function ExecutiveDiscussionsTab({ requestId }: ExecutiveDiscussionsTabPr
             className="p-3 shrink-0 space-y-3" 
             style={{ borderTop: '1px solid var(--border-color)', backgroundColor: 'var(--surface-1)' }}
           >
-            {/* Optional structured fields */}
-            <div className="grid grid-cols-3 gap-2">
-              <div>
-                <Input
-                  value={updateTitle}
-                  onChange={(e) => setUpdateTitle(e.target.value)}
-                  placeholder="Title (optional)"
-                  className="h-7 text-[11px]"
-                  style={{ background: 'var(--input-bg)' }}
-                />
-              </div>
+            {/* Compact structured fields row */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <Input
+                value={updateTitle}
+                onChange={(e) => setUpdateTitle(e.target.value)}
+                placeholder="Title (optional)"
+                className="h-7 text-[11px] w-[140px]"
+                style={{ background: 'var(--input-bg)', borderColor: 'var(--input-border)' }}
+              />
+              <Select value={category} onValueChange={(v) => setCategory(v as any)}>
+                <SelectTrigger 
+                  className="h-7 text-[11px] w-[100px]" 
+                  style={{ background: 'var(--input-bg)', borderColor: 'var(--input-border)' }}
+                >
+                  <SelectValue placeholder="Category" />
+                </SelectTrigger>
+                <SelectContent className="z-[400]" style={{ background: 'var(--surface-1)' }}>
+                  <SelectItem value="delivery">Delivery</SelectItem>
+                  <SelectItem value="budget">Budget</SelectItem>
+                  <SelectItem value="risk">Risk</SelectItem>
+                  <SelectItem value="scope">Scope</SelectItem>
+                  <SelectItem value="stakeholder">Stakeholder</SelectItem>
+                </SelectContent>
+              </Select>
               <Select value={impact} onValueChange={(v) => setImpact(v as any)}>
-                <SelectTrigger className="h-7 text-[11px]" style={{ background: 'var(--input-bg)' }}>
+                <SelectTrigger 
+                  className="h-7 text-[11px] w-[90px]" 
+                  style={{ background: 'var(--input-bg)', borderColor: 'var(--input-border)' }}
+                >
                   <SelectValue placeholder="Impact" />
                 </SelectTrigger>
-                <SelectContent className="z-[400]">
+                <SelectContent className="z-[400]" style={{ background: 'var(--surface-1)' }}>
                   <SelectItem value="low">Low</SelectItem>
                   <SelectItem value="medium">Medium</SelectItem>
                   <SelectItem value="high">High</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={decisionNeeded} onValueChange={(v) => setDecisionNeeded(v as any)}>
-                <SelectTrigger className="h-7 text-[11px]" style={{ background: 'var(--input-bg)' }}>
+                <SelectTrigger 
+                  className="h-7 text-[11px] w-[110px]" 
+                  style={{ background: 'var(--input-bg)', borderColor: 'var(--input-border)' }}
+                >
                   <SelectValue placeholder="Decision?" />
                 </SelectTrigger>
-                <SelectContent className="z-[400]">
+                <SelectContent className="z-[400]" style={{ background: 'var(--surface-1)' }}>
                   <SelectItem value="no">No decision</SelectItem>
                   <SelectItem value="yes">Decision needed</SelectItem>
                 </SelectContent>
