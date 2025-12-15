@@ -4,6 +4,7 @@ import {
   X, Users, Search, LayoutGrid, Target, Calendar, Settings, AlertTriangle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { PageChrome } from '@/components/layout/PageChrome';
 
 // Brand Colors
 const COLORS = {
@@ -816,31 +817,21 @@ export default function ProductRoomPage() {
     });
   };
 
-  // Get current date for greeting
-  const hour = new Date().getHours();
-  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+  // Quarter selector for right actions
+  const quarterSelector = (
+    <QuarterSelector
+      quarters={visibleQuarters}
+      selectedIndex={selectedQuarterIndex}
+      onSelect={setSelectedQuarterIndex}
+      onShift={handleShift}
+      canShiftLeft={canShiftLeft}
+      canShiftRight={canShiftRight}
+    />
+  );
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Main Content */}
-      <div className="flex flex-col min-h-screen">
-        {/* Header - h-12 to align with sidebar */}
-        <header className="h-12 sticky top-0 bg-white/80 backdrop-blur-md border-b px-6 flex items-center z-30">
-          <div className="flex items-center justify-between w-full">
-            <h1 className="text-xl font-semibold text-gray-900">Product Room</h1>
-            <QuarterSelector
-              quarters={visibleQuarters}
-              selectedIndex={selectedQuarterIndex}
-              onSelect={setSelectedQuarterIndex}
-              onShift={handleShift}
-              canShiftLeft={canShiftLeft}
-              canShiftRight={canShiftRight}
-            />
-          </div>
-        </header>
-
-        {/* Content */}
-        <main className="flex-1 p-6 space-y-6">
+    <PageChrome rightActions={quarterSelector}>
+      <div className="flex-1 p-6 space-y-6 overflow-auto">
           {/* Quarter Label */}
           <div className="flex items-center gap-3">
             <h2 className="text-2xl font-bold text-gray-900">{currentQuarterLabel}</h2>
@@ -918,9 +909,7 @@ export default function ProductRoomPage() {
             />
             <ImplementationList items={IMPLEMENTATION_ITEMS} />
           </div>
-        </main>
-      </div>
-
+        </div>
       {/* Slide Panels */}
       <SlidePanel
         open={showDecisions}
@@ -987,6 +976,6 @@ export default function ProductRoomPage() {
           ))}
         </div>
       </SlidePanel>
-    </div>
+    </PageChrome>
   );
 }

@@ -1,6 +1,6 @@
 /**
  * Product Backlog Page - Executive Table view for Business Requests
- * Uses GlobalPageHeader for consistent header + IndustryHeaderToolbarV2 for toolbar
+ * Uses PageChrome for consistent header + IndustryHeaderToolbarV2 for toolbar
  */
 
 import React, { useState, useMemo } from 'react';
@@ -15,7 +15,7 @@ import { DemandBulkDeleteModal } from '@/components/demand/DemandBulkDeleteModal
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
-import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
+import { PageChrome } from '@/components/layout/PageChrome';
 
 export default function ProductBacklogPage() {
   const queryClient = useQueryClient();
@@ -187,7 +187,7 @@ export default function ProductBacklogPage() {
     toast.success(`Deleted ${dbIds.length} request(s)`);
   };
 
-  // Toolbar content (without title - GlobalPageHeader handles that)
+  // Toolbar content
   const toolbarElement = (
     <IndustryHeaderToolbarV2
       title="Product Backlog"
@@ -225,73 +225,62 @@ export default function ProductBacklogPage() {
     />
   );
 
-  // Combined header with GlobalPageHeader + toolbar
-  const headerElement = (
-    <div className="flex flex-col" style={{ backgroundColor: 'var(--bg)' }}>
-      <GlobalPageHeader
-        sectionLabel="Product"
-        pageTitle="Product Backlog"
-        showDivider={false}
-      />
-      {toolbarElement}
-    </div>
-  );
-
   return (
-    <div className="h-full flex flex-col" style={{ backgroundColor: 'var(--bg)' }}>
-      <ExecutiveTable
-        data={tableData}
-        isLoading={isLoading}
-        onRowClick={(row) => handleOpenFullView(row.id)}
-        onOpenFullView={handleOpenFullView}
-        onFieldUpdate={handleFieldUpdate}
-        onCreateNew={() => setCreateModalOpen(true)}
-        onDuplicate={handleDuplicate}
-        onDelete={handleDelete}
-        externalHeader={headerElement}
-        searchValue={searchValue}
-        onSearchChange={setSearchValue}
-        columnsDialogOpen={columnsDialogOpen}
-        onColumnsDialogChange={setColumnsDialogOpen}
-        selectedRows={selectedRows}
-        onSelectedRowsChange={setSelectedRows}
-      />
+    <PageChrome toolbar={toolbarElement}>
+      <div className="h-full flex flex-col" style={{ backgroundColor: 'var(--bg)' }}>
+        <ExecutiveTable
+          data={tableData}
+          isLoading={isLoading}
+          onRowClick={(row) => handleOpenFullView(row.id)}
+          onOpenFullView={handleOpenFullView}
+          onFieldUpdate={handleFieldUpdate}
+          onCreateNew={() => setCreateModalOpen(true)}
+          onDuplicate={handleDuplicate}
+          onDelete={handleDelete}
+          searchValue={searchValue}
+          onSearchChange={setSearchValue}
+          columnsDialogOpen={columnsDialogOpen}
+          onColumnsDialogChange={setColumnsDialogOpen}
+          selectedRows={selectedRows}
+          onSelectedRowsChange={setSelectedRows}
+        />
 
-      {/* Bulk Actions Bar */}
-      <DemandBulkActionsBar
-        selectedCount={selectedRows.length}
-        onClear={() => setSelectedRows([])}
-        onUpdateStatus={() => setBulkStatusModalOpen(true)}
-        onDelete={() => setBulkDeleteModalOpen(true)}
-      />
+        {/* Bulk Actions Bar */}
+        <DemandBulkActionsBar
+          selectedCount={selectedRows.length}
+          onClear={() => setSelectedRows([])}
+          onUpdateStatus={() => setBulkStatusModalOpen(true)}
+          onDelete={() => setBulkDeleteModalOpen(true)}
+        />
 
-      {/* Bulk Status Update Modal */}
-      <DemandBulkStatusModal
-        isOpen={bulkStatusModalOpen}
-        onClose={() => setBulkStatusModalOpen(false)}
-        onConfirm={handleBulkStatusUpdate}
-        selectedCount={selectedRows.length}
-      />
+        {/* Bulk Status Update Modal */}
+        <DemandBulkStatusModal
+          isOpen={bulkStatusModalOpen}
+          onClose={() => setBulkStatusModalOpen(false)}
+          onConfirm={handleBulkStatusUpdate}
+          selectedCount={selectedRows.length}
+        />
 
-      {/* Bulk Delete Modal */}
-      <DemandBulkDeleteModal
-        isOpen={bulkDeleteModalOpen}
-        onClose={() => setBulkDeleteModalOpen(false)}
-        onConfirm={handleBulkDelete}
-        selectedCount={selectedRows.length}
-      />
+        {/* Bulk Delete Modal */}
+        <DemandBulkDeleteModal
+          isOpen={bulkDeleteModalOpen}
+          onClose={() => setBulkDeleteModalOpen(false)}
+          onConfirm={handleBulkDelete}
+          selectedCount={selectedRows.length}
+        />
 
-      <BusinessRequestDrawer
-        isOpen={!!selectedRequestId}
-        onClose={() => setSelectedRequestId(null)}
-        requestId={selectedRequestId}
-        onRequestChange={() => queryClient.invalidateQueries({ queryKey: ['business-requests'] })}
-      />
+        <BusinessRequestDrawer
+          isOpen={!!selectedRequestId}
+          onClose={() => setSelectedRequestId(null)}
+          requestId={selectedRequestId}
+          onRequestChange={() => queryClient.invalidateQueries({ queryKey: ['business-requests'] })}
+        />
 
-      <CreateBusinessRequestModal 
-        isOpen={createModalOpen} 
-        onClose={() => setCreateModalOpen(false)} 
-      />
-    </div>
+        <CreateBusinessRequestModal 
+          isOpen={createModalOpen} 
+          onClose={() => setCreateModalOpen(false)} 
+        />
+      </div>
+    </PageChrome>
   );
 }
