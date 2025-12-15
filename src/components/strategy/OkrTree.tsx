@@ -86,11 +86,11 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
     return (
       <div key={item.id}>
         <div
-          className={`grid items-center py-2 transition-colors focus:outline-none focus:ring-0 ${
+          className={`grid items-center py-1.5 transition-colors focus:outline-none focus:ring-0 ${
             isObjective || isTheme ? 'cursor-pointer' : ''
           }`}
           style={{
-            gridTemplateColumns: '1fr 160px 70px 70px',
+            gridTemplateColumns: '1fr 120px 50px 50px',
             borderBottom: '1px solid var(--divider)',
             backgroundColor: isTheme ? 'var(--surface-2)' : 'transparent',
           }}
@@ -158,7 +158,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
 
           {/* Progress */}
           <div className="flex justify-center">
-            <div className="w-[140px] h-2.5 bg-muted rounded-full overflow-hidden">
+            <div className="w-[100px] h-1.5 bg-muted rounded-full overflow-hidden">
               <div
                 className="h-full rounded-full transition-all"
                 style={{
@@ -171,7 +171,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
 
           {/* Progress % */}
           <div className="flex justify-center">
-            <span className="text-sm font-semibold" style={{ color: getProgressColor(item.progress) }}>
+            <span className="text-xs font-semibold" style={{ color: getProgressColor(item.progress) }}>
               {Math.round(item.progress)}%
             </span>
           </div>
@@ -179,14 +179,14 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
           {/* Owner */}
           <div className="flex justify-center">
             {item.owner ? (
-              <Avatar className="h-8 w-8 border border-border">
+              <Avatar className="h-6 w-6 border border-border">
                 <AvatarImage src={item.owner.avatar} alt={item.owner.name} />
-                <AvatarFallback className="text-xs bg-brand-dark text-white font-bold">
+                <AvatarFallback className="text-[10px] bg-brand-dark text-white font-bold">
                   {item.owner.initials}
                 </AvatarFallback>
               </Avatar>
             ) : (
-              <div className="w-8 h-8" />
+              <div className="w-6 h-6" />
             )}
           </div>
         </div>
@@ -223,17 +223,17 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
         backgroundColor: 'var(--surface-1)',
       }}
     >
-      <CardHeader className="py-2.5 px-3" style={{ backgroundColor: 'var(--surface-2)', borderRadius: '8px 8px 0 0' }}>
+      <CardHeader className="py-2 px-3" style={{ backgroundColor: 'var(--surface-2)', borderRadius: '8px 8px 0 0' }}>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--text-1)' }}>OKR Tree</CardTitle>
+          <CardTitle className="text-xs font-semibold" style={{ color: 'var(--text-1)' }}>OKR Tree</CardTitle>
           <div className="flex items-center gap-2">
-            <div className="relative w-48">
+            <div className="relative w-40">
               <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3" style={{ color: 'var(--text-3)' }} />
               <Input
                 placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-7 h-7 text-xs"
+                className="pl-7 h-6 text-xs"
                 style={{ 
                   backgroundColor: 'var(--input-bg)', 
                   borderColor: 'var(--input-border)',
@@ -244,7 +244,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
             <Button 
               variant="ghost" 
               size="icon" 
-              className="h-6 w-6"
+              className="h-5 w-5"
               onClick={() => navigate('/enterprise/okr-hub')}
               title="Open OKR Hub"
             >
@@ -253,16 +253,16 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
           </div>
         </div>
       </CardHeader>
-      <CardContent className="pt-0 px-3 pb-3">
+      <CardContent className="pt-0 px-3 pb-2">
         <div className="border rounded overflow-hidden" style={{ backgroundColor: 'var(--surface-1)', borderColor: 'var(--divider)' }}>
           {/* Column Headers */}
           <div
-            className="grid items-center py-1.5 font-semibold text-[10px] uppercase tracking-wide"
+            className="grid items-center py-1 font-semibold text-[10px]"
             style={{
               gridTemplateColumns: '1fr 120px 50px 50px',
               backgroundColor: 'var(--surface-2)',
               borderBottom: '1px solid var(--divider)',
-              color: 'var(--text-1)',
+              color: 'var(--text-2)',
             }}
           >
             <div className="pl-3">Item</div>
