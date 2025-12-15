@@ -10,16 +10,13 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Trash2, Copy, Lock, Unlock } from 'lucide-react';
+import { Trash2, Copy } from 'lucide-react';
 import { CanonicalDrawerShell, DrawerTab, KebabMenuItem } from '@/components/shared/CanonicalDrawerShell';
 import { UnifiedLinksTab } from '@/components/shared/UnifiedLinksTab';
 import { UnifiedAuditHistoryTab } from '@/components/shared/UnifiedAuditHistoryTab';
 import { CommentsSection } from '@/components/shared/CommentsSection';
 import { ThemeChildrenTab } from './tabs/ThemeChildrenTab';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { Separator } from '@/components/ui/separator';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -29,12 +26,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { RichTextEditor } from '@/components/business-requests/RichTextEditor';
+import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
-import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
 
 interface Theme {
   id: string;
@@ -61,23 +56,15 @@ function formatThemeKey(id: string): string {
   return `TH-${id.slice(0, 4)}`;
 }
 
-// Status enum to display label mapping
-const STATUS_LABELS: Record<string, string> = {
-  'proposed': 'Backlog / Not Started',
-  'active': 'In Progress',
-  'done': 'Completed',
+// Strategic theme states - maps DB values to strategic labels
+const THEME_STATES: Record<string, string> = {
+  'proposed': 'Draft',
+  'active': 'Active',
+  'done': 'Retired',
   'cancelled': 'Cancelled',
 };
 
-// Reverse mapping for saving
-const LABEL_TO_STATUS: Record<string, string> = {
-  'backlog': 'proposed',
-  'in-progress': 'active',
-  'completed': 'done',
-  'cancelled': 'cancelled',
-};
-
-// Theme Details Tab Component
+// Theme Details Tab Component - Simplified to strategic essentials only
 function ThemeDetailsTab({ 
   theme, 
   formData, 
@@ -89,33 +76,20 @@ function ThemeDetailsTab({
   onChange: (field: string, value: any) => void;
   onDirty: () => void;
 }) {
-  const [targetDateLocked, setTargetDateLocked] = useState(false);
-
-  // Fetch active programs for multi-select (now 'programs' table)
-  const { data: programs } = useQuery({
-    queryKey: ['active-programs'],
+  // Fetch snapshot name for read-only display
+  const { data: snapshot } = useQuery({
+    queryKey: ['snapshot-name', theme.snapshot_id],
     queryFn: async () => {
+      if (!theme.snapshot_id) return null;
       const { data, error } = await supabase
-        .from('programs')
+        .from('strategy_snapshots')
         .select('id, name')
-        .eq('status', 'active')
-        .order('name');
-      if (error) throw error;
-      return data || [];
+        .eq('id', theme.snapshot_id)
+        .single();
+      if (error) return null;
+      return data;
     },
-  });
-
-  // Fetch imperative alignments (strategic initiatives)
-  const { data: initiatives } = useQuery({
-    queryKey: ['strategic-initiatives'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('initiatives')
-        .select('id, name')
-        .order('name');
-      if (error) throw error;
-      return data || [];
-    },
+    enabled: !!theme.snapshot_id,
   });
 
   const handleFieldChange = (field: string, value: any) => {
@@ -123,46 +97,19 @@ function ThemeDetailsTab({
     onDirty();
   };
 
-  const handleLockToggle = () => {
-    if (targetDateLocked) {
-      setTargetDateLocked(false);
-      toast.info('Target Completion Date unlocked');
-    } else {
-      if (!formData.start_date) {
-        toast.error('Cannot lock: Start Date must be populated first');
-        return;
-      }
-      if (!formData.end_date) {
-        toast.error('Cannot lock: Target Completion Date must be populated first');
-        return;
-      }
-      setTargetDateLocked(true);
-      toast.success('Target Completion Date locked');
-    }
-  };
-
   return (
     <div className="p-4 md:p-5 pb-6 space-y-5 bg-muted/30">
-      {/* DETAILS Section */}
-      <div className="border border-border rounded-xl bg-white p-5 space-y-5 shadow-sm">
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-gold">Details</h3>
+      {/* STRATEGIC CONTEXT Section */}
+      <div className="border border-border rounded-xl bg-white dark:bg-surface-2 p-5 space-y-5 shadow-sm">
+        <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-gold">Strategic Context</h3>
         
-        {/* Programs & State - 2 column */}
+        {/* Strategic Snapshot (read-only) & State */}
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label className="text-xs font-medium">Programs</Label>
-            <Select>
-              <SelectTrigger className="h-9">
-                <SelectValue placeholder="Select programs..." />
-              </SelectTrigger>
-              <SelectContent className="z-[400]">
-                {programs?.map((program) => (
-                  <SelectItem key={program.id} value={program.id}>
-                    {program.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Label className="text-xs font-medium text-muted-foreground">Strategic Snapshot</Label>
+            <div className="h-9 px-3 flex items-center bg-muted/50 border border-border rounded-md text-sm">
+              {snapshot?.name || 'No snapshot assigned'}
+            </div>
           </div>
           <div className="space-y-2">
             <Label className="text-xs font-medium">State</Label>
@@ -174,10 +121,9 @@ function ThemeDetailsTab({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="z-[400]">
-                <SelectItem value="proposed">Backlog / Not Started</SelectItem>
-                <SelectItem value="active">In Progress</SelectItem>
-                <SelectItem value="done">Completed</SelectItem>
-                <SelectItem value="cancelled">Cancelled</SelectItem>
+                {Object.entries(THEME_STATES).map(([value, label]) => (
+                  <SelectItem key={value} value={value}>{label}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -186,139 +132,14 @@ function ThemeDetailsTab({
         {/* Description */}
         <div>
           <Label className="text-xs font-medium">Description</Label>
+          <p className="text-xs text-muted-foreground mb-2">Strategic intent and purpose of this theme</p>
           <div className="mt-1">
             <RichTextEditor
               value={formData.description || ''}
               onChange={(value) => handleFieldChange('description', value)}
-              placeholder="Enter theme description..."
+              placeholder="Describe the strategic intent of this theme..."
             />
           </div>
-        </div>
-
-        {/* Active - No red dot */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label className="text-xs font-medium">Active</Label>
-            <Select defaultValue="yes">
-              <SelectTrigger className="h-9">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="z-[400]">
-                <SelectItem value="yes">Yes</SelectItem>
-                <SelectItem value="no">No</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        {/* Strategic Initiative */}
-        <div className="space-y-2">
-          <Label className="text-xs font-medium">Strategic Initiative</Label>
-          <Select>
-            <SelectTrigger className="h-9">
-              <SelectValue placeholder="Select One" />
-            </SelectTrigger>
-            <SelectContent className="z-[400]">
-              {initiatives?.map((init) => (
-                <SelectItem key={init.id} value={init.id}>
-                  {init.name}
-                </SelectItem>
-              )) || (
-                <>
-                  <SelectItem value="technical-debt">Technical Debt</SelectItem>
-                  <SelectItem value="innovation">Innovation</SelectItem>
-                  <SelectItem value="growth">Growth</SelectItem>
-                </>
-              )}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Imperative Alignment */}
-        <div className="space-y-2">
-          <Label className="text-xs font-medium">Imperative Alignment</Label>
-          <Select>
-            <SelectTrigger className="h-9">
-              <SelectValue placeholder="Select One" />
-            </SelectTrigger>
-            <SelectContent className="z-[400]">
-              <SelectItem value="high">High</SelectItem>
-              <SelectItem value="medium">Medium</SelectItem>
-              <SelectItem value="low">Low</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      {/* DATES Section */}
-      <div className="border border-border rounded-xl bg-white p-5 space-y-5 shadow-sm">
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-gold">Dates</h3>
-        
-        <div className="grid grid-cols-2 gap-3">
-
-          {/* Start / Initiation */}
-          <div>
-            <Label className="text-xs font-medium mb-1.5 block">Start / Initiation</Label>
-            <CatalystDatePicker
-              value={formData.start_date || null}
-              onChange={(date) => handleFieldChange('start_date', date ? format(date, 'yyyy-MM-dd') : null)}
-              placeholder="Select date"
-            />
-          </div>
-
-          {/* Target Completion with Lock/Reset */}
-          <div>
-            <Label className="text-xs font-medium mb-1.5 block">Target Completion</Label>
-            <div className="flex gap-1.5">
-              <div className="flex-1">
-                <CatalystDatePicker
-                  value={formData.end_date || null}
-                  onChange={(date) => handleFieldChange('end_date', date ? format(date, 'yyyy-MM-dd') : null)}
-                  placeholder="Select date"
-                  disabled={targetDateLocked}
-                />
-              </div>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={handleLockToggle}
-                className={cn(
-                  "shrink-0 h-9 w-9",
-                  targetDateLocked && "bg-muted border-brand-gold text-brand-gold"
-                )}
-                title={targetDateLocked ? 'Unlock date' : 'Lock date'}
-              >
-                {targetDateLocked ? <Lock className="h-3.5 w-3.5" /> : <Unlock className="h-3.5 w-3.5" />}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* DISPLAY OPTIONS Section */}
-      <div className="border border-border rounded-xl bg-white p-5 space-y-5 shadow-sm">
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-gold">Display Options</h3>
-        
-        {/* Major Theme */}
-        <div className="flex items-center justify-between">
-          <Label className="text-sm font-medium">Major Theme</Label>
-          <Switch 
-            checked={formData.color_tag ? true : false}
-            onCheckedChange={(checked) => {
-              handleFieldChange('color_tag', checked ? '#0000FF' : null);
-            }}
-          />
-        </div>
-
-        {/* Report Color */}
-        <div className="flex items-center justify-between">
-          <Label className="text-sm font-medium">Report Color</Label>
-          <input
-            type="color"
-            value={formData.color_tag || '#0000FF'}
-            onChange={(e) => handleFieldChange('color_tag', e.target.value)}
-            className="h-8 w-20 rounded border cursor-pointer"
-          />
         </div>
       </div>
     </div>
