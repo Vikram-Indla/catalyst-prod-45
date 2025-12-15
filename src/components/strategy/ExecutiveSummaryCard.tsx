@@ -52,14 +52,17 @@ export function ExecutiveSummaryCard({ snapshotId }: ExecutiveSummaryCardProps) 
   const isLoading = okrLoading || countsLoading || risksLoading;
 
   // Calculate metrics
-  const overallProgress = okrMetrics?.avgProgress || 0;
   const objectivesCount = okrMetrics?.count || 0;
+  const hasObjectives = objectivesCount > 0;
+  const overallProgress = hasObjectives ? (okrMetrics?.avgProgress || 0) : null;
   
-  // At risk: objectives with poor/at_risk health OR low progress
-  const atRiskCount = okrMetrics?.objectives.filter(obj => {
-    const health = (obj.health || '').toLowerCase();
-    return health === 'at_risk' || health === 'poor' || obj.overall_progress < 30;
-  }).length || 0;
+  // At risk: objectives with poor/at_risk health (only count if objectives exist)
+  const atRiskCount = hasObjectives 
+    ? (okrMetrics?.objectives.filter(obj => {
+        const health = (obj.health || '').toLowerCase();
+        return health === 'at_risk' || health === 'poor';
+      }).length || 0)
+    : 0;
 
   // Alignment gaps
   const misalignedEpics = counts?.misalignedEpics || 0;
@@ -78,7 +81,7 @@ export function ExecutiveSummaryCard({ snapshotId }: ExecutiveSummaryCardProps) 
     value,
     subtext,
     onClick,
-    valueColor,
+    isNeutral = false,
   }: {
     icon: typeof TrendingUp;
     iconColor: string;
@@ -87,11 +90,11 @@ export function ExecutiveSummaryCard({ snapshotId }: ExecutiveSummaryCardProps) 
     value: number | string;
     subtext: string;
     onClick: () => void;
-    valueColor?: string;
+    isNeutral?: boolean;
   }) => (
     <button
       onClick={onClick}
-      className="flex flex-col items-start p-3 rounded-lg transition-colors text-left hover:bg-[var(--surface-2)] group"
+      className="flex flex-col items-start p-4 rounded-lg transition-colors text-left hover:bg-[var(--surface-2)] group flex-1"
       style={{ borderRight: '1px solid var(--divider)' }}
     >
       <div className="flex items-center gap-2 mb-2">
@@ -107,9 +110,9 @@ export function ExecutiveSummaryCard({ snapshotId }: ExecutiveSummaryCardProps) 
       </div>
       <span 
         className="text-[28px] font-bold leading-none mb-1"
-        style={{ color: valueColor || 'var(--text-1)' }}
+        style={{ color: isNeutral ? 'var(--text-2)' : iconColor }}
       >
-        {typeof value === 'number' && label === 'Overall Progress' ? `${value}%` : value}
+        {value}
       </span>
       <span className="text-[12px]" style={{ color: 'var(--text-3)' }}>
         {subtext}
@@ -128,6 +131,12 @@ export function ExecutiveSummaryCard({ snapshotId }: ExecutiveSummaryCardProps) 
     );
   }
 
+  // Determine colors based on actual data
+  const progressColor = !hasObjectives ? 'var(--text-2)' : 
+    (overallProgress! >= 70 ? 'hsl(var(--secondary-green))' : 
+     overallProgress! >= 40 ? 'hsl(var(--brand-gold))' : 
+     'hsl(var(--muted-foreground))');
+
   return (
     <PremiumCard>
       <PremiumCardHeader title="Executive Summary" subtitle="Key metrics at a glance" />
@@ -135,58 +144,44 @@ export function ExecutiveSummaryCard({ snapshotId }: ExecutiveSummaryCardProps) 
         <div className="grid grid-cols-2 lg:grid-cols-4">
           <KPITile
             icon={TrendingUp}
-            iconColor="hsl(var(--secondary-green))"
-            iconBg="hsl(var(--secondary-green) / 0.1)"
+            iconColor={hasObjectives ? 'hsl(var(--secondary-green))' : 'var(--text-3)'}
+            iconBg={hasObjectives ? 'hsl(var(--secondary-green) / 0.1)' : 'var(--surface-3)'}
             label="Overall Progress"
-            value={overallProgress}
-            subtext={`Across ${objectivesCount} objective${objectivesCount !== 1 ? 's' : ''}`}
+            value={hasObjectives ? `${Math.round(overallProgress!)}%` : 'N/A'}
+            subtext={hasObjectives ? `Across ${objectivesCount} objective${objectivesCount !== 1 ? 's' : ''}` : 'Create objectives to start tracking'}
             onClick={() => navigate('/enterprise/okr-hub')}
-            valueColor={overallProgress >= 70 ? 'hsl(var(--secondary-green))' : overallProgress >= 40 ? 'hsl(var(--brand-gold))' : 'hsl(var(--destructive))'}
+            isNeutral={!hasObjectives}
           />
           <KPITile
             icon={AlertTriangle}
-            iconColor="hsl(var(--brand-gold))"
-            iconBg="hsl(var(--brand-gold) / 0.1)"
+            iconColor={atRiskCount > 0 ? 'hsl(var(--brand-gold))' : 'var(--text-3)'}
+            iconBg={atRiskCount > 0 ? 'hsl(var(--brand-gold) / 0.1)' : 'var(--surface-3)'}
             label="At Risk"
             value={atRiskCount}
-            subtext="Needs attention"
+            subtext={atRiskCount > 0 ? 'Needs attention' : 'No items flagged'}
             onClick={() => navigate('/enterprise/okr-hub')}
-            valueColor={atRiskCount > 0 ? 'hsl(var(--brand-gold))' : 'var(--text-1)'}
+            isNeutral={atRiskCount === 0}
           />
           <KPITile
             icon={Link2}
-            iconColor={alignmentGaps > 0 ? 'hsl(var(--destructive))' : 'hsl(var(--secondary-green))'}
-            iconBg={alignmentGaps > 0 ? 'hsl(var(--destructive) / 0.1)' : 'hsl(var(--secondary-green) / 0.1)'}
+            iconColor={alignmentGaps > 0 ? 'hsl(var(--brand-gold))' : 'hsl(var(--secondary-green))'}
+            iconBg={alignmentGaps > 0 ? 'hsl(var(--brand-gold) / 0.1)' : 'hsl(var(--secondary-green) / 0.1)'}
             label="Alignment Gaps"
             value={alignmentGaps}
-            subtext="Misaligned or not linked"
+            subtext={alignmentGaps > 0 ? 'Misaligned or not linked' : 'No gaps detected'}
             onClick={() => navigate('/enterprise/strategic-backlog')}
-            valueColor={alignmentGaps > 0 ? 'hsl(var(--destructive))' : 'var(--text-1)'}
+            isNeutral={alignmentGaps === 0}
           />
-          <div className="flex flex-col items-start p-3 rounded-lg transition-colors text-left hover:bg-[var(--surface-2)] group cursor-pointer"
+          <KPITile
+            icon={ShieldAlert}
+            iconColor={openRisks > 0 ? 'hsl(var(--destructive))' : 'hsl(var(--secondary-green))'}
+            iconBg={openRisks > 0 ? 'hsl(var(--destructive) / 0.1)' : 'hsl(var(--secondary-green) / 0.1)'}
+            label="Risk Exposure"
+            value={openRisks}
+            subtext={highRisks > 0 ? `High: ${highRisks} · Open risks` : (openRisks > 0 ? 'Open risks' : 'No open risks')}
             onClick={() => navigate('/enterprise/risks')}
-          >
-            <div className="flex items-center gap-2 mb-2">
-              <div 
-                className="w-7 h-7 rounded flex items-center justify-center"
-                style={{ backgroundColor: openRisks > 0 ? 'hsl(var(--destructive) / 0.1)' : 'hsl(var(--secondary-green) / 0.1)' }}
-              >
-                <ShieldAlert className="w-3.5 h-3.5" style={{ color: openRisks > 0 ? 'hsl(var(--destructive))' : 'hsl(var(--secondary-green))' }} />
-              </div>
-              <span className="text-[12px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-2)' }}>
-                Risk Exposure
-              </span>
-            </div>
-            <span 
-              className="text-[28px] font-bold leading-none mb-1"
-              style={{ color: openRisks > 0 ? 'hsl(var(--destructive))' : 'var(--text-1)' }}
-            >
-              {openRisks}
-            </span>
-            <span className="text-[12px]" style={{ color: 'var(--text-3)' }}>
-              {highRisks > 0 ? `High: ${highRisks} · ` : ''}Open risks
-            </span>
-          </div>
+            isNeutral={openRisks === 0}
+          />
         </div>
       </PremiumCardContent>
     </PremiumCard>
