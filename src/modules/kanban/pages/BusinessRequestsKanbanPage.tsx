@@ -13,6 +13,7 @@ import { CreateBusinessRequestModal } from '@/components/business-requests/Creat
 import { IndustryHeaderToolbarV2 } from '@/shared/components/IndustryHeaderToolbarV2';
 import { useDepartments } from '@/hooks/useDepartmentsAndOwners';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
+import { PageChrome } from '@/components/layout/PageChrome';
 
 export default function BusinessRequestsKanbanPage() {
   const navigate = useNavigate();
@@ -159,58 +160,56 @@ export default function BusinessRequestsKanbanPage() {
 
   const hasActiveFilters = searchQuery || selectedAssignees.length > 0 || scoringFilter !== 'all';
 
+  // Toolbar content
+  const toolbarElement = (
+    <IndustryHeaderToolbarV2
+      title="Product Kanban"
+      countText={`${filteredTickets.length}`}
+      activeView="board"
+      searchValue={searchQuery}
+      onSearchChange={setSearchQuery}
+      avatars={teamMembers.slice(0, 6).map(m => ({
+        id: m.id,
+        name: m.name,
+        initials: m.name.split(' ').map(n => n[0]).join('').substring(0, 2),
+        color: m.color
+      }))}
+      selectedAvatarIds={selectedAssignees}
+      onToggleAvatar={(id) => setSelectedAssignees(prev => prev.includes(id) ? prev.filter(a => a !== id) : [...prev, id])}
+      onSelectAllAvatars={() => setSelectedAssignees([])}
+      scoringFilter={scoringFilter}
+      onScoringFilterChange={setScoringFilter}
+      onViewSettings={() => setCompactMode(!compactMode)}
+      onExport={() => {
+        // Export CSV
+        const headers = ['ID', 'Summary', 'Status', 'Score', 'Assignee'];
+        const csvRows = [headers.join(',')];
+        filteredTickets.forEach(t => {
+          csvRows.push([t.id, `"${t.summary.replace(/"/g, '""')}"`, t.status, t.score ?? '', t.assignee ?? ''].join(','));
+        });
+        const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'business-requests.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+      }}
+    />
+  );
+
   if (isLoading) {
     return (
-      <div className="p-8 space-y-4">
-        {Array.from({ length: 5 }).map((_, i) => (<Skeleton key={i} className="h-20 w-full" />))}
-      </div>
+      <PageChrome toolbar={toolbarElement}>
+        <div className="p-8 space-y-4">
+          {Array.from({ length: 5 }).map((_, i) => (<Skeleton key={i} className="h-20 w-full" />))}
+        </div>
+      </PageChrome>
     );
   }
 
   return (
-    <div 
-      className="flex flex-col overflow-hidden"
-      style={{ 
-        height: 'calc(100vh - 48px)', // Subtract global header
-        backgroundColor: 'var(--bg)' 
-      }}
-    >
-      {/* Unified Header Toolbar */}
-      <IndustryHeaderToolbarV2
-        title="Product Kanban"
-        countText={`${filteredTickets.length}`}
-        activeView="board"
-        searchValue={searchQuery}
-        onSearchChange={setSearchQuery}
-        avatars={teamMembers.slice(0, 6).map(m => ({
-          id: m.id,
-          name: m.name,
-          initials: m.name.split(' ').map(n => n[0]).join('').substring(0, 2),
-          color: m.color
-        }))}
-        selectedAvatarIds={selectedAssignees}
-        onToggleAvatar={(id) => setSelectedAssignees(prev => prev.includes(id) ? prev.filter(a => a !== id) : [...prev, id])}
-        onSelectAllAvatars={() => setSelectedAssignees([])}
-        scoringFilter={scoringFilter}
-        onScoringFilterChange={setScoringFilter}
-        onViewSettings={() => setCompactMode(!compactMode)}
-        onExport={() => {
-          // Export CSV
-          const headers = ['ID', 'Summary', 'Status', 'Score', 'Assignee'];
-          const csvRows = [headers.join(',')];
-          filteredTickets.forEach(t => {
-            csvRows.push([t.id, `"${t.summary.replace(/"/g, '""')}"`, t.status, t.score ?? '', t.assignee ?? ''].join(','));
-          });
-          const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = 'business-requests.csv';
-          a.click();
-          URL.revokeObjectURL(url);
-        }}
-      />
-
+    <PageChrome toolbar={toolbarElement}>
       {/* Board Container - fills remaining viewport with proper flex rules */}
       <div 
         className="flex-1 flex flex-col overflow-hidden px-4 pt-3"
@@ -272,6 +271,6 @@ export default function BusinessRequestsKanbanPage() {
 
       {/* Create Business Request Modal */}
       <CreateBusinessRequestModal isOpen={createModalOpen} onClose={() => setCreateModalOpen(false)} />
-    </div>
+    </PageChrome>
   );
 }
