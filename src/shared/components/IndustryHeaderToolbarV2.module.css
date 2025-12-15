@@ -14,44 +14,7 @@
   --radius-full: 9999px;
 }
 
-/* ========================
-   ROW 1: TITLE BAR
-   ======================== */
-.titleBar {
-  height: 48px;
-  display: flex;
-  align-items: center;
-  padding: 0 24px;
-  background: hsl(var(--background));
-}
-
-.titleBar__content {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-}
-
-.titleBar__title {
-  font-size: 20px;
-  font-weight: 700;
-  color: hsl(var(--secondary-green));
-  margin: 0;
-  line-height: 1.2;
-}
-
-.titleBar__count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 24px;
-  height: 22px;
-  padding: 0 8px;
-  background: hsl(var(--muted));
-  border-radius: var(--radius-full);
-  font-size: 12px;
-  font-weight: 600;
-  color: hsl(var(--muted-foreground));
-}
+/* Title bar styles removed - use GlobalPageHeader instead */
 
 /* ========================
    ROW 2: COMMAND BAR
