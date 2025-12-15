@@ -137,6 +137,20 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
           }
         />
         <PremiumCardContent noPadding>
+          {/* Empty state banner when all counts are 0 */}
+          {!isLoading && !okrLoading && objectivesCount === 0 && (counts?.themes ?? 0) === 0 && (counts?.epics ?? 0) === 0 && (counts?.features ?? 0) === 0 && (
+            <div 
+              className="px-4 py-3 text-[13px] border-b"
+              style={{ 
+                backgroundColor: 'hsl(var(--brand-gold) / 0.08)',
+                borderColor: 'hsl(var(--brand-gold) / 0.2)',
+                color: 'var(--text-1)',
+              }}
+            >
+              No strategy items linked yet. Create an objective to start tracking progress, alignment, and risk.
+            </div>
+          )}
+
           {/* Table header */}
           <div 
             className="grid items-center px-4 py-2"

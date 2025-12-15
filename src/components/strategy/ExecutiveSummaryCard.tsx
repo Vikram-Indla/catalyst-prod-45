@@ -133,14 +133,17 @@ export function ExecutiveSummaryCard({ snapshotId }: ExecutiveSummaryCardProps) 
       }).length ?? 0)
     : 0;
 
-  // Alignment gaps - safe access
-  const misalignedEpics = counts?.misalignedEpics ?? 0;
-  const misalignedFeatures = counts?.misalignedFeatures ?? 0;
-  const alignmentGaps = misalignedEpics + misalignedFeatures;
+  // Linked Work: count of themes+epics+features linked to this snapshot
+  const linkedThemes = counts?.themes ?? 0;
+  const linkedEpics = counts?.epics ?? 0;
+  const linkedFeatures = counts?.features ?? 0;
+  const linkedWorkCount = linkedThemes + linkedEpics + linkedFeatures;
+  const canShowLinkedWork = !countsError;
 
   // Risk exposure - safe access
   const openRisks = riskData?.total ?? 0;
   const highRisks = riskData?.high ?? 0;
+  const canShowRisks = !risksError;
 
   // Determine display values and states for each tile
   const progressValue = okrError ? '—' : (hasObjectives ? `${Math.round(overallProgress!)}%` : 'N/A');
@@ -153,65 +156,104 @@ export function ExecutiveSummaryCard({ snapshotId }: ExecutiveSummaryCardProps) 
     ? 'Unable to load' 
     : (!hasObjectives ? 'No objectives yet' : (atRiskCount > 0 ? 'Needs attention' : 'No items flagged'));
 
-  const alignmentValue = countsError ? '—' : alignmentGaps;
-  const alignmentSubtext = countsError 
-    ? 'Data source not configured' 
-    : (alignmentGaps > 0 ? 'Misaligned or not linked' : 'No gaps detected');
+  const linkedWorkSubtext = linkedWorkCount > 0 
+    ? `${linkedThemes} themes · ${linkedEpics} epics · ${linkedFeatures} features`
+    : 'No items linked yet';
 
-  const riskValue = risksError ? '—' : openRisks;
-  const riskSubtext = risksError 
-    ? 'Risks module not enabled' 
-    : (highRisks > 0 ? `High: ${highRisks} · Open risks` : (openRisks > 0 ? 'Open risks' : 'No open risks'));
+  const riskSubtext = highRisks > 0 
+    ? `High: ${highRisks} · Open risks` 
+    : (openRisks > 0 ? 'Open risks' : 'No open risks');
+
+  // Build tiles array - only include tiles that can be computed
+  const tiles: Array<{
+    icon: typeof TrendingUp;
+    label: string;
+    value: number | string;
+    subtext: string;
+    onClick: () => void;
+    isNeutral: boolean;
+    isLoading: boolean;
+    hasError: boolean;
+    accentColor: 'green' | 'gold' | 'red' | 'neutral';
+  }> = [
+    {
+      icon: TrendingUp,
+      label: 'Overall Progress',
+      value: progressValue,
+      subtext: progressSubtext,
+      onClick: () => navigate('/enterprise/okr-hub'),
+      isLoading: okrLoading,
+      hasError: okrError,
+      isNeutral: !hasObjectives || okrError,
+      accentColor: hasObjectives ? 'green' : 'neutral',
+    },
+    {
+      icon: AlertTriangle,
+      label: 'At Risk',
+      value: atRiskValue,
+      subtext: atRiskSubtext,
+      onClick: () => navigate('/enterprise/okr-hub'),
+      isLoading: okrLoading,
+      hasError: okrError,
+      isNeutral: atRiskCount === 0 || okrError || !hasObjectives,
+      accentColor: atRiskCount > 0 ? 'gold' : 'neutral',
+    },
+  ];
+
+  // Only show Linked Work tile if data source is available
+  if (canShowLinkedWork) {
+    tiles.push({
+      icon: Link2,
+      label: 'Linked Work',
+      value: linkedWorkCount,
+      subtext: linkedWorkSubtext,
+      onClick: () => navigate('/enterprise/strategic-backlog'),
+      isLoading: countsLoading,
+      hasError: false,
+      isNeutral: linkedWorkCount === 0,
+      accentColor: linkedWorkCount > 0 ? 'green' : 'neutral',
+    });
+  }
+
+  // Only show Risk Exposure tile if risks module is available
+  if (canShowRisks) {
+    tiles.push({
+      icon: ShieldAlert,
+      label: 'Risk Exposure',
+      value: openRisks,
+      subtext: riskSubtext,
+      onClick: () => navigate('/enterprise/risks'),
+      isLoading: risksLoading,
+      hasError: false,
+      isNeutral: openRisks === 0,
+      accentColor: openRisks > 0 ? 'red' : 'green',
+    });
+  }
+
+  // Determine grid columns based on number of tiles
+  const gridCols = tiles.length === 4 ? 'grid-cols-2 lg:grid-cols-4' 
+    : tiles.length === 3 ? 'grid-cols-3' 
+    : 'grid-cols-2';
 
   return (
     <PremiumCard>
       <PremiumCardHeader title="Executive Summary" subtitle="Key metrics at a glance" />
       <PremiumCardContent noPadding>
-        <div className="grid grid-cols-2 lg:grid-cols-4">
-          <KPITile
-            icon={TrendingUp}
-            label="Overall Progress"
-            value={progressValue}
-            subtext={progressSubtext}
-            onClick={() => navigate('/enterprise/okr-hub')}
-            isLoading={okrLoading}
-            hasError={okrError}
-            isNeutral={!hasObjectives || okrError}
-            accentColor={hasObjectives ? 'green' : 'neutral'}
-          />
-          <KPITile
-            icon={AlertTriangle}
-            label="At Risk"
-            value={atRiskValue}
-            subtext={atRiskSubtext}
-            onClick={() => navigate('/enterprise/okr-hub')}
-            isLoading={okrLoading}
-            hasError={okrError}
-            isNeutral={atRiskCount === 0 || okrError || !hasObjectives}
-            accentColor={atRiskCount > 0 ? 'gold' : 'neutral'}
-          />
-          <KPITile
-            icon={Link2}
-            label="Alignment Gaps"
-            value={alignmentValue}
-            subtext={alignmentSubtext}
-            onClick={() => navigate('/enterprise/strategic-backlog')}
-            isLoading={countsLoading}
-            hasError={countsError}
-            isNeutral={alignmentGaps === 0 || countsError}
-            accentColor={alignmentGaps > 0 ? 'gold' : 'green'}
-          />
-          <KPITile
-            icon={ShieldAlert}
-            label="Risk Exposure"
-            value={riskValue}
-            subtext={riskSubtext}
-            onClick={() => navigate('/enterprise/risks')}
-            isLoading={risksLoading}
-            hasError={risksError}
-            isNeutral={openRisks === 0 || risksError}
-            accentColor={openRisks > 0 ? 'red' : 'green'}
-          />
+        <div className={`grid ${gridCols}`}>
+          {tiles.map((tile, index) => (
+            <KPITile
+              key={tile.label}
+              icon={tile.icon}
+              label={tile.label}
+              value={tile.value}
+              subtext={tile.subtext}
+              onClick={tile.onClick}
+              isLoading={tile.isLoading}
+              hasError={tile.hasError}
+              isNeutral={tile.isNeutral}
+              accentColor={tile.accentColor}
+            />
+          ))}
         </div>
       </PremiumCardContent>
     </PremiumCard>

@@ -174,7 +174,9 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
                 </AvatarFallback>
               </Avatar>
             ) : (
-              <div className="w-6 h-6" />
+              <span className="text-[11px]" style={{ color: 'var(--text-3)' }}>
+                Unassigned
+              </span>
             )}
           </div>
         </div>
@@ -248,41 +250,41 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
           {treeData.length > 0 ? (
             treeData.map((item) => renderTreeItem(item, 0))
           ) : (
-            <div className="py-8 px-4 text-center">
+            <div className="py-10 px-6 text-center">
               <div 
-                className="w-10 h-10 rounded-full mx-auto flex items-center justify-center mb-2"
+                className="w-12 h-12 rounded-full mx-auto flex items-center justify-center mb-3"
                 style={{ backgroundColor: 'hsl(var(--secondary-green) / 0.1)' }}
               >
-                <Target className="w-4 h-4" style={{ color: 'hsl(var(--secondary-green))' }} />
+                <Target className="w-5 h-5" style={{ color: 'hsl(var(--secondary-green))' }} />
               </div>
               <p 
-                className="text-[13px] font-medium mb-1"
+                className="text-[15px] font-semibold mb-1"
                 style={{ color: 'var(--text-1)' }}
               >
-                No objectives found
+                No OKRs linked to this snapshot
               </p>
               <p 
-                className="text-[12px] mb-3"
+                className="text-[13px] mb-4 max-w-xs mx-auto"
                 style={{ color: 'var(--text-3)' }}
               >
-                Link objectives to this snapshot
+                Create objectives to start tracking progress, alignment, and risk.
               </p>
-              <div className="flex items-center justify-center gap-2">
+              <div className="flex items-center justify-center gap-3">
                 <Button 
                   size="sm" 
-                  className="gap-1.5 h-7 text-[12px]"
+                  className="gap-1.5 h-8 text-[13px] px-4"
                   style={{ backgroundColor: 'hsl(var(--brand-gold))', color: 'white' }}
                 >
-                  <Plus className="w-3 h-3" />
-                  Create
+                  <Plus className="w-3.5 h-3.5" />
+                  Create Objective
                 </Button>
                 <Button 
                   variant="outline" 
                   size="sm"
-                  className="h-7 text-[12px]"
+                  className="h-8 text-[13px] px-4"
                   onClick={() => navigate('/enterprise/okr-hub')}
                 >
-                  OKR Hub
+                  Open OKR Hub
                 </Button>
               </div>
             </div>
