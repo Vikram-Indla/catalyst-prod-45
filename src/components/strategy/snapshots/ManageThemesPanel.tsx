@@ -33,8 +33,10 @@ function useUpdateThemeLinks() {
     mutationFn: async ({ snapshotId, themeIds }: { snapshotId: string; themeIds: string[] }) => {
       const { error } = await supabase
         .from('snapshot_configurations')
-        .update({ themes: themeIds })
-        .eq('snapshot_id', snapshotId);
+        .upsert(
+          { snapshot_id: snapshotId, themes: themeIds },
+          { onConflict: 'snapshot_id' }
+        );
       
       if (error) throw error;
     },
