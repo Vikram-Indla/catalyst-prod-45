@@ -164,30 +164,47 @@ export function DiscussionsViewTab({ requestId }: DiscussionsViewTabProps) {
               const displayName = isSystemUser ? 'System' : (profile?.full_name || profile?.email || 'Unknown User');
               const initials = isSystemUser ? 'SY' : getInitials(profile?.full_name, profile?.email);
               
-              return (
-                <Card key={discussion.id} className="p-4 bg-card border-border/60">
+                return (
+                <div 
+                  key={discussion.id} 
+                  className="p-4 rounded-md"
+                  style={{ 
+                    background: 'var(--surface-2)', 
+                    border: '1px solid var(--border-color)' 
+                  }}
+                >
                   <div className="flex gap-3">
                     <Avatar className="h-8 w-8 shrink-0">
-                      <AvatarFallback className={`text-xs ${isSystemUser ? 'bg-muted text-muted-foreground' : 'bg-brand-gold/10 text-brand-gold'}`}>
+                      <AvatarFallback 
+                        className="text-xs"
+                        style={{ 
+                          background: isSystemUser ? 'var(--surface-3)' : 'var(--accent-muted)',
+                          color: isSystemUser ? 'var(--text-3)' : 'var(--accent-color)'
+                        }}
+                      >
                         {initials}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className={`font-medium text-[13px] ${isSystemUser ? 'text-muted-foreground italic' : 'text-foreground'}`}>
+                        <span 
+                          className="font-medium text-[13px]"
+                          style={{ color: isSystemUser ? 'var(--text-3)' : 'var(--text-1)' }}
+                        >
                           {displayName}
                         </span>
-                        <span className="text-[12px] text-muted-foreground">
+                        <span className="text-[12px]" style={{ color: 'var(--text-3)' }}>
                           {format(new Date(discussion.created_at), 'MMM d, yyyy h:mm a')}
                         </span>
                       </div>
                       <p 
-                        className="text-[13px] text-foreground whitespace-pre-wrap"
+                        className="text-[13px] whitespace-pre-wrap"
+                        style={{ color: 'var(--text-1)' }}
                         dangerouslySetInnerHTML={{ __html: formatMessage(discussion.message) }}
                       />
                     </div>
                   </div>
-                </Card>
+                </div>
               );
             })
           )}
@@ -195,7 +212,11 @@ export function DiscussionsViewTab({ requestId }: DiscussionsViewTabProps) {
       </ScrollArea>
 
       {/* Add Comment Form */}
-      <form onSubmit={handleSubmit} className="p-4 shrink-0" style={{ borderTop: '1px solid var(--border-color)', backgroundColor: 'var(--surface-1)' }}>
+      <form 
+        onSubmit={handleSubmit} 
+        className="p-4 shrink-0" 
+        style={{ borderTop: '1px solid var(--border-color)', backgroundColor: 'var(--surface-1)' }}
+      >
         <div className="flex gap-2">
           <div className="flex-1 relative">
             <Textarea
@@ -203,7 +224,12 @@ export function DiscussionsViewTab({ requestId }: DiscussionsViewTabProps) {
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
               placeholder="Add a comment... Use @ to mention team members"
-              className="min-h-[80px] resize-none pr-10 text-[13px] bg-muted/30 border-border/60 focus:border-brand-gold"
+              className="min-h-[80px] resize-none pr-10 text-[13px]"
+              style={{ 
+                background: 'var(--input-bg)', 
+                borderColor: 'var(--input-border)',
+                color: 'var(--input-text)'
+              }}
             />
             <Popover open={mentionOpen} onOpenChange={setMentionOpen}>
               <PopoverTrigger asChild>
@@ -211,13 +237,18 @@ export function DiscussionsViewTab({ requestId }: DiscussionsViewTabProps) {
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="absolute right-2 top-2 h-7 w-7 p-0 text-muted-foreground hover:text-brand-gold"
+                  className="absolute right-2 top-2 h-7 w-7 p-0"
+                  style={{ color: 'var(--text-3)' }}
                   onClick={() => setMentionOpen(true)}
                 >
                   <AtSign className="h-4 w-4" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-64 p-0" align="end">
+              <PopoverContent 
+                className="w-64 p-0 z-[400]" 
+                align="end"
+                style={{ background: 'var(--surface-1)', borderColor: 'var(--border-color)' }}
+              >
                 <Command>
                   <CommandInput 
                     placeholder="Search users..." 
@@ -239,10 +270,10 @@ export function DiscussionsViewTab({ requestId }: DiscussionsViewTabProps) {
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex flex-col">
-                            <span className="text-[13px] font-medium">
+                            <span className="text-[13px] font-medium" style={{ color: 'var(--text-1)' }}>
                               {profile.full_name || 'No name'}
                             </span>
-                            <span className="text-[11px] text-muted-foreground">
+                            <span className="text-[11px]" style={{ color: 'var(--text-3)' }}>
                               {profile.email}
                             </span>
                           </div>
@@ -259,7 +290,10 @@ export function DiscussionsViewTab({ requestId }: DiscussionsViewTabProps) {
           <Button 
             type="submit" 
             disabled={!newComment.trim() || addCommentMutation.isPending}
-            className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+            style={{ 
+              background: 'var(--btn-primary-bg)', 
+              color: 'var(--btn-primary-text)' 
+            }}
           >
             <Send className="h-4 w-4 mr-2" />
             {addCommentMutation.isPending ? 'Sending...' : 'Send'}

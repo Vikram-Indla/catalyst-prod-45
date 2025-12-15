@@ -7,3 +7,10 @@ export { DrawerMetadataChips } from './DrawerMetadataChips';
 export { CIOPanel } from './CIOPanel';
 export { SummaryStrip, DemandSummaryStrip, RisksSummaryStrip, MilestonesSummaryStrip, LinksSummaryStrip, BudgetSummaryStrip } from './SummaryStrip';
 export { EnterpriseStatusControl } from './EnterpriseStatusControl';
+export { 
+  EnterpriseDrawerShell, 
+  DrawerSection, 
+  DrawerDetailRow, 
+  DrawerEmptyState,
+  DrawerTabToolbar 
+} from './EnterpriseDrawerShell';

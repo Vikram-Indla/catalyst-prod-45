@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetClose } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -50,6 +50,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useVisibleDrawerTabs } from '@/hooks/useDrawerTabConfigs';
 import { DrawerMetadataChips, CIOPanel, EnterpriseStatusControl } from './drawer';
+import { cn } from '@/lib/utils';
 
 // Fields to track for audit logging (human-readable names)
 const AUDIT_FIELD_LABELS: Record<string, string> = {
@@ -438,11 +439,25 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
   return (
     <>
       <Sheet open={isOpen} onOpenChange={(open) => !open && handleAttemptClose()}>
-        <SheetContent side="right" hideClose className={`executive-drawer ${drawerWidthClass} p-0 flex flex-col overflow-hidden`} style={{ background: 'var(--surface-1)' }}>
-          <SheetHeader className="executive-drawer-header flex-col space-y-0 shrink-0 p-0" style={{ background: 'var(--surface-1)' }}>
+        <SheetContent 
+          side="right" 
+          hideClose 
+          className={cn(
+            "enterprise-drawer p-0 flex flex-col overflow-hidden",
+            drawerWidthClass
+          )}
+          style={{ background: 'var(--surface-1)' }}
+        >
+          <SheetHeader 
+            className="enterprise-drawer-header flex-col space-y-0 shrink-0 p-0" 
+            style={{ background: 'var(--surface-1)' }}
+          >
             {/* Enterprise Header - Breadcrumb + ID */}
             <div className="px-4 md:px-5 pt-3 pb-1 flex items-center gap-2">
-              <span className="text-[10px] uppercase tracking-wider font-medium" style={{ color: 'var(--text-3)' }}>
+              <span 
+                className="text-[10px] uppercase tracking-wider font-medium" 
+                style={{ color: 'var(--text-3)' }}
+              >
                 Product Backlog
               </span>
               <span style={{ color: 'var(--text-3)' }}>/</span>
@@ -514,7 +529,11 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                       <ChevronDown className="h-3.5 w-3.5 ml-1" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="bg-popover">
+                  <DropdownMenuContent 
+                    align="end" 
+                    className="z-[400]"
+                    style={{ background: 'var(--surface-1)', borderColor: 'var(--border-color)' }}
+                  >
                     <DropdownMenuItem onSelect={handleSave}>
                       Save
                     </DropdownMenuItem>
@@ -531,7 +550,11 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                       <MoreVertical className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56 bg-popover">
+                  <DropdownMenuContent 
+                    align="end" 
+                    className="w-56 z-[400]"
+                    style={{ background: 'var(--surface-1)', borderColor: 'var(--border-color)' }}
+                  >
                     <DropdownMenuItem onSelect={() => handleAdditionalOption('duplicate')}>
                       <Copy className="h-4 w-4 mr-2" />
                       Duplicate Request
@@ -551,7 +574,8 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                   variant="ghost"
                   size="icon"
                   onClick={toggleExpand}
-                  className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  className="h-8 w-8"
+                  style={{ color: 'var(--text-3)' }}
                   title={isExpanded ? 'Collapse' : 'Expand'}
                 >
                   {isExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
@@ -561,13 +585,14 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                   variant="ghost" 
                   size="icon" 
                   onClick={handleAttemptClose}
-                  className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  className="h-8 w-8"
+                  style={{ color: 'var(--text-3)' }}
                 >
                   <X className="h-4 w-4" />
                 </Button>
               </div>
             </div>
-            <div style={{ borderBottom: '1px solid var(--accent-color)' }} />
+            <div style={{ borderBottom: '2px solid var(--accent-color)' }} />
             <SheetDescription className="sr-only">Business request details panel</SheetDescription>
           </SheetHeader>
 
@@ -581,21 +606,31 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
             onOpenChange={setWorkflowModalOpen}
           />
 
-          {/* Tabs with horizontal scroll */}
+          {/* Tabs with horizontal scroll - using semantic tokens */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
-            <TabsList className="executive-tabs-list w-full justify-start rounded-none h-10 shrink-0 overflow-x-auto flex-nowrap px-4 md:px-5">
+            <TabsList 
+              className="executive-tabs-list w-full justify-start rounded-none h-10 shrink-0 overflow-x-auto flex-nowrap px-4 md:px-5"
+              style={{ 
+                background: 'var(--surface-1)', 
+                borderBottom: '1px solid var(--border-color)' 
+              }}
+            >
               {VIEW_TABS.map((tab) => (
                 <TabsTrigger
                   key={tab.value}
                   value={tab.value}
-                  className="executive-tab whitespace-nowrap"
+                  className="executive-tab whitespace-nowrap text-xs"
+                  style={{ color: 'var(--text-2)' }}
                 >
                   {tab.label}
                 </TabsTrigger>
               ))}
             </TabsList>
 
-            <div className="executive-drawer-content flex-1 flex flex-col min-h-0 overflow-y-auto">
+            <div 
+              className="executive-drawer-content flex-1 flex flex-col min-h-0 overflow-y-auto"
+              style={{ background: 'var(--bg)' }}
+            >
               <TabsContent value="demand-details" className="m-0 focus-visible:outline-none flex-1 p-4 md:p-5 pb-6">
                 <DemandDetailsViewTab data={formData} onChange={handleFieldChange} onNavigateToTab={setActiveTab} />
               </TabsContent>
@@ -632,15 +667,22 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
 
       {/* Unsaved Changes Dialog */}
       <AlertDialog open={showUnsavedChangesDialog} onOpenChange={setShowUnsavedChangesDialog}>
-        <AlertDialogContent>
+        <AlertDialogContent style={{ background: 'var(--surface-1)', borderColor: 'var(--border-color)' }}>
           <AlertDialogHeader>
-            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle style={{ color: 'var(--text-1)' }}>Unsaved Changes</AlertDialogTitle>
+            <AlertDialogDescription style={{ color: 'var(--text-2)' }}>
               You have unsaved changes. Are you sure you want to leave? Your changes will be lost.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowUnsavedChangesDialog(false)}>
+            <AlertDialogCancel 
+              onClick={() => setShowUnsavedChangesDialog(false)}
+              style={{ 
+                background: 'var(--btn-secondary-bg)', 
+                color: 'var(--btn-secondary-text)',
+                borderColor: 'var(--btn-secondary-border)'
+              }}
+            >
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction 
@@ -651,7 +693,10 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
             </AlertDialogAction>
             <AlertDialogAction 
               onClick={handleSaveAndClose}
-              className="bg-brand-gold text-white hover:bg-brand-gold-hover"
+              style={{ 
+                background: 'var(--btn-primary-bg)', 
+                color: 'var(--btn-primary-text)' 
+              }}
             >
               Save & Close
             </AlertDialogAction>
@@ -661,16 +706,24 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <AlertDialogContent>
+        <AlertDialogContent style={{ background: 'var(--surface-1)', borderColor: 'var(--border-color)' }}>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Request</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle style={{ color: 'var(--text-1)' }}>Delete Request</AlertDialogTitle>
+            <AlertDialogDescription style={{ color: 'var(--text-2)' }}>
               Are you sure you want to delete <span className="font-semibold">{request?.request_key}</span>? 
               This request will be moved to deleted items and can be restored within 30 days.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel
+              style={{ 
+                background: 'var(--btn-secondary-bg)', 
+                color: 'var(--btn-secondary-text)',
+                borderColor: 'var(--btn-secondary-border)'
+              }}
+            >
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleConfirmDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
