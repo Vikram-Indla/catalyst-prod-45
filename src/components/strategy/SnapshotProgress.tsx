@@ -282,21 +282,24 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
 
   return (
     <Card 
+      className="rounded-lg shadow-sm"
       style={{ 
         borderLeft: '3px solid var(--accent-color)',
-        backgroundColor: 'var(--surface-2)',
+        backgroundColor: 'var(--surface-1)',
       }}
     >
-      <CardHeader className="pb-4" style={{ backgroundColor: 'var(--surface-3)', borderRadius: '8px 8px 0 0' }}>
+      <CardHeader className="py-3 px-4" style={{ backgroundColor: 'var(--surface-2)', borderRadius: '8px 8px 0 0' }}>
         <div className="flex items-center gap-2">
-          <CardTitle className="text-base flex items-center gap-2" style={{ color: 'var(--text-1)' }}>Snapshot Progress</CardTitle>
+          <CardTitle className="text-sm font-semibold" style={{ color: 'var(--text-1)' }}>
+            Snapshot Progress
+          </CardTitle>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Info className="h-4 w-4 text-muted-foreground cursor-help hover:text-brand-gold transition-colors" />
+                <Info className="h-3.5 w-3.5 cursor-help" style={{ color: 'var(--text-3)' }} />
               </TooltipTrigger>
               <TooltipContent side="right" className="max-w-xs">
-                <p className="text-sm">
+                <p className="text-xs">
                   Shows progress of work items tied to the strategic snapshot. 
                   Dials show completion status breakdown. 
                   Click any item type to manage in its grid.
@@ -306,7 +309,7 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
           </TooltipProvider>
         </div>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-5 px-4 pb-4">
         {isLoading ? (
           <div className="text-center py-12 text-sm text-muted-foreground">
             Loading progress data...

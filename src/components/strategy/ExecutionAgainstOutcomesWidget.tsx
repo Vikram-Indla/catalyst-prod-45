@@ -97,22 +97,21 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
   return (
     <>
       <Card 
-        className="h-full" 
+        className="h-full rounded-lg shadow-sm" 
         style={{ 
           borderLeft: '3px solid var(--accent-color)',
-          backgroundColor: 'var(--surface-2)',
+          backgroundColor: 'var(--surface-1)',
         }}
       >
-        <CardHeader className="pb-3" style={{ backgroundColor: 'var(--surface-3)', borderRadius: '8px 8px 0 0' }}>
+        <CardHeader className="py-3 px-4" style={{ backgroundColor: 'var(--surface-2)', borderRadius: '8px 8px 0 0' }}>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-base flex items-center gap-2" style={{ color: 'var(--text-1)' }}>
-              <Target className="h-4 w-4" style={{ color: 'var(--accent-color)' }} />
+            <CardTitle className="text-sm font-semibold flex items-center gap-2" style={{ color: 'var(--text-1)' }}>
               Execution Against Outcomes
             </CardTitle>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                  <Info className="h-3.5 w-3.5 cursor-help" style={{ color: 'var(--text-3)' }} />
                 </TooltipTrigger>
                 <TooltipContent side="left" className="max-w-xs">
                   <p className="text-xs">
@@ -122,23 +121,23 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
               </Tooltip>
             </TooltipProvider>
           </div>
-          {/* Legend */}
-          <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
+          {/* Legend - compact */}
+          <div className="flex items-center gap-3 mt-1.5 text-[11px]" style={{ color: 'var(--text-3)' }}>
             <div className="flex items-center gap-1">
-              <div className="w-2 h-2 rounded-full bg-red-500" />
+              <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
               <span>≤39%</span>
             </div>
             <div className="flex items-center gap-1">
-              <div className="w-2 h-2 rounded-full bg-amber-500" />
+              <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
               <span>40-69%</span>
             </div>
             <div className="flex items-center gap-1">
-              <div className="w-2 h-2 rounded-full bg-green-500" />
+              <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
               <span>≥70%</span>
             </div>
           </div>
         </CardHeader>
-        <CardContent className="pt-0">
+        <CardContent className="pt-0 px-4 pb-4">
           {isLoading ? (
             <div className="space-y-3">
               {[1, 2, 3, 4].map((i) => (

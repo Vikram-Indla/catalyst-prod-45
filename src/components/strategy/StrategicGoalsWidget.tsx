@@ -51,35 +51,35 @@ export function StrategicGoalsWidget({ snapshotId }: StrategicGoalsWidgetProps) 
 
   return (
     <Card 
+      className="rounded-lg shadow-sm"
       style={{ 
         borderLeft: '3px solid var(--accent-color)',
-        backgroundColor: 'var(--surface-2)',
+        backgroundColor: 'var(--surface-1)',
       }}
     >
-      <CardHeader style={{ backgroundColor: 'var(--surface-3)', borderRadius: '8px 8px 0 0' }}>
+      <CardHeader className="py-3 px-4" style={{ backgroundColor: 'var(--surface-2)', borderRadius: '8px 8px 0 0' }}>
         <div className="flex items-center justify-between">
+          <CardTitle className="text-sm font-semibold" style={{ color: 'var(--text-1)' }}>
+            Strategic Objectives
+          </CardTitle>
           <div className="flex items-center gap-2">
-            <Target className="h-5 w-5" style={{ color: 'var(--accent-color)' }} />
-            <CardTitle className="text-base" style={{ color: 'var(--text-1)' }}>Strategic Objectives</CardTitle>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1 text-sm">
-              <TrendingUp className="h-4 w-4 text-success" />
+            <div className="flex items-center gap-1 text-xs" style={{ color: 'var(--text-2)' }}>
+              <TrendingUp className="h-3.5 w-3.5 text-success" />
               <span className="font-semibold">{avgProgress}%</span>
             </div>
             <Button
               variant="ghost"
               size="sm"
-              className="h-7 px-2"
+              className="h-6 w-6 p-0"
               onClick={handleOpenOKRHub}
               title="Open OKR Hub"
             >
-              <ExternalLink className="h-3.5 w-3.5" />
+              <ExternalLink className="h-3 w-3" style={{ color: 'var(--text-3)' }} />
             </Button>
           </div>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-4 pb-4">
         {count === 0 ? (
           <div className="text-center py-6 text-sm text-muted-foreground">
             <p>No objectives linked to this snapshot's themes</p>

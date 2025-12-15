@@ -22,17 +22,17 @@ export function MissionVisionValuesCard({
 }: MissionVisionValuesCardProps) {
   return (
     <Card 
-      className="min-h-[140px] overflow-hidden" 
+      className="min-h-[120px] overflow-hidden rounded-lg shadow-sm" 
       style={{ 
         borderLeft: '3px solid var(--accent-color)',
         backgroundColor: 'var(--surface-1)',
       }}
     >
-      <CardHeader className="pb-2">
-        <CardTitle className="text-base font-medium" style={{ color: 'var(--accent-color)' }}>{title}</CardTitle>
-        <p className="text-sm italic" style={{ color: 'var(--text-3)' }}>{subtitle}</p>
+      <CardHeader className="py-3 px-4" style={{ backgroundColor: 'var(--surface-2)', borderRadius: '8px 8px 0 0' }}>
+        <CardTitle className="text-sm font-semibold" style={{ color: 'var(--accent-color)' }}>{title}</CardTitle>
+        <p className="text-[11px]" style={{ color: 'var(--text-3)' }}>{subtitle}</p>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-4 pb-4">
         <InlineEditTextarea
           value={value}
           onSave={onSave}

@@ -93,16 +93,37 @@ export default function StrategyRoomPage() {
   }
 
   return (
-    <div className="h-full flex flex-col bg-background min-w-0">
-      {/* Header - NO toolbar row so NO divider */}
-      <div className="h-[44px] flex items-center justify-between px-6 flex-shrink-0">
+    <div className="h-full flex flex-col min-w-0" style={{ backgroundColor: 'var(--bg)' }}>
+      {/* Header Row - Enterprise pattern: title + controls */}
+      <div 
+        className="h-[44px] flex items-center justify-between px-5 flex-shrink-0 border-b"
+        style={{ borderColor: 'var(--divider)' }}
+      >
         <div className="flex items-center gap-3 min-w-0">
-          <h1 className="text-xl font-semibold text-secondary-green truncate">Strategy Room</h1>
-          <span className="text-sm text-muted-foreground hidden md:inline">for Snapshot</span>
+          {/* Breadcrumb-style prefix */}
+          <span className="text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--text-3)' }}>
+            Enterprise
+          </span>
+          <span style={{ color: 'var(--text-3)' }}>/</span>
+          <h1 className="text-lg font-semibold truncate" style={{ color: 'var(--text-1)' }}>
+            Strategy Room
+          </h1>
+        </div>
+
+        {/* Snapshot Selector - Right aligned */}
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-medium" style={{ color: 'var(--text-3)' }}>Snapshot:</span>
           <div className="w-56 md:w-64">
             <Select value={effectiveSelectedSnapshotId} onValueChange={handleSnapshotChange}>
-              <SelectTrigger className="h-9">
-                <SelectValue placeholder="Select one" />
+              <SelectTrigger 
+                className="h-8 text-sm"
+                style={{ 
+                  backgroundColor: 'var(--input-bg)', 
+                  borderColor: 'var(--input-border)',
+                  color: 'var(--text-1)'
+                }}
+              >
+                <SelectValue placeholder="Select snapshot" />
               </SelectTrigger>
               <SelectContent className="z-[400]">
                 <div className="p-2">
@@ -111,6 +132,11 @@ export default function StrategyRoomPage() {
                     value={snapshotSearchQuery}
                     onChange={(e) => setSnapshotSearchQuery(e.target.value)}
                     className="mb-2 h-8 text-sm"
+                    style={{ 
+                      backgroundColor: 'var(--input-bg)', 
+                      borderColor: 'var(--input-border)',
+                      color: 'var(--input-text)'
+                    }}
                   />
                 </div>
                 {filteredSnapshots.map((snapshot) => (
@@ -122,18 +148,16 @@ export default function StrategyRoomPage() {
             </Select>
           </div>
         </div>
-
-        {/* Plus button removed per user request */}
       </div>
 
-      {/* Content Area */}
-      <div className="flex-1 overflow-auto p-4 md:p-6 min-w-0">
-        <div className="space-y-6">
+      {/* Content Area - Tighter grid, consistent spacing */}
+      <div className="flex-1 overflow-auto p-5 min-w-0">
+        <div className="space-y-5">
           {/* Mission/Vision/Values - 3-up on desktop, 2-up tablet, 1-up mobile */}
           <MissionVisionValues snapshot={selectedSnapshot} onUpdate={refetchSnapshots} />
 
           {/* Execution and Goals Widgets - 2-up on desktop/tablet, 1-up mobile */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <ExecutionAgainstOutcomesWidget 
               snapshotId={effectiveSelectedSnapshotId}
             />
@@ -143,7 +167,7 @@ export default function StrategyRoomPage() {
           </div>
 
           {/* Strategy Pyramid and Misaligned Items - 2-up on desktop, stacked otherwise */}
-          <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-4 md:gap-6">
+          <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-5">
             <StrategyPyramid 
               onLayerClick={handlePyramidLayerClick} 
               snapshotId={effectiveSelectedSnapshotId}
