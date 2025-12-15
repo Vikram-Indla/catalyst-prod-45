@@ -51,8 +51,9 @@ import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useVisibleDrawerTabs } from '@/hooks/useDrawerTabConfigs';
-import { DrawerMetadataChips, EnterpriseStatusControl, ExecutiveSummaryPanel } from './drawer';
+import { DrawerMetadataChips, EnterpriseStatusControl, ExecutiveSummaryPanel, MetaStrip } from './drawer';
 import { cn } from '@/lib/utils';
+import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings, getOwnerIdForDepartment } from '@/hooks/useDepartmentsAndOwners';
 
 // Fields to track for audit logging (human-readable names)
 const AUDIT_FIELD_LABELS: Record<string, string> = {
@@ -512,19 +513,30 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                   )}
                 </div>
 
-                {/* Compact Metadata Row - Status + Key Chips */}
+                {/* Meta Strip - Single source of truth for ownership fields */}
                 <div className="flex items-center gap-2 flex-wrap">
                   <EnterpriseStatusControl
                     currentStep={formData.process_step || 'new_request'}
                     onChange={(step) => handleFieldChange('process_step', step)}
                   />
-                  <DrawerMetadataChips
+                  <div className="h-4 w-px" style={{ background: 'var(--border-color)' }} />
+                  <MetaStrip
                     businessOwner={formData.business_owner}
+                    businessOwnerId={formData.business_owner_id}
                     department={formData.department}
-                    rank={formData.rank}
+                    departmentId={formData.department_id}
                     targetDate={formData.end_date}
+                    onBusinessOwnerChange={(id) => handleFieldChange('business_owner_id', id)}
+                    onDepartmentChange={(id) => handleFieldChange('department_id', id)}
+                    onTargetDateChange={(date) => handleFieldChange('end_date', date)}
+                  />
+                  <div className="h-4 w-px" style={{ background: 'var(--border-color)' }} />
+                  <DrawerMetadataChips
+                    platform={formData.delivery_platform}
+                    quarter={formData.planned_quarter}
                     priorityTier={formData.priority_tier}
                     priorityScore={formData.business_score}
+                    rank={formData.rank}
                   />
                 </div>
               </div>
