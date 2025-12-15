@@ -26,9 +26,9 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
 
   const getColorText = (color: 'red' | 'yellow' | 'green' | 'na') => {
     switch (color) {
-      case 'red': return 'text-red-700';
-      case 'yellow': return 'text-amber-700';
-      case 'green': return 'text-green-700';
+      case 'red': return 'text-red-600';
+      case 'yellow': return 'text-amber-600';
+      case 'green': return 'text-green-600';
       default: return 'text-muted-foreground';
     }
   };
@@ -83,20 +83,27 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
   const objectivesColor = getObjectivesColor();
   const acceptedCount = getAcceptedCount();
 
+  // Compact pill legend
   const legendAction = (
-    <div className="flex items-center gap-2 text-[10px]" style={{ color: 'var(--text-3)' }}>
-      <div className="flex items-center gap-0.5">
-        <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
-        <span>≤39</span>
-      </div>
-      <div className="flex items-center gap-0.5">
-        <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-        <span>40-69</span>
-      </div>
-      <div className="flex items-center gap-0.5">
-        <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-        <span>≥70</span>
-      </div>
+    <div className="flex items-center gap-1.5">
+      <span 
+        className="px-1.5 py-0.5 rounded text-[10px] font-medium"
+        style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', color: 'rgb(220, 38, 38)' }}
+      >
+        ≤39%
+      </span>
+      <span 
+        className="px-1.5 py-0.5 rounded text-[10px] font-medium"
+        style={{ backgroundColor: 'rgba(245, 158, 11, 0.1)', color: 'rgb(217, 119, 6)' }}
+      >
+        40-69%
+      </span>
+      <span 
+        className="px-1.5 py-0.5 rounded text-[10px] font-medium"
+        style={{ backgroundColor: 'rgba(34, 197, 94, 0.1)', color: 'rgb(22, 163, 74)' }}
+      >
+        ≥70%
+      </span>
     </div>
   );
 
@@ -106,14 +113,14 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
         <PremiumCardHeader title="Execution" action={legendAction} />
         <PremiumCardContent className="flex-1">
           {isLoading ? (
-            <div className="space-y-2">
+            <div className="space-y-3">
               {[1, 2, 3].map((i) => (
-                <Skeleton key={i} className="h-8 w-full" />
+                <Skeleton key={i} className="h-10 w-full" />
               ))}
             </div>
           ) : !okrMetrics || !snapshotId ? (
-            <div className="flex items-center justify-center h-full min-h-[100px]">
-              <span className="text-xs" style={{ color: 'var(--text-3)' }}>
+            <div className="flex items-center justify-center h-full min-h-[120px]">
+              <span className="text-sm" style={{ color: 'var(--text-3)' }}>
                 Select a snapshot to view metrics
               </span>
             </div>
@@ -128,21 +135,21 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
                   percentage: okrMetrics.avgProgress,
                   color: objectivesColor,
                 })}
-                className="w-full flex items-center justify-between py-2 rounded transition-colors text-left focus:outline-none hover:bg-[var(--surface-2)]"
+                className="w-full flex items-center justify-between py-2.5 rounded transition-colors text-left focus:outline-none hover:bg-[var(--surface-2)]"
                 style={{ borderBottom: '1px solid var(--divider)' }}
               >
-                <div className="flex items-center gap-2 flex-1 min-w-0">
-                  <div className={`w-2 h-2 rounded-full flex-shrink-0 ${getColorClass(objectivesColor)}`} />
-                  <span className="text-xs font-medium truncate" style={{ color: 'var(--text-1)' }}>Objectives</span>
+                <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                  <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${getColorClass(objectivesColor)}`} />
+                  <span className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>Objectives</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className={`text-xs font-bold ${getColorText(objectivesColor)}`}>
+                <div className="flex items-center gap-3">
+                  <span className={`text-sm font-bold ${getColorText(objectivesColor)}`}>
                     {okrMetrics.avgProgress}%
                   </span>
-                  <span className="text-[10px]" style={{ color: 'var(--text-3)' }}>
+                  <span className="text-xs font-medium" style={{ color: 'var(--text-2)' }}>
                     {acceptedCount}/{okrMetrics.count}
                   </span>
-                  <ChevronRight className="h-3 w-3" style={{ color: 'var(--text-3)' }} />
+                  <ChevronRight className="h-4 w-4" style={{ color: 'var(--text-3)' }} />
                 </div>
               </button>
 
@@ -151,18 +158,18 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
                 return (
                   <div
                     key={theme.themeId}
-                    className="flex items-center justify-between py-2"
+                    className="flex items-center justify-between py-2.5"
                     style={{ borderBottom: '1px solid var(--divider)' }}
                   >
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <div className={`w-2 h-2 rounded-full flex-shrink-0 ${getColorClass(color)}`} />
-                      <span className="text-xs truncate" style={{ color: 'var(--text-2)' }}>{theme.themeName}</span>
+                    <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                      <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${getColorClass(color)}`} />
+                      <span className="text-sm truncate" style={{ color: 'var(--text-1)' }}>{theme.themeName}</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className={`text-xs font-semibold ${getColorText(color)}`}>
+                    <div className="flex items-center gap-3">
+                      <span className={`text-sm font-semibold ${getColorText(color)}`}>
                         {theme.avgProgress}%
                       </span>
-                      <span className="text-[10px]" style={{ color: 'var(--text-3)' }}>
+                      <span className="text-xs font-medium min-w-[16px] text-right" style={{ color: 'var(--text-2)' }}>
                         {theme.objectives.length}
                       </span>
                     </div>
@@ -171,7 +178,7 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
               })}
               {themes.length > 3 && (
                 <div className="text-center py-2">
-                  <span className="text-[10px]" style={{ color: 'var(--text-3)' }}>+{themes.length - 3} more themes</span>
+                  <span className="text-xs font-medium" style={{ color: 'var(--text-3)' }}>+{themes.length - 3} more themes</span>
                 </div>
               )}
             </div>
