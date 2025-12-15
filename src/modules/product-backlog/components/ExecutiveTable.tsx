@@ -10,11 +10,11 @@ import { toast } from 'sonner';
 import { IndustryViewSwitchButton } from '@/components/industry/IndustryViewSwitchButton';
 import { useDepartments } from '@/hooks/useDepartmentsAndOwners';
 
-// Row heights for density modes
+// Row heights for density modes - Enterprise-grade compact
 const DENSITY_CONFIG = {
-  compact: { rowHeight: 36, fontSize: 12, padding: '6px 12px' },
-  regular: { rowHeight: 44, fontSize: 13, padding: '10px 12px' },
-  relaxed: { rowHeight: 52, fontSize: 14, padding: '14px 12px' },
+  compact: { rowHeight: 36, fontSize: 12, padding: '6px 10px' },
+  regular: { rowHeight: 44, fontSize: 13, padding: '8px 10px' },
+  relaxed: { rowHeight: 48, fontSize: 14, padding: '10px 12px' },
 };
 
 // Status options - neutral styling with accent indicators
@@ -41,14 +41,14 @@ const PLATFORMS = [
   { value: 'mobile', label: 'Mobile App' },
 ];
 
-// Icons
+// Icons - Enterprise sizing (14-16px for visibility)
 const Icons = {
   Search: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>,
-  ChevronUp: () => <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 15l-6-6-6 6"/></svg>,
-  ChevronDown: () => <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6"/></svg>,
+  ChevronUp: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 15l-6-6-6 6"/></svg>,
+  ChevronDown: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6"/></svg>,
   ChevronLeft: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>,
   ChevronRight: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>,
-  Filter: () => <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"/></svg>,
+  Filter: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"/></svg>,
   X: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
   Download: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>,
   Columns: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="3" x2="12" y2="21"/></svg>,
@@ -156,10 +156,10 @@ interface ExecutiveTableProps {
   onSelectedRowsChange?: (rows: string[]) => void;
 }
 
-// Status Badge - neutral pill with small left accent dot
+// Status Badge - neutral pill with small left accent dot, enterprise compact
 function StatusBadge({ value, options }: { value: string; options: { value: string; label: string; accent?: string }[] }) {
   const option = options.find(o => o.value === value);
-  if (!option) return <span className="text-muted-foreground text-xs">—</span>;
+  if (!option) return <span style={{ color: 'var(--text-3)', fontSize: '12px' }}>—</span>;
   
   // Accent dot color based on status category
   const accentClasses: Record<string, string> = {
@@ -171,41 +171,59 @@ function StatusBadge({ value, options }: { value: string; options: { value: stri
   const accentClass = accentClasses[option.accent || 'neutral'] || accentClasses.neutral;
   
   return (
-    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-muted/60 text-[11px] font-medium text-foreground whitespace-nowrap border border-border/40">
+    <span 
+      className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded whitespace-nowrap"
+      style={{ 
+        backgroundColor: 'var(--surface-3)',
+        border: '1px solid var(--border-color)',
+        fontSize: '11px',
+        fontWeight: 500,
+        color: 'var(--text-1)',
+      }}
+    >
       <span className={`w-1.5 h-1.5 rounded-full ${accentClass}`} />
       {option.label}
     </span>
   );
 }
 
-// Score Progress Bar - with proper track border
+// Score Progress Bar - with proper track border, enterprise compact
 function ScoreBar({ score }: { score: number | null }) {
   if (score === null || score === undefined) {
-    return <span className="text-muted-foreground text-[11px]"></span>;
+    return <span style={{ color: 'var(--text-3)', fontSize: '12px' }}>—</span>;
   }
   
   return (
     <div className="flex items-center gap-2 min-w-[80px]">
-      <div className="flex-1 h-2 bg-muted/50 border border-border/60 rounded overflow-hidden">
+      <div 
+        className="flex-1 h-1.5 rounded overflow-hidden"
+        style={{ 
+          backgroundColor: 'var(--surface-3)',
+          border: '1px solid var(--border-color)',
+        }}
+      >
         <div 
           className="h-full rounded-sm transition-all duration-300 bg-secondary-green"
           style={{ width: `${Math.min(score, 100)}%` }}
         />
       </div>
-      <span className="text-xs font-medium min-w-[24px] tabular-nums text-foreground">
+      <span 
+        className="min-w-[24px] tabular-nums font-medium"
+        style={{ fontSize: '12px', color: 'var(--text-1)' }}
+      >
         {score}
       </span>
     </div>
   );
 }
 
-// Date Display - neutral text only
+// Date Display - neutral text only, enterprise compact
 function DateDisplay({ date }: { date: string | null }) {
-  if (!date) return <span className="text-muted-foreground">—</span>;
+  if (!date) return <span style={{ color: 'var(--text-3)', fontSize: '12px' }}>—</span>;
   const d = new Date(date);
   
   return (
-    <span className="text-xs text-muted-foreground">
+    <span style={{ fontSize: '12px', color: 'var(--text-2)' }}>
       {d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' })}
     </span>
   );
@@ -1048,7 +1066,8 @@ export function ExecutiveTable({
             e.stopPropagation();
             onOpenFullView(row.id);
           }}
-          className="font-medium font-mono text-xs cursor-pointer hover:underline transition-colors text-secondary-green"
+          className="font-semibold font-mono text-[13px] cursor-pointer hover:underline transition-colors"
+          style={{ color: 'var(--accent-color)' }}
         >
           {value}
         </span>
@@ -1062,7 +1081,11 @@ export function ExecutiveTable({
             e.stopPropagation();
             onOpenFullView(row.id);
           }}
-          className="block overflow-hidden text-ellipsis whitespace-nowrap cursor-pointer text-foreground font-medium hover:text-brand-gold hover:underline transition-colors"
+          className="block overflow-hidden text-ellipsis whitespace-nowrap cursor-pointer font-medium hover:underline transition-colors"
+          style={{ 
+            color: 'var(--text-1)',
+            fontSize: '13px',
+          }}
           title={`Click to view details: ${value}`}
         >
           {value}
@@ -1088,8 +1111,12 @@ export function ExecutiveTable({
     }
     
     if (column.id === 'rank') {
-      // Empty state = blank (not dashes)
-      return value ? <span className="font-medium tabular-nums text-foreground">#{value}</span> : null;
+      // Empty state = dash, ranked = bold number
+      return value ? (
+        <span className="font-semibold tabular-nums" style={{ color: 'var(--text-1)', fontSize: '13px' }}>#{value}</span>
+      ) : (
+        <span style={{ color: 'var(--text-3)', fontSize: '12px' }}>—</span>
+      );
     }
     
     if (column.id === 'department') {
@@ -1100,7 +1127,7 @@ export function ExecutiveTable({
           value={value}
           type="select"
           options={departmentOptions}
-          displayValue={<span className="text-xs text-foreground">{dept?.label || ''}</span>}
+          displayValue={<span style={{ fontSize: '13px', color: 'var(--text-1)' }}>{dept?.label || '—'}</span>}
           onSave={handleInlineSave}
           columnId={column.id}
         />
@@ -1114,7 +1141,7 @@ export function ExecutiveTable({
           value={value}
           type="select"
           options={PLATFORMS}
-          displayValue={<span className="text-xs text-foreground">{plat?.label || ''}</span>}
+          displayValue={<span style={{ fontSize: '13px', color: 'var(--text-1)' }}>{plat?.label || '—'}</span>}
           onSave={handleInlineSave}
           columnId={column.id}
         />
@@ -1123,8 +1150,8 @@ export function ExecutiveTable({
     
     if (column.id === 'reporter' || column.id === 'assignee' || column.id === 'businessOwner') {
       return (
-        <span className="text-xs text-foreground truncate">
-          {value || '—'}
+        <span className="truncate" style={{ fontSize: '13px', color: 'var(--text-1)' }}>
+          {value || <span style={{ color: 'var(--text-3)' }}>—</span>}
         </span>
       );
     }
@@ -1140,7 +1167,7 @@ export function ExecutiveTable({
           value={value}
           type="select"
           options={DELIVERY_TRACKS}
-          displayValue={<span className="text-xs text-foreground">{track?.label || ''}</span>}
+          displayValue={<span style={{ fontSize: '13px', color: 'var(--text-1)' }}>{track?.label || '—'}</span>}
           onSave={handleInlineSave}
           columnId={column.id}
         />
@@ -1154,7 +1181,7 @@ export function ExecutiveTable({
           value={value}
           type="select"
           options={QUARTERS}
-          displayValue={<span className="text-xs text-foreground">{q?.label || ''}</span>}
+          displayValue={<span style={{ fontSize: '13px', color: 'var(--text-1)' }}>{q?.label || '—'}</span>}
           onSave={handleInlineSave}
           columnId={column.id}
         />
@@ -1162,8 +1189,12 @@ export function ExecutiveTable({
     }
 
     return (
-      <span className="block overflow-hidden text-ellipsis whitespace-nowrap" title={value}>
-        {value ?? '—'}
+      <span 
+        className="block overflow-hidden text-ellipsis whitespace-nowrap" 
+        title={value}
+        style={{ fontSize: '13px', color: 'var(--text-1)' }}
+      >
+        {value ?? <span style={{ color: 'var(--text-3)' }}>—</span>}
       </span>
     );
   };
@@ -1305,24 +1336,25 @@ export function ExecutiveTable({
             <table className="w-full border-collapse" style={{ minWidth: columns.reduce((acc, col) => acc + (col.minWidth || 100), 48 + 40) }}>
               <thead className="sticky top-0 z-10">
                 <tr>
-                  {/* Checkbox column */}
+                  {/* Checkbox column - 40px header height */}
                   <th 
-                    className="w-10 px-3 py-2.5 text-center font-semibold text-[11px] uppercase tracking-wider whitespace-nowrap"
+                    className="w-10 px-2.5 text-center whitespace-nowrap"
                     style={{ 
+                      height: '40px',
                       backgroundColor: 'var(--surface-2)',
-                      color: 'var(--text-2)',
-                      borderBottom: '1px solid var(--divider)',
+                      borderBottom: '2px solid var(--border-color)',
                     }}
                   >
                     <input
                       type="checkbox"
                       checked={paginatedData.length > 0 && selectedRows.length === paginatedData.length}
                       onChange={handleSelectAll}
-                      className="w-3.5 h-3.5 accent-brand-gold"
+                      className="w-3.5 h-3.5 accent-brand-gold cursor-pointer"
                     />
                   </th>
                   {columns.map(col => {
                     const isSorted = sortConfig.column === col.id;
+                    const hasActiveFilter = filters[col.id] && filters[col.id].length > 0;
                     return (
                       <th 
                         key={col.id}
@@ -1332,123 +1364,175 @@ export function ExecutiveTable({
                         onDragLeave={() => setDragOverColumn(null)}
                         onDrop={(e) => handleColumnDrop(e, col.id)}
                         onDragEnd={() => { setDraggingColumn(null); setDragOverColumn(null); }}
-                        className={`px-3 py-2.5 text-left font-semibold text-[11px] uppercase tracking-wider whitespace-nowrap cursor-grab transition-colors ${
+                        className={`group px-2.5 text-left whitespace-nowrap cursor-grab transition-colors ${
                           draggingColumn === col.id ? 'opacity-50' : ''
                         }`}
                         style={{ 
+                          height: '40px',
                           minWidth: col.minWidth,
                           backgroundColor: dragOverColumn === col.id ? 'var(--accent-muted)' : 'var(--surface-2)',
-                          color: 'var(--text-2)',
-                          borderBottom: isSorted ? '2px solid var(--accent-color)' : '1px solid var(--divider)',
+                          borderBottom: isSorted ? '2px solid var(--accent-color)' : '2px solid var(--border-color)',
                           borderLeft: dragOverColumn === col.id ? '2px solid var(--accent-color)' : 'none',
                         }}
                       >
                         <div className="flex items-center gap-1.5">
-                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0 cursor-grab text-muted-foreground/50">
+                          {/* Drag handle - subtle, visible on hover */}
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0 cursor-grab opacity-0 group-hover:opacity-40 transition-opacity" style={{ color: 'var(--text-3)' }}>
                             <circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/>
                             <circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/>
                           </svg>
-                          <span className="select-none">{col.header}</span>
+                          {/* Header label - 12px semibold, high contrast */}
+                          <span 
+                            className="select-none text-xs font-semibold tracking-wide"
+                            style={{ color: 'var(--text-1)' }}
+                          >
+                            {col.header}
+                          </span>
+                          {/* Sort icon - visible on hover OR when active */}
                           {col.sortable && (
                             <button
                               onClick={(e) => { e.stopPropagation(); handleSort(col.id); }}
                               onMouseDown={(e) => e.stopPropagation()}
-                              className={`p-0.5 border-none bg-transparent cursor-pointer flex items-center ${isSorted ? 'text-brand-gold' : 'text-muted-foreground/50'}`}
+                              className={`p-0.5 border-none bg-transparent cursor-pointer flex items-center transition-opacity ${
+                                isSorted ? 'opacity-100' : 'opacity-0 group-hover:opacity-60'
+                              }`}
+                              style={{ color: isSorted ? 'var(--accent-color)' : 'var(--text-3)' }}
                             >
                               {isSorted && sortConfig.direction === 'desc' 
                                 ? <Icons.ChevronDown />
                                 : <Icons.ChevronUp />
-                            }
-                          </button>
-                        )}
-                        {col.filterable && col.options && (
-                          <div onMouseDown={(e) => e.stopPropagation()}>
-                            <ColumnFilterDropdown
-                              column={col.id}
-                              options={col.options}
-                              selected={filters[col.id] || []}
-                              onApply={(values) => handleFilter(col.id, values)}
-                              onClear={() => handleFilter(col.id, [])}
-                            />
-                          </div>
-                        )}
-                      </div>
-                    </th>
+                              }
+                            </button>
+                          )}
+                          {/* Filter icon - visible on hover OR when active */}
+                          {col.filterable && col.options && (
+                            <div 
+                              onMouseDown={(e) => e.stopPropagation()}
+                              className={`transition-opacity ${hasActiveFilter ? 'opacity-100' : 'opacity-0 group-hover:opacity-60'}`}
+                            >
+                              <ColumnFilterDropdown
+                                column={col.id}
+                                options={col.options}
+                                selected={filters[col.id] || []}
+                                onApply={(values) => handleFilter(col.id, values)}
+                                onClear={() => handleFilter(col.id, [])}
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </th>
                     );
                   })}
-                  {/* Actions column */}
                   {/* Actions column header */}
                   <th 
-                    className="w-12 px-3 py-2.5"
+                    className="w-12 px-2.5"
                     style={{ 
+                      height: '40px',
                       backgroundColor: 'var(--surface-2)',
-                      borderBottom: '1px solid var(--divider)',
+                      borderBottom: '2px solid var(--border-color)',
                     }}
                   ></th>
                 </tr>
               </thead>
               <tbody>
-                {paginatedData.map((row, index) => (
-                  <tr
-                    key={row.id}
-                    className="transition-colors cursor-pointer"
-                    style={{ 
-                      height: `${rowHeight}px`,
-                      backgroundColor: selectedRows.includes(row.id) 
-                        ? 'var(--accent-muted)' 
-                        : index % 2 === 1 ? 'var(--surface-2)' : 'var(--surface-1)',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = 'var(--surface-3)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = selectedRows.includes(row.id) 
-                        ? 'var(--accent-muted)' 
-                        : index % 2 === 1 ? 'var(--surface-2)' : 'var(--surface-1)';
-                    }}
-                  >
+                {paginatedData.length === 0 ? (
+                  <tr>
                     <td 
-                      className="px-3 py-2 text-center"
-                      style={{ borderBottom: '1px solid var(--divider)' }}
+                      colSpan={columns.length + 2} 
+                      className="text-center py-8"
+                      style={{ color: 'var(--text-3)' }}
                     >
-                      <input
-                        type="checkbox"
-                        checked={selectedRows.includes(row.id)}
-                        onChange={() => handleSelectRow(row.id)}
-                        className="w-3.5 h-3.5 accent-brand-gold"
-                      />
-                    </td>
-                    {columns.map(col => (
-                      <td 
-                        key={col.id} 
-                        className="px-3 py-2 text-sm whitespace-nowrap overflow-hidden text-ellipsis"
-                        style={{ 
-                          minWidth: col.minWidth,
-                          textAlign: (col.align || 'left') as React.CSSProperties['textAlign'],
-                          borderBottom: '1px solid var(--divider)',
-                          color: 'var(--text-1)',
-                        }}
-                      >
-                        {renderCellContent(row, col)}
-                      </td>
-                    ))}
-                    <td 
-                      className="px-3 py-2"
-                      style={{ borderBottom: '1px solid var(--divider)' }}
-                    >
-                      <RowActionsMenu
-                        onDuplicate={async () => {
-                          if (onDuplicate) {
-                            await onDuplicate(row.id);
-                          } else {
-                            toast.success('Duplicated');
-                          }
-                        }}
-                        onDelete={() => setDeleteConfirmId(row.id)}
-                      />
+                      <div className="flex flex-col items-center gap-2">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ opacity: 0.4 }}>
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                          <polyline points="14 2 14 8 20 8"/>
+                          <line x1="16" y1="13" x2="8" y2="13"/>
+                          <line x1="16" y1="17" x2="8" y2="17"/>
+                        </svg>
+                        <span className="text-sm font-medium">No items to display</span>
+                        <span className="text-xs opacity-70">Create a new request or adjust your filters</span>
+                      </div>
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  paginatedData.map((row, index) => (
+                    <tr
+                      key={row.id}
+                      className="transition-colors cursor-pointer"
+                      style={{ 
+                        height: `${rowHeight}px`,
+                        backgroundColor: selectedRows.includes(row.id) 
+                          ? 'var(--accent-muted)' 
+                          : index % 2 === 1 ? 'var(--surface-2)' : 'var(--surface-1)',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = 'var(--surface-3)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = selectedRows.includes(row.id) 
+                          ? 'var(--accent-muted)' 
+                          : index % 2 === 1 ? 'var(--surface-2)' : 'var(--surface-1)';
+                      }}
+                    >
+                      <td 
+                        className="px-2.5 text-center"
+                        style={{ borderBottom: '1px solid var(--divider)' }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selectedRows.includes(row.id)}
+                          onChange={() => handleSelectRow(row.id)}
+                          className="w-3.5 h-3.5 accent-brand-gold cursor-pointer"
+                        />
+                      </td>
+                      {columns.map(col => (
+                        <td 
+                          key={col.id} 
+                          className="px-2.5 whitespace-nowrap overflow-hidden text-ellipsis"
+                          style={{ 
+                            minWidth: col.minWidth,
+                            textAlign: (col.align || 'left') as React.CSSProperties['textAlign'],
+                            borderBottom: '1px solid var(--divider)',
+                            color: 'var(--text-1)',
+                            fontSize: '13px',
+                          }}
+                        >
+                          {renderCellContent(row, col)}
+                        </td>
+                      ))}
+                      <td 
+                        className="px-2.5"
+                        style={{ borderBottom: '1px solid var(--divider)' }}
+                      >
+                        <RowActionsMenu
+                          onDuplicate={async () => {
+                            if (onDuplicate) {
+                              await onDuplicate(row.id);
+                            } else {
+                              toast.success('Duplicated');
+                            }
+                          }}
+                          onDelete={() => setDeleteConfirmId(row.id)}
+                        />
+                      </td>
+                    </tr>
+                  ))
+                )}
+                {/* Empty space filler - intentional when few rows */}
+                {paginatedData.length > 0 && paginatedData.length < 5 && (
+                  <tr>
+                    <td 
+                      colSpan={columns.length + 2} 
+                      className="text-center py-10"
+                      style={{ 
+                        color: 'var(--text-3)',
+                        borderBottom: 'none',
+                      }}
+                    >
+                      <span className="text-xs opacity-50">End of list</span>
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
