@@ -132,7 +132,7 @@ function SnapshotTableRow({
 }
 
 export default function StrategicSnapshots() {
-  const [view, setView] = useState<ViewMode>('table');
+  const [view, setView] = useState<ViewMode>('cards');
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [sortBy, setSortBy] = useState<SortOption>('updated_desc');
