@@ -25,10 +25,11 @@ function getHealthBgColor(health: string | null): string {
   }
 }
 
-function getProgressColor(progress: number): string {
+function getProgressColor(progress: number, hasData: boolean = true): string {
+  if (!hasData || progress === 0) return 'var(--text-3)'; // Neutral for zero/no data
   if (progress >= 70) return 'hsl(var(--secondary-green))';
   if (progress >= 40) return 'hsl(var(--brand-gold))';
-  return 'hsl(var(--destructive))';
+  return 'var(--text-2)'; // Neutral instead of destructive red for low progress
 }
 
 export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: OkrTreeProps) {
@@ -149,7 +150,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
                 className="h-full rounded-full transition-all"
                 style={{
                   width: `${item.progress}%`,
-                  backgroundColor: getProgressColor(item.progress)
+                  backgroundColor: getProgressColor(item.progress, item.progress > 0)
                 }}
               />
             </div>
@@ -158,9 +159,9 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
           <div className="flex justify-center">
             <span 
               className="text-sm font-semibold"
-              style={{ color: getProgressColor(item.progress) }}
+              style={{ color: getProgressColor(item.progress, item.progress > 0) }}
             >
-              {Math.round(item.progress)}%
+              {item.progress > 0 ? `${Math.round(item.progress)}%` : '—'}
             </span>
           </div>
 
@@ -224,7 +225,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
 
   return (
     <PremiumCard>
-      <PremiumCardHeader title="OKR Tree" action={headerAction} />
+      <PremiumCardHeader title="OKR Tree" subtitle="Themes → Objectives → Key Results" action={headerAction} />
       <PremiumCardContent noPadding>
         {/* Column Headers - sticky, compact */}
         <div

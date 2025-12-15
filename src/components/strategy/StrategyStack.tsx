@@ -112,8 +112,8 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
     <>
       <PremiumCard>
         <PremiumCardHeader 
-          title="Strategy Hierarchy" 
-          subtitle="Coverage & alignment across strategic layers"
+          title="Strategy Coverage & Alignment" 
+          subtitle="Coverage across strategic layers"
           action={
             <div className="flex items-center gap-2">
               <Button 
@@ -222,13 +222,13 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                   </div>
                 </div>
 
-                {/* Percentage */}
+                {/* Percentage - show dash if no data */}
                 <div className="text-right">
                   <span 
                     className="text-[13px] font-bold"
-                    style={{ color: 'var(--text-1)' }}
+                    style={{ color: data.count === 0 ? 'var(--text-3)' : 'var(--text-1)' }}
                   >
-                    {data.progress}%
+                    {data.count === 0 ? '—' : `${data.progress}%`}
                   </span>
                 </div>
 
