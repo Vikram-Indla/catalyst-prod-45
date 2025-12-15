@@ -169,8 +169,11 @@ export default function BusinessRequestsKanbanPage() {
 
   return (
     <div 
-      className="h-screen flex flex-col overflow-hidden"
-      style={{ backgroundColor: 'var(--bg)' }}
+      className="flex flex-col overflow-hidden"
+      style={{ 
+        height: 'calc(100vh - 48px)', // Subtract global header
+        backgroundColor: 'var(--bg)' 
+      }}
     >
       {/* Unified Header Toolbar */}
       <IndustryHeaderToolbarV2
@@ -208,21 +211,52 @@ export default function BusinessRequestsKanbanPage() {
         }}
       />
 
-      {/* Board Container - fills remaining viewport */}
+      {/* Board Container - fills remaining viewport with proper height calculation */}
       <div 
-        className="flex-1 overflow-auto px-5 py-4"
-        style={{ backgroundColor: 'var(--bg)' }}
+        className="flex-1 overflow-hidden px-4 py-3"
+        style={{ 
+          backgroundColor: 'var(--surface-1)',
+          minHeight: 0, // Critical for flex child to shrink
+        }}
       >
         {groupBy === 'none' ? (
-          <div className="flex gap-3.5 min-w-max pb-4 h-full">
+          <div 
+            className="flex gap-3 h-full overflow-x-auto pb-2"
+            style={{ minWidth: 'max-content' }}
+          >
             {COLUMNS_CONFIG.map(column => (
-              <KanbanColumn key={column.id} column={column.id} tickets={ticketsByColumn[column.id] || []} onDrop={handleDrop} onCardClick={handleCardClick} compactMode={compactMode} collapsed={collapsedColumns.includes(column.id)} onToggleCollapse={() => toggleColumnCollapse(column.id)} teamMembers={teamMembers} />
+              <KanbanColumn 
+                key={column.id} 
+                column={column.id} 
+                tickets={ticketsByColumn[column.id] || []} 
+                onDrop={handleDrop} 
+                onCardClick={handleCardClick} 
+                compactMode={compactMode} 
+                collapsed={collapsedColumns.includes(column.id)} 
+                onToggleCollapse={() => toggleColumnCollapse(column.id)} 
+                teamMembers={teamMembers} 
+              />
             ))}
           </div>
         ) : (
-          <div className="min-w-max">
+          <div className="h-full overflow-y-auto" style={{ minWidth: 'max-content' }}>
             {Object.entries(groupedTickets || {}).map(([key, group]) => (
-              <Swimlane key={key} label={group.label} color={group.color} icon={group.icon} tickets={group.tickets} count={group.tickets.length} onDrop={handleDrop} onCardClick={handleCardClick} compactMode={compactMode} collapsedColumns={collapsedColumns} onToggleColumnCollapse={toggleColumnCollapse} isExpanded={expandedSwimlanes[key] !== false} onToggleExpand={() => toggleSwimlaneExpand(key)} teamMembers={teamMembers} />
+              <Swimlane 
+                key={key} 
+                label={group.label} 
+                color={group.color} 
+                icon={group.icon} 
+                tickets={group.tickets} 
+                count={group.tickets.length} 
+                onDrop={handleDrop} 
+                onCardClick={handleCardClick} 
+                compactMode={compactMode} 
+                collapsedColumns={collapsedColumns} 
+                onToggleColumnCollapse={toggleColumnCollapse} 
+                isExpanded={expandedSwimlanes[key] !== false} 
+                onToggleExpand={() => toggleSwimlaneExpand(key)} 
+                teamMembers={teamMembers} 
+              />
             ))}
           </div>
         )}
