@@ -2,6 +2,7 @@
 // All previous v1 code has been removed
 
 import { OKRHubV2 } from '@/modules/okr-v2';
+import { PageChrome } from '@/components/layout/PageChrome';
 
 interface OKRHubProps {
   scopeType?: 'enterprise' | 'portfolio' | 'program' | 'team';
@@ -10,7 +11,11 @@ interface OKRHubProps {
 
 export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) {
   // v2 is now the only OKR implementation
-  return <OKRHubV2 />;
+  return (
+    <PageChrome>
+      <OKRHubV2 />
+    </PageChrome>
+  );
 }
 
 export default OKRHub;

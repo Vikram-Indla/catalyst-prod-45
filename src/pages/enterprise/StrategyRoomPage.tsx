@@ -9,8 +9,7 @@ import { ObjectiveDrawerV2 } from '@/modules/okr-v2';
 import { ThemeDetailsDrawer } from '@/components/backlog/ThemeDetailsDrawer';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
-import { PageShell } from '@/components/shared/PageShell';
+import { PageChrome } from '@/components/layout/PageChrome';
 
 type ObjectiveLevel = "OBJECTIVES";
 
@@ -76,63 +75,57 @@ export default function StrategyRoomPage() {
 
   if (snapshotsLoading || !effectiveSelectedSnapshotId) {
     return (
-      <PageShell>
+      <PageChrome>
         <div className="flex-1 flex items-center justify-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
-      </PageShell>
+      </PageChrome>
     );
   }
 
-  return (
-    <PageShell>
-      {/* Global Page Header */}
-      <GlobalPageHeader
-        sectionLabel="Enterprise"
-        pageTitle="Strategy Room"
-        rightActions={
-          <div className="flex items-center gap-2">
-            <span className="text-[12px] font-medium" style={{ color: 'var(--text-2)' }}>Snapshot:</span>
-            <div className="w-56">
-              <Select value={effectiveSelectedSnapshotId} onValueChange={handleSnapshotChange}>
-                <SelectTrigger 
-                  className="h-8 text-[13px]"
-                  style={{ 
-                    backgroundColor: 'var(--input-bg)', 
-                    borderColor: 'var(--input-border)',
-                    color: 'var(--text-1)'
-                  }}
-                >
-                  <SelectValue placeholder="Select snapshot" />
-                </SelectTrigger>
-                <SelectContent className="z-[400]">
-                  <div className="p-2">
-                    <Input
-                      placeholder="Search snapshots..."
-                      value={snapshotSearchQuery}
-                      onChange={(e) => setSnapshotSearchQuery(e.target.value)}
-                      className="mb-2 h-7 text-[12px]"
-                      style={{ 
-                        backgroundColor: 'var(--input-bg)', 
-                        borderColor: 'var(--input-border)',
-                        color: 'var(--input-text)'
-                      }}
-                    />
-                  </div>
-                  {filteredSnapshots.map((snapshot) => (
-                    <SelectItem key={snapshot.id} value={snapshot.id}>
-                      {snapshot.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+  const snapshotSelector = (
+    <div className="flex items-center gap-2">
+      <span className="text-[12px] font-medium" style={{ color: 'var(--text-2)' }}>Snapshot:</span>
+      <div className="w-56">
+        <Select value={effectiveSelectedSnapshotId} onValueChange={handleSnapshotChange}>
+          <SelectTrigger 
+            className="h-8 text-[13px]"
+            style={{ 
+              backgroundColor: 'var(--input-bg)', 
+              borderColor: 'var(--input-border)',
+              color: 'var(--text-1)'
+            }}
+          >
+            <SelectValue placeholder="Select snapshot" />
+          </SelectTrigger>
+          <SelectContent className="z-[400]">
+            <div className="p-2">
+              <Input
+                placeholder="Search snapshots..."
+                value={snapshotSearchQuery}
+                onChange={(e) => setSnapshotSearchQuery(e.target.value)}
+                className="mb-2 h-7 text-[12px]"
+                style={{ 
+                  backgroundColor: 'var(--input-bg)', 
+                  borderColor: 'var(--input-border)',
+                  color: 'var(--input-text)'
+                }}
+              />
             </div>
-          </div>
-        }
-      />
+            {filteredSnapshots.map((snapshot) => (
+              <SelectItem key={snapshot.id} value={snapshot.id}>
+                {snapshot.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+    </div>
+  );
 
-      {/* Content Area - consistent vertical rhythm */}
-      <PageShell.Content variant="wide" className="space-y-5 pb-8">
+  return (
+    <PageChrome rightActions={snapshotSelector}>
+      <div className="px-6 py-4 space-y-5 pb-8 max-w-[1600px] mx-auto">
         {/* Section 1: Strategy Context - Mission/Vision/Values */}
         <StrategyContextCard snapshot={selectedSnapshot} onUpdate={refetchSnapshots} />
 
@@ -151,7 +144,7 @@ export default function StrategyRoomPage() {
           onObjectiveClick={handleObjectiveClick}
           onThemeClick={handleThemeClick}
         />
-      </PageShell.Content>
+      </div>
 
       {/* Drawers */}
       <ObjectiveDrawerV2
@@ -171,6 +164,6 @@ export default function StrategyRoomPage() {
           setThemeDrawerOpen(false);
         }}
       />
-    </PageShell>
+    </PageChrome>
   );
 }

@@ -24,6 +24,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { supabase } from '@/integrations/supabase/client';
+import { PageChrome } from '@/components/layout/PageChrome';
 
 // Catalyst Golden Hour Palette (semantic tokens)
 const palette = {
@@ -438,57 +439,48 @@ export default function EnterpriseRisks() {
     );
   }
 
-  return (
-    <div className="flex flex-col h-full bg-background">
-      {/* Row 1: Title */}
-      <div className="h-[44px] flex items-center px-6">
-        <h1 className="text-xl font-semibold text-secondary-green">Enterprise Risks</h1>
+  const toolbarContent = (
+    <div className="flex items-center justify-between w-full">
+      <div className="flex items-center gap-3">
         {filters.status && (
-          <span className="text-sm px-2 py-0.5 rounded bg-muted text-muted-foreground ml-3">
+          <span className="text-sm px-2 py-0.5 rounded bg-muted text-muted-foreground">
             Where Status = {filters.status}
           </span>
         )}
+        <Button variant="outline" size="sm" onClick={() => setIsFiltersDialogOpen(true)}>
+          <Filter className="w-4 h-4 mr-2" />
+          Apply Filters
+        </Button>
       </div>
-
-      {/* Row 2: Controls */}
-      <div 
-        className="h-[52px] flex items-center justify-between px-6 border-b"
-        style={{ borderColor: 'hsl(var(--border))' }}
-      >
-        <div className="flex items-center gap-3">
-          <Button variant="outline" size="sm" onClick={() => setIsFiltersDialogOpen(true)}>
-            <Filter className="w-4 h-4 mr-2" />
-            Apply Filters
-          </Button>
-        </div>
-        <div className="flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                <MoreVertical className="w-4 h-4 mr-2" />
-                More Actions
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="z-[400]">
-              <DropdownMenuItem onClick={handleExport}>Export Risks</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <Button 
-            size="sm" 
-            className="bg-brand-gold hover:bg-brand-gold-hover text-white"
-            onClick={() => {
-              setEditingRisk(null);
-              setIsCreateEditOpen(true);
-            }}
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            New Risk
-          </Button>
-        </div>
+      <div className="flex items-center gap-2">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm">
+              <MoreVertical className="w-4 h-4 mr-2" />
+              More Actions
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="z-[400]">
+            <DropdownMenuItem onClick={handleExport}>Export Risks</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <Button 
+          size="sm" 
+          className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+          onClick={() => {
+            setEditingRisk(null);
+            setIsCreateEditOpen(true);
+          }}
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          New Risk
+        </Button>
       </div>
+    </div>
+  );
 
-      {/* Page Content */}
+  return (
+    <PageChrome toolbar={toolbarContent}>
       <div className="flex-1 overflow-auto p-6">
         {/* KPI Cards Row */}
         <div className="grid grid-cols-4 gap-4 mb-6">
@@ -894,6 +886,6 @@ export default function EnterpriseRisks() {
           setSelectedRisk(risk);
         }}
       />
-    </div>
+    </PageChrome>
   );
 }
