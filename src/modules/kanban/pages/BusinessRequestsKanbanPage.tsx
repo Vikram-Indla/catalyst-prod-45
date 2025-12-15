@@ -211,18 +211,19 @@ export default function BusinessRequestsKanbanPage() {
         }}
       />
 
-      {/* Board Container - fills remaining viewport with proper height calculation */}
+      {/* Board Container - fills remaining viewport with proper flex rules */}
       <div 
-        className="flex-1 overflow-hidden px-4 py-3"
+        className="flex-1 flex flex-col overflow-hidden px-4 pt-3"
         style={{ 
           backgroundColor: 'var(--surface-1)',
-          minHeight: 0, // Critical for flex child to shrink
+          minHeight: 0,
+          paddingBottom: 'calc(12px + env(safe-area-inset-bottom, 0px))',
         }}
       >
         {groupBy === 'none' ? (
           <div 
-            className="flex gap-3 h-full overflow-x-auto pb-2"
-            style={{ minWidth: 'max-content' }}
+            className="flex gap-3 flex-1 overflow-x-auto overflow-y-hidden"
+            style={{ minHeight: 0 }}
           >
             {COLUMNS_CONFIG.map(column => (
               <KanbanColumn 
@@ -239,7 +240,7 @@ export default function BusinessRequestsKanbanPage() {
             ))}
           </div>
         ) : (
-          <div className="h-full overflow-y-auto" style={{ minWidth: 'max-content' }}>
+          <div className="flex-1 overflow-y-auto" style={{ minHeight: 0 }}>
             {Object.entries(groupedTickets || {}).map(([key, group]) => (
               <Swimlane 
                 key={key} 
