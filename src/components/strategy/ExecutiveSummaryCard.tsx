@@ -185,7 +185,7 @@ export function ExecutiveSummaryCard({ snapshotId }: ExecutiveSummaryCardProps) 
   const riskColor = openRisks > 0 ? (riskData?.high ?? 0) > 0 ? 'red' : 'bronze' : 'green';
 
   return (
-    <PremiumCard>
+    <PremiumCard accent="gold">
       <PremiumCardHeader 
         title="Executive Summary" 
         subtitle="Key performance indicators at a glance" 
