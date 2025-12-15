@@ -49,6 +49,7 @@ import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useVisibleDrawerTabs } from '@/hooks/useDrawerTabConfigs';
+import { DrawerMetadataChips, CIOPanel, EnterpriseStatusControl } from './drawer';
 
 // Fields to track for audit logging (human-readable names)
 const AUDIT_FIELD_LABELS: Record<string, string> = {
@@ -187,6 +188,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showUnsavedChangesDialog, setShowUnsavedChangesDialog] = useState(false);
   const [workflowModalOpen, setWorkflowModalOpen] = useState(false);
+  const [cioPanelCollapsed, setCioPanelCollapsed] = useState(false);
   const nameInputRef = useRef<HTMLInputElement>(null);
 
   // Track if we initiated a data update (to avoid resetting hasChanges on refetch)
@@ -438,23 +440,28 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
       <Sheet open={isOpen} onOpenChange={(open) => !open && handleAttemptClose()}>
         <SheetContent side="right" hideClose className={`executive-drawer ${drawerWidthClass} p-0 flex flex-col overflow-hidden`} style={{ background: 'var(--surface-1)' }}>
           <SheetHeader className="executive-drawer-header flex-col space-y-0 shrink-0 p-0" style={{ background: 'var(--surface-1)' }}>
-            {/* Header row with proper top spacing */}
-            <div className="flex items-center justify-between px-4 md:px-5 pt-4 pb-3" style={{ borderBottom: '1px solid var(--accent-color)', background: 'var(--surface-1)' }}>
-              {/* Left side: Request ID + Title + Priority Pill */}
-              <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                <div className="flex items-center gap-2 shrink-0">
-                  <span className="text-sm font-medium text-secondary-green">{request?.request_key || '...'}</span>
-                  <button
-                    onClick={handleCopyLink}
-                    className="text-muted-foreground/60 hover:text-brand-gold transition-colors p-0.5"
-                    title="Copy link"
-                  >
-                    <LinkIcon className="h-3 w-3" />
-                  </button>
-                </div>
-                
+            {/* Enterprise Header - Breadcrumb + ID */}
+            <div className="px-4 md:px-5 pt-3 pb-1 flex items-center gap-2">
+              <span className="text-[10px] uppercase tracking-wider font-medium" style={{ color: 'var(--text-3)' }}>
+                Product Backlog
+              </span>
+              <span style={{ color: 'var(--text-3)' }}>/</span>
+              <span className="text-xs font-semibold text-secondary-green">{request?.request_key || '...'}</span>
+              <button
+                onClick={handleCopyLink}
+                className="text-muted-foreground/60 hover:text-brand-gold transition-colors p-0.5"
+                title="Copy link"
+              >
+                <LinkIcon className="h-3 w-3" />
+              </button>
+            </div>
+
+            {/* Main Header Row - Title + Status + Actions */}
+            <div className="flex items-start justify-between px-4 md:px-5 pb-3 gap-4" style={{ background: 'var(--surface-1)' }}>
+              {/* Left side: Title + Status + Metadata chips */}
+              <div className="flex-1 min-w-0 space-y-2">
                 {/* Editable title */}
-                <div className="flex items-center gap-1.5 flex-1 min-w-0 group">
+                <div className="flex items-center gap-1.5 group">
                   {isEditingName ? (
                     <Input
                       ref={nameInputRef}
@@ -462,11 +469,11 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                       onChange={(e) => setEditedName(e.target.value)}
                       onBlur={handleSaveName}
                       onKeyDown={handleNameKeyDown}
-                      className="text-base font-medium h-auto py-1 px-2 border-brand-gold/50 focus:border-brand-gold"
+                      className="text-lg font-semibold h-auto py-1 px-2 border-brand-gold/50 focus:border-brand-gold max-w-[500px]"
                     />
                   ) : (
                     <>
-                      <SheetTitle className="truncate text-base font-medium text-foreground">
+                      <SheetTitle className="text-lg font-semibold truncate max-w-[500px]" style={{ color: 'var(--text-1)' }}>
                         {request?.title || 'Loading...'}
                       </SheetTitle>
                       <button
@@ -479,9 +486,23 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                     </>
                   )}
                 </div>
+
+                {/* Status + Metadata chips row */}
+                <div className="flex items-center gap-3 flex-wrap">
+                  <EnterpriseStatusControl
+                    currentStep={formData.process_step || 'new_request'}
+                    onChange={(step) => handleFieldChange('process_step', step)}
+                  />
+                  <DrawerMetadataChips
+                    businessOwner={formData.business_owner}
+                    department={formData.department}
+                    rank={formData.rank}
+                    targetDate={formData.end_date}
+                  />
+                </div>
               </div>
               
-              {/* Right side: Save button + action icons all inline */}
+              {/* Right side: Save button + action icons */}
               <div className="flex items-center gap-2 shrink-0">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -546,31 +567,19 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                 </Button>
               </div>
             </div>
+            <div style={{ borderBottom: '1px solid var(--accent-color)' }} />
             <SheetDescription className="sr-only">Business request details panel</SheetDescription>
           </SheetHeader>
 
-          {/* Workflow Status - same size as tab labels */}
-          <div className="px-4 md:px-5 py-2 flex items-center shrink-0" style={{ background: 'var(--surface-1)' }}>
-            <button 
-              onClick={() => setWorkflowModalOpen(true)}
-              className="flex items-center gap-2 text-sm font-medium transition-colors cursor-pointer"
-              style={{ color: 'var(--text-2)' }}
-            >
-              <span className="font-bold" style={{ color: 'var(--text-1)' }}>Status:</span>
-              <span className="capitalize underline underline-offset-2" style={{ color: 'var(--accent-color)' }}>
-                {formData.process_step?.replace(/_/g, ' ') || 'New Request'}
-              </span>
-              <span className="text-xs font-normal" style={{ color: 'var(--text-3)' }}>(click to update)</span>
-            </button>
-            <WorkflowViewerModal 
-              currentStep={formData.process_step || 'new_request'}
-              requestId={requestId || ''}
-              submittedDate={request?.created_at}
-              onStepChange={(step) => handleFieldChange('process_step', step)}
-              open={workflowModalOpen}
-              onOpenChange={setWorkflowModalOpen}
-            />
-          </div>
+          {/* Hidden workflow modal trigger */}
+          <WorkflowViewerModal 
+            currentStep={formData.process_step || 'new_request'}
+            requestId={requestId || ''}
+            submittedDate={request?.created_at}
+            onStepChange={(step) => handleFieldChange('process_step', step)}
+            open={workflowModalOpen}
+            onOpenChange={setWorkflowModalOpen}
+          />
 
           {/* Tabs with horizontal scroll */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
