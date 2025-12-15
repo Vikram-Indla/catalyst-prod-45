@@ -23,14 +23,16 @@ export function MissionVisionValuesCard({
   return (
     <PremiumCard className="h-full flex flex-col">
       <PremiumCardHeader title={title} subtitle={subtitle} />
-      <PremiumCardContent className="flex-1 min-h-[80px]">
-        <InlineEditTextarea
-          value={value}
-          onSave={onSave}
-          placeholder={placeholder}
-          emptyText="None found."
-          aria-label={ariaLabel}
-        />
+      <PremiumCardContent className="flex-1 min-h-[60px] py-3">
+        <div className="text-[14px] leading-relaxed" style={{ color: 'var(--text-1)' }}>
+          <InlineEditTextarea
+            value={value}
+            onSave={onSave}
+            placeholder={placeholder}
+            emptyText="None found."
+            aria-label={ariaLabel}
+          />
+        </div>
       </PremiumCardContent>
     </PremiumCard>
   );

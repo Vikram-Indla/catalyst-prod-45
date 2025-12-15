@@ -42,24 +42,24 @@ const PremiumCardHeader = React.forwardRef<HTMLDivElement, PremiumCardHeaderProp
     <div
       ref={ref}
       className={cn(
-        "flex items-center justify-between px-4 py-3 border-b",
+        "flex items-center justify-between px-4 py-2.5 border-b",
         className
       )}
       style={{
         borderColor: 'var(--divider)',
-        backgroundColor: 'var(--card-bg)',
+        backgroundColor: 'var(--surface-2)',
       }}
       {...props}
     >
-      <div className="flex flex-col gap-0.5">
+      <div className="flex flex-col gap-0">
         <h3 
-          className="text-[13px] font-semibold uppercase tracking-wide"
+          className="text-[13px] font-semibold tracking-wide"
           style={{ color: 'var(--text-1)' }}
         >
           {title}
         </h3>
         {subtitle && (
-          <p className="text-xs" style={{ color: 'var(--text-3)' }}>
+          <p className="text-[12px]" style={{ color: 'var(--text-2)' }}>
             {subtitle}
           </p>
         )}

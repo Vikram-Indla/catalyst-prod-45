@@ -135,21 +135,21 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
                   percentage: okrMetrics.avgProgress,
                   color: objectivesColor,
                 })}
-                className="w-full flex items-center justify-between py-2.5 rounded transition-colors text-left focus:outline-none hover:bg-[var(--surface-2)]"
+                className="w-full flex items-center justify-between py-2 rounded transition-colors text-left focus:outline-none hover:bg-[var(--surface-2)]"
                 style={{ borderBottom: '1px solid var(--divider)' }}
               >
-                <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                  <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${getColorClass(objectivesColor)}`} />
-                  <span className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>Objectives</span>
+                <div className="flex items-center gap-2 flex-1 min-w-0">
+                  <div className={`w-2 h-2 rounded-full flex-shrink-0 ${getColorClass(objectivesColor)}`} />
+                  <span className="text-[14px] font-medium" style={{ color: 'var(--text-1)' }}>Objectives</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className={`text-sm font-bold ${getColorText(objectivesColor)}`}>
+                <div className="flex items-center gap-2">
+                  <span className={`text-[14px] font-bold ${getColorText(objectivesColor)}`}>
                     {okrMetrics.avgProgress}%
                   </span>
-                  <span className="text-xs font-medium" style={{ color: 'var(--text-2)' }}>
+                  <span className="text-[12px] font-medium" style={{ color: 'var(--text-1)' }}>
                     {acceptedCount}/{okrMetrics.count}
                   </span>
-                  <ChevronRight className="h-4 w-4" style={{ color: 'var(--text-3)' }} />
+                  <ChevronRight className="h-3.5 w-3.5" style={{ color: 'var(--text-2)' }} />
                 </div>
               </button>
 
@@ -158,18 +158,18 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
                 return (
                   <div
                     key={theme.themeId}
-                    className="flex items-center justify-between py-2.5"
+                    className="flex items-center justify-between py-2"
                     style={{ borderBottom: '1px solid var(--divider)' }}
                   >
-                    <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                      <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${getColorClass(color)}`} />
-                      <span className="text-sm truncate" style={{ color: 'var(--text-1)' }}>{theme.themeName}</span>
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      <div className={`w-2 h-2 rounded-full flex-shrink-0 ${getColorClass(color)}`} />
+                      <span className="text-[14px] truncate" style={{ color: 'var(--text-1)' }}>{theme.themeName}</span>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <span className={`text-sm font-semibold ${getColorText(color)}`}>
+                    <div className="flex items-center gap-2">
+                      <span className={`text-[14px] font-semibold ${getColorText(color)}`}>
                         {theme.avgProgress}%
                       </span>
-                      <span className="text-xs font-medium min-w-[16px] text-right" style={{ color: 'var(--text-2)' }}>
+                      <span className="text-[12px] font-medium min-w-[16px] text-right" style={{ color: 'var(--text-1)' }}>
                         {theme.objectives.length}
                       </span>
                     </div>
@@ -177,8 +177,8 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
                 );
               })}
               {themes.length > 3 && (
-                <div className="text-center py-2">
-                  <span className="text-xs font-medium" style={{ color: 'var(--text-3)' }}>+{themes.length - 3} more themes</span>
+                <div className="text-center py-1.5">
+                  <span className="text-[12px] font-medium" style={{ color: 'var(--text-2)' }}>+{themes.length - 3} more</span>
                 </div>
               )}
             </div>

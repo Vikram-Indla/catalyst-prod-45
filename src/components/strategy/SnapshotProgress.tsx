@@ -112,25 +112,25 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
     
     return (
       <div 
-        className="flex items-center gap-3 py-2.5 cursor-pointer rounded transition-colors hover:bg-[var(--surface-2)] group"
+        className="flex items-center gap-2 py-2 cursor-pointer rounded transition-colors hover:bg-[var(--surface-2)] group"
         onClick={onClick}
         style={{ borderBottom: isLast ? 'none' : '1px solid var(--divider)' }}
       >
-        <span className="text-sm min-w-[80px]" style={{ color: 'var(--text-1)' }}>
+        <span className="text-[14px] min-w-[72px]" style={{ color: 'var(--text-1)' }}>
           {label}
         </span>
-        <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--surface-3)' }}>
+        <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--surface-3)' }}>
           <div 
             className="h-full rounded-full transition-all duration-300"
             style={{ width: `${percent}%`, backgroundColor: 'hsl(var(--secondary-green))' }}
           />
         </div>
-        <span className="text-sm font-semibold min-w-[48px] text-right" style={{ color: 'var(--text-1)' }}>
+        <span className="text-[13px] font-semibold min-w-[40px] text-right" style={{ color: 'var(--text-1)' }}>
           {accepted}/{total}
         </span>
         <ChevronRight 
-          className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" 
-          style={{ color: 'var(--text-3)' }} 
+          className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" 
+          style={{ color: 'var(--text-2)' }} 
         />
       </div>
     );
