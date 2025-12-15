@@ -68,7 +68,6 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
         return { 
           count: objectivesCount, 
           aligned: objectivesCount, 
-          misaligned: 0,
           gap: 0,
           progress: okrMetrics?.avgProgress || 0,
         };
@@ -76,7 +75,6 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
         return { 
           count: counts?.themes || 0, 
           aligned: counts?.themes || 0, 
-          misaligned: 0,
           gap: 0,
           progress: 0,
         };
@@ -84,7 +82,6 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
         return { 
           count: counts?.epics || 0, 
           aligned: counts?.alignedEpics || 0, 
-          misaligned: counts?.misalignedEpics || 0,
           gap: counts?.misalignedEpics || 0,
           progress: counts?.alignedEpics && counts?.epics ? Math.round((counts.alignedEpics / counts.epics) * 100) : 0,
         };
@@ -92,12 +89,11 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
         return { 
           count: counts?.features || 0, 
           aligned: counts?.alignedFeatures || 0, 
-          misaligned: counts?.misalignedFeatures || 0,
           gap: counts?.misalignedFeatures || 0,
           progress: counts?.alignedFeatures && counts?.features ? Math.round((counts.alignedFeatures / counts.features) * 100) : 0,
         };
       default:
-        return { count: 0, aligned: 0, misaligned: 0, gap: 0, progress: 0 };
+        return { count: 0, aligned: 0, gap: 0, progress: 0 };
     }
   };
 
@@ -107,6 +103,12 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
   };
 
   const handleOpenOKRHub = () => navigate('/enterprise/okr-hub');
+
+  const allEmpty = !isLoading && !okrLoading && 
+    objectivesCount === 0 && 
+    (counts?.themes ?? 0) === 0 && 
+    (counts?.epics ?? 0) === 0 && 
+    (counts?.features ?? 0) === 0;
 
   return (
     <>
@@ -137,8 +139,8 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
           }
         />
         <PremiumCardContent noPadding>
-          {/* Empty state banner when all counts are 0 */}
-          {!isLoading && !okrLoading && objectivesCount === 0 && (counts?.themes ?? 0) === 0 && (counts?.epics ?? 0) === 0 && (counts?.features ?? 0) === 0 && (
+          {/* Empty state banner */}
+          {allEmpty && (
             <div 
               className="px-4 py-3 text-[13px] border-b"
               style={{ 
@@ -155,7 +157,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
           <div 
             className="grid items-center px-4 py-2"
             style={{
-              gridTemplateColumns: '180px 60px 1fr 60px 60px 60px 32px',
+              gridTemplateColumns: '160px 64px 1fr 56px 56px 56px 28px',
               backgroundColor: 'var(--surface-2)',
               borderBottom: '1px solid var(--divider)',
             }}
@@ -163,7 +165,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
             <div className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-2)' }}>
               Layer
             </div>
-            <div className="text-[11px] font-semibold uppercase tracking-wider text-center" style={{ color: 'var(--text-2)' }}>
+            <div className="text-[11px] font-semibold uppercase tracking-wider text-right pr-2" style={{ color: 'var(--text-2)' }}>
               Count
             </div>
             <div className="text-[11px] font-semibold uppercase tracking-wider text-center" style={{ color: 'var(--text-2)' }}>
@@ -181,7 +183,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
             <div></div>
           </div>
 
-          {/* Table rows - compact enterprise density */}
+          {/* Table rows */}
           {layerConfigs.map((layer, index) => {
             const data = getLayerData(layer.key);
             const Icon = layer.icon;
@@ -191,9 +193,9 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
               <button
                 key={layer.key}
                 onClick={() => handleDrilldown(layer.label)}
-                className="w-full grid items-center px-4 py-2 transition-colors text-left group hover:bg-[var(--surface-2)]"
+                className="w-full grid items-center px-4 py-2.5 transition-colors text-left group hover:bg-[var(--surface-2)]"
                 style={{ 
-                  gridTemplateColumns: '180px 60px 1fr 60px 60px 60px 32px',
+                  gridTemplateColumns: '160px 64px 1fr 56px 56px 56px 28px',
                   borderBottom: isLast ? 'none' : '1px solid var(--divider)',
                 }}
               >
@@ -213,20 +215,23 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                   </span>
                 </div>
 
-                {/* Count */}
-                <div className="text-center">
+                {/* Count - right aligned */}
+                <div className="text-right pr-2">
                   <span 
-                    className="text-[14px] font-bold"
+                    className="text-[14px] font-bold tabular-nums"
                     style={{ color: 'var(--text-1)' }}
                   >
                     {isLoading || okrLoading ? '–' : data.count}
                   </span>
                 </div>
 
-                {/* Coverage bar - hide track entirely when no data */}
-                <div className="flex items-center px-2">
+                {/* Coverage bar */}
+                <div className="flex items-center px-3">
                   {data.count > 0 ? (
-                    <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--surface-3)' }}>
+                    <div 
+                      className="w-full h-[6px] rounded-full overflow-hidden" 
+                      style={{ backgroundColor: 'var(--surface-3)' }}
+                    >
                       <div 
                         className="h-full rounded-full transition-all"
                         style={{ 
@@ -236,14 +241,17 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                       />
                     </div>
                   ) : (
-                    <div className="w-full" />
+                    <div 
+                      className="w-full h-[6px] rounded-full" 
+                      style={{ backgroundColor: 'var(--surface-3)' }}
+                    />
                   )}
                 </div>
 
-                {/* Percentage - show dash if no data */}
+                {/* Percentage */}
                 <div className="text-right">
                   <span 
-                    className="text-[13px] font-bold"
+                    className="text-[13px] font-semibold tabular-nums"
                     style={{ color: data.count === 0 ? 'var(--text-3)' : 'var(--text-1)' }}
                   >
                     {data.count === 0 ? '—' : `${data.progress}%`}
@@ -253,8 +261,8 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                 {/* Aligned */}
                 <div className="text-right">
                   <span 
-                    className="text-[13px] font-semibold"
-                    style={{ color: 'hsl(var(--secondary-green))' }}
+                    className="text-[13px] font-semibold tabular-nums"
+                    style={{ color: data.aligned > 0 ? 'hsl(var(--secondary-green))' : 'var(--text-3)' }}
                   >
                     {data.aligned}
                   </span>
@@ -263,7 +271,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                 {/* Gap */}
                 <div className="text-right">
                   <span 
-                    className="text-[13px] font-semibold"
+                    className="text-[13px] font-semibold tabular-nums"
                     style={{ color: data.gap > 0 ? 'hsl(var(--destructive))' : 'var(--text-3)' }}
                   >
                     {data.gap}
