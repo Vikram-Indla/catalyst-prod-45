@@ -10,11 +10,11 @@ import { toast } from 'sonner';
 import { IndustryViewSwitchButton } from '@/components/industry/IndustryViewSwitchButton';
 import { useDepartments } from '@/hooks/useDepartmentsAndOwners';
 
-// Row heights for density modes - Enterprise-grade compact
+// Row heights for density modes - Enterprise-grade Jira-like compact
 const DENSITY_CONFIG = {
-  compact: { rowHeight: 36, fontSize: 12, padding: '6px 10px' },
-  regular: { rowHeight: 44, fontSize: 13, padding: '8px 10px' },
-  relaxed: { rowHeight: 48, fontSize: 14, padding: '10px 12px' },
+  compact: { rowHeight: 40, fontSize: 13, padding: '8px 12px' },
+  regular: { rowHeight: 44, fontSize: 13, padding: '8px 12px' },
+  relaxed: { rowHeight: 52, fontSize: 14, padding: '10px 14px' },
 };
 
 // Status options - neutral styling with accent indicators
@@ -156,60 +156,61 @@ interface ExecutiveTableProps {
   onSelectedRowsChange?: (rows: string[]) => void;
 }
 
-// Status Badge - neutral pill with small left accent dot, enterprise compact
+// Status Badge - neutral pill with small left accent dot, enterprise crisp
 function StatusBadge({ value, options }: { value: string; options: { value: string; label: string; accent?: string }[] }) {
   const option = options.find(o => o.value === value);
-  if (!option) return <span style={{ color: 'var(--text-3)', fontSize: '12px' }}>—</span>;
+  if (!option) return <span style={{ color: 'var(--text-3)', fontSize: '13px' }}>—</span>;
   
   // Accent dot color based on status category
   const accentClasses: Record<string, string> = {
     gold: 'bg-brand-gold',
     green: 'bg-secondary-green',
-    neutral: 'bg-muted-foreground/40',
+    neutral: 'bg-muted-foreground/50',
   };
   
   const accentClass = accentClasses[option.accent || 'neutral'] || accentClasses.neutral;
   
   return (
     <span 
-      className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded whitespace-nowrap"
+      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md whitespace-nowrap"
       style={{ 
         backgroundColor: 'var(--surface-3)',
         border: '1px solid var(--border-color)',
-        fontSize: '11px',
+        fontSize: '12px',
         fontWeight: 500,
         color: 'var(--text-1)',
+        lineHeight: '1.2',
       }}
     >
-      <span className={`w-1.5 h-1.5 rounded-full ${accentClass}`} />
+      <span className={`w-2 h-2 rounded-full ${accentClass} flex-shrink-0`} />
       {option.label}
     </span>
   );
 }
 
-// Score Progress Bar - with proper track border, enterprise compact
+// Score Progress Bar - with proper track border, enterprise crisp
 function ScoreBar({ score }: { score: number | null }) {
   if (score === null || score === undefined) {
-    return <span style={{ color: 'var(--text-3)', fontSize: '12px' }}>—</span>;
+    return <span style={{ color: 'var(--text-3)', fontSize: '13px' }}>—</span>;
   }
   
   return (
-    <div className="flex items-center gap-2 min-w-[80px]">
+    <div className="flex items-center gap-2.5 min-w-[90px]">
       <div 
-        className="flex-1 h-1.5 rounded overflow-hidden"
+        className="flex-1 h-2 rounded-sm overflow-hidden"
         style={{ 
           backgroundColor: 'var(--surface-3)',
           border: '1px solid var(--border-color)',
         }}
       >
         <div 
-          className="h-full rounded-sm transition-all duration-300 bg-secondary-green"
+          className="h-full transition-all duration-300 bg-secondary-green"
           style={{ width: `${Math.min(score, 100)}%` }}
         />
       </div>
       <span 
-        className="min-w-[24px] tabular-nums font-medium"
-        style={{ fontSize: '12px', color: 'var(--text-1)' }}
+        className="min-w-[28px] tabular-nums font-semibold text-right"
+        style={{ fontSize: '13px', color: 'var(--text-1)' }}
       >
         {score}
       </span>
@@ -217,13 +218,13 @@ function ScoreBar({ score }: { score: number | null }) {
   );
 }
 
-// Date Display - neutral text only, enterprise compact
+// Date Display - neutral text only, enterprise crisp
 function DateDisplay({ date }: { date: string | null }) {
-  if (!date) return <span style={{ color: 'var(--text-3)', fontSize: '12px' }}>—</span>;
+  if (!date) return <span style={{ color: 'var(--text-3)', fontSize: '13px' }}>—</span>;
   const d = new Date(date);
   
   return (
-    <span style={{ fontSize: '12px', color: 'var(--text-2)' }}>
+    <span style={{ fontSize: '13px', color: 'var(--text-1)', fontVariantNumeric: 'tabular-nums' }}>
       {d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' })}
     </span>
   );
@@ -1321,82 +1322,95 @@ export function ExecutiveTable({
         </div>
       )}
 
-      {/* TABLE CONTAINER - Single boxed card with border, border-radius, horizontal scroll */}
-      {/* Proper spacing and full-width content with semantic tokens for dark mode */}
-      <div className="px-4 pb-4 pt-3 flex-1 min-h-0 overflow-hidden">
+      {/* TABLE CONTAINER - Enterprise boxed card with proper spacing and horizontal scroll */}
+      <div className="px-5 pb-4 pt-2 flex-1 min-h-0 overflow-hidden">
         <div 
-          className="flex flex-col rounded-xl overflow-hidden h-full"
+          className="flex flex-col rounded-lg overflow-hidden h-full shadow-sm"
           style={{ 
             backgroundColor: 'var(--surface-1)',
-            border: '1px solid var(--border-color)',
+            border: '1px solid var(--divider)',
           }}
         >
           {/* Scrollable Table Area - owns horizontal + vertical scroll */}
           <div className="flex-1 overflow-auto min-h-0">
-            <table className="w-full border-collapse" style={{ minWidth: columns.reduce((acc, col) => acc + (col.minWidth || 100), 48 + 40) }}>
-              <thead className="sticky top-0 z-10">
+            <table className="w-full border-collapse table-fixed" style={{ minWidth: columns.reduce((acc, col) => acc + (col.minWidth || 100), 48 + 48) }}>
+              <thead className="sticky top-0 z-20">
                 <tr>
-                  {/* Checkbox column - 40px header height */}
+                  {/* Checkbox column - 44px header height, pinned */}
                   <th 
-                    className="w-10 px-2.5 text-center whitespace-nowrap"
+                    className="w-12 px-3 text-center whitespace-nowrap sticky left-0 z-30"
                     style={{ 
-                      height: '40px',
-                      backgroundColor: 'var(--surface-2)',
-                      borderBottom: '2px solid var(--border-color)',
+                      height: '44px',
+                      backgroundColor: 'var(--surface-1)',
+                      borderBottom: '2px solid var(--divider)',
                     }}
                   >
                     <input
                       type="checkbox"
                       checked={paginatedData.length > 0 && selectedRows.length === paginatedData.length}
                       onChange={handleSelectAll}
-                      className="w-3.5 h-3.5 accent-brand-gold cursor-pointer"
+                      className="w-4 h-4 accent-brand-gold cursor-pointer"
                     />
                   </th>
-                  {columns.map(col => {
+                  {columns.map((col, colIndex) => {
                     const isSorted = sortConfig.column === col.id;
                     const hasActiveFilter = filters[col.id] && filters[col.id].length > 0;
+                    // Pin first two columns (Request ID and Summary) for horizontal scroll
+                    const isPinned = colIndex === 0 || colIndex === 1;
+                    const leftOffset = colIndex === 0 ? '48px' : colIndex === 1 ? `${48 + (columns[0]?.minWidth || 110)}px` : undefined;
+                    
                     return (
                       <th 
                         key={col.id}
-                        draggable={true}
-                        onDragStart={(e) => handleColumnDragStart(e, col.id)}
+                        draggable={!isPinned}
+                        onDragStart={(e) => !isPinned && handleColumnDragStart(e, col.id)}
                         onDragOver={(e) => handleColumnDragOver(e, col.id)}
                         onDragLeave={() => setDragOverColumn(null)}
                         onDrop={(e) => handleColumnDrop(e, col.id)}
                         onDragEnd={() => { setDraggingColumn(null); setDragOverColumn(null); }}
-                        className={`group px-2.5 text-left whitespace-nowrap cursor-grab transition-colors ${
+                        className={`group px-3 text-left whitespace-nowrap transition-colors ${
                           draggingColumn === col.id ? 'opacity-50' : ''
-                        }`}
+                        } ${isPinned ? 'sticky z-30' : ''}`}
                         style={{ 
-                          height: '40px',
+                          height: '44px',
                           minWidth: col.minWidth,
-                          backgroundColor: dragOverColumn === col.id ? 'var(--accent-muted)' : 'var(--surface-2)',
-                          borderBottom: isSorted ? '2px solid var(--accent-color)' : '2px solid var(--border-color)',
+                          backgroundColor: dragOverColumn === col.id ? 'var(--accent-muted)' : 'var(--surface-1)',
+                          borderBottom: isSorted ? '2px solid var(--accent-color)' : '2px solid var(--divider)',
                           borderLeft: dragOverColumn === col.id ? '2px solid var(--accent-color)' : 'none',
+                          cursor: isPinned ? 'default' : 'grab',
+                          ...(isPinned && leftOffset ? { left: leftOffset } : {}),
                         }}
                       >
-                        <div className="flex items-center gap-1.5">
-                          {/* Drag handle - subtle, visible on hover */}
-                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0 cursor-grab opacity-0 group-hover:opacity-40 transition-opacity" style={{ color: 'var(--text-3)' }}>
-                            <circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/>
-                            <circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/>
-                          </svg>
-                          {/* Header label - 12px semibold, high contrast */}
+                        <div className="flex items-center gap-2">
+                          {/* Drag handle - visible on hover, not for pinned columns */}
+                          {!isPinned && (
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0 cursor-grab opacity-0 group-hover:opacity-40 transition-opacity" style={{ color: 'var(--text-3)' }}>
+                              <circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/>
+                              <circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/>
+                            </svg>
+                          )}
+                          {/* Header label - 13px semibold, high contrast for enterprise legibility */}
                           <span 
-                            className="select-none text-xs font-semibold tracking-wide"
-                            style={{ color: 'var(--text-1)' }}
+                            className="select-none font-semibold"
+                            style={{ 
+                              color: 'var(--text-1)',
+                              fontSize: '13px',
+                              letterSpacing: '0.01em',
+                            }}
                           >
                             {col.header}
                           </span>
-                          {/* Sort icon - visible on hover OR when active */}
+                          {/* Sort icon - visible on hover OR when active, 16px for visibility */}
                           {col.sortable && (
                             <button
                               onClick={(e) => { e.stopPropagation(); handleSort(col.id); }}
                               onMouseDown={(e) => e.stopPropagation()}
-                              className={`p-0.5 border-none bg-transparent cursor-pointer flex items-center transition-opacity ${
-                                isSorted ? 'opacity-100' : 'opacity-0 group-hover:opacity-60'
+                              className={`p-1 border-none bg-transparent cursor-pointer flex items-center rounded transition-all ${
+                                isSorted ? 'opacity-100' : 'opacity-0 group-hover:opacity-70'
                               }`}
-                              style={{ color: isSorted ? 'var(--accent-color)' : 'var(--text-3)' }}
+                              style={{ 
+                                color: isSorted ? 'var(--accent-color)' : 'var(--text-2)',
+                              }}
                             >
                               {isSorted && sortConfig.direction === 'desc' 
                                 ? <Icons.ChevronDown />
@@ -1408,7 +1422,7 @@ export function ExecutiveTable({
                           {col.filterable && col.options && (
                             <div 
                               onMouseDown={(e) => e.stopPropagation()}
-                              className={`transition-opacity ${hasActiveFilter ? 'opacity-100' : 'opacity-0 group-hover:opacity-60'}`}
+                              className={`transition-opacity ${hasActiveFilter ? 'opacity-100' : 'opacity-0 group-hover:opacity-70'}`}
                             >
                               <ColumnFilterDropdown
                                 column={col.id}
@@ -1425,11 +1439,11 @@ export function ExecutiveTable({
                   })}
                   {/* Actions column header */}
                   <th 
-                    className="w-12 px-2.5"
+                    className="w-14 px-3"
                     style={{ 
-                      height: '40px',
-                      backgroundColor: 'var(--surface-2)',
-                      borderBottom: '2px solid var(--border-color)',
+                      height: '44px',
+                      backgroundColor: 'var(--surface-1)',
+                      borderBottom: '2px solid var(--divider)',
                     }}
                   ></th>
                 </tr>
@@ -1458,50 +1472,62 @@ export function ExecutiveTable({
                   paginatedData.map((row, index) => (
                     <tr
                       key={row.id}
-                      className="transition-colors cursor-pointer"
+                      className="transition-colors cursor-pointer group/row"
                       style={{ 
                         height: `${rowHeight}px`,
                         backgroundColor: selectedRows.includes(row.id) 
                           ? 'var(--accent-muted)' 
-                          : index % 2 === 1 ? 'var(--surface-2)' : 'var(--surface-1)',
+                          : 'var(--surface-1)',
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = 'var(--surface-3)';
+                        e.currentTarget.style.backgroundColor = 'var(--surface-2)';
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.backgroundColor = selectedRows.includes(row.id) 
                           ? 'var(--accent-muted)' 
-                          : index % 2 === 1 ? 'var(--surface-2)' : 'var(--surface-1)';
+                          : 'var(--surface-1)';
                       }}
                     >
+                      {/* Checkbox cell - pinned */}
                       <td 
-                        className="px-2.5 text-center"
-                        style={{ borderBottom: '1px solid var(--divider)' }}
+                        className="px-3 text-center sticky left-0 z-10"
+                        style={{ 
+                          borderBottom: '1px solid var(--divider)',
+                          backgroundColor: selectedRows.includes(row.id) ? 'var(--accent-muted)' : 'var(--surface-1)',
+                        }}
                       >
                         <input
                           type="checkbox"
                           checked={selectedRows.includes(row.id)}
                           onChange={() => handleSelectRow(row.id)}
-                          className="w-3.5 h-3.5 accent-brand-gold cursor-pointer"
+                          className="w-4 h-4 accent-brand-gold cursor-pointer"
                         />
                       </td>
-                      {columns.map(col => (
-                        <td 
-                          key={col.id} 
-                          className="px-2.5 whitespace-nowrap overflow-hidden text-ellipsis"
-                          style={{ 
-                            minWidth: col.minWidth,
-                            textAlign: (col.align || 'left') as React.CSSProperties['textAlign'],
-                            borderBottom: '1px solid var(--divider)',
-                            color: 'var(--text-1)',
-                            fontSize: '13px',
-                          }}
-                        >
-                          {renderCellContent(row, col)}
-                        </td>
-                      ))}
+                      {columns.map((col, colIndex) => {
+                        // Pin first two columns (Request ID and Summary)
+                        const isPinned = colIndex === 0 || colIndex === 1;
+                        const leftOffset = colIndex === 0 ? '48px' : colIndex === 1 ? `${48 + (columns[0]?.minWidth || 110)}px` : undefined;
+                        
+                        return (
+                          <td 
+                            key={col.id} 
+                            className={`px-3 whitespace-nowrap overflow-hidden text-ellipsis ${isPinned ? 'sticky z-10' : ''}`}
+                            style={{ 
+                              minWidth: col.minWidth,
+                              textAlign: (col.align || 'left') as React.CSSProperties['textAlign'],
+                              borderBottom: '1px solid var(--divider)',
+                              color: 'var(--text-1)',
+                              fontSize: '13px',
+                              backgroundColor: selectedRows.includes(row.id) ? 'var(--accent-muted)' : 'var(--surface-1)',
+                              ...(isPinned && leftOffset ? { left: leftOffset } : {}),
+                            }}
+                          >
+                            {renderCellContent(row, col)}
+                          </td>
+                        );
+                      })}
                       <td 
-                        className="px-2.5"
+                        className="px-3"
                         style={{ borderBottom: '1px solid var(--divider)' }}
                       >
                         <RowActionsMenu
@@ -1518,18 +1544,22 @@ export function ExecutiveTable({
                     </tr>
                   ))
                 )}
-                {/* Empty space filler - intentional when few rows */}
-                {paginatedData.length > 0 && paginatedData.length < 5 && (
+                {/* Empty space filler - intentional when few rows, enterprise clean */}
+                {paginatedData.length > 0 && paginatedData.length < 8 && (
                   <tr>
                     <td 
                       colSpan={columns.length + 2} 
-                      className="text-center py-10"
+                      className="text-center py-12"
                       style={{ 
                         color: 'var(--text-3)',
                         borderBottom: 'none',
+                        backgroundColor: 'var(--surface-1)',
                       }}
                     >
-                      <span className="text-xs opacity-50">End of list</span>
+                      <div className="flex flex-col items-center gap-1">
+                        <span className="text-sm font-medium" style={{ opacity: 0.5 }}>End of results</span>
+                        <span className="text-xs" style={{ opacity: 0.35 }}>{paginatedData.length} item{paginatedData.length !== 1 ? 's' : ''} shown</span>
+                      </div>
                     </td>
                   </tr>
                 )}
