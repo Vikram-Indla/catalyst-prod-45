@@ -48,33 +48,51 @@ function KPITile({
   return (
     <button
       onClick={onClick}
-      className="relative flex flex-col items-start p-4 transition-colors text-left hover:bg-[var(--surface-2)] group flex-1 min-w-0"
+      className="relative flex flex-col items-start p-5 text-left group flex-1 min-w-0 transition-all duration-200"
+      style={{
+        backgroundColor: 'var(--surface-tinted)',
+        border: '1px solid var(--kpi-border)',
+        borderRadius: '8px',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor = 'var(--border-accent)';
+        e.currentTarget.style.transform = 'translateY(-2px)';
+        e.currentTarget.style.boxShadow = 'var(--card-shadow-hover)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = 'var(--kpi-border)';
+        e.currentTarget.style.transform = 'translateY(0)';
+        e.currentTarget.style.boxShadow = 'none';
+      }}
       aria-label={`${label}: ${value}`}
     >
-      {/* Top accent bar - each tile has its own */}
+      {/* Top accent bar - appears on hover */}
       <div 
-        className="absolute top-0 left-0 right-0 h-[2px]"
-        style={{ backgroundColor: accentBorder }}
+        className="absolute top-0 left-0 right-0 h-[3px] opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+        style={{ 
+          backgroundColor: accentBorder,
+          borderRadius: '8px 8px 0 0',
+        }}
       />
       
       <span 
-        className="text-[11px] font-semibold uppercase tracking-wider mb-2"
-        style={{ color: 'var(--text-2)' }}
+        className="text-[11px] font-semibold uppercase tracking-wider mb-3"
+        style={{ color: 'var(--text-muted)' }}
       >
         {label}
       </span>
       
       {isLoading ? (
         <span 
-          className="text-[28px] font-bold leading-none mb-1"
-          style={{ color: 'var(--text-3)' }}
+          className="text-[32px] font-bold leading-none mb-1"
+          style={{ color: 'var(--text-faint)' }}
         >
           —
         </span>
       ) : (
         <span 
-          className="text-[28px] font-bold leading-none mb-1 tabular-nums"
-          style={{ color: isNeutral ? 'var(--text-2)' : accentBorder }}
+          className="text-[32px] font-bold leading-none mb-1 tabular-nums"
+          style={{ color: isNeutral ? 'var(--text-primary)' : accentBorder }}
         >
           {value}
         </span>
@@ -82,7 +100,7 @@ function KPITile({
       
       <span 
         className="text-[12px] leading-snug"
-        style={{ color: 'var(--text-3)' }}
+        style={{ color: 'var(--text-muted)' }}
       >
         {subtext}
       </span>
@@ -190,8 +208,8 @@ export function ExecutiveSummaryCard({ snapshotId }: ExecutiveSummaryCardProps) 
         title="Executive Summary" 
         subtitle="Key performance indicators at a glance" 
       />
-      <PremiumCardContent noPadding>
-        <div className="grid grid-cols-2 lg:grid-cols-4 divide-x" style={{ borderColor: 'var(--divider)' }}>
+      <PremiumCardContent>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <KPITile
             label="Overall Progress"
             value={progressValue}
