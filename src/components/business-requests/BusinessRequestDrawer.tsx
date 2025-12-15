@@ -41,7 +41,9 @@ import { BusinessScoreViewTab } from './drawer-tabs/BusinessScoreViewTab';
 import { BudgetViewTab } from './drawer-tabs/BudgetViewTab';
 import { LinksViewTab } from './drawer-tabs/LinksViewTab';
 import { DiscussionsViewTab } from './drawer-tabs/DiscussionsViewTab';
+import { ExecutiveDiscussionsTab } from './drawer-tabs/ExecutiveDiscussionsTab';
 import { AuditHistoryTab } from './drawer-tabs/AuditHistoryTab';
+import { ExecutiveAuditHistoryTab } from './drawer-tabs/ExecutiveAuditHistoryTab';
 import { MilestonesViewTab } from './drawer-tabs/MilestonesViewTab';
 import { RisksViewTab } from './drawer-tabs/RisksViewTab';
 import { WorkflowViewerModal } from './WorkflowViewerModal';
@@ -49,7 +51,7 @@ import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useVisibleDrawerTabs } from '@/hooks/useDrawerTabConfigs';
-import { DrawerMetadataChips, CIOPanel, EnterpriseStatusControl } from './drawer';
+import { DrawerMetadataChips, EnterpriseStatusControl, ExecutiveSummaryPanel } from './drawer';
 import { cn } from '@/lib/utils';
 
 // Fields to track for audit logging (human-readable names)
@@ -654,11 +656,11 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
               <TabsContent value="links" className="m-0 focus-visible:outline-none">
                 {requestId && <LinksViewTab requestId={requestId} onNavigateToEpic={handleNavigateToEpic} />}
               </TabsContent>
-              <TabsContent value="discussions" className="m-0 focus-visible:outline-none h-[500px]">
-                {requestId && <DiscussionsViewTab requestId={requestId} />}
+              <TabsContent value="discussions" className="m-0 focus-visible:outline-none flex-1 flex flex-col min-h-0">
+                {requestId && <ExecutiveDiscussionsTab requestId={requestId} />}
               </TabsContent>
               <TabsContent value="audit-history" className="m-0 focus-visible:outline-none flex-1 flex flex-col min-h-0">
-                {requestId && <AuditHistoryTab requestId={requestId} />}
+                {requestId && <ExecutiveAuditHistoryTab requestId={requestId} />}
               </TabsContent>
             </div>
           </Tabs>
