@@ -2,17 +2,20 @@ import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { X, Calendar, MoreVertical, ExternalLink, Layers, Settings, CheckCircle2, AlertTriangle, ChevronRight } from 'lucide-react';
-import { StrategicSnapshot, useSnapshotConfiguration } from '@/hooks/useStrategicSnapshots';
+import { X, Calendar, MoreVertical, ExternalLink, Layers, Settings, CheckCircle2, AlertTriangle, ChevronRight, Pencil } from 'lucide-react';
+import { StrategicSnapshot, useSnapshotConfiguration, useDeleteSnapshot } from '@/hooks/useStrategicSnapshots';
 import { useSnapshotStrategyLinks } from '@/hooks/useStrategicBacklog';
 import { format, formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useState } from 'react';
 import { ActivateSnapshotModal } from './ActivateSnapshotModal';
 import { ManageQuartersDrawer } from './ManageQuartersDrawer';
+import { RenameSnapshotModal } from './RenameSnapshotModal';
+import { EditSnapshotDetailsModal } from './EditSnapshotDetailsModal';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
 interface SnapshotDetailsDrawerV2Props {
   open: boolean;
@@ -26,6 +29,10 @@ export function SnapshotDetailsDrawerV2({ open, onClose, snapshot }: SnapshotDet
   const { data: links } = useSnapshotStrategyLinks(snapshot?.id);
   const [activateModalOpen, setActivateModalOpen] = useState(false);
   const [manageQuartersOpen, setManageQuartersOpen] = useState(false);
+  const [renameModalOpen, setRenameModalOpen] = useState(false);
+  const [editDetailsModalOpen, setEditDetailsModalOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const deleteSnapshotMutation = useDeleteSnapshot();
 
   if (!snapshot) return null;
 
@@ -108,9 +115,21 @@ export function SnapshotDetailsDrawerV2({ open, onClose, snapshot }: SnapshotDet
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="z-[400]">
-                    <DropdownMenuItem>Rename</DropdownMenuItem>
-                    <DropdownMenuItem>Duplicate</DropdownMenuItem>
-                    <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setRenameModalOpen(true)}>
+                      <Pencil className="h-4 w-4 mr-2" />
+                      Rename
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setEditDetailsModalOpen(true)}>
+                      <Settings className="h-4 w-4 mr-2" />
+                      Edit Details
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                      onClick={() => setDeleteConfirmOpen(true)}
+                      className="text-destructive focus:text-destructive"
+                    >
+                      Delete
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onClose}>
@@ -281,6 +300,51 @@ export function SnapshotDetailsDrawerV2({ open, onClose, snapshot }: SnapshotDet
           snapshot={snapshot}
         />
       )}
+
+      {/* Rename Modal */}
+      {snapshot && (
+        <RenameSnapshotModal
+          open={renameModalOpen}
+          onClose={() => setRenameModalOpen(false)}
+          snapshot={snapshot}
+        />
+      )}
+
+      {/* Edit Details Modal */}
+      {snapshot && (
+        <EditSnapshotDetailsModal
+          open={editDetailsModalOpen}
+          onClose={() => setEditDetailsModalOpen(false)}
+          snapshot={snapshot}
+        />
+      )}
+
+      {/* Delete Confirmation */}
+      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Snapshot</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{snapshot?.name}"? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={async () => {
+                if (snapshot) {
+                  await deleteSnapshotMutation.mutateAsync(snapshot.id);
+                  setDeleteConfirmOpen(false);
+                  onClose();
+                }
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
