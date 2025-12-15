@@ -157,49 +157,51 @@ export function KanbanCard({ ticket, onClick, compactMode, teamMembers = [] }: K
       onClick={() => onClick?.(ticket)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="p-3 rounded-lg cursor-grab transition-all duration-150"
+      className="p-2.5 rounded-md cursor-grab transition-all duration-100"
       style={{
         backgroundColor: 'var(--surface-1)',
         border: isHovered ? '1px solid var(--border-strong)' : '1px solid var(--border-color)',
-        borderLeft: `4px solid ${department?.color || 'var(--text-3)'}`,
-        opacity: isDragging ? 0.6 : 1,
-        boxShadow: isHovered ? 'var(--card-shadow)' : 'none',
-        transform: isHovered ? 'translateY(-1px)' : 'none',
+        borderLeft: `3px solid ${department?.color || 'var(--text-3)'}`,
+        opacity: isDragging ? 0.5 : 1,
+        boxShadow: isHovered ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
       }}
     >
-      {/* Header */}
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <span className="text-[11px] font-semibold font-mono" style={{ color: 'var(--text-3)' }}>{ticket.id}</span>
-        </div>
+      {/* Header - Key + Rank */}
+      <div className="flex items-center justify-between mb-1.5">
+        <span 
+          className="text-[10px] font-semibold font-mono"
+          style={{ color: 'var(--text-3)' }}
+        >
+          {ticket.id}
+        </span>
         <RankBadge rank={ticket.rank} />
       </div>
 
-      {/* Summary */}
+      {/* Summary - Primary emphasis */}
       <p 
-        className="text-[13px] font-medium leading-snug mb-2.5 line-clamp-2"
+        className="text-[12px] font-medium leading-snug mb-2 line-clamp-2"
         style={{ color: 'var(--text-1)' }}
       >
         {ticket.summary}
       </p>
 
-      {/* Business Owner & Department */}
-      <div className="flex flex-wrap gap-1 mb-2.5">
+      {/* Chips - Owner & Department (compact) */}
+      <div className="flex flex-wrap gap-1 mb-2">
         {ticket.businessOwner && (
           <span 
-            className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium"
+            className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-medium"
             style={{
-              backgroundColor: 'rgba(92, 124, 92, 0.12)',
+              backgroundColor: 'rgba(92, 124, 92, 0.1)',
               color: 'hsl(var(--secondary-green))',
             }}
           >
             <KanbanIcons.User />
-            {ticket.businessOwner}
+            <span className="max-w-[80px] truncate">{ticket.businessOwner}</span>
           </span>
         )}
         {(ticket.department || department) && (
           <span 
-            className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium"
+            className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-medium max-w-[100px] truncate"
             style={{
               backgroundColor: 'var(--surface-3)',
               color: 'var(--text-2)',
@@ -210,12 +212,10 @@ export function KanbanCard({ ticket, onClick, compactMode, teamMembers = [] }: K
         )}
       </div>
 
-      {/* Footer */}
+      {/* Footer - Days & Avatar */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <DaysInColumnIndicator days={ticket.daysInColumn} />
-        </div>
-        {assignee && <Avatar member={assignee} size={26} />}
+        <DaysInColumnIndicator days={ticket.daysInColumn} />
+        {assignee && <Avatar member={assignee} size={22} />}
       </div>
     </div>
   );
