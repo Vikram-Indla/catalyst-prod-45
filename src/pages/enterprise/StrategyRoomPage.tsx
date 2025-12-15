@@ -13,6 +13,7 @@ import { ThemeDetailsDrawer } from '@/components/backlog/ThemeDetailsDrawer';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
+import { PageShell } from '@/components/shared/PageShell';
 
 type ObjectiveLevel = "OBJECTIVES";
 
@@ -78,27 +79,27 @@ export default function StrategyRoomPage() {
 
   if (snapshotsLoading || !effectiveSelectedSnapshotId) {
     return (
-      <div className="h-full flex flex-col" style={{ backgroundColor: 'var(--bg)' }}>
+      <PageShell>
         <div className="flex-1 flex items-center justify-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
-      </div>
+      </PageShell>
     );
   }
 
   return (
-    <div className="h-full flex flex-col min-w-0" style={{ backgroundColor: 'var(--bg)' }}>
+    <PageShell>
       {/* Global Page Header */}
       <GlobalPageHeader
         sectionLabel="Enterprise"
         pageTitle="Strategy Room"
         rightActions={
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-medium" style={{ color: 'var(--text-3)' }}>Snapshot:</span>
-            <div className="w-60">
+          <div className="flex items-center gap-2">
+            <span className="text-[12px] font-medium" style={{ color: 'var(--text-2)' }}>Snapshot:</span>
+            <div className="w-56">
               <Select value={effectiveSelectedSnapshotId} onValueChange={handleSnapshotChange}>
                 <SelectTrigger 
-                  className="h-8 text-sm"
+                  className="h-8 text-[13px]"
                   style={{ 
                     backgroundColor: 'var(--input-bg)', 
                     borderColor: 'var(--input-border)',
@@ -113,7 +114,7 @@ export default function StrategyRoomPage() {
                       placeholder="Search snapshots..."
                       value={snapshotSearchQuery}
                       onChange={(e) => setSnapshotSearchQuery(e.target.value)}
-                      className="mb-2 h-8 text-sm"
+                      className="mb-2 h-7 text-[12px]"
                       style={{ 
                         backgroundColor: 'var(--input-bg)', 
                         borderColor: 'var(--input-border)',
@@ -134,33 +135,31 @@ export default function StrategyRoomPage() {
       />
 
       {/* Content Area */}
-      <div className="flex-1 overflow-auto px-6 py-4 min-w-0">
-        <div className="max-w-[1600px] mx-auto space-y-4">
-          {/* Mission/Vision/Values - 3-up equal height */}
-          <MissionVisionValues snapshot={selectedSnapshot} onUpdate={refetchSnapshots} />
+      <PageShell.Content variant="wide" className="space-y-4">
+        {/* Mission/Vision/Values - compact row */}
+        <MissionVisionValues snapshot={selectedSnapshot} onUpdate={refetchSnapshots} />
 
-          {/* KPI Widgets - 4-column grid with equal heights */}
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-            <ExecutionAgainstOutcomesWidget snapshotId={effectiveSelectedSnapshotId} />
-            <StrategicGoalsWidget snapshotId={effectiveSelectedSnapshotId} />
-            <MisalignedWorkItems snapshotId={effectiveSelectedSnapshotId} />
-            <SnapshotProgress snapshotId={effectiveSelectedSnapshotId} />
-          </div>
-
-          {/* Strategy Stack (replaces pyramid) - the centerpiece */}
-          <StrategyStack 
-            onLayerClick={handlePyramidLayerClick} 
-            snapshotId={effectiveSelectedSnapshotId}
-          />
-
-          {/* OKR Tree */}
-          <OkrTree
-            selectedSnapshot={effectiveSelectedSnapshotId}
-            onObjectiveClick={handleObjectiveClick}
-            onThemeClick={handleThemeClick}
-          />
+        {/* KPI Widgets - 4-column grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
+          <ExecutionAgainstOutcomesWidget snapshotId={effectiveSelectedSnapshotId} />
+          <StrategicGoalsWidget snapshotId={effectiveSelectedSnapshotId} />
+          <MisalignedWorkItems snapshotId={effectiveSelectedSnapshotId} />
+          <SnapshotProgress snapshotId={effectiveSelectedSnapshotId} />
         </div>
-      </div>
+
+        {/* Strategy Stack (replaces pyramid) - the centerpiece */}
+        <StrategyStack 
+          onLayerClick={handlePyramidLayerClick} 
+          snapshotId={effectiveSelectedSnapshotId}
+        />
+
+        {/* OKR Tree */}
+        <OkrTree
+          selectedSnapshot={effectiveSelectedSnapshotId}
+          onObjectiveClick={handleObjectiveClick}
+          onThemeClick={handleThemeClick}
+        />
+      </PageShell.Content>
 
       {/* Drawers */}
       <ObjectiveDrawerV2
@@ -180,6 +179,6 @@ export default function StrategyRoomPage() {
           setThemeDrawerOpen(false);
         }}
       />
-    </div>
+    </PageShell>
   );
 }

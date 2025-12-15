@@ -2,17 +2,21 @@
  * PageShell - Enterprise-grade page layout wrapper
  * 
  * Provides consistent layout, spacing, and dark/light mode support
- * across all pages in /home, /enterprise, and /product routes.
+ * across all pages. Works with GlobalPageHeader to ensure uniform
+ * breadcrumb + title + actions across all routes.
  * 
  * LAYOUT VARIANTS:
  * - 'contained': Max-width 1280px, centered - for forms, dashboards
  * - 'wide': Max-width 1600px - for data tables, boards  
  * - 'full': No max-width constraint - for full-bleed layouts
  * 
- * Implements the Catalyst Master Page Specification:
- * - Responsive padding: 12px mobile, 16px tablet, 24px desktop, 32px large
- * - Minimum height fills viewport minus header
- * - All surfaces use semantic tokens for dark/light mode
+ * Usage:
+ * <PageShell>
+ *   <GlobalPageHeader sectionLabel="Enterprise" pageTitle="Strategy Room" />
+ *   <PageShell.Content>
+ *     {your page content}
+ *   </PageShell.Content>
+ * </PageShell>
  */
 
 import React from 'react';
@@ -24,25 +28,45 @@ interface PageShellProps {
   variant?: 'contained' | 'wide' | 'full';
   /** Optional className */
   className?: string;
-  /** Whether to include vertical padding (default true) */
-  padded?: boolean;
-  /** Whether content should fill remaining viewport height */
-  fillHeight?: boolean;
-  /** Optional right rail content (e.g., "My Focus" widget) */
-  rightRail?: React.ReactNode;
-  /** Width of right rail when present */
-  rightRailWidth?: string;
 }
 
+interface PageShellContentProps {
+  children: React.ReactNode;
+  /** Optional className */
+  className?: string;
+  /** Layout variant - inherited from parent but can override */
+  variant?: 'contained' | 'wide' | 'full';
+}
+
+/**
+ * Main page wrapper - handles full height and background
+ */
 export function PageShell({
   children,
   variant = 'wide',
   className,
-  padded = true,
-  fillHeight = false,
-  rightRail,
-  rightRailWidth = '320px',
 }: PageShellProps) {
+  return (
+    <div
+      className={cn(
+        'h-full flex flex-col min-w-0',
+        className
+      )}
+      style={{ backgroundColor: 'var(--bg)' }}
+    >
+      {children}
+    </div>
+  );
+}
+
+/**
+ * Content area inside PageShell - handles padding, max-width, scrolling
+ */
+function PageShellContent({
+  children,
+  className,
+  variant = 'wide',
+}: PageShellContentProps) {
   const maxWidthClasses = {
     contained: 'max-w-[1280px]',
     wide: 'max-w-[1600px]',
@@ -50,44 +74,21 @@ export function PageShell({
   };
 
   return (
-    <div
-      className={cn(
-        'w-full mx-auto',
-        // Responsive padding: 12px mobile, 16px sm, 24px md, 32px lg
-        'px-3 sm:px-4 md:px-6 lg:px-8',
-        maxWidthClasses[variant],
-        padded && 'py-4 md:py-6',
-        // Fill remaining height minus header (56px top nav)
-        fillHeight && 'min-h-[calc(100vh-56px)] flex flex-col',
-        className
-      )}
-      style={{ backgroundColor: 'var(--bg)' }}
-    >
-      {rightRail ? (
-        <div 
-          className="flex gap-6" 
-          style={{ 
-            display: 'grid',
-            gridTemplateColumns: `1fr ${rightRailWidth}`,
-          }}
-        >
-          {/* Main content area expands to use available width */}
-          <div className="min-w-0 flex flex-col">
-            {children}
-          </div>
-          {/* Right rail with fixed width */}
-          <aside 
-            className="shrink-0 hidden xl:block"
-            style={{ width: rightRailWidth }}
-          >
-            {rightRail}
-          </aside>
-        </div>
-      ) : (
-        children
-      )}
+    <div className="flex-1 overflow-auto px-6 py-4 min-w-0">
+      <div
+        className={cn(
+          'mx-auto',
+          maxWidthClasses[variant],
+          className
+        )}
+      >
+        {children}
+      </div>
     </div>
   );
 }
+
+// Attach Content as a sub-component
+PageShell.Content = PageShellContent;
 
 export default PageShell;
