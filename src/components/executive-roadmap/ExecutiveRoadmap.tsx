@@ -725,15 +725,6 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
         </div>
       </div>
 
-      {/* Header - Title Row */}
-      <div 
-        className="h-12 flex items-center px-6 print:hidden shrink-0 relative z-[100]"
-        style={{ backgroundColor: 'hsl(var(--background))' }}
-      >
-        <h1 className="text-xl font-bold m-0 leading-tight" style={{ color: 'hsl(var(--secondary-green))' }}>
-          Product Roadmap
-        </h1>
-      </div>
 
       {/* Toolbar Row */}
       <div 
