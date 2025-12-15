@@ -10,10 +10,7 @@ import { toast } from 'sonner';
 import { RichTextEditor } from '../RichTextEditor';
 import { UserPicker } from '@/components/ui/user-picker';
 import { BusinessRequest } from '@/types/business-request';
-import { 
-  DeliveryPlatformSelect, 
-  PlannedQuarterSelect 
-} from '@/components/ui/lookup-select';
+import { PlannedQuarterSelect } from '@/components/ui/lookup-select';
 import { getTierDisplayInfo, PriorityTier } from '@/hooks/usePrioritizationConfig';
 
 interface DemandDetailsViewTabProps {
@@ -184,18 +181,8 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
           </div>
         </div>
 
-        {/* Delivery context - Platform + Quarter only */}
+        {/* Delivery context - Quarter only (Platform in Meta Strip) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>Delivery Platform</Label>
-            <div className="mt-1">
-              <DeliveryPlatformSelect
-                value={data.delivery_platform || null}
-                onChange={(value) => onChange('delivery_platform', value)}
-              />
-            </div>
-          </div>
-          
           <div>
             <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>Quarter</Label>
             <div className="mt-1">

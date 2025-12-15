@@ -4,11 +4,12 @@
  */
 
 import { format } from 'date-fns';
-import { User, Building2, Calendar, ChevronDown } from 'lucide-react';
+import { User, Building2, Calendar, ChevronDown, Layers } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { DepartmentSelect } from '@/components/business-requests/DepartmentSelect';
 import { BusinessOwnerSelect } from '@/components/business-requests/BusinessOwnerSelect';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
+import { DeliveryPlatformSelect } from '@/components/ui/lookup-select';
 import {
   Popover,
   PopoverContent,
@@ -22,9 +23,11 @@ interface MetaStripProps {
   department?: string | null;
   departmentId?: string | null;
   targetDate?: string | null;
+  deliveryPlatform?: string | null;
   onBusinessOwnerChange?: (id: string, name: string) => void;
   onDepartmentChange?: (id: string, name: string) => void;
   onTargetDateChange?: (date: string | null) => void;
+  onDeliveryPlatformChange?: (value: string | null) => void;
   className?: string;
 }
 
@@ -34,14 +37,17 @@ export function MetaStrip({
   department,
   departmentId,
   targetDate,
+  deliveryPlatform,
   onBusinessOwnerChange,
   onDepartmentChange,
   onTargetDateChange,
+  onDeliveryPlatformChange,
   className
 }: MetaStripProps) {
   const [ownerOpen, setOwnerOpen] = useState(false);
   const [deptOpen, setDeptOpen] = useState(false);
   const [dateOpen, setDateOpen] = useState(false);
+  const [platformOpen, setPlatformOpen] = useState(false);
 
   return (
     <div 
@@ -143,6 +149,37 @@ export function MetaStrip({
               setDateOpen(false);
             }}
             placeholder="Select target date"
+          />
+        </PopoverContent>
+      </Popover>
+
+      {/* Delivery Platform - Editable */}
+      <Popover open={platformOpen} onOpenChange={setPlatformOpen}>
+        <PopoverTrigger asChild>
+          <button
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors hover:bg-[var(--surface-3)]"
+            style={{ 
+              background: 'var(--surface-2)', 
+              border: '1px solid var(--border-color)',
+              color: 'var(--text-1)'
+            }}
+          >
+            <Layers className="h-3 w-3 shrink-0" style={{ color: 'var(--text-3)' }} />
+            <span className="truncate max-w-[100px]">{deliveryPlatform || 'No platform'}</span>
+            <ChevronDown className="h-3 w-3 shrink-0" style={{ color: 'var(--text-3)' }} />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent 
+          className="w-[200px] p-2 z-[400]" 
+          align="start"
+          style={{ background: 'var(--surface-1)', borderColor: 'var(--border-color)' }}
+        >
+          <DeliveryPlatformSelect
+            value={deliveryPlatform || null}
+            onChange={(value) => {
+              onDeliveryPlatformChange?.(value);
+              setPlatformOpen(false);
+            }}
           />
         </PopoverContent>
       </Popover>

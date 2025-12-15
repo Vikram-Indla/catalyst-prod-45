@@ -57,44 +57,34 @@ export function KanbanColumn({
         onClick={onToggleCollapse}
         onMouseEnter={() => setIsHeaderHovered(true)}
         onMouseLeave={() => setIsHeaderHovered(false)}
+        className="cursor-pointer transition-all duration-150 flex flex-col items-center py-3.5"
         style={{
           width: '48px',
-          minHeight: inSwimlane ? '200px' : '500px',
-          backgroundColor: isHeaderHovered ? KANBAN_COLORS.bgHover : KANBAN_COLORS.bgCard,
+          minHeight: inSwimlane ? '200px' : '100%',
+          backgroundColor: isHeaderHovered ? 'var(--surface-3)' : 'var(--surface-1)',
           borderRadius: '10px',
-          border: `1px solid ${KANBAN_COLORS.borderLight}`,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          padding: '14px 0',
-          cursor: 'pointer',
-          transition: 'all 0.15s ease',
+          border: '1px solid var(--border-color)',
         }}
       >
-        <div style={{
-          width: '12px',
-          height: '12px',
-          borderRadius: '4px',
-          backgroundColor: columnConfig?.color || KANBAN_COLORS.grey,
-          marginBottom: '10px',
-        }} />
-        <span style={{ 
-          fontSize: '14px', 
-          fontWeight: 700, 
-          color: KANBAN_COLORS.textPrimary, 
-          marginBottom: '10px',
-        }}>
+        <div 
+          className="w-3 h-3 rounded mb-2.5"
+          style={{ backgroundColor: columnConfig?.color || 'var(--text-3)' }} 
+        />
+        <span 
+          className="text-sm font-bold mb-2.5"
+          style={{ color: 'var(--text-1)' }}
+        >
           {tickets.length}
         </span>
-        <span style={{
-          writingMode: 'vertical-rl',
-          textOrientation: 'mixed',
-          transform: 'rotate(180deg)',
-          fontSize: '12px',
-          fontWeight: 600,
-          color: KANBAN_COLORS.textMuted,
-          letterSpacing: '0.5px',
-        }}>
+        <span 
+          className="text-xs font-semibold tracking-wide"
+          style={{
+            writingMode: 'vertical-rl',
+            textOrientation: 'mixed',
+            transform: 'rotate(180deg)',
+            color: 'var(--text-3)',
+          }}
+        >
           {columnConfig?.label}
         </span>
       </div>
@@ -106,43 +96,42 @@ export function KanbanColumn({
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
+      className="flex flex-col transition-all duration-150 h-full"
       style={{
         width: inSwimlane ? '260px' : '300px',
         minWidth: inSwimlane ? '260px' : '300px',
-        backgroundColor: isDragOver ? KANBAN_COLORS.bgSelected : KANBAN_COLORS.bgColumn,
+        backgroundColor: isDragOver ? 'var(--accent-muted)' : 'var(--surface-2)',
         borderRadius: '10px',
-        border: isDragOver ? `2px dashed ${KANBAN_COLORS.gold}` : `1px solid ${KANBAN_COLORS.borderLight}`,
-        display: 'flex',
-        flexDirection: 'column',
-        transition: 'all 0.15s ease',
+        border: isDragOver ? '2px dashed var(--accent-color)' : '1px solid var(--border-color)',
       }}
     >
-      {/* Column Header */}
-      <div style={{
-        padding: '14px 12px',
-        borderBottom: `1px solid ${KANBAN_COLORS.borderLight}`,
-        backgroundColor: KANBAN_COLORS.bgCard,
-        borderRadius: '10px 10px 0 0',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{
-              width: '12px',
-              height: '12px',
-              borderRadius: '4px',
-              backgroundColor: columnConfig?.color || KANBAN_COLORS.grey,
-            }} />
-            <span style={{ fontSize: '13px', fontWeight: 700, color: KANBAN_COLORS.textPrimary }}>
+      {/* Column Header - Sticky */}
+      <div 
+        className="sticky top-0 z-10 rounded-t-[10px] px-3 py-3"
+        style={{
+          borderBottom: '1px solid var(--border-color)',
+          backgroundColor: 'var(--surface-1)',
+        }}
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div 
+              className="w-3 h-3 rounded"
+              style={{ backgroundColor: columnConfig?.color || 'var(--text-3)' }} 
+            />
+            <span 
+              className="text-[13px] font-bold"
+              style={{ color: 'var(--text-1)' }}
+            >
               {columnConfig?.label}
             </span>
-            <span style={{
-              padding: '3px 10px',
-              borderRadius: '12px',
-              backgroundColor: KANBAN_COLORS.champagneLight,
-              color: KANBAN_COLORS.bronzeDark,
-              fontSize: '11px',
-              fontWeight: 700,
-            }}>
+            <span 
+              className="px-2.5 py-0.5 rounded-full text-[11px] font-bold"
+              style={{ 
+                backgroundColor: 'var(--surface-3)', 
+                color: 'var(--text-2)' 
+              }}
+            >
               {tickets.length}
             </span>
           </div>
@@ -151,15 +140,10 @@ export function KanbanColumn({
               onClick={onToggleCollapse}
               onMouseEnter={() => setIsHeaderHovered(true)}
               onMouseLeave={() => setIsHeaderHovered(false)}
+              className="p-1.5 rounded-md transition-all cursor-pointer"
               style={{
-                background: 'none',
-                border: 'none',
-                padding: '6px',
-                cursor: 'pointer',
-                color: KANBAN_COLORS.textMuted,
-                borderRadius: '6px',
-                transition: 'all 0.15s',
-                backgroundColor: isHeaderHovered ? KANBAN_COLORS.greyLight : 'transparent',
+                color: 'var(--text-3)',
+                backgroundColor: isHeaderHovered ? 'var(--surface-2)' : 'transparent',
               }}
             >
               <KanbanIcons.Minimize />
@@ -168,16 +152,11 @@ export function KanbanColumn({
         </div>
       </div>
 
-      {/* Cards */}
-      <div style={{
-        flex: 1,
-        padding: '8px',
-        overflowY: 'auto',
-        maxHeight: inSwimlane ? '320px' : 'calc(100vh - 260px)',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: compactMode ? '6px' : '8px',
-      }}>
+      {/* Cards - scrollable */}
+      <div 
+        className="flex-1 overflow-y-auto p-2 flex flex-col"
+        style={{ gap: compactMode ? '6px' : '8px' }}
+      >
         {tickets.map(ticket => (
           <KanbanCard
             key={ticket.id}
@@ -188,12 +167,10 @@ export function KanbanColumn({
           />
         ))}
         {tickets.length === 0 && (
-          <div style={{
-            padding: '24px 16px',
-            textAlign: 'center',
-            color: KANBAN_COLORS.textLight,
-            fontSize: '12px',
-          }}>
+          <div 
+            className="py-6 px-4 text-center text-xs"
+            style={{ color: 'var(--text-muted)' }}
+          >
             No items
           </div>
         )}

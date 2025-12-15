@@ -1,7 +1,7 @@
-// KanbanCard component - matching HTML specification exactly
+// KanbanCard component - themed with semantic tokens
 
 import React, { useState } from 'react';
-import { KanbanTicket, PRIORITIES, DEPARTMENTS, KANBAN_COLORS, TeamMember } from '../types';
+import { KanbanTicket, PRIORITIES, DEPARTMENTS, TeamMember } from '../types';
 import { KanbanIcons } from './KanbanIcons';
 
 interface KanbanCardProps {
@@ -16,30 +16,26 @@ function DaysInColumnIndicator({ days }: { days: number }) {
   if (!days || days === 0) return null;
   
   const getIndicatorColor = (day: number, totalDays: number) => {
-    if (totalDays >= 20) return KANBAN_COLORS.danger;
-    if (totalDays >= 12 && day >= 2) return KANBAN_COLORS.danger;
-    if (totalDays >= 8 && day >= 3) return KANBAN_COLORS.danger;
-    if (totalDays >= 5 && day === 4) return KANBAN_COLORS.danger;
-    if (totalDays >= 3 && day === 3) return KANBAN_COLORS.warning;
-    return KANBAN_COLORS.grey;
+    if (totalDays >= 20) return 'hsl(var(--destructive))';
+    if (totalDays >= 12 && day >= 2) return 'hsl(var(--destructive))';
+    if (totalDays >= 8 && day >= 3) return 'hsl(var(--destructive))';
+    if (totalDays >= 5 && day === 4) return 'hsl(var(--destructive))';
+    if (totalDays >= 3 && day === 3) return 'hsl(var(--y300))';
+    return 'var(--text-3)';
   };
 
   const dotsToShow = Math.min(4, Math.ceil(days / 3));
   
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }} title={`${days} days in column`}>
+    <div className="flex items-center gap-0.5" title={`${days} days in column`}>
       {Array.from({ length: dotsToShow }).map((_, i) => (
         <span
           key={i}
-          style={{
-            width: '5px',
-            height: '5px',
-            borderRadius: '50%',
-            backgroundColor: getIndicatorColor(i + 1, days),
-          }}
+          className="w-[5px] h-[5px] rounded-full"
+          style={{ backgroundColor: getIndicatorColor(i + 1, days) }}
         />
       ))}
-      <span style={{ fontSize: '10px', color: KANBAN_COLORS.textMuted, marginLeft: '3px' }}>{days}d</span>
+      <span className="text-[10px] ml-0.5" style={{ color: 'var(--text-3)' }}>{days}d</span>
     </div>
   );
 }
@@ -50,17 +46,10 @@ function RankBadge({ rank }: { rank: number | null }) {
     return (
       <span 
         title="No rank assigned"
+        className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium cursor-default"
         style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '3px',
-          padding: '2px 6px',
-          borderRadius: '4px',
-          backgroundColor: KANBAN_COLORS.greyLight,
-          color: KANBAN_COLORS.textMuted,
-          fontSize: '10px',
-          fontWeight: 500,
-          cursor: 'default',
+          backgroundColor: 'var(--surface-2)',
+          color: 'var(--text-3)',
         }}
       >
         Unranked
@@ -71,17 +60,10 @@ function RankBadge({ rank }: { rank: number | null }) {
   return (
     <span 
       title={`Rank: ${rank}`}
+      className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-semibold cursor-default"
       style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '3px',
-        padding: '2px 6px',
-        borderRadius: '4px',
-        backgroundColor: `${KANBAN_COLORS.gold}20`,
-        color: KANBAN_COLORS.goldDark,
-        fontSize: '10px',
-        fontWeight: 600,
-        cursor: 'default',
+        backgroundColor: 'var(--accent-muted)',
+        color: 'var(--accent-color)',
       }}
     >
       #{rank}
@@ -93,21 +75,15 @@ function RankBadge({ rank }: { rank: number | null }) {
 function Avatar({ member, size = 24 }: { member: TeamMember; size?: number }) {
   return (
     <div
+      className="rounded-full flex items-center justify-center font-semibold shrink-0 cursor-pointer"
       style={{
         width: size,
         height: size,
-        borderRadius: '50%',
         backgroundColor: member.color,
         color: 'white',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
         fontSize: size * 0.38,
-        fontWeight: 600,
-        flexShrink: 0,
-        cursor: 'pointer',
-        border: '2px solid white',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+        border: '2px solid var(--surface-1)',
+        boxShadow: 'var(--card-shadow)',
       }}
       title={member.name}
     >
@@ -121,8 +97,8 @@ function PriorityIndicator({ priority }: { priority: string }) {
   const p = PRIORITIES.find(pr => pr.id === priority);
   if (!p) return null;
   return (
-    <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px' }} title={p.label}>
-      <span style={{ fontSize: '10px' }}>{p.icon}</span>
+    <span className="flex items-center gap-1 text-[11px]" title={p.label}>
+      <span className="text-[10px]">{p.icon}</span>
     </span>
   );
 }
@@ -153,24 +129,17 @@ export function KanbanCard({ ticket, onClick, compactMode, teamMembers = [] }: K
         onClick={() => onClick?.(ticket)}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+        className="flex items-center gap-2 px-2.5 py-2 rounded-md cursor-grab transition-all duration-150"
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          padding: '8px 10px',
-          backgroundColor: KANBAN_COLORS.bgCard,
-          borderRadius: '6px',
-          border: `1px solid ${isHovered ? KANBAN_COLORS.borderDefault : KANBAN_COLORS.borderLight}`,
-          borderLeft: `4px solid ${department?.color || KANBAN_COLORS.grey}`,
-          cursor: 'grab',
+          backgroundColor: 'var(--surface-1)',
+          border: isHovered ? '1px solid var(--border-strong)' : '1px solid var(--border-color)',
+          borderLeft: `4px solid ${department?.color || 'var(--text-3)'}`,
           opacity: isDragging ? 0.6 : 1,
-          fontSize: '12px',
-          transition: 'all 0.15s ease',
-          boxShadow: isHovered ? '0 2px 8px rgba(0,0,0,0.08)' : '0 1px 2px rgba(0,0,0,0.04)',
+          boxShadow: isHovered ? 'var(--card-shadow)' : 'none',
         }}
       >
-        <span style={{ color: KANBAN_COLORS.textMuted, fontWeight: 600, minWidth: '56px', fontFamily: 'monospace', fontSize: '11px' }}>{ticket.id}</span>
-        <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: KANBAN_COLORS.textPrimary }}>
+        <span className="font-semibold min-w-[56px] font-mono text-[11px]" style={{ color: 'var(--text-3)' }}>{ticket.id}</span>
+        <span className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-xs" style={{ color: 'var(--text-1)' }}>
           {ticket.summary}
         </span>
         <RankBadge rank={ticket.rank} />
@@ -188,79 +157,62 @@ export function KanbanCard({ ticket, onClick, compactMode, teamMembers = [] }: K
       onClick={() => onClick?.(ticket)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      className="p-3 rounded-lg cursor-grab transition-all duration-150"
       style={{
-        padding: '12px',
-        backgroundColor: KANBAN_COLORS.bgCard,
-        borderRadius: '8px',
-        border: `1px solid ${isHovered ? KANBAN_COLORS.borderDefault : KANBAN_COLORS.borderLight}`,
-        borderLeft: `4px solid ${department?.color || KANBAN_COLORS.grey}`,
-        cursor: 'grab',
+        backgroundColor: 'var(--surface-1)',
+        border: isHovered ? '1px solid var(--border-strong)' : '1px solid var(--border-color)',
+        borderLeft: `4px solid ${department?.color || 'var(--text-3)'}`,
         opacity: isDragging ? 0.6 : 1,
-        transition: 'all 0.15s ease',
-        boxShadow: isHovered ? '0 4px 12px rgba(0,0,0,0.08)' : '0 1px 3px rgba(0,0,0,0.04)',
+        boxShadow: isHovered ? 'var(--card-shadow)' : 'none',
         transform: isHovered ? 'translateY(-1px)' : 'none',
       }}
     >
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontSize: '11px', fontWeight: 600, color: KANBAN_COLORS.textMuted, fontFamily: 'monospace' }}>{ticket.id}</span>
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] font-semibold font-mono" style={{ color: 'var(--text-3)' }}>{ticket.id}</span>
         </div>
         <RankBadge rank={ticket.rank} />
       </div>
 
       {/* Summary */}
-      <p style={{
-        fontSize: '13px',
-        fontWeight: 500,
-        color: KANBAN_COLORS.textPrimary,
-        lineHeight: 1.4,
-        marginBottom: '10px',
-        display: '-webkit-box',
-        WebkitLineClamp: 2,
-        WebkitBoxOrient: 'vertical',
-        overflow: 'hidden',
-      }}>
+      <p 
+        className="text-[13px] font-medium leading-snug mb-2.5 line-clamp-2"
+        style={{ color: 'var(--text-1)' }}
+      >
         {ticket.summary}
       </p>
 
       {/* Business Owner & Department */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '10px' }}>
+      <div className="flex flex-wrap gap-1 mb-2.5">
         {ticket.businessOwner && (
-          <span style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '4px',
-            padding: '3px 8px',
-            backgroundColor: `${KANBAN_COLORS.olive}12`,
-            borderRadius: '4px',
-            fontSize: '10px',
-            color: KANBAN_COLORS.olive,
-            fontWeight: 500,
-          }}>
+          <span 
+            className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium"
+            style={{
+              backgroundColor: 'rgba(92, 124, 92, 0.12)',
+              color: 'hsl(var(--secondary-green))',
+            }}
+          >
             <KanbanIcons.User />
             {ticket.businessOwner}
           </span>
         )}
         {(ticket.department || department) && (
-          <span style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            padding: '3px 8px',
-            backgroundColor: `${department?.color || KANBAN_COLORS.bronze}12`,
-            borderRadius: '4px',
-            fontSize: '10px',
-            color: department?.color || KANBAN_COLORS.bronze,
-            fontWeight: 500,
-          }}>
+          <span 
+            className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium"
+            style={{
+              backgroundColor: 'var(--surface-3)',
+              color: 'var(--text-2)',
+            }}
+          >
             {department?.label || ticket.department}
           </span>
         )}
       </div>
 
       {/* Footer */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
           <DaysInColumnIndicator days={ticket.daysInColumn} />
         </div>
         {assignee && <Avatar member={assignee} size={26} />}
