@@ -6,6 +6,7 @@ import { X, Calendar, MoreVertical, ExternalLink, Layers, Settings, CheckCircle2
 import { StrategicSnapshot, useSnapshotConfiguration, useDeleteSnapshot } from '@/hooks/useStrategicSnapshots';
 import { useSnapshotStrategyLinks } from '@/hooks/useStrategicBacklog';
 import { format, formatDistanceToNow } from 'date-fns';
+import { useUserRole } from '@/hooks/useUserRole';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -27,6 +28,7 @@ export function SnapshotDetailsDrawerV2({ open, onClose, snapshot }: SnapshotDet
   const navigate = useNavigate();
   const { data: configuration } = useSnapshotConfiguration(snapshot?.id || null);
   const { data: links } = useSnapshotStrategyLinks(snapshot?.id);
+  const { isAdmin } = useUserRole();
   const [activateModalOpen, setActivateModalOpen] = useState(false);
   const [manageQuartersOpen, setManageQuartersOpen] = useState(false);
   const [renameModalOpen, setRenameModalOpen] = useState(false);
@@ -298,6 +300,7 @@ export function SnapshotDetailsDrawerV2({ open, onClose, snapshot }: SnapshotDet
           open={manageQuartersOpen}
           onClose={() => setManageQuartersOpen(false)}
           snapshot={snapshot}
+          isAdmin={isAdmin}
         />
       )}
 

@@ -6,20 +6,40 @@ import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import { X, Trash2, Search, AlertTriangle } from 'lucide-react';
+import { X, Trash2, Search, AlertTriangle, Lock } from 'lucide-react';
 import { StrategicSnapshot, useSnapshotConfiguration, generateQuarterOptions } from '@/hooks/useStrategicSnapshots';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface ManageQuartersDrawerProps {
   open: boolean;
   onClose: () => void;
   snapshot: StrategicSnapshot;
+  isAdmin?: boolean;
 }
 
-export function ManageQuartersDrawer({ open, onClose, snapshot }: ManageQuartersDrawerProps) {
+// Helper to determine if a quarter is in the past
+function isQuarterInPast(quarter: string): boolean {
+  const match = quarter.match(/Q(\d)\s+(\d{4})/);
+  if (!match) return false;
+  
+  const q = parseInt(match[1], 10);
+  const year = parseInt(match[2], 10);
+  
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth(); // 0-11
+  const currentQuarter = Math.floor(currentMonth / 3) + 1;
+  
+  if (year < currentYear) return true;
+  if (year === currentYear && q < currentQuarter) return true;
+  return false;
+}
+
+export function ManageQuartersDrawer({ open, onClose, snapshot, isAdmin = false }: ManageQuartersDrawerProps) {
   const { data: configuration } = useSnapshotConfiguration(snapshot.id);
   const queryClient = useQueryClient();
   
@@ -29,6 +49,7 @@ export function ManageQuartersDrawer({ open, onClose, snapshot }: ManageQuarters
   const [saving, setSaving] = useState(false);
   
   const isArchived = snapshot.status === 'ARCHIVED';
+  const isActive = snapshot.status === 'ACTIVE';
   const allQuarters = useMemo(() => generateQuarterOptions(), []);
 
   useEffect(() => {
@@ -52,6 +73,13 @@ export function ManageQuartersDrawer({ open, onClose, snapshot }: ManageQuarters
 
   const toggleSelectQuarter = (quarter: string) => {
     if (isArchived) return;
+    
+    // For active snapshots, non-admins cannot select past quarters
+    if (isActive && !isAdmin && isQuarterInPast(quarter)) {
+      catalystToast.error('Restricted', 'Only admins can select past quarters for active snapshots');
+      return;
+    }
+    
     setSelectedToAdd((prev) =>
       prev.includes(quarter) ? prev.filter((q) => q !== quarter) : [...prev, quarter]
     );
@@ -187,23 +215,45 @@ export function ManageQuartersDrawer({ open, onClose, snapshot }: ManageQuarters
                         {searchQuery ? 'No matching quarters' : 'All quarters assigned'}
                       </p>
                     ) : (
-                      availableQuarters.map((quarter) => (
-                        <label
-                          key={quarter}
-                          className={cn(
-                            'flex items-center gap-3 py-2 px-3 rounded-md cursor-pointer transition-colors',
-                            selectedToAdd.includes(quarter)
-                              ? 'bg-brand-gold/10'
-                              : 'hover:bg-muted/50'
-                          )}
-                        >
-                          <Checkbox
-                            checked={selectedToAdd.includes(quarter)}
-                            onCheckedChange={() => toggleSelectQuarter(quarter)}
-                          />
-                          <span className="text-sm">{quarter}</span>
-                        </label>
-                      ))
+                      availableQuarters.map((quarter) => {
+                        const isPast = isQuarterInPast(quarter);
+                        const isDisabled = isActive && !isAdmin && isPast;
+                        
+                        return (
+                          <TooltipProvider key={quarter}>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <label
+                                  className={cn(
+                                    'flex items-center gap-3 py-2 px-3 rounded-md transition-colors',
+                                    isDisabled 
+                                      ? 'opacity-50 cursor-not-allowed' 
+                                      : 'cursor-pointer',
+                                    selectedToAdd.includes(quarter)
+                                      ? 'bg-brand-gold/10'
+                                      : !isDisabled && 'hover:bg-muted/50'
+                                  )}
+                                >
+                                  <Checkbox
+                                    checked={selectedToAdd.includes(quarter)}
+                                    onCheckedChange={() => toggleSelectQuarter(quarter)}
+                                    disabled={isDisabled}
+                                  />
+                                  <span className="text-sm flex-1">{quarter}</span>
+                                  {isDisabled && (
+                                    <Lock className="h-3.5 w-3.5 text-muted-foreground" />
+                                  )}
+                                </label>
+                              </TooltipTrigger>
+                              {isDisabled && (
+                                <TooltipContent side="right">
+                                  <p>Only admins can select past quarters</p>
+                                </TooltipContent>
+                              )}
+                            </Tooltip>
+                          </TooltipProvider>
+                        );
+                      })
                     )}
                   </div>
                 </ScrollArea>
