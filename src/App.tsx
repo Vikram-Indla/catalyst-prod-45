@@ -146,6 +146,7 @@ import DeliveryPlatforms from "./pages/admin/DeliveryPlatforms";
 import RiskSeverityLevels from "./pages/admin/RiskSeverityLevels";
 import DevelopmentInventory from "./pages/admin/DevelopmentInventory";
 import UIQARoute from "./pages/UIQARoute";
+import ThemeAuditProbe from "./pages/ThemeAuditProbe";
 import ValueStreamView from "./pages/ValueStreamView";
 import UserProfile from "./pages/UserProfile";
 import ProgramInsights from "./pages/insights/ProgramInsights";
@@ -706,6 +707,7 @@ const App = () => (
               {/* QA Tools */}
               <Route path="/qa/dark-mode-gate" element={<DarkModeGatePage />} />
               <Route path="/ui/qa" element={<UIQARoute />} />
+              <Route path="/theme-audit" element={<ThemeAuditProbe />} />
             </Route>
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
