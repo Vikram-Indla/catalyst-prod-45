@@ -172,7 +172,28 @@
   --sidebar-active: rgba(92, 124, 92, 0.12);
   
   /* KPI */
-  --kpi-border: rgba(92, 124, 92, 0.1);
+  --kpi-border: rgba(92, 124, 92, 0.15);
+  
+  /* Section Accent Colors (Left Border) */
+  --section-accent-green: #5C7C5C;
+  --section-accent-gold: #C69C6D;
+  --section-accent-bronze: #8B7355;
+  --section-accent-champagne: #D4B896;
+  
+  /* Navigation & Header */
+  --nav-bg: var(--surface-bg);
+  --nav-text: var(--text-secondary);
+  --nav-text-active: var(--text-primary);
+  --brand-active: var(--brand-gold);
+  
+  /* Create Button (Primary Action) */
+  --accent-color: #C69C6D;
+  --accent-hover: #B8905F;
+  --text-inverse: #FFFFFF;
+  
+  /* Surface Levels for Components */
+  --surface-1: var(--surface-bg);
+  --surface-2: var(--surface-hover);
   
   /* Semantic Aliases */
   --bg: var(--page-bg);
@@ -277,7 +298,28 @@ html.dark {
   --sidebar-active: rgba(92, 124, 92, 0.15);
   
   /* KPI */
-  --kpi-border: rgba(92, 124, 92, 0.15);
+  --kpi-border: rgba(92, 124, 92, 0.2);
+  
+  /* Section Accent Colors (Left Border) - Same in dark mode */
+  --section-accent-green: #5C7C5C;
+  --section-accent-gold: #C69C6D;
+  --section-accent-bronze: #8B7355;
+  --section-accent-champagne: #D4B896;
+  
+  /* Navigation & Header */
+  --nav-bg: var(--surface-elevated);
+  --nav-text: var(--text-secondary);
+  --nav-text-active: var(--text-primary);
+  --brand-active: var(--brand-gold);
+  
+  /* Create Button (Primary Action) */
+  --accent-color: #C69C6D;
+  --accent-hover: #B8905F;
+  --text-inverse: #FFFFFF;
+  
+  /* Surface Levels for Components */
+  --surface-1: var(--surface-elevated);
+  --surface-2: var(--surface-hover);
   
   /* Semantic Aliases */
   --bg: var(--page-bg);
