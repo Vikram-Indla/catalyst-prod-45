@@ -301,6 +301,40 @@
   --empty-state-bg: var(--surface-2);
   --empty-state-border: var(--border-color);
   --empty-state-text: var(--text-2);
+  
+  /* Button States (Light) */
+  --btn-primary-bg: var(--brand-accent);
+  --btn-primary-hover: var(--brand-accent-hover);
+  --btn-primary-text: #FFFFFF;
+  --btn-secondary-bg: var(--surface-1);
+  --btn-secondary-hover: var(--surface-2);
+  --btn-secondary-border: var(--border-color);
+  --btn-secondary-text: var(--text-1);
+  --btn-ghost-hover: var(--surface-2);
+  --btn-disabled-bg: var(--surface-3);
+  --btn-disabled-text: var(--text-3);
+  
+  /* Tab States (Light) */
+  --tab-default-bg: transparent;
+  --tab-default-text: var(--text-2);
+  --tab-hover-bg: var(--surface-2);
+  --tab-active-bg: transparent;
+  --tab-active-text: var(--text-1);
+  --tab-active-border: var(--brand-active);
+  
+  /* Table Styles (Light) */
+  --table-header-bg: var(--surface-2);
+  --table-header-text: var(--text-2);
+  --table-row-bg: var(--surface-1);
+  --table-row-hover: var(--surface-2);
+  --table-row-selected: rgba(92, 124, 92, 0.08);
+  --table-border: var(--border-color);
+  
+  /* Form Inputs (Light) */
+  --form-label: var(--text-2);
+  --form-placeholder: var(--text-3);
+  --form-focus-border: var(--accent-color);
+  --form-focus-ring: var(--focus-ring-color);
 }
 
 /* ============================================
@@ -377,6 +411,39 @@ html[data-theme="dark"] {
   --empty-state-border: var(--border-color);
   --empty-state-text: var(--text-2);
   
+  /* Button States (Dark) - More visible */
+  --btn-primary-bg: var(--brand-accent);
+  --btn-primary-hover: var(--brand-accent-hover);
+  --btn-primary-text: #0B1220;
+  --btn-secondary-bg: var(--surface-2);
+  --btn-secondary-hover: var(--surface-3);
+  --btn-secondary-border: var(--border-color);
+  --btn-secondary-text: var(--text-1);
+  --btn-ghost-hover: var(--surface-2);
+  --btn-disabled-bg: var(--surface-3);
+  --btn-disabled-text: var(--text-3);
+  
+  /* Tab States (Dark) */
+  --tab-default-bg: transparent;
+  --tab-default-text: var(--text-2);
+  --tab-hover-bg: var(--surface-2);
+  --tab-active-bg: transparent;
+  --tab-active-text: var(--text-1);
+  --tab-active-border: var(--brand-accent);
+  
+  /* Table Styles (Dark) */
+  --table-header-bg: var(--surface-2);
+  --table-header-text: var(--text-2);
+  --table-row-bg: var(--surface-1);
+  --table-row-hover: var(--surface-2);
+  --table-row-selected: rgba(92, 124, 92, 0.12);
+  --table-border: var(--border-color);
+  
+  /* Form Inputs (Dark) */
+  --form-label: var(--text-2);
+  --form-placeholder: var(--text-3);
+  --form-focus-border: var(--accent-color);
+  --form-focus-ring: var(--focus-ring-color);
   /* Override Tailwind semantic colors for dark mode */
   --background: 222 47% 8%;                       /* #0B1220 */
   --foreground: 220 25% 94%;                      /* #EAF0F7 */

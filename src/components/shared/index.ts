@@ -6,6 +6,8 @@
 
 // Layout & Container Components
 export { PageContainer } from './PageContainer';
+export { PageShell } from './PageShell';
+export { DrawerPanel, DrawerSection } from './DrawerPanel';
 
 // Empty State Components
 export { CatalystEmptyState } from './CatalystEmptyState';

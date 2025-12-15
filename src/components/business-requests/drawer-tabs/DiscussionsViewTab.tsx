@@ -133,26 +133,29 @@ export function DiscussionsViewTab({ requestId }: DiscussionsViewTabProps) {
   });
 
   return (
-    <div className="flex flex-col h-[500px]">
+    <div className="flex flex-col h-[500px]" style={{ backgroundColor: 'var(--surface-1)' }}>
       {/* Header */}
-      <div className="flex items-center gap-2 px-6 py-4 border-b border-border/40 bg-card">
-        <MessageSquare className="h-5 w-5 text-brand-gold flex-shrink-0" />
-        <h3 className="text-[15px] font-semibold text-brand-gold uppercase tracking-wide">Discussions</h3>
-        <span className="text-[13px] text-muted-foreground">({discussions.length} comments)</span>
+      <div 
+        className="flex items-center gap-2 px-6 py-4 shrink-0"
+        style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: 'var(--surface-1)' }}
+      >
+        <MessageSquare className="h-5 w-5 flex-shrink-0" style={{ color: 'var(--accent-color)' }} />
+        <h3 className="text-[15px] font-semibold uppercase tracking-wide" style={{ color: 'var(--accent-color)' }}>Discussions</h3>
+        <span className="text-[13px]" style={{ color: 'var(--text-2)' }}>({discussions.length} comments)</span>
       </div>
 
       {/* Comments List */}
       <ScrollArea className="flex-1 px-6">
         <div className="space-y-4 py-4">
           {isLoading ? (
-            <div className="text-center py-8 text-muted-foreground text-[13px]">
+            <div className="text-center py-8 text-[13px]" style={{ color: 'var(--text-3)' }}>
               Loading discussions...
             </div>
           ) : discussions.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
+            <div className="text-center py-12" style={{ color: 'var(--text-3)' }}>
               <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-40" />
-              <p className="text-[15px] font-medium">No discussions yet</p>
-              <p className="text-[13px]">Start the conversation about this epic</p>
+              <p className="text-[15px] font-medium" style={{ color: 'var(--text-2)' }}>No discussions yet</p>
+              <p className="text-[13px]">Start the conversation about this request</p>
             </div>
           ) : (
             discussions.map((discussion: any) => {
@@ -192,7 +195,7 @@ export function DiscussionsViewTab({ requestId }: DiscussionsViewTabProps) {
       </ScrollArea>
 
       {/* Add Comment Form */}
-      <form onSubmit={handleSubmit} className="border-t border-border/40 p-4 bg-card">
+      <form onSubmit={handleSubmit} className="p-4 shrink-0" style={{ borderTop: '1px solid var(--border-color)', backgroundColor: 'var(--surface-1)' }}>
         <div className="flex gap-2">
           <div className="flex-1 relative">
             <Textarea
