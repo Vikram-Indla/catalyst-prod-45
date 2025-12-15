@@ -5,13 +5,20 @@
 
 import { useState, useCallback, useRef } from 'react';
 import { exportAnalyticsReportToPDF } from '../lib/exportAnalyticsReportToPDF';
-import { X, TrendingUp, TrendingDown, Minus, AlertTriangle, Clock, Link, Download, BarChart3, Target, ChevronRight } from 'lucide-react';
+import { X, TrendingUp, TrendingDown, Minus, AlertTriangle, Clock, Link, Download, BarChart3, Target, ChevronRight, ChevronDown, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { RISK_COLORS } from '@/config/riskColors';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 // Dialog import removed - using custom inline modal for z-index control
 import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import type { 
   PerformanceMetrics, 
   ThemeAnalyticsRow, 
@@ -22,6 +29,12 @@ import type {
   FocusSeverity,
   DrillDownItem,
 } from '../lib/okrAnalytics';
+
+export interface ThemeChip {
+  id: string;
+  name: string;
+  color: string;
+}
 
 // ─────────────────────────────────────────────────────────────────────────────────
 // HELPER COMPONENTS
@@ -630,9 +643,9 @@ interface StrategyAnalyticsModalProps {
   onClose: () => void;
   analytics: OkrAnalyticsResult | null;
   isLoading?: boolean;
-  filterLabel?: string;
-  themeCount?: number;
-  totalThemeCount?: number;
+  themes?: ThemeChip[];
+  selectedThemeIds: string[];
+  onThemeChange: (themeIds: string[]) => void;
 }
 
 export function StrategyAnalyticsModal({
@@ -640,9 +653,9 @@ export function StrategyAnalyticsModal({
   onClose,
   analytics,
   isLoading = false,
-  filterLabel = 'All Themes',
-  themeCount,
-  totalThemeCount,
+  themes = [],
+  selectedThemeIds,
+  onThemeChange,
 }: StrategyAnalyticsModalProps) {
   const [drillDownOpen, setDrillDownOpen] = useState(false);
   const [drillDownTitle, setDrillDownTitle] = useState('');
@@ -655,6 +668,24 @@ export function StrategyAnalyticsModal({
     setDrillDownItems(items);
     setDrillDownOpen(true);
   }, []);
+
+  // Compute filter label for display
+  const filterLabel = selectedThemeIds.length === 0 
+    ? 'All Themes' 
+    : selectedThemeIds.length === 1 
+      ? themes.find(t => t.id === selectedThemeIds[0])?.name || '1 Theme'
+      : `${selectedThemeIds.length} Themes`;
+
+  const handleThemeToggle = useCallback((themeId: string | null) => {
+    if (themeId === null) {
+      onThemeChange([]);
+    } else {
+      const newIds = selectedThemeIds.includes(themeId)
+        ? selectedThemeIds.filter(id => id !== themeId)
+        : [...selectedThemeIds, themeId];
+      onThemeChange(newIds);
+    }
+  }, [selectedThemeIds, onThemeChange]);
 
   const handleExportPDF = useCallback(async () => {
     if (!contentRef.current || !analytics) return;
@@ -693,16 +724,47 @@ export function StrategyAnalyticsModal({
             </div>
             
             <div className="flex items-center gap-4">
-              {/* Filter Chip */}
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-[#faf7f1] rounded-full border border-border text-xs text-muted-foreground">
-                <BarChart3 className="h-3.5 w-3.5" />
-                <span>{filterLabel}</span>
-                {themeCount !== undefined && totalThemeCount !== undefined && themeCount !== totalThemeCount && (
-                  <span className="px-1.5 py-0.5 bg-brand-gold rounded-full text-[10px] font-semibold text-white">
-                    {themeCount}/{totalThemeCount}
-                  </span>
-                )}
-              </div>
+              {/* Interactive Theme Filter Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex items-center gap-2 px-3 py-1.5 bg-[#faf7f1] rounded-full border border-border text-xs text-muted-foreground hover:bg-muted/50 transition-colors">
+                    <BarChart3 className="h-3.5 w-3.5" />
+                    <span>{filterLabel}</span>
+                    {selectedThemeIds.length > 0 && (
+                      <span className="px-1.5 py-0.5 bg-brand-gold rounded-full text-[10px] font-semibold text-white">
+                        {selectedThemeIds.length}/{themes.length}
+                      </span>
+                    )}
+                    <ChevronDown className="h-3 w-3 ml-0.5" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 z-[1100]">
+                  <DropdownMenuItem 
+                    onClick={() => handleThemeToggle(null)}
+                    className="flex items-center justify-between"
+                  >
+                    <span className="font-medium">All Themes</span>
+                    {selectedThemeIds.length === 0 && <Check className="h-4 w-4 text-brand-gold" />}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  {themes.map(theme => (
+                    <DropdownMenuItem
+                      key={theme.id}
+                      onClick={() => handleThemeToggle(theme.id)}
+                      className="flex items-center justify-between"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span 
+                          className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                          style={{ backgroundColor: theme.color }}
+                        />
+                        <span className="truncate">{theme.name}</span>
+                      </div>
+                      {selectedThemeIds.includes(theme.id) && <Check className="h-4 w-4 text-brand-gold" />}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
               
               <button
                 onClick={onClose}

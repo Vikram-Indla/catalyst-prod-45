@@ -350,9 +350,9 @@ export function StrategyCockpit({ snapshotId }: StrategyCockpitProps) {
         onClose={() => setAnalyticsOpen(false)}
         analytics={analytics}
         isLoading={analyticsLoading}
-        filterLabel={selectedThemeIds.length > 0 ? `${selectedThemeIds.length} Themes` : 'All Themes'}
-        themeCount={themeCount}
-        totalThemeCount={totalThemeCount}
+        themes={themeChips || []}
+        selectedThemeIds={selectedThemeIds}
+        onThemeChange={setSelectedThemeIds}
       />
     </div>
   );
