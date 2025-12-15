@@ -526,9 +526,11 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                     department={formData.department}
                     departmentId={formData.department_id}
                     targetDate={formData.end_date}
+                    deliveryPlatform={formData.delivery_platform}
                     onBusinessOwnerChange={(id) => handleFieldChange('business_owner_id', id)}
                     onDepartmentChange={(id) => handleFieldChange('department_id', id)}
                     onTargetDateChange={(date) => handleFieldChange('end_date', date)}
+                    onDeliveryPlatformChange={(value) => handleFieldChange('delivery_platform', value)}
                   />
                   <div className="h-4 w-px" style={{ background: 'var(--border-color)' }} />
                   <DrawerMetadataChips

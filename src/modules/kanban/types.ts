@@ -92,49 +92,49 @@ export interface SwimlaneGroup {
   tickets: KanbanTicket[];
 }
 
-// Kanban colors matching the specification exactly
+// Kanban colors - semantic token based for dark/light theme parity
 export const KANBAN_COLORS = {
-  // Primary Brand
-  olive: '#5c7c5c',
-  oliveLight: '#6d8d6d',
-  oliveDark: '#4a6a4a',
-  bronze: '#8b7355',
-  bronzeLight: '#a08868',
-  bronzeDark: '#6f5c44',
-  gold: '#c69c6d',
-  goldLight: '#d4ae85',
-  goldDark: '#b8894f',
-  champagne: '#d4b896',
-  champagneLight: '#e5d4be',
-  champagneDark: '#c4a67e',
-  grey: '#c8ccd0',
-  greyLight: '#e5e7eb',
-  greyDark: '#9ca3af',
+  // Primary Brand (kept for backwards compat but prefer tokens)
+  olive: 'hsl(var(--secondary-green))',
+  oliveLight: 'hsl(var(--secondary-green) / 0.7)',
+  oliveDark: 'hsl(var(--secondary-green))',
+  bronze: 'hsl(var(--secondary-bronze))',
+  bronzeLight: 'hsl(var(--secondary-bronze) / 0.7)',
+  bronzeDark: 'hsl(var(--secondary-bronze))',
+  gold: 'hsl(var(--brand-gold))',
+  goldLight: 'hsl(var(--brand-gold) / 0.7)',
+  goldDark: 'hsl(var(--brand-gold))',
+  champagne: 'hsl(var(--palette-beginner))',
+  champagneLight: 'hsl(var(--palette-beginner) / 0.5)',
+  champagneDark: 'hsl(var(--palette-beginner))',
+  grey: 'var(--text-3)',
+  greyLight: 'var(--surface-2)',
+  greyDark: 'var(--text-2)',
   
-  // Backgrounds
-  bgPage: '#ffffff',
-  bgCard: '#ffffff',
-  bgColumn: '#f8f9fa',
-  bgHeader: '#ffffff',
-  bgHover: '#fafafa',
-  bgSelected: 'rgba(198, 156, 109, 0.08)',
+  // Backgrounds - semantic tokens
+  bgPage: 'var(--bg)',
+  bgCard: 'var(--surface-1)',
+  bgColumn: 'var(--surface-2)',
+  bgHeader: 'var(--surface-1)',
+  bgHover: 'var(--surface-3)',
+  bgSelected: 'var(--accent-muted)',
   
-  // Borders
-  borderLight: '#e5e7eb',
-  borderDefault: '#d1d5db',
+  // Borders - semantic tokens
+  borderLight: 'var(--border-color)',
+  borderDefault: 'var(--border-strong)',
   
-  // Text
-  textPrimary: '#1f2937',
-  textSecondary: '#4b5563',
-  textMuted: '#6b7280',
-  textLight: '#9ca3af',
+  // Text - semantic tokens
+  textPrimary: 'var(--text-1)',
+  textSecondary: 'var(--text-2)',
+  textMuted: 'var(--text-3)',
+  textLight: 'var(--text-muted)',
   
   // Status
-  danger: '#dc2626',
-  warning: '#f59e0b',
-  info: '#3b82f6',
-  success: '#22c55e',
-  purple: '#8b5cf6',
+  danger: 'hsl(var(--destructive))',
+  warning: 'hsl(var(--y300))',
+  info: 'hsl(var(--b400))',
+  success: 'hsl(var(--g300))',
+  purple: 'hsl(var(--p300))',
 };
 
 // Column configuration

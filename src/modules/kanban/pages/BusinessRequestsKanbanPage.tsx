@@ -168,7 +168,10 @@ export default function BusinessRequestsKanbanPage() {
   }
 
   return (
-    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: KANBAN_COLORS.bgPage, overflow: 'hidden' }}>
+    <div 
+      className="h-screen flex flex-col overflow-hidden"
+      style={{ backgroundColor: 'var(--bg)' }}
+    >
       {/* Unified Header Toolbar */}
       <IndustryHeaderToolbarV2
         title="Product Kanban"
@@ -205,16 +208,19 @@ export default function BusinessRequestsKanbanPage() {
         }}
       />
 
-      {/* Board Container with horizontal scroll */}
-      <div style={{ flex: 1, overflow: 'auto', padding: '20px 28px' }}>
+      {/* Board Container - fills remaining viewport */}
+      <div 
+        className="flex-1 overflow-auto px-5 py-4"
+        style={{ backgroundColor: 'var(--bg)' }}
+      >
         {groupBy === 'none' ? (
-          <div style={{ display: 'flex', gap: '14px', minWidth: 'max-content', paddingBottom: '20px' }}>
+          <div className="flex gap-3.5 min-w-max pb-4 h-full">
             {COLUMNS_CONFIG.map(column => (
               <KanbanColumn key={column.id} column={column.id} tickets={ticketsByColumn[column.id] || []} onDrop={handleDrop} onCardClick={handleCardClick} compactMode={compactMode} collapsed={collapsedColumns.includes(column.id)} onToggleCollapse={() => toggleColumnCollapse(column.id)} teamMembers={teamMembers} />
             ))}
           </div>
         ) : (
-          <div style={{ minWidth: 'max-content' }}>
+          <div className="min-w-max">
             {Object.entries(groupedTickets || {}).map(([key, group]) => (
               <Swimlane key={key} label={group.label} color={group.color} icon={group.icon} tickets={group.tickets} count={group.tickets.length} onDrop={handleDrop} onCardClick={handleCardClick} compactMode={compactMode} collapsedColumns={collapsedColumns} onToggleColumnCollapse={toggleColumnCollapse} isExpanded={expandedSwimlanes[key] !== false} onToggleExpand={() => toggleSwimlaneExpand(key)} teamMembers={teamMembers} />
             ))}
