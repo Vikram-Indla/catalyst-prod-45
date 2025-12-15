@@ -17,13 +17,10 @@ import BrowsePage from "./pages/BrowsePage";
 import SearchPage from "./pages/SearchPage";
 import Home from "./pages/jira-align/Home";
 import PortfolioRoomPageOld from "./pages/jira-align/PortfolioRoomPage";
-import PortfolioRoomPage from "./pages/PortfolioRoomPage";
-import PortfolioBacklog from "./pages/PortfolioBacklog";
 import PlaceholderPage from "./pages/jira-align/PlaceholderPage";
 import StrategyRoom from "./pages/StrategyRoom";
 import StrategyRoomPage from "./pages/enterprise/StrategyRoomPage";
 import Themes from "./pages/Themes";
-import ThemesGrid from "./pages/ThemesGrid";
 import Initiatives from "./pages/Initiatives";
 import Epics from "./pages/Epics";
 import EpicsPage from "./pages/items/EpicsPage";
@@ -56,20 +53,17 @@ import PortfolioKanban from "./pages/PortfolioKanban";
 import PortfolioRoadmap from "./pages/PortfolioRoadmap";
 import Roadmaps from "./pages/Roadmaps";
 import DependenciesPage from "./pages/work/Dependencies";
-import PortfolioInsights from "./pages/PortfolioInsights";
 import ProgramRoom from "./pages/ProgramRoom";
 import ProgramEpicsPage from "./pages/ProgramEpicsPage";
 import ProgramBoardNew from "./pages/ProgramBoardNew";
 import ProgramBoardWithSidebar from "./pages/ProgramBoardWithSidebar";
 import ProgramBoardOld from "./pages/ProgramBoard";
 import ProgramBoardHistory from "./pages/ProgramBoardHistory";
-import ForecastWithSidebar from "./pages/program/ForecastWithSidebar";
 import QuartersPage from "./pages/program/QuartersPage";
 import CapacityWithSidebar from "./pages/program/CapacityWithSidebar";
 import BacklogWithSidebar from "./pages/program/BacklogWithSidebar";
 import RoadmapsWithSidebar from "./pages/program/RoadmapsWithSidebar";
 import FeaturesWithSidebar from "./pages/program/FeaturesWithSidebar";
-import ProgramIncrements from "./pages/ProgramIncrements";
 import PIObjectives from "./pages/PIObjectives";
 import CapacityPlanning from "./pages/CapacityPlanning";
 import Forecast from "./pages/Forecast";
@@ -77,8 +71,6 @@ import WorkSpendGrid from "./pages/WorkSpendGrid";
 import RisksGridPage from "./pages/risks/RisksGridPage";
 import RiskRoamReportPage from "./pages/risks/RiskRoamReportPage";
 import TeamRoom from "./pages/TeamRoom";
-import TeamRoomDetail from "./pages/TeamRoomDetail";
-import TeamsDirectory from "./pages/TeamsDirectory";
 import SprintBoard from "./pages/SprintBoard";
 import Backlog from "./pages/Backlog";
 import BacklogPage from "./pages/BacklogPage";
@@ -86,7 +78,6 @@ import Sprints from "./pages/Sprints";
 import Stories from "./pages/Stories";
 import Subtasks from "./pages/Subtasks";
 import Releases from "./pages/Releases";
-import TeamBacklog from "./pages/team/TeamBacklog";
 import OrgSetup from "./pages/admin/OrgSetup";
 import HierarchyConfig from "./pages/admin/HierarchyConfig";
 import CustomFields from "./pages/admin/CustomFields";
@@ -151,10 +142,6 @@ import UIQARoute from "./pages/UIQARoute";
 import ThemeAuditProbe from "./pages/ThemeAuditProbe";
 import ValueStreamView from "./pages/ValueStreamView";
 import UserProfile from "./pages/UserProfile";
-import ProgramInsights from "./pages/insights/ProgramInsights";
-import TeamInsights from "./pages/insights/TeamInsights";
-import Predictability from "./pages/insights/Predictability";
-import DependencyRisk from "./pages/insights/DependencyRisk";
 import NotFound from "./pages/NotFound";
 import ProgramDirectory from "./pages/ProgramDirectory";
 import ProjectDirectory from "./pages/ProjectDirectory";
@@ -165,7 +152,6 @@ import { WorkHubLayout } from "./modules/work-hub/WorkHubLayout";
 import { SummaryView } from "./modules/work-hub/views/SummaryView";
 import { ListView, AllWorkView, ReleasesView, ReleaseDetailsView } from "./modules/work-hub/views";
 import { AdminGuard } from "./components/admin/AdminGuard";
-import OKRHeatmap from "./pages/enterprise/OKRHeatmap";
 import OKRTree from "./pages/enterprise/OKRTree";
 import OKRHub from "./pages/enterprise/OKRHub";
 // OKR v2 is now the single source - no separate portfolio/program/team OKR hubs
@@ -175,19 +161,12 @@ import StrategicBacklog from "./pages/enterprise/StrategicBacklog";
 import EnterpriseEpics from "./pages/enterprise/EnterpriseEpics";
 import { WorkTreePage } from "./pages/work-tree";
 
-import EnterpriseFeatures from "./pages/enterprise/EnterpriseFeatures";
-import EnterpriseStories from "./pages/enterprise/EnterpriseStories";
-import EnterpriseDefects from "./pages/enterprise/EnterpriseDefects";
 import EnterpriseTasks from "./pages/enterprise/EnterpriseTasks";
 import EnterpriseObjectives from "./pages/enterprise/EnterpriseObjectives";
 import EnterpriseDependencies from "./pages/enterprise/EnterpriseDependencies";
-import EnterpriseSprints from "./pages/enterprise/EnterpriseSprints";
-import EnterpriseProgramIncrements from "./pages/enterprise/EnterpriseProgramIncrements";
 import EnterpriseReleaseVehicles from "./pages/enterprise/EnterpriseReleaseVehicles";
 import EnterpriseSuccessCriteria from "./pages/enterprise/EnterpriseSuccessCriteria";
 import EnterpriseRisks from "./pages/enterprise/EnterpriseRisks";
-import EnterpriseIdeation from "./pages/enterprise/EnterpriseIdeation";
-import EnterpriseImpediments from "./pages/enterprise/EnterpriseImpediments";
 import EnterpriseComingSoon from "./pages/enterprise/ComingSoon";
 import SkillsInventory from "./pages/SkillsInventory";
 
@@ -205,7 +184,6 @@ import ProductBacklogPage from "./modules/product-backlog/pages/ProductBacklogPa
 import RequestAccess from "./pages/RequestAccess";
 import ResetPassword from "./pages/ResetPassword";
 import TeamComingSoon from "./pages/team/ComingSoon";
-import TeamStoriesPage from "./pages/team/TeamStoriesPage";
 import SelfTest from "./pages/dev/SelfTest";
 import EpicBacklogTests from "./pages/dev/EpicBacklogTests";
 import ForecastSelfTest from "./pages/dev/ForecastSelfTest";
@@ -217,7 +195,6 @@ import SourcesReference from "./pages/dev/SourcesReference";
 import ToastDemo from "./pages/dev/ToastDemo";
 import DarkModeGatePage from "./pages/qa/DarkModeGatePage";
 import UnauthorizedPage from "./pages/UnauthorizedPage";
-import KanbanBoardsPage from "./pages/KanbanBoardsPage";
 import KanbanBoardView from "./pages/KanbanBoardView";
 import KanbanBoardSetup from "./pages/KanbanBoardSetup";
 import KanbanBoardAnalytics from "./pages/KanbanBoardAnalytics";
@@ -289,7 +266,7 @@ const App = () => (
               
               <Route path="/search" element={<SearchPage />} />
               <Route path="/portfolio-room" element={<PortfolioRoomPageOld />} />
-              <Route path="/portfolio/:portfolioId/room" element={<PortfolioRoomPage />} />
+              <Route path="/portfolio/:portfolioId/room" element={<PlaceholderPage />} />
               <Route path="/portfolio/:portfolioId/epics" element={<EpicsPage />} />
               <Route path="/portfolio/:portfolioId/backlog" element={<EpicBacklogWithSidebar />} />
               <Route path="/portfolio/:portfolioId/roadmaps" element={<PlaceholderPage />} />
@@ -302,7 +279,7 @@ const App = () => (
               <Route path="/enterprise/strategy-room" element={<StrategyRoomPage />} />
               <Route path="/enterprise/snapshots" element={<StrategicSnapshots />} />
               <Route path="/enterprise/backlog" element={<StrategicBacklog />} />
-              <Route path="/enterprise/okr-heatmap" element={<OKRHeatmap />} />
+              <Route path="/enterprise/okr-heatmap" element={<EnterpriseComingSoon />} />
               <Route path="/enterprise/okr-tree" element={<OKRTree />} />
               <Route path="/enterprise/okr-hub" element={<OKRHub />} />
               <Route path="/portfolio/:portfolioId/okr-hub" element={<OKRHub />} />
@@ -316,16 +293,16 @@ const App = () => (
               <Route path="/program/:programId/dependencies" element={<DependenciesPage />} />
               <Route path="/program/:programId/roadmaps" element={<RoadmapsWithSidebar />} />
               <Route path="/program/:programId/objectives-tree" element={<OKRHub />} />
-              <Route path="/program/:programId/forecast" element={<ForecastWithSidebar />} />
+              <Route path="/program/:programId/forecast" element={<PlaceholderPage />} />
               <Route path="/program/:programId/capacity" element={<CapacityWithSidebar />} />
-              <Route path="/program/:programId/quarters" element={<ProgramIncrements />} />
+              <Route path="/program/:programId/quarters" element={<QuartersPage />} />
               <Route path="/program/:programId/epic-balancing" element={<EpicBalancingPage />} />
               <Route path="/program/:programId/reports" element={<PlaceholderPage />} />
               <Route path="/team/:teamId/okr-hub" element={<OKRHub />} />
               <Route path="/enterprise/roadmaps" element={<RoadmapsPage />} />
               <Route path="/work-tree" element={<WorkTreePage />} />
               <Route path="/enterprise/work-tree" element={<WorkTreePage />} />
-              <Route path="/enterprise/kanban-boards" element={<KanbanBoardsPage />} />
+              <Route path="/enterprise/kanban-boards" element={<EnterpriseComingSoon />} />
               
               
               {/* Mining */}
@@ -337,19 +314,19 @@ const App = () => (
 <Route path="/product/capacity" element={<CapacityPlanningPage />} />
               
               {/* Enterprise More Items */}
-              <Route path="/enterprise/ideation" element={<EnterpriseIdeation />} />
+              <Route path="/enterprise/ideation" element={<EnterpriseComingSoon />} />
               <Route path="/enterprise/risks" element={<EnterpriseRisks />} />
-              <Route path="/enterprise/impediments" element={<EnterpriseImpediments />} />
+              <Route path="/enterprise/impediments" element={<EnterpriseComingSoon />} />
               <Route path="/enterprise/epics" element={<EnterpriseEpics />} />
               
-              <Route path="/enterprise/features" element={<EnterpriseFeatures />} />
-              <Route path="/enterprise/stories" element={<EnterpriseStories />} />
-              <Route path="/enterprise/defects" element={<EnterpriseDefects />} />
+              <Route path="/enterprise/features" element={<EnterpriseComingSoon />} />
+              <Route path="/enterprise/stories" element={<EnterpriseComingSoon />} />
+              <Route path="/enterprise/defects" element={<EnterpriseComingSoon />} />
               <Route path="/enterprise/tasks" element={<EnterpriseTasks />} />
               <Route path="/enterprise/objectives" element={<EnterpriseObjectives />} />
               <Route path="/enterprise/dependencies" element={<EnterpriseDependencies />} />
-              <Route path="/enterprise/sprints" element={<EnterpriseSprints />} />
-              <Route path="/enterprise/program-increments" element={<EnterpriseProgramIncrements />} />
+              <Route path="/enterprise/sprints" element={<EnterpriseComingSoon />} />
+              <Route path="/enterprise/program-increments" element={<EnterpriseComingSoon />} />
               <Route path="/enterprise/release-vehicles" element={<EnterpriseReleaseVehicles />} />
               <Route path="/enterprise/success-criteria" element={<EnterpriseSuccessCriteria />} />
               <Route path="/enterprise/skills-inventory" element={<SkillsInventory />} />
@@ -386,8 +363,8 @@ const App = () => (
               <Route path="/enterprise/pages/story-point-progress" element={<EnterpriseComingSoon />} />
               
               <Route path="/themes" element={<Themes />} />
-              <Route path="/themes/grid" element={<ThemesGrid />} />
-              <Route path="/portfolio/:portfolioId/themes" element={<ThemesGrid />} />
+              <Route path="/themes/grid" element={<Themes />} />
+              <Route path="/portfolio/:portfolioId/themes" element={<Themes />} />
               <Route path="/initiatives" element={<Initiatives />} />
               <Route path="/epics" element={<Navigate to="/program/b2c3d4e5-f6a7-8901-bcde-f12345678901/epic-backlog" replace />} />
               <Route path="/backlog/epics" element={<Navigate to="/program/b2c3d4e5-f6a7-8901-bcde-f12345678901/epic-backlog" replace />} />
@@ -417,7 +394,7 @@ const App = () => (
           <Route path="/roadmaps" element={<Roadmaps />} />
               <Route path="/dependencies" element={<DependenciesPage />} />
               <Route path="/work-spend-grid" element={<WorkSpendGrid />} />
-              <Route path="/portfolio-insights" element={<PortfolioInsights />} />
+              <Route path="/portfolio-insights" element={<EnterpriseComingSoon />} />
               <Route path="/programs/:programId/room" element={<ProgramRoom />} />
               <Route path="/programs/:programId/epics" element={<EpicsPage />} />
               <Route path="/programs/:programId/features" element={<FeaturesWithSidebar />} />
@@ -427,12 +404,12 @@ const App = () => (
               <Route path="/programs/:programId/objective-tree" element={<OKRHub />} />
               <Route path="/programs/:programId/work-tree" element={<WorkTreePage />} />
               <Route path="/programs/:programId/program-board" element={<ProgramBoardWithSidebar />} />
-              <Route path="/programs/:programId/forecast" element={<ForecastWithSidebar />} />
+              <Route path="/programs/:programId/forecast" element={<PlaceholderPage />} />
               <Route path="/programs/:programId/capacity" element={<CapacityWithSidebar />} />
               <Route path="/programs/:programId/settings" element={<PlaceholderPage />} />
               <Route path="/programs/:programId/quarters" element={<QuartersPage />} />
               <Route path="/program-room" element={<Navigate to="/home" replace />} />
-              <Route path="/pis" element={<ProgramIncrements />} />
+              <Route path="/pis" element={<PlaceholderPage />} />
               <Route path="/program-board" element={<Navigate to="/home" replace />} />
               <Route path="/programs/program-board" element={<Navigate to="/home" replace />} />
               <Route path="/programs/program-board/history" element={<ProgramBoardHistory />} />
@@ -448,10 +425,10 @@ const App = () => (
               <Route path="/projects/:projectKey/summary" element={<ProjectSummaryPage />} />
               <Route path="/projects/:projectKey/settings" element={<ProjectSettingsPage />} />
               <Route path="/project/:projectId/work" element={<ProjectWorkHubPage />} />
-              <Route path="/teams" element={<TeamsDirectory />} />
-              <Route path="/teams/:teamId/room" element={<TeamRoomDetail />} />
+              <Route path="/teams" element={<TeamComingSoon />} />
+              <Route path="/teams/:teamId/room" element={<TeamComingSoon />} />
               <Route path="/teams/:teamId/work-tree" element={<WorkTreePage />} />
-              <Route path="/teams/:teamId/backlog" element={<TeamBacklog />} />
+              <Route path="/teams/:teamId/backlog" element={<TeamComingSoon />} />
               <Route path="/teams/:teamId/board" element={<TeamComingSoon />} />
               <Route path="/teams/:teamId/objective-tree" element={<OKRHub />} />
               <Route path="/teams/:teamId/roadmaps" element={<TeamComingSoon />} />
@@ -471,13 +448,13 @@ const App = () => (
               <Route path="/teams/:teamId/reports/work-tree" element={<WorkTreePage />} />
               <Route path="/teams/:teamId/pages/assessments" element={<TeamComingSoon />} />
               <Route path="/teams/:teamId/pages/metrics" element={<TeamComingSoon />} />
-              <Route path="/teams/:teamId/kanban-boards" element={<KanbanBoardsPage />} />
+              <Route path="/teams/:teamId/kanban-boards" element={<TeamComingSoon />} />
 
               {/* Portfolio Routes with :portfolioId */}
-              <Route path="/portfolio/:portfolioId/room" element={<PortfolioRoomPage />} />
+              <Route path="/portfolio/:portfolioId/room" element={<PlaceholderPage />} />
               <Route path="/portfolio/:portfolioId/objective-tree" element={<OKRHub />} />
               <Route path="/portfolio/:portfolioId/work-tree" element={<WorkTreePage />} />
-              <Route path="/portfolio/:portfolioId/backlog" element={<PortfolioBacklog />} />
+              <Route path="/portfolio/:portfolioId/backlog" element={<PlaceholderPage />} />
               <Route path="/portfolio/:portfolioId/roadmaps" element={<Roadmaps />} />
               <Route path="/portfolio/:portfolioId/forecast" element={<Forecast />} />
               <Route path="/portfolio/:portfolioId/capacity" element={<CapacityPlanning />} />
@@ -490,7 +467,7 @@ const App = () => (
               <Route path="/portfolio/:portfolioId/risks" element={<RisksGridPage />} />
               <Route path="/portfolio/:portfolioId/impediments" element={<Impediments />} />
               <Route path="/portfolio/:portfolioId/sprints" element={<Sprints />} />
-              <Route path="/portfolio/:portfolioId/program-increments" element={<ProgramIncrements />} />
+              <Route path="/portfolio/:portfolioId/program-increments" element={<PlaceholderPage />} />
               <Route path="/portfolio/:portfolioId/release-vehicles" element={<ReleaseVehicles />} />
               <Route path="/portfolio/:portfolioId/reports/epic-status" element={<EpicStatusReport />} />
               <Route path="/portfolio/:portfolioId/reports/epic-trace" element={<EpicTraceReport />} />
@@ -500,7 +477,7 @@ const App = () => (
               <Route path="/portfolio/:portfolioId/pages/assessments" element={<TeamComingSoon />} />
               <Route path="/portfolio/:portfolioId/pages/metrics" element={<TeamComingSoon />} />
               <Route path="/portfolio/:portfolioId/pages/meetings" element={<TeamComingSoon />} />
-              <Route path="/portfolio/:portfolioId/kanban-boards" element={<KanbanBoardsPage />} />
+              <Route path="/portfolio/:portfolioId/kanban-boards" element={<TeamComingSoon />} />
 
               {/* Program Routes with :programId */}
               <Route path="/programs/:programId/room" element={<ProgramRoom />} />
@@ -510,9 +487,9 @@ const App = () => (
               <Route path="/programs/:programId/backlog" element={<BacklogWithSidebar />} />
               <Route path="/programs/:programId/roadmaps" element={<RoadmapsWithSidebar />} />
               <Route path="/programs/:programId/dependencies" element={<DependenciesPage />} />
-              <Route path="/programs/:programId/forecast" element={<ForecastWithSidebar />} />
+              <Route path="/programs/:programId/forecast" element={<PlaceholderPage />} />
               <Route path="/programs/:programId/capacity" element={<CapacityWithSidebar />} />
-              <Route path="/programs/:programId/increments" element={<ProgramIncrements />} />
+              <Route path="/programs/:programId/increments" element={<PlaceholderPage />} />
               <Route path="/programs/:programId/epics" element={<Epics />} />
               <Route path="/programs/:programId/features" element={<FeaturesWithSidebar />} />
               <Route path="/programs/:programId/stories" element={<Stories />} />
@@ -526,16 +503,16 @@ const App = () => (
               <Route path="/programs/:programId/reports/board-history" element={<ProgramBoardHistory />} />
               <Route path="/programs/:programId/reports/work-tree" element={<WorkTreePage />} />
               <Route path="/programs/:programId/reports/pi-objectives" element={<PIObjectives />} />
-              <Route path="/programs/:programId/kanban-boards" element={<KanbanBoardsPage />} />
+              <Route path="/programs/:programId/kanban-boards" element={<TeamComingSoon />} />
               <Route path="/programs/:programId/pages/assessments" element={<TeamComingSoon />} />
               <Route path="/programs/:programId/pages/metrics" element={<TeamComingSoon />} />
               <Route path="/programs/:programId/pages/meetings" element={<TeamComingSoon />} />
               
-              <Route path="/team/:teamId/room" element={<TeamRoomDetail />} />
+              <Route path="/team/:teamId/room" element={<TeamComingSoon />} />
               
               {/* Team Routes - Placeholder Routes */}
-              <Route path="/team/:teamId/backlog" element={<TeamBacklog />} />
-              <Route path="/team/:teamId/stories" element={<TeamStoriesPage />} />
+              <Route path="/team/:teamId/backlog" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/stories" element={<TeamComingSoon />} />
               <Route path="/team/:teamId/roadmaps" element={<TeamComingSoon />} />
               <Route path="/team/:teamId/objective-tree" element={<OKRHub />} />
               <Route path="/team/:teamId/work-tree" element={<WorkTreePage />} />
@@ -577,7 +554,7 @@ const App = () => (
               <Route path="/team/:teamId/reports/story-point-progress" element={<TeamComingSoon />} />
               <Route path="/team/:teamId/reports/team-velocity-trend" element={<TeamComingSoon />} />
               <Route path="/team/:teamId/reports/work-tree" element={<WorkTreePage />} />
-              <Route path="/team/:teamId/kanban-boards" element={<KanbanBoardsPage />} />
+              <Route path="/team/:teamId/kanban-boards" element={<TeamComingSoon />} />
               
               {/* Team More Pages - Placeholder Routes */}
               <Route path="/team/:teamId/pages/assessments" element={<TeamComingSoon />} />
@@ -599,7 +576,7 @@ const App = () => (
               <Route path="/unauthorized" element={<UnauthorizedPage />} />
               
               {/* Kanban Boards Routes - Team Scoped */}
-              <Route path="/team/:teamId/kanban-boards" element={<KanbanBoardsPage />} />
+              <Route path="/team/:teamId/kanban-boards" element={<TeamComingSoon />} />
               <Route path="/team/:teamId/kanban-boards/:boardId" element={<KanbanBoardView />} />
               <Route path="/team/:teamId/kanban-boards/:boardId/setup" element={<KanbanBoardSetup />} />
               <Route path="/team/:teamId/kanban-boards/:boardId/analytics" element={<KanbanBoardAnalytics />} />
@@ -621,16 +598,16 @@ const App = () => (
               <Route path="/release/calendar" element={<ReleaseCalendar />} />
               <Route path="/release/settings" element={<ReleaseSettings />} />
               {/* Kanban Boards Routes - Program Scoped */}
-              <Route path="/programs/:programId/kanban-boards" element={<KanbanBoardsPage />} />
+              <Route path="/programs/:programId/kanban-boards" element={<TeamComingSoon />} />
               <Route path="/programs/:programId/kanban-boards/:boardId" element={<KanbanBoardView />} />
               <Route path="/programs/:programId/kanban-boards/:boardId/setup" element={<KanbanBoardSetup />} />
               <Route path="/programs/:programId/kanban-boards/:boardId/analytics" element={<KanbanBoardAnalytics />} />
               
-              <Route path="/insights/portfolio" element={<PortfolioInsights />} />
-              <Route path="/insights/program" element={<ProgramInsights />} />
-              <Route path="/insights/team" element={<TeamInsights />} />
-              <Route path="/insights/predictability" element={<Predictability />} />
-              <Route path="/insights/dependency-risk" element={<DependencyRisk />} />
+              <Route path="/insights/portfolio" element={<EnterpriseComingSoon />} />
+              <Route path="/insights/program" element={<EnterpriseComingSoon />} />
+              <Route path="/insights/team" element={<EnterpriseComingSoon />} />
+              <Route path="/insights/predictability" element={<EnterpriseComingSoon />} />
+              <Route path="/insights/dependency-risk" element={<EnterpriseComingSoon />} />
               <Route path="/admin/org-setup" element={<AdminGuard><OrgSetup /></AdminGuard>} />
               <Route path="/admin/hierarchy" element={<AdminGuard><HierarchyConfig /></AdminGuard>} />
               <Route path="/admin/custom-fields" element={<AdminGuard><CustomFields /></AdminGuard>} />
