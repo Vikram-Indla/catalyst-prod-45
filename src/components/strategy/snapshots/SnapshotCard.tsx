@@ -48,141 +48,128 @@ export function SnapshotCard({ snapshot, onViewDetails, onDelete }: SnapshotCard
     }
   };
 
-  const getStatusBadgeStyles = () => {
-    if (isActive) return 'bg-brand-gold/10 text-brand-gold border-brand-gold/30';
-    if (isArchived) return 'bg-muted text-muted-foreground border-muted';
-    return 'bg-amber-50 text-amber-700 border-amber-200'; // DRAFT
+  const getStatusBadge = () => {
+    if (isActive) {
+      return <Badge className="bg-secondary-green/10 text-secondary-green border-secondary-green/30 text-xs">active</Badge>;
+    }
+    if (isArchived) {
+      return <Badge variant="outline" className="text-muted-foreground text-xs">archived</Badge>;
+    }
+    return <Badge variant="outline" className="text-foreground text-xs">draft</Badge>;
   };
 
   return (
     <>
-      <Card className={cn(
-        'cursor-pointer hover:shadow-lg transition-all duration-200 border',
-        isArchived && 'opacity-70 bg-muted/30',
-        isActive && 'ring-2 ring-brand-gold/30'
-      )}>
-      <CardHeader className="flex flex-row items-start justify-between pb-2">
-        <div className="flex-1 min-w-0">
-          <CardTitle className="text-base font-semibold truncate">{snapshot.name}</CardTitle>
-          <div className="flex items-center gap-2 mt-1">
-            <Badge
-              variant="outline"
-              className={cn('text-xs font-medium', getStatusBadgeStyles())}
-            >
-              {snapshot.status}
-            </Badge>
-          </div>
-        </div>
-        
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
-              <MoreVertical className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="bg-popover">
-            {/* DRAFT or ACTIVE: show edit actions */}
-            {!isArchived && (
-              <>
-                <DropdownMenuItem onClick={() => setRenameModalOpen(true)}>
-                  <Pencil className="h-4 w-4 mr-2" />
-                  Rename
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setEditDetailsModalOpen(true)}>
-                  <Settings className="h-4 w-4 mr-2" />
-                  Edit details
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setManageQuartersOpen(true)}>
-                  <CalendarRange className="h-4 w-4 mr-2" />
-                  Manage quarters
-                </DropdownMenuItem>
-              </>
-            )}
-            
-            {/* Always show View Details */}
-            <DropdownMenuItem onClick={() => onViewDetails(snapshot)}>
-              <Eye className="h-4 w-4 mr-2" />
-              View details
-            </DropdownMenuItem>
-            
-            {/* DRAFT only: Activate */}
-            {isDraft && (
-              <DropdownMenuItem onClick={() => setActivateModalOpen(true)}>
-                <Play className="h-4 w-4 mr-2" />
-                Activate snapshot
-              </DropdownMenuItem>
-            )}
-            
-            {/* DRAFT or ACTIVE: Archive */}
-            {!isArchived && (
-              <DropdownMenuItem onClick={() => setArchiveModalOpen(true)}>
-                <Archive className="h-4 w-4 mr-2" />
-                Archive snapshot
-              </DropdownMenuItem>
-            )}
-            
-            {/* DRAFT only: Delete */}
-            {isDraft && (
-              <>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem 
-                  onClick={() => onDelete(snapshot)}
-                  className="text-destructive focus:text-destructive"
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Delete
-                </DropdownMenuItem>
-              </>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </CardHeader>
-      
-      <CardContent className="pt-0" onClick={() => onViewDetails(snapshot)}>
-        <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
-          {snapshot.description || 'No description'}
-        </p>
-        
-        <div className="space-y-2 text-sm">
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Calendar className="h-3.5 w-3.5" />
-            <span>{formatDate(snapshot.start_date)} — {formatDate(snapshot.end_date)}</span>
+      <Card 
+        className={cn(
+          'cursor-pointer hover:shadow-lg transition-all duration-200 border relative',
+          isArchived && 'opacity-70 bg-muted/30',
+          isActive && 'border-l-4 border-l-secondary-green'
+        )}
+        onClick={() => onViewDetails(snapshot)}
+      >
+        <CardHeader className="flex flex-row items-start justify-between pb-2 pt-4">
+          <div className="flex-1 min-w-0 pr-2">
+            <CardTitle className="text-base font-semibold truncate text-foreground">
+              {snapshot.name}
+            </CardTitle>
+            <div className="mt-2">
+              {getStatusBadge()}
+            </div>
           </div>
           
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Clock className="h-3.5 w-3.5" />
-            <span>Created {formatDate(snapshot.created_at)}</span>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+              <Button variant="ghost" size="icon" className="h-8 w-8 -mt-1 -mr-2">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-popover z-[400]">
+              {!isArchived && (
+                <>
+                  <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setRenameModalOpen(true); }}>
+                    <Pencil className="h-4 w-4 mr-2" />
+                    Rename
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setEditDetailsModalOpen(true); }}>
+                    <Settings className="h-4 w-4 mr-2" />
+                    Edit details
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setManageQuartersOpen(true); }}>
+                    <CalendarRange className="h-4 w-4 mr-2" />
+                    Manage quarters
+                  </DropdownMenuItem>
+                </>
+              )}
+              
+              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onViewDetails(snapshot); }}>
+                <Eye className="h-4 w-4 mr-2" />
+                View details
+              </DropdownMenuItem>
+              
+              {isDraft && (
+                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setActivateModalOpen(true); }}>
+                  <Play className="h-4 w-4 mr-2" />
+                  Activate snapshot
+                </DropdownMenuItem>
+              )}
+              
+              {!isArchived && (
+                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setArchiveModalOpen(true); }}>
+                  <Archive className="h-4 w-4 mr-2" />
+                  Archive snapshot
+                </DropdownMenuItem>
+              )}
+              
+              {isDraft && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    onClick={(e) => { e.stopPropagation(); onDelete(snapshot); }}
+                    className="text-destructive focus:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </CardHeader>
+        
+        <CardContent className="pt-0 pb-4">
+          <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
+            {snapshot.description || 'No description'}
+          </p>
+          
+          <div className="space-y-1.5 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <Calendar className="h-3.5 w-3.5" />
+              <span>{formatDate(snapshot.start_date)} — {formatDate(snapshot.end_date)}</span>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <Clock className="h-3.5 w-3.5" />
+              <span>Created {formatDate(snapshot.created_at)}</span>
+            </div>
           </div>
           
-          <div className="flex items-center gap-4 mt-3 pt-3 border-t">
-            <div 
-              className="flex items-center gap-1.5 cursor-pointer hover:opacity-80"
-              onClick={(e) => {
-                e.stopPropagation();
-                setManageQuartersOpen(true);
-              }}
-            >
-              <Layers className="h-3.5 w-3.5 text-brand-gold" />
-              <span className="text-xs font-medium">
+          <div className="flex items-center gap-4 mt-4 pt-3 border-t border-border/50">
+            <div className="flex items-center gap-1.5">
+              <Layers className={cn("h-3.5 w-3.5", quarterCount === 0 ? "text-amber-500" : "text-brand-gold")} />
+              <span className={cn("text-sm font-medium", quarterCount === 0 && "text-amber-500")}>
                 {quarterCount} Quarters
               </span>
             </div>
-            <div 
-              className="flex items-center gap-1.5 cursor-pointer hover:opacity-80"
-              onClick={(e) => {
-                e.stopPropagation();
-                navigate(`/enterprise/strategic-backlog?snapshot=${snapshot.id}&tab=themes`);
-              }}
-            >
-              <Users className="h-3.5 w-3.5 text-brand-gold" />
-              <span className="text-xs font-medium">
+            <div className="flex items-center gap-1.5">
+              <Users className={cn("h-3.5 w-3.5", themeCount === 0 ? "text-amber-500" : "text-brand-gold")} />
+              <span className={cn("text-sm font-medium", themeCount === 0 && "text-amber-500")}>
                 {themeCount} Themes
               </span>
             </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
 
       <RenameSnapshotModal
         open={renameModalOpen}
