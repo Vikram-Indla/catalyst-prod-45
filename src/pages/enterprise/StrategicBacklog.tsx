@@ -1,12 +1,13 @@
 /**
  * Strategic Backlog - Enterprise Strategy Command Center
- * Premium workspace with segmented control, coverage panel, and enterprise tables
+ * CLAUDE DESIGN TAKEOVER - Token-based theming
  */
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { 
   Select, 
   SelectContent, 
@@ -20,7 +21,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Archive, CheckCircle2, Plus, ChevronDown, AlertTriangle } from 'lucide-react';
+import { Archive, CheckCircle2, Plus, ChevronDown, AlertTriangle, Search } from 'lucide-react';
 import { PageChrome } from '@/components/layout/PageChrome';
 import { StrategicBacklogThemesSection } from '@/components/strategic-backlog/StrategicBacklogThemesSection';
 import { StrategicBacklogObjectivesSection } from '@/components/strategic-backlog/StrategicBacklogObjectivesSection';
@@ -37,6 +38,7 @@ export default function StrategicBacklog() {
   const [selectedSnapshotId, setSelectedSnapshotId] = useState<string>('');
   const [activeSection, setActiveSection] = useState<SubSection>('themes');
   const [createThemeOpen, setCreateThemeOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Fetch snapshots
   const { data: snapshots = [] } = useQuery({
@@ -84,7 +86,6 @@ export default function StrategicBacklog() {
       const objectiveIds = (objectives || []).map(o => o.id);
       if (objectiveIds.length === 0) return { count: objectives?.length || 0, withKRs: 0 };
       
-      // Count objectives with at least one KR
       const { data: krs } = await supabase
         .from('key_results')
         .select('objective_id')
@@ -118,13 +119,11 @@ export default function StrategicBacklog() {
   const { data: epicsData = { total: 0, aligned: 0 } } = useQuery({
     queryKey: ['epics-coverage', snapshotId, themeIds],
     queryFn: async () => {
-      // Count aligned epics (linked to themes in this snapshot)
       const { count: aligned } = await supabase
         .from('epics')
         .select('*', { count: 'exact', head: true })
         .in('theme_id', themeIds);
       
-      // Count total unaligned epics
       const { count: unaligned } = await supabase
         .from('epics')
         .select('*', { count: 'exact', head: true })
@@ -143,14 +142,14 @@ export default function StrategicBacklog() {
     <div className="flex items-center gap-3">
       {/* Snapshot Selector */}
       <Select value={snapshotId} onValueChange={setSelectedSnapshotId}>
-        <SelectTrigger className="w-[220px] h-9 bg-surface border-border">
+        <SelectTrigger className="w-[220px] h-9 bg-catalyst-surface border-catalyst-border text-catalyst-text">
           <SelectValue placeholder="Select snapshot" />
         </SelectTrigger>
-        <SelectContent className="z-[400]">
+        <SelectContent className="z-[400] bg-catalyst-surface border-catalyst-border">
           {snapshots.map((snap) => (
-            <SelectItem key={snap.id} value={snap.id}>
+            <SelectItem key={snap.id} value={snap.id} className="text-catalyst-text hover:bg-catalyst-surface-hover">
               <div className="flex items-center gap-2">
-                {snap.status === 'ARCHIVED' && <Archive className="h-3 w-3 text-muted-foreground" />}
+                {snap.status === 'ARCHIVED' && <Archive className="h-3 w-3 text-catalyst-text-muted" />}
                 {snap.name}
               </div>
             </SelectItem>
@@ -163,10 +162,10 @@ export default function StrategicBacklog() {
         <Badge 
           variant="outline" 
           className={cn(
-            "text-xs h-7",
+            "text-xs h-7 border",
             isArchived 
-              ? "bg-muted text-muted-foreground border-border" 
-              : "bg-secondary-green/10 border-secondary-green/30 text-secondary-green"
+              ? "bg-catalyst-surface-hover text-catalyst-text-muted border-catalyst-border" 
+              : "bg-emerald-50 dark:bg-emerald-500/20 border-emerald-200 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-400"
           )}
         >
           {isArchived ? (
@@ -177,7 +176,7 @@ export default function StrategicBacklog() {
           ) : (
             <>
               <CheckCircle2 className="h-3 w-3 mr-1" />
-              {currentSnapshot.status}
+              active
             </>
           )}
         </Badge>
@@ -187,20 +186,29 @@ export default function StrategicBacklog() {
       {!isArchived && snapshotId && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button size="sm" className="bg-brand-gold hover:bg-brand-gold-hover text-white gap-1">
+            <Button size="sm" className="bg-catalyst-gold hover:bg-catalyst-gold-hover text-white gap-1">
               <Plus className="h-4 w-4" />
               Create
               <ChevronDown className="h-3 w-3 ml-1" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="z-[400]">
-            <DropdownMenuItem onClick={() => setCreateThemeOpen(true)}>
+          <DropdownMenuContent align="end" className="z-[400] bg-catalyst-surface border-catalyst-border">
+            <DropdownMenuItem 
+              onClick={() => setCreateThemeOpen(true)}
+              className="text-catalyst-text hover:bg-catalyst-surface-hover cursor-pointer"
+            >
               Theme
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setActiveSection('objectives')}>
+            <DropdownMenuItem 
+              onClick={() => setActiveSection('objectives')}
+              className="text-catalyst-text hover:bg-catalyst-surface-hover cursor-pointer"
+            >
               Objective
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setActiveSection('epics')}>
+            <DropdownMenuItem 
+              onClick={() => setActiveSection('epics')}
+              className="text-catalyst-text hover:bg-catalyst-surface-hover cursor-pointer"
+            >
               Epic
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -212,24 +220,24 @@ export default function StrategicBacklog() {
   return (
     <PageChrome rightActions={headerActions}>
       {!snapshotId ? (
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex-1 flex items-center justify-center bg-catalyst-bg">
           <div className="text-center p-8">
-            <div className="p-4 rounded-full bg-muted/50 mx-auto w-fit mb-4">
-              <AlertTriangle className="h-8 w-8 text-muted-foreground/50" />
+            <div className="p-4 rounded-full bg-catalyst-surface mx-auto w-fit mb-4">
+              <AlertTriangle className="h-8 w-8 text-catalyst-text-muted" />
             </div>
-            <h3 className="text-base font-semibold text-foreground mb-2">
+            <h3 className="text-base font-semibold text-catalyst-text mb-2">
               Select a Strategic Snapshot
             </h3>
-            <p className="text-sm text-muted-foreground max-w-sm">
+            <p className="text-sm text-catalyst-text-secondary max-w-sm">
               Choose a snapshot from the dropdown above to view and manage strategic items.
             </p>
           </div>
         </div>
       ) : (
-        <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 flex flex-col overflow-hidden bg-catalyst-bg">
           {/* Sticky Toolbar */}
-          <div className="shrink-0 px-6 py-4 border-b border-border bg-background">
-            <div className="flex items-center justify-between">
+          <div className="shrink-0 px-6 py-4 border-b border-catalyst-border bg-catalyst-bg">
+            <div className="flex items-center justify-between gap-4">
               {/* Segmented Control */}
               <StrategicBacklogSegmentedControl
                 activeSection={activeSection}
@@ -240,13 +248,24 @@ export default function StrategicBacklog() {
                   epics: epicsData.aligned,
                 }}
               />
+
+              {/* Search */}
+              <div className="relative max-w-xs">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-catalyst-text-muted" />
+                <Input
+                  placeholder={`Search ${activeSection}...`}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9 h-9 w-64 bg-catalyst-surface border-catalyst-border text-catalyst-text placeholder:text-catalyst-text-muted"
+                />
+              </div>
             </div>
           </div>
 
           {/* Main Content Area */}
           <div className="flex-1 flex overflow-hidden">
             {/* Left: Coverage Panel */}
-            <div className="w-64 shrink-0 border-r border-border bg-muted/20 p-4 overflow-y-auto">
+            <div className="w-64 shrink-0 border-r border-catalyst-border bg-catalyst-surface p-4 overflow-y-auto">
               <StrategicBacklogCoveragePanel
                 themes={themes.length}
                 themesWithObjectives={themesWithObjectives}
@@ -259,12 +278,13 @@ export default function StrategicBacklog() {
             </div>
 
             {/* Right: Table Content */}
-            <div className="flex-1 overflow-auto p-6">
+            <div className="flex-1 overflow-auto p-6 bg-catalyst-bg">
               {activeSection === 'themes' && (
                 <StrategicBacklogThemesSection
                   themes={themes}
                   snapshotId={snapshotId}
                   isArchived={isArchived}
+                  searchQuery={searchQuery}
                 />
               )}
               {activeSection === 'objectives' && (
@@ -272,6 +292,7 @@ export default function StrategicBacklog() {
                   snapshotId={snapshotId}
                   themes={themes}
                   isArchived={isArchived}
+                  searchQuery={searchQuery}
                 />
               )}
               {activeSection === 'epics' && (
@@ -280,6 +301,7 @@ export default function StrategicBacklog() {
                   themes={themes}
                   links={links || null}
                   isArchived={isArchived}
+                  searchQuery={searchQuery}
                 />
               )}
             </div>
