@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronRight } from "lucide-react";
 import { PremiumCard, PremiumCardHeader, PremiumCardContent } from '@/components/ui/premium-card';
+import { Button } from '@/components/ui/button';
 import { useOKRv2StrategyMetrics } from "@/hooks/useOKRv2StrategyMetrics";
 import { ExecutionDrilldownDrawer } from "./ExecutionDrilldownDrawer";
 import { getThresholdColor, type ExecutionMetrics } from "@/hooks/useExecutionMetrics";
@@ -104,10 +105,24 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
               ))}
             </div>
           ) : !okrMetrics || !snapshotId ? (
-            <div className="flex items-center justify-center h-full min-h-[80px]">
-              <span className="text-[13px]" style={{ color: 'var(--text-3)' }}>
+            <div className="flex items-center justify-center h-full min-h-[100px]">
+              <span className="text-[14px]" style={{ color: 'var(--text-2)' }}>
                 Select a snapshot
               </span>
+            </div>
+          ) : okrMetrics.count === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full min-h-[100px] gap-2">
+              <p className="text-[14px] font-medium" style={{ color: 'var(--text-1)' }}>
+                No objectives in this snapshot
+              </p>
+              <Button 
+                size="sm" 
+                className="h-7 text-[12px]"
+                style={{ backgroundColor: 'hsl(var(--brand-gold))', color: 'white' }}
+                onClick={() => {/* TODO: open create objective modal */}}
+              >
+                Create Objective
+              </Button>
             </div>
           ) : (
             <div className="space-y-0">
@@ -120,21 +135,21 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
                   percentage: okrMetrics.avgProgress,
                   color: objectivesColor,
                 })}
-                className="w-full flex items-center justify-between py-1.5 rounded transition-colors text-left focus:outline-none hover:bg-[var(--surface-2)]"
+                className="w-full flex items-center justify-between py-2 rounded transition-colors text-left focus:outline-none hover:bg-[var(--surface-2)]"
                 style={{ borderBottom: '1px solid var(--divider)' }}
               >
                 <div className="flex items-center gap-2 flex-1 min-w-0">
-                  <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${getColorClass(objectivesColor)}`} />
-                  <span className="text-[14px] font-medium" style={{ color: 'var(--text-1)' }}>Objectives</span>
+                  <div className={`w-3 h-3 rounded-full flex-shrink-0 ${getColorClass(objectivesColor)}`} />
+                  <span className="text-[14px] font-semibold" style={{ color: 'var(--text-1)' }}>Objectives</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className={`text-[14px] font-bold ${getColorText(objectivesColor)}`}>
+                  <span className={`text-[16px] font-bold ${getColorText(objectivesColor)}`}>
                     {okrMetrics.avgProgress}%
                   </span>
-                  <span className="text-[13px] font-medium" style={{ color: 'var(--text-1)' }}>
+                  <span className="text-[14px] font-semibold" style={{ color: 'var(--text-1)' }}>
                     {acceptedCount}/{okrMetrics.count}
                   </span>
-                  <ChevronRight className="h-3.5 w-3.5" style={{ color: 'var(--text-3)' }} />
+                  <ChevronRight className="h-4 w-4" style={{ color: 'var(--text-2)' }} />
                 </div>
               </button>
 
@@ -143,18 +158,18 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
                 return (
                   <div
                     key={theme.themeId}
-                    className="flex items-center justify-between py-1.5"
+                    className="flex items-center justify-between py-2"
                     style={{ borderBottom: '1px solid var(--divider)' }}
                   >
                     <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${getColorClass(color)}`} />
-                      <span className="text-[13px] truncate" style={{ color: 'var(--text-1)' }}>{theme.themeName}</span>
+                      <div className={`w-3 h-3 rounded-full flex-shrink-0 ${getColorClass(color)}`} />
+                      <span className="text-[14px] truncate" style={{ color: 'var(--text-1)' }}>{theme.themeName}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className={`text-[13px] font-semibold ${getColorText(color)}`}>
+                      <span className={`text-[14px] font-bold ${getColorText(color)}`}>
                         {theme.avgProgress}%
                       </span>
-                      <span className="text-[12px] font-medium min-w-[16px] text-right" style={{ color: 'var(--text-2)' }}>
+                      <span className="text-[13px] font-semibold min-w-[20px] text-right" style={{ color: 'var(--text-2)' }}>
                         {theme.objectives.length}
                       </span>
                     </div>
