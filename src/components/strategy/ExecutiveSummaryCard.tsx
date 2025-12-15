@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { TrendingUp, AlertTriangle, Link2, ShieldAlert } from 'lucide-react';
+import { TrendingUp, AlertTriangle, Link2, ShieldAlert, AlertCircle } from 'lucide-react';
 import { PremiumCard, PremiumCardHeader, PremiumCardContent } from '@/components/ui/premium-card';
 import { useOKRv2StrategyMetrics } from '@/hooks/useOKRv2StrategyMetrics';
 import { useStrategyPyramidCounts } from '@/hooks/useExecutionMetrics';
@@ -17,13 +17,84 @@ interface RiskData {
   total: number;
 }
 
+interface KPITileProps {
+  icon: typeof TrendingUp;
+  label: string;
+  value: number | string;
+  subtext: string;
+  onClick: () => void;
+  isNeutral?: boolean;
+  isLoading?: boolean;
+  hasError?: boolean;
+  accentColor?: 'green' | 'gold' | 'red' | 'neutral';
+}
+
+function KPITile({ 
+  icon: Icon, 
+  label, 
+  value, 
+  subtext, 
+  onClick, 
+  isNeutral = false, 
+  isLoading = false,
+  hasError = false,
+  accentColor = 'neutral'
+}: KPITileProps) {
+  const colorMap = {
+    green: { icon: 'hsl(var(--secondary-green))', bg: 'hsl(var(--secondary-green) / 0.1)' },
+    gold: { icon: 'hsl(var(--brand-gold))', bg: 'hsl(var(--brand-gold) / 0.1)' },
+    red: { icon: 'hsl(var(--destructive))', bg: 'hsl(var(--destructive) / 0.1)' },
+    neutral: { icon: 'var(--text-3)', bg: 'var(--surface-3)' },
+  };
+  
+  const colors = colorMap[isNeutral ? 'neutral' : accentColor];
+
+  return (
+    <button
+      onClick={onClick}
+      className="flex flex-col items-start p-4 rounded-lg transition-colors text-left hover:bg-[var(--surface-2)] group flex-1 border-r border-border/40 last:border-r-0"
+    >
+      <div className="flex items-center gap-2 mb-2">
+        <div 
+          className="w-7 h-7 rounded flex items-center justify-center"
+          style={{ backgroundColor: colors.bg }}
+        >
+          {hasError ? (
+            <AlertCircle className="w-3.5 h-3.5" style={{ color: 'var(--text-3)' }} />
+          ) : (
+            <Icon className="w-3.5 h-3.5" style={{ color: colors.icon }} />
+          )}
+        </div>
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          {label}
+        </span>
+      </div>
+      {isLoading ? (
+        <div className="h-8 w-12 bg-muted/30 rounded animate-pulse mb-1" />
+      ) : (
+        <span 
+          className="text-[28px] font-bold leading-none mb-1"
+          style={{ color: isNeutral || hasError ? 'var(--text-2)' : colors.icon }}
+        >
+          {value}
+        </span>
+      )}
+      <span className="text-xs text-muted-foreground">
+        {subtext}
+      </span>
+    </button>
+  );
+}
+
 export function ExecutiveSummaryCard({ snapshotId }: ExecutiveSummaryCardProps) {
   const navigate = useNavigate();
-  const { data: okrMetrics, isLoading: okrLoading } = useOKRv2StrategyMetrics(snapshotId);
-  const { data: counts, isLoading: countsLoading } = useStrategyPyramidCounts(snapshotId);
+  
+  // Each query runs independently - we don't block on all of them
+  const { data: okrMetrics, isLoading: okrLoading, isError: okrError } = useOKRv2StrategyMetrics(snapshotId);
+  const { data: counts, isLoading: countsLoading, isError: countsError } = useStrategyPyramidCounts(snapshotId);
 
-  // Fetch risks
-  const { data: riskData, isLoading: risksLoading } = useQuery<RiskData>({
+  // Fetch risks independently
+  const { data: riskData, isLoading: risksLoading, isError: risksError } = useQuery<RiskData>({
     queryKey: ['executive-risks', snapshotId],
     queryFn: async () => {
       const { data: risks } = await supabase
@@ -46,96 +117,51 @@ export function ExecutiveSummaryCard({ snapshotId }: ExecutiveSummaryCardProps) 
         total: riskList.length,
       };
     },
-    enabled: !!snapshotId,
+    enabled: true, // Always try to fetch risks
   });
 
-  const isLoading = okrLoading || countsLoading || risksLoading;
-
-  // Calculate metrics
-  const objectivesCount = okrMetrics?.count || 0;
+  // Calculate metrics - with safe fallbacks
+  const objectivesCount = okrMetrics?.count ?? 0;
   const hasObjectives = objectivesCount > 0;
-  const overallProgress = hasObjectives ? (okrMetrics?.avgProgress || 0) : null;
+  const overallProgress = hasObjectives ? (okrMetrics?.avgProgress ?? 0) : null;
   
-  // At risk: objectives with poor/at_risk health (only count if objectives exist)
+  // At risk: objectives with poor/at_risk health
   const atRiskCount = hasObjectives 
-    ? (okrMetrics?.objectives.filter(obj => {
+    ? (okrMetrics?.objectives?.filter(obj => {
         const health = (obj.health || '').toLowerCase();
         return health === 'at_risk' || health === 'poor';
-      }).length || 0)
+      }).length ?? 0)
     : 0;
 
-  // Alignment gaps
-  const misalignedEpics = counts?.misalignedEpics || 0;
-  const misalignedFeatures = counts?.misalignedFeatures || 0;
+  // Alignment gaps - safe access
+  const misalignedEpics = counts?.misalignedEpics ?? 0;
+  const misalignedFeatures = counts?.misalignedFeatures ?? 0;
   const alignmentGaps = misalignedEpics + misalignedFeatures;
 
-  // Risk exposure
-  const openRisks = riskData?.total || 0;
-  const highRisks = riskData?.high || 0;
+  // Risk exposure - safe access
+  const openRisks = riskData?.total ?? 0;
+  const highRisks = riskData?.high ?? 0;
 
-  const KPITile = ({
-    icon: Icon,
-    iconColor,
-    iconBg,
-    label,
-    value,
-    subtext,
-    onClick,
-    isNeutral = false,
-  }: {
-    icon: typeof TrendingUp;
-    iconColor: string;
-    iconBg: string;
-    label: string;
-    value: number | string;
-    subtext: string;
-    onClick: () => void;
-    isNeutral?: boolean;
-  }) => (
-    <button
-      onClick={onClick}
-      className="flex flex-col items-start p-4 rounded-lg transition-colors text-left hover:bg-[var(--surface-2)] group flex-1"
-      style={{ borderRight: '1px solid var(--divider)' }}
-    >
-      <div className="flex items-center gap-2 mb-2">
-        <div 
-          className="w-7 h-7 rounded flex items-center justify-center"
-          style={{ backgroundColor: iconBg }}
-        >
-          <Icon className="w-3.5 h-3.5" style={{ color: iconColor }} />
-        </div>
-        <span className="text-[12px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-2)' }}>
-          {label}
-        </span>
-      </div>
-      <span 
-        className="text-[28px] font-bold leading-none mb-1"
-        style={{ color: isNeutral ? 'var(--text-2)' : iconColor }}
-      >
-        {value}
-      </span>
-      <span className="text-[12px]" style={{ color: 'var(--text-3)' }}>
-        {subtext}
-      </span>
-    </button>
-  );
+  // Determine display values and states for each tile
+  const progressValue = okrError ? '—' : (hasObjectives ? `${Math.round(overallProgress!)}%` : 'N/A');
+  const progressSubtext = okrError 
+    ? 'Unable to load' 
+    : (hasObjectives ? `Across ${objectivesCount} objective${objectivesCount !== 1 ? 's' : ''}` : 'Create objectives to start tracking');
 
-  if (isLoading) {
-    return (
-      <PremiumCard>
-        <PremiumCardHeader title="Executive Summary" />
-        <PremiumCardContent className="flex items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
-        </PremiumCardContent>
-      </PremiumCard>
-    );
-  }
+  const atRiskValue = okrError ? '—' : atRiskCount;
+  const atRiskSubtext = okrError 
+    ? 'Unable to load' 
+    : (!hasObjectives ? 'No objectives yet' : (atRiskCount > 0 ? 'Needs attention' : 'No items flagged'));
 
-  // Determine colors based on actual data
-  const progressColor = !hasObjectives ? 'var(--text-2)' : 
-    (overallProgress! >= 70 ? 'hsl(var(--secondary-green))' : 
-     overallProgress! >= 40 ? 'hsl(var(--brand-gold))' : 
-     'hsl(var(--muted-foreground))');
+  const alignmentValue = countsError ? '—' : alignmentGaps;
+  const alignmentSubtext = countsError 
+    ? 'Data source not configured' 
+    : (alignmentGaps > 0 ? 'Misaligned or not linked' : 'No gaps detected');
+
+  const riskValue = risksError ? '—' : openRisks;
+  const riskSubtext = risksError 
+    ? 'Risks module not enabled' 
+    : (highRisks > 0 ? `High: ${highRisks} · Open risks` : (openRisks > 0 ? 'Open risks' : 'No open risks'));
 
   return (
     <PremiumCard>
@@ -144,43 +170,47 @@ export function ExecutiveSummaryCard({ snapshotId }: ExecutiveSummaryCardProps) 
         <div className="grid grid-cols-2 lg:grid-cols-4">
           <KPITile
             icon={TrendingUp}
-            iconColor={hasObjectives ? 'hsl(var(--secondary-green))' : 'var(--text-3)'}
-            iconBg={hasObjectives ? 'hsl(var(--secondary-green) / 0.1)' : 'var(--surface-3)'}
             label="Overall Progress"
-            value={hasObjectives ? `${Math.round(overallProgress!)}%` : 'N/A'}
-            subtext={hasObjectives ? `Across ${objectivesCount} objective${objectivesCount !== 1 ? 's' : ''}` : 'Create objectives to start tracking'}
+            value={progressValue}
+            subtext={progressSubtext}
             onClick={() => navigate('/enterprise/okr-hub')}
-            isNeutral={!hasObjectives}
+            isLoading={okrLoading}
+            hasError={okrError}
+            isNeutral={!hasObjectives || okrError}
+            accentColor={hasObjectives ? 'green' : 'neutral'}
           />
           <KPITile
             icon={AlertTriangle}
-            iconColor={atRiskCount > 0 ? 'hsl(var(--brand-gold))' : 'var(--text-3)'}
-            iconBg={atRiskCount > 0 ? 'hsl(var(--brand-gold) / 0.1)' : 'var(--surface-3)'}
             label="At Risk"
-            value={atRiskCount}
-            subtext={atRiskCount > 0 ? 'Needs attention' : 'No items flagged'}
+            value={atRiskValue}
+            subtext={atRiskSubtext}
             onClick={() => navigate('/enterprise/okr-hub')}
-            isNeutral={atRiskCount === 0}
+            isLoading={okrLoading}
+            hasError={okrError}
+            isNeutral={atRiskCount === 0 || okrError || !hasObjectives}
+            accentColor={atRiskCount > 0 ? 'gold' : 'neutral'}
           />
           <KPITile
             icon={Link2}
-            iconColor={alignmentGaps > 0 ? 'hsl(var(--brand-gold))' : 'hsl(var(--secondary-green))'}
-            iconBg={alignmentGaps > 0 ? 'hsl(var(--brand-gold) / 0.1)' : 'hsl(var(--secondary-green) / 0.1)'}
             label="Alignment Gaps"
-            value={alignmentGaps}
-            subtext={alignmentGaps > 0 ? 'Misaligned or not linked' : 'No gaps detected'}
+            value={alignmentValue}
+            subtext={alignmentSubtext}
             onClick={() => navigate('/enterprise/strategic-backlog')}
-            isNeutral={alignmentGaps === 0}
+            isLoading={countsLoading}
+            hasError={countsError}
+            isNeutral={alignmentGaps === 0 || countsError}
+            accentColor={alignmentGaps > 0 ? 'gold' : 'green'}
           />
           <KPITile
             icon={ShieldAlert}
-            iconColor={openRisks > 0 ? 'hsl(var(--destructive))' : 'hsl(var(--secondary-green))'}
-            iconBg={openRisks > 0 ? 'hsl(var(--destructive) / 0.1)' : 'hsl(var(--secondary-green) / 0.1)'}
             label="Risk Exposure"
-            value={openRisks}
-            subtext={highRisks > 0 ? `High: ${highRisks} · Open risks` : (openRisks > 0 ? 'Open risks' : 'No open risks')}
+            value={riskValue}
+            subtext={riskSubtext}
             onClick={() => navigate('/enterprise/risks')}
-            isNeutral={openRisks === 0}
+            isLoading={risksLoading}
+            hasError={risksError}
+            isNeutral={openRisks === 0 || risksError}
+            accentColor={openRisks > 0 ? 'red' : 'green'}
           />
         </div>
       </PremiumCardContent>
