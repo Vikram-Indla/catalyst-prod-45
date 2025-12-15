@@ -100,8 +100,10 @@ export function ManageQuartersDrawer({ open, onClose, snapshot, isAdmin = false 
       
       const { error } = await supabase
         .from('snapshot_configurations')
-        .update({ quarters: finalQuarters })
-        .eq('snapshot_id', snapshot.id);
+        .upsert(
+          { snapshot_id: snapshot.id, quarters: finalQuarters },
+          { onConflict: 'snapshot_id' }
+        );
       
       if (error) throw error;
       
