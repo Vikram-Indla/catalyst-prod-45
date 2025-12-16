@@ -7,12 +7,15 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { format } from 'date-fns';
+import { format, startOfDay, endOfDay } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings, getOwnerIdForDepartment } from '@/hooks/useDepartmentsAndOwners';
-import { generateReportPDF, downloadPDF } from '@/utils/pdfGenerator';
+import { downloadDemandConfirmationPDF } from '@/utils/demandConfirmationPdf';
+import { catalystToast } from '@/lib/catalystToast';
+
+const EMAIL_DOMAIN = '@mim.gov.sa';
+const MAX_REQUESTS_PER_DAY = 2;
 
 // Force light mode for external portal
 const forceLightMode = () => {
@@ -140,11 +143,11 @@ export default function SubmitDemandRequest() {
     
     for (const file of Array.from(files)) {
       if (!validTypes.includes(file.type)) {
-        toast.error(`Invalid file type: ${file.name}`);
+        catalystToast.error('Invalid File', `Invalid file type: ${file.name}`);
         continue;
       }
       if (attachments.length >= 5) {
-        toast.error('Maximum 5 files allowed');
+        catalystToast.error('Limit Reached', 'Maximum 5 files allowed');
         break;
       }
       
@@ -188,9 +191,9 @@ export default function SubmitDemandRequest() {
       newErrors.requestedBy = 'Requested by is required';
     }
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Invalid email format';
+      newErrors.email = 'Email username is required';
+    } else if (!/^[a-zA-Z0-9._-]+$/.test(formData.email)) {
+      newErrors.email = 'Invalid username (letters, numbers, dots, dashes only)';
     }
     if (!formData.departmentId) {
       newErrors.department = 'Department is required';
@@ -198,6 +201,28 @@ export default function SubmitDemandRequest() {
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+  
+  // Check daily submission limit
+  const checkDailyLimit = async (email: string): Promise<boolean> => {
+    const fullEmail = `${email}${EMAIL_DOMAIN}`;
+    const today = new Date();
+    const dayStart = startOfDay(today).toISOString();
+    const dayEnd = endOfDay(today).toISOString();
+    
+    const { count, error } = await supabase
+      .from('business_requests')
+      .select('*', { count: 'exact', head: true })
+      .ilike('requestor', `%${fullEmail}%`)
+      .gte('created_at', dayStart)
+      .lte('created_at', dayEnd);
+    
+    if (error) {
+      console.error('Error checking daily limit:', error);
+      return true; // Allow submission if check fails
+    }
+    
+    return (count || 0) < MAX_REQUESTS_PER_DAY;
   };
   
   const handleSubmit = async () => {
@@ -211,6 +236,18 @@ export default function SubmitDemandRequest() {
     setIsSubmitting(true);
     
     try {
+      // Check daily submission limit
+      const withinLimit = await checkDailyLimit(formData.email);
+      if (!withinLimit) {
+        catalystToast.error(
+          'Daily Limit Reached', 
+          `Maximum ${MAX_REQUESTS_PER_DAY} requests per day allowed. Please try again tomorrow.`
+        );
+        setIsSubmitting(false);
+        return;
+      }
+      
+      const fullEmail = `${formData.email}${EMAIL_DOMAIN}`;
       // Insert business request
       const { data: requestData, error: requestError } = await supabase
         .from('business_requests')
@@ -224,7 +261,7 @@ export default function SubmitDemandRequest() {
           business_owner_id: formData.businessOwnerId || null,
           process_step: 'new_request',
           health: 'green',
-          requestor: formData.requestedBy,
+          requestor: `${formData.requestedBy} (${fullEmail})`,
         }])
         .select('id, request_key, created_at')
         .single();
@@ -268,83 +305,33 @@ export default function SubmitDemandRequest() {
       
     } catch (error) {
       console.error('Submission error:', error);
-      toast.error('Failed to submit request. Please try again.');
+      catalystToast.error('Submission Failed', 'Failed to submit request. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
   
-  const handleDownloadPDF = async () => {
+  const handleDownloadPDF = () => {
     if (!submittedData) return;
     
-    // Create PDF content
-    const pdfContent = `
-      <div style="font-family: system-ui, sans-serif; padding: 40px; max-width: 600px; margin: 0 auto;">
-        <div style="text-align: center; margin-bottom: 30px;">
-          <h1 style="color: #5c7c5c; margin: 0; font-size: 24px;">
-            <span style="color: #5c7c5c;">Cata</span><span style="color: #c69c6d;">lyst</span>
-          </h1>
-        </div>
-        
-        <h2 style="text-align: center; margin-bottom: 10px;">Demand Request Confirmation</h2>
-        <p style="text-align: center; color: #666; margin-bottom: 30px;">Official submission receipt for your records</p>
-        
-        <div style="background: #f5ede3; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 30px;">
-          <p style="color: #666; margin: 0 0 5px;">REQUEST ID</p>
-          <h2 style="color: #c69c6d; margin: 0; font-size: 28px;">${submittedData.requestId}</h2>
-          <p style="color: #666; margin: 10px 0 0;">Submitted: ${format(submittedData.submittedAt, 'd MMMM yyyy \'at\' HH:mm')}</p>
-        </div>
-        
-        <h3 style="border-bottom: 1px solid #eee; padding-bottom: 10px;">REQUEST SUMMARY</h3>
-        <table style="width: 100%; margin-bottom: 30px;">
-          <tr><td style="color: #666; padding: 8px 0;">Summary</td><td style="padding: 8px 0;">${formData.summary}</td></tr>
-          <tr><td style="color: #666; padding: 8px 0;">Business Ask</td><td style="padding: 8px 0;">${BUSINESS_ASK_OPTIONS.find(o => o.value === formData.businessAsk)?.label || formData.businessAsk}</td></tr>
-          <tr><td style="color: #666; padding: 8px 0;">Delivery Platform</td><td style="padding: 8px 0;">${DELIVERY_PLATFORM_OPTIONS.find(o => o.value === formData.deliveryPlatform)?.label || formData.deliveryPlatform}</td></tr>
-        </table>
-        
-        <h3 style="border-bottom: 1px solid #eee; padding-bottom: 10px;">REQUESTER INFORMATION</h3>
-        <table style="width: 100%; margin-bottom: 30px;">
-          <tr><td style="color: #666; padding: 8px 0;">Requested by</td><td style="padding: 8px 0;">${formData.requestedBy}</td></tr>
-          <tr><td style="color: #666; padding: 8px 0;">Email</td><td style="padding: 8px 0;">${formData.email}</td></tr>
-          <tr><td style="color: #666; padding: 8px 0;">Department</td><td style="padding: 8px 0;">${formData.department}</td></tr>
-          <tr><td style="color: #666; padding: 8px 0;">Business Owner</td><td style="padding: 8px 0;">${formData.businessOwner}</td></tr>
-        </table>
-        
-        <h3 style="border-bottom: 1px solid #eee; padding-bottom: 10px;">DESCRIPTION</h3>
-        <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; border-left: 3px solid #c69c6d; margin-bottom: 30px;">
-          ${formData.description}
-        </div>
-        
-        <p style="text-align: center; color: #999; font-size: 12px; margin-top: 40px;">
-          Document generated on ${format(new Date(), 'd MMMM yyyy')}<br/>
-          Reference: ${submittedData.requestId}
-        </p>
-      </div>
-    `;
-    
-    // Create a temporary element for PDF generation
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = pdfContent;
-    tempDiv.style.position = 'absolute';
-    tempDiv.style.left = '-9999px';
-    tempDiv.style.background = 'white';
-    document.body.appendChild(tempDiv);
+    const fullEmail = formData.email.includes('@') ? formData.email : `${formData.email}${EMAIL_DOMAIN}`;
     
     try {
-      const doc = await generateReportPDF({
-        totalTests: 0,
-        passedTests: 0,
-        failedTests: 0,
-        notRunTests: 0,
-        passRate: 0,
-      }, tempDiv);
-      
-      downloadPDF(doc, `Catalyst-Confirmation-${submittedData.requestId}`);
+      downloadDemandConfirmationPDF({
+        requestId: submittedData.requestId,
+        submittedAt: submittedData.submittedAt,
+        summary: formData.summary,
+        businessAsk: BUSINESS_ASK_OPTIONS.find(o => o.value === formData.businessAsk)?.label || formData.businessAsk,
+        deliveryPlatform: DELIVERY_PLATFORM_OPTIONS.find(o => o.value === formData.deliveryPlatform)?.label || formData.deliveryPlatform,
+        requestedBy: formData.requestedBy,
+        email: fullEmail,
+        department: formData.department,
+        businessOwner: formData.businessOwner,
+        description: formData.description,
+      });
     } catch (error) {
       console.error('PDF generation error:', error);
-      toast.error('Failed to generate PDF');
-    } finally {
-      document.body.removeChild(tempDiv);
+      catalystToast.error('PDF Error', 'Failed to generate PDF');
     }
   };
   
@@ -498,13 +485,21 @@ export default function SubmitDemandRequest() {
                   <Label className="text-sm font-medium text-gray-700">
                     Email <span className="text-[#c69c6d]">*</span>
                   </Label>
-                  <Input
-                    type="email"
-                    placeholder="name@mim.gov.sa"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
-                    className={cn("mt-1.5", errors.email && "border-destructive")}
-                  />
+                  <div className="flex mt-1.5">
+                    <Input
+                      type="text"
+                      placeholder="username"
+                      value={formData.email}
+                      onChange={(e) => handleInputChange('email', e.target.value.replace(/@.*$/, ''))}
+                      className={cn(
+                        "rounded-r-none border-r-0",
+                        errors.email && "border-destructive"
+                      )}
+                    />
+                    <div className="flex items-center px-3 bg-gray-100 border border-l-0 border-gray-300 rounded-r-md text-gray-600 text-sm whitespace-nowrap">
+                      {EMAIL_DOMAIN}
+                    </div>
+                  </div>
                   {errors.email && (
                     <p className="text-destructive text-xs mt-1">{errors.email}</p>
                   )}
