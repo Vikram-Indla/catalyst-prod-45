@@ -620,7 +620,7 @@ export default function Auth() {
 
                     <button 
                       type="button" 
-                      onClick={() => navigate('/request-access')}
+                      onClick={() => navigate('/submit-request')}
                       className="w-full transition-all duration-300 font-body py-4 px-6 font-semibold rounded-[10px] text-base border-2 cursor-pointer bg-transparent text-brand-gold border-brand-gold hover:bg-brand-gold hover:text-white hover:-translate-y-0.5"
                     >
                       Log Demand Request
