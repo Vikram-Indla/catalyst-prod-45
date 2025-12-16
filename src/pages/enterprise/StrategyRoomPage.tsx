@@ -5,7 +5,7 @@ import { StrategyContextCard } from '@/components/strategy/StrategyContextCard';
 import { ExecutiveSummaryCard } from '@/components/strategy/ExecutiveSummaryCard';
 import { StrategyStack } from '@/components/strategy/StrategyStack';
 import { OkrTree } from '@/components/strategy/OkrTree';
-import { ObjectiveAnalyticsDrawer } from '@/modules/okr-v2';
+import { ObjectiveDrawerV2 } from '@/modules/okr-v2';
 import { ThemeDetailsDrawer } from '@/components/backlog/ThemeDetailsDrawer';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -173,7 +173,7 @@ export default function StrategyRoomPage() {
       </div>
 
       {/* Drawers */}
-      <ObjectiveAnalyticsDrawer
+      <ObjectiveDrawerV2
         objectiveId={selectedObjectiveId}
         open={!!selectedObjectiveId}
         onClose={() => {
