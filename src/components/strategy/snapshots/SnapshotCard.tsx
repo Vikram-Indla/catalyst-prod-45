@@ -52,21 +52,37 @@ export function SnapshotCard({ snapshot, onViewDetails, onDelete }: SnapshotCard
 
   const getStatusBadge = () => {
     if (isActive) {
-      return <Badge className="bg-secondary-green/10 text-secondary-green border-secondary-green/30 text-xs">active</Badge>;
+      return (
+        <Badge className="bg-[rgba(92,124,92,0.1)] dark:bg-[rgba(92,124,92,0.15)] text-[#5C7C5C] dark:text-[#7DA37D] border border-[rgba(92,124,92,0.3)] text-[10px] font-semibold uppercase tracking-wider">
+          ACTIVE
+        </Badge>
+      );
     }
     if (isArchived) {
-      return <Badge variant="outline" className="text-muted-foreground text-xs">archived</Badge>;
+      return (
+        <Badge className="bg-[#F6F8FA] dark:bg-[#21262D] text-[#57606A] dark:text-[#8B949E] border border-[#E1E4E8] dark:border-[#30363D] text-[10px] font-semibold uppercase tracking-wider">
+          ARCHIVED
+        </Badge>
+      );
     }
-    return <Badge variant="outline" className="text-foreground text-xs">draft</Badge>;
+    return (
+      <Badge className="bg-[#F6F8FA] dark:bg-[#21262D] text-[#57606A] dark:text-[#8B949E] border border-[#E1E4E8] dark:border-[#30363D] text-[10px] font-semibold uppercase tracking-wider">
+        DRAFT
+      </Badge>
+    );
   };
 
   return (
     <>
       <Card 
         className={cn(
-          'cursor-pointer hover:shadow-lg transition-all duration-200 border relative',
-          isArchived && 'opacity-70 bg-muted/30',
-          isActive && 'border-l-4 border-l-secondary-green'
+          "relative p-0 rounded-xl cursor-pointer transition-all duration-200",
+          "bg-white dark:bg-[#161B22]",
+          "border border-[#E1E4E8] dark:border-[#30363D]",
+          "shadow-sm dark:shadow-none",
+          "hover:shadow-md hover:border-[rgba(198,156,109,0.3)] dark:hover:border-[#3D444D]",
+          isArchived && 'opacity-70',
+          isActive && 'border-l-[3px] border-l-[#5C7C5C]'
         )}
         onClick={() => onViewDetails(snapshot)}
       >
@@ -156,16 +172,16 @@ export function SnapshotCard({ snapshot, onViewDetails, onDelete }: SnapshotCard
             </div>
           </div>
           
-          <div className="flex items-center gap-4 mt-4 pt-3 border-t border-border/50">
+          <div className="flex items-center gap-4 mt-4 pt-3 border-t border-[#EAECEF] dark:border-[#21262D]">
             <div className="flex items-center gap-1.5">
-              <Layers className={cn("h-3.5 w-3.5", quarterCount === 0 ? "text-amber-500" : "text-brand-gold")} />
-              <span className={cn("text-sm font-medium", quarterCount === 0 && "text-amber-500")}>
+              <Layers className={cn("h-3.5 w-3.5", quarterCount === 0 ? "text-[#C69C6D]" : "text-[#C69C6D]")} />
+              <span className={cn("text-sm font-medium text-[#24292F] dark:text-[#E6EDF3]", quarterCount === 0 && "text-[#C69C6D]")}>
                 {quarterCount} Quarters
               </span>
             </div>
             <div className="flex items-center gap-1.5">
-              <Users className={cn("h-3.5 w-3.5", themeCount === 0 ? "text-amber-500" : "text-brand-gold")} />
-              <span className={cn("text-sm font-medium", themeCount === 0 && "text-amber-500")}>
+              <Users className={cn("h-3.5 w-3.5", themeCount === 0 ? "text-[#C69C6D]" : "text-[#C69C6D]")} />
+              <span className={cn("text-sm font-medium text-[#24292F] dark:text-[#E6EDF3]", themeCount === 0 && "text-[#C69C6D]")}>
                 {themeCount} Themes
               </span>
             </div>

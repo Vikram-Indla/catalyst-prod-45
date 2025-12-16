@@ -92,11 +92,23 @@ function SnapshotTableRow({
   const getStatusBadge = () => {
     switch (snapshot.status) {
       case 'ACTIVE':
-        return <Badge className="bg-[hsl(var(--g50))] text-[hsl(var(--g400))] border-[hsl(var(--g300))/30] hover:bg-[hsl(var(--g75))]">Active</Badge>;
+        return (
+          <Badge className="bg-[rgba(92,124,92,0.1)] dark:bg-[rgba(92,124,92,0.15)] text-[#5C7C5C] dark:text-[#7DA37D] border border-[rgba(92,124,92,0.3)] text-[10px] font-semibold uppercase tracking-wider">
+            ACTIVE
+          </Badge>
+        );
       case 'ARCHIVED':
-        return <Badge variant="outline" className="text-muted-foreground">Archived</Badge>;
+        return (
+          <Badge className="bg-[#F6F8FA] dark:bg-[#21262D] text-[#57606A] dark:text-[#8B949E] border border-[#E1E4E8] dark:border-[#30363D] text-[10px] font-semibold uppercase tracking-wider">
+            ARCHIVED
+          </Badge>
+        );
       default:
-        return <Badge variant="outline" className="text-foreground">Draft</Badge>;
+        return (
+          <Badge className="bg-[#F6F8FA] dark:bg-[#21262D] text-[#57606A] dark:text-[#8B949E] border border-[#E1E4E8] dark:border-[#30363D] text-[10px] font-semibold uppercase tracking-wider">
+            DRAFT
+          </Badge>
+        );
     }
   };
 
@@ -106,8 +118,10 @@ function SnapshotTableRow({
   return (
     <tr 
       className={cn(
-        "border-b border-border/40 hover:bg-muted/30 transition-colors cursor-pointer group",
-        isActive && "border-l-[3px] border-l-[hsl(var(--brand-gold))] bg-[hsl(var(--brand-gold))/3]"
+        "cursor-pointer transition-colors group",
+        "border-b border-[#EAECEF] dark:border-[#21262D]",
+        "hover:bg-[#F6F8FA] dark:hover:bg-[#161B22]",
+        isActive && "border-l-[3px] border-l-[#5C7C5C] bg-[rgba(92,124,92,0.05)]"
       )}
       onClick={() => onSelect(snapshot)}
     >
@@ -119,15 +133,15 @@ function SnapshotTableRow({
       <td className="py-3 px-4">{getStatusBadge()}</td>
       <td className="py-3 px-4 text-sm text-muted-foreground tabular-nums">{formatDateRange()}</td>
       <td className="py-3 px-4 text-right tabular-nums">
-        <span className={cn("text-sm", quarterCount === 0 && "text-[hsl(var(--y400))] font-medium")}>
+        <span className={cn("text-sm", quarterCount === 0 && "text-[#C69C6D] font-medium")}>
           {quarterCount}
-          {quarterCount === 0 && <AlertTriangle className="h-3 w-3 inline ml-1 text-[hsl(var(--y400))]" />}
+          {quarterCount === 0 && <AlertTriangle className="h-3 w-3 inline ml-1 text-[#C69C6D]" />}
         </span>
       </td>
       <td className="py-3 px-4 text-right tabular-nums">
-        <span className={cn("text-sm", themeCount === 0 && "text-[hsl(var(--y400))] font-medium")}>
+        <span className={cn("text-sm", themeCount === 0 && "text-[#C69C6D] font-medium")}>
           {themeCount}
-          {themeCount === 0 && <AlertTriangle className="h-3 w-3 inline ml-1 text-[hsl(var(--y400))]" />}
+          {themeCount === 0 && <AlertTriangle className="h-3 w-3 inline ml-1 text-[#C69C6D]" />}
         </span>
       </td>
       <td className="py-3 px-4">
@@ -238,30 +252,32 @@ export default function StrategicSnapshots() {
   const toolbar = (
     <div className="flex items-center gap-3 w-full">
       {/* Search */}
-      <div className="relative flex-1 max-w-xs">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
+      <div className={cn(
+        "relative flex items-center gap-2 px-3 py-2 rounded-lg w-64",
+        "bg-white dark:bg-[#0D1117]",
+        "border border-[#E1E4E8] dark:border-[#30363D]",
+        "focus-within:border-[#C69C6D] focus-within:ring-1 focus-within:ring-[rgba(198,156,109,0.3)]"
+      )}>
+        <Search className="h-4 w-4 text-[#8B949E]" />
+        <input
+          type="text"
           placeholder="Search snapshots..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-9 h-8 text-[13px]"
-          style={{ 
-            backgroundColor: 'var(--input-bg)', 
-            borderColor: 'var(--input-border)',
-            color: 'var(--text-1)'
-          }}
+          className="flex-1 bg-transparent text-sm text-[#24292F] dark:text-[#E6EDF3] placeholder:text-[#8B949E] outline-none"
         />
       </div>
 
       {/* Status Filter */}
       <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as StatusFilter)}>
         <SelectTrigger 
-          className="w-[120px] h-8 text-[13px]"
-          style={{ 
-            backgroundColor: 'var(--input-bg)', 
-            borderColor: 'var(--input-border)',
-            color: 'var(--text-1)'
-          }}
+          className={cn(
+            "w-[120px] h-8 text-sm",
+            "bg-white dark:bg-[#0D1117]",
+            "border border-[#E1E4E8] dark:border-[#30363D]",
+            "hover:border-[#D0D7DE] dark:hover:border-[#3D444D]",
+            "text-[#24292F] dark:text-[#E6EDF3]"
+          )}
         >
           <SelectValue placeholder="All Status" />
         </SelectTrigger>
@@ -276,12 +292,13 @@ export default function StrategicSnapshots() {
       {/* Owner Filter */}
       <Select value="all">
         <SelectTrigger 
-          className="w-[120px] h-8 text-[13px]"
-          style={{ 
-            backgroundColor: 'var(--input-bg)', 
-            borderColor: 'var(--input-border)',
-            color: 'var(--text-1)'
-          }}
+          className={cn(
+            "w-[120px] h-8 text-sm",
+            "bg-white dark:bg-[#0D1117]",
+            "border border-[#E1E4E8] dark:border-[#30363D]",
+            "hover:border-[#D0D7DE] dark:hover:border-[#3D444D]",
+            "text-[#24292F] dark:text-[#E6EDF3]"
+          )}
         >
           <SelectValue placeholder="All Owners" />
         </SelectTrigger>
@@ -293,12 +310,13 @@ export default function StrategicSnapshots() {
       {/* Sort */}
       <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
         <SelectTrigger 
-          className="w-[130px] h-8 text-[13px]"
-          style={{ 
-            backgroundColor: 'var(--input-bg)', 
-            borderColor: 'var(--input-border)',
-            color: 'var(--text-1)'
-          }}
+          className={cn(
+            "w-[130px] h-8 text-sm",
+            "bg-white dark:bg-[#0D1117]",
+            "border border-[#E1E4E8] dark:border-[#30363D]",
+            "hover:border-[#D0D7DE] dark:hover:border-[#3D444D]",
+            "text-[#24292F] dark:text-[#E6EDF3]"
+          )}
         >
           <SelectValue placeholder="Last Updated" />
         </SelectTrigger>
@@ -311,31 +329,31 @@ export default function StrategicSnapshots() {
       </Select>
 
       {/* View Toggle */}
-      <div className="flex items-center border border-border rounded-md overflow-hidden ml-auto">
-        <Button
-          variant="ghost"
-          size="icon"
+      <div className="flex items-center p-1 bg-[#F6F8FA] dark:bg-[#21262D] rounded-lg ml-auto">
+        <button
           className={cn(
-            "h-8 w-8 rounded-none",
-            view === 'table' && "bg-muted"
+            "p-1.5 rounded-md transition-colors",
+            view === 'table' 
+              ? "bg-white dark:bg-[#30363D] text-[#24292F] dark:text-[#E6EDF3] shadow-sm"
+              : "text-[#8B949E] hover:text-[#57606A]"
           )}
           onClick={() => setView('table')}
           aria-label="Table view"
         >
           <List className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
+        </button>
+        <button
           className={cn(
-            "h-8 w-8 rounded-none",
-            view === 'cards' && "bg-muted"
+            "p-1.5 rounded-md transition-colors",
+            view === 'cards' 
+              ? "bg-white dark:bg-[#30363D] text-[#24292F] dark:text-[#E6EDF3] shadow-sm"
+              : "text-[#8B949E] hover:text-[#57606A]"
           )}
           onClick={() => setView('cards')}
           aria-label="Card view"
         >
           <Grid3x3 className="h-4 w-4" />
-        </Button>
+        </button>
       </div>
     </div>
   );
@@ -368,18 +386,18 @@ export default function StrategicSnapshots() {
             )}
           </div>
         ) : view === 'table' ? (
-          <div className="rounded-xl border border-border bg-card overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-[#0D1117] border border-[#E1E4E8] dark:border-[#30363D] rounded-xl overflow-hidden">
             <table className="w-full">
               <thead>
-                <tr className="bg-muted/50 border-b border-border">
-                  <th className="py-2.5 px-4 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">Snapshot Name</th>
-                  <th className="py-2.5 px-4 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">Status</th>
-                  <th className="py-2.5 px-4 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">Date Range</th>
-                  <th className="py-2.5 px-4 text-right text-xs font-medium uppercase tracking-wide text-muted-foreground">Quarters</th>
-                  <th className="py-2.5 px-4 text-right text-xs font-medium uppercase tracking-wide text-muted-foreground">Themes</th>
-                  <th className="py-2.5 px-4 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">Owner</th>
-                  <th className="py-2.5 px-4 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">Last Updated</th>
-                  <th className="py-2.5 px-4 w-[50px]"></th>
+                <tr className="bg-[#FAFBFC] dark:bg-[#161B22] border-b border-[#E1E4E8] dark:border-[#30363D]">
+                  <th className="py-3 px-4 text-left text-[11px] font-semibold uppercase tracking-wider text-[#8B949E] dark:text-[#6E7681]">Snapshot Name</th>
+                  <th className="py-3 px-4 text-left text-[11px] font-semibold uppercase tracking-wider text-[#8B949E] dark:text-[#6E7681]">Status</th>
+                  <th className="py-3 px-4 text-left text-[11px] font-semibold uppercase tracking-wider text-[#8B949E] dark:text-[#6E7681]">Date Range</th>
+                  <th className="py-3 px-4 text-right text-[11px] font-semibold uppercase tracking-wider text-[#8B949E] dark:text-[#6E7681]">Quarters</th>
+                  <th className="py-3 px-4 text-right text-[11px] font-semibold uppercase tracking-wider text-[#8B949E] dark:text-[#6E7681]">Themes</th>
+                  <th className="py-3 px-4 text-left text-[11px] font-semibold uppercase tracking-wider text-[#8B949E] dark:text-[#6E7681]">Owner</th>
+                  <th className="py-3 px-4 text-left text-[11px] font-semibold uppercase tracking-wider text-[#8B949E] dark:text-[#6E7681]">Last Updated</th>
+                  <th className="py-3 px-4 w-[50px]"></th>
                 </tr>
               </thead>
               <tbody>
