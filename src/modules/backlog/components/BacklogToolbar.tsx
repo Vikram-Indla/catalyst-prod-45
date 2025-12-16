@@ -37,12 +37,22 @@ export function BacklogToolbar({
   // Label for add button based on type (always Epic in Epic Backlog mode)
   const itemTypeLabel = isEpicBacklog ? 'Epic' : (type === 'epic' ? 'Epic' : type.charAt(0).toUpperCase() + type.slice(1));
 
-  // HARD GUARD: Cannot create epic without programId
-  const canCreate = isEpicBacklog && type === 'epic' && !!programId;
+  // Button is only enabled in Epic Backlog mode with epic type
+  // programId check moved inside dialog for better UX
+  const canOpenDialog = isEpicBacklog && type === 'epic';
 
   const handleAddClick = () => {
-    if (!canCreate) {
-      console.error('[BacklogToolbar] Cannot create epic without programId');
+    // TEMPORARY LOGGING - remove after fix confirmed
+    console.log('[BacklogToolbar] handleAddClick called', { 
+      programId, 
+      isEpicBacklog, 
+      type, 
+      canOpenDialog,
+      currentOpenState: isCreateDialogOpen 
+    });
+    
+    if (!canOpenDialog) {
+      console.error('[BacklogToolbar] Cannot open dialog - not in Epic Backlog mode');
       return;
     }
     setIsCreateDialogOpen(true);
@@ -57,8 +67,8 @@ export function BacklogToolbar({
             size="sm" 
             variant="default" 
             onClick={handleAddClick}
-            disabled={!canCreate}
-            title={!canCreate ? 'Program context required to create epics' : undefined}
+            disabled={!canOpenDialog}
+            title={!canOpenDialog ? 'Epic Backlog mode required' : undefined}
           >
             <Plus className="h-4 w-4 mr-2" />
             Add
@@ -122,14 +132,12 @@ export function BacklogToolbar({
         </Button>
       </div>
 
-      {/* CANONICAL Create Epic Dialog - requires programId */}
-      {programId && (
-        <CreateEpicDialog
-          open={isCreateDialogOpen}
-          onOpenChange={setIsCreateDialogOpen}
-          programId={programId}
-        />
-      )}
+      {/* CANONICAL Create Epic Dialog - ALWAYS rendered, handles missing programId internally */}
+      <CreateEpicDialog
+        open={isCreateDialogOpen}
+        onOpenChange={setIsCreateDialogOpen}
+        programId={programId}
+      />
     </>
   );
 }
