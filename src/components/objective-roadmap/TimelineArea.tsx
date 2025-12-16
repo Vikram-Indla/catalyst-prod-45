@@ -156,9 +156,9 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
   
   // Timeline bar: Grey track with gold fill (rounded ends)
   return (
-    <div className="relative h-[76px] border-b border-border hover:bg-muted/20">
+    <div className="relative h-[76px] border-b border-border hover:bg-muted/20 group/bar">
       <div 
-        className="absolute top-1/2 -translate-y-1/2 h-6 rounded-full cursor-pointer group overflow-hidden"
+        className="absolute top-1/2 -translate-y-1/2 h-6 rounded-full cursor-pointer overflow-hidden"
         style={{ 
           left: `${barLeft}%`, 
           width: `${barWidth}%`,
@@ -193,6 +193,24 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
               {objective.keyResults.length} KRs
             </span>
           )}
+        </div>
+      </div>
+      
+      {/* Tooltip - positioned outside overflow-hidden container */}
+      <div 
+        className="absolute top-0 left-0 -translate-y-full mb-2 px-4 py-3 bg-popover border border-border rounded-lg shadow-xl opacity-0 group-hover/bar:opacity-100 transition-opacity pointer-events-none z-[100]"
+        style={{ 
+          left: `${barLeft}%`,
+          marginTop: '-8px'
+        }}
+      >
+        <div className="text-sm font-semibold text-foreground mb-1">{objective.name}</div>
+        <div className="text-xs text-muted-foreground mb-2">
+          {objective.startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} → {objective.endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+        </div>
+        <div className="flex items-center gap-3 text-xs">
+          <span className="text-brand-gold font-medium">{objective.progress}% complete</span>
+          <span className="text-muted-foreground">{objective.keyResults.length} Key Results</span>
         </div>
       </div>
     </div>
@@ -247,19 +265,19 @@ const KRMarker: React.FC<KRMarkerProps> = ({
   
   return (
     <div 
-      className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rotate-45 border-2 border-white z-10 group/kr cursor-pointer"
+      className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rotate-45 border-2 z-10 group/kr cursor-pointer"
       style={{ 
         left: `${position}%`,
         background: keyResult.status === 'complete' ? krColor : 'transparent',
         borderColor: krColor
       }}
     >
-      {/* Tooltip */}
-      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-popover border border-border rounded-lg shadow-lg opacity-0 group-hover/kr:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 rotate-[-45deg]">
-        <div className="text-[10px] font-medium text-muted-foreground mb-1">Key Result</div>
-        <div className="text-xs font-medium mb-1 max-w-[200px] truncate">{keyResult.title}</div>
-        <div className="text-[10px] text-muted-foreground">
-          {keyResult.progress}% complete
+      {/* Tooltip - counter-rotated for readability */}
+      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 px-4 py-3 bg-popover border border-border rounded-lg shadow-xl opacity-0 group-hover/kr:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-[100] -rotate-45">
+        <div className="text-[10px] font-semibold text-brand-gold uppercase tracking-wide mb-1">Key Result</div>
+        <div className="text-sm font-medium text-foreground mb-1 max-w-[220px] truncate">{keyResult.title}</div>
+        <div className="text-xs text-muted-foreground">
+          <span className="text-brand-gold font-medium">{keyResult.progress}%</span> complete
         </div>
       </div>
     </div>
