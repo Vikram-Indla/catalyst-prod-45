@@ -3,22 +3,10 @@
  * Pixel-perfect table matching mockups
  */
 import { useState, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { Search, ChevronRight, ArrowUpDown, ArrowUp } from 'lucide-react';
-import type { StrategicTheme, SnapshotStrategyLinks } from '@/types/strategicBacklog';
+import type { StrategicTheme } from '@/types/strategicBacklog';
 import { cn } from '@/lib/utils';
-
-interface EpicsSectionProps {
-  snapshotId: string;
-  themes: StrategicTheme[];
-  links: SnapshotStrategyLinks | null;
-  isArchived: boolean;
-  onSelectItem: (item: any) => void;
-  selectedItemId?: string;
-}
+import { format } from 'date-fns';
 
 interface Epic {
   id: string;
@@ -31,82 +19,37 @@ interface Epic {
   updated_at: string;
 }
 
-interface Objective {
-  id: string;
-  name: string;
-  theme_id?: string | null;
+interface EpicsSectionProps {
+  epics: Epic[];
+  themes: StrategicTheme[];
+  isLoading: boolean;
+  isArchived: boolean;
+  onSelectItem: (item: any) => void;
+  selectedItemId?: string;
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
+  featureCounts: Record<string, number>;
 }
 
 export function StrategicBacklogEpicsSection({ 
-  snapshotId, 
+  epics,
   themes, 
-  links, 
+  isLoading,
   isArchived,
   onSelectItem,
   selectedItemId,
+  searchQuery,
+  onSearchChange,
+  featureCounts,
 }: EpicsSectionProps) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortColumn, setSortColumn] = useState<'name' | 'objective' | 'status' | 'features' | 'priority'>('name');
+  const [sortColumn, setSortColumn] = useState<'name' | 'theme' | 'status' | 'features' | 'updated'>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
-  const themeIds = themes.map(t => t.id);
-
-  // Fetch objectives for themes
-  const { data: objectives = [] } = useQuery({
-    queryKey: ['objectives-for-epics', themeIds],
-    queryFn: async () => {
-      if (themeIds.length === 0) return [];
-      const { data, error } = await supabase
-        .from('objectives')
-        .select('id, name, theme_id')
-        .in('theme_id', themeIds);
-      if (error) return [];
-      return (data || []) as Objective[];
-    },
-    enabled: themeIds.length > 0,
-  });
-
-  const objectiveLookup = useMemo(() => {
+  const themeLookup = useMemo(() => {
     const map: Record<string, string> = {};
-    objectives.forEach(o => { map[o.id] = o.name; });
+    themes.forEach(t => { map[t.id] = t.name; });
     return map;
-  }, [objectives]);
-
-  const { data: epics = [], isLoading } = useQuery({
-    queryKey: ['snapshot-epics', snapshotId, themeIds],
-    queryFn: async () => {
-      if (themeIds.length === 0) return [];
-      const { data, error } = await supabase
-        .from('epics')
-        .select('*')
-        .in('theme_id', themeIds)
-        .order('name');
-      if (error) throw error;
-      return (data || []) as Epic[];
-    },
-    enabled: themeIds.length > 0,
-  });
-
-  // Get feature counts for epics
-  const { data: featureCounts = {} } = useQuery({
-    queryKey: ['epic-feature-counts', epics.map(e => e.id)],
-    queryFn: async () => {
-      if (epics.length === 0) return {};
-      const epicIds = epics.map(e => e.id);
-      const { data } = await supabase
-        .from('features')
-        .select('epic_id')
-        .in('epic_id', epicIds);
-      
-      const counts: Record<string, number> = {};
-      epicIds.forEach(id => counts[id] = 0);
-      (data || []).forEach(f => {
-        if (f.epic_id) counts[f.epic_id] = (counts[f.epic_id] || 0) + 1;
-      });
-      return counts;
-    },
-    enabled: epics.length > 0,
-  });
+  }, [themes]);
 
   const filteredEpics = useMemo(() => {
     let result = epics;
@@ -115,7 +58,8 @@ export function StrategicBacklogEpicsSection({
       const query = searchQuery.toLowerCase();
       result = result.filter(epic =>
         epic.name.toLowerCase().includes(query) ||
-        epic.epic_key?.toLowerCase().includes(query)
+        epic.epic_key?.toLowerCase().includes(query) ||
+        (epic.theme_id && themeLookup[epic.theme_id]?.toLowerCase().includes(query))
       );
     }
 
@@ -127,6 +71,10 @@ export function StrategicBacklogEpicsSection({
           aVal = a.name.toLowerCase();
           bVal = b.name.toLowerCase();
           break;
+        case 'theme':
+          aVal = a.theme_id ? themeLookup[a.theme_id] || '' : '';
+          bVal = b.theme_id ? themeLookup[b.theme_id] || '' : '';
+          break;
         case 'status':
           aVal = a.status || '';
           bVal = b.status || '';
@@ -135,10 +83,9 @@ export function StrategicBacklogEpicsSection({
           aVal = featureCounts[a.id] || 0;
           bVal = featureCounts[b.id] || 0;
           break;
-        case 'priority':
-          const priorityOrder: Record<string, number> = { 'High': 0, 'Medium': 1, 'Low': 2 };
-          aVal = priorityOrder[a.priority || 'Low'] ?? 3;
-          bVal = priorityOrder[b.priority || 'Low'] ?? 3;
+        case 'updated':
+          aVal = a.updated_at || '';
+          bVal = b.updated_at || '';
           break;
         default:
           return 0;
@@ -150,7 +97,7 @@ export function StrategicBacklogEpicsSection({
     });
 
     return result;
-  }, [epics, searchQuery, sortColumn, sortDirection, featureCounts]);
+  }, [epics, searchQuery, sortColumn, sortDirection, themeLookup, featureCounts]);
 
   const handleSort = (column: typeof sortColumn) => {
     if (sortColumn === column) {
@@ -176,30 +123,11 @@ export function StrategicBacklogEpicsSection({
     );
   };
 
-  const getPriorityClass = (priority?: string | null) => {
-    switch (priority) {
-      case 'High':
-        return 'text-rose-600 dark:text-rose-400';
-      case 'Medium':
-        return 'text-amber-600 dark:text-amber-400';
-      default:
-        return 'text-muted-foreground';
-    }
-  };
-
   const SortIcon = ({ column }: { column: typeof sortColumn }) => {
     if (sortColumn === column) {
       return <ArrowUp className={cn("h-3 w-3 ml-1", sortDirection === 'desc' && "rotate-180")} />;
     }
     return <ArrowUpDown className="h-3 w-3 ml-1 opacity-40" />;
-  };
-
-  // Find objective name for epic (via theme linkage)
-  const getObjectiveForEpic = (epic: Epic): string => {
-    // In a real implementation, you'd have epic -> objective linkage
-    // For now, we'll find first objective with matching theme
-    const obj = objectives.find(o => o.theme_id === epic.theme_id);
-    return obj?.name || '—';
   };
 
   return (
@@ -216,7 +144,7 @@ export function StrategicBacklogEpicsSection({
           type="text"
           placeholder="Search epics..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={(e) => onSearchChange(e.target.value)}
           className={cn(
             "flex-1 bg-transparent text-sm outline-none",
             "text-[#24292F] dark:text-[#E6EDF3]",
@@ -240,10 +168,10 @@ export function StrategicBacklogEpicsSection({
               </th>
               <th 
                 className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider w-52 cursor-pointer hover:text-foreground transition-colors"
-                onClick={() => handleSort('objective')}
+                onClick={() => handleSort('theme')}
               >
                 <button className="flex items-center">
-                  Objective <SortIcon column="objective" />
+                  Theme <SortIcon column="theme" />
                 </button>
               </th>
               <th 
@@ -263,11 +191,11 @@ export function StrategicBacklogEpicsSection({
                 </button>
               </th>
               <th 
-                className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider w-24 cursor-pointer hover:text-foreground transition-colors"
-                onClick={() => handleSort('priority')}
+                className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider w-32 cursor-pointer hover:text-foreground transition-colors"
+                onClick={() => handleSort('updated')}
               >
                 <button className="flex items-center">
-                  Priority <SortIcon column="priority" />
+                  Updated <SortIcon column="updated" />
                 </button>
               </th>
               <th className="w-10"></th>
@@ -302,7 +230,7 @@ export function StrategicBacklogEpicsSection({
                       <span className="text-sm font-medium text-foreground">{epic.name}</span>
                     </td>
                     <td className="px-4 py-3 text-sm text-muted-foreground">
-                      {getObjectiveForEpic(epic)}
+                      {epic.theme_id ? themeLookup[epic.theme_id] || '—' : '—'}
                     </td>
                     <td className="px-4 py-3">
                       {getStatusBadge(epic.status)}
@@ -310,10 +238,8 @@ export function StrategicBacklogEpicsSection({
                     <td className="px-4 py-3 text-sm text-muted-foreground">
                       {featureCounts[epic.id] || 0}
                     </td>
-                    <td className="px-4 py-3">
-                      <span className={cn("text-sm", getPriorityClass(epic.priority))}>
-                        {epic.priority || 'Low'}
-                      </span>
+                    <td className="px-4 py-3 text-sm text-muted-foreground">
+                      {epic.updated_at ? format(new Date(epic.updated_at), 'MMM d, yyyy') : '—'}
                     </td>
                     <td className="px-4 py-3">
                       <ChevronRight className="h-4 w-4 text-muted-foreground" />

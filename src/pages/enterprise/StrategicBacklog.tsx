@@ -2,10 +2,9 @@
  * Strategic Backlog - Enterprise Strategy Command Center
  * Pixel-perfect implementation matching Catalyst design specs
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { 
   Select, 
@@ -25,18 +24,39 @@ import { AddToBacklogModal } from '@/components/strategic-backlog/AddToBacklogMo
 import { ThemeDetailsDrawer } from '@/components/backlog/ThemeDetailsDrawer';
 import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
 import { ObjectiveDrawerV2 } from '@/modules/okr-v2/components/ObjectiveDrawerV2';
-import { useStrategicThemes, useSnapshotStrategyLinks } from '@/hooks/useStrategicBacklog';
-import { cn } from '@/lib/utils';
+import { useStrategicThemes } from '@/hooks/useStrategicBacklog';
+import { 
+  useStrategicBacklogCounts, 
+  useStrategicBacklogRealtime,
+  useThemeObjectiveCounts as useThemeObjCounts,
+  useObjectiveKrCounts,
+  useEpicFeatureCounts,
+} from '@/hooks/useStrategicBacklogList';
+import { useSearchParams } from 'react-router-dom';
+import { useDebounce } from '@/hooks/useDebounce';
 
 type SubSection = 'themes' | 'objectives' | 'epics';
 
-
 export default function StrategicBacklog() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get('tab') as SubSection | null;
+  
   const [selectedSnapshotId, setSelectedSnapshotId] = useState<string>('');
-  const [activeSection, setActiveSection] = useState<SubSection>('themes');
+  const [activeSection, setActiveSection] = useState<SubSection>(tabParam || 'themes');
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [selectedItemType, setSelectedItemType] = useState<'theme' | 'objective' | 'epic' | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  // Debounce search for performance
+  const debouncedSearch = useDebounce(searchQuery, 300);
+
+  // Persist tab to URL
+  const handleSectionChange = useCallback((section: SubSection) => {
+    setActiveSection(section);
+    setSearchQuery(''); // Clear search when switching tabs
+    setSearchParams({ tab: section });
+  }, [setSearchParams]);
 
   // Fetch snapshots
   const { data: snapshots = [] } = useQuery({
@@ -63,54 +83,74 @@ export default function StrategicBacklog() {
     }
   }, [snapshots, selectedSnapshotId]);
 
-  // Fetch strategy data
-  const { data: themes = [] } = useStrategicThemes(snapshotId);
-  const { data: links } = useSnapshotStrategyLinks(snapshotId);
-  const themeIds = themes.map(t => t.id);
+  // Fetch themes for the snapshot
+  const { data: themes = [], refetch: refetchThemes } = useStrategicThemes(snapshotId);
+  const themeIds = useMemo(() => themes.map(t => t.id), [themes]);
 
-  // Fetch objectives count
-  const { data: objectivesData = { count: 0, list: [] } } = useQuery({
-    queryKey: ['objectives-for-backlog', snapshotId, themeIds],
+  // Fetch objectives for the themes
+  const { data: objectives = [], isLoading: loadingObjectives, refetch: refetchObjectives } = useQuery({
+    queryKey: ['strategic-backlog-objectives', snapshotId, themeIds, debouncedSearch],
     queryFn: async () => {
-      if (themeIds.length === 0) return { count: 0, list: [] };
-      
-      const { data: objectives, error } = await supabase
+      if (themeIds.length === 0) return [];
+      let query = supabase
         .from('objectives')
         .select('*')
         .in('theme_id', themeIds);
       
-      if (error) return { count: 0, list: [] };
-      return { count: objectives?.length || 0, list: objectives || [] };
+      if (debouncedSearch && activeSection === 'objectives') {
+        query = query.or(`name.ilike.%${debouncedSearch}%,description.ilike.%${debouncedSearch}%`);
+      }
+      
+      const { data, error } = await query.order('name');
+      if (error) throw error;
+      return data || [];
     },
     enabled: !!snapshotId && themeIds.length > 0,
   });
 
-  // Fetch themes with objectives coverage
-  const { data: themesWithObjectives = 0 } = useQuery({
-    queryKey: ['themes-with-objectives', snapshotId, themeIds],
+  // Fetch epics for the themes
+  const { data: epics = [], isLoading: loadingEpics, refetch: refetchEpics } = useQuery({
+    queryKey: ['strategic-backlog-epics', snapshotId, themeIds, debouncedSearch],
     queryFn: async () => {
-      if (themeIds.length === 0) return 0;
-      const { data: objectives } = await supabase
-        .from('objectives')
-        .select('theme_id')
-        .in('theme_id', themeIds);
-      return new Set((objectives || []).map(o => o.theme_id)).size;
-    },
-    enabled: !!snapshotId && themeIds.length > 0,
-  });
-
-  // Fetch epics counts
-  const { data: epicsData = { total: 0, aligned: 0 } } = useQuery({
-    queryKey: ['epics-coverage', snapshotId, themeIds],
-    queryFn: async () => {
-      const { count: aligned } = await supabase
+      if (themeIds.length === 0) return [];
+      let query = supabase
         .from('epics')
-        .select('*', { count: 'exact', head: true })
+        .select('*')
         .in('theme_id', themeIds);
-      return { total: aligned || 0, aligned: aligned || 0 };
+      
+      if (debouncedSearch && activeSection === 'epics') {
+        query = query.or(`name.ilike.%${debouncedSearch}%,epic_key.ilike.%${debouncedSearch}%`);
+      }
+      
+      const { data, error } = await query.order('name');
+      if (error) throw error;
+      return data || [];
     },
     enabled: !!snapshotId && themeIds.length > 0,
   });
+
+  // Live counts for tab badges
+  const { counts, refetch: refetchCounts } = useStrategicBacklogCounts(snapshotId, themeIds);
+
+  // Related counts
+  const { data: objectiveCounts = {} } = useThemeObjCounts(themeIds);
+  const { data: krCounts = {} } = useObjectiveKrCounts(objectives.map(o => o.id));
+  const { data: featureCounts = {} } = useEpicFeatureCounts(epics.map(e => e.id));
+
+  // Coverage calculations
+  const themesWithObjectives = useMemo(() => {
+    return Object.keys(objectiveCounts).filter(id => objectiveCounts[id] > 0).length;
+  }, [objectiveCounts]);
+
+  // Realtime subscriptions
+  const handleRealtimeUpdate = useCallback(() => {
+    refetchThemes();
+    refetchObjectives();
+    refetchEpics();
+    refetchCounts();
+  }, [refetchThemes, refetchObjectives, refetchEpics, refetchCounts]);
+
+  useStrategicBacklogRealtime(snapshotId, themeIds, handleRealtimeUpdate);
 
   const handleSelectItem = (item: any, type: 'theme' | 'objective' | 'epic') => {
     setSelectedItem(item);
@@ -176,12 +216,8 @@ export default function StrategicBacklog() {
           <div className="shrink-0 px-6 py-4">
             <StrategicBacklogTabs
               activeSection={activeSection}
-              onSectionChange={setActiveSection}
-              counts={{
-                themes: themes.length,
-                objectives: objectivesData.count,
-                epics: epicsData.aligned,
-              }}
+              onSectionChange={handleSectionChange}
+              counts={counts}
             />
           </div>
 
@@ -192,11 +228,11 @@ export default function StrategicBacklog() {
               {/* Left: Coverage Panel */}
               <div className="w-72 shrink-0">
                 <StrategicBacklogCoveragePanel
-                  themes={themes.length}
+                  themes={counts.themes}
                   themesWithObjectives={themesWithObjectives}
-                  objectives={objectivesData.count}
-                  epics={epicsData.aligned}
-                  onNavigate={setActiveSection}
+                  objectives={counts.objectives}
+                  epics={counts.epics}
+                  onNavigate={handleSectionChange}
                 />
               </div>
 
@@ -209,25 +245,35 @@ export default function StrategicBacklog() {
                     isArchived={isArchived}
                     onSelectItem={(item) => handleSelectItem(item, 'theme')}
                     selectedItemId={selectedItemType === 'theme' ? selectedItem?.id : undefined}
+                    searchQuery={activeSection === 'themes' ? searchQuery : ''}
+                    onSearchChange={setSearchQuery}
+                    objectiveCounts={objectiveCounts}
                   />
                 )}
                 {activeSection === 'objectives' && (
                   <StrategicBacklogObjectivesSection
-                    snapshotId={snapshotId}
+                    objectives={objectives}
                     themes={themes}
+                    isLoading={loadingObjectives}
                     isArchived={isArchived}
                     onSelectItem={(item) => handleSelectItem(item, 'objective')}
                     selectedItemId={selectedItemType === 'objective' ? selectedItem?.id : undefined}
+                    searchQuery={activeSection === 'objectives' ? searchQuery : ''}
+                    onSearchChange={setSearchQuery}
+                    krCounts={krCounts}
                   />
                 )}
                 {activeSection === 'epics' && (
                   <StrategicBacklogEpicsSection
-                    snapshotId={snapshotId}
+                    epics={epics}
                     themes={themes}
-                    links={links || null}
+                    isLoading={loadingEpics}
                     isArchived={isArchived}
                     onSelectItem={(item) => handleSelectItem(item, 'epic')}
                     selectedItemId={selectedItemType === 'epic' ? selectedItem?.id : undefined}
+                    searchQuery={activeSection === 'epics' ? searchQuery : ''}
+                    onSearchChange={setSearchQuery}
+                    featureCounts={featureCounts}
                   />
                 )}
               </div>
