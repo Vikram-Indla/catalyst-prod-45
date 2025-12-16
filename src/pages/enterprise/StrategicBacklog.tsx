@@ -138,13 +138,10 @@ export default function StrategicBacklog() {
 
       {/* Status Badge */}
       {currentSnapshot && !isArchived && (
-        <Badge 
-          variant="outline" 
-          className="text-xs h-7 bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-950/30 dark:border-emerald-800 dark:text-emerald-400 gap-1"
-        >
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-[rgba(92,124,92,0.1)] dark:bg-[rgba(92,124,92,0.15)] text-[#5C7C5C] dark:text-[#7DA37D] border border-[rgba(92,124,92,0.3)]">
           <Check className="h-3 w-3" />
-          active
-        </Badge>
+          ACTIVE
+        </span>
       )}
 
       {/* Create Split Button */}
