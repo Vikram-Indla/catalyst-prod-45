@@ -200,7 +200,6 @@ export function EntityRisksTab({ entityType, entityId }: EntityRisksTabProps) {
         owner_id: data.owner_id,
         risk_number: nextRiskNumber,
         program_id: null as string | null,
-        program_increment_id: null as string | null,
         created_by: user?.id || null,
         notify: 'None',
         tags: '',

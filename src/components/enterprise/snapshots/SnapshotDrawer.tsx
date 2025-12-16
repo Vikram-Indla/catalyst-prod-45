@@ -336,7 +336,7 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <SheetContent 
         side="right" 
-        className="w-[560px] max-w-full p-0 flex flex-col bg-background border-l border-border"
+        className="w-screen sm:w-[65vw] sm:max-w-[980px] p-0 flex flex-col bg-background border-l border-border"
         hideClose
       >
         <SheetHeader className="sr-only">
