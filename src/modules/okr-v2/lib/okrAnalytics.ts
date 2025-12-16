@@ -227,7 +227,7 @@ export function computeOkrAnalytics(input: OkrAnalyticsInput): OkrAnalyticsResul
     baseline: computeBaselineInfo(
       computeObjectiveProgress(obj),
       obj.startDate,
-      obj.dueDate
+      obj.endDate
     ),
   }));
 
@@ -329,7 +329,7 @@ export function computeOkrAnalytics(input: OkrAnalyticsInput): OkrAnalyticsResul
       const baseline = computeBaselineInfo(
         computeObjectiveProgress(obj),
         obj.startDate,
-        obj.dueDate
+        obj.endDate
       );
       if (baseline.expected !== null) {
         themeExpectedSum += baseline.expected;

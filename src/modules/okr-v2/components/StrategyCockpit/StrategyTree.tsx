@@ -47,7 +47,7 @@ const COLUMN_CONFIG: Record<string, { label: string; width: string }> = {
   status: { label: 'Status', width: '100px' },
   progress: { label: 'Progress vs Plan', width: '180px' },
   startDate: { label: 'Start Date', width: '110px' },
-  dueDate: { label: 'Due Date', width: '110px' },
+  endDate: { label: 'End Date', width: '110px' },
   risks: { label: 'Risks', width: '100px' },
   krs: { label: 'Linked', width: '120px' },
 };
@@ -316,11 +316,11 @@ function TableRow({
           </td>
         );
 
-      case 'dueDate':
+      case 'endDate':
         return (
           <td key={colKey} className="py-3 px-4" style={{ width: COLUMN_CONFIG[colKey].width }}>
             <span className="text-sm text-muted-foreground">
-              {formatDate((item as any).dueDate)}
+              {formatDate((item as any).endDate)}
             </span>
           </td>
         );
@@ -497,15 +497,15 @@ export function StrategyTree({
       );
     }
 
-    if (filters.dueDateFrom) {
+    if (filters.endDateFrom) {
       objectivesWithTheme = objectivesWithTheme.filter(({ objective }) =>
-        objective.dueDate && new Date(objective.dueDate) >= filters.dueDateFrom!
+        objective.endDate && new Date(objective.endDate) >= filters.endDateFrom!
       );
     }
 
-    if (filters.dueDateTo) {
+    if (filters.endDateTo) {
       objectivesWithTheme = objectivesWithTheme.filter(({ objective }) =>
-        objective.dueDate && new Date(objective.dueDate) <= filters.dueDateTo!
+        objective.endDate && new Date(objective.endDate) <= filters.endDateTo!
       );
     }
 

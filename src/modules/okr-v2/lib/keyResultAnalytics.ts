@@ -213,7 +213,7 @@ export function computeKeyResultAnalytics(
   const actualProgress = Math.round(computeKeyResultProgress(kr) * 10) / 10;
 
   // Compute baseline using KR's own dates (startDate and endDate) for time-based trend
-  const baseline = computeBaselineInfo(actualProgress, kr.startDate, kr.endDate || kr.dueDate);
+  const baseline = computeBaselineInfo(actualProgress, kr.startDate, kr.endDate);
   const hasTimeframe = !!(kr.startDate && kr.endDate);
 
   // Work item status counts

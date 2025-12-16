@@ -407,7 +407,7 @@ export function computeObjectiveAnalytics(
   const baseline = computeBaselineInfo(
     actualProgress,
     objective.startDate,
-    objective.dueDate
+    objective.endDate
   );
 
   // KR status counts

@@ -23,8 +23,8 @@ export interface OKRSmartFilters {
   ownerIds?: string[];
   startDateFrom?: Date;
   startDateTo?: Date;
-  dueDateFrom?: Date;
-  dueDateTo?: Date;
+  endDateFrom?: Date;
+  endDateTo?: Date;
 }
 
 interface OKRSmartFiltersDialogProps {
@@ -395,18 +395,18 @@ export function OKRSmartFiltersDialog({
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground">Due Date From</label>
+                <label className="text-xs font-medium text-muted-foreground">End Date From</label>
                 <DateInput
-                  value={localFilters.dueDateFrom}
-                  onChange={(date) => updateFilter('dueDateFrom', date)}
+                  value={localFilters.endDateFrom}
+                  onChange={(date) => updateFilter('endDateFrom', date)}
                   placeholder="From date"
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground">Due Date To</label>
+                <label className="text-xs font-medium text-muted-foreground">End Date To</label>
                 <DateInput
-                  value={localFilters.dueDateTo}
-                  onChange={(date) => updateFilter('dueDateTo', date)}
+                  value={localFilters.endDateTo}
+                  onChange={(date) => updateFilter('endDateTo', date)}
                   placeholder="To date"
                 />
               </div>

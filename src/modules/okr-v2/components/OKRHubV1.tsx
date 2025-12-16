@@ -94,14 +94,14 @@ export function OKRHubV1({ snapshotId }: OKRHubV1Props) {
         objective.startDate && new Date(objective.startDate) <= filters.startDateTo!
       );
     }
-    if (filters.dueDateFrom) {
+    if (filters.endDateFrom) {
       items = items.filter(({ objective }) =>
-        objective.dueDate && new Date(objective.dueDate) >= filters.dueDateFrom!
+        objective.endDate && new Date(objective.endDate) >= filters.endDateFrom!
       );
     }
-    if (filters.dueDateTo) {
+    if (filters.endDateTo) {
       items = items.filter(({ objective }) =>
-        objective.dueDate && new Date(objective.dueDate) <= filters.dueDateTo!
+        objective.endDate && new Date(objective.endDate) <= filters.endDateTo!
       );
     }
 
