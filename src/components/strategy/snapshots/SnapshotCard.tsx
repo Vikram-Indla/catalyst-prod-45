@@ -72,6 +72,11 @@ export function SnapshotCard({ snapshot, onViewDetails, onDelete }: SnapshotCard
     );
   };
 
+  const handleCardClick = () => {
+    console.log('Card clicked:', snapshot.name, snapshot.id);
+    onViewDetails(snapshot);
+  };
+
   return (
     <>
       <Card 
@@ -84,7 +89,7 @@ export function SnapshotCard({ snapshot, onViewDetails, onDelete }: SnapshotCard
           isArchived && 'opacity-70',
           isActive && 'border-l-[3px] border-l-[#5C7C5C]'
         )}
-        onClick={() => onViewDetails(snapshot)}
+        onClick={handleCardClick}
       >
         <CardHeader className="flex flex-row items-start justify-between pb-2 pt-4">
           <div className="flex-1 min-w-0 pr-2">
