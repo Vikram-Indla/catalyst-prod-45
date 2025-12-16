@@ -127,7 +127,7 @@ export function StrategicBacklogThemesSection({
 
       {/* Table */}
       <div style={{ background: 'var(--surface-bg)', border: '1px solid var(--border-default)', borderRadius: '10px', overflow: 'hidden' }}>
-        <table className="w-full">
+        <table className="w-full table-fixed">
           <thead>
             <tr style={{ borderBottom: '1px solid var(--border-default)' }}>
               <th 
@@ -191,8 +191,14 @@ export function StrategicBacklogThemesSection({
                     onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = '#F6F8FA'; }}
                     onMouseLeave={(e) => { e.currentTarget.style.background = isSelected ? 'var(--row-selected)' : 'transparent'; }}
                   >
-                    <td className="px-4 py-3.5">
-                      <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{theme.name}</span>
+                    <td className="px-4 py-3.5 min-w-0">
+                      <span
+                        className="text-sm font-medium block truncate"
+                        style={{ color: 'var(--text-primary)' }}
+                        title={theme.name}
+                      >
+                        {theme.name}
+                      </span>
                     </td>
                     <td className="px-4 py-3.5">
                       {getStatusBadge(theme.status)}
