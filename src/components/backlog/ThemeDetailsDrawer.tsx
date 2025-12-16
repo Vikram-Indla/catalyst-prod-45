@@ -384,12 +384,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
     },
   });
 
-  if (!theme) {
-    console.log('[ThemeDetailsDrawer] No theme provided, returning null');
-    return null;
-  }
-
-  console.log('[ThemeDetailsDrawer] Rendering with theme:', theme.id, 'isOpen:', isOpen);
+  if (!theme) return null;
 
   const drawerWidthClass = isExpanded
     ? 'w-screen sm:w-[70vw] sm:max-w-[1120px]'

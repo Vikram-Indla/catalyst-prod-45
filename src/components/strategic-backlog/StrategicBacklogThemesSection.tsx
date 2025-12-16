@@ -186,10 +186,7 @@ export function StrategicBacklogThemesSection({
                 return (
                   <tr
                     key={theme.id}
-                    onClick={() => {
-                      console.log('[ThemesSection] Row clicked, theme:', theme);
-                      onSelectItem(theme);
-                    }}
+                    onClick={() => onSelectItem(theme)}
                     className="cursor-pointer transition-colors group"
                     style={{
                       borderBottom: '1px solid var(--border-subtle)',
