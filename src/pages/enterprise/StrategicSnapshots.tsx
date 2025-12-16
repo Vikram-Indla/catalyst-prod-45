@@ -115,13 +115,23 @@ function SnapshotTableRow({
   const ownerName = owner?.full_name || 'Unassigned';
   const ownerInitials = ownerName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
 
+  const isSelected = false; // Can be passed as prop if needed for drawer open state
+
   return (
     <tr 
       className={cn(
-        "cursor-pointer transition-colors group",
-        "border-b border-[#EAECEF] dark:border-[#21262D]",
-        "hover:bg-[#F6F8FA] dark:hover:bg-[#161B22]",
-        isActive && "border-l-[3px] border-l-[#5C7C5C] bg-[rgba(92,124,92,0.05)]"
+        "cursor-pointer transition-all duration-150 group",
+        "border-b border-[#E8E4DC] dark:border-[#21262D]",
+        // Hover state with champagne left border
+        "hover:bg-[rgba(198,156,109,0.06)] dark:hover:bg-[rgba(198,156,109,0.08)]",
+        "hover:border-l-[3px] hover:border-l-[#D4B896]",
+        // Active snapshot styling
+        isActive && "border-l-[3px] border-l-[#5C7C5C] bg-[rgba(92,124,92,0.05)]",
+        // Selected state (when drawer open)
+        isSelected && !isActive && [
+          "bg-[rgba(198,156,109,0.08)] dark:bg-[rgba(198,156,109,0.12)]",
+          "border-l-[3px] border-l-[#C69C6D]"
+        ]
       )}
       onClick={() => onSelect(snapshot)}
     >
@@ -389,7 +399,7 @@ export default function StrategicSnapshots() {
           <div className="bg-white dark:bg-[#0D1117] border border-[#E1E4E8] dark:border-[#30363D] rounded-xl overflow-hidden">
             <table className="w-full">
               <thead>
-                <tr className="bg-[#FAFBFC] dark:bg-[#161B22] border-b border-[#E1E4E8] dark:border-[#30363D]">
+                <tr className="bg-[#F5F3F0] dark:bg-[#21262D] border-b border-[#E8E4DC] dark:border-[#30363D]">
                   <th className="py-3 px-4 text-left text-[11px] font-semibold uppercase tracking-wider text-[#8B949E] dark:text-[#6E7681]">Snapshot Name</th>
                   <th className="py-3 px-4 text-left text-[11px] font-semibold uppercase tracking-wider text-[#8B949E] dark:text-[#6E7681]">Status</th>
                   <th className="py-3 px-4 text-left text-[11px] font-semibold uppercase tracking-wider text-[#8B949E] dark:text-[#6E7681]">Date Range</th>
