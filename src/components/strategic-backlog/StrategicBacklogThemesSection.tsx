@@ -3,10 +3,7 @@
  * Pixel-perfect table matching mockups exactly
  */
 import { useState, useMemo } from 'react';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { Search, Target, ChevronRight, ArrowUpDown, ArrowUp } from 'lucide-react';
-import { useThemesObjectiveCounts } from '@/hooks/useThemeObjectiveLinks';
 import { format } from 'date-fns';
 import type { StrategicTheme } from '@/types/strategicBacklog';
 import { cn } from '@/lib/utils';
@@ -17,6 +14,9 @@ interface ThemesSectionProps {
   isArchived: boolean;
   onSelectItem: (item: StrategicTheme) => void;
   selectedItemId?: string;
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
+  objectiveCounts: Record<string, number>;
 }
 
 export function StrategicBacklogThemesSection({ 
@@ -25,12 +25,12 @@ export function StrategicBacklogThemesSection({
   isArchived,
   onSelectItem,
   selectedItemId,
+  searchQuery,
+  onSearchChange,
+  objectiveCounts,
 }: ThemesSectionProps) {
-  const [searchQuery, setSearchQuery] = useState('');
   const [sortColumn, setSortColumn] = useState<'name' | 'status' | 'objectives' | 'updated'>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
-
-  const { data: objectiveCounts = {} } = useThemesObjectiveCounts(themes.map(t => t.id));
 
   const filteredThemes = useMemo(() => {
     let result = themes;
@@ -120,7 +120,7 @@ export function StrategicBacklogThemesSection({
           type="text"
           placeholder="Search themes..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={(e) => onSearchChange(e.target.value)}
           className={cn(
             "flex-1 bg-transparent text-sm outline-none",
             "text-[#24292F] dark:text-[#E6EDF3]",

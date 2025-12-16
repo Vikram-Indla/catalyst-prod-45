@@ -3,21 +3,10 @@
  * Pixel-perfect table matching mockups exactly
  */
 import { useState, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { Search, ChevronRight, ArrowUpDown, ArrowUp } from 'lucide-react';
 import type { StrategicTheme } from '@/types/strategicBacklog';
 import { cn } from '@/lib/utils';
-
-interface ObjectivesSectionProps {
-  snapshotId: string;
-  themes: StrategicTheme[];
-  isArchived: boolean;
-  onSelectItem: (item: any) => void;
-  selectedItemId?: string;
-}
+import { format } from 'date-fns';
 
 interface Objective {
   id: string;
@@ -30,58 +19,37 @@ interface Objective {
   updated_at: string;
 }
 
+interface ObjectivesSectionProps {
+  objectives: Objective[];
+  themes: StrategicTheme[];
+  isLoading: boolean;
+  isArchived: boolean;
+  onSelectItem: (item: any) => void;
+  selectedItemId?: string;
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
+  krCounts: Record<string, number>;
+}
+
 export function StrategicBacklogObjectivesSection({ 
-  snapshotId, 
+  objectives,
   themes, 
+  isLoading,
   isArchived,
   onSelectItem,
   selectedItemId,
+  searchQuery,
+  onSearchChange,
+  krCounts,
 }: ObjectivesSectionProps) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortColumn, setSortColumn] = useState<'name' | 'theme' | 'status' | 'krs' | 'progress'>('name');
+  const [sortColumn, setSortColumn] = useState<'name' | 'theme' | 'status' | 'krs' | 'updated'>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
-  const themeIds = themes.map(t => t.id);
   const themeLookup = useMemo(() => {
     const map: Record<string, string> = {};
     themes.forEach(t => { map[t.id] = t.name; });
     return map;
   }, [themes]);
-
-  const { data: objectives = [], isLoading } = useQuery({
-    queryKey: ['snapshot-objectives', snapshotId, themeIds],
-    queryFn: async () => {
-      if (themeIds.length === 0) return [];
-      const { data, error } = await supabase
-        .from('objectives')
-        .select('*')
-        .in('theme_id', themeIds)
-        .order('name');
-      if (error) throw error;
-      return (data || []) as Objective[];
-    },
-    enabled: themeIds.length > 0,
-  });
-
-  const { data: krCounts = {} } = useQuery({
-    queryKey: ['objectives-kr-counts', objectives.map(o => o.id)],
-    queryFn: async () => {
-      if (objectives.length === 0) return {};
-      const objectiveIds = objectives.map(o => o.id);
-      const { data } = await supabase
-        .from('key_results')
-        .select('objective_id')
-        .in('objective_id', objectiveIds);
-      
-      const counts: Record<string, number> = {};
-      objectiveIds.forEach(id => counts[id] = 0);
-      (data || []).forEach(kr => {
-        if (kr.objective_id) counts[kr.objective_id] = (counts[kr.objective_id] || 0) + 1;
-      });
-      return counts;
-    },
-    enabled: objectives.length > 0,
-  });
 
   const filteredObjectives = useMemo(() => {
     let result = objectives;
@@ -115,9 +83,9 @@ export function StrategicBacklogObjectivesSection({
           aVal = krCounts[a.id] || 0;
           bVal = krCounts[b.id] || 0;
           break;
-        case 'progress':
-          aVal = a.overall_progress || 0;
-          bVal = b.overall_progress || 0;
+        case 'updated':
+          aVal = a.updated_at || '';
+          bVal = b.updated_at || '';
           break;
         default:
           return 0;
@@ -176,7 +144,7 @@ export function StrategicBacklogObjectivesSection({
           type="text"
           placeholder="Search objectives..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={(e) => onSearchChange(e.target.value)}
           className={cn(
             "flex-1 bg-transparent text-sm outline-none",
             "text-[#24292F] dark:text-[#E6EDF3]",
@@ -223,11 +191,11 @@ export function StrategicBacklogObjectivesSection({
                 </button>
               </th>
               <th 
-                className="text-left px-4 py-3 text-xs font-medium text-muted-foreground w-36 cursor-pointer hover:text-foreground transition-colors"
-                onClick={() => handleSort('progress')}
+                className="text-left px-4 py-3 text-xs font-medium text-muted-foreground w-32 cursor-pointer hover:text-foreground transition-colors"
+                onClick={() => handleSort('updated')}
               >
                 <button className="flex items-center">
-                  Progress <SortIcon column="progress" />
+                  Updated <SortIcon column="updated" />
                 </button>
               </th>
               <th className="w-10"></th>
@@ -249,7 +217,6 @@ export function StrategicBacklogObjectivesSection({
             ) : (
               filteredObjectives.map((obj) => {
                 const isSelected = selectedItemId === obj.id;
-                const progress = Math.round((obj.overall_progress || 0) * 100);
                 return (
                   <tr
                     key={obj.id}
@@ -271,18 +238,8 @@ export function StrategicBacklogObjectivesSection({
                     <td className="px-4 py-3 text-sm text-center text-muted-foreground">
                       {krCounts[obj.id] || 0}
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <div className="flex-1 h-2 bg-border rounded-full overflow-hidden max-w-[80px]">
-                          <div 
-                            className="bg-secondary-green h-full rounded-full" 
-                            style={{ width: `${progress}%` }}
-                          />
-                        </div>
-                        <span className="text-sm text-muted-foreground w-10 text-right">
-                          {progress}%
-                        </span>
-                      </div>
+                    <td className="px-4 py-3 text-sm text-muted-foreground">
+                      {obj.updated_at ? format(new Date(obj.updated_at), 'MMM d, yyyy') : '—'}
                     </td>
                     <td className="px-4 py-3">
                       <ChevronRight className="h-4 w-4 text-muted-foreground" />
