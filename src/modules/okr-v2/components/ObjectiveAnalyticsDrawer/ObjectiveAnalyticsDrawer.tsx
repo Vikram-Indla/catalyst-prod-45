@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { useObjectiveAnalytics } from '../../hooks/useObjectiveAnalytics';
+import { ObjectiveDrawerV2 } from '../ObjectiveDrawerV2';
 import type { ObjectiveAnalyticsData, InsightSeverity, BaselineInfo, KrStatusCounts, TrendDirection } from '../../lib/objectiveAnalytics';
 import type { AnalyticsRiskSummary } from '../../lib/okrRiskTypes';
 
@@ -430,7 +431,7 @@ function DrawerSkeleton() {
 // MAIN DRAWER CONTENT
 // ─────────────────────────────────────────────────────────────────────────────────
 
-function DrawerContent({ analytics }: { analytics: ObjectiveAnalyticsData }) {
+function DrawerContent({ analytics, onTitleClick }: { analytics: ObjectiveAnalyticsData; onTitleClick: () => void }) {
   const { baseline, risks, coverage, insights, alignment, krStatus } = analytics;
 
   return (
@@ -444,7 +445,10 @@ function DrawerContent({ analytics }: { analytics: ObjectiveAnalyticsData }) {
           </div>
         </div>
 
-        <h2 className="text-lg font-semibold text-foreground leading-snug mb-4">
+        <h2 
+          onClick={onTitleClick}
+          className="text-lg font-semibold text-foreground leading-snug mb-4 cursor-pointer hover:text-brand-gold transition-colors"
+        >
           {analytics.name}
         </h2>
 
@@ -524,37 +528,55 @@ export function ObjectiveAnalyticsDrawer({
   snapshotId 
 }: ObjectiveAnalyticsDrawerProps) {
   const { analytics, isLoading, error } = useObjectiveAnalytics(objectiveId, snapshotId);
+  const [editDrawerOpen, setEditDrawerOpen] = useState(false);
+
+  const handleTitleClick = () => {
+    setEditDrawerOpen(true);
+  };
+
+  const handleEditDrawerClose = () => {
+    setEditDrawerOpen(false);
+  };
 
   return (
-    <Sheet open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <SheetContent 
-        side="right" 
-        className="w-screen sm:w-[480px] sm:max-w-[480px] p-0 flex flex-col"
-        style={{ borderLeft: '3px solid var(--accent-color)' }}
-      >
-        <SheetHeader className="sr-only">
-          <SheetTitle>Objective Analytics</SheetTitle>
-        </SheetHeader>
+    <>
+      <Sheet open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
+        <SheetContent 
+          side="right" 
+          className="w-screen sm:w-[480px] sm:max-w-[480px] p-0 flex flex-col"
+          style={{ borderLeft: '3px solid var(--accent-color)' }}
+        >
+          <SheetHeader className="sr-only">
+            <SheetTitle>Objective Analytics</SheetTitle>
+          </SheetHeader>
 
-        {isLoading && <DrawerSkeleton />}
-        
-        {error && (
-          <div className="p-6 text-center text-destructive">
-            <p>Failed to load objective analytics</p>
-            <p className="text-sm text-muted-foreground">{error.message}</p>
-          </div>
-        )}
+          {isLoading && <DrawerSkeleton />}
+          
+          {error && (
+            <div className="p-6 text-center text-destructive">
+              <p>Failed to load objective analytics</p>
+              <p className="text-sm text-muted-foreground">{error.message}</p>
+            </div>
+          )}
 
-        {!isLoading && !error && analytics && (
-          <DrawerContent analytics={analytics} />
-        )}
+          {!isLoading && !error && analytics && (
+            <DrawerContent analytics={analytics} onTitleClick={handleTitleClick} />
+          )}
 
-        {!isLoading && !error && !analytics && objectiveId && (
-          <div className="p-6 text-center text-muted-foreground">
-            <p>Objective not found</p>
-          </div>
-        )}
-      </SheetContent>
-    </Sheet>
+          {!isLoading && !error && !analytics && objectiveId && (
+            <div className="p-6 text-center text-muted-foreground">
+              <p>Objective not found</p>
+            </div>
+          )}
+        </SheetContent>
+      </Sheet>
+
+      {/* Edit Drawer - Opens on top when title is clicked */}
+      <ObjectiveDrawerV2
+        objectiveId={objectiveId}
+        open={editDrawerOpen}
+        onClose={handleEditDrawerClose}
+      />
+    </>
   );
 }
