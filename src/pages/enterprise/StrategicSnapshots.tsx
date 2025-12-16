@@ -449,7 +449,6 @@ export default function StrategicSnapshots() {
         onClose={() => setSelectedSnapshot(null)}
         snapshot={selectedSnapshot}
       />
-      />
 
       {/* Delete Confirmation */}
       <AlertDialog open={!!deleteSnapshot} onOpenChange={() => setDeleteSnapshot(null)}>
