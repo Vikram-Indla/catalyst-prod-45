@@ -131,7 +131,7 @@ export function ManageQuartersDrawer({ open, onClose, snapshot, isAdmin = false 
   return (
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
       <SheetContent side="right" width="medium" className="flex flex-col" hideClose>
-        <SheetHeader className="border-b pb-4">
+        <SheetHeader className="border-b border-brand-gold pb-4">
           <div className="flex items-center justify-between">
             <div>
               <SheetTitle>Manage quarters</SheetTitle>
@@ -156,19 +156,15 @@ export function ManageQuartersDrawer({ open, onClose, snapshot, isAdmin = false 
           )}
         </SheetHeader>
 
-        {/* Body with Gold Vertical Line */}
-        <div className="flex-1 flex overflow-hidden">
-          {/* GOLD VERTICAL LINE — LOCKED STANDARD */}
-          <div className="w-1 bg-[#C69C6D] flex-shrink-0" />
-          
-          <SheetBody className="flex-1 overflow-hidden">
+        {/* Body - No gold vertical line */}
+        <SheetBody className="flex-1 overflow-hidden">
           <div className="space-y-6 h-full flex flex-col">
             {/* Assigned Quarters Section */}
             <div className="space-y-3">
-              <Label className="text-[11px] font-semibold uppercase tracking-wider text-[#8B949E] dark:text-[#6E7681]">Assigned quarters</Label>
+              <Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Assigned quarters</Label>
               {assignedQuarters.length === 0 ? (
-                <div className="p-6 border-2 border-dashed border-[#E8E4DC] dark:border-[#30363D] rounded-[10px] text-center">
-                  <p className="text-sm text-[#8B949E] dark:text-[#6E7681] italic">No quarters assigned yet.</p>
+                <div className="p-6 border-2 border-dashed border-border rounded-lg text-center">
+                  <p className="text-sm text-muted-foreground italic">No quarters assigned yet.</p>
                 </div>
               ) : (
                 <ScrollArea className="max-h-[180px]">
@@ -195,9 +191,9 @@ export function ManageQuartersDrawer({ open, onClose, snapshot, isAdmin = false 
                 </ScrollArea>
               )}
               {assignedQuarters.length === 0 && !isArchived && (
-                <div className="flex items-center gap-2 mt-3 px-3.5 py-2.5 rounded-lg bg-[rgba(212,165,90,0.12)]">
-                  <AlertTriangle className="w-3.5 h-3.5 text-[#D4A55A] flex-shrink-0" />
-                  <span className="text-[13px] text-[#9A7B3C]">At least 1 quarter is recommended for activation.</span>
+                <div className="flex items-center gap-2 mt-3 px-3.5 py-2.5 rounded-lg bg-brand-gold/10">
+                  <AlertTriangle className="w-3.5 h-3.5 text-brand-gold flex-shrink-0" />
+                  <span className="text-[13px] text-brand-gold">At least 1 quarter is recommended for activation.</span>
                 </div>
               )}
             </div>
@@ -205,7 +201,7 @@ export function ManageQuartersDrawer({ open, onClose, snapshot, isAdmin = false 
             {/* Add Quarters Section */}
             {!isArchived && (
               <div className="space-y-3 flex-1 flex flex-col min-h-0">
-                <Label className="text-[11px] font-semibold uppercase tracking-wider text-[#8B949E] dark:text-[#6E7681]">Add quarters</Label>
+                <Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Add quarters</Label>
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -215,7 +211,7 @@ export function ManageQuartersDrawer({ open, onClose, snapshot, isAdmin = false 
                     className="pl-9"
                   />
                 </div>
-                <ScrollArea className="flex-1 min-h-[150px] max-h-[200px] border rounded-md">
+                <ScrollArea className="flex-1 min-h-[150px] max-h-[200px] border border-border rounded-md">
                   <div className="p-2 space-y-1">
                     {availableQuarters.length === 0 ? (
                       <p className="text-sm text-muted-foreground text-center py-4">
@@ -276,10 +272,9 @@ export function ManageQuartersDrawer({ open, onClose, snapshot, isAdmin = false 
               </div>
             )}
           </div>
-          </SheetBody>
-        </div>
+        </SheetBody>
 
-        <SheetFooter className="border-t pt-4 flex items-center justify-between">
+        <SheetFooter className="border-t border-border pt-4 flex items-center justify-between">
           <Badge variant="secondary" className="text-xs">
             {totalSelected} quarter{totalSelected !== 1 ? 's' : ''} selected
           </Badge>
@@ -287,7 +282,6 @@ export function ManageQuartersDrawer({ open, onClose, snapshot, isAdmin = false 
             <Button 
               variant="outline" 
               onClick={onClose}
-              className="px-5 py-2.5 rounded-lg text-sm font-medium bg-transparent border border-[#E8E4DC] dark:border-[#30363D] text-[#57534E] dark:text-[#B0BAC6] hover:bg-[#F5F3F0] dark:hover:bg-[#21262D]"
             >
               Cancel
             </Button>
@@ -295,12 +289,7 @@ export function ManageQuartersDrawer({ open, onClose, snapshot, isAdmin = false 
               <Button 
                 onClick={handleApply} 
                 disabled={saving || !hasChanges}
-                className={cn(
-                  "px-5 py-2.5 rounded-lg text-sm font-semibold",
-                  hasChanges
-                    ? "bg-[#C69C6D] text-white hover:bg-[#B8915F]"
-                    : "bg-[#F5F3F0] dark:bg-[#21262D] text-[#8B949E] cursor-not-allowed"
-                )}
+                className="bg-brand-gold hover:bg-brand-gold-hover text-white"
               >
                 {saving ? 'Applying...' : 'Apply'}
               </Button>

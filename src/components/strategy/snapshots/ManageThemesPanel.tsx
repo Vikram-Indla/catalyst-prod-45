@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Search, Plus, Minus, AlertCircle, Check, X } from 'lucide-react';
+import { ArrowLeft, Search, Plus, AlertCircle, X, Check } from 'lucide-react';
 import { StrategicSnapshot, useSnapshotConfiguration } from '@/hooks/useStrategicSnapshots';
 import { useSnapshotStrategyLinks } from '@/hooks/useStrategicBacklog';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -57,7 +57,6 @@ export function ManageThemesPanel({ snapshot, onBack }: ManageThemesPanelProps) 
   const [searchAvailable, setSearchAvailable] = useState('');
   const [searchIncluded, setSearchIncluded] = useState('');
   const [selectedToAdd, setSelectedToAdd] = useState<string[]>([]);
-  const [selectedToRemove, setSelectedToRemove] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -103,7 +102,6 @@ export function ManageThemesPanel({ snapshot, onBack }: ManageThemesPanelProps) 
   // Reset selections when links change
   useEffect(() => {
     setSelectedToAdd([]);
-    setSelectedToRemove([]);
   }, [linkedThemeIds.length]);
 
   const handleAddSelected = async () => {
@@ -127,35 +125,8 @@ export function ManageThemesPanel({ snapshot, onBack }: ManageThemesPanelProps) 
     }
   };
 
-  const handleRemoveSelected = async () => {
-    if (isArchived || selectedToRemove.length === 0) return;
-    setError(null);
-    setSaving(true);
-    
-    try {
-      const newThemeIds = linkedThemeIds.filter(id => !selectedToRemove.includes(id));
-      await updateLinks.mutateAsync({
-        snapshotId: snapshot.id,
-        themeIds: newThemeIds,
-      });
-      setSelectedToRemove([]);
-      catalystToast.success('Themes Removed', `${selectedToRemove.length} theme(s) unlinked from snapshot`);
-    } catch (err: any) {
-      setError(err.message || 'Failed to remove themes');
-      catalystToast.error('Error', err.message || 'Failed to remove themes');
-    } finally {
-      setSaving(false);
-    }
-  };
-
   const toggleAddSelection = (themeId: string) => {
     setSelectedToAdd(prev => 
-      prev.includes(themeId) ? prev.filter(id => id !== themeId) : [...prev, themeId]
-    );
-  };
-
-  const toggleRemoveSelection = (themeId: string) => {
-    setSelectedToRemove(prev => 
       prev.includes(themeId) ? prev.filter(id => id !== themeId) : [...prev, themeId]
     );
   };
@@ -164,9 +135,9 @@ export function ManageThemesPanel({ snapshot, onBack }: ManageThemesPanelProps) 
   const getStatusBadgeStyles = (status: string | null | undefined) => {
     const s = (status || '').toLowerCase();
     if (s === 'active') return "bg-[rgba(92,124,92,0.15)] text-[#5C7C5C] border-transparent";
-    if (s === 'proposed') return "bg-[rgba(212,184,150,0.3)] text-[#8B7355] border-transparent";
-    if (s === 'archived') return "bg-[rgba(139,147,158,0.15)] text-[#8B949E] border-transparent";
-    return "bg-[rgba(139,147,158,0.15)] text-[#8B949E] border-transparent";
+    if (s === 'proposed') return "bg-brand-gold/15 text-brand-gold border-transparent";
+    if (s === 'archived') return "bg-muted text-muted-foreground border-transparent";
+    return "bg-muted text-muted-foreground border-transparent";
   };
 
   // Handle single theme removal
@@ -191,7 +162,7 @@ export function ManageThemesPanel({ snapshot, onBack }: ManageThemesPanelProps) 
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center gap-3 pb-4 border-b border-[#E8E4DC] dark:border-[#30363D]">
+      <div className="flex items-center gap-3 pb-4 border-b border-brand-gold">
         <Button
           variant="ghost"
           size="icon"
@@ -201,8 +172,8 @@ export function ManageThemesPanel({ snapshot, onBack }: ManageThemesPanelProps) 
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div>
-          <h3 className="text-base font-semibold text-[#24292F] dark:text-[#E6EDF3]">Manage Themes</h3>
-          <p className="text-xs text-[#8B949E] dark:text-[#6E7681]">{snapshot.name}</p>
+          <h3 className="text-base font-semibold text-foreground">Manage Themes</h3>
+          <p className="text-xs text-muted-foreground">{snapshot.name}</p>
         </div>
       </div>
 
@@ -214,20 +185,15 @@ export function ManageThemesPanel({ snapshot, onBack }: ManageThemesPanelProps) 
         </div>
       )}
 
-      {/* Gold Vertical Line + Content */}
-      <div className="flex-1 flex overflow-hidden mt-4">
-        {/* GOLD VERTICAL LINE — LOCKED STANDARD */}
-        <div className="w-1 bg-[#C69C6D] flex-shrink-0" />
-        
-        {/* Two-column layout */}
-        <div className="flex-1 overflow-hidden grid grid-cols-2 gap-4 pl-4">
-          {/* Left: Available Themes */}
-          <div className="flex flex-col min-h-0">
-            <Label className="text-[11px] font-semibold uppercase tracking-wider text-[#8B949E] dark:text-[#6E7681] mb-2">
-              Available Themes ({availableThemes.length})
-            </Label>
-            <div className="relative mb-2">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#8B949E]" />
+      {/* Two-column layout */}
+      <div className="flex-1 overflow-hidden grid grid-cols-2 gap-4 mt-4">
+        {/* Left: Available Themes */}
+        <div className="flex flex-col min-h-0">
+          <Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+            Available Themes ({availableThemes.length})
+          </Label>
+          <div className="relative mb-2">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <Input
               placeholder="Search..."
               value={searchAvailable}
@@ -235,128 +201,128 @@ export function ManageThemesPanel({ snapshot, onBack }: ManageThemesPanelProps) 
               className="pl-8 h-8 text-sm"
             />
           </div>
-            <ScrollArea className="flex-1 border border-[#E8E4DC] dark:border-[#30363D] rounded-md">
-              <div className="p-2 space-y-1">
-                {themesLoading ? (
-                  <p className="text-sm text-[#8B949E] text-center py-4">Loading...</p>
-                ) : availableThemes.length === 0 ? (
-                  <p className="text-sm text-[#8B949E] text-center py-4">
-                    {searchAvailable ? 'No matching themes' : 'All themes linked'}
-                  </p>
-                ) : (
-                  availableThemes.map((theme) => (
-                    <label
-                      key={theme.id}
-                      className={cn(
-                        'flex items-start gap-2 py-2 px-2.5 rounded-md cursor-pointer transition-colors',
-                        selectedToAdd.includes(theme.id)
-                          ? 'bg-[rgba(198,156,109,0.1)]'
-                          : 'hover:bg-[rgba(198,156,109,0.06)]',
-                        isArchived && 'opacity-50 cursor-not-allowed'
+          <ScrollArea className="flex-1 border border-border rounded-lg">
+            <div className="p-2 space-y-1">
+              {themesLoading ? (
+                <p className="text-sm text-muted-foreground text-center py-4">Loading...</p>
+              ) : availableThemes.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  {searchAvailable ? 'No matching themes' : 'All themes linked'}
+                </p>
+              ) : (
+                availableThemes.map((theme) => (
+                  <label
+                    key={theme.id}
+                    className={cn(
+                      'flex items-start gap-2.5 py-2.5 px-3 rounded-lg cursor-pointer transition-colors',
+                      selectedToAdd.includes(theme.id)
+                        ? 'bg-brand-gold/10 border border-brand-gold/30'
+                        : 'hover:bg-muted/50 border border-transparent',
+                      isArchived && 'opacity-50 cursor-not-allowed'
+                    )}
+                  >
+                    <Checkbox
+                      checked={selectedToAdd.includes(theme.id)}
+                      onCheckedChange={() => !isArchived && toggleAddSelection(theme.id)}
+                      disabled={isArchived}
+                      className="mt-0.5"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <span className="text-sm font-medium text-foreground block truncate">{theme.name}</span>
+                      {theme.status && (
+                        <Badge className={cn("mt-1.5 text-[10px] font-medium px-2 py-0.5 rounded-full", getStatusBadgeStyles(theme.status))}>
+                          {theme.status}
+                        </Badge>
                       )}
-                    >
-                      <Checkbox
-                        checked={selectedToAdd.includes(theme.id)}
-                        onCheckedChange={() => !isArchived && toggleAddSelection(theme.id)}
-                        disabled={isArchived}
-                        className="mt-0.5"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <span className="text-sm font-medium text-[#24292F] dark:text-[#E6EDF3] line-clamp-1">{theme.name}</span>
-                        {theme.status && (
-                          <Badge className={cn("mt-1 text-[10px] font-medium px-2 py-0.5 rounded-full", getStatusBadgeStyles(theme.status))}>
-                            {theme.status}
-                          </Badge>
-                        )}
-                      </div>
-                    </label>
-                  ))
-                )}
+                    </div>
+                  </label>
+                ))
+              )}
             </div>
           </ScrollArea>
           {!isArchived && (
             <Button
               size="sm"
-              className="mt-2 bg-[hsl(var(--brand-gold))] hover:bg-[hsl(var(--brand-gold-hover))] text-white"
+              className="mt-3 bg-brand-gold hover:bg-brand-gold-hover text-white"
               onClick={handleAddSelected}
               disabled={selectedToAdd.length === 0 || saving}
             >
-              <Plus className="h-3.5 w-3.5 mr-1" />
+              <Plus className="h-3.5 w-3.5 mr-1.5" />
               Add Selected ({selectedToAdd.length})
             </Button>
           )}
         </div>
 
-            {/* Right: Included Themes */}
-            <div className="flex flex-col min-h-0">
-              <Label className="text-[11px] font-semibold uppercase tracking-wider text-[#8B949E] dark:text-[#6E7681] mb-2">
-                Included in Snapshot ({includedThemes.length})
-              </Label>
-              <div className="relative mb-2">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#8B949E]" />
-                <Input
-                  placeholder="Search..."
-                  value={searchIncluded}
-                  onChange={(e) => setSearchIncluded(e.target.value)}
-                  className="pl-8 h-8 text-sm"
-                />
-              </div>
-              <ScrollArea className="flex-1 border border-[#E8E4DC] dark:border-[#30363D] rounded-md">
-                <div className="p-2 space-y-1">
-                  {filteredIncludedThemes.length === 0 ? (
-                    <div className="p-6 border-2 border-dashed border-[#E8E4DC] dark:border-[#30363D] rounded-[10px] text-center">
-                      <p className="text-sm text-[#8B949E] italic">
-                        {searchIncluded ? 'No matching themes' : 'No themes linked yet'}
-                      </p>
-                    </div>
-                  ) : (
-                    filteredIncludedThemes.map((theme) => (
-                      <div
-                        key={theme.id}
-                        className={cn(
-                          "flex items-center justify-between p-3.5",
-                          "bg-[rgba(92,124,92,0.08)] dark:bg-[rgba(92,124,92,0.12)]",
-                          "border-b border-[#E8E4DC] dark:border-[#21262D] last:border-b-0 rounded-md"
-                        )}
-                      >
-                        <div className="flex-1 min-w-0">
-                          <span className="text-sm font-medium text-[#24292F] dark:text-[#E6EDF3] line-clamp-1">{theme.name}</span>
-                          {theme.status && (
-                            <Badge className={cn("mt-1 text-[10px] font-medium px-2 py-0.5 rounded-full", getStatusBadgeStyles(theme.status))}>
-                              {theme.status}
-                            </Badge>
-                          )}
-                        </div>
-                        {/* Individual remove button */}
-                        {!isArchived && (
-                          <button
-                            onClick={() => handleRemoveSingle(theme.id)}
-                            disabled={saving}
-                            className="w-7 h-7 rounded-md flex items-center justify-center text-[#8B949E] hover:bg-[#F5F3F0] dark:hover:bg-[#21262D] hover:text-[#24292F] dark:hover:text-[#E6EDF3] transition-colors"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                        )}
-                      </div>
-                    ))
-                  )}
-                </div>
-              </ScrollArea>
-            </div>
+        {/* Right: Included Themes */}
+        <div className="flex flex-col min-h-0">
+          <Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+            Included in Snapshot ({includedThemes.length})
+          </Label>
+          <div className="relative mb-2">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              placeholder="Search..."
+              value={searchIncluded}
+              onChange={(e) => setSearchIncluded(e.target.value)}
+              className="pl-8 h-8 text-sm"
+            />
           </div>
+          <ScrollArea className="flex-1 border border-border rounded-lg bg-muted/30">
+            <div className="p-2 space-y-1.5">
+              {filteredIncludedThemes.length === 0 ? (
+                <div className="p-8 text-center">
+                  <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-muted/50 flex items-center justify-center">
+                    <Check className="h-5 w-5 text-muted-foreground" />
+                  </div>
+                  <p className="text-sm text-muted-foreground italic">
+                    {searchIncluded ? 'No matching themes' : 'No themes linked yet'}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Select themes from the left to include them
+                  </p>
+                </div>
+              ) : (
+                filteredIncludedThemes.map((theme) => (
+                  <div
+                    key={theme.id}
+                    className="flex items-center justify-between p-3 bg-background border border-border rounded-lg"
+                  >
+                    <div className="flex-1 min-w-0 mr-2">
+                      <span className="text-sm font-medium text-foreground block truncate">{theme.name}</span>
+                      {theme.status && (
+                        <Badge className={cn("mt-1 text-[10px] font-medium px-2 py-0.5 rounded-full", getStatusBadgeStyles(theme.status))}>
+                          {theme.status}
+                        </Badge>
+                      )}
+                    </div>
+                    {/* Individual remove button */}
+                    {!isArchived && (
+                      <button
+                        onClick={() => handleRemoveSingle(theme.id)}
+                        disabled={saving}
+                        className="w-7 h-7 rounded-md flex items-center justify-center text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors flex-shrink-0"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+          </ScrollArea>
         </div>
+      </div>
 
-      {/* Summary */}
-      <div className="pt-4 mt-4 border-t border-[#E8E4DC] dark:border-[#30363D]">
+      {/* Footer */}
+      <div className="pt-4 mt-4 border-t border-border">
         <div className="flex items-center justify-between">
-          <Badge className="text-xs bg-[#F5F3F0] dark:bg-[#21262D] text-[#57534E] dark:text-[#B0BAC6]">
+          <Badge variant="secondary" className="text-xs">
             {linkedThemeIds.length} theme{linkedThemeIds.length !== 1 ? 's' : ''} linked
           </Badge>
           <Button 
             variant="outline" 
             size="sm" 
             onClick={onBack}
-            className="border-[#E8E4DC] dark:border-[#30363D] text-[#57534E] dark:text-[#B0BAC6] hover:bg-[#F5F3F0] dark:hover:bg-[#21262D]"
           >
             Done
           </Button>
