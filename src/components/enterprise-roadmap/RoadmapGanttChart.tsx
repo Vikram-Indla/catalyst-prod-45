@@ -7,7 +7,6 @@ import {
   generateTimelinePeriods, 
   calculateBarMetrics, 
   calculateTodayPosition,
-  itemTypeStyles,
   formatRoadmapDate 
 } from './utils';
 import { startOfYear, endOfYear, addYears } from 'date-fns';
@@ -25,7 +24,7 @@ interface RoadmapGanttChartProps {
 }
 
 const ROW_HEIGHT = 60;
-const MIN_BAR_WIDTH = 4;
+const LINE_HEIGHT = 3; // Sleek progress line height
 
 export function RoadmapGanttChart({
   items,
@@ -172,7 +171,6 @@ export function RoadmapGanttChart({
             
             if (!metrics.visible) return null;
 
-            const style = itemTypeStyles[item.type];
             const isSelected = selectedId === item.id;
             const barWidth = metrics.width;
 
@@ -188,59 +186,92 @@ export function RoadmapGanttChart({
                   height: ROW_HEIGHT
                 }}
               >
-                {/* Gantt Bar */}
+                {/* Progress Line Visualization */}
                 <div
-                  className="absolute h-8 group cursor-pointer"
+                  className="absolute group cursor-pointer"
                   style={{ 
                     left: metrics.left, 
                     width: barWidth,
-                    top: (ROW_HEIGHT - 32) / 2
+                    top: '50%',
+                    transform: 'translateY(-50%)'
                   }}
                   onClick={() => onItemClick(item)}
                   onMouseEnter={(e) => handleBarHover(item, e)}
                   onMouseLeave={() => setHoveredItem(null)}
                 >
-                  {/* Bar */}
+                  {/* Start Node */}
                   <div className={cn(
-                    "h-full rounded-md border relative overflow-hidden",
-                    "transition-all duration-200",
-                    "hover:shadow-lg hover:scale-y-110",
-                    style.bg,
-                    style.border,
-                    isSelected && "ring-2 ring-[#C69C6D] ring-offset-1"
-                  )}>
-                    {/* Progress Fill */}
-                    {item.progress > 0 && (
-                      <div 
-                        className="absolute inset-y-0 left-0 bg-black/20"
-                        style={{ width: `${item.progress}%` }}
-                      />
-                    )}
-                    
-                    {/* Label (if bar is wide enough) */}
-                    {barWidth > 100 && (
-                      <div className="absolute inset-0 flex items-center px-2">
-                        <span className="text-xs font-medium text-white truncate">
-                          {item.name}
-                        </span>
-                      </div>
-                    )}
+                    "absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-10",
+                    "w-3 h-3 rounded-full border-2",
+                    "bg-white dark:bg-[#0D1117]",
+                    "border-[#C69C6D]",
+                    "transition-transform group-hover:scale-125"
+                  )} />
 
-                    {/* Progress Text (if bar is wide enough) */}
-                    {barWidth > 60 && (
-                      <div className="absolute inset-y-0 right-2 flex items-center">
-                        <span className="text-xs font-bold text-white">
-                          {item.progress}%
-                        </span>
-                      </div>
+                  {/* Track Line (background) */}
+                  <div 
+                    className="absolute inset-y-0 left-0 right-0 my-auto rounded-full bg-[#E1E4E8] dark:bg-[#30363D]"
+                    style={{ height: LINE_HEIGHT }}
+                  />
+
+                  {/* Progress Line (foreground with gradient) */}
+                  <div 
+                    className={cn(
+                      "absolute inset-y-0 left-0 my-auto rounded-full",
+                      "transition-all duration-300",
+                      isSelected && "shadow-[0_0_8px_rgba(198,156,109,0.6)]"
                     )}
+                    style={{ 
+                      height: LINE_HEIGHT,
+                      width: `${item.progress}%`,
+                      background: item.type === 'theme' 
+                        ? 'linear-gradient(90deg, #5C7C5C, #7A9A7A)' 
+                        : item.type === 'objective'
+                        ? 'linear-gradient(90deg, #C69C6D, #D4B896)'
+                        : 'linear-gradient(90deg, #8B7355, #A89070)'
+                    }}
+                  />
+
+                  {/* Progress Node (current position) */}
+                  {item.progress > 0 && item.progress < 100 && (
+                    <div 
+                      className={cn(
+                        "absolute top-1/2 -translate-y-1/2 z-10",
+                        "w-2.5 h-2.5 rounded-full",
+                        "transition-transform group-hover:scale-125",
+                        item.type === 'theme' ? "bg-[#5C7C5C]" : 
+                        item.type === 'objective' ? "bg-[#C69C6D]" : "bg-[#8B7355]"
+                      )}
+                      style={{ left: `${item.progress}%`, transform: 'translate(-50%, -50%)' }}
+                    />
+                  )}
+
+                  {/* End Node */}
+                  <div className={cn(
+                    "absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10",
+                    "w-3 h-3 rounded-full border-2",
+                    item.progress >= 100 
+                      ? "bg-[#5C7C5C] border-[#5C7C5C]" 
+                      : "bg-white dark:bg-[#0D1117] border-[#8B949E] dark:border-[#6E7681]",
+                    "transition-transform group-hover:scale-125"
+                  )} />
+
+                  {/* Progress Label (floats above line) */}
+                  <div className={cn(
+                    "absolute -top-5 left-1/2 -translate-x-1/2",
+                    "text-[10px] font-semibold",
+                    "opacity-0 group-hover:opacity-100 transition-opacity",
+                    item.type === 'theme' ? "text-[#5C7C5C]" : 
+                    item.type === 'objective' ? "text-[#C69C6D]" : "text-[#8B7355]"
+                  )}>
+                    {item.progress}%
                   </div>
 
                   {/* Date Labels on Hover */}
-                  <div className="absolute -bottom-5 left-0 text-[10px] text-[#8B949E] dark:text-[#6E7681] opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute -bottom-4 left-0 text-[10px] text-[#8B949E] dark:text-[#6E7681] opacity-0 group-hover:opacity-100 transition-opacity">
                     {formatRoadmapDate(item.startDate)}
                   </div>
-                  <div className="absolute -bottom-5 right-0 text-[10px] text-[#8B949E] dark:text-[#6E7681] opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute -bottom-4 right-0 text-[10px] text-[#8B949E] dark:text-[#6E7681] opacity-0 group-hover:opacity-100 transition-opacity">
                     {formatRoadmapDate(item.endDate)}
                   </div>
                 </div>
