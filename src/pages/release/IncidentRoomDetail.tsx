@@ -488,11 +488,125 @@ export default function IncidentRoomDetail() {
               </TabsContent>
 
               <TabsContent value="sla" className="p-4">
-                <p className="text-sm text-muted-foreground">SLA history coming soon.</p>
+                {incident.sla ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                      <span className="text-sm">Response Due</span>
+                      <span className="text-sm font-medium">{new Date(incident.sla.response_due_at).toLocaleString()}</span>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                      <span className="text-sm">Resolution Due</span>
+                      <span className="text-sm font-medium">{new Date(incident.sla.resolution_due_at).toLocaleString()}</span>
+                    </div>
+                    {incident.sla.response_breached && (
+                      <div className="flex items-center gap-2 p-3 bg-destructive/10 text-destructive rounded-lg">
+                        <AlertTriangle className="h-4 w-4" />
+                        <span className="text-sm">Response SLA breached</span>
+                      </div>
+                    )}
+                    {incident.sla.resolution_breached && (
+                      <div className="flex items-center gap-2 p-3 bg-destructive/10 text-destructive rounded-lg">
+                        <AlertTriangle className="h-4 w-4" />
+                        <span className="text-sm">Resolution SLA breached</span>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">No SLA configured for this severity.</p>
+                )}
               </TabsContent>
 
               <TabsContent value="approvals" className="p-4">
-                <p className="text-sm text-muted-foreground">Approvals coming soon.</p>
+                {incident.committee ? (
+                  <div className="space-y-4">
+                    {/* Committee Status */}
+                    <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                      <span className="text-sm font-medium">Committee Status</span>
+                      <Badge variant={
+                        incident.committee.status === 'approved' ? 'default' : 
+                        incident.committee.status === 'rejected' ? 'destructive' : 'secondary'
+                      } className={incident.committee.status === 'approved' ? 'bg-secondary-green' : ''}>
+                        {incident.committee.status.charAt(0).toUpperCase() + incident.committee.status.slice(1)}
+                      </Badge>
+                    </div>
+
+                    {/* Members & Votes */}
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-medium">Committee Members</h4>
+                      {incident.committee.members?.map(member => {
+                        const vote = incident.committee?.votes?.find(v => v.member_id === member.id);
+                        return (
+                          <div key={member.id} className="flex items-center justify-between p-3 border border-border rounded-lg">
+                            <div className="flex items-center gap-3">
+                              <Avatar className="h-8 w-8">
+                                <AvatarFallback className="text-xs bg-brand-gold text-white">
+                                  {member.user?.full_name?.split(' ').map(n => n[0]).join('').slice(0, 2) || '??'}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div>
+                                <p className="text-sm font-medium">{member.user?.full_name || 'Unknown'}</p>
+                                {member.has_veto && (
+                                  <span className="text-xs text-muted-foreground">Has veto power</span>
+                                )}
+                              </div>
+                            </div>
+                            <div>
+                              {vote ? (
+                                <Badge variant={
+                                  vote.vote === 'approved' ? 'default' : 
+                                  vote.vote === 'rejected' || vote.vote === 'vetoed' ? 'destructive' : 'secondary'
+                                } className={vote.vote === 'approved' ? 'bg-secondary-green' : ''}>
+                                  {vote.vote === 'vetoed' ? 'Vetoed' : vote.vote.charAt(0).toUpperCase() + vote.vote.slice(1)}
+                                </Badge>
+                              ) : (
+                                <span className="text-xs text-muted-foreground">Pending</span>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Voting Actions */}
+                    {incident.committee.status === 'pending' && (
+                      <div className="flex gap-2 pt-2">
+                        <Button 
+                          variant="outline" 
+                          className="flex-1"
+                          onClick={() => handleVote('rejected')}
+                          disabled={isSubmitting}
+                        >
+                          <X className="h-4 w-4 mr-1" />
+                          Reject
+                        </Button>
+                        <Button 
+                          className="flex-1 bg-secondary-green hover:bg-secondary-green/90"
+                          onClick={() => handleVote('approved')}
+                          disabled={isSubmitting}
+                        >
+                          <Check className="h-4 w-4 mr-1" />
+                          Approve
+                        </Button>
+                      </div>
+                    )}
+
+                    {incident.committee.decision_note && (
+                      <div className="p-3 bg-muted/30 rounded-lg">
+                        <p className="text-xs text-muted-foreground mb-1">Decision Note</p>
+                        <p className="text-sm">{incident.committee.decision_note}</p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <Users className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                    <p className="text-sm text-muted-foreground">
+                      {incident.requires_committee 
+                        ? 'Committee review not yet initiated. Click "Send to Committee" to start.'
+                        : 'This incident does not require committee approval.'}
+                    </p>
+                  </div>
+                )}
               </TabsContent>
             </Tabs>
 
