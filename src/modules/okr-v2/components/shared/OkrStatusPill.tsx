@@ -81,8 +81,9 @@ export function OkrStatusPill({ status, size = 'md' }: OkrStatusPillProps) {
   return (
     <span
       className={cn(
-        'inline-flex items-center justify-center rounded-full font-medium border whitespace-nowrap',
-        size === 'sm' ? 'px-2.5 py-0.5 text-[11px]' : 'px-3.5 py-1 text-xs',
+        'inline-flex items-center justify-center rounded-full font-medium border whitespace-nowrap text-center',
+        // Uniform width based on longest status "In Progress", flatter height
+        'min-w-[70px] px-2 py-[3px] text-[10px]',
         styles.bg,
         styles.text,
         styles.border
