@@ -355,8 +355,8 @@ export default function Auth() {
         </div>
       </div>
 
-      {/* Right Panel - Login/Password Reset Panel */}
-      <div className="relative w-full lg:w-[55%] p-6 sm:p-8 md:p-12 lg:p-16 bg-[var(--surface-1)]">
+      {/* Right Panel - Login/Password Reset Panel - LIGHT MODE ONLY */}
+      <div className="relative w-full lg:w-[55%] p-6 sm:p-8 md:p-12 lg:p-16 bg-white">
         {/* Subtle background gradients */}
         <div 
           className="absolute top-0 right-0 w-96 h-96 rounded-full pointer-events-none"
@@ -420,26 +420,26 @@ export default function Auth() {
             <>
               {/* User Type Selector */}
               <div className="flex justify-center mb-8">
-                <div className="inline-flex rounded-full p-1" style={{ backgroundColor: 'var(--surface-2)' }}>
+                <div className="inline-flex rounded-full p-1 bg-gray-100">
                   <button
                     type="button"
                     onClick={() => setUserType("existing")}
-                    className="font-body transition-all duration-200 px-6 py-2.5 rounded-full text-sm font-medium border-none cursor-pointer"
-                    style={{
-                      backgroundColor: userType === "existing" ? "var(--accent-color)" : "transparent",
-                      color: userType === "existing" ? "#fff" : "var(--text-2)",
-                    }}
+                    className={`font-body transition-all duration-200 px-6 py-2.5 rounded-full text-sm font-medium border-none cursor-pointer ${
+                      userType === "existing" 
+                        ? "bg-brand-gold text-white" 
+                        : "bg-transparent text-gray-600 hover:text-gray-800"
+                    }`}
                   >
                     Existing User
                   </button>
                   <button
                     type="button"
                     onClick={() => setUserType("external")}
-                    className="font-body transition-all duration-200 px-6 py-2.5 rounded-full text-sm font-medium border-none cursor-pointer"
-                    style={{
-                      backgroundColor: userType === "external" ? "var(--accent-color)" : "transparent",
-                      color: userType === "external" ? "#fff" : "var(--text-2)",
-                    }}
+                    className={`font-body transition-all duration-200 px-6 py-2.5 rounded-full text-sm font-medium border-none cursor-pointer ${
+                      userType === "external" 
+                        ? "bg-brand-gold text-white" 
+                        : "bg-transparent text-gray-600 hover:text-gray-800"
+                    }`}
                   >
                     External User
                   </button>
@@ -450,26 +450,26 @@ export default function Auth() {
                 <>
                   {/* Sign In / Sign Up Toggle */}
                   <div className="flex justify-center mb-6">
-                    <div className="inline-flex rounded-lg p-1" style={{ backgroundColor: 'var(--surface-2)' }}>
+                    <div className="inline-flex rounded-lg p-1 bg-gray-100">
                       <button
                         type="button"
                         onClick={() => { setAuthMode("signin"); resetForm(); }}
-                        className="font-body transition-all duration-200 px-5 py-2 rounded-md text-sm font-medium border-none cursor-pointer"
-                        style={{
-                          backgroundColor: authMode === "signin" ? "hsl(var(--brand-gold))" : "transparent",
-                          color: authMode === "signin" ? "#fff" : "var(--text-2)",
-                        }}
+                        className={`font-body transition-all duration-200 px-5 py-2 rounded-md text-sm font-medium border-none cursor-pointer ${
+                          authMode === "signin" 
+                            ? "bg-brand-gold text-white" 
+                            : "bg-transparent text-gray-600 hover:text-gray-800"
+                        }`}
                       >
                         Sign In
                       </button>
                       <button
                         type="button"
                         onClick={() => { setAuthMode("signup"); resetForm(); }}
-                        className="font-body transition-all duration-200 px-5 py-2 rounded-md text-sm font-medium border-none cursor-pointer"
-                        style={{
-                          backgroundColor: authMode === "signup" ? "hsl(var(--brand-gold))" : "transparent",
-                          color: authMode === "signup" ? "#fff" : "var(--text-2)",
-                        }}
+                        className={`font-body transition-all duration-200 px-5 py-2 rounded-md text-sm font-medium border-none cursor-pointer ${
+                          authMode === "signup" 
+                            ? "bg-brand-gold text-white" 
+                            : "bg-transparent text-gray-600 hover:text-gray-800"
+                        }`}
                       >
                         Sign Up
                       </button>
@@ -478,12 +478,12 @@ export default function Auth() {
 
                   {/* Header */}
                   <h2 
-                    className="text-center mb-2 font-display"
-                    style={{ fontSize: "clamp(1.5rem, 3vw, 1.875rem)", fontWeight: 500, color: 'var(--text-1)' }}
+                    className="text-center mb-2 font-display text-gray-900"
+                    style={{ fontSize: "clamp(1.5rem, 3vw, 1.875rem)", fontWeight: 500 }}
                   >
                     {authMode === "signin" ? "Welcome back" : "Create an account"}
                   </h2>
-                  <p className="text-center mb-6 font-body" style={{ fontSize: "clamp(0.9rem, 2vw, 1rem)", color: 'var(--text-2)' }}>
+                  <p className="text-center mb-6 font-body text-gray-500" style={{ fontSize: "clamp(0.9rem, 2vw, 1rem)" }}>
                     {authMode === "signin" ? "Enter your credentials to access your account" : "Fill in your details to get started"}
                   </p>
 
@@ -491,7 +491,7 @@ export default function Auth() {
                   <form onSubmit={authMode === "signin" ? handleSignIn : handleSignUp} className="space-y-4">
                     {authMode === "signup" && (
                       <div>
-                        <label htmlFor="fullName" className="block mb-1.5 font-body text-sm font-medium" style={{ color: 'var(--text-1)' }}>
+                        <label htmlFor="fullName" className="block mb-1.5 font-body text-sm font-medium text-gray-700">
                           Full Name
                         </label>
                         <input 
@@ -501,18 +501,13 @@ export default function Auth() {
                           onChange={e => { setFullName(e.target.value); setLoginError(null); }} 
                           placeholder="John Doe" 
                           required 
-                          className="w-full transition-all outline-none font-body text-base py-3.5 px-4 rounded-[10px] border-2 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/10"
-                          style={{ 
-                            backgroundColor: 'var(--input-bg)', 
-                            borderColor: 'var(--input-border)', 
-                            color: 'var(--input-text)'
-                          }}
+                          className="w-full transition-all outline-none font-body text-base py-3.5 px-4 rounded-[10px] border-2 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/10 bg-white border-gray-200 text-gray-900 placeholder:text-gray-400"
                         />
                       </div>
                     )}
 
                     <div>
-                      <label htmlFor="email" className="block mb-1.5 font-body text-sm font-medium" style={{ color: 'var(--text-1)' }}>
+                      <label htmlFor="email" className="block mb-1.5 font-body text-sm font-medium text-gray-700">
                         Email Address
                       </label>
                       <input 
@@ -522,17 +517,14 @@ export default function Auth() {
                         onChange={e => { setEmail(e.target.value); setLoginError(null); }} 
                         placeholder="name@company.com" 
                         required 
-                        className="w-full transition-all outline-none font-body text-base py-3.5 px-4 rounded-[10px] border-2 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/10"
-                        style={{ 
-                          backgroundColor: 'var(--input-bg)', 
-                          borderColor: loginError ? 'hsl(var(--destructive))' : 'var(--input-border)', 
-                          color: 'var(--input-text)'
-                        }}
+                        className={`w-full transition-all outline-none font-body text-base py-3.5 px-4 rounded-[10px] border-2 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/10 bg-white text-gray-900 placeholder:text-gray-400 ${
+                          loginError ? 'border-red-500' : 'border-gray-200'
+                        }`}
                       />
                     </div>
 
                     <div>
-                      <label htmlFor="password" className="block mb-1.5 font-body text-sm font-medium" style={{ color: 'var(--text-1)' }}>
+                      <label htmlFor="password" className="block mb-1.5 font-body text-sm font-medium text-gray-700">
                         Password
                       </label>
                       <PasswordInput
@@ -547,7 +539,7 @@ export default function Auth() {
 
                     {authMode === "signup" && (
                       <div>
-                        <label htmlFor="confirmPassword" className="block mb-1.5 font-body text-sm font-medium" style={{ color: 'var(--text-1)' }}>
+                        <label htmlFor="confirmPassword" className="block mb-1.5 font-body text-sm font-medium text-gray-700">
                           Confirm Password
                         </label>
                         <PasswordInput
@@ -562,7 +554,7 @@ export default function Auth() {
                     )}
 
                     {loginError && (
-                      <p className="text-sm font-body text-destructive">{loginError}</p>
+                      <p className="text-sm font-body text-red-600">{loginError}</p>
                     )}
 
                     {authMode === "signin" && (
@@ -572,17 +564,15 @@ export default function Auth() {
                             type="checkbox" 
                             checked={rememberMe} 
                             onChange={e => setRememberMe(e.target.checked)} 
-                            className="w-4 h-4 rounded border-2 cursor-pointer appearance-none transition-all checked:bg-brand-gold checked:border-brand-gold"
+                            className="w-4 h-4 rounded border-2 cursor-pointer appearance-none transition-all checked:bg-brand-gold checked:border-brand-gold border-gray-300 bg-white"
                             style={{
-                              borderColor: 'var(--input-border)',
-                              backgroundColor: rememberMe ? undefined : 'var(--input-bg)',
                               backgroundImage: rememberMe ? "url(\"data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e\")" : "none",
                               backgroundSize: "100% 100%",
                               backgroundPosition: "center",
                               backgroundRepeat: "no-repeat"
                             }}
                           />
-                          <span className="font-body text-sm" style={{ color: 'var(--text-2)' }}>Remember me</span>
+                          <span className="font-body text-sm text-gray-600">Remember me</span>
                         </label>
                         <button 
                           type="button" 
@@ -596,11 +586,7 @@ export default function Auth() {
                     <button 
                       type="submit" 
                       disabled={isLoading} 
-                      className="w-full relative overflow-hidden transition-all duration-300 font-body py-4 font-semibold rounded-[10px] text-base border-none cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed hover:-translate-y-0.5"
-                      style={{
-                        backgroundColor: authMode === "signin" ? "hsl(var(--brand-dark))" : "hsl(var(--brand-gold))",
-                        color: "hsl(var(--n0))"
-                      }}
+                      className="w-full relative overflow-hidden transition-all duration-300 font-body py-4 font-semibold rounded-[10px] text-base border-none cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed hover:-translate-y-0.5 bg-brand-gold hover:bg-brand-gold-hover text-white"
                     >
                       <span className="relative flex items-center justify-center gap-2">
                         {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
