@@ -5630,7 +5630,6 @@ export type Database = {
           created_at: string | null
           current_value: number | null
           direction: string | null
-          due_date: string | null
           end_date: string | null
           goal_value: number
           health: string | null
@@ -5660,7 +5659,6 @@ export type Database = {
           created_at?: string | null
           current_value?: number | null
           direction?: string | null
-          due_date?: string | null
           end_date?: string | null
           goal_value: number
           health?: string | null
@@ -5690,7 +5688,6 @@ export type Database = {
           created_at?: string | null
           current_value?: number | null
           direction?: string | null
-          due_date?: string | null
           end_date?: string | null
           goal_value?: number
           health?: string | null
@@ -6546,7 +6543,6 @@ export type Database = {
           created_by: string | null
           delivered_value: number | null
           description: string | null
-          due_date: string | null
           end_date: string | null
           goal_id: string | null
           health: Database["public"]["Enums"]["objective_health"] | null
@@ -6598,7 +6594,6 @@ export type Database = {
           created_by?: string | null
           delivered_value?: number | null
           description?: string | null
-          due_date?: string | null
           end_date?: string | null
           goal_id?: string | null
           health?: Database["public"]["Enums"]["objective_health"] | null
@@ -6650,7 +6645,6 @@ export type Database = {
           created_by?: string | null
           delivered_value?: number | null
           description?: string | null
-          due_date?: string | null
           end_date?: string | null
           goal_id?: string | null
           health?: Database["public"]["Enums"]["objective_health"] | null

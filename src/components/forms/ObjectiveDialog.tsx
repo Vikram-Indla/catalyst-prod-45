@@ -29,7 +29,7 @@ const formSchema = z.object({
   owner_id: z.string().optional(),
   status: z.enum(['on_track', 'at_risk', 'off_track', 'pending', 'completed', 'paused']),
   start_date: z.string().optional(),
-  due_date: z.string().optional(),
+  end_date: z.string().optional(),
   tags: z.array(z.string()).optional(),
   program_increment_ids: z.array(z.string()).optional(),
 });
@@ -61,7 +61,7 @@ export function ObjectiveDialog({ open, onClose, objectiveId, scopeType = 'portf
       owner_id: '',
       status: 'pending',
       start_date: '',
-      due_date: '',
+      end_date: '',
       tags: [],
       program_increment_ids: [],
     },
@@ -192,7 +192,7 @@ export function ObjectiveDialog({ open, onClose, objectiveId, scopeType = 'portf
         owner_id: existingObjective.owner_id || '',
         status: (existingObjective.status as 'on_track' | 'at_risk' | 'off_track' | 'pending' | 'completed' | 'paused') || 'pending',
         start_date: existingObjective.start_date || '',
-        due_date: existingObjective.due_date || '',
+        end_date: existingObjective.end_date || '',
         tags: existingObjective.tags || [],
         program_increment_ids: (Array.isArray(existingObjective.program_increment_ids)
           ? existingObjective.program_increment_ids.filter((id): id is string => typeof id === 'string')
@@ -214,7 +214,7 @@ export function ObjectiveDialog({ open, onClose, objectiveId, scopeType = 'portf
         owner_id: data.owner_id || null,
         status: data.status,
         start_date: data.start_date || null,
-        due_date: data.due_date || null,
+        end_date: data.end_date || null,
         tags: data.tags || [],
         program_increment_ids: data.program_increment_ids || [],
         level: data.tier, // Map tier to level field
@@ -508,10 +508,10 @@ export function ObjectiveDialog({ open, onClose, objectiveId, scopeType = 'portf
 
               <FormField
                 control={form.control}
-                name="due_date"
+                name="end_date"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Due Date</FormLabel>
+                    <FormLabel>End Date</FormLabel>
                     <FormControl>
                       <Input type="date" {...field} />
                     </FormControl>

@@ -11,7 +11,7 @@ export interface KeyResult {
   baseline_value?: number;
   goal_value: number;
   current_value: number;
-  due_date?: string;
+  end_date?: string;
   owner_user_id?: string;
   created_at: string;
   updated_at: string;
