@@ -1,6 +1,6 @@
 /**
  * Strategic Backlog Tabs - Themes | Objectives | Epics
- * Matches mockup exactly with icon + label + count badges
+ * Pixel-perfect implementation matching mockups
  */
 import { cn } from '@/lib/utils';
 import { Layers, Target, Box } from 'lucide-react';
@@ -40,22 +40,22 @@ export function StrategicBacklogTabs({
             key={tab.id}
             onClick={() => onSectionChange(tab.id)}
             className={cn(
-              "flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors whitespace-nowrap",
+              "flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors whitespace-nowrap",
               isActive
                 ? "bg-muted text-foreground"
                 : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
             )}
           >
             <Icon className={cn(
-              "h-5 w-5",
-              isActive ? "text-secondary-green" : "text-muted-foreground/60"
+              "h-4 w-4",
+              isActive ? "text-brand-gold" : "text-muted-foreground"
             )} />
             {tab.label}
             <span className={cn(
-              "px-1.5 py-0.5 text-xs rounded",
+              "px-1.5 py-0.5 text-xs rounded-md min-w-[20px] text-center",
               isActive 
                 ? "bg-secondary-green/15 text-secondary-green" 
-                : "bg-border text-muted-foreground"
+                : "bg-muted text-muted-foreground"
             )}>
               {count}
             </span>

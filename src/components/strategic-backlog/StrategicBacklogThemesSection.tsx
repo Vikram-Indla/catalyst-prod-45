@@ -1,6 +1,6 @@
 /**
  * Strategic Backlog - Themes Section
- * Pixel-perfect table matching mockups
+ * Pixel-perfect table matching mockups exactly
  */
 import { useState, useMemo } from 'react';
 import { Input } from '@/components/ui/input';
@@ -88,9 +88,8 @@ export function StrategicBacklogThemesSection({
     const isActive = status === 'active';
     return (
       <Badge 
-        variant="outline" 
         className={cn(
-          "text-[11px] font-medium px-2.5 py-1",
+          "text-xs font-medium px-2.5 py-0.5 border",
           isActive 
             ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800"
             : "bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700"
@@ -117,17 +116,17 @@ export function StrategicBacklogThemesSection({
           placeholder="Search themes..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10 h-10 bg-surface border-border"
+          className="pl-10 h-10 bg-surface border-border rounded-lg"
         />
       </div>
 
       {/* Table */}
       <div className="bg-surface border border-border rounded-lg overflow-hidden">
         <table className="w-full">
-          <thead className="bg-muted/50 border-b border-border">
-            <tr>
+          <thead className="border-b border-border">
+            <tr className="bg-muted/30">
               <th 
-                className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider cursor-pointer hover:text-foreground transition-colors"
+                className="text-left px-4 py-3 text-xs font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
                 onClick={() => handleSort('name')}
               >
                 <button className="flex items-center">
@@ -135,7 +134,7 @@ export function StrategicBacklogThemesSection({
                 </button>
               </th>
               <th 
-                className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider w-28 cursor-pointer hover:text-foreground transition-colors"
+                className="text-left px-4 py-3 text-xs font-medium text-muted-foreground w-24 cursor-pointer hover:text-foreground transition-colors"
                 onClick={() => handleSort('status')}
               >
                 <button className="flex items-center">
@@ -143,7 +142,7 @@ export function StrategicBacklogThemesSection({
                 </button>
               </th>
               <th 
-                className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider w-32 cursor-pointer hover:text-foreground transition-colors"
+                className="text-left px-4 py-3 text-xs font-medium text-muted-foreground w-28 cursor-pointer hover:text-foreground transition-colors"
                 onClick={() => handleSort('objectives')}
               >
                 <button className="flex items-center">
@@ -151,7 +150,7 @@ export function StrategicBacklogThemesSection({
                 </button>
               </th>
               <th 
-                className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider w-32 cursor-pointer hover:text-foreground transition-colors"
+                className="text-left px-4 py-3 text-xs font-medium text-muted-foreground w-32 cursor-pointer hover:text-foreground transition-colors"
                 onClick={() => handleSort('updated')}
               >
                 <button className="flex items-center">
@@ -176,8 +175,8 @@ export function StrategicBacklogThemesSection({
                     key={theme.id}
                     onClick={() => onSelectItem(theme)}
                     className={cn(
-                      "cursor-pointer hover:bg-[rgba(92,124,92,0.08)] transition-colors",
-                      isSelected && "bg-[rgba(92,124,92,0.08)] border-l-2 border-l-brand-gold"
+                      "cursor-pointer hover:bg-muted/50 transition-colors",
+                      isSelected && "bg-muted/50"
                     )}
                   >
                     <td className="px-4 py-3">
@@ -187,7 +186,7 @@ export function StrategicBacklogThemesSection({
                       {getStatusBadge(theme.status)}
                     </td>
                     <td className="px-4 py-3">
-                      <span className="inline-flex items-center gap-1 text-sm text-muted-foreground">
+                      <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
                         <Target className="h-4 w-4" />
                         {objectiveCounts[theme.id] || 0}
                       </span>

@@ -1,15 +1,13 @@
 /**
  * Strategic Backlog - Objectives Section
- * Pixel-perfect table matching mockups
+ * Pixel-perfect table matching mockups exactly
  */
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { Search, ChevronRight, ArrowUpDown, ArrowUp } from 'lucide-react';
-import { format } from 'date-fns';
 import type { StrategicTheme } from '@/types/strategicBacklog';
 import { cn } from '@/lib/utils';
 
@@ -65,7 +63,6 @@ export function StrategicBacklogObjectivesSection({
     enabled: themeIds.length > 0,
   });
 
-  // Get KR counts
   const { data: krCounts = {} } = useQuery({
     queryKey: ['objectives-kr-counts', objectives.map(o => o.id)],
     queryFn: async () => {
@@ -147,9 +144,8 @@ export function StrategicBacklogObjectivesSection({
     const isActive = status === 'active';
     return (
       <Badge 
-        variant="outline" 
         className={cn(
-          "text-[11px] font-medium px-2.5 py-1",
+          "text-xs font-medium px-2.5 py-0.5 border",
           isActive 
             ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800"
             : "bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700"
@@ -176,17 +172,17 @@ export function StrategicBacklogObjectivesSection({
           placeholder="Search objectives..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10 h-10 bg-surface border-border"
+          className="pl-10 h-10 bg-surface border-border rounded-lg"
         />
       </div>
 
       {/* Table */}
       <div className="bg-surface border border-border rounded-lg overflow-hidden">
         <table className="w-full">
-          <thead className="bg-muted/50 border-b border-border">
-            <tr>
+          <thead className="border-b border-border">
+            <tr className="bg-muted/30">
               <th 
-                className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider cursor-pointer hover:text-foreground transition-colors"
+                className="text-left px-4 py-3 text-xs font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
                 onClick={() => handleSort('name')}
               >
                 <button className="flex items-center">
@@ -194,7 +190,7 @@ export function StrategicBacklogObjectivesSection({
                 </button>
               </th>
               <th 
-                className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider w-52 cursor-pointer hover:text-foreground transition-colors"
+                className="text-left px-4 py-3 text-xs font-medium text-muted-foreground w-52 cursor-pointer hover:text-foreground transition-colors"
                 onClick={() => handleSort('theme')}
               >
                 <button className="flex items-center">
@@ -202,7 +198,7 @@ export function StrategicBacklogObjectivesSection({
                 </button>
               </th>
               <th 
-                className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider w-24 cursor-pointer hover:text-foreground transition-colors"
+                className="text-left px-4 py-3 text-xs font-medium text-muted-foreground w-24 cursor-pointer hover:text-foreground transition-colors"
                 onClick={() => handleSort('status')}
               >
                 <button className="flex items-center">
@@ -210,7 +206,7 @@ export function StrategicBacklogObjectivesSection({
                 </button>
               </th>
               <th 
-                className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider w-16 cursor-pointer hover:text-foreground transition-colors"
+                className="text-left px-4 py-3 text-xs font-medium text-muted-foreground w-16 cursor-pointer hover:text-foreground transition-colors"
                 onClick={() => handleSort('krs')}
               >
                 <button className="flex items-center">
@@ -218,7 +214,7 @@ export function StrategicBacklogObjectivesSection({
                 </button>
               </th>
               <th 
-                className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider w-32 cursor-pointer hover:text-foreground transition-colors"
+                className="text-left px-4 py-3 text-xs font-medium text-muted-foreground w-36 cursor-pointer hover:text-foreground transition-colors"
                 onClick={() => handleSort('progress')}
               >
                 <button className="flex items-center">
@@ -250,8 +246,8 @@ export function StrategicBacklogObjectivesSection({
                     key={obj.id}
                     onClick={() => onSelectItem(obj)}
                     className={cn(
-                      "cursor-pointer hover:bg-[rgba(92,124,92,0.08)] transition-colors",
-                      isSelected && "bg-[rgba(92,124,92,0.08)] border-l-2 border-l-brand-gold"
+                      "cursor-pointer hover:bg-muted/50 transition-colors",
+                      isSelected && "bg-muted/50"
                     )}
                   >
                     <td className="px-4 py-3">
@@ -263,18 +259,18 @@ export function StrategicBacklogObjectivesSection({
                     <td className="px-4 py-3">
                       {getStatusBadge(obj.status)}
                     </td>
-                    <td className="px-4 py-3 text-sm text-muted-foreground">
+                    <td className="px-4 py-3 text-sm text-center text-muted-foreground">
                       {krCounts[obj.id] || 0}
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <div className="flex-1 h-1.5 bg-border rounded-full overflow-hidden">
+                        <div className="flex-1 h-2 bg-border rounded-full overflow-hidden max-w-[80px]">
                           <div 
                             className="bg-secondary-green h-full rounded-full" 
                             style={{ width: `${progress}%` }}
                           />
                         </div>
-                        <span className="text-xs text-muted-foreground w-9 text-right">
+                        <span className="text-sm text-muted-foreground w-10 text-right">
                           {progress}%
                         </span>
                       </div>
