@@ -36,19 +36,27 @@ const getDateRangeFromFilter = (filter: AppliedDateFilter | null): { start: Date
         end: new Date(year, 11, 31),
       };
     case 'quarter': {
-      const qIndex = parseInt(String(value)[1]) - 1;
-      const startMonth = qIndex * 3;
-      const endMonth = startMonth + 2;
+      // Handle multi-select quarters
+      const quarters = Array.isArray(value) ? value as string[] : [String(value)];
+      const qIndices = quarters.map(q => parseInt(q[1]) - 1).sort((a, b) => a - b);
+      const firstQ = qIndices[0];
+      const lastQ = qIndices[qIndices.length - 1];
+      const startMonth = firstQ * 3;
+      const endMonth = lastQ * 3 + 2;
       return {
         start: new Date(year, startMonth, 1),
         end: new Date(year, endMonth + 1, 0), // Last day of end month
       };
     }
     case 'month': {
-      const monthIdx = Number(value);
+      // Handle multi-select months
+      const months = Array.isArray(value) ? value as number[] : [Number(value)];
+      const sortedMonths = [...months].sort((a, b) => a - b);
+      const firstMonth = sortedMonths[0];
+      const lastMonth = sortedMonths[sortedMonths.length - 1];
       return {
-        start: new Date(year, monthIdx, 1),
-        end: new Date(year, monthIdx + 1, 0), // Last day of month
+        start: new Date(year, firstMonth, 1),
+        end: new Date(year, lastMonth + 1, 0), // Last day of last month
       };
     }
     case 'custom':
