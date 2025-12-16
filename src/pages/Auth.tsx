@@ -300,10 +300,9 @@ export default function Auth() {
 
           {/* Description */}
           <p 
-            className="mb-8 sm:mb-12 max-w-md font-body"
+            className="mb-8 sm:mb-12 max-w-md font-body text-white/65"
             style={{
               fontSize: "clamp(0.95rem, 2vw, 1.1rem)",
-              color: "hsl(var(--n0) / 0.65)",
               lineHeight: 1.8
             }}
           >
@@ -330,10 +329,7 @@ export default function Auth() {
                     size={18}
                     strokeWidth={1.5}
                   />
-                  <span 
-                    className="font-body text-base font-medium tracking-wide transition-colors duration-300 group-hover:text-brand-gold"
-                    style={{ color: "hsl(var(--n0) / 0.85)" }}
-                  >
+                  <span className="font-body text-base font-medium tracking-wide transition-colors duration-300 group-hover:text-brand-gold text-white/85">
                     {item.label}
                   </span>
                 </div>
@@ -349,7 +345,7 @@ export default function Auth() {
             <div className="rounded-sm w-10 h-[3px] bg-brand-gold/50" />
             <div className="rounded-sm w-5 h-[3px] bg-brand-gold/30" />
           </div>
-          <p className="font-body text-sm" style={{ color: "hsl(var(--n0) / 0.35)" }}>
+          <p className="font-body text-sm text-white/35">
             © 2025 Catalyst. All rights reserved.
           </p>
         </div>
