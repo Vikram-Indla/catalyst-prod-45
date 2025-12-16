@@ -122,6 +122,10 @@ export const statusColors: Record<ItemStatus, { dot: string; badge: string }> = 
     dot: 'bg-[#B85C5C]',
     badge: 'bg-[rgba(184,92,92,0.1)] text-[#B85C5C] border-[rgba(184,92,92,0.3)] dark:bg-[rgba(184,92,92,0.15)] dark:text-[#D68A8A]'
   },
+  'delayed': {
+    dot: 'bg-[#B85C5C]',
+    badge: 'bg-[rgba(184,92,92,0.1)] text-[#B85C5C] border-[rgba(184,92,92,0.3)] dark:bg-[rgba(184,92,92,0.15)] dark:text-[#D68A8A]'
+  },
   'in-progress': {
     dot: 'bg-[#C69C6D]',
     badge: 'bg-[rgba(198,156,109,0.1)] text-[#C69C6D] border-[rgba(198,156,109,0.3)] dark:bg-[rgba(198,156,109,0.15)] dark:text-[#D4B896]'

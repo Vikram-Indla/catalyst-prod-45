@@ -4,7 +4,10 @@ export type TimeScale = 'monthly' | 'quarterly' | 'yearly';
 
 export type ItemType = 'theme' | 'objective' | 'epic';
 
-export type ItemStatus = 'active' | 'proposed' | 'on-track' | 'at-risk' | 'off-track' | 'in-progress' | 'done';
+export type ItemStatus = 'active' | 'proposed' | 'on-track' | 'at-risk' | 'off-track' | 'delayed' | 'in-progress' | 'done';
+
+// Health status for executive summary (On Track, At Risk, Delayed)
+export type HealthStatus = 'on-track' | 'at-risk' | 'delayed';
 
 export interface RoadmapItem {
   id: string;
@@ -12,6 +15,7 @@ export interface RoadmapItem {
   name: string;
   strategy?: string;
   status: ItemStatus;
+  health?: HealthStatus; // Executive health indicator
   startDate: string;
   endDate: string;
   progress: number;
