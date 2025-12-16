@@ -103,7 +103,7 @@ export function StrategicBacklogQuickDrawer({ item, type, onClose, themes }: Qui
 
   return (
     <div 
-      className="w-[420px] shrink-0 h-full overflow-y-auto animate-in slide-in-from-right duration-200"
+      className="w-[420px] shrink-0 h-full min-h-0 overflow-y-auto animate-in slide-in-from-right duration-200"
       style={{ background: 'var(--surface-bg)', borderLeft: '1px solid var(--border-default)' }}
     >
       {/* Header */}

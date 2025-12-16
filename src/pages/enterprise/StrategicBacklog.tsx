@@ -171,7 +171,7 @@ export default function StrategicBacklog() {
           </div>
         </div>
       ) : (
-        <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="h-full flex flex-col min-h-0 overflow-hidden">
           {/* Tabs */}
           <div className="shrink-0 px-6 py-4">
             <StrategicBacklogTabs
@@ -186,9 +186,9 @@ export default function StrategicBacklog() {
           </div>
 
           {/* Main Content Area */}
-          <div className="flex-1 flex overflow-hidden">
+          <div className="flex-1 flex overflow-hidden min-h-0">
             {/* Main Content with Padding */}
-            <div className="flex-1 flex gap-6 px-6 pb-6 overflow-hidden">
+            <div className="flex-1 flex gap-6 px-6 pb-6 overflow-hidden min-h-0">
               {/* Left: Coverage Panel */}
               <div className="w-72 shrink-0">
                 <StrategicBacklogCoveragePanel
@@ -201,7 +201,7 @@ export default function StrategicBacklog() {
               </div>
 
               {/* Right: Table Content */}
-              <div className="flex-1 overflow-auto">
+              <div className="flex-1 overflow-auto min-h-0">
                 {activeSection === 'themes' && (
                   <StrategicBacklogThemesSection
                     themes={themes}
