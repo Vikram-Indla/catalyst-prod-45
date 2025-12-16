@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 
 export interface ObjectiveFormData {
   name: string;
@@ -170,22 +171,22 @@ export function ObjectiveOverviewTabV2({ formData, onChange, objective }: Object
         {/* Start Date */}
         <div className="space-y-2">
           <Label className="text-sm font-medium text-[#24292F] dark:text-[#E6EDF3]">Start Date</Label>
-          <Input
-            type="date"
-            value={formData.start_date || ''}
-            onChange={(e) => handleFieldChange('start_date', e.target.value)}
-            className="bg-white dark:bg-[#0D1117] border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] focus:border-[#C69C6D] focus:ring-1 focus:ring-[rgba(198,156,109,0.3)]"
+          <CatalystDatePicker
+            value={formData.start_date || null}
+            onChange={(date) => handleFieldChange('start_date', date ? date.toISOString().split('T')[0] : '')}
+            placeholder="Pick start date"
+            dateFormat="dd/MM/yyyy"
           />
         </div>
 
         {/* Due Date */}
         <div className="space-y-2">
           <Label className="text-sm font-medium text-[#24292F] dark:text-[#E6EDF3]">Due Date</Label>
-          <Input
-            type="date"
-            value={formData.due_date || ''}
-            onChange={(e) => handleFieldChange('due_date', e.target.value)}
-            className="bg-white dark:bg-[#0D1117] border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] focus:border-[#C69C6D] focus:ring-1 focus:ring-[rgba(198,156,109,0.3)]"
+          <CatalystDatePicker
+            value={formData.due_date || null}
+            onChange={(date) => handleFieldChange('due_date', date ? date.toISOString().split('T')[0] : '')}
+            placeholder="Pick due date"
+            dateFormat="dd/MM/yyyy"
           />
         </div>
       </div>
