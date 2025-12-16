@@ -14,6 +14,62 @@ import { useObjectiveRoadmapData } from '@/hooks/useObjectiveRoadmapData';
 import { ObjectiveAnalyticsDrawer } from '@/modules/okr-v2';
 import GlobalPageHeader from '@/components/layout/GlobalPageHeader';
 import { Loader2 } from 'lucide-react';
+import { AppliedDateFilter } from '@/components/roadmap/DateRangeFilter';
+
+// Helper to compute date range from AppliedDateFilter
+const getDateRangeFromFilter = (filter: AppliedDateFilter | null): { start: Date; end: Date } => {
+  if (!filter) {
+    // Default to current year
+    const year = new Date().getFullYear();
+    return {
+      start: new Date(year, 0, 1),
+      end: new Date(year, 11, 31),
+    };
+  }
+
+  const { type, year, value, startDate, endDate } = filter;
+
+  switch (type) {
+    case 'year':
+      return {
+        start: new Date(year, 0, 1),
+        end: new Date(year, 11, 31),
+      };
+    case 'quarter': {
+      const qIndex = parseInt(String(value)[1]) - 1;
+      const startMonth = qIndex * 3;
+      const endMonth = startMonth + 2;
+      return {
+        start: new Date(year, startMonth, 1),
+        end: new Date(year, endMonth + 1, 0), // Last day of end month
+      };
+    }
+    case 'month': {
+      const monthIdx = Number(value);
+      return {
+        start: new Date(year, monthIdx, 1),
+        end: new Date(year, monthIdx + 1, 0), // Last day of month
+      };
+    }
+    case 'custom':
+      if (startDate && endDate) {
+        return {
+          start: new Date(startDate),
+          end: new Date(endDate),
+        };
+      }
+      // Fallback
+      return {
+        start: new Date(year, 0, 1),
+        end: new Date(year, 11, 31),
+      };
+    default:
+      return {
+        start: new Date(year, 0, 1),
+        end: new Date(year, 11, 31),
+      };
+  }
+};
 
 export const ObjectiveRoadmapPage: React.FC = () => {
   // Fetch real data from Supabase
@@ -27,17 +83,24 @@ export const ObjectiveRoadmapPage: React.FC = () => {
   const [columnWidth, setColumnWidth] = useState(340);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilters, setActiveFilters] = useState<ActiveFilters>(DEFAULT_FILTERS);
-  const [filterStartDate, setFilterStartDate] = useState('2025-01-01');
-  const [filterEndDate, setFilterEndDate] = useState('2025-12-31');
+  
+  // Date filter state
+  const currentYear = new Date().getFullYear();
+  const currentQuarter = `Q${Math.floor(new Date().getMonth() / 3) + 1}`;
+  const [appliedDateFilter, setAppliedDateFilter] = useState<AppliedDateFilter | null>({
+    type: 'year',
+    year: currentYear,
+    value: currentYear,
+  });
+  
+  // Compute timeline dates from filter
+  const { start: timelineStart, end: timelineEnd } = getDateRangeFromFilter(appliedDateFilter);
   
   // Drawer state
   const [selectedObjectiveId, setSelectedObjectiveId] = useState<string | null>(null);
   
   const objectivesListRef = useRef<HTMLDivElement>(null);
   const timelineGridRef = useRef<HTMLDivElement>(null);
-  
-  const timelineStart = new Date(filterStartDate);
-  const timelineEnd = new Date(filterEndDate);
   
   const filteredObjectives = filterObjectives(objectives, activeFilters, searchQuery);
   const visibleObjectives = filteredObjectives.slice(0, visibleCount);
@@ -81,6 +144,18 @@ export const ObjectiveRoadmapPage: React.FC = () => {
     setGroupBy(newGroupBy);
     setCollapsedGroups(new Set());
   }, []);
+
+  const handleApplyDateFilter = useCallback((filter: AppliedDateFilter) => {
+    setAppliedDateFilter(filter);
+  }, []);
+
+  const handleClearDateFilter = useCallback(() => {
+    setAppliedDateFilter({
+      type: 'year',
+      year: currentYear,
+      value: currentYear,
+    });
+  }, [currentYear]);
   
   // Scroll sync (vertical only - horizontal is handled in TimelineArea)
   useEffect(() => {
@@ -123,9 +198,9 @@ export const ObjectiveRoadmapPage: React.FC = () => {
         onToggleMilestones={() => setShowMilestones(!showMilestones)}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
-        filterStartDate={filterStartDate}
-        filterEndDate={filterEndDate}
-        onApplyDateFilter={(start, end) => { setFilterStartDate(start); setFilterEndDate(end); }}
+        appliedDateFilter={appliedDateFilter}
+        onApplyDateFilter={handleApplyDateFilter}
+        onClearDateFilter={handleClearDateFilter}
         onScrollToToday={handleScrollToToday}
         activeFilters={activeFilters}
         onApplyFilters={(filters) => { setActiveFilters(filters); setVisibleCount(10); }}

@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Scale, GroupBy, ActiveFilters, Theme, Owner } from '@/types/objective-roadmap';
-import { DATE_FILTER_PRESETS, countActiveFilters } from '@/utils/objective-roadmap-utils';
-import { Search, Layers, Filter, Calendar, Clock, ChevronDown, Check, X } from 'lucide-react';
+import { countActiveFilters } from '@/utils/objective-roadmap-utils';
+import { Search, Layers, Filter, Clock, ChevronDown, Check, X } from 'lucide-react';
 import { SmartFiltersPanel } from './SmartFiltersPanel';
+import { DateRangeFilter, AppliedDateFilter } from '@/components/roadmap/DateRangeFilter';
 import { cn } from '@/lib/utils';
 
 interface RoadmapToolbarProps {
@@ -14,9 +15,9 @@ interface RoadmapToolbarProps {
   onToggleMilestones: () => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  filterStartDate: string;
-  filterEndDate: string;
-  onApplyDateFilter: (start: string, end: string) => void;
+  appliedDateFilter: AppliedDateFilter | null;
+  onApplyDateFilter: (filter: AppliedDateFilter) => void;
+  onClearDateFilter: () => void;
   onScrollToToday: () => void;
   activeFilters: ActiveFilters;
   onApplyFilters: (filters: ActiveFilters) => void;
@@ -36,9 +37,9 @@ export const RoadmapToolbar: React.FC<RoadmapToolbarProps> = ({
   onToggleMilestones,
   searchQuery,
   onSearchChange,
-  filterStartDate,
-  filterEndDate,
+  appliedDateFilter,
   onApplyDateFilter,
+  onClearDateFilter,
   onScrollToToday,
   activeFilters,
   onApplyFilters,
@@ -49,14 +50,9 @@ export const RoadmapToolbar: React.FC<RoadmapToolbarProps> = ({
 }) => {
   const [groupByOpen, setGroupByOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [calendarOpen, setCalendarOpen] = useState(false);
-  const [tempStartDate, setTempStartDate] = useState(filterStartDate);
-  const [tempEndDate, setTempEndDate] = useState(filterEndDate);
-  const [activePreset, setActivePreset] = useState('year');
   
   const groupByRef = useRef<HTMLDivElement>(null);
   const filtersRef = useRef<HTMLDivElement>(null);
-  const calendarRef = useRef<HTMLDivElement>(null);
   
   const activeFilterCount = countActiveFilters(activeFilters);
   
@@ -68,31 +64,11 @@ export const RoadmapToolbar: React.FC<RoadmapToolbarProps> = ({
       if (filtersRef.current && !filtersRef.current.contains(e.target as Node)) {
         setFiltersOpen(false);
       }
-      if (calendarRef.current && !calendarRef.current.contains(e.target as Node)) {
-        setCalendarOpen(false);
-      }
     };
     
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-  
-  const handlePresetClick = (preset: typeof DATE_FILTER_PRESETS[0]) => {
-    setActivePreset(preset.key);
-    setTempStartDate(preset.start);
-    setTempEndDate(preset.end);
-  };
-  
-  const handleCalendarApply = () => {
-    onApplyDateFilter(tempStartDate, tempEndDate);
-    setCalendarOpen(false);
-  };
-  
-  const handleCalendarReset = () => {
-    setTempStartDate('2025-01-01');
-    setTempEndDate('2025-12-31');
-    setActivePreset('year');
-  };
   
   const groupByOptions: { key: GroupBy; label: string }[] = [
     { key: 'theme', label: 'Theme' },
@@ -219,76 +195,12 @@ export const RoadmapToolbar: React.FC<RoadmapToolbarProps> = ({
           ))}
         </div>
         
-        {/* Calendar Filter */}
-        <div className="relative" ref={calendarRef}>
-          <button 
-            className="w-9 h-9 flex items-center justify-center border border-border rounded-lg bg-background hover:bg-muted"
-            onClick={() => setCalendarOpen(!calendarOpen)}
-            title="Date Filter"
-          >
-            <Calendar size={16} />
-          </button>
-          {calendarOpen && (
-            <div className="absolute top-full mt-1 right-0 w-80 bg-background border border-border rounded-lg shadow-xl z-50">
-              <div className="px-4 py-3 border-b border-border">
-                <span className="text-sm font-semibold">Date Range Filter</span>
-              </div>
-              <div className="p-4 space-y-4">
-                <div>
-                  <div className="text-xs font-medium text-muted-foreground mb-2">Quick Select</div>
-                  <div className="grid grid-cols-4 gap-2">
-                    {DATE_FILTER_PRESETS.map(preset => (
-                      <button
-                        key={preset.key}
-                        className={cn(
-                          "px-2 py-1.5 text-xs border rounded-md transition-colors",
-                          activePreset === preset.key 
-                            ? "bg-brand-gold/15 border-brand-gold text-brand-gold" 
-                            : "border-border text-muted-foreground hover:border-brand-gold"
-                        )}
-                        onClick={() => handlePresetClick(preset)}
-                      >
-                        {preset.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <div className="text-xs font-medium text-muted-foreground mb-2">Custom Range</div>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="date"
-                      className="flex-1 h-9 px-2 text-sm border border-border rounded-md bg-background focus:outline-none focus:border-brand-gold"
-                      value={tempStartDate}
-                      onChange={(e) => { setTempStartDate(e.target.value); setActivePreset(''); }}
-                    />
-                    <span className="text-sm text-muted-foreground">to</span>
-                    <input
-                      type="date"
-                      className="flex-1 h-9 px-2 text-sm border border-border rounded-md bg-background focus:outline-none focus:border-brand-gold"
-                      value={tempEndDate}
-                      onChange={(e) => { setTempEndDate(e.target.value); setActivePreset(''); }}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center justify-end gap-2 px-4 py-3 border-t border-border bg-muted/50">
-                <button 
-                  className="px-3 py-1.5 text-sm border border-border rounded-md hover:bg-background"
-                  onClick={handleCalendarReset}
-                >
-                  Reset
-                </button>
-                <button 
-                  className="px-4 py-1.5 text-sm font-medium bg-brand-gold text-white rounded-md hover:bg-brand-gold-hover"
-                  onClick={handleCalendarApply}
-                >
-                  Apply
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
+        {/* Date Range Filter */}
+        <DateRangeFilter
+          appliedFilter={appliedDateFilter}
+          onApplyFilter={onApplyDateFilter}
+          onClearFilter={onClearDateFilter}
+        />
         
         {/* Today Button */}
         <button 
