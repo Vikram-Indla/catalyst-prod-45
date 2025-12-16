@@ -1,7 +1,7 @@
 import type { Config } from "tailwindcss";
 
 export default {
-  darkMode: ["class"],
+  darkMode: ["class", "[data-theme='dark']"],
   content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
   prefix: "",
   theme: {
@@ -14,22 +14,27 @@ export default {
     },
     extend: {
       colors: {
-        // Enterprise Gold Brand Colors
+        /* ══════════════════════════════════════════════════════════
+           BRAND COLORS (V2)
+           ══════════════════════════════════════════════════════════ */
         brand: {
-          dark: "hsl(var(--brand-dark))",
-          gold: "hsl(var(--brand-gold))",
-          "gold-hover": "hsl(var(--brand-gold-hover))",
-          "gold-pale": "hsl(var(--brand-gold-pale))",
-          "gold-border": "hsl(var(--brand-gold-border))",
+          dark: "#1A1A1A",
+          gold: "#C69C6D",
+          "gold-hover": "#B8905F",
+          "gold-muted": "rgba(198, 156, 109, 0.15)",
         },
-        // Text Colors
-        text: {
-          primary: "hsl(var(--text-primary))",
-          secondary: "hsl(var(--text-secondary))",
-          tertiary: "hsl(var(--text-tertiary))",
-          muted: "hsl(var(--text-muted))",
-          inverse: "hsl(var(--text-inverse))",
-        },
+        
+        /* ══════════════════════════════════════════════════════════
+           SECONDARY PALETTE - Golden Hour (V2)
+           ══════════════════════════════════════════════════════════ */
+        "secondary-green": "#5C7C5C",
+        "secondary-bronze": "#8B7355",
+        "secondary-champagne": "#D4B896",
+        "secondary-grey": "#C8CCD0",
+        
+        /* ══════════════════════════════════════════════════════════
+           TAILWIND/SHADCN SEMANTIC COLORS (V2)
+           ══════════════════════════════════════════════════════════ */
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -38,11 +43,6 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
-          50: "hsl(var(--primary-50))",
-          100: "hsl(var(--primary-100))",
-          200: "hsl(var(--primary-200))",
-          600: "hsl(var(--primary-600))",
-          700: "hsl(var(--primary-700))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -55,16 +55,6 @@ export default {
         muted: {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",
-        },
-        // Surface hierarchy tokens - for layered UI
-        surface: {
-          0: "var(--surface-0)",
-          1: "var(--surface-1)",
-          2: "var(--surface-2)",
-          3: "var(--surface-3)",
-          sunken: "var(--surface-sunken)",
-          raised: "var(--surface-raised)",
-          backdrop: "var(--surface-backdrop)",
         },
         accent: {
           DEFAULT: "hsl(var(--accent))",
@@ -88,187 +78,196 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        
+        /* ══════════════════════════════════════════════════════════
+           STATUS COLORS (V2)
+           ══════════════════════════════════════════════════════════ */
         success: {
-          DEFAULT: "hsl(var(--success))",
-          600: "hsl(var(--success-600))",
+          DEFAULT: "var(--status-success)",
+          bg: "var(--status-success-bg)",
         },
         warning: {
-          DEFAULT: "hsl(var(--warning))",
-          600: "hsl(var(--warning-600))",
+          DEFAULT: "var(--status-warning)",
+          bg: "var(--status-warning-bg)",
+        },
+        danger: {
+          DEFAULT: "var(--status-danger)",
+          bg: "var(--status-danger-bg)",
         },
         info: {
-          DEFAULT: "hsl(var(--info))",
-          600: "hsl(var(--info-600))",
+          DEFAULT: "var(--status-info)",
+          bg: "var(--status-info-bg)",
         },
-        health: {
-          green: "hsl(var(--health-green))",
-          yellow: "hsl(var(--health-yellow))",
-          red: "hsl(var(--health-red))",
-          gray: "hsl(var(--health-gray))",
-          "on-track": "hsl(var(--health-on-track))",
-          "at-risk": "hsl(var(--health-at-risk))",
-          "off-track": "hsl(var(--health-off-track))",
-          unknown: "hsl(var(--health-unknown))",
+        
+        /* ══════════════════════════════════════════════════════════
+           SURFACE COLORS (V2)
+           ══════════════════════════════════════════════════════════ */
+        surface: {
+          bg: "var(--surface-bg)",
+          elevated: "var(--surface-elevated)",
+          subtle: "var(--surface-subtle)",
+          hover: "var(--surface-hover)",
+          tinted: "var(--surface-tinted)",
         },
-        workitem: {
-          theme: "hsl(var(--workitem-theme))",
-          epic: "hsl(var(--workitem-epic))",
-          feature: "hsl(var(--workitem-feature))",
-          story: "hsl(var(--workitem-story))",
-          subtask: "hsl(var(--workitem-subtask))",
-          defect: "hsl(var(--workitem-defect))",
-          task: "hsl(var(--workitem-task))",
-          incident: "hsl(var(--workitem-incident))",
+        
+        /* ══════════════════════════════════════════════════════════
+           TEXT COLORS (V2)
+           ══════════════════════════════════════════════════════════ */
+        text: {
+          primary: "var(--text-primary)",
+          secondary: "var(--text-secondary)",
+          muted: "var(--text-muted)",
+          faint: "var(--text-faint)",
+          link: "var(--text-link)",
+          "link-hover": "var(--text-link-hover)",
         },
-        status: {
-          "backlog-bg": "hsl(var(--status-backlog-bg))",
-          "backlog-text": "hsl(var(--status-backlog-text))",
-          "in-progress-bg": "hsl(var(--status-in-progress-bg))",
-          "in-progress-text": "hsl(var(--status-in-progress-text))",
-          "done-bg": "hsl(var(--status-done-bg))",
-          "done-text": "hsl(var(--status-done-text))",
-          "blocked-bg": "hsl(var(--status-blocked-bg))",
-          "blocked-text": "hsl(var(--status-blocked-text))",
-          "warning-bg": "hsl(var(--status-warning-bg))",
-          "warning-text": "hsl(var(--status-warning-text))",
+        
+        /* ══════════════════════════════════════════════════════════
+           BORDER COLORS (V2)
+           ══════════════════════════════════════════════════════════ */
+        "border-default": "var(--border-default)",
+        "border-subtle": "var(--border-subtle)",
+        "border-muted": "var(--border-muted)",
+        "border-accent": "var(--border-accent)",
+        
+        /* ══════════════════════════════════════════════════════════
+           PROGRESS COLORS (V2)
+           ══════════════════════════════════════════════════════════ */
+        progress: {
+          bg: "var(--progress-bg)",
+          low: "var(--progress-fill-low)",
+          medium: "var(--progress-fill-medium)",
+          high: "var(--progress-fill-high)",
         },
-        neutral: {
-          0: "hsl(var(--neutral-0))",
-          50: "hsl(var(--neutral-50))",
-          100: "hsl(var(--neutral-100))",
-          200: "hsl(var(--neutral-200))",
-          300: "hsl(var(--neutral-300))",
-          400: "hsl(var(--neutral-400))",
-          500: "hsl(var(--neutral-500))",
-          600: "hsl(var(--neutral-600))",
-          700: "hsl(var(--neutral-700))",
-          800: "hsl(var(--neutral-800))",
-          900: "hsl(var(--neutral-900))",
-        },
-        // Golden Hour Secondary Palette - for charts, graphs, reports
-        palette: {
-          expert: "hsl(var(--palette-expert))",         // #5c7c5c - Olive green
-          advanced: "hsl(var(--palette-advanced))",     // #8b7355 - Bronze/brown
-          intermediate: "hsl(var(--palette-intermediate))", // #c69c6d - Catalyst gold
-          beginner: "hsl(var(--palette-beginner))",     // #d4b896 - Light champagne
-          none: "hsl(var(--palette-none))",             // #c8ccd0 - Cool grey
-        },
-        // Secondary colors for body content (Golden Hour)
-        "secondary-green": "hsl(var(--secondary-green))",
-        "secondary-green-hover": "hsl(var(--secondary-green-hover))",
-        "secondary-bronze": "hsl(var(--secondary-bronze))",
-        "secondary-champagne": "hsl(var(--secondary-champagne))",
-        "secondary-grey": "hsl(var(--secondary-grey))",
-        // Chart colors using Golden Hour palette
-        chartGolden: {
-          1: "hsl(var(--chart-golden-1))",  // Expert - Olive
-          2: "hsl(var(--chart-golden-2))",  // Advanced - Bronze
-          3: "hsl(var(--chart-golden-3))",  // Intermediate - Gold
-          4: "hsl(var(--chart-golden-4))",  // Beginner - Champagne
-          5: "hsl(var(--chart-golden-5))",  // None - Grey
-        },
-        // Catalyst Toast Colors
-        catalyst: {
-          black: "#1a1a1a",
-        },
-        toast: {
-          message: "#525252",
-          close: "#9ca3af",
-          success: {
-            bg: "#f0fdf4",
-            border: "#22c55e",
-            "border-dark": "#16a34a",
-            icon: "#15803d",
-          },
-          error: {
-            bg: "#fef2f2",
-            border: "#ef4444",
-            "border-dark": "#dc2626",
-            icon: "#dc2626",
-          },
-          warning: {
-            bg: "#fffbeb",
-            border: "#f59e0b",
-            "border-dark": "#d97706",
-            icon: "#d97706",
-          },
-        },
-        "brand-gold-dark": "#a67c4e",
       },
+      
+      /* ══════════════════════════════════════════════════════════
+         BORDER RADIUS (V2)
+         ══════════════════════════════════════════════════════════ */
       borderRadius: {
         none: "0",
-        sm: "0.25rem",
-        DEFAULT: "0.375rem",
-        md: "0.375rem",
-        lg: "0.5rem",
-        xl: "0.75rem",
+        sm: "4px",
+        DEFAULT: "6px",
+        md: "6px",
+        lg: "8px",
+        xl: "10px",
+        "2xl": "12px",
+        "3xl": "16px",
         full: "9999px",
       },
+      
+      /* ══════════════════════════════════════════════════════════
+         BOX SHADOWS (V2)
+         ══════════════════════════════════════════════════════════ */
       boxShadow: {
         sm: "var(--shadow-sm)",
         DEFAULT: "var(--shadow-md)",
         md: "var(--shadow-md)",
         lg: "var(--shadow-lg)",
-        xl: "var(--shadow-xl)",
-        panel: "var(--shadow-panel)",
-        elegant: "var(--shadow-elegant)",
-        glow: "var(--shadow-glow)",
+        card: "var(--shadow-card)",
+        "card-hover": "var(--shadow-card-hover)",
+        dropdown: "var(--shadow-dropdown)",
       },
+      
+      /* ══════════════════════════════════════════════════════════
+         TYPOGRAPHY (V2)
+         ══════════════════════════════════════════════════════════ */
+      fontFamily: {
+        sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', '"Noto Sans"', 'Helvetica', 'Arial', 'sans-serif'],
+        mono: ['"SF Mono"', 'Monaco', 'Consolas', '"Liberation Mono"', '"Courier New"', 'monospace'],
+      },
+      fontSize: {
+        'xs': ['11px', { lineHeight: '1.4', fontWeight: '400' }],
+        'sm': ['12px', { lineHeight: '1.5', fontWeight: '400' }],
+        'base': ['14px', { lineHeight: '1.5', fontWeight: '400' }],
+        'md': ['15px', { lineHeight: '1.5', fontWeight: '500' }],
+        'lg': ['16px', { lineHeight: '1.5', fontWeight: '600' }],
+        'xl': ['18px', { lineHeight: '1.4', fontWeight: '600' }],
+        '2xl': ['22px', { lineHeight: '1.3', fontWeight: '600' }],
+        '3xl': ['28px', { lineHeight: '1.25', fontWeight: '600' }],
+        '4xl': ['36px', { lineHeight: '1.2', fontWeight: '700' }],
+      },
+      
+      /* ══════════════════════════════════════════════════════════
+         SPACING (V2 - 8px Base Grid)
+         ══════════════════════════════════════════════════════════ */
+      spacing: {
+        '0.5': '2px',
+        '1': '4px',
+        '1.5': '6px',
+        '2': '8px',
+        '2.5': '10px',
+        '3': '12px',
+        '4': '16px',
+        '5': '20px',
+        '6': '24px',
+        '7': '28px',
+        '8': '32px',
+        '9': '36px',
+        '10': '40px',
+        '11': '44px',
+        '12': '48px',
+        '14': '56px',
+        '16': '64px',
+        '20': '80px',
+        '24': '96px',
+      },
+      
+      /* ══════════════════════════════════════════════════════════
+         TRANSITION DURATION (V2)
+         ══════════════════════════════════════════════════════════ */
       transitionDuration: {
         fast: "150ms",
         normal: "200ms",
         slow: "300ms",
       },
-      fontFamily: {
-        sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', '"Roboto"', '"Oxygen"', '"Ubuntu"', '"Fira Sans"', '"Droid Sans"', '"Helvetica Neue"', 'sans-serif'],
-        body: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', '"Roboto"', '"Oxygen"', '"Ubuntu"', '"Fira Sans"', '"Droid Sans"', '"Helvetica Neue"', 'sans-serif'],
-        heading: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', '"Roboto"', '"Oxygen"', '"Ubuntu"', '"Fira Sans"', '"Droid Sans"', '"Helvetica Neue"', 'sans-serif'],
-        mono: ['Menlo', 'Monaco', 'Consolas', '"Liberation Mono"', '"Courier New"', 'monospace'],
-      },
-      fontSize: {
-        // Atlassian Typography Scale
-        'code': ['11px', { lineHeight: '16px', fontWeight: '400' }],
-        'xs': ['12px', { lineHeight: '16px', fontWeight: '400' }],          // small
-        'sm': ['12px', { lineHeight: '16px', fontWeight: '600' }],          // h6
-        'base': ['14px', { lineHeight: '20px', fontWeight: '400' }],        // body
-        'md': ['14px', { lineHeight: '20px', fontWeight: '400' }],          // body
-        'lg': ['16px', { lineHeight: '20px', fontWeight: '600' }],          // h4
-        'xl': ['20px', { lineHeight: '24px', fontWeight: '500' }],          // h3
-        '2xl': ['24px', { lineHeight: '28px', fontWeight: '500' }],         // h2
-        '3xl': ['29px', { lineHeight: '32px', fontWeight: '500' }],         // h1
-        '4xl': ['35px', { lineHeight: '40px', fontWeight: '500' }],
-      },
+      
+      /* ══════════════════════════════════════════════════════════
+         ANIMATIONS (V2)
+         ══════════════════════════════════════════════════════════ */
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
         },
-        "toast-in": {
-          "0%": { opacity: "0", transform: "translateY(-12px)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
+        "fade-in": {
+          from: { opacity: "0" },
+          to: { opacity: "1" },
         },
-        "toast-out": {
-          "0%": { opacity: "1", transform: "translateY(0)" },
-          "100%": { opacity: "0", transform: "translateY(-12px)" },
+        "slide-in-right": {
+          from: { transform: "translateX(100%)", opacity: "0" },
+          to: { transform: "translateX(0)", opacity: "1" },
+        },
+        "pulse-glow": {
+          "0%, 100%": { boxShadow: "0 0 5px rgba(198, 156, 109, 0.3)" },
+          "50%": { boxShadow: "0 0 20px rgba(198, 156, 109, 0.6)" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "toast-in": "toast-in 0.3s ease",
-        "toast-out": "toast-out 0.2s ease forwards",
+        "fade-in": "fade-in 0.3s ease-in-out",
+        "slide-in-right": "slide-in-right 0.4s ease-out",
+        "pulse-glow": "pulse-glow 2s ease-in-out infinite",
+      },
+      
+      /* ══════════════════════════════════════════════════════════
+         Z-INDEX (V2)
+         ══════════════════════════════════════════════════════════ */
+      zIndex: {
+        'dropdown': '10',
+        'sticky': '20',
+        'fixed': '30',
+        'modal-backdrop': '40',
+        'modal': '50',
+        'popover': '60',
+        'tooltip': '70',
+        'toast': '80',
+        'maximum': '100',
       },
     },
   },
