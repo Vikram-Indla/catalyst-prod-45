@@ -3,7 +3,7 @@ import { Scale, GroupBy, ActiveFilters, Theme, Owner } from '@/types/objective-r
 import { countActiveFilters } from '@/utils/objective-roadmap-utils';
 import { Search, Layers, Filter, ChevronDown, Check, X } from 'lucide-react';
 import { SmartFiltersPanel } from './SmartFiltersPanel';
-import { DateRangeFilter, AppliedDateFilter } from '@/components/roadmap/DateRangeFilter';
+import { RoadmapDateFilterV2, RoadmapViewport } from '@/components/roadmaps/RoadmapDateFilterV2';
 import { cn } from '@/lib/utils';
 
 interface RoadmapToolbarProps {
@@ -15,9 +15,8 @@ interface RoadmapToolbarProps {
   onToggleMilestones: () => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  appliedDateFilter: AppliedDateFilter | null;
-  onApplyDateFilter: (filter: AppliedDateFilter) => void;
-  onClearDateFilter: () => void;
+  appliedViewport: RoadmapViewport;
+  onApplyViewport: (viewport: RoadmapViewport) => void;
   onScrollToToday: () => void;
   activeFilters: ActiveFilters;
   onApplyFilters: (filters: ActiveFilters) => void;
@@ -37,9 +36,8 @@ export const RoadmapToolbar: React.FC<RoadmapToolbarProps> = ({
   onToggleMilestones,
   searchQuery,
   onSearchChange,
-  appliedDateFilter,
-  onApplyDateFilter,
-  onClearDateFilter,
+  appliedViewport,
+  onApplyViewport,
   onScrollToToday,
   activeFilters,
   onApplyFilters,
@@ -69,6 +67,15 @@ export const RoadmapToolbar: React.FC<RoadmapToolbarProps> = ({
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+  
+  // Handle viewport changes - sync scale with parent
+  const handleViewportApply = (viewport: RoadmapViewport) => {
+    onApplyViewport(viewport);
+    // Also sync scale to parent's scale state
+    if (viewport.scale !== scale) {
+      onScaleChange(viewport.scale);
+    }
+  };
   
   const groupByOptions: { key: GroupBy; label: string }[] = [
     { key: 'theme', label: 'Theme' },
@@ -179,11 +186,10 @@ export const RoadmapToolbar: React.FC<RoadmapToolbarProps> = ({
         
         <div className="w-px h-6 bg-border" />
         
-        {/* Date Range Filter */}
-        <DateRangeFilter
-          appliedFilter={appliedDateFilter}
-          onApplyFilter={onApplyDateFilter}
-          onClearFilter={onClearDateFilter}
+        {/* Date Range Filter V2 */}
+        <RoadmapDateFilterV2
+          appliedViewport={appliedViewport}
+          onApply={handleViewportApply}
         />
       </div>
     </div>
