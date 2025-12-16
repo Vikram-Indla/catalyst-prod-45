@@ -168,6 +168,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
       </div>
     </div>
   );
+};
 
 interface KRMarkerProps {
   keyResult: KeyResult;
