@@ -112,13 +112,11 @@ export default function StrategicBacklog() {
   });
 
   const handleSelectItem = (item: any, type: 'theme' | 'objective' | 'epic') => {
-    console.log('[StrategicBacklog] handleSelectItem called:', { item, type });
     setSelectedItem(item);
     setSelectedItemType(type);
   };
 
   const handleCloseDrawer = () => {
-    console.log('[StrategicBacklog] handleCloseDrawer called');
     setSelectedItem(null);
     setSelectedItemType(null);
   };
