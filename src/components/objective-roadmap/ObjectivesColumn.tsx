@@ -181,9 +181,9 @@ export const ObjectivesColumn = forwardRef<HTMLDivElement, ObjectivesColumnProps
                           </div>
                         </div>
                       </div>
-                      {/* Status pill per legend */}
+                      {/* Status pill - compact size */}
                       <div 
-                        className="flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-semibold rounded-full uppercase"
+                        className="flex items-center px-1.5 py-0.5 text-[9px] font-semibold rounded-full uppercase tracking-wide"
                         style={statusConfig.variant === 'filled' 
                           ? { background: statusConfig.color, color: 'white' }
                           : { background: 'transparent', color: statusConfig.color, border: `1px solid ${statusConfig.color}` }
