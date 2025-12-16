@@ -112,11 +112,13 @@ export default function StrategicBacklog() {
   });
 
   const handleSelectItem = (item: any, type: 'theme' | 'objective' | 'epic') => {
+    console.log('[StrategicBacklog] handleSelectItem called:', { item, type });
     setSelectedItem(item);
     setSelectedItemType(type);
   };
 
   const handleCloseDrawer = () => {
+    console.log('[StrategicBacklog] handleCloseDrawer called');
     setSelectedItem(null);
     setSelectedItemType(null);
   };
@@ -236,6 +238,7 @@ export default function StrategicBacklog() {
           {/* Theme Details Drawer */}
           {selectedItem && selectedItemType === 'theme' && (
             <ThemeDetailsDrawer
+              key={`theme-drawer-${selectedItem.id}`}
               theme={selectedItem}
               isOpen={true}
               onClose={handleCloseDrawer}
