@@ -10,7 +10,8 @@ import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
-import { 
+import { PageChrome } from '@/components/layout/PageChrome';
+import {
   Search, 
   Filter, 
   Calendar, 
@@ -173,121 +174,112 @@ export default function EnterpriseRoadmapsPage() {
     );
   }
 
-  return (
-    <div className="flex-1 flex flex-col h-full overflow-hidden bg-background">
-      {/* Page Header */}
-      <div className="px-6 pt-6 pb-5">
-        {/* Breadcrumb */}
-        <div className="flex items-baseline gap-2 mb-5">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.5px] text-brand-gold cursor-pointer hover:underline">
-            ENTERPRISE
-          </span>
-          <span className="text-base text-muted-foreground">/</span>
-          <h1 className="text-[28px] font-semibold text-foreground">
-            Roadmaps
-          </h1>
+  // Toolbar component for PageChrome
+  const toolbar = (
+    <div className="flex items-center justify-between gap-4 w-full">
+      <div className="flex items-center gap-3">
+        {/* Search */}
+        <div className="flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-md w-[260px] focus-within:border-brand-gold focus-within:ring-1 focus-within:ring-brand-gold/30">
+          <Search className="w-4 h-4 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder="Search themes, objectives..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
+          />
         </div>
 
-        {/* Executive Summary Strip */}
-        <div className="flex items-center gap-6 px-5 py-4 bg-card border border-border rounded-[10px] mb-5">
-          {/* Total Themes */}
-          <div className="flex flex-col gap-0.5">
-            <span className="text-[20px] font-bold text-foreground">
-              {items.length}
-            </span>
-            <span className="text-[11px] font-medium uppercase tracking-[0.3px] text-muted-foreground">
-              Total Themes
-            </span>
-          </div>
-
-          <div className="w-px h-10 bg-border" />
-
-          {/* Status Counts */}
-          <div className="flex gap-4">
-            <div className="flex items-center gap-2">
-              <div className={cn("w-2 h-2 rounded-full", statusConfig.ontrack.dotClass)} />
-              <span className="text-sm font-medium text-muted-foreground">
-                {statusCounts.ontrack} On Track
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className={cn("w-2 h-2 rounded-full", statusConfig.atrisk.dotClass)} />
-              <span className="text-sm font-medium text-muted-foreground">
-                {statusCounts.atrisk} At Risk
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className={cn("w-2 h-2 rounded-full", statusConfig.delayed.dotClass)} />
-              <span className="text-sm font-medium text-muted-foreground">
-                {statusCounts.delayed} Delayed
-              </span>
-            </div>
-          </div>
-
-          {/* Today Indicator */}
-          <div className="ml-auto flex items-center gap-2 text-[13px] text-muted-foreground">
-            <div className="w-2.5 h-2.5 bg-brand-gold rotate-45" />
-            <span>Today: {format(today, 'MMM d, yyyy')}</span>
-          </div>
-        </div>
-
-        {/* Toolbar */}
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            {/* Search */}
-            <div className="flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-md w-[260px] focus-within:border-brand-gold focus-within:ring-1 focus-within:ring-brand-gold/30">
-              <Search className="w-4 h-4 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder="Search themes, objectives..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
-              />
-            </div>
-
-            {/* View Toggle */}
-            <div className="flex bg-card border border-border rounded-md overflow-hidden">
-              {(['monthly', 'quarterly', 'yearly'] as const).map((mode) => (
-                <button
-                  key={mode}
-                  onClick={() => setViewMode(mode)}
-                  className={cn(
-                    "px-3 py-2 text-[13px] font-medium transition-colors capitalize",
-                    viewMode === mode
-                      ? 'bg-brand-gold text-white'
-                      : 'text-muted-foreground hover:text-foreground'
-                  )}
-                >
-                  {mode}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button className="flex items-center gap-2 px-3 py-2 text-[13px] font-medium bg-card border border-border rounded-md text-muted-foreground hover:border-brand-gold/50 transition-colors">
-              <Filter className="w-4 h-4" />
-              Filters
+        {/* View Toggle */}
+        <div className="flex bg-card border border-border rounded-md overflow-hidden">
+          {(['monthly', 'quarterly', 'yearly'] as const).map((mode) => (
+            <button
+              key={mode}
+              onClick={() => setViewMode(mode)}
+              className={cn(
+                "px-3 py-2 text-[13px] font-medium transition-colors capitalize",
+                viewMode === mode
+                  ? 'bg-brand-gold text-white'
+                  : 'text-muted-foreground hover:text-foreground'
+              )}
+            >
+              {mode}
             </button>
-            <button className="flex items-center gap-2 px-3 py-2 text-[13px] font-medium bg-card border border-border rounded-md text-muted-foreground hover:border-brand-gold/50 transition-colors">
-              <Flag className="w-4 h-4" />
-              Milestones
-            </button>
-            <button className="flex items-center gap-2 px-3 py-2 text-[13px] font-medium bg-card border border-border rounded-md text-muted-foreground hover:border-brand-gold/50 transition-colors">
-              <Calendar className="w-4 h-4" />
-              {selectedYear}
-            </button>
-            <button className="flex items-center gap-2 px-3 py-2 text-[13px] font-medium bg-card border border-border rounded-md text-muted-foreground hover:border-brand-gold/50 transition-colors">
-              <Download className="w-4 h-4" />
-              Export
-            </button>
-          </div>
+          ))}
         </div>
       </div>
 
-      {/* Roadmap Container */}
-      <div className="flex-1 mx-6 mb-6 bg-card border border-border rounded-[10px] overflow-hidden flex flex-col">
+      <div className="flex items-center gap-3">
+        <button className="flex items-center gap-2 px-3 py-2 text-[13px] font-medium bg-card border border-border rounded-md text-muted-foreground hover:border-brand-gold/50 transition-colors">
+          <Filter className="w-4 h-4" />
+          Filters
+        </button>
+        <button className="flex items-center gap-2 px-3 py-2 text-[13px] font-medium bg-card border border-border rounded-md text-muted-foreground hover:border-brand-gold/50 transition-colors">
+          <Flag className="w-4 h-4" />
+          Milestones
+        </button>
+        <button className="flex items-center gap-2 px-3 py-2 text-[13px] font-medium bg-card border border-border rounded-md text-muted-foreground hover:border-brand-gold/50 transition-colors">
+          <Calendar className="w-4 h-4" />
+          {selectedYear}
+        </button>
+        <button className="flex items-center gap-2 px-3 py-2 text-[13px] font-medium bg-card border border-border rounded-md text-muted-foreground hover:border-brand-gold/50 transition-colors">
+          <Download className="w-4 h-4" />
+          Export
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <PageChrome toolbar={toolbar}>
+      <div className="flex-1 flex flex-col h-full overflow-hidden">
+        {/* Executive Summary Strip */}
+        <div className="px-6 pt-4 pb-4">
+          <div className="flex items-center gap-6 px-5 py-4 bg-card border border-border rounded-[10px]">
+            {/* Total Themes */}
+            <div className="flex flex-col gap-0.5">
+              <span className="text-[20px] font-bold text-foreground">
+                {items.length}
+              </span>
+              <span className="text-[11px] font-medium uppercase tracking-[0.3px] text-muted-foreground">
+                Total Themes
+              </span>
+            </div>
+
+            <div className="w-px h-10 bg-border" />
+
+            {/* Status Counts */}
+            <div className="flex gap-4">
+              <div className="flex items-center gap-2">
+                <div className={cn("w-2 h-2 rounded-full", statusConfig.ontrack.dotClass)} />
+                <span className="text-sm font-medium text-muted-foreground">
+                  {statusCounts.ontrack} On Track
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className={cn("w-2 h-2 rounded-full", statusConfig.atrisk.dotClass)} />
+                <span className="text-sm font-medium text-muted-foreground">
+                  {statusCounts.atrisk} At Risk
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className={cn("w-2 h-2 rounded-full", statusConfig.delayed.dotClass)} />
+                <span className="text-sm font-medium text-muted-foreground">
+                  {statusCounts.delayed} Delayed
+                </span>
+              </div>
+            </div>
+
+            {/* Today Indicator */}
+            <div className="ml-auto flex items-center gap-2 text-[13px] text-muted-foreground">
+              <div className="w-2.5 h-2.5 bg-brand-gold rotate-45" />
+              <span>Today: {format(today, 'MMM d, yyyy')}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Roadmap Container */}
+        <div className="flex-1 mx-6 mb-6 bg-card border border-border rounded-[10px] overflow-hidden flex flex-col">
         {/* Header Row */}
         <div className="flex border-b border-border bg-muted/50">
           {/* Left Column Header */}
@@ -515,7 +507,8 @@ export default function EnterpriseRoadmapsPage() {
           onClose={closeDrawer}
         />
       )}
-    </div>
+      </div>
+    </PageChrome>
   );
 }
 
