@@ -445,8 +445,8 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
           className={`executive-drawer ${drawerWidthClass} p-0 flex flex-col overflow-hidden bg-white dark:bg-[#161B22]`}
         >
           <SheetHeader className="executive-drawer-header flex-col space-y-0 shrink-0 p-0 bg-white dark:bg-[#161B22]">
-            {/* Header Row */}
-            <div className="flex items-center justify-between px-4 md:px-5 pt-4 pb-3 border-b border-brand-gold">
+            {/* Header Row - thin gold border */}
+            <div className="flex items-center justify-between px-4 md:px-5 pt-4 pb-3 border-b border-brand-gold/50">
               {/* Left: Theme Key + Title */}
               <div className="flex items-center gap-2.5 flex-1 min-w-0">
                 <div className="flex items-center gap-1 shrink-0">
@@ -541,9 +541,9 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
           </SheetHeader>
 
           {/* Single-page scrollable content with gold vertical line */}
-          <div className="flex-1 flex overflow-hidden">
-            {/* 🔒 GOLD VERTICAL LINE — MANDATORY */}
-            <div className="w-1 bg-[#C69C6D] flex-shrink-0" />
+          <div className="flex-1 flex overflow-hidden min-h-0">
+            {/* 🔒 GOLD VERTICAL LINE — FULL HEIGHT */}
+            <div className="w-1 bg-brand-gold flex-shrink-0 self-stretch" />
             
             {/* Scrollable Content */}
             <div className="flex-1 overflow-y-auto">

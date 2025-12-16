@@ -30,6 +30,9 @@ interface ThemeRowProps {
   onSelect: () => void;
 }
 
+// Must match ROW_HEIGHT in RoadmapGanttChart.tsx
+const ROW_HEIGHT = 60;
+
 function ThemeRow({ item, level, isExpanded, isSelected, onToggle, onSelect }: ThemeRowProps) {
   const hasChildren = item.children && item.children.length > 0;
   const style = itemTypeStyles[item.type];
@@ -40,13 +43,14 @@ function ThemeRow({ item, level, isExpanded, isSelected, onToggle, onSelect }: T
   return (
     <div
       onClick={onSelect}
+      style={{ height: ROW_HEIGHT }}
       className={cn(
-        "group cursor-pointer transition-colors",
+        "group cursor-pointer transition-colors flex items-center",
         "hover:bg-[#F6F8FA] dark:hover:bg-[#21262D]",
         isSelected && "bg-[rgba(198,156,109,0.05)] dark:bg-[rgba(198,156,109,0.08)]"
       )}
     >
-      <div className={cn("flex items-center gap-3 px-4 py-3", indentClass)}>
+      <div className={cn("flex items-center gap-3 px-4 w-full", indentClass)}>
         {/* Expand Toggle */}
         {hasChildren ? (
           <button 
@@ -69,7 +73,7 @@ function ThemeRow({ item, level, isExpanded, isSelected, onToggle, onSelect }: T
         )}
 
         {/* Type Icon */}
-        <div className={cn("w-6 h-6 rounded flex items-center justify-center", style.iconBg)}>
+        <div className={cn("w-6 h-6 rounded flex items-center justify-center flex-shrink-0", style.iconBg)}>
           <Icon size={14} className={style.iconColor} />
         </div>
 
@@ -89,7 +93,7 @@ function ThemeRow({ item, level, isExpanded, isSelected, onToggle, onSelect }: T
         </div>
 
         {/* Status Dot */}
-        <div className={cn("w-2.5 h-2.5 rounded-full", statusColors[item.status]?.dot || 'bg-[#8B949E]')} />
+        <div className={cn("w-2.5 h-2.5 rounded-full flex-shrink-0", statusColors[item.status]?.dot || 'bg-[#8B949E]')} />
       </div>
     </div>
   );
@@ -170,8 +174,8 @@ export function RoadmapThemePanel({
         </div>
       </div>
 
-      {/* Theme List */}
-      <div className="divide-y divide-[#EAECEF] dark:divide-[#21262D]">
+      {/* Theme List - No dividers, fixed height rows handle alignment */}
+      <div>
         {filteredItems.length > 0 ? (
           renderItems(filteredItems)
         ) : (
