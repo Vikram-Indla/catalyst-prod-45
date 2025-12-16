@@ -1,17 +1,13 @@
 /**
  * Strategic Backlog - Epics Section
- * Enterprise-grade table for epics alignment
+ * Pixel-perfect table matching mockups
  */
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Search, ChevronRight, Link as LinkIcon } from 'lucide-react';
-import { EpicDetailsPanel } from '@/components/epic-backlog/EpicDetailsPanel';
-import { StrategicBacklogEmptyState } from './StrategicBacklogEmptyState';
-import { format } from 'date-fns';
+import { Badge } from '@/components/ui/badge';
+import { Search, ChevronRight, ArrowUpDown, ArrowUp } from 'lucide-react';
 import type { StrategicTheme, SnapshotStrategyLinks } from '@/types/strategicBacklog';
 import { cn } from '@/lib/utils';
 
@@ -20,6 +16,8 @@ interface EpicsSectionProps {
   themes: StrategicTheme[];
   links: SnapshotStrategyLinks | null;
   isArchived: boolean;
+  onSelectItem: (item: any) => void;
+  selectedItemId?: string;
 }
 
 interface Epic {
@@ -27,35 +25,52 @@ interface Epic {
   name: string;
   epic_key?: string | null;
   status?: string | null;
-  health?: string | null;
   theme_id?: string | null;
-  primary_program_id?: string | null;
+  priority?: string | null;
   created_at: string;
   updated_at: string;
 }
 
-const STATUS_LABELS: Record<string, { label: string; className: string }> = {
-  'proposed': { label: 'Proposed', className: 'bg-muted text-muted-foreground' },
-  'analyzing': { label: 'Analyzing', className: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' },
-  'approved': { label: 'Approved', className: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' },
-  'in_progress': { label: 'In Progress', className: 'bg-brand-gold/20 text-brand-gold' },
-  'done': { label: 'Done', className: 'bg-secondary-green/20 text-secondary-green' },
-  'cancelled': { label: 'Cancelled', className: 'bg-muted text-muted-foreground line-through' },
-};
+interface Objective {
+  id: string;
+  name: string;
+  theme_id?: string | null;
+}
 
-export function StrategicBacklogEpicsSection({ snapshotId, themes, links, isArchived }: EpicsSectionProps) {
-  const [selectedEpicId, setSelectedEpicId] = useState<string | null>(null);
+export function StrategicBacklogEpicsSection({ 
+  snapshotId, 
+  themes, 
+  links, 
+  isArchived,
+  onSelectItem,
+  selectedItemId,
+}: EpicsSectionProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortColumn, setSortColumn] = useState<'key' | 'name' | 'theme' | 'status' | 'updated'>('name');
+  const [sortColumn, setSortColumn] = useState<'name' | 'objective' | 'status' | 'features' | 'priority'>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
-  const [showUnalignedOnly, setShowUnalignedOnly] = useState(false);
 
   const themeIds = themes.map(t => t.id);
-  const themeLookup = useMemo(() => {
+
+  // Fetch objectives for themes
+  const { data: objectives = [] } = useQuery({
+    queryKey: ['objectives-for-epics', themeIds],
+    queryFn: async () => {
+      if (themeIds.length === 0) return [];
+      const { data, error } = await supabase
+        .from('objectives')
+        .select('id, name, theme_id')
+        .in('theme_id', themeIds);
+      if (error) return [];
+      return (data || []) as Objective[];
+    },
+    enabled: themeIds.length > 0,
+  });
+
+  const objectiveLookup = useMemo(() => {
     const map: Record<string, string> = {};
-    themes.forEach(t => { map[t.id] = t.name; });
+    objectives.forEach(o => { map[o.id] = o.name; });
     return map;
-  }, [themes]);
+  }, [objectives]);
 
   const { data: epics = [], isLoading } = useQuery({
     queryKey: ['snapshot-epics', snapshotId, themeIds],
@@ -72,33 +87,35 @@ export function StrategicBacklogEpicsSection({ snapshotId, themes, links, isArch
     enabled: themeIds.length > 0,
   });
 
-  const { data: unalignedEpics = [] } = useQuery({
-    queryKey: ['unaligned-epics'],
+  // Get feature counts for epics
+  const { data: featureCounts = {} } = useQuery({
+    queryKey: ['epic-feature-counts', epics.map(e => e.id)],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('epics')
-        .select('*')
-        .is('theme_id', null)
-        .order('name');
-      if (error) return [];
-      return (data || []) as Epic[];
+      if (epics.length === 0) return {};
+      const epicIds = epics.map(e => e.id);
+      const { data } = await supabase
+        .from('features')
+        .select('epic_id')
+        .in('epic_id', epicIds);
+      
+      const counts: Record<string, number> = {};
+      epicIds.forEach(id => counts[id] = 0);
+      (data || []).forEach(f => {
+        if (f.epic_id) counts[f.epic_id] = (counts[f.epic_id] || 0) + 1;
+      });
+      return counts;
     },
+    enabled: epics.length > 0,
   });
 
-  const allEpics = useMemo(() => {
-    if (showUnalignedOnly) return unalignedEpics;
-    return epics;
-  }, [epics, unalignedEpics, showUnalignedOnly]);
-
   const filteredEpics = useMemo(() => {
-    let result = allEpics;
+    let result = epics;
 
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       result = result.filter(epic =>
         epic.name.toLowerCase().includes(query) ||
-        epic.epic_key?.toLowerCase().includes(query) ||
-        (epic.theme_id && themeLookup[epic.theme_id]?.toLowerCase().includes(query))
+        epic.epic_key?.toLowerCase().includes(query)
       );
     }
 
@@ -106,25 +123,22 @@ export function StrategicBacklogEpicsSection({ snapshotId, themes, links, isArch
       let aVal: any, bVal: any;
 
       switch (sortColumn) {
-        case 'key':
-          aVal = a.epic_key || '';
-          bVal = b.epic_key || '';
-          break;
         case 'name':
           aVal = a.name.toLowerCase();
           bVal = b.name.toLowerCase();
-          break;
-        case 'theme':
-          aVal = a.theme_id ? themeLookup[a.theme_id] || '' : '';
-          bVal = b.theme_id ? themeLookup[b.theme_id] || '' : '';
           break;
         case 'status':
           aVal = a.status || '';
           bVal = b.status || '';
           break;
-        case 'updated':
-          aVal = a.updated_at || '';
-          bVal = b.updated_at || '';
+        case 'features':
+          aVal = featureCounts[a.id] || 0;
+          bVal = featureCounts[b.id] || 0;
+          break;
+        case 'priority':
+          const priorityOrder: Record<string, number> = { 'High': 0, 'Medium': 1, 'Low': 2 };
+          aVal = priorityOrder[a.priority || 'Low'] ?? 3;
+          bVal = priorityOrder[b.priority || 'Low'] ?? 3;
           break;
         default:
           return 0;
@@ -136,7 +150,7 @@ export function StrategicBacklogEpicsSection({ snapshotId, themes, links, isArch
     });
 
     return result;
-  }, [allEpics, searchQuery, sortColumn, sortDirection, themeLookup]);
+  }, [epics, searchQuery, sortColumn, sortDirection, featureCounts]);
 
   const handleSort = (column: typeof sortColumn) => {
     if (sortColumn === column) {
@@ -147,175 +161,162 @@ export function StrategicBacklogEpicsSection({ snapshotId, themes, links, isArch
     }
   };
 
-  const SortIndicator = ({ column }: { column: typeof sortColumn }) => {
-    if (sortColumn !== column) return <span className="text-muted-foreground/30 ml-1">⇅</span>;
-    return <span className="text-brand-gold ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>;
-  };
-
-  const getStatusBadge = (status?: string) => {
-    const config = STATUS_LABELS[status || 'proposed'] || STATUS_LABELS['proposed'];
+  const getStatusBadge = (status?: string | null) => {
+    const isActive = status === 'active' || status === 'in_progress';
     return (
-      <Badge className={cn("text-xs", config.className)}>
-        {config.label}
+      <Badge 
+        variant="outline" 
+        className={cn(
+          "text-[11px] font-medium px-2.5 py-1",
+          isActive 
+            ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800"
+            : "bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700"
+        )}
+      >
+        {isActive ? 'Active' : 'Draft'}
       </Badge>
     );
   };
 
-  // Empty states
-  if (themes.length === 0) {
-    return (
-      <StrategicBacklogEmptyState
-        type="epic"
-        hasSnapshot={!!snapshotId}
-        hasThemes={false}
-        isArchived={isArchived}
-      />
-    );
-  }
+  const getPriorityClass = (priority?: string | null) => {
+    switch (priority) {
+      case 'High':
+        return 'text-rose-600 dark:text-rose-400';
+      case 'Medium':
+        return 'text-amber-600 dark:text-amber-400';
+      default:
+        return 'text-muted-foreground';
+    }
+  };
 
-  if (epics.length === 0 && unalignedEpics.length === 0 && !searchQuery && !isLoading) {
-    return (
-      <StrategicBacklogEmptyState
-        type="epic"
-        hasSnapshot={!!snapshotId}
-        hasThemes={true}
-        isArchived={isArchived}
-        onLink={() => {/* TODO: Open link epic dialog */}}
-      />
-    );
-  }
+  const SortIcon = ({ column }: { column: typeof sortColumn }) => {
+    if (sortColumn === column) {
+      return <ArrowUp className={cn("h-3 w-3 ml-1", sortDirection === 'desc' && "rotate-180")} />;
+    }
+    return <ArrowUpDown className="h-3 w-3 ml-1 opacity-40" />;
+  };
+
+  // Find objective name for epic (via theme linkage)
+  const getObjectiveForEpic = (epic: Epic): string => {
+    // In a real implementation, you'd have epic -> objective linkage
+    // For now, we'll find first objective with matching theme
+    const obj = objectives.find(o => o.theme_id === epic.theme_id);
+    return obj?.name || '—';
+  };
 
   return (
     <div className="space-y-4">
-      {/* Toolbar */}
-      <div className="flex items-center gap-3">
-        <div className="relative flex-1 max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search epics..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 h-9"
-          />
-        </div>
-
-        {/* Unaligned filter */}
-        <Button
-          variant={showUnalignedOnly ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setShowUnalignedOnly(!showUnalignedOnly)}
-          className={cn(
-            showUnalignedOnly && 'bg-amber-500 hover:bg-amber-600 text-white border-amber-500'
-          )}
-        >
-          Unaligned ({unalignedEpics.length})
-        </Button>
-
-        {!isArchived && unalignedEpics.length > 0 && (
-          <Button variant="outline" size="sm">
-            <LinkIcon className="h-3.5 w-3.5 mr-1.5" />
-            Link to theme
-          </Button>
-        )}
+      {/* Search */}
+      <div className="relative max-w-md">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Search epics..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-10 h-10 bg-surface border-border"
+        />
       </div>
 
       {/* Table */}
-      {isLoading ? (
-        <div className="text-center py-12 text-muted-foreground">Loading epics...</div>
-      ) : filteredEpics.length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground">
-          {searchQuery 
-            ? 'No epics match your search.' 
-            : showUnalignedOnly 
-              ? 'No unaligned epics found.'
-              : 'No epics linked to themes in this snapshot.'}
-        </div>
-      ) : (
-        <div className="border border-border rounded-lg overflow-hidden bg-surface">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-brand-gold/5 border-b border-border">
-                <th
-                  className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider w-24 cursor-pointer hover:bg-brand-gold/10 transition-colors"
-                  onClick={() => handleSort('key')}
-                >
-                  Key <SortIndicator column="key" />
-                </th>
-                <th
-                  className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-brand-gold/10 transition-colors"
-                  onClick={() => handleSort('name')}
-                >
-                  Epic <SortIndicator column="name" />
-                </th>
-                <th
-                  className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider w-40 cursor-pointer hover:bg-brand-gold/10 transition-colors"
-                  onClick={() => handleSort('theme')}
-                >
-                  Theme <SortIndicator column="theme" />
-                </th>
-                <th
-                  className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider w-28 cursor-pointer hover:bg-brand-gold/10 transition-colors"
-                  onClick={() => handleSort('status')}
-                >
-                  Status <SortIndicator column="status" />
-                </th>
-                <th
-                  className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider w-28 cursor-pointer hover:bg-brand-gold/10 transition-colors"
-                  onClick={() => handleSort('updated')}
-                >
-                  Updated <SortIndicator column="updated" />
-                </th>
-                <th className="w-10"></th>
+      <div className="bg-surface border border-border rounded-lg overflow-hidden">
+        <table className="w-full">
+          <thead className="bg-muted/50 border-b border-border">
+            <tr>
+              <th 
+                className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider cursor-pointer hover:text-foreground transition-colors"
+                onClick={() => handleSort('name')}
+              >
+                <button className="flex items-center">
+                  Epic <SortIcon column="name" />
+                </button>
+              </th>
+              <th 
+                className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider w-52 cursor-pointer hover:text-foreground transition-colors"
+                onClick={() => handleSort('objective')}
+              >
+                <button className="flex items-center">
+                  Objective <SortIcon column="objective" />
+                </button>
+              </th>
+              <th 
+                className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider w-24 cursor-pointer hover:text-foreground transition-colors"
+                onClick={() => handleSort('status')}
+              >
+                <button className="flex items-center">
+                  State <SortIcon column="status" />
+                </button>
+              </th>
+              <th 
+                className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider w-24 cursor-pointer hover:text-foreground transition-colors"
+                onClick={() => handleSort('features')}
+              >
+                <button className="flex items-center">
+                  Features <SortIcon column="features" />
+                </button>
+              </th>
+              <th 
+                className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider w-24 cursor-pointer hover:text-foreground transition-colors"
+                onClick={() => handleSort('priority')}
+              >
+                <button className="flex items-center">
+                  Priority <SortIcon column="priority" />
+                </button>
+              </th>
+              <th className="w-10"></th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border/50">
+            {isLoading ? (
+              <tr>
+                <td colSpan={6} className="px-4 py-12 text-center text-muted-foreground">
+                  Loading epics...
+                </td>
               </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {filteredEpics.map((epic) => (
-                <tr
-                  key={epic.id}
-                  onClick={() => setSelectedEpicId(epic.id)}
-                  className="cursor-pointer hover:bg-[rgba(92,124,92,0.06)] transition-colors"
-                >
-                  <td className="px-4 py-3">
-                    <span className="font-mono text-sm text-brand-gold">{epic.epic_key || '—'}</span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="font-medium text-foreground">{epic.name}</span>
-                  </td>
-                  <td className="px-4 py-3 text-sm">
-                    {epic.theme_id ? (
-                      <span className="text-muted-foreground truncate block max-w-[150px]">
-                        {themeLookup[epic.theme_id] || '—'}
-                      </span>
-                    ) : (
-                      <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800/50">
-                        Unaligned
-                      </Badge>
+            ) : filteredEpics.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="px-4 py-12 text-center text-muted-foreground">
+                  No epics found
+                </td>
+              </tr>
+            ) : (
+              filteredEpics.map((epic) => {
+                const isSelected = selectedItemId === epic.id;
+                return (
+                  <tr
+                    key={epic.id}
+                    onClick={() => onSelectItem(epic)}
+                    className={cn(
+                      "cursor-pointer hover:bg-[rgba(92,124,92,0.08)] transition-colors",
+                      isSelected && "bg-[rgba(92,124,92,0.08)] border-l-2 border-l-brand-gold"
                     )}
-                  </td>
-                  <td className="px-4 py-3">
-                    {getStatusBadge(epic.status)}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-muted-foreground">
-                    {epic.updated_at ? format(new Date(epic.updated_at), 'MMM d') : '—'}
-                  </td>
-                  <td className="px-4 py-3">
-                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {/* Epic Details Panel */}
-      {selectedEpicId && (
-        <EpicDetailsPanel
-          epicId={selectedEpicId}
-          onClose={() => setSelectedEpicId(null)}
-          onRefetch={() => {}}
-        />
-      )}
+                  >
+                    <td className="px-4 py-3">
+                      <span className="text-sm font-medium text-foreground">{epic.name}</span>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-muted-foreground">
+                      {getObjectiveForEpic(epic)}
+                    </td>
+                    <td className="px-4 py-3">
+                      {getStatusBadge(epic.status)}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-muted-foreground">
+                      {featureCounts[epic.id] || 0}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={cn("text-sm", getPriorityClass(epic.priority))}>
+                        {epic.priority || 'Low'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

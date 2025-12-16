@@ -1,17 +1,15 @@
 /**
  * Coverage & Gaps Panel for Strategic Backlog
- * Executive-grade strategy health metrics
+ * Matches mockup exactly
  */
 import { cn } from '@/lib/utils';
-import { CheckCircle2, AlertTriangle, Palette, Target, Boxes } from 'lucide-react';
+import { Check, AlertTriangle, Layers, Target, Box } from 'lucide-react';
 
 interface CoveragePanelProps {
   themes: number;
   themesWithObjectives: number;
   objectives: number;
-  objectivesWithKRs: number;
   epics: number;
-  epicsAligned: number;
   onNavigate: (section: 'themes' | 'objectives' | 'epics') => void;
 }
 
@@ -19,122 +17,92 @@ export function StrategicBacklogCoveragePanel({
   themes,
   themesWithObjectives,
   objectives,
-  objectivesWithKRs,
   epics,
-  epicsAligned,
   onNavigate,
 }: CoveragePanelProps) {
-  // Calculate coverage percentages
-  const themesCoverage = themes > 0 ? Math.round((themesWithObjectives / themes) * 100) : 0;
-  const objectivesCoverage = objectives > 0 ? Math.round((objectivesWithKRs / objectives) * 100) : 0;
-  const epicsCoverage = epics > 0 ? Math.round((epicsAligned / epics) * 100) : 0;
-
-  const metrics = [
-    {
-      id: 'themes' as const,
-      label: 'Themes',
-      icon: Palette,
-      count: themes,
-      coverageLabel: 'with objectives',
-      coverageValue: themesWithObjectives,
-      coveragePercent: themesCoverage,
-      hasGap: themes > 0 && themesWithObjectives < themes,
-      actionLabel: themes === 0 ? 'Create theme' : themesWithObjectives < themes ? 'Add objective' : null,
-    },
-    {
-      id: 'objectives' as const,
-      label: 'Objectives',
-      icon: Target,
-      count: objectives,
-      coverageLabel: 'with key results',
-      coverageValue: objectivesWithKRs,
-      coveragePercent: objectivesCoverage,
-      hasGap: objectives > 0 && objectivesWithKRs < objectives,
-      actionLabel: objectives === 0 && themes > 0 ? 'Create objective' : null,
-    },
-    {
-      id: 'epics' as const,
-      label: 'Epics aligned',
-      icon: Boxes,
-      count: epicsAligned,
-      coverageLabel: 'to themes',
-      coverageValue: epicsAligned,
-      coveragePercent: epicsCoverage,
-      hasGap: epics > epicsAligned,
-      actionLabel: epicsAligned === 0 && themes > 0 ? 'Link epic' : null,
-    },
-  ];
+  const themesPercent = themes > 0 ? Math.round((themesWithObjectives / themes) * 100) : 0;
+  const themesComplete = themesPercent === 100 && themes > 0;
+  const objectivesComplete = objectives > 0;
+  const epicsComplete = epics > 0;
 
   return (
-    <div className="rounded-lg border border-border bg-surface p-4">
+    <div className="bg-surface border border-border rounded-lg p-4">
       <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4">
         Coverage & Gaps
       </h3>
       
-      <div className="space-y-3">
-        {metrics.map((metric) => {
-          const Icon = metric.icon;
-          const isComplete = !metric.hasGap && metric.count > 0;
-          const needsAttention = metric.hasGap || metric.count === 0;
-
-          return (
-            <button
-              key={metric.id}
-              onClick={() => onNavigate(metric.id)}
-              className={cn(
-                "w-full flex items-center justify-between p-2.5 rounded-md transition-colors text-left",
-                "hover:bg-[rgba(92,124,92,0.08)]",
-                needsAttention && "bg-amber-50/50 dark:bg-amber-950/10"
-              )}
-            >
-              <div className="flex items-center gap-2.5">
-                <div className={cn(
-                  "p-1.5 rounded-md",
-                  isComplete ? "bg-secondary-green/10" : "bg-muted"
-                )}>
-                  <Icon className={cn(
-                    "h-3.5 w-3.5",
-                    isComplete ? "text-secondary-green" : "text-muted-foreground"
-                  )} />
-                </div>
-                
-                <div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-sm font-medium text-foreground">
-                      {metric.label}
-                    </span>
-                    <span className={cn(
-                      "text-sm font-semibold",
-                      isComplete ? "text-secondary-green" : "text-foreground"
-                    )}>
-                      {metric.count}
-                    </span>
-                  </div>
-                  
-                  {metric.count > 0 && (
-                    <p className="text-xs text-muted-foreground">
-                      {metric.coverageValue} {metric.coverageLabel} ({metric.coveragePercent}%)
-                    </p>
-                  )}
-                </div>
-              </div>
-
+      <div className="space-y-4">
+        {/* Themes */}
+        <button
+          onClick={() => onNavigate('themes')}
+          className="w-full flex items-center justify-between hover:bg-muted/50 -mx-2 px-2 py-1 rounded transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
+              <Layers className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <div className="text-left">
               <div className="flex items-center gap-2">
-                {isComplete && (
-                  <CheckCircle2 className="h-4 w-4 text-secondary-green" />
-                )}
-                {needsAttention && metric.actionLabel && (
-                  <span className="text-xs text-brand-gold font-medium">
-                    {metric.actionLabel} →
-                  </span>
-                )}
-                {needsAttention && !metric.actionLabel && metric.hasGap && (
-                  <AlertTriangle className="h-4 w-4 text-amber-500" />
-                )}
+                <span className="text-sm font-medium text-foreground">Themes</span>
+                <span className="text-sm text-muted-foreground">{themes}</span>
               </div>
-            </button>
-          );
-        })}
+              <div className="text-xs text-muted-foreground">
+                {themesWithObjectives} with objectives ({themesPercent}%)
+              </div>
+            </div>
+          </div>
+          {themesComplete ? (
+            <Check className="h-4 w-4 text-emerald-500" />
+          ) : themes > 0 ? (
+            <AlertTriangle className="h-4 w-4 text-amber-500" />
+          ) : null}
+        </button>
+
+        {/* Objectives */}
+        <button
+          onClick={() => onNavigate('objectives')}
+          className="w-full flex items-center justify-between hover:bg-muted/50 -mx-2 px-2 py-1 rounded transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
+              <Target className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <div className="text-left">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-foreground">Objectives</span>
+                <span className="text-sm text-muted-foreground">{objectives}</span>
+              </div>
+            </div>
+          </div>
+          {objectivesComplete ? (
+            <Check className="h-4 w-4 text-emerald-500" />
+          ) : (
+            <AlertTriangle className="h-4 w-4 text-amber-500" />
+          )}
+        </button>
+
+        {/* Epics aligned */}
+        <button
+          onClick={() => onNavigate('epics')}
+          className="w-full flex items-center justify-between hover:bg-muted/50 -mx-2 px-2 py-1 rounded transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
+              <Box className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <div className="text-left">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-foreground">Epics aligned</span>
+                <span className="text-sm text-muted-foreground">{epics}</span>
+              </div>
+            </div>
+          </div>
+          {epicsComplete ? (
+            <Check className="h-4 w-4 text-emerald-500" />
+          ) : (
+            <AlertTriangle className="h-4 w-4 text-amber-500" />
+          )}
+        </button>
       </div>
     </div>
   );
