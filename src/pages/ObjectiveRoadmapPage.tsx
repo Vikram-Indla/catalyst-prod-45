@@ -4,6 +4,7 @@ import { RoadmapToolbar } from '@/components/objective-roadmap/RoadmapToolbar';
 import { ObjectivesColumn } from '@/components/objective-roadmap/ObjectivesColumn';
 import { TimelineArea } from '@/components/objective-roadmap/TimelineArea';
 import { LoadMoreStrip } from '@/components/objective-roadmap/LoadMoreStrip';
+import { ObjectiveRoadmapLegend } from '@/components/objective-roadmap/ObjectiveRoadmapLegend';
 import { groupObjectives, countNeedAttention } from '@/utils/objective-roadmap-utils';
 import { filterObjectivesCanonical, countMatchingObjectives } from '@/utils/canonical-roadmap-filter-utils';
 import { Scale, GroupBy } from '@/types/objective-roadmap';
@@ -70,6 +71,7 @@ export const ObjectiveRoadmapPage: React.FC = () => {
   
   const [groupBy, setGroupBy] = useState<GroupBy>('theme');
   const [showMilestones, setShowMilestones] = useState(true);
+  const [showLegend, setShowLegend] = useState(true);
   const [visibleCount, setVisibleCount] = useState(10);
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
   const [columnWidth, setColumnWidth] = useState(340);
@@ -232,7 +234,7 @@ export const ObjectiveRoadmapPage: React.FC = () => {
         matchingObjectives={draftMatchingCount}
       />
       
-      <div className="flex flex-1 min-h-0 overflow-hidden">
+      <div className="relative flex flex-1 min-h-0 overflow-hidden">
         <ObjectivesColumn
           ref={objectivesListRef}
           groups={groups}
@@ -256,6 +258,9 @@ export const ObjectiveRoadmapPage: React.FC = () => {
           timelineEnd={timelineEnd}
           onObjectiveClick={handleObjectiveClick}
         />
+        
+        {/* Legend */}
+        <ObjectiveRoadmapLegend isVisible={showLegend && showMilestones} />
       </div>
       
       <LoadMoreStrip
