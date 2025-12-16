@@ -4,7 +4,7 @@
  * 
  * AUTHORITATIVE COLOR MAPPING:
  * - Complete/On Track: Olive #5c7c5c (filled)
- * - Current/In Progress: Gold #c69c6d (outline + white fill)
+ * - Current/In Progress: Green #5c7c5c (outline + white fill)
  * - Pending/Planned: Champagne #d4b896 (outline)
  * - Overdue/Blocked: Terracotta #c75a4a (filled)
  * - Not Started: Grey #c8ccd0 (muted)
@@ -24,16 +24,16 @@ export const KR_STATUS_STYLES = {
     filled: true,
   },
   
-  // Current / In Progress - Gold outline + white fill
+  // Current / In Progress - Green outline + white fill
   current: {
     label: 'Current',
-    color: '#c69c6d',
+    color: '#5c7c5c',
     filled: false,
     fillColor: '#ffffff',
   },
   'in-progress': {
     label: 'Current',
-    color: '#c69c6d',
+    color: '#5c7c5c',
     filled: false,
     fillColor: '#ffffff',
   },
