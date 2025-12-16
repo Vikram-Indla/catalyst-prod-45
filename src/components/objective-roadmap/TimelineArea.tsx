@@ -135,7 +135,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
         style={{ 
           left: `${barLeft}%`, 
           width: `${barWidth}%`,
-          background: 'hsl(var(--muted) / 0.5)',
+          background: '#C8CCD0',
           minWidth: '40px'
         }}
         onClick={onClick}

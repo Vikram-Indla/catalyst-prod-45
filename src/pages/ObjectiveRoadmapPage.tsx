@@ -10,14 +10,13 @@ import {
   DEFAULT_FILTERS 
 } from '@/utils/objective-roadmap-utils';
 import { Scale, GroupBy, ActiveFilters } from '@/types/objective-roadmap';
-import { sampleThemes, sampleOwners, sampleObjectives } from '@/data/objective-roadmap-sample';
+import { useObjectiveRoadmapData } from '@/hooks/useObjectiveRoadmapData';
 import GlobalPageHeader from '@/components/layout/GlobalPageHeader';
+import { Loader2 } from 'lucide-react';
 
 export const ObjectiveRoadmapPage: React.FC = () => {
-  // Use sample data - replace with API calls
-  const objectives = sampleObjectives;
-  const themes = sampleThemes;
-  const owners = sampleOwners;
+  // Fetch real data from Supabase
+  const { objectives, themes, owners, isLoading } = useObjectiveRoadmapData();
   
   const [scale, setScale] = useState<Scale>('monthly');
   const [groupBy, setGroupBy] = useState<GroupBy>('theme');
@@ -93,6 +92,17 @@ export const ObjectiveRoadmapPage: React.FC = () => {
     };
   }, []);
   
+  if (isLoading) {
+    return (
+      <div className="flex flex-col h-full">
+        <GlobalPageHeader sectionLabel="ENTERPRISE" pageTitle="Objective Roadmap" />
+        <div className="flex-1 flex items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-brand-gold" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-full">
       <GlobalPageHeader sectionLabel="ENTERPRISE" pageTitle="Objective Roadmap" />
