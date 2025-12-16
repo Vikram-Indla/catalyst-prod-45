@@ -23,17 +23,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { format } from 'date-fns';
-
-const COLOR_OPTIONS = [
-  { value: '#c69c6d', label: 'Gold' },
-  { value: '#5c7c5c', label: 'Olive' },
-  { value: '#8b7355', label: 'Bronze' },
-  { value: '#d4b896', label: 'Champagne' },
-  { value: '#3b82f6', label: 'Blue' },
-  { value: '#8b5cf6', label: 'Purple' },
-  { value: '#ec4899', label: 'Pink' },
-  { value: '#14b8a6', label: 'Teal' },
-];
+import { CATALYST_BRAND_COLORS, DEFAULT_THEME_COLOR } from '@/constants/brandColors';
 
 interface ThemeDrawerProps {
   open: boolean;
@@ -158,7 +148,7 @@ export function ThemeDrawer({ open, onOpenChange, theme, isArchived }: ThemeDraw
                 <div className="space-y-2">
                   <Label>Color Tag</Label>
                   <div className="flex flex-wrap gap-2">
-                    {COLOR_OPTIONS.map((color) => (
+                    {CATALYST_BRAND_COLORS.map((color) => (
                       <button
                         key={color.value}
                         type="button"

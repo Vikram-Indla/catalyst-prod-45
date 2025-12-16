@@ -1,16 +1,16 @@
 /**
  * Add to Strategic Backlog Modal
- * Pixel-perfect implementation matching mockups exactly
+ * Theme selection opens the canonical CreateThemeDialog
+ * Objective selection opens CreateObjectiveDialogV2
  */
 import { useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Layers, Target } from 'lucide-react';
-import { useCreateTheme } from '@/hooks/useStrategicBacklog';
-import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 import { CreateObjectiveDialogV2 } from '@/modules/okr-v2/components/CreateObjectiveDialogV2';
+import { CreateThemeDialog } from './CreateThemeDialog';
 
 interface AddToBacklogModalProps {
   open: boolean;
@@ -25,63 +25,43 @@ const TYPE_CONFIG = {
     icon: Layers,
     label: 'Theme',
     subtitle: 'Strategic pillar',
-    nameLabel: 'Theme Name',
-    namePlaceholder: 'Enter name...',
   },
   objective: {
     icon: Target,
     label: 'Objective',
     subtitle: 'Measurable goal',
-    nameLabel: 'Objective Name',
-    namePlaceholder: 'Enter name...',
   },
 };
 
 export function AddToBacklogModal({ open, onOpenChange, snapshotId }: AddToBacklogModalProps) {
   const [selectedType, setSelectedType] = useState<ItemType>(null);
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showThemeDialog, setShowThemeDialog] = useState(false);
   const [showObjectiveDialog, setShowObjectiveDialog] = useState(false);
-  
-  const createTheme = useCreateTheme();
 
   const handleClose = () => {
     onOpenChange(false);
     setTimeout(() => {
       setSelectedType(null);
-      setName('');
-      setDescription('');
     }, 200);
   };
 
-  const handleCreate = async () => {
+  const handleCreate = () => {
     if (!selectedType) return;
     
-    // For objectives, open the dedicated dialog
-    if (selectedType === 'objective') {
-      onOpenChange(false);
+    // Close this modal and open the appropriate dialog
+    onOpenChange(false);
+    
+    if (selectedType === 'theme') {
+      setShowThemeDialog(true);
+    } else if (selectedType === 'objective') {
       setShowObjectiveDialog(true);
-      return;
     }
-    
-    if (!name.trim()) return;
-    
-    setIsSubmitting(true);
-    try {
-      if (selectedType === 'theme') {
-        await createTheme.mutateAsync({
-          name: name.trim(),
-          description: description.trim() || undefined,
-          snapshot_id: snapshotId,
-          status: 'draft',
-        });
-      }
-      handleClose();
-    } catch (error: any) {
-      catalystToast.error('Error', error.message || 'Failed to create item.');
-    } finally {
-      setIsSubmitting(false);
+  };
+
+  const handleThemeDialogClose = (isOpen: boolean) => {
+    setShowThemeDialog(isOpen);
+    if (!isOpen) {
+      setSelectedType(null);
     }
   };
 
@@ -92,13 +72,8 @@ export function AddToBacklogModal({ open, onOpenChange, snapshotId }: AddToBackl
     }
   };
 
-  const config = selectedType ? TYPE_CONFIG[selectedType] : null;
-  const buttonLabel = selectedType && config ? `Create ${config.label}` : 'Create';
-  
-  // For objectives, allow clicking Create without name
-  const isCreateDisabled = selectedType === 'objective' 
-    ? false 
-    : (!selectedType || !name.trim() || isSubmitting);
+  const buttonLabel = selectedType ? `Create` : 'Create';
+  const isCreateDisabled = !selectedType;
 
   return (
     <>
@@ -115,7 +90,7 @@ export function AddToBacklogModal({ open, onOpenChange, snapshotId }: AddToBackl
               What are you adding?
             </Label>
             
-            {/* Type Selector Cards - 2 columns now */}
+            {/* Type Selector Cards - 2 columns */}
             <div className="grid grid-cols-2 gap-3">
               {(['theme', 'objective'] as const).map((type) => {
                 const cfg = TYPE_CONFIG[type];
@@ -148,49 +123,6 @@ export function AddToBacklogModal({ open, onOpenChange, snapshotId }: AddToBackl
                 );
               })}
             </div>
-
-            {/* Form fields - only show for theme, not objective */}
-            {selectedType && selectedType !== 'objective' && config && (
-              <div className="mt-6 space-y-4">
-                <div>
-                  <Label className="text-sm font-medium text-[#24292F] dark:text-[#E6EDF3] block mb-2">
-                    {config.nameLabel}
-                  </Label>
-                  <input
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder={config.namePlaceholder}
-                    className={cn(
-                      "w-full px-3 py-2.5 rounded-lg text-sm",
-                      "bg-white dark:bg-[#0D1117]",
-                      "border border-[#E1E4E8] dark:border-[#30363D]",
-                      "text-[#24292F] dark:text-[#E6EDF3]",
-                      "placeholder:text-[#8B949E] dark:placeholder:text-[#6E7681]",
-                      "focus:border-[#C69C6D] focus:ring-1 focus:ring-[rgba(198,156,109,0.3)] outline-none"
-                    )}
-                  />
-                </div>
-                <div>
-                  <Label className="text-sm font-medium text-[#24292F] dark:text-[#E6EDF3] block mb-2">
-                    Description
-                  </Label>
-                  <textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Enter description..."
-                    rows={4}
-                    className={cn(
-                      "w-full px-3 py-2 rounded-lg text-sm resize-none",
-                      "bg-white dark:bg-[#0D1117]",
-                      "border border-[#E1E4E8] dark:border-[#30363D]",
-                      "text-[#24292F] dark:text-[#E6EDF3]",
-                      "placeholder:text-[#8B949E] dark:placeholder:text-[#6E7681]",
-                      "focus:border-[#C69C6D] focus:ring-1 focus:ring-[rgba(198,156,109,0.3)] outline-none"
-                    )}
-                  />
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Footer */}
@@ -211,13 +143,20 @@ export function AddToBacklogModal({ open, onOpenChange, snapshotId }: AddToBackl
                 "disabled:opacity-50 disabled:cursor-not-allowed"
               )}
             >
-              {isSubmitting ? 'Creating...' : buttonLabel}
+              {buttonLabel}
             </button>
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* CreateObjectiveDialogV2 - opens when objective is selected */}
+      {/* CreateThemeDialog - canonical theme creation modal */}
+      <CreateThemeDialog
+        open={showThemeDialog}
+        onOpenChange={handleThemeDialogClose}
+        snapshotId={snapshotId}
+      />
+
+      {/* CreateObjectiveDialogV2 - canonical objective creation modal */}
       <CreateObjectiveDialogV2
         open={showObjectiveDialog}
         onOpenChange={handleObjectiveDialogClose}

@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+import { CATALYST_BRAND_COLORS, DEFAULT_THEME_COLOR } from '@/constants/brandColors';
 
 interface ThemeDialogProps {
   open: boolean;
@@ -23,7 +24,7 @@ export function ThemeDialog({ open, onOpenChange, theme }: ThemeDialogProps) {
   const [status, setStatus] = useState(theme?.status || 'proposed');
   const [startDate, setStartDate] = useState(theme?.start_date || '');
   const [endDate, setEndDate] = useState(theme?.end_date || '');
-  const [colorTag, setColorTag] = useState(theme?.color_tag || '#3B82F6');
+  const [colorTag, setColorTag] = useState(theme?.color_tag || DEFAULT_THEME_COLOR);
 
   const queryClient = useQueryClient();
 
@@ -34,7 +35,7 @@ export function ThemeDialog({ open, onOpenChange, theme }: ThemeDialogProps) {
       setStatus(theme?.status || 'proposed');
       setStartDate(theme?.start_date || '');
       setEndDate(theme?.end_date || '');
-      setColorTag(theme?.color_tag || '#3B82F6');
+      setColorTag(theme?.color_tag || DEFAULT_THEME_COLOR);
     }
   }, [open, theme]);
 
@@ -112,7 +113,7 @@ export function ThemeDialog({ open, onOpenChange, theme }: ThemeDialogProps) {
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="z-[400]">
                   <SelectItem value="proposed">Proposed</SelectItem>
                   <SelectItem value="active">Active</SelectItem>
                   <SelectItem value="done">Done</SelectItem>
@@ -121,13 +122,21 @@ export function ThemeDialog({ open, onOpenChange, theme }: ThemeDialogProps) {
               </Select>
             </div>
             <div>
-              <Label htmlFor="color">Color Tag</Label>
-              <Input
-                id="color"
-                type="color"
-                value={colorTag}
-                onChange={(e) => setColorTag(e.target.value)}
-              />
+              <Label>Color Tag</Label>
+              <div className="flex gap-2 pt-1">
+                {CATALYST_BRAND_COLORS.map((color) => (
+                  <button
+                    key={color.value}
+                    type="button"
+                    onClick={() => setColorTag(color.value)}
+                    className={`w-8 h-8 rounded-lg border-2 transition-all ${
+                      colorTag === color.value ? 'border-foreground scale-110 ring-2 ring-offset-1 ring-foreground/20' : 'border-transparent hover:scale-105'
+                    }`}
+                    style={{ backgroundColor: color.value }}
+                    title={color.label}
+                  />
+                ))}
+              </div>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">

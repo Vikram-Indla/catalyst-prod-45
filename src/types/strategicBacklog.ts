@@ -115,5 +115,7 @@ export interface CreateThemeInput {
   owner_id?: string;
   status?: 'active' | 'draft' | 'archived';
   color_tag?: string;
-  snapshot_id: string;
+  snapshot_id?: string;
+  start_date?: string;
+  end_date?: string;
 }
