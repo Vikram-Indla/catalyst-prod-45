@@ -19,6 +19,8 @@ export interface KeyResult {
   status: 'not-started' | 'in-progress' | 'complete' | 'overdue';
 }
 
+export type ObjectiveStatus = 'on-track' | 'at-risk' | 'off-track' | 'in-progress' | 'pending';
+
 export interface Objective {
   id: string;
   name: string;
@@ -27,7 +29,7 @@ export interface Objective {
   startDate: Date;
   endDate: Date;
   progress: number;
-  status: 'on-track' | 'at-risk' | 'delayed';
+  status: ObjectiveStatus;
   keyResults: KeyResult[];
 }
 

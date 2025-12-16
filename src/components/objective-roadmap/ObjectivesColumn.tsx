@@ -62,12 +62,20 @@ export const ObjectivesColumn = forwardRef<HTMLDivElement, ObjectivesColumnProps
       return owners.find(o => o.id === ownerId) || { name: 'Unassigned', initials: '?' };
     };
     
-    const getStatusColor = (status: string) => {
+    // Status config per legend:
+    // On track: Filled, Green (secondary-green #5c7c5c)
+    // At risk: Filled, Bronze (secondary-bronze #8b7355)
+    // Off track: Filled, Red (destructive)
+    // In Progress: Outline, Gold (brand-gold #c69c6d)
+    // Pending: Outline, Grey (muted)
+    const getStatusConfig = (status: string) => {
       switch (status) {
-        case 'on-track': return '#059669';
-        case 'at-risk': return '#D97706';
-        case 'delayed': return '#DC2626';
-        default: return '#6B7280';
+        case 'on-track': return { color: '#5c7c5c', variant: 'filled' as const };
+        case 'at-risk': return { color: '#8b7355', variant: 'filled' as const };
+        case 'off-track': return { color: 'hsl(0, 84%, 60%)', variant: 'filled' as const }; // destructive
+        case 'in-progress': return { color: '#c69c6d', variant: 'outline' as const };
+        case 'pending': return { color: '#6b7280', variant: 'outline' as const };
+        default: return { color: '#6b7280', variant: 'outline' as const };
       }
     };
     
@@ -117,13 +125,16 @@ export const ObjectivesColumn = forwardRef<HTMLDivElement, ObjectivesColumnProps
                     </div>
                     <div className="flex items-center gap-1">
                       {statusCounts['on-track'] && (
-                        <span className="w-2 h-2 rounded-full" style={{ background: '#059669' }} />
+                        <span className="w-2 h-2 rounded-full bg-secondary-green" />
                       )}
                       {statusCounts['at-risk'] && (
-                        <span className="w-2 h-2 rounded-full" style={{ background: '#D97706' }} />
+                        <span className="w-2 h-2 rounded-full bg-secondary-bronze" />
                       )}
-                      {statusCounts['delayed'] && (
-                        <span className="w-2 h-2 rounded-full" style={{ background: '#DC2626' }} />
+                      {(statusCounts['off-track'] || statusCounts['delayed']) && (
+                        <span className="w-2 h-2 rounded-full bg-destructive" />
+                      )}
+                      {statusCounts['in-progress'] && (
+                        <span className="w-2 h-2 rounded-full bg-brand-gold" />
                       )}
                     </div>
                   </div>
@@ -132,7 +143,7 @@ export const ObjectivesColumn = forwardRef<HTMLDivElement, ObjectivesColumnProps
                 {!isCollapsed && group.items.map(obj => {
                   const theme = getTheme(obj.themeId);
                   const owner = getOwner(obj.ownerId);
-                  const statusColor = getStatusColor(obj.status);
+                  const statusConfig = getStatusConfig(obj.status);
                   
                   return (
                     <div 
@@ -170,18 +181,14 @@ export const ObjectivesColumn = forwardRef<HTMLDivElement, ObjectivesColumnProps
                           </div>
                         </div>
                       </div>
+                      {/* Status pill per legend */}
                       <div 
                         className="flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-semibold rounded-full uppercase"
-                        style={{ 
-                          background: `${statusColor}15`, 
-                          color: statusColor,
-                          border: `1px solid ${statusColor}30`
-                        }}
+                        style={statusConfig.variant === 'filled' 
+                          ? { background: statusConfig.color, color: 'white' }
+                          : { background: 'transparent', color: statusConfig.color, border: `1px solid ${statusConfig.color}` }
+                        }
                       >
-                        <span 
-                          className="w-1.5 h-1.5 rounded-full" 
-                          style={{ background: statusColor }} 
-                        />
                         {obj.status.replace('-', ' ')}
                       </div>
                     </div>

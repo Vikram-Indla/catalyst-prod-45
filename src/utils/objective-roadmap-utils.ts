@@ -94,7 +94,7 @@ export function groupObjectives(
 }
 
 export function countNeedAttention(objectives: Objective[]): number {
-  return objectives.filter(o => o.status === 'at-risk' || o.status === 'delayed').length;
+  return objectives.filter(o => o.status === 'at-risk' || o.status === 'off-track').length;
 }
 
 export function hasOverdueKRs(obj: Objective): boolean {

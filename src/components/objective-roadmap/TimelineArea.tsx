@@ -127,36 +127,23 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
   const barRight = calcPosition(objective.endDate, timelineStart, timelineEnd);
   const barWidth = Math.max(barRight - barLeft, 2);
   
-  const getStatusColors = (status: string) => {
-    switch (status) {
-      case 'on-track': return { bg: '#059669', light: '#05966920' };
-      case 'at-risk': return { bg: '#D97706', light: '#D9770620' };
-      case 'delayed': return { bg: '#DC2626', light: '#DC262620' };
-      default: return { bg: '#6B7280', light: '#6B728020' };
-    }
-  };
-  
-  const colors = getStatusColors(objective.status);
-  
+  // Timeline bar: Grey track with gold fill (rounded ends)
   return (
     <div className="relative h-[76px] border-b border-border hover:bg-muted/20">
       <div 
-        className="absolute top-1/2 -translate-y-1/2 h-8 rounded-md cursor-pointer group overflow-hidden"
+        className="absolute top-1/2 -translate-y-1/2 h-6 rounded-full cursor-pointer group overflow-hidden"
         style={{ 
           left: `${barLeft}%`, 
           width: `${barWidth}%`,
-          background: colors.light,
+          background: 'hsl(var(--muted) / 0.5)',
           minWidth: '40px'
         }}
         onClick={onClick}
       >
-        {/* Progress Fill */}
+        {/* Progress Fill - Gold with rounded ends */}
         <div 
-          className="absolute inset-y-0 left-0 rounded-l-md transition-all"
-          style={{ 
-            width: `${objective.progress}%`,
-            background: `linear-gradient(90deg, ${colors.bg}40, ${colors.bg}60)`
-          }} 
+          className="absolute inset-y-0 left-0 rounded-full bg-brand-gold transition-all"
+          style={{ width: `${objective.progress}%` }}
         />
         
         {/* Bar Content */}
@@ -169,7 +156,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
                 keyResult={kr}
                 objectiveStart={objective.startDate}
                 objectiveEnd={objective.endDate}
-                statusColor={colors.bg}
+                statusColor="#c69c6d"
               />
             ))
           ) : (
@@ -178,16 +165,9 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
             </span>
           )}
         </div>
-        
-        {/* End marker */}
-        <div 
-          className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 rotate-45 border-2 border-white"
-          style={{ background: colors.bg }}
-        />
       </div>
     </div>
   );
-};
 
 interface KRMarkerProps {
   keyResult: KeyResult;
