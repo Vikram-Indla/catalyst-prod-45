@@ -8,7 +8,7 @@ import { useStrategicSnapshots, useDeleteSnapshot, StrategicSnapshot, useSnapsho
 import { useSnapshotStrategyLinks } from '@/hooks/useStrategicBacklog';
 import { CreateSnapshotModal } from '@/components/strategy/snapshots/CreateSnapshotModal';
 import { SnapshotCard } from '@/components/strategy/snapshots/SnapshotCard';
-import { SnapshotDetailsDrawerV2 } from '@/components/strategy/snapshots/SnapshotDetailsDrawerV2';
+import { SnapshotDrawer } from '@/components/enterprise/snapshots/SnapshotDrawer';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -443,11 +443,11 @@ export default function StrategicSnapshots() {
         onClose={() => setCreateModalOpen(false)}
       />
 
-      {/* Details Drawer V2 */}
-      <SnapshotDetailsDrawerV2
-        open={!!selectedSnapshot}
+      {/* New Snapshot Drawer */}
+      <SnapshotDrawer
+        isOpen={!!selectedSnapshot}
         onClose={() => setSelectedSnapshot(null)}
-        snapshot={selectedSnapshot}
+        snapshotId={selectedSnapshot?.id || null}
       />
 
       {/* Delete Confirmation */}
