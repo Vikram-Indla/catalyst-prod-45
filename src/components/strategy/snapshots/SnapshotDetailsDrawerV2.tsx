@@ -197,8 +197,12 @@ export function SnapshotDetailsDrawerV2({ open, onClose, snapshot }: SnapshotDet
                 </div>
               </div>
 
-              {/* Body */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-5">
+              {/* Body with Gold Vertical Line */}
+              <div className="flex-1 flex overflow-hidden">
+                {/* GOLD VERTICAL LINE — LOCKED STANDARD */}
+                <div className="w-1 bg-[#C69C6D] flex-shrink-0" />
+                
+                <div className="flex-1 overflow-y-auto p-4 space-y-5">
                 {/* Description */}
                 <div>
                   <h4 className="text-[11px] font-semibold uppercase tracking-wider text-[#8B949E] dark:text-[#6E7681] mb-2">DESCRIPTION</h4>
@@ -307,6 +311,7 @@ export function SnapshotDetailsDrawerV2({ open, onClose, snapshot }: SnapshotDet
                       <span className="text-sm font-medium">Open Strategic Backlog</span>
                     </button>
                   </div>
+                </div>
                 </div>
               </div>
 
