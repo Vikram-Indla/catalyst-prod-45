@@ -113,9 +113,15 @@ export function StrategicBacklogQuickDrawer({ item, type, onClose, themes }: Qui
       >
         <div className="flex items-start justify-between">
           <div className="flex-1 pr-4">
-            <div 
+            <div
               className="mb-1"
-              style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#8B949E' }}
+              style={{
+                fontSize: '11px',
+                fontWeight: 600,
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+                color: 'var(--text-muted)',
+              }}
             >
               {getTypeLabel()}
             </div>
@@ -124,7 +130,7 @@ export function StrategicBacklogQuickDrawer({ item, type, onClose, themes }: Qui
               {getStatusBadge()}
             </div>
           </div>
-          <button 
+          <button
             onClick={onClose}
             className="p-1.5 rounded-md transition-colors"
             style={{ color: 'var(--text-muted)' }}
@@ -140,9 +146,15 @@ export function StrategicBacklogQuickDrawer({ item, type, onClose, themes }: Qui
       <div className="p-5 space-y-6">
         {/* Description */}
         <div>
-          <label 
+          <label
             className="block mb-2"
-            style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#8B949E' }}
+            style={{
+              fontSize: '11px',
+              fontWeight: 600,
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px',
+              color: 'var(--text-muted)',
+            }}
           >
             Description
           </label>
@@ -154,21 +166,27 @@ export function StrategicBacklogQuickDrawer({ item, type, onClose, themes }: Qui
         {/* Theme-specific: Linked Objectives */}
         {type === 'theme' && (
           <div>
-            <label 
+            <label
               className="block mb-3"
-              style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#8B949E' }}
+              style={{
+                fontSize: '11px',
+                fontWeight: 600,
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+                color: 'var(--text-muted)',
+              }}
             >
               Linked Objectives
             </label>
-            <div 
+            <div
               className="flex flex-col items-center justify-center py-8 px-4 rounded-lg text-center"
-              style={{ 
+              style={{
                 border: '2px dashed var(--border-default)',
                 background: 'var(--surface-subtle)',
               }}
             >
-              <Target className="h-8 w-8 mb-2" style={{ color: '#8B949E' }} />
-              <span className="text-sm" style={{ color: '#8B949E' }}>
+              <Target className="h-8 w-8 mb-2" style={{ color: 'var(--text-muted)' }} />
+              <span className="text-sm" style={{ color: 'var(--text-muted)' }}>
                 {objectiveCount} objectives linked
               </span>
             </div>
@@ -178,13 +196,19 @@ export function StrategicBacklogQuickDrawer({ item, type, onClose, themes }: Qui
         {/* Objective-specific: Progress */}
         {type === 'objective' && (
           <div>
-            <label 
+            <label
               className="block mb-3"
-              style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#8B949E' }}
+              style={{
+                fontSize: '11px',
+                fontWeight: 600,
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+                color: 'var(--text-muted)',
+              }}
             >
               Progress
             </label>
-            <div 
+            <div
               className="p-4 rounded-lg"
               style={{ background: 'var(--surface-subtle)', border: '1px solid var(--border-default)' }}
             >
@@ -193,9 +217,9 @@ export function StrategicBacklogQuickDrawer({ item, type, onClose, themes }: Qui
                 <span className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>{progress}%</span>
               </div>
               <div className="h-2 rounded-full overflow-hidden" style={{ background: 'var(--border-default)' }}>
-                <div 
-                  className="h-full rounded-full transition-all" 
-                  style={{ width: `${progress}%`, background: '#5C7C5C' }}
+                <div
+                  className="h-full rounded-full transition-all"
+                  style={{ width: `${progress}%`, background: 'var(--secondary-green)' }}
                 />
               </div>
             </div>
