@@ -2,7 +2,7 @@
  * Strategic Backlog - Enterprise Strategy Command Center
  * Pixel-perfect implementation matching Catalyst design specs
  */
-import { useState, useEffect, Component, type ReactNode } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
@@ -30,33 +30,6 @@ import { cn } from '@/lib/utils';
 
 type SubSection = 'themes' | 'objectives' | 'epics';
 
-// TEMP DEBUG boundary to deterministically detect render crashes
-class DebugDrawerErrorBoundary extends Component<
-  { name: string; children: ReactNode },
-  { error: unknown }
-> {
-  state = { error: null as unknown };
-
-  static getDerivedStateFromError(error: unknown) {
-    return { error };
-  }
-
-  componentDidCatch(error: unknown) {
-    // TEMP DEBUG (remove after diagnosis)
-    console.error(`[${this.props.name}] crashed while rendering`, error);
-  }
-
-  render() {
-    if (this.state.error) {
-      return (
-        <div className="fixed top-3 right-3 z-[999] rounded-md border border-border bg-brand-gold/10 px-3 py-2 text-xs font-semibold text-foreground shadow-lg">
-          {this.props.name} CRASHED (see console)
-        </div>
-      );
-    }
-    return this.props.children;
-  }
-}
 
 export default function StrategicBacklog() {
   const [selectedSnapshotId, setSelectedSnapshotId] = useState<string>('');
@@ -140,14 +113,6 @@ export default function StrategicBacklog() {
   });
 
   const handleSelectItem = (item: any, type: 'theme' | 'objective' | 'epic') => {
-    // TEMP DEBUG (remove after diagnosis)
-    console.log('[StrategicBacklog] selectItem', {
-      type,
-      id: item?.id,
-      isTheme: type === 'theme',
-      willOpenThemeDrawer: type === 'theme',
-    });
-
     setSelectedItem(item);
     setSelectedItemType(type);
   };
@@ -269,23 +234,14 @@ export default function StrategicBacklog() {
             </div>
           </div>
 
-          {/* TEMP DEBUG state marker */}
-          {selectedItemType === 'theme' && (
-            <div className="fixed bottom-3 left-3 z-[999] rounded-md border border-border bg-brand-gold/10 px-3 py-2 text-xs font-semibold text-foreground shadow-lg">
-              THEME CLICK STATE — type: {selectedItemType} — id: {selectedItem?.id || '—'}
-            </div>
-          )}
-
           {/* Theme Details Drawer */}
           {selectedItem && selectedItemType === 'theme' && (
-            <DebugDrawerErrorBoundary name="ThemeDetailsDrawer">
-              <ThemeDetailsDrawer
-                key={`theme-drawer-${selectedItem.id}`}
-                theme={selectedItem}
-                isOpen={true}
-                onClose={handleCloseDrawer}
-              />
-            </DebugDrawerErrorBoundary>
+            <ThemeDetailsDrawer
+              key={`theme-drawer-${selectedItem.id}`}
+              theme={selectedItem}
+              isOpen={true}
+              onClose={handleCloseDrawer}
+            />
           )}
 
           {/* Epic Details Panel */}
