@@ -508,14 +508,6 @@ function DrawerContent({ analytics }: { analytics: ObjectiveAnalyticsData }) {
           </div>
         )}
 
-        {/* Alignment & Context (Collapsible) */}
-        <CollapsibleSection title="Alignment & Context" defaultOpen>
-          <AlignmentBreadcrumb 
-            themeName={alignment.themeName}
-            themeColor={alignment.themeColor}
-            objectiveName={alignment.objectiveName}
-          />
-        </CollapsibleSection>
       </div>
     </div>
   );
