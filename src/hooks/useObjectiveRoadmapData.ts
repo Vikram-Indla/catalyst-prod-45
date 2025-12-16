@@ -17,19 +17,31 @@ export function useObjectiveRoadmapData() {
     },
   });
 
-  // Fetch key results for objectives
+  // Fetch key results for objectives from key_results_v2 table
   const objectiveIds = objectivesData.map(o => o.id);
   const { data: keyResultsData = [], isLoading: krLoading } = useQuery({
-    queryKey: ['objective-roadmap-key-results', objectiveIds],
+    queryKey: ['objective-roadmap-key-results-v2', objectiveIds],
     queryFn: async () => {
       if (objectiveIds.length === 0) return [];
       
       const { data, error } = await supabase
-        .from('key_results')
-        .select('id, objective_id, name, target_value, current_value, created_at')
+        .from('key_results_v2')
+        .select('id, objective_id, summary, goal_value, current_value, start_date, end_date, baseline_value')
         .in('objective_id', objectiveIds);
       
       if (error) throw error;
+      
+      // Debug log for verification (temporary)
+      if (data && data.length > 0) {
+        console.log('[Roadmap KR Debug] Fetched KRs:', data.map(kr => ({
+          id: kr.id,
+          objective_id: kr.objective_id,
+          summary: kr.summary,
+          start_date: kr.start_date,
+          end_date: kr.end_date
+        })));
+      }
+      
       return data || [];
     },
     enabled: objectiveIds.length > 0,
@@ -106,6 +118,15 @@ export function useObjectiveRoadmapData() {
   const objectives: Objective[] = objectivesData.map(obj => {
     const objKRs = krsByObjective[obj.id] || [];
     
+    // Debug log for specific objectives (temporary)
+    if (obj.name?.includes('DGA Ranking') || obj.name?.includes('Digitize')) {
+      console.log(`[Roadmap Debug] Objective "${obj.name}" (${obj.id}):`, {
+        fetchedKRsCount: objKRs.length,
+        krIds: objKRs.map(kr => kr.id),
+        krDates: objKRs.map(kr => ({ start: kr.start_date, end: kr.end_date }))
+      });
+    }
+    
     // Calculate objective dates for KR distribution
     const currentDate = new Date();
     const objStartDate = obj.start_date ? new Date(obj.start_date) : new Date(currentDate.getFullYear(), 0, 1);
@@ -113,19 +134,28 @@ export function useObjectiveRoadmapData() {
     const objDuration = objEndDate.getTime() - objStartDate.getTime();
     
     const keyResults: KeyResult[] = objKRs.map((kr, index) => {
-      // Distribute KRs evenly across the objective timeline
-      const krCount = objKRs.length;
-      const spacing = objDuration / (krCount + 1);
-      const krDueDate = new Date(objStartDate.getTime() + spacing * (index + 1));
+      // Use actual KR dates if available, otherwise distribute across objective timeline
+      let krDueDate: Date;
+      if (kr.end_date) {
+        krDueDate = new Date(kr.end_date);
+      } else {
+        // Fallback: distribute KRs evenly across the objective timeline
+        const krCount = objKRs.length;
+        const spacing = objDuration / (krCount + 1);
+        krDueDate = new Date(objStartDate.getTime() + spacing * (index + 1));
+      }
+      
+      // Calculate progress using goal_value (not target_value)
+      const progress = kr.goal_value && kr.goal_value > 0 
+        ? Math.round(((kr.current_value || 0) / kr.goal_value) * 100) 
+        : 0;
       
       return {
         id: kr.id,
-        title: kr.name,
+        title: kr.summary, // Use summary field from key_results_v2
         dueDate: krDueDate,
-        progress: kr.target_value && kr.target_value > 0 
-          ? Math.round(((kr.current_value || 0) / kr.target_value) * 100) 
-          : 0,
-        status: mapKRStatus(kr.current_value, kr.target_value),
+        progress,
+        status: mapKRStatus(kr.current_value, kr.goal_value), // Use goal_value
       };
     });
 
