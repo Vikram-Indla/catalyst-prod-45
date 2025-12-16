@@ -9,7 +9,7 @@ export function useObjectiveRoadmapData() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('objectives')
-        .select('id, name, theme_id, owner_id, start_date, end_date, progress_pct, confidence')
+        .select('id, name, theme_id, owner_id, start_date, end_date, progress_pct, confidence, status')
         .order('name');
       
       if (error) throw error;
@@ -75,12 +75,14 @@ export function useObjectiveRoadmapData() {
     },
   });
 
-  // Map confidence to status
-  const mapConfidenceToStatus = (confidence: string | null): Objective['status'] => {
-    switch (confidence) {
-      case 'high': return 'on-track';
-      case 'med': return 'in-progress';
-      case 'low': return 'at-risk';
+  // Map database status to roadmap status
+  const mapStatusToRoadmapStatus = (status: string | null): Objective['status'] => {
+    switch (status) {
+      case 'on_track': return 'on-track';
+      case 'at_risk': return 'at-risk';
+      case 'off_track': return 'at-risk';
+      case 'completed': return 'on-track';
+      case 'in_progress': return 'in-progress';
       default: return 'pending';
     }
   };
@@ -171,7 +173,7 @@ export function useObjectiveRoadmapData() {
       startDate,
       endDate,
       progress: obj.progress_pct || 0,
-      status: mapConfidenceToStatus(obj.confidence),
+      status: mapStatusToRoadmapStatus(obj.status),
       keyResults,
     };
   });
