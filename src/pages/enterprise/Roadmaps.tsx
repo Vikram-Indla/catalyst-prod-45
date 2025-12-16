@@ -138,10 +138,7 @@ export default function EnterpriseRoadmapsPage() {
 
   // Header actions
   const headerActions = (
-    <button className={cn(
-      "inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium",
-      "bg-[#C69C6D] hover:bg-[#B8905F] text-white"
-    )}>
+    <button className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-brand-gold hover:bg-brand-gold-hover text-white transition-colors">
       <Plus size={16} />
       Create
     </button>
@@ -151,24 +148,18 @@ export default function EnterpriseRoadmapsPage() {
   if (!isLoading && items.length === 0) {
     return (
       <PageChrome rightActions={headerActions}>
-        <div className="flex-1 flex items-center justify-center bg-[#FAFBFC] dark:bg-[#0D1117]">
+        <div className="flex-1 flex items-center justify-center bg-muted/30">
           <div className="text-center max-w-md">
-            <div className={cn(
-              "w-20 h-20 rounded-2xl mx-auto mb-6 flex items-center justify-center",
-              "bg-[rgba(198,156,109,0.1)] dark:bg-[rgba(198,156,109,0.15)]"
-            )}>
-              <Map size={40} className="text-[#C69C6D]" />
+            <div className="w-20 h-20 rounded-2xl mx-auto mb-6 flex items-center justify-center bg-brand-gold/10">
+              <Map size={40} className="text-brand-gold" />
             </div>
-            <h3 className="text-xl font-semibold text-[#24292F] dark:text-[#E6EDF3] mb-2">
+            <h3 className="text-xl font-semibold text-foreground mb-2">
               No roadmap items yet
             </h3>
-            <p className="text-sm text-[#8B949E] dark:text-[#6E7681] mb-6">
+            <p className="text-sm text-muted-foreground mb-6">
               Start building your strategic roadmap by adding themes, objectives, and epics with timeline information.
             </p>
-            <button className={cn(
-              "inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium",
-              "bg-[#C69C6D] hover:bg-[#B8905F] text-white"
-            )}>
+            <button className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-brand-gold hover:bg-brand-gold-hover text-white transition-colors">
               <Plus size={16} />
               Add First Item
             </button>
@@ -180,10 +171,7 @@ export default function EnterpriseRoadmapsPage() {
 
   return (
     <PageChrome rightActions={headerActions}>
-      <div className={cn(
-        "flex-1 flex flex-col min-h-0",
-        "bg-[#FAFBFC] dark:bg-[#0D1117]"
-      )}>
+      <div className="flex-1 flex flex-col min-h-0 bg-muted/30">
         {/* Toolbar */}
         <RoadmapToolbar
           timeScale={timeScale}

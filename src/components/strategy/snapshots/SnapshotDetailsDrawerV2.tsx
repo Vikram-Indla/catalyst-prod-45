@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import { X, Calendar, MoreVertical, ExternalLink, Layers, Settings, CheckCircle2, AlertTriangle, ChevronRight, Pencil, Trash2 } from 'lucide-react';
 import { StrategicSnapshot, useSnapshotConfiguration, useDeleteSnapshot } from '@/hooks/useStrategicSnapshots';
 import { useSnapshotStrategyLinks } from '@/hooks/useStrategicBacklog';
@@ -206,125 +205,135 @@ export function SnapshotDetailsDrawerV2({ open, onClose, snapshot }: SnapshotDet
               <div className="flex-1 overflow-y-auto p-4 space-y-5">
               {/* Description */}
               <div>
-                <h4 className="text-[11px] font-semibold uppercase tracking-wider text-[#8B949E] dark:text-[#6E7681] mb-2">DESCRIPTION</h4>
-                <p className="text-sm text-[#24292F] dark:text-[#E6EDF3]">
+                <h4 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">DESCRIPTION</h4>
+                <p className="text-sm text-foreground">
                   {snapshot.description || 'No description provided.'}
                 </p>
               </div>
 
+              {/* Gold Horizontal Divider */}
+              <div className="h-px bg-secondary-champagne" />
+
               {/* Date Range */}
               <div>
-                <h4 className="text-[11px] font-semibold uppercase tracking-wider text-[#8B949E] dark:text-[#6E7681] mb-2">DATE RANGE</h4>
-                <div className="flex items-center gap-2 text-sm text-[#24292F] dark:text-[#E6EDF3]">
-                  <Calendar className="h-4 w-4 text-[#8B949E]" />
+                <h4 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">DATE RANGE</h4>
+                <div className="flex items-center gap-2 text-sm text-foreground">
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
                   <span>{formatDate(snapshot.start_date)} — {formatDate(snapshot.end_date)}</span>
                 </div>
               </div>
 
-              <Separator />
+              {/* Gold Horizontal Divider */}
+              <div className="h-px bg-secondary-champagne" />
 
               {/* Readiness */}
               <div>
-                <h4 className="text-[11px] font-semibold uppercase tracking-wider text-[#8B949E] dark:text-[#6E7681] mb-2">READINESS</h4>
+                <h4 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">READINESS</h4>
                 {isReady ? (
                   <div className="flex items-center gap-3 p-3 rounded-lg bg-[rgba(92,124,92,0.1)] dark:bg-[rgba(92,124,92,0.15)] border border-[rgba(92,124,92,0.3)]">
-                    <CheckCircle2 className="h-4 w-4 text-[#5C7C5C] dark:text-[#7DA37D] flex-shrink-0" />
-                    <span className="text-sm text-[#24292F] dark:text-[#E6EDF3]">Ready for activation</span>
+                    <CheckCircle2 className="h-4 w-4 text-secondary-green flex-shrink-0" />
+                    <span className="text-sm text-foreground">Ready for activation</span>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-[rgba(198,156,109,0.1)] dark:bg-[rgba(198,156,109,0.15)] border border-[rgba(198,156,109,0.3)] dark:border-[rgba(198,156,109,0.4)]">
-                    <AlertTriangle className="h-4 w-4 text-[#C69C6D] flex-shrink-0" />
-                    <span className="text-sm text-[#24292F] dark:text-[#E6EDF3]">
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-brand-gold/10 border border-brand-gold/30">
+                    <AlertTriangle className="h-4 w-4 text-brand-gold flex-shrink-0" />
+                    <span className="text-sm text-foreground">
                       Incomplete — add quarters and themes
                     </span>
                   </div>
                 )}
               </div>
 
-              <Separator />
+              {/* Gold Horizontal Divider */}
+              <div className="h-px bg-secondary-champagne" />
 
               {/* Scope Cards */}
               <div>
-                <h4 className="text-[11px] font-semibold uppercase tracking-wider text-[#8B949E] dark:text-[#6E7681] mb-3">SCOPE</h4>
+                <h4 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-3">SCOPE</h4>
                 <div className="grid grid-cols-2 gap-3">
                   {/* Quarters Card */}
                   <button
                     onClick={() => setManageQuartersOpen(true)}
-                    className="p-4 rounded-lg transition-all text-left group bg-[#FAFBFC] dark:bg-[#0D1117] border border-[#EAECEF] dark:border-[#21262D] hover:border-[rgba(198,156,109,0.3)]"
+                    className="p-4 rounded-lg transition-all text-left group bg-muted/50 border border-border hover:border-brand-gold/30"
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <div className="h-8 w-8 rounded-md bg-[rgba(198,156,109,0.1)] flex items-center justify-center">
-                        <Layers className="h-4 w-4 text-[#C69C6D]" />
+                      <div className="h-8 w-8 rounded-md bg-brand-gold/10 flex items-center justify-center">
+                        <Layers className="h-4 w-4 text-brand-gold" />
                       </div>
-                      <ChevronRight className="h-4 w-4 text-[#8B949E] group-hover:text-[#24292F] dark:group-hover:text-[#E6EDF3] transition-colors" />
+                      <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
                     </div>
-                    <div className="text-xs text-[#8B949E] mb-1">Quarters</div>
+                    <div className="text-xs text-muted-foreground mb-1">Quarters</div>
                     <div className={cn(
                       "text-xl font-semibold tabular-nums",
-                      quarterCount === 0 ? "text-[#C69C6D]" : "text-[#24292F] dark:text-[#E6EDF3]"
+                      quarterCount === 0 ? "text-brand-gold" : "text-foreground"
                     )}>
                       {quarterCount}
-                      {quarterCount === 0 && <AlertTriangle className="h-3.5 w-3.5 inline ml-1 text-[#C69C6D]" />}
+                      {quarterCount === 0 && <AlertTriangle className="h-3.5 w-3.5 inline ml-1 text-brand-gold" />}
                     </div>
                   </button>
 
                   {/* Themes Card */}
                   <button
                     onClick={() => setCurrentView('themes')}
-                    className="p-4 rounded-lg transition-all text-left group bg-[#FAFBFC] dark:bg-[#0D1117] border border-[#EAECEF] dark:border-[#21262D] hover:border-[rgba(198,156,109,0.3)]"
+                    className="p-4 rounded-lg transition-all text-left group bg-muted/50 border border-border hover:border-brand-gold/30"
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <div className="h-8 w-8 rounded-md bg-[rgba(198,156,109,0.1)] flex items-center justify-center">
-                        <Settings className="h-4 w-4 text-[#C69C6D]" />
+                      <div className="h-8 w-8 rounded-md bg-brand-gold/10 flex items-center justify-center">
+                        <Settings className="h-4 w-4 text-brand-gold" />
                       </div>
-                      <ChevronRight className="h-4 w-4 text-[#8B949E] group-hover:text-[#24292F] dark:group-hover:text-[#E6EDF3] transition-colors" />
+                      <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
                     </div>
-                    <div className="text-xs text-[#8B949E] mb-1">Themes</div>
+                    <div className="text-xs text-muted-foreground mb-1">Themes</div>
                     <div className={cn(
                       "text-xl font-semibold tabular-nums",
-                      themeCount === 0 ? "text-[#C69C6D]" : "text-[#24292F] dark:text-[#E6EDF3]"
+                      themeCount === 0 ? "text-brand-gold" : "text-foreground"
                     )}>
                       {themeCount}
-                      {themeCount === 0 && <AlertTriangle className="h-3.5 w-3.5 inline ml-1 text-[#C69C6D]" />}
+                      {themeCount === 0 && <AlertTriangle className="h-3.5 w-3.5 inline ml-1 text-brand-gold" />}
                     </div>
                   </button>
                 </div>
               </div>
 
-              <Separator />
+              {/* Gold Horizontal Divider */}
+              <div className="h-px bg-secondary-champagne" />
 
               {/* Quick Actions */}
               <div>
-                <h4 className="text-[11px] font-semibold uppercase tracking-wider text-[#8B949E] dark:text-[#6E7681] mb-3">QUICK ACTIONS</h4>
+                <h4 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-3">QUICK ACTIONS</h4>
                 <div className="space-y-2">
                   <button 
-                    className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors bg-white dark:bg-[#161B22] border border-[#E1E4E8] dark:border-[#30363D] hover:border-[rgba(198,156,109,0.3)] text-[#24292F] dark:text-[#E6EDF3]"
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors bg-background border border-border hover:border-brand-gold/30 text-foreground"
                     onClick={handleNavigateToStrategyRoom}
                   >
-                    <ExternalLink className="h-4 w-4 text-[#8B949E]" />
+                    <ExternalLink className="h-4 w-4 text-muted-foreground" />
                     <span className="text-sm font-medium">Open in Strategy Room</span>
                   </button>
                   <button 
-                    className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors bg-white dark:bg-[#161B22] border border-[#E1E4E8] dark:border-[#30363D] hover:border-[rgba(198,156,109,0.3)] text-[#24292F] dark:text-[#E6EDF3]"
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors bg-background border border-border hover:border-brand-gold/30 text-foreground"
                     onClick={handleNavigateToBacklog}
                   >
-                    <ExternalLink className="h-4 w-4 text-[#8B949E]" />
+                    <ExternalLink className="h-4 w-4 text-muted-foreground" />
                     <span className="text-sm font-medium">Open Strategic Backlog</span>
                   </button>
                 </div>
               </div>
               </div>
 
-              {/* Footer - Activate action for non-active snapshots */}
+              {/* Footer WITH Gold Line Extension */}
               {!isActive && !isArchived && (
-                <div className="p-4 border-t border-[#E1E4E8] dark:border-[#30363D]">
-                  <button 
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-brand-gold hover:bg-brand-gold-hover text-white text-sm font-medium transition-colors"
-                    onClick={() => setActivateModalOpen(true)}
-                  >
-                    <CheckCircle2 className="h-4 w-4" />
-                    Activate Snapshot
-                  </button>
+                <div className="flex-shrink-0 flex border-t border-border">
+                  {/* Gold line continues into footer */}
+                  <div className="w-1 bg-brand-gold flex-shrink-0" />
+                  <div className="flex-1 p-4">
+                    <button 
+                      className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-brand-gold hover:bg-brand-gold-hover text-white text-sm font-medium transition-colors"
+                      onClick={() => setActivateModalOpen(true)}
+                    >
+                      <CheckCircle2 className="h-4 w-4" />
+                      Activate Snapshot
+                    </button>
+                  </div>
                 </div>
               )}
             </>
