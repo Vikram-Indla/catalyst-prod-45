@@ -31,6 +31,7 @@ const SheetOverlay = React.forwardRef<
 SheetOverlay.displayName = SheetPrimitive.Overlay.displayName;
 
 // Side variants - Using semantic tokens for theme support
+// DRAWER LAYOUT CONTRACT: left/right drawers use h-[100dvh] to guarantee full viewport height
 const sheetSideVariants = cva(
   cn(
     "fixed z-[200] shadow-2xl transition ease-in-out",
@@ -43,8 +44,8 @@ const sheetSideVariants = cva(
       side: {
         top: "inset-x-0 top-0 data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top",
         bottom: "inset-x-0 bottom-0 data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
-        left: "inset-y-0 left-0 h-full data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left",
-        right: "inset-y-0 right-0 h-full data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right",
+        left: "inset-y-0 left-0 h-[100dvh] max-h-[100dvh] data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left",
+        right: "inset-y-0 right-0 h-[100dvh] max-h-[100dvh] data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right",
       },
     },
     defaultVariants: {
@@ -88,7 +89,8 @@ const SheetContent = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Con
           className={cn(
             sheetSideVariants({ side }), 
             isHorizontal && sheetWidthVariants({ width }),
-            "flex flex-col",
+            // DRAWER LAYOUT CONTRACT: flex-col + overflow-hidden ensures single scroll container pattern
+            "flex flex-col overflow-hidden",
             className
           )}
           style={{

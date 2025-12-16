@@ -565,8 +565,9 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
               ))}
             </TabsList>
 
-            <div className="executive-drawer-content flex-1 flex flex-col min-h-0 bg-white overflow-y-auto">
-              <TabsContent value="demand-details" className="m-0 focus-visible:outline-none flex-1 p-4 md:p-5 pb-6">
+            {/* DRAWER BODY: Single scroll container - flex-1 min-h-0 overflow-y-auto */}
+            <div className="executive-drawer-content flex-1 min-h-0 overflow-y-auto bg-white">
+              <TabsContent value="demand-details" className="m-0 focus-visible:outline-none p-4 md:p-5 pb-6">
                 <DemandDetailsViewTab data={formData} onChange={handleFieldChange} />
               </TabsContent>
               <TabsContent value="business-score" className="m-0 focus-visible:outline-none">
@@ -576,22 +577,22 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                   onDirtyChange={handleDirtyChange}
                 />
               </TabsContent>
-              <TabsContent value="budget" className="m-0 focus-visible:outline-none flex-1 p-4 md:p-5 pb-6">
+              <TabsContent value="budget" className="m-0 focus-visible:outline-none p-4 md:p-5 pb-6">
                 <BudgetViewTab data={formData} onChange={handleFieldChange} onDirtyChange={handleDirtyChange} />
               </TabsContent>
-              <TabsContent value="risks" className="m-0 focus-visible:outline-none flex-1 p-4 md:p-5 pb-6">
+              <TabsContent value="risks" className="m-0 focus-visible:outline-none p-4 md:p-5 pb-6">
                 <RisksViewTab data={formData} onChange={handleFieldChange} onDirtyChange={handleDirtyChange} />
               </TabsContent>
-              <TabsContent value="milestones" className="m-0 focus-visible:outline-none flex-1 p-4 md:p-5 pb-6">
+              <TabsContent value="milestones" className="m-0 focus-visible:outline-none p-4 md:p-5 pb-6">
                 <MilestonesViewTab data={formData} onChange={handleFieldChange} onDirtyChange={handleDirtyChange} />
               </TabsContent>
               <TabsContent value="links" className="m-0 focus-visible:outline-none">
                 <LinksViewTab data={formData} onChange={handleFieldChange} onDirtyChange={handleDirtyChange} />
               </TabsContent>
-              <TabsContent value="discussions" className="m-0 focus-visible:outline-none h-[500px]">
+              <TabsContent value="discussions" className="m-0 focus-visible:outline-none">
                 <DiscussionsViewTab data={formData} onChange={handleFieldChange} onDirtyChange={handleDirtyChange} />
               </TabsContent>
-              <TabsContent value="audit-history" className="m-0 focus-visible:outline-none flex-1 flex flex-col min-h-0">
+              <TabsContent value="audit-history" className="m-0 focus-visible:outline-none">
                 <AuditHistoryTab data={formData} onChange={handleFieldChange} onDirtyChange={handleDirtyChange} />
               </TabsContent>
             </div>
