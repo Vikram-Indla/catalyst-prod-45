@@ -24,7 +24,7 @@ import { StrategicBacklogEpicsSection } from '@/components/strategic-backlog/Str
 import { AddToBacklogModal } from '@/components/strategic-backlog/AddToBacklogModal';
 import { ThemeDetailsDrawer } from '@/components/backlog/ThemeDetailsDrawer';
 import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
-import { ObjectiveAnalyticsDrawer } from '@/modules/okr-v2/components/ObjectiveAnalyticsDrawer';
+import { ObjectiveDrawerV2 } from '@/modules/okr-v2/components/ObjectiveDrawerV2';
 import { useStrategicThemes, useSnapshotStrategyLinks } from '@/hooks/useStrategicBacklog';
 import { cn } from '@/lib/utils';
 
@@ -251,8 +251,8 @@ export default function StrategicBacklog() {
             />
           )}
 
-          {/* Objective Analytics Drawer */}
-          <ObjectiveAnalyticsDrawer
+          {/* Objective Drawer V2 */}
+          <ObjectiveDrawerV2
             objectiveId={selectedItemType === 'objective' ? selectedItem?.id : null}
             open={selectedItemType === 'objective' && !!selectedItem}
             onClose={handleCloseDrawer}
