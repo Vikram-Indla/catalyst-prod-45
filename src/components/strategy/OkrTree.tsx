@@ -12,9 +12,9 @@ interface OkrTreeProps {
 }
 
 function getProgressBarColor(progress: number): string {
-  if (progress < 30) return '#B85C5C';
-  if (progress >= 70) return '#5C7C5C';
-  return '#C69C6D';
+  if (progress < 30) return 'hsl(var(--destructive))';
+  if (progress >= 70) return 'hsl(var(--secondary-green))';
+  return 'hsl(var(--brand-gold))';
 }
 
 export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: OkrTreeProps) {
@@ -61,19 +61,29 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
 
     const badge = getBadgeStyle();
 
+    const handleActivate = () => {
+      if (isTheme && onThemeClick) {
+        onThemeClick({ id: item.id, name: item.title, type: 'theme' });
+      } else if (isObjective) {
+        onObjectiveClick({ id: item.id, title: item.title, type: 'objective_v2' });
+      }
+    };
+
+    const isClickable = isObjective || (isTheme && !!onThemeClick);
+
     return (
       <div key={item.id}>
         <div
-          className={`grid items-center py-3 transition-colors ${
-            isObjective || isTheme ? 'cursor-pointer' : ''
-          }`}
+          className={`grid items-center py-3 transition-colors ${isClickable ? 'cursor-pointer' : ''}`}
+          role={isClickable ? 'button' : undefined}
+          tabIndex={isClickable ? 0 : -1}
           style={{
             gridTemplateColumns: '1fr 200px 50px 80px',
             borderBottom: '1px solid var(--border-subtle)',
             backgroundColor: isTheme ? 'var(--surface-subtle)' : 'transparent',
           }}
           onMouseEnter={(e) => {
-            if (isObjective || isTheme) {
+            if (isClickable) {
               e.currentTarget.style.backgroundColor = 'var(--surface-hover)';
             }
           }}
@@ -81,10 +91,20 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
             e.currentTarget.style.backgroundColor = isTheme ? 'var(--surface-subtle)' : 'transparent';
           }}
           onClick={() => {
-            if (isTheme && onThemeClick) {
-              onThemeClick({ id: item.id, name: item.title, type: 'theme' });
-            } else if (isObjective) {
-              onObjectiveClick({ id: item.id, title: item.title, type: 'objective_v2' });
+            if (isClickable) handleActivate();
+          }}
+          onPointerUp={(e) => {
+            // Mobile/touch: make activation reliable even inside scroll containers
+            if (!isClickable) return;
+            if (e.pointerType === 'touch' || e.pointerType === 'pen') {
+              handleActivate();
+            }
+          }}
+          onKeyDown={(e) => {
+            if (!isClickable) return;
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleActivate();
             }
           }}
         >
