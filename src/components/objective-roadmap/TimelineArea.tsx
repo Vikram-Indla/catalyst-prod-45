@@ -185,7 +185,6 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
                 totalKRs={objective.keyResults.length}
                 objectiveStart={objective.startDate}
                 objectiveEnd={objective.endDate}
-                statusColor="#c69c6d"
               />
             ))
           ) : (
@@ -222,7 +221,6 @@ interface KRMarkerProps {
   totalKRs: number;
   objectiveStart: Date;
   objectiveEnd: Date;
-  statusColor: string;
 }
 
 const KRMarker: React.FC<KRMarkerProps> = ({
@@ -231,7 +229,6 @@ const KRMarker: React.FC<KRMarkerProps> = ({
   totalKRs,
   objectiveStart,
   objectiveEnd,
-  statusColor,
 }) => {
   // Distribute KRs evenly across the bar if no specific due date
   const position = useMemo(() => {
@@ -251,23 +248,30 @@ const KRMarker: React.FC<KRMarkerProps> = ({
     return 10 + spacing * (index + 1);
   }, [keyResult.dueDate, objectiveStart, objectiveEnd, index, totalKRs]);
   
+  // KR status colors using Catalyst brand tokens (CSS variable values)
   const getKRColor = (status: string) => {
     switch (status) {
-      case 'complete': return '#059669';
-      case 'overdue': return '#DC2626';
-      case 'in-progress': return statusColor;
-      default: return '#6B7280';
+      case 'complete': return 'hsl(142, 71%, 45%)'; // secondary-green
+      case 'overdue': return 'hsl(0, 84%, 60%)'; // destructive
+      case 'in-progress': return 'hsl(35, 46%, 60%)'; // brand-gold
+      case 'not-started': 
+      default: return 'hsl(215, 16%, 47%)'; // muted-foreground grey
     }
   };
   
+  const isFilledStatus = (status: string) => {
+    return status === 'complete' || status === 'overdue';
+  };
+  
   const krColor = getKRColor(keyResult.status);
+  const isFilled = isFilledStatus(keyResult.status);
   
   return (
     <div 
       className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rotate-45 border-2 z-10 group/kr cursor-pointer"
       style={{ 
         left: `${position}%`,
-        background: keyResult.status === 'complete' ? krColor : 'transparent',
+        background: isFilled ? krColor : 'transparent',
         borderColor: krColor
       }}
     >
