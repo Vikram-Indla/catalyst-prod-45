@@ -117,6 +117,11 @@ function SnapshotTableRow({
 
   const isSelected = false; // Can be passed as prop if needed for drawer open state
 
+  const handleRowClick = () => {
+    console.log('Row clicked:', snapshot.name, snapshot.id);
+    onSelect(snapshot);
+  };
+
   return (
     <tr 
       className={cn(
@@ -133,7 +138,7 @@ function SnapshotTableRow({
           "border-l-[3px] border-l-[#C69C6D]"
         ]
       )}
-      onClick={() => onSelect(snapshot)}
+      onClick={handleRowClick}
     >
       <td className="py-3 px-4">
         <span className="font-medium text-foreground group-hover:text-[hsl(var(--brand-gold))] transition-colors">
@@ -444,6 +449,7 @@ export default function StrategicSnapshots() {
       />
 
       {/* Details Drawer V2 */}
+      {(() => { console.log('Drawer state:', { open: !!selectedSnapshot, snapshotId: selectedSnapshot?.id, snapshotName: selectedSnapshot?.name }); return null; })()}
       <SnapshotDetailsDrawerV2
         open={!!selectedSnapshot}
         onClose={() => setSelectedSnapshot(null)}
