@@ -1,28 +1,45 @@
 import React, { useState, useMemo } from 'react';
-import { ActiveFilters, Theme, Owner } from '@/types/objective-roadmap';
+import { Theme, Owner } from '@/types/objective-roadmap';
+import { 
+  FilterState, 
+  ProgressRange, 
+  KRCondition,
+  PROGRESS_RANGE_CONFIG,
+  KR_CONDITION_CONFIG,
+  countFilterSelections,
+} from '@/types/canonical-roadmap-filters';
 import { ChevronDown, Search, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface SmartFiltersPanelProps {
-  activeFilters: ActiveFilters;
-  onApplyFilters: (filters: ActiveFilters) => void;
-  onClearFilters: () => void;
-  onClose: () => void;
+  draftFilters: FilterState;
+  onToggleStatus: (status: string) => void;
+  onToggleTheme: (themeId: string) => void;
+  onToggleOwner: (ownerId: string) => void;
+  onToggleProgressRange: (range: ProgressRange) => void;
+  onToggleKRCondition: (condition: KRCondition) => void;
+  onApply: () => void;
+  onCancel: () => void;
+  onClearAll: () => void;
   themes: Theme[];
   owners: Owner[];
   matchingCount: number;
 }
 
 export const SmartFiltersPanel: React.FC<SmartFiltersPanelProps> = ({
-  activeFilters,
-  onApplyFilters,
-  onClearFilters,
-  onClose,
+  draftFilters,
+  onToggleStatus,
+  onToggleTheme,
+  onToggleOwner,
+  onToggleProgressRange,
+  onToggleKRCondition,
+  onApply,
+  onCancel,
+  onClearAll,
   themes,
   owners,
   matchingCount,
 }) => {
-  const [pendingFilters, setPendingFilters] = useState<ActiveFilters>({ ...activeFilters });
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
   const [ownerSearchQuery, setOwnerSearchQuery] = useState('');
   
@@ -38,66 +55,6 @@ export const SmartFiltersPanel: React.FC<SmartFiltersPanelProps> = ({
     });
   };
   
-  const toggleStatus = (status: string) => {
-    setPendingFilters(prev => ({
-      ...prev,
-      status: prev.status.includes(status)
-        ? prev.status.filter(s => s !== status)
-        : [...prev.status, status]
-    }));
-  };
-  
-  const toggleTheme = (themeId: string) => {
-    setPendingFilters(prev => ({
-      ...prev,
-      theme: prev.theme.includes(themeId)
-        ? prev.theme.filter(t => t !== themeId)
-        : [...prev.theme, themeId]
-    }));
-  };
-  
-  const toggleOwner = (ownerId: string) => {
-    setPendingFilters(prev => ({
-      ...prev,
-      owner: prev.owner.includes(ownerId)
-        ? prev.owner.filter(o => o !== ownerId)
-        : [...prev.owner, ownerId]
-    }));
-  };
-  
-  const toggleKR = (krFilter: string) => {
-    setPendingFilters(prev => ({
-      ...prev,
-      kr: prev.kr.includes(krFilter)
-        ? prev.kr.filter(k => k !== krFilter)
-        : [...prev.kr, krFilter]
-    }));
-  };
-  
-  const setProgressRange = (min: number, max: number) => {
-    setPendingFilters(prev => ({
-      ...prev,
-      progressMin: min,
-      progressMax: max
-    }));
-  };
-  
-  const handleClear = () => {
-    setPendingFilters({
-      status: [],
-      theme: [],
-      progressMin: 0,
-      progressMax: 100,
-      owner: [],
-      kr: []
-    });
-    onClearFilters();
-  };
-  
-  const handleApply = () => {
-    onApplyFilters(pendingFilters);
-  };
-  
   const filteredOwners = useMemo(() => {
     if (!ownerSearchQuery) return owners;
     return owners.filter(o => 
@@ -106,22 +63,11 @@ export const SmartFiltersPanel: React.FC<SmartFiltersPanelProps> = ({
   }, [owners, ownerSearchQuery]);
   
   const statusOptions = [
-    { value: 'on-track', label: 'On Track', color: '#059669' },
-    { value: 'at-risk', label: 'At Risk', color: '#D97706' },
-    { value: 'delayed', label: 'Delayed', color: '#DC2626' },
-  ];
-  
-  const progressPresets = [
-    { min: 0, max: 25, label: '0-25%' },
-    { min: 25, max: 50, label: '25-50%' },
-    { min: 50, max: 75, label: '50-75%' },
-    { min: 75, max: 100, label: '75-100%' },
-  ];
-  
-  const krOptions = [
-    { value: 'has-overdue', label: 'Has Overdue KRs', color: '#DC2626' },
-    { value: 'all-complete', label: 'All KRs Complete', color: '#059669' },
-    { value: 'no-kr', label: 'No Key Results', color: '#6B7280' },
+    { value: 'on-track', label: 'On Track', color: 'hsl(var(--secondary-green))' },
+    { value: 'at-risk', label: 'At Risk', color: 'hsl(var(--secondary-bronze))' },
+    { value: 'off-track', label: 'Off Track', color: 'hsl(var(--destructive))' },
+    { value: 'in-progress', label: 'In Progress', color: 'hsl(var(--brand-gold))' },
+    { value: 'pending', label: 'Pending', color: 'hsl(var(--muted-foreground))' },
   ];
   
   const renderSection = (
@@ -162,11 +108,12 @@ export const SmartFiltersPanel: React.FC<SmartFiltersPanelProps> = ({
   
   return (
     <div className="absolute top-full mt-1 left-0 w-[360px] bg-background border border-border rounded-xl shadow-xl z-50 overflow-hidden">
+      {/* Header with Clear all */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-border">
         <span className="text-sm font-semibold">Smart Filters</span>
         <button 
           className="text-xs font-medium text-brand-gold hover:underline"
-          onClick={handleClear}
+          onClick={onClearAll}
         >
           Clear all
         </button>
@@ -174,18 +121,18 @@ export const SmartFiltersPanel: React.FC<SmartFiltersPanelProps> = ({
       
       <div className="max-h-[400px] overflow-y-auto">
         {/* Status Filter */}
-        {renderSection('status', 'Status', pendingFilters.status.length, (
+        {renderSection('status', 'Status', draftFilters.status.length, (
           <div className="flex flex-wrap gap-2">
             {statusOptions.map(opt => (
               <div
                 key={opt.value}
                 className={cn(
                   "flex items-center gap-1.5 px-3 py-1.5 text-xs border rounded-full cursor-pointer transition-colors",
-                  pendingFilters.status.includes(opt.value)
+                  draftFilters.status.includes(opt.value)
                     ? "bg-brand-gold/15 border-brand-gold text-brand-gold"
                     : "border-border text-muted-foreground hover:border-brand-gold"
                 )}
-                onClick={() => toggleStatus(opt.value)}
+                onClick={() => onToggleStatus(opt.value)}
               >
                 <span className="w-2 h-2 rounded-full" style={{ background: opt.color }} />
                 {opt.label}
@@ -195,7 +142,7 @@ export const SmartFiltersPanel: React.FC<SmartFiltersPanelProps> = ({
         ))}
         
         {/* Theme Filter */}
-        {renderSection('theme', 'Theme', pendingFilters.theme.length, (
+        {renderSection('theme', 'Theme', draftFilters.themeIds.length, (
           <div className="space-y-1">
             {themes.map(theme => (
               <label 
@@ -205,16 +152,16 @@ export const SmartFiltersPanel: React.FC<SmartFiltersPanelProps> = ({
                 <input
                   type="checkbox"
                   className="hidden"
-                  checked={pendingFilters.theme.includes(theme.id)}
-                  onChange={() => toggleTheme(theme.id)}
+                  checked={draftFilters.themeIds.includes(theme.id)}
+                  onChange={() => onToggleTheme(theme.id)}
                 />
                 <span className={cn(
                   "w-4 h-4 flex items-center justify-center border-2 rounded transition-colors",
-                  pendingFilters.theme.includes(theme.id)
+                  draftFilters.themeIds.includes(theme.id)
                     ? "bg-brand-gold border-brand-gold"
                     : "border-border"
                 )}>
-                  {pendingFilters.theme.includes(theme.id) && (
+                  {draftFilters.themeIds.includes(theme.id) && (
                     <Check size={10} className="text-white" />
                   )}
                 </span>
@@ -228,50 +175,28 @@ export const SmartFiltersPanel: React.FC<SmartFiltersPanelProps> = ({
           </div>
         ))}
         
-        {/* Progress Filter */}
-        {renderSection('progress', 'Progress', (pendingFilters.progressMin > 0 || pendingFilters.progressMax < 100) ? 1 : 0, (
-          <>
-            <div className="flex gap-1.5 mb-3">
-              {progressPresets.map(preset => (
-                <button
-                  key={preset.label}
-                  className={cn(
-                    "flex-1 px-2 py-1.5 text-xs border rounded-md text-center transition-colors",
-                    pendingFilters.progressMin === preset.min && pendingFilters.progressMax === preset.max
-                      ? "bg-brand-gold/15 border-brand-gold text-brand-gold"
-                      : "border-border text-muted-foreground hover:border-brand-gold"
-                  )}
-                  onClick={() => setProgressRange(preset.min, preset.max)}
-                >
-                  {preset.label}
-                </button>
-              ))}
-            </div>
-            <div className="flex items-center gap-2.5">
-              <input
-                type="number"
-                className="w-16 h-8 px-2 text-xs text-center border border-border rounded-md bg-background focus:outline-none focus:border-brand-gold"
-                min={0}
-                max={100}
-                value={pendingFilters.progressMin}
-                onChange={(e) => setProgressRange(Number(e.target.value), pendingFilters.progressMax)}
-              />
-              <span className="text-xs text-muted-foreground">to</span>
-              <input
-                type="number"
-                className="w-16 h-8 px-2 text-xs text-center border border-border rounded-md bg-background focus:outline-none focus:border-brand-gold"
-                min={0}
-                max={100}
-                value={pendingFilters.progressMax}
-                onChange={(e) => setProgressRange(pendingFilters.progressMin, Number(e.target.value))}
-              />
-              <span className="text-xs text-muted-foreground">%</span>
-            </div>
-          </>
+        {/* Progress Filter (Multi-select buckets) */}
+        {renderSection('progress', 'Progress', draftFilters.progressRanges.length, (
+          <div className="flex flex-wrap gap-1.5">
+            {PROGRESS_RANGE_CONFIG.map(preset => (
+              <button
+                key={preset.key}
+                className={cn(
+                  "px-3 py-1.5 text-xs border rounded-md text-center transition-colors",
+                  draftFilters.progressRanges.includes(preset.key)
+                    ? "bg-brand-gold/15 border-brand-gold text-brand-gold"
+                    : "border-border text-muted-foreground hover:border-brand-gold"
+                )}
+                onClick={() => onToggleProgressRange(preset.key)}
+              >
+                {preset.label}
+              </button>
+            ))}
+          </div>
         ))}
         
         {/* Owner Filter */}
-        {renderSection('owner', 'Owner', pendingFilters.owner.length, (
+        {renderSection('owner', 'Owner', draftFilters.ownerIds.length, (
           <>
             <div className="relative mb-2.5">
               <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -292,16 +217,16 @@ export const SmartFiltersPanel: React.FC<SmartFiltersPanelProps> = ({
                   <input
                     type="checkbox"
                     className="hidden"
-                    checked={pendingFilters.owner.includes(owner.id)}
-                    onChange={() => toggleOwner(owner.id)}
+                    checked={draftFilters.ownerIds.includes(owner.id)}
+                    onChange={() => onToggleOwner(owner.id)}
                   />
                   <span className={cn(
                     "w-4 h-4 flex items-center justify-center border-2 rounded transition-colors",
-                    pendingFilters.owner.includes(owner.id)
+                    draftFilters.ownerIds.includes(owner.id)
                       ? "bg-brand-gold border-brand-gold"
                       : "border-border"
                   )}>
-                    {pendingFilters.owner.includes(owner.id) && (
+                    {draftFilters.ownerIds.includes(owner.id) && (
                       <Check size={10} className="text-white" />
                     )}
                   </span>
@@ -316,26 +241,26 @@ export const SmartFiltersPanel: React.FC<SmartFiltersPanelProps> = ({
         ))}
         
         {/* Key Results Filter */}
-        {renderSection('kr', 'Key Results', pendingFilters.kr.length, (
+        {renderSection('kr', 'Key Results', draftFilters.krConditions.length, (
           <div className="space-y-1">
-            {krOptions.map(opt => (
+            {KR_CONDITION_CONFIG.map(opt => (
               <label 
-                key={opt.value} 
+                key={opt.key} 
                 className="flex items-center gap-2.5 px-2.5 py-2 rounded-md cursor-pointer hover:bg-muted/50"
               >
                 <input
                   type="checkbox"
                   className="hidden"
-                  checked={pendingFilters.kr.includes(opt.value)}
-                  onChange={() => toggleKR(opt.value)}
+                  checked={draftFilters.krConditions.includes(opt.key)}
+                  onChange={() => onToggleKRCondition(opt.key)}
                 />
                 <span className={cn(
                   "w-4 h-4 flex items-center justify-center border-2 rounded transition-colors",
-                  pendingFilters.kr.includes(opt.value)
+                  draftFilters.krConditions.includes(opt.key)
                     ? "bg-brand-gold border-brand-gold"
                     : "border-border"
                 )}>
-                  {pendingFilters.kr.includes(opt.value) && (
+                  {draftFilters.krConditions.includes(opt.key) && (
                     <Check size={10} className="text-white" />
                   )}
                 </span>
@@ -347,6 +272,7 @@ export const SmartFiltersPanel: React.FC<SmartFiltersPanelProps> = ({
         ))}
       </div>
       
+      {/* Footer with Apply/Cancel */}
       <div className="flex items-center justify-between px-4 py-3 border-t border-border bg-muted/50">
         <span className="text-xs text-muted-foreground">
           <strong className="text-foreground">{matchingCount}</strong> objectives match
@@ -354,13 +280,13 @@ export const SmartFiltersPanel: React.FC<SmartFiltersPanelProps> = ({
         <div className="flex gap-2">
           <button 
             className="px-3 py-1.5 text-sm border border-border rounded-md hover:bg-background"
-            onClick={onClose}
+            onClick={onCancel}
           >
             Cancel
           </button>
           <button 
             className="px-4 py-1.5 text-sm font-medium bg-brand-gold text-white rounded-md hover:bg-brand-gold-hover"
-            onClick={handleApply}
+            onClick={onApply}
           >
             Apply Filters
           </button>

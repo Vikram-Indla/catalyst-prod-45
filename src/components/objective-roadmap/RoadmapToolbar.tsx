@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Scale, GroupBy, ActiveFilters, Theme, Owner } from '@/types/objective-roadmap';
-import { countActiveFilters } from '@/utils/objective-roadmap-utils';
+import { Scale, GroupBy, Theme, Owner } from '@/types/objective-roadmap';
+import { FilterState, ProgressRange, KRCondition } from '@/types/canonical-roadmap-filters';
 import { Search, Layers, Filter, ChevronDown, Check, X } from 'lucide-react';
 import { SmartFiltersPanel } from './SmartFiltersPanel';
 import { RoadmapDateFilterV2, RoadmapViewport } from '@/components/roadmaps/RoadmapDateFilterV2';
@@ -17,13 +17,22 @@ interface RoadmapToolbarProps {
   onSearchChange: (query: string) => void;
   appliedViewport: RoadmapViewport;
   onApplyViewport: (viewport: RoadmapViewport) => void;
-  onScrollToToday: () => void;
-  activeFilters: ActiveFilters;
-  onApplyFilters: (filters: ActiveFilters) => void;
-  onClearFilters: () => void;
+  
+  // Canonical filter props
+  draftFilters: FilterState;
+  activeFilterCount: number;
+  onToggleStatus: (status: string) => void;
+  onToggleTheme: (themeId: string) => void;
+  onToggleOwner: (ownerId: string) => void;
+  onToggleProgressRange: (range: ProgressRange) => void;
+  onToggleKRCondition: (condition: KRCondition) => void;
+  onOpenFilters: () => void;
+  onApplyFilters: () => void;
+  onCancelFilters: () => void;
+  onClearAll: () => void;
+  
   themes: Theme[];
   owners: Owner[];
-  totalObjectives: number;
   matchingObjectives: number;
 }
 
@@ -38,10 +47,17 @@ export const RoadmapToolbar: React.FC<RoadmapToolbarProps> = ({
   onSearchChange,
   appliedViewport,
   onApplyViewport,
-  onScrollToToday,
-  activeFilters,
+  draftFilters,
+  activeFilterCount,
+  onToggleStatus,
+  onToggleTheme,
+  onToggleOwner,
+  onToggleProgressRange,
+  onToggleKRCondition,
+  onOpenFilters,
   onApplyFilters,
-  onClearFilters,
+  onCancelFilters,
+  onClearAll,
   themes,
   owners,
   matchingObjectives,
@@ -52,21 +68,23 @@ export const RoadmapToolbar: React.FC<RoadmapToolbarProps> = ({
   const groupByRef = useRef<HTMLDivElement>(null);
   const filtersRef = useRef<HTMLDivElement>(null);
   
-  const activeFilterCount = countActiveFilters(activeFilters);
-  
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (groupByRef.current && !groupByRef.current.contains(e.target as Node)) {
         setGroupByOpen(false);
       }
       if (filtersRef.current && !filtersRef.current.contains(e.target as Node)) {
-        setFiltersOpen(false);
+        // On click outside, cancel and close
+        if (filtersOpen) {
+          onCancelFilters();
+          setFiltersOpen(false);
+        }
       }
     };
     
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [filtersOpen, onCancelFilters]);
   
   // Handle viewport changes - sync scale with parent
   const handleViewportApply = (viewport: RoadmapViewport) => {
@@ -75,6 +93,30 @@ export const RoadmapToolbar: React.FC<RoadmapToolbarProps> = ({
     if (viewport.scale !== scale) {
       onScaleChange(viewport.scale);
     }
+  };
+  
+  // Handle opening filters panel
+  const handleOpenFilters = () => {
+    onOpenFilters(); // Sync draft = applied
+    setFiltersOpen(true);
+  };
+  
+  // Handle apply filters
+  const handleApplyFilters = () => {
+    onApplyFilters();
+    setFiltersOpen(false);
+  };
+  
+  // Handle cancel filters
+  const handleCancelFilters = () => {
+    onCancelFilters();
+    setFiltersOpen(false);
+  };
+  
+  // Handle clear all (global reset)
+  const handleClearAll = () => {
+    onClearAll();
+    setFiltersOpen(false);
   };
   
   const groupByOptions: { key: GroupBy; label: string }[] = [
@@ -142,7 +184,7 @@ export const RoadmapToolbar: React.FC<RoadmapToolbarProps> = ({
               "h-9 px-3 flex items-center gap-2 text-sm border border-border rounded-lg bg-background hover:bg-muted",
               activeFilterCount > 0 && "border-brand-gold text-brand-gold"
             )}
-            onClick={() => setFiltersOpen(!filtersOpen)}
+            onClick={handleOpenFilters}
           >
             <Filter size={16} />
             Filters
@@ -154,10 +196,15 @@ export const RoadmapToolbar: React.FC<RoadmapToolbarProps> = ({
           </button>
           {filtersOpen && (
             <SmartFiltersPanel
-              activeFilters={activeFilters}
-              onApplyFilters={(filters) => { onApplyFilters(filters); setFiltersOpen(false); }}
-              onClearFilters={onClearFilters}
-              onClose={() => setFiltersOpen(false)}
+              draftFilters={draftFilters}
+              onToggleStatus={onToggleStatus}
+              onToggleTheme={onToggleTheme}
+              onToggleOwner={onToggleOwner}
+              onToggleProgressRange={onToggleProgressRange}
+              onToggleKRCondition={onToggleKRCondition}
+              onApply={handleApplyFilters}
+              onCancel={handleCancelFilters}
+              onClearAll={handleClearAll}
               themes={themes}
               owners={owners}
               matchingCount={matchingObjectives}
