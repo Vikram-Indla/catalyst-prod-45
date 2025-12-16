@@ -26,77 +26,97 @@ export function StrategicBacklogCoveragePanel({
   const epicsComplete = epics > 0;
 
   return (
-    <div className="bg-surface border border-border rounded-lg p-4">
-      <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-4">
-        Coverage & Gaps
-      </h3>
+    <div style={{ background: 'var(--surface-bg)', border: '1px solid var(--border-default)', borderRadius: '10px', overflow: 'hidden' }}>
+      <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--border-subtle)' }}>
+        <h3 style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--text-muted)', margin: 0 }}>
+          Coverage & Gaps
+        </h3>
+      </div>
       
-      <div className="space-y-3">
+      <div>
         {/* Themes */}
         <button
           onClick={() => onNavigate('themes')}
-          className="w-full flex items-center justify-between hover:bg-muted/50 -mx-2 px-2 py-2 rounded-lg transition-colors"
+          className="w-full flex items-center justify-between transition-colors group"
+          style={{ padding: '12px 16px', borderBottom: '1px solid var(--border-subtle)', background: 'transparent' }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--surface-hover)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
         >
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
-              <Layers className="h-4 w-4 text-brand-gold" />
+            <div 
+              className="w-8 h-8 rounded-lg flex items-center justify-center"
+              style={{ background: 'rgba(92, 124, 92, 0.1)' }}
+            >
+              <Layers className="h-4 w-4" style={{ color: '#5C7C5C' }} />
             </div>
             <div className="text-left">
               <div className="flex items-center gap-1.5">
-                <span className="text-sm font-medium text-foreground">Themes</span>
-                <span className="text-sm text-muted-foreground">{themes}</span>
+                <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Themes</span>
+                <span className="text-sm" style={{ color: 'var(--text-muted)' }}>{themes}</span>
               </div>
-              <div className="text-xs text-muted-foreground">
+              <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
                 {themesWithObjectives} with objectives ({themesPercent}%)
               </div>
             </div>
           </div>
           {themesComplete ? (
-            <Check className="h-4 w-4 text-emerald-500" />
+            <Check className="h-4 w-4" style={{ color: '#5C7C5C' }} />
           ) : themes > 0 ? (
-            <AlertTriangle className="h-4 w-4 text-amber-500" />
+            <AlertTriangle className="h-4 w-4" style={{ color: '#C69C6D' }} />
           ) : null}
         </button>
 
         {/* Objectives */}
         <button
           onClick={() => onNavigate('objectives')}
-          className="w-full flex items-center justify-between hover:bg-muted/50 -mx-2 px-2 py-2 rounded-lg transition-colors"
+          className="w-full flex items-center justify-between transition-colors group"
+          style={{ padding: '12px 16px', borderBottom: '1px solid var(--border-subtle)', background: 'transparent' }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--surface-hover)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
         >
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
-              <Target className="h-4 w-4 text-secondary-green" />
+            <div 
+              className="w-8 h-8 rounded-lg flex items-center justify-center"
+              style={{ background: 'rgba(198, 156, 109, 0.1)' }}
+            >
+              <Target className="h-4 w-4" style={{ color: '#C69C6D' }} />
             </div>
             <div className="text-left">
               <div className="flex items-center gap-1.5">
-                <span className="text-sm font-medium text-foreground">Objectives</span>
-                <span className="text-sm text-muted-foreground">{objectives}</span>
+                <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Objectives</span>
+                <span className="text-sm" style={{ color: 'var(--text-muted)' }}>{objectives}</span>
               </div>
             </div>
           </div>
           {objectivesComplete ? (
-            <Check className="h-4 w-4 text-emerald-500" />
+            <Check className="h-4 w-4" style={{ color: '#5C7C5C' }} />
           ) : null}
         </button>
 
         {/* Epics aligned */}
         <button
           onClick={() => onNavigate('epics')}
-          className="w-full flex items-center justify-between hover:bg-muted/50 -mx-2 px-2 py-2 rounded-lg transition-colors"
+          className="w-full flex items-center justify-between transition-colors group"
+          style={{ padding: '12px 16px', background: 'transparent' }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--surface-hover)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
         >
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
-              <Box className="h-4 w-4 text-muted-foreground" />
+            <div 
+              className="w-8 h-8 rounded-lg flex items-center justify-center"
+              style={{ background: 'rgba(139, 115, 85, 0.1)' }}
+            >
+              <Box className="h-4 w-4" style={{ color: '#8B7355' }} />
             </div>
             <div className="text-left">
               <div className="flex items-center gap-1.5">
-                <span className="text-sm font-medium text-foreground">Epics aligned</span>
-                <span className="text-sm text-muted-foreground">{epics}</span>
+                <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Epics aligned</span>
+                <span className="text-sm" style={{ color: 'var(--text-muted)' }}>{epics}</span>
               </div>
             </div>
           </div>
           {epicsComplete ? (
-            <Check className="h-4 w-4 text-emerald-500" />
+            <Check className="h-4 w-4" style={{ color: '#5C7C5C' }} />
           ) : null}
         </button>
       </div>

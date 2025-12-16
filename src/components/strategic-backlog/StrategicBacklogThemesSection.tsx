@@ -111,59 +111,68 @@ export function StrategicBacklogThemesSection({
     <div className="space-y-4">
       {/* Search */}
       <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: 'var(--text-muted)' }} />
         <Input
           placeholder="Search themes..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10 h-10 bg-surface border-border rounded-lg"
+          className="pl-10 h-10 rounded-lg"
+          style={{ 
+            background: 'var(--surface-bg)', 
+            border: '1px solid var(--border-default)',
+            color: 'var(--text-primary)',
+          }}
         />
       </div>
 
       {/* Table */}
-      <div className="bg-surface border border-border rounded-lg overflow-hidden">
+      <div style={{ background: 'var(--surface-bg)', border: '1px solid var(--border-default)', borderRadius: '10px', overflow: 'hidden' }}>
         <table className="w-full">
-          <thead className="border-b border-border">
-            <tr className="bg-muted/30">
+          <thead>
+            <tr style={{ borderBottom: '1px solid var(--border-default)' }}>
               <th 
-                className="text-left px-4 py-3 text-xs font-medium text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
+                className="text-left px-4 py-3 cursor-pointer transition-colors"
                 onClick={() => handleSort('name')}
+                style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px', color: 'var(--text-muted)' }}
               >
-                <button className="flex items-center">
+                <button className="flex items-center hover:opacity-80">
                   Theme <SortIcon column="name" />
                 </button>
               </th>
               <th 
-                className="text-left px-4 py-3 text-xs font-medium text-muted-foreground w-24 cursor-pointer hover:text-foreground transition-colors"
+                className="text-left px-4 py-3 w-24 cursor-pointer transition-colors"
                 onClick={() => handleSort('status')}
+                style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px', color: 'var(--text-muted)' }}
               >
-                <button className="flex items-center">
+                <button className="flex items-center hover:opacity-80">
                   State <SortIcon column="status" />
                 </button>
               </th>
               <th 
-                className="text-left px-4 py-3 text-xs font-medium text-muted-foreground w-28 cursor-pointer hover:text-foreground transition-colors"
+                className="text-left px-4 py-3 w-28 cursor-pointer transition-colors"
                 onClick={() => handleSort('objectives')}
+                style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px', color: 'var(--text-muted)' }}
               >
-                <button className="flex items-center">
+                <button className="flex items-center hover:opacity-80">
                   Objectives <SortIcon column="objectives" />
                 </button>
               </th>
               <th 
-                className="text-left px-4 py-3 text-xs font-medium text-muted-foreground w-32 cursor-pointer hover:text-foreground transition-colors"
+                className="text-left px-4 py-3 w-32 cursor-pointer transition-colors"
                 onClick={() => handleSort('updated')}
+                style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.3px', color: 'var(--text-muted)' }}
               >
-                <button className="flex items-center">
+                <button className="flex items-center hover:opacity-80">
                   Updated <SortIcon column="updated" />
                 </button>
               </th>
               <th className="w-10"></th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-border/50">
+          <tbody>
             {filteredThemes.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-4 py-12 text-center text-muted-foreground">
+                <td colSpan={5} className="px-4 py-12 text-center" style={{ color: 'var(--text-muted)' }}>
                   No themes found
                 </td>
               </tr>
@@ -174,28 +183,34 @@ export function StrategicBacklogThemesSection({
                   <tr
                     key={theme.id}
                     onClick={() => onSelectItem(theme)}
-                    className={cn(
-                      "cursor-pointer hover:bg-muted/50 transition-colors",
-                      isSelected && "bg-muted/50"
-                    )}
+                    className="cursor-pointer transition-colors group"
+                    style={{ 
+                      borderBottom: '1px solid var(--border-subtle)',
+                      background: isSelected ? 'var(--row-selected)' : 'transparent',
+                    }}
+                    onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = '#F6F8FA'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = isSelected ? 'var(--row-selected)' : 'transparent'; }}
                   >
-                    <td className="px-4 py-3">
-                      <span className="text-sm font-medium text-foreground">{theme.name}</span>
+                    <td className="px-4 py-3.5">
+                      <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{theme.name}</span>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3.5">
                       {getStatusBadge(theme.status)}
                     </td>
-                    <td className="px-4 py-3">
-                      <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
+                    <td className="px-4 py-3.5">
+                      <span className="inline-flex items-center gap-1.5 text-sm" style={{ color: 'var(--text-muted)' }}>
                         <Target className="h-4 w-4" />
                         {objectiveCounts[theme.id] || 0}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-sm text-muted-foreground">
+                    <td className="px-4 py-3.5 text-sm" style={{ color: 'var(--text-muted)' }}>
                       {theme.updated_at ? format(new Date(theme.updated_at), 'MMM d, yyyy') : '—'}
                     </td>
-                    <td className="px-4 py-3">
-                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                    <td className="px-4 py-3.5">
+                      <ChevronRight 
+                        className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" 
+                        style={{ color: 'var(--text-muted)' }} 
+                      />
                     </td>
                   </tr>
                 );

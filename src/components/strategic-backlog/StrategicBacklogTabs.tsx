@@ -29,7 +29,7 @@ export function StrategicBacklogTabs({
   counts,
 }: TabsProps) {
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-1 p-1 rounded-lg" style={{ background: 'var(--surface-subtle)' }}>
       {TABS.map((tab) => {
         const Icon = tab.icon;
         const isActive = activeSection === tab.id;
@@ -40,23 +40,27 @@ export function StrategicBacklogTabs({
             key={tab.id}
             onClick={() => onSectionChange(tab.id)}
             className={cn(
-              "flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors whitespace-nowrap",
+              "flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-all whitespace-nowrap",
               isActive
-                ? "bg-muted text-foreground"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                ? "bg-white dark:bg-[#161B22] shadow-sm"
+                : "hover:bg-[var(--surface-hover)]"
             )}
+            style={{
+              color: isActive ? 'var(--text-primary)' : 'var(--text-muted)',
+            }}
           >
-            <Icon className={cn(
-              "h-4 w-4",
-              isActive ? "text-brand-gold" : "text-muted-foreground"
-            )} />
+            <Icon 
+              className="h-4 w-4"
+              style={{ color: isActive ? '#C69C6D' : 'var(--text-muted)' }}
+            />
             {tab.label}
-            <span className={cn(
-              "px-1.5 py-0.5 text-xs rounded-md min-w-[20px] text-center",
-              isActive 
-                ? "bg-secondary-green/15 text-secondary-green" 
-                : "bg-muted text-muted-foreground"
-            )}>
+            <span 
+              className="px-1.5 py-0.5 text-[11px] font-semibold rounded-full min-w-[20px] text-center"
+              style={{
+                background: isActive ? '#C69C6D' : 'var(--border-default)',
+                color: isActive ? '#FFFFFF' : 'var(--text-muted)',
+              }}
+            >
               {count}
             </span>
           </button>
