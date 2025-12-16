@@ -23,6 +23,7 @@ import { StrategicBacklogObjectivesSection } from '@/components/strategic-backlo
 import { StrategicBacklogEpicsSection } from '@/components/strategic-backlog/StrategicBacklogEpicsSection';
 import { AddToBacklogModal } from '@/components/strategic-backlog/AddToBacklogModal';
 import { StrategicBacklogQuickDrawer } from '@/components/strategic-backlog/StrategicBacklogQuickDrawer';
+import { ObjectiveAnalyticsDrawer } from '@/modules/okr-v2/components/ObjectiveAnalyticsDrawer';
 import { useStrategicThemes, useSnapshotStrategyLinks } from '@/hooks/useStrategicBacklog';
 import { cn } from '@/lib/utils';
 
@@ -232,7 +233,7 @@ export default function StrategicBacklog() {
           </div>
 
           {/* Quick Drawer - Renders as portal overlay */}
-          {selectedItem && selectedItemType && (
+          {selectedItem && selectedItemType && selectedItemType !== 'objective' && (
             <StrategicBacklogQuickDrawer
               item={selectedItem}
               type={selectedItemType}
@@ -240,6 +241,13 @@ export default function StrategicBacklog() {
               themes={themes}
             />
           )}
+
+          {/* Objective Analytics Drawer */}
+          <ObjectiveAnalyticsDrawer
+            objectiveId={selectedItemType === 'objective' ? selectedItem?.id : null}
+            open={selectedItemType === 'objective' && !!selectedItem}
+            onClose={handleCloseDrawer}
+          />
         </div>
       )}
 
