@@ -186,10 +186,6 @@ export function StrategyCockpit({ snapshotId }: StrategyCockpitProps) {
 
   return (
     <div className="flex flex-col h-full bg-background">
-      {/* Page Header - Title only, NO divider */}
-      <div className="h-[44px] flex items-center px-6 flex-shrink-0">
-        <h1 className="text-xl font-semibold text-secondary-green">Objectives</h1>
-      </div>
 
       {/* Summary Cards */}
       <div className="px-6 py-4 bg-background">
