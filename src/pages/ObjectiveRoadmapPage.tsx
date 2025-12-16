@@ -231,6 +231,8 @@ export const ObjectiveRoadmapPage: React.FC = () => {
         onGroupByChange={handleGroupByChange}
         showMilestones={showMilestones}
         onToggleMilestones={() => setShowMilestones(!showMilestones)}
+        showLegend={showLegend}
+        onToggleLegend={() => setShowLegend(!showLegend)}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         appliedViewport={appliedViewport}

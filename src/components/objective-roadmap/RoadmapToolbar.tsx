@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Scale, GroupBy, Theme, Owner } from '@/types/objective-roadmap';
 import { FilterState, ProgressRange, KRCondition } from '@/types/canonical-roadmap-filters';
-import { Search, Layers, Filter, ChevronDown, Check, X } from 'lucide-react';
+import { Search, Layers, Filter, ChevronDown, Check, X, Info } from 'lucide-react';
 import { SmartFiltersPanel } from './SmartFiltersPanel';
 import { RoadmapDateFilterV2, RoadmapViewport } from '@/components/roadmaps/RoadmapDateFilterV2';
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface RoadmapToolbarProps {
   scale: Scale;
@@ -13,6 +14,8 @@ interface RoadmapToolbarProps {
   onGroupByChange: (groupBy: GroupBy) => void;
   showMilestones: boolean;
   onToggleMilestones: () => void;
+  showLegend: boolean;
+  onToggleLegend: () => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
   
@@ -46,6 +49,8 @@ export const RoadmapToolbar: React.FC<RoadmapToolbarProps> = ({
   onGroupByChange,
   showMilestones,
   onToggleMilestones,
+  showLegend,
+  onToggleLegend,
   searchQuery,
   onSearchChange,
   appliedViewport,
@@ -249,6 +254,29 @@ export const RoadmapToolbar: React.FC<RoadmapToolbarProps> = ({
           onApply={handleViewportApply}
           onClear={handleClearAll}
         />
+        
+        {/* Legend Toggle */}
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                className={cn(
+                  "h-9 w-9 flex items-center justify-center border border-border rounded-lg transition-colors",
+                  showLegend 
+                    ? "bg-brand-gold text-white border-brand-gold" 
+                    : "bg-background text-muted-foreground hover:bg-muted"
+                )}
+                onClick={onToggleLegend}
+                aria-pressed={showLegend}
+              >
+                <Info size={16} />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              {showLegend ? 'Hide legend' : 'Show legend'}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
     </div>
   );
