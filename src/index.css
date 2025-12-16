@@ -282,6 +282,9 @@
   /* Dividers */
   --divider: #D8DEE4;
   --divider-subtle: #EAECEF;
+  
+  /* Additional surface tokens */
+  --surface-3: #F0F2F5;
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -398,6 +401,9 @@
   
   /* Progress Bars */
   --progress-bg: #30363D;
+  
+  /* Additional surface tokens */
+  --surface-3: #21262D;
   --progress-fill-low: #D88888;
   --progress-fill-medium: #D4B896;
   --progress-fill-high: #7DA37D;
