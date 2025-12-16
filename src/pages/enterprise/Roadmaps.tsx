@@ -1,113 +1,223 @@
-// Enterprise Roadmaps Page - Strategic Themes Roadmap
+// Enterprise Roadmaps Page - CIO-Level Strategic Visibility Dashboard
 // Route: /enterprise/roadmaps
-// THEME-ONLY: Supports Child Epic markers (circles on Theme bars)
+// Complete redesign with split-view Gantt chart
 
 import { useState, useCallback } from 'react';
-import { RoadmapEngine } from '@/components/roadmap/RoadmapEngine';
-import { themeRoadmapConfig } from '@/config/roadmaps/themeRoadmapConfig';
-import { useThemeRoadmapItems } from '@/hooks/useThemeRoadmapItems';
+import { Plus, ChevronRight, Map } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { PageChrome } from '@/components/layout/PageChrome';
 import { ThemeDetailsDrawer } from '@/components/backlog/ThemeDetailsDrawer';
+import { ObjectiveAnalyticsDrawer } from '@/modules/okr-v2/components/ObjectiveAnalyticsDrawer';
 import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { PageChrome } from '@/components/layout/PageChrome';
+
+import { 
+  RoadmapToolbar, 
+  RoadmapThemePanel, 
+  RoadmapGanttChart,
+  useRoadmapData,
+  TimeScale,
+  RoadmapItem,
+  Milestone
+} from '@/components/enterprise-roadmap';
 
 export default function EnterpriseRoadmapsPage() {
-  const [selectedThemeId, setSelectedThemeId] = useState<string | null>(null);
-  const [selectedEpicId, setSelectedEpicId] = useState<string | null>(null);
-  
-  // Fetch themes for roadmap (includes child epics as markers)
-  const { items, isLoading, childEpicsMap } = useThemeRoadmapItems();
+  // State
+  const [timeScale, setTimeScale] = useState<TimeScale>('quarterly');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showMilestones, setShowMilestones] = useState(true);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const [selectedItem, setSelectedItem] = useState<RoadmapItem | null>(null);
 
-  // Fetch selected theme data for drawer
+  // Fetch roadmap data
+  const { items, milestones, isLoading } = useRoadmapData();
+
+  // Fetch selected item details for drawers
   const { data: selectedTheme } = useQuery({
-    queryKey: ['theme-detail', selectedThemeId],
+    queryKey: ['roadmap-theme-detail', selectedItem?.id],
     queryFn: async () => {
-      if (!selectedThemeId) return null;
+      if (!selectedItem || selectedItem.type !== 'theme') return null;
       const { data, error } = await supabase
         .from('strategic_themes')
         .select('*')
-        .eq('id', selectedThemeId)
+        .eq('id', selectedItem.id)
         .single();
       if (error) throw error;
       return data;
     },
-    enabled: !!selectedThemeId,
+    enabled: !!selectedItem && selectedItem.type === 'theme',
   });
 
-  // Fetch selected epic data for drawer
   const { data: selectedEpic } = useQuery({
-    queryKey: ['epic-detail-for-theme-roadmap', selectedEpicId],
+    queryKey: ['roadmap-epic-detail', selectedItem?.id],
     queryFn: async () => {
-      if (!selectedEpicId) return null;
+      if (!selectedItem || selectedItem.type !== 'epic') return null;
       const { data, error } = await supabase
         .from('epics')
         .select('*')
-        .eq('id', selectedEpicId)
+        .eq('id', selectedItem.id)
         .single();
       if (error) throw error;
       return data;
     },
-    enabled: !!selectedEpicId,
+    enabled: !!selectedItem && selectedItem.type === 'epic',
   });
 
-  // Handle theme bar click - open theme drawer
-  const handleThemeClick = useCallback((themeId: string) => {
-    setSelectedThemeId(themeId);
-  }, []);
-
-  // Handle epic marker click - open epic drawer
-  // This is called from RoadmapEngine when a milestone (epic marker) is clicked
-  const handleEpicMarkerClick = useCallback((epicId: string) => {
-    setSelectedEpicId(epicId);
-  }, []);
-
-  // Close theme drawer
-  const handleCloseThemeDrawer = useCallback(() => {
-    setSelectedThemeId(null);
-  }, []);
-
-  // Close epic drawer
-  const handleCloseEpicDrawer = useCallback(() => {
-    setSelectedEpicId(null);
-  }, []);
-
-  // Create config with openDrawer wired
-  const configWithDrawer = {
-    ...themeRoadmapConfig,
-    openDrawer: handleThemeClick,
-    // Theme-specific: handler for epic marker clicks
-    onMilestoneClick: (data: { epicId?: string; index?: number }) => {
-      if (data.epicId) {
-        handleEpicMarkerClick(data.epicId);
+  // Handlers
+  const handleToggleExpand = useCallback((id: string) => {
+    setExpandedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
       }
-    },
-  };
+      return next;
+    });
+  }, []);
+
+  const handleSelectItem = useCallback((item: RoadmapItem) => {
+    setSelectedItem(item);
+  }, []);
+
+  const handleCloseDrawer = useCallback(() => {
+    setSelectedItem(null);
+  }, []);
+
+  const handleTodayClick = useCallback(() => {
+    setSelectedYear(new Date().getFullYear());
+  }, []);
+
+  const handleMilestoneClick = useCallback((milestone: Milestone) => {
+    console.log('Milestone clicked:', milestone);
+  }, []);
+
+  const handleExportClick = useCallback(() => {
+    console.log('Export roadmap');
+  }, []);
+
+  const handleFullscreenClick = useCallback(() => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      document.documentElement.requestFullscreen();
+    }
+  }, []);
+
+  // Header actions
+  const headerActions = (
+    <button className={cn(
+      "inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium",
+      "bg-[#C69C6D] hover:bg-[#B8905F] text-white"
+    )}>
+      <Plus size={16} />
+      Create
+    </button>
+  );
+
+  // Empty state
+  if (!isLoading && items.length === 0) {
+    return (
+      <PageChrome rightActions={headerActions}>
+        <div className="flex-1 flex items-center justify-center bg-[#FAFBFC] dark:bg-[#0D1117]">
+          <div className="text-center max-w-md">
+            <div className={cn(
+              "w-20 h-20 rounded-2xl mx-auto mb-6 flex items-center justify-center",
+              "bg-[rgba(198,156,109,0.1)] dark:bg-[rgba(198,156,109,0.15)]"
+            )}>
+              <Map size={40} className="text-[#C69C6D]" />
+            </div>
+            <h3 className="text-xl font-semibold text-[#24292F] dark:text-[#E6EDF3] mb-2">
+              No roadmap items yet
+            </h3>
+            <p className="text-sm text-[#8B949E] dark:text-[#6E7681] mb-6">
+              Start building your strategic roadmap by adding themes, objectives, and epics with timeline information.
+            </p>
+            <button className={cn(
+              "inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium",
+              "bg-[#C69C6D] hover:bg-[#B8905F] text-white"
+            )}>
+              <Plus size={16} />
+              Add First Item
+            </button>
+          </div>
+        </div>
+      </PageChrome>
+    );
+  }
 
   return (
-    <PageChrome>
-      <RoadmapEngine 
-        config={configWithDrawer}
-        items={items}
-        isLoading={isLoading}
-        onItemClick={handleThemeClick}
-      />
+    <PageChrome rightActions={headerActions}>
+      <div className={cn(
+        "flex-1 flex flex-col min-h-0",
+        "bg-[#FAFBFC] dark:bg-[#0D1117]"
+      )}>
+        {/* Toolbar */}
+        <RoadmapToolbar
+          timeScale={timeScale}
+          onTimeScaleChange={setTimeScale}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          showMilestones={showMilestones}
+          onToggleMilestones={() => setShowMilestones(!showMilestones)}
+          selectedYear={selectedYear}
+          onYearChange={setSelectedYear}
+          onTodayClick={handleTodayClick}
+          onExportClick={handleExportClick}
+          onFullscreenClick={handleFullscreenClick}
+        />
+
+        {/* Main Content: Split View */}
+        <div className="flex-1 flex overflow-hidden min-h-0">
+          {/* Left Panel: Theme List */}
+          <RoadmapThemePanel
+            items={items}
+            expandedIds={expandedIds}
+            selectedId={selectedItem?.id || null}
+            onToggleExpand={handleToggleExpand}
+            onSelectItem={handleSelectItem}
+            searchQuery={searchQuery}
+          />
+
+          {/* Right Panel: Gantt Chart */}
+          <RoadmapGanttChart
+            items={items}
+            expandedIds={expandedIds}
+            selectedId={selectedItem?.id || null}
+            milestones={milestones}
+            showMilestones={showMilestones}
+            timeScale={timeScale}
+            selectedYear={selectedYear}
+            onItemClick={handleSelectItem}
+            onMilestoneClick={handleMilestoneClick}
+          />
+        </div>
+      </div>
 
       {/* Theme Details Drawer */}
-      {selectedTheme && (
+      {selectedTheme && selectedItem?.type === 'theme' && (
         <ThemeDetailsDrawer
           theme={selectedTheme}
-          isOpen={!!selectedThemeId}
-          onClose={handleCloseThemeDrawer}
+          isOpen={true}
+          onClose={handleCloseDrawer}
         />
       )}
 
-      {/* Epic Details Drawer - Opens when clicking an Epic marker on Theme bar */}
-      {selectedEpic && (
+      {/* Objective Analytics Drawer */}
+      <ObjectiveAnalyticsDrawer
+        objectiveId={selectedItem?.type === 'objective' ? selectedItem.id : null}
+        open={selectedItem?.type === 'objective'}
+        onClose={handleCloseDrawer}
+      />
+
+      {/* Epic Details Drawer */}
+      {selectedEpic && selectedItem?.type === 'epic' && (
         <EpicDetailsPanel
           epic={selectedEpic}
-          open={!!selectedEpicId}
-          onClose={handleCloseEpicDrawer}
+          open={true}
+          onClose={handleCloseDrawer}
         />
       )}
     </PageChrome>
