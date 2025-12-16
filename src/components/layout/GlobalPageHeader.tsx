@@ -106,7 +106,7 @@ export function GlobalPageHeader({
 export const ROUTE_META: Record<string, { sectionLabel: string; pageTitle: string }> = {
   '/enterprise/strategy-room': { sectionLabel: 'Enterprise', pageTitle: 'Strategy Room' },
   '/enterprise/strategic-backlog': { sectionLabel: 'Enterprise', pageTitle: 'Strategic Backlog' },
-  '/enterprise/roadmaps': { sectionLabel: 'Enterprise', pageTitle: 'Theme Roadmap' },
+  '/enterprise/roadmaps': { sectionLabel: 'Enterprise', pageTitle: 'Objective Roadmap' },
   '/industry/backlog': { sectionLabel: 'Product', pageTitle: 'Product Backlog' },
   '/industry/kanban': { sectionLabel: 'Product', pageTitle: 'Product Kanban' },
   '/industry/roadmaps': { sectionLabel: 'Product', pageTitle: 'Product Roadmap' },
