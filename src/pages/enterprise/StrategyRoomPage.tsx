@@ -10,6 +10,7 @@ import { ThemeDetailsDrawer } from '@/components/backlog/ThemeDetailsDrawer';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { PageChrome } from '@/components/layout/PageChrome';
+import { toast } from 'sonner';
 
 type ObjectiveLevel = "OBJECTIVES";
 
@@ -17,8 +18,7 @@ export default function StrategyRoomPage() {
   const [selectedSnapshotId, setSelectedSnapshotId] = useState<string>('');
   const [filterLevel, setFilterLevel] = useState<ObjectiveLevel | undefined>(undefined);
   const [filterPI, setFilterPI] = useState<string | undefined>(undefined);
-  const [selectedObjective, setSelectedObjective] = useState<any>(null);
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [selectedObjectiveId, setSelectedObjectiveId] = useState<string | null>(null);
   const [snapshotSearchQuery, setSnapshotSearchQuery] = useState('');
   const [selectedTheme, setSelectedTheme] = useState<any>(null);
   const [themeDrawerOpen, setThemeDrawerOpen] = useState(false);
@@ -60,13 +60,28 @@ export default function StrategyRoomPage() {
   };
 
   const handleObjectiveClick = (objective: any) => {
-    setSelectedObjective(objective);
-    setDrawerOpen(true);
+    setSelectedObjectiveId(objective?.id || null);
   };
 
-  const handleThemeClick = (theme: any) => {
-    setSelectedTheme(theme);
-    setThemeDrawerOpen(true);
+  const handleThemeClick = async (theme: any) => {
+    try {
+      const themeId = theme?.id;
+      if (!themeId) return;
+
+      const { data, error } = await supabase
+        .from('strategic_themes')
+        .select('id, name, description, status, start_date, end_date, portfolio_ask_date, color_tag, owner_id, snapshot_id, created_at')
+        .eq('id', themeId)
+        .single();
+
+      if (error) throw error;
+
+      setSelectedTheme(data);
+      setThemeDrawerOpen(true);
+    } catch (err) {
+      console.error('Failed to open theme drawer', err);
+      toast.error('Unable to open theme');
+    }
   };
 
   const filteredSnapshots = snapshots.filter((s) =>
@@ -159,11 +174,10 @@ export default function StrategyRoomPage() {
 
       {/* Drawers */}
       <ObjectiveAnalyticsDrawer
-        objectiveId={selectedObjective?.id || null}
-        open={drawerOpen}
+        objectiveId={selectedObjectiveId}
+        open={!!selectedObjectiveId}
         onClose={() => {
-          setSelectedObjective(null);
-          setDrawerOpen(false);
+          setSelectedObjectiveId(null);
         }}
       />
 
