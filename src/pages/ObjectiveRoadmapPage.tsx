@@ -4,20 +4,16 @@ import { RoadmapToolbar } from '@/components/objective-roadmap/RoadmapToolbar';
 import { ObjectivesColumn } from '@/components/objective-roadmap/ObjectivesColumn';
 import { TimelineArea } from '@/components/objective-roadmap/TimelineArea';
 import { LoadMoreStrip } from '@/components/objective-roadmap/LoadMoreStrip';
-import { 
-  groupObjectives, 
-  countNeedAttention, 
-  filterObjectives,
-  DEFAULT_FILTERS 
-} from '@/utils/objective-roadmap-utils';
-import { Scale, GroupBy, ActiveFilters } from '@/types/objective-roadmap';
+import { groupObjectives, countNeedAttention } from '@/utils/objective-roadmap-utils';
+import { filterObjectivesCanonical, countMatchingObjectives } from '@/utils/canonical-roadmap-filter-utils';
+import { Scale, GroupBy } from '@/types/objective-roadmap';
 import { useObjectiveRoadmapData } from '@/hooks/useObjectiveRoadmapData';
+import { useCanonicalRoadmapFilters } from '@/hooks/useCanonicalRoadmapFilters';
 import { ObjectiveAnalyticsDrawer } from '@/modules/okr-v2';
 import GlobalPageHeader from '@/components/layout/GlobalPageHeader';
 import { Loader2 } from 'lucide-react';
 import { 
   RoadmapViewport, 
-  getDefaultViewport,
   RoadmapDebugOverlay 
 } from '@/components/roadmaps/RoadmapDateFilterV2';
 
@@ -51,8 +47,23 @@ export const ObjectiveRoadmapPage: React.FC = () => {
   // Fetch real data from Supabase
   const { objectives, themes, owners, isLoading } = useObjectiveRoadmapData();
   
-  // Viewport state (single source of truth for date range + scale)
-  const [appliedViewport, setAppliedViewport] = useState<RoadmapViewport>(getDefaultViewport);
+  // Canonical filter state (single source of truth)
+  const {
+    appliedFilters,
+    appliedViewport,
+    draftFilters,
+    activeFilterCount,
+    openFilters,
+    applyFilters,
+    cancelFilters,
+    clearAll,
+    toggleStatus,
+    toggleTheme,
+    toggleOwner,
+    toggleProgressRange,
+    toggleKRCondition,
+    applyViewport,
+  } = useCanonicalRoadmapFilters();
   
   // Derive scale from viewport
   const scale = appliedViewport.scale;
@@ -63,7 +74,6 @@ export const ObjectiveRoadmapPage: React.FC = () => {
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
   const [columnWidth, setColumnWidth] = useState(340);
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeFilters, setActiveFilters] = useState<ActiveFilters>(DEFAULT_FILTERS);
   
   // Timeline dates derived from viewport
   const timelineStart = appliedViewport.start;
@@ -75,13 +85,24 @@ export const ObjectiveRoadmapPage: React.FC = () => {
   const objectivesListRef = useRef<HTMLDivElement>(null);
   const timelineGridRef = useRef<HTMLDivElement>(null);
   
-  // Filter by viewport overlap FIRST, then by other filters
+  // Filter by viewport overlap FIRST, then by canonical filters
   const objectivesInViewport = useMemo(
     () => filterByViewportOverlap(objectives, appliedViewport),
     [objectives, appliedViewport]
   );
   
-  const filteredObjectives = filterObjectives(objectivesInViewport, activeFilters, searchQuery);
+  // Apply canonical filters to objectives in viewport
+  const filteredObjectives = useMemo(
+    () => filterObjectivesCanonical(objectivesInViewport, appliedFilters, searchQuery),
+    [objectivesInViewport, appliedFilters, searchQuery]
+  );
+  
+  // Calculate matching count for draft filters (for "X objectives match" in panel)
+  const draftMatchingCount = useMemo(
+    () => countMatchingObjectives(objectivesInViewport, draftFilters, searchQuery),
+    [objectivesInViewport, draftFilters, searchQuery]
+  );
+  
   const visibleObjectives = filteredObjectives.slice(0, visibleCount);
   const groups = groupObjectives(visibleObjectives, groupBy, themes);
   
@@ -125,18 +146,31 @@ export const ObjectiveRoadmapPage: React.FC = () => {
   }, []);
 
   const handleApplyViewport = useCallback((viewport: RoadmapViewport) => {
-    setAppliedViewport(viewport);
+    applyViewport(viewport);
     // Reset visible count when viewport changes
     setVisibleCount(10);
-  }, []);
+  }, [applyViewport]);
 
   // Handle scale change from external sources (sync back to viewport)
   const handleScaleChange = useCallback((newScale: Scale) => {
-    setAppliedViewport(prev => ({
-      ...prev,
+    applyViewport({
+      ...appliedViewport,
       scale: newScale,
-    }));
-  }, []);
+    });
+  }, [applyViewport, appliedViewport]);
+  
+  // Handle clear all - also reset search and visible count
+  const handleClearAll = useCallback(() => {
+    clearAll();
+    setSearchQuery('');
+    setVisibleCount(10);
+  }, [clearAll]);
+  
+  // Handle apply filters - reset visible count
+  const handleApplyFilters = useCallback(() => {
+    applyFilters();
+    setVisibleCount(10);
+  }, [applyFilters]);
   
   // Scroll sync (vertical only - horizontal is handled in TimelineArea)
   useEffect(() => {
@@ -181,14 +215,21 @@ export const ObjectiveRoadmapPage: React.FC = () => {
         onSearchChange={setSearchQuery}
         appliedViewport={appliedViewport}
         onApplyViewport={handleApplyViewport}
-        onScrollToToday={handleScrollToToday}
-        activeFilters={activeFilters}
-        onApplyFilters={(filters) => { setActiveFilters(filters); setVisibleCount(10); }}
-        onClearFilters={() => { setActiveFilters(DEFAULT_FILTERS); setVisibleCount(10); }}
+        // Canonical filter props
+        draftFilters={draftFilters}
+        activeFilterCount={activeFilterCount}
+        onToggleStatus={toggleStatus}
+        onToggleTheme={toggleTheme}
+        onToggleOwner={toggleOwner}
+        onToggleProgressRange={toggleProgressRange}
+        onToggleKRCondition={toggleKRCondition}
+        onOpenFilters={openFilters}
+        onApplyFilters={handleApplyFilters}
+        onCancelFilters={cancelFilters}
+        onClearAll={handleClearAll}
         themes={themes}
         owners={owners}
-        totalObjectives={objectives.length}
-        matchingObjectives={filteredObjectives.length}
+        matchingObjectives={draftMatchingCount}
       />
       
       <div className="flex flex-1 min-h-0 overflow-hidden">
