@@ -222,8 +222,16 @@ export function CreateEpicDialog({
 
   const createEpicMutation = useMutation({
     mutationFn: async () => {
+      // GUARD: Ensure programId exists before proceeding
+      if (!programId) {
+        throw new Error('Program ID is required to create an epic');
+      }
+      
+      console.log('[CreateEpicDialog] Mutation starting with programId:', programId);
+      
       // Generate the next epic key for this program
       const epicKey = await generateNextEpicKey(programId);
+      console.log('[CreateEpicDialog] Generated epic key:', epicKey);
       
       const { data, error } = await supabase
         .from('epics')
@@ -242,7 +250,12 @@ export function CreateEpicDialog({
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('[CreateEpicDialog] Insert error:', error);
+        throw error;
+      }
+      
+      console.log('[CreateEpicDialog] Epic created:', data);
 
       // Commit attachments if any were uploaded
       if (uploadSessionId && stagedFiles.some(f => f.status === 'uploaded')) {
@@ -271,9 +284,10 @@ export function CreateEpicDialog({
         onCreated(data.id);
       }
     },
-    onError: (error) => {
-      console.error('Failed to create epic:', error);
-      toast.error('Failed to create epic');
+    onError: (error: any) => {
+      console.error('[CreateEpicDialog] Failed to create epic:', error);
+      const errorMessage = error?.message || error?.details || 'Failed to create epic';
+      toast.error(`Failed to create epic: ${errorMessage}`);
     },
   });
 
@@ -615,9 +629,21 @@ export function CreateEpicDialog({
             onClick={handleSubmit} 
             disabled={!isValid || createEpicMutation.isPending}
             className="bg-brand-gold hover:bg-brand-gold-hover text-background disabled:opacity-50"
-            title={isProgramMissing ? 'Program context required to create epic' : undefined}
+            title={
+              isProgramMissing 
+                ? 'Program context required' 
+                : !name.trim() 
+                ? 'Epic name required' 
+                : !themeId 
+                ? 'Strategic theme required' 
+                : !reporterId 
+                ? 'Reporter required' 
+                : !assigneeId 
+                ? 'Assignee required' 
+                : undefined
+            }
           >
-            {createEpicMutation.isPending ? 'Creating...' : isProgramMissing ? 'Create Epic (Disabled)' : 'Create Epic'}
+            {createEpicMutation.isPending ? 'Creating...' : 'Create Epic'}
           </Button>
         </DialogFooter>
       </DialogContent>
