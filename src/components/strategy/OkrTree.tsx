@@ -14,15 +14,15 @@ interface OkrTreeProps {
 
 function getProgressColor(progress: number): string {
   if (progress === 0) return 'var(--text-3)';
-  if (progress < 30) return 'hsl(var(--destructive))';
-  if (progress >= 70) return 'hsl(var(--secondary-green))';
-  return 'hsl(var(--brand-gold))';
+  if (progress < 30) return 'var(--destructive)';
+  if (progress >= 70) return 'var(--secondary-green)';
+  return 'var(--brand-gold)';
 }
 
 function getProgressBarColor(progress: number): string {
-  if (progress < 30) return 'hsl(var(--destructive))';
-  if (progress >= 70) return 'hsl(var(--secondary-green))';
-  return 'hsl(var(--brand-gold))';
+  if (progress < 30) return 'var(--destructive)';
+  if (progress >= 70) return 'var(--secondary-green)';
+  return 'var(--brand-gold)';
 }
 
 export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: OkrTreeProps) {
@@ -107,8 +107,8 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
               <span 
                 className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase flex-shrink-0"
                 style={{ 
-                  backgroundColor: 'hsl(var(--secondary-green) / 0.15)', 
-                  color: 'hsl(var(--secondary-green))' 
+                  backgroundColor: 'rgba(92, 124, 92, 0.15)', 
+                  color: 'var(--secondary-green)' 
                 }}
               >
                 THEME
@@ -118,8 +118,8 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
               <span 
                 className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase flex-shrink-0"
                 style={{ 
-                  backgroundColor: 'hsl(var(--brand-gold) / 0.15)', 
-                  color: 'hsl(var(--brand-gold))' 
+                  backgroundColor: 'rgba(198, 156, 109, 0.15)', 
+                  color: 'var(--brand-gold)' 
                 }}
               >
                 OBJ
@@ -129,8 +129,8 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
               <span 
                 className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase flex-shrink-0"
                 style={{ 
-                  backgroundColor: 'hsl(var(--secondary-bronze) / 0.15)', 
-                  color: 'hsl(var(--secondary-bronze))' 
+                  backgroundColor: 'rgba(139, 115, 85, 0.15)', 
+                  color: 'var(--secondary-bronze)' 
                 }}
               >
                 KR
@@ -199,7 +199,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
         style={{
           backgroundColor: 'var(--surface-1)',
           border: '1px solid var(--divider)',
-          borderLeft: '3px solid hsl(var(--secondary-champagne))',
+          borderLeft: '3px solid var(--secondary-champagne)',
           boxShadow: 'var(--shadow-sm)',
         }}
       >
@@ -217,7 +217,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
         <div className="flex items-center justify-center py-12">
           <div 
             className="animate-spin rounded-full h-6 w-6 border-b-2" 
-            style={{ borderColor: 'hsl(var(--brand-gold))' }}
+            style={{ borderColor: 'var(--brand-gold)' }}
           />
         </div>
       </section>
@@ -225,14 +225,14 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
   }
 
   return (
-    <section 
-      className="rounded-[10px] overflow-hidden"
-      style={{
-        backgroundColor: 'var(--surface-1)',
-        border: '1px solid var(--divider)',
-        borderLeft: '3px solid hsl(var(--secondary-champagne))',
-        boxShadow: 'var(--shadow-sm)',
-      }}
+      <section 
+        className="rounded-[10px] overflow-hidden"
+        style={{
+          backgroundColor: 'var(--surface-1)',
+          border: '1px solid var(--divider)',
+          borderLeft: '3px solid var(--secondary-champagne)',
+          boxShadow: 'var(--shadow-sm)',
+        }}
     >
       {/* Header */}
       <div 
@@ -250,11 +250,11 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
             className="text-[12px] mt-0.5 flex items-center gap-1.5"
             style={{ color: 'var(--text-2)' }}
           >
-            <span style={{ color: 'hsl(var(--secondary-green))' }}>Theme</span>
+            <span style={{ color: 'var(--secondary-green)' }}>Theme</span>
             <span>→</span>
-            <span style={{ color: 'hsl(var(--secondary-green))' }}>Objective</span>
+            <span style={{ color: 'var(--secondary-green)' }}>Objective</span>
             <span>→</span>
-            <span style={{ color: 'hsl(var(--secondary-green))' }}>Key Results</span>
+            <span style={{ color: 'var(--secondary-green)' }}>Key Results</span>
           </p>
         </div>
         <div className="flex items-center gap-2">

@@ -41,16 +41,16 @@ function KPITile({
   progressValue = 0,
 }: KPITileProps) {
   const accentStyles: Record<string, string> = {
-    green: 'hsl(var(--secondary-green))',
-    gold: 'hsl(var(--brand-gold))',
-    bronze: 'hsl(var(--secondary-bronze))',
+    green: 'var(--secondary-green)',
+    gold: 'var(--brand-gold)',
+    bronze: 'var(--secondary-bronze)',
     neutral: 'var(--text-2)',
   };
   
   const progressColors: Record<string, string> = {
-    green: 'hsl(var(--secondary-green))',
-    gold: 'hsl(var(--brand-gold))',
-    bronze: 'hsl(var(--secondary-bronze))',
+    green: 'var(--secondary-green)',
+    gold: 'var(--brand-gold)',
+    bronze: 'var(--secondary-bronze)',
     neutral: 'var(--text-3)',
   };
 
@@ -90,7 +90,7 @@ function KPITile({
         <div 
           className="w-8 h-8 rounded-lg flex items-center justify-center"
           style={{ 
-            backgroundColor: 'hsl(var(--brand-gold) / 0.1)',
+            backgroundColor: 'rgba(198, 156, 109, 0.1)',
           }}
         >
           {icon}
@@ -238,7 +238,7 @@ export function ExecutiveSummaryCard({ snapshotId }: ExecutiveSummaryCardProps) 
       style={{
         backgroundColor: 'var(--surface-1)',
         border: '1px solid var(--divider)',
-        borderLeft: '3px solid hsl(var(--brand-gold))',
+        borderLeft: '3px solid var(--brand-gold)',
         boxShadow: 'var(--shadow-sm)',
       }}
     >
@@ -271,7 +271,7 @@ export function ExecutiveSummaryCard({ snapshotId }: ExecutiveSummaryCardProps) 
             onClick={() => navigate('/enterprise/okr-hub')}
             isLoading={okrLoading}
             accentColor={progressColor}
-            icon={<BarChart3 className="w-[18px] h-[18px]" style={{ color: 'hsl(var(--brand-gold))' }} />}
+            icon={<BarChart3 className="w-[18px] h-[18px]" style={{ color: 'var(--brand-gold)' }} />}
             showProgress={hasObjectives}
             progressValue={overallProgress ?? 0}
           />
@@ -282,7 +282,7 @@ export function ExecutiveSummaryCard({ snapshotId }: ExecutiveSummaryCardProps) 
             onClick={() => navigate('/enterprise/okr-hub')}
             isLoading={okrLoading}
             accentColor={atRiskColor}
-            icon={<AlertTriangle className="w-[18px] h-[18px]" style={{ color: 'hsl(var(--brand-gold))' }} />}
+            icon={<AlertTriangle className="w-[18px] h-[18px]" style={{ color: 'var(--brand-gold)' }} />}
           />
           <KPITile
             label="Alignment Gaps"
@@ -291,7 +291,7 @@ export function ExecutiveSummaryCard({ snapshotId }: ExecutiveSummaryCardProps) 
             onClick={() => navigate('/enterprise/strategic-backlog')}
             isLoading={countsLoading}
             accentColor={gapColor}
-            icon={<Info className="w-[18px] h-[18px]" style={{ color: 'hsl(var(--brand-gold))' }} />}
+            icon={<Info className="w-[18px] h-[18px]" style={{ color: 'var(--brand-gold)' }} />}
           />
           <KPITile
             label="Risk Exposure"
@@ -300,7 +300,7 @@ export function ExecutiveSummaryCard({ snapshotId }: ExecutiveSummaryCardProps) 
             onClick={() => navigate('/enterprise/risks')}
             isLoading={risksLoading}
             accentColor={riskColor}
-            icon={<Shield className="w-[18px] h-[18px]" style={{ color: 'hsl(var(--brand-gold))' }} />}
+            icon={<Shield className="w-[18px] h-[18px]" style={{ color: 'var(--brand-gold)' }} />}
           />
         </div>
       </div>
