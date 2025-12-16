@@ -17,6 +17,7 @@ import {
   RoadmapToolbar, 
   RoadmapThemePanel, 
   RoadmapGanttChart,
+  RoadmapExecutiveSummary,
   useRoadmapData,
   exportRoadmapToPDF,
   TimeScale,
@@ -172,6 +173,9 @@ export default function EnterpriseRoadmapsPage() {
   return (
     <PageChrome rightActions={headerActions}>
       <div className="flex-1 flex flex-col min-h-0 bg-muted/30">
+        {/* Executive Summary Strip (per markdown spec) */}
+        <RoadmapExecutiveSummary items={items} />
+
         {/* Toolbar */}
         <RoadmapToolbar
           timeScale={timeScale}
