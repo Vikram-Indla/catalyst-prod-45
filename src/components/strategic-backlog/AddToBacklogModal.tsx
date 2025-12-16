@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Layers, Target, X } from 'lucide-react';
+import { Layers, Target } from 'lucide-react';
 import { useCreateTheme } from '@/hooks/useStrategicBacklog';
 import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
@@ -107,12 +107,6 @@ export function AddToBacklogModal({ open, onOpenChange, snapshotId }: AddToBackl
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-5 border-b border-[#E1E4E8] dark:border-[#30363D]">
             <h2 className="text-lg font-semibold text-[#24292F] dark:text-[#E6EDF3]">Add to Strategic Backlog</h2>
-            <button 
-              onClick={handleClose}
-              className="p-1.5 rounded-md hover:bg-[#F6F8FA] dark:hover:bg-[#21262D] text-[#8B949E] hover:text-[#24292F] dark:hover:text-[#E6EDF3] transition-colors"
-            >
-              <X className="h-5 w-5" />
-            </button>
           </div>
 
           {/* Content */}
