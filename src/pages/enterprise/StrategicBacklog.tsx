@@ -232,17 +232,17 @@ export default function StrategicBacklog() {
                 )}
               </div>
             </div>
-
-            {/* Quick Drawer - Outside padded container */}
-            {selectedItem && selectedItemType && (
-              <StrategicBacklogQuickDrawer
-                item={selectedItem}
-                type={selectedItemType}
-                onClose={handleCloseDrawer}
-                themes={themes}
-              />
-            )}
           </div>
+
+          {/* Quick Drawer - Renders as portal overlay */}
+          {selectedItem && selectedItemType && (
+            <StrategicBacklogQuickDrawer
+              item={selectedItem}
+              type={selectedItemType}
+              onClose={handleCloseDrawer}
+              themes={themes}
+            />
+          )}
         </div>
       )}
 
