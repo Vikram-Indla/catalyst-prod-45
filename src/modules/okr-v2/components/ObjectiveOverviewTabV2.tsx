@@ -66,15 +66,17 @@ export function ObjectiveOverviewTabV2({ formData, onChange, objective }: Object
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6 bg-white dark:bg-[#161B22]">
       {/* Name (required) */}
       <div className="space-y-2">
-        <Label htmlFor="name">Name *</Label>
+        <Label htmlFor="name" className="text-sm font-medium text-[#24292F] dark:text-[#E6EDF3]">
+          Name <span className="text-[#B85C5C]">*</span>
+        </Label>
         <Input
           id="name"
           value={formData.name}
           onChange={(e) => handleFieldChange('name', e.target.value)}
-          className={`font-medium ${!formData.name.trim() ? 'border-destructive' : ''}`}
+          className={`font-medium bg-white dark:bg-[#0D1117] border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] focus:border-[#C69C6D] focus:ring-1 focus:ring-[rgba(198,156,109,0.3)] ${!formData.name.trim() ? 'border-destructive' : ''}`}
           required
         />
         {!formData.name.trim() && (
@@ -84,29 +86,34 @@ export function ObjectiveOverviewTabV2({ formData, onChange, objective }: Object
 
       {/* Description */}
       <div className="space-y-2">
-        <Label htmlFor="description">Description</Label>
+        <Label htmlFor="description" className="text-sm font-medium text-[#24292F] dark:text-[#E6EDF3]">
+          Description
+        </Label>
         <Textarea
           id="description"
           value={formData.description}
           onChange={(e) => handleFieldChange('description', e.target.value)}
           rows={3}
           placeholder="Add a description..."
+          className="bg-white dark:bg-[#0D1117] border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] placeholder:text-[#8B949E] dark:placeholder:text-[#6E7681] focus:border-[#C69C6D] focus:ring-1 focus:ring-[rgba(198,156,109,0.3)]"
         />
       </div>
 
       {/* Theme (required) */}
       <div className="space-y-2">
-        <Label>Theme *</Label>
+        <Label className="text-sm font-medium text-[#24292F] dark:text-[#E6EDF3]">
+          Theme <span className="text-[#B85C5C]">*</span>
+        </Label>
         <Select
           value={formData.theme_id || ''}
           onValueChange={(v) => handleFieldChange('theme_id', v || '')}
         >
-          <SelectTrigger className={!formData.theme_id ? 'border-destructive' : ''}>
+          <SelectTrigger className={`bg-white dark:bg-[#0D1117] border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] focus:border-[#C69C6D] focus:ring-1 focus:ring-[rgba(198,156,109,0.3)] ${!formData.theme_id ? 'border-destructive' : ''}`}>
             <SelectValue placeholder="Select theme (required)" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-white dark:bg-[#161B22] border-[#E1E4E8] dark:border-[#30363D]">
             {themes?.map((theme) => (
-              <SelectItem key={theme.id} value={theme.id}>
+              <SelectItem key={theme.id} value={theme.id} className="text-[#24292F] dark:text-[#E6EDF3] focus:bg-[#F6F8FA] dark:focus:bg-[#21262D]">
                 {theme.name}
               </SelectItem>
             ))}
@@ -120,40 +127,40 @@ export function ObjectiveOverviewTabV2({ formData, onChange, objective }: Object
       <div className="grid grid-cols-2 gap-4">
         {/* Status */}
         <div className="space-y-2">
-          <Label>Status</Label>
+          <Label className="text-sm font-medium text-[#24292F] dark:text-[#E6EDF3]">Status</Label>
           <Select
             value={formData.status}
             onValueChange={(v) => handleFieldChange('status', v)}
           >
-            <SelectTrigger>
+            <SelectTrigger className="bg-white dark:bg-[#0D1117] border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] focus:border-[#C69C6D] focus:ring-1 focus:ring-[rgba(198,156,109,0.3)]">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="in_progress">In Progress</SelectItem>
-              <SelectItem value="on_track">On Track</SelectItem>
-              <SelectItem value="at_risk">At Risk</SelectItem>
-              <SelectItem value="off_track">Off Track</SelectItem>
-              <SelectItem value="completed">Completed</SelectItem>
+            <SelectContent className="bg-white dark:bg-[#161B22] border-[#E1E4E8] dark:border-[#30363D]">
+              <SelectItem value="pending" className="text-[#24292F] dark:text-[#E6EDF3] focus:bg-[#F6F8FA] dark:focus:bg-[#21262D]">Pending</SelectItem>
+              <SelectItem value="in_progress" className="text-[#24292F] dark:text-[#E6EDF3] focus:bg-[#F6F8FA] dark:focus:bg-[#21262D]">In Progress</SelectItem>
+              <SelectItem value="on_track" className="text-[#24292F] dark:text-[#E6EDF3] focus:bg-[#F6F8FA] dark:focus:bg-[#21262D]">On Track</SelectItem>
+              <SelectItem value="at_risk" className="text-[#24292F] dark:text-[#E6EDF3] focus:bg-[#F6F8FA] dark:focus:bg-[#21262D]">At Risk</SelectItem>
+              <SelectItem value="off_track" className="text-[#24292F] dark:text-[#E6EDF3] focus:bg-[#F6F8FA] dark:focus:bg-[#21262D]">Off Track</SelectItem>
+              <SelectItem value="completed" className="text-[#24292F] dark:text-[#E6EDF3] focus:bg-[#F6F8FA] dark:focus:bg-[#21262D]">Completed</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         {/* Health */}
         <div className="space-y-2">
-          <Label>Health</Label>
+          <Label className="text-sm font-medium text-[#24292F] dark:text-[#E6EDF3]">Health</Label>
           <Select
             value={formData.health || 'at_risk'}
             onValueChange={(v) => handleFieldChange('health', v)}
           >
-            <SelectTrigger>
+            <SelectTrigger className="bg-white dark:bg-[#0D1117] border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] focus:border-[#C69C6D] focus:ring-1 focus:ring-[rgba(198,156,109,0.3)]">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="good">Good</SelectItem>
-              <SelectItem value="fair">Fair</SelectItem>
-              <SelectItem value="poor">Poor</SelectItem>
-              <SelectItem value="at_risk">At Risk</SelectItem>
+            <SelectContent className="bg-white dark:bg-[#161B22] border-[#E1E4E8] dark:border-[#30363D]">
+              <SelectItem value="good" className="text-[#24292F] dark:text-[#E6EDF3] focus:bg-[#F6F8FA] dark:focus:bg-[#21262D]">Good</SelectItem>
+              <SelectItem value="fair" className="text-[#24292F] dark:text-[#E6EDF3] focus:bg-[#F6F8FA] dark:focus:bg-[#21262D]">Fair</SelectItem>
+              <SelectItem value="poor" className="text-[#24292F] dark:text-[#E6EDF3] focus:bg-[#F6F8FA] dark:focus:bg-[#21262D]">Poor</SelectItem>
+              <SelectItem value="at_risk" className="text-[#24292F] dark:text-[#E6EDF3] focus:bg-[#F6F8FA] dark:focus:bg-[#21262D]">At Risk</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -162,39 +169,41 @@ export function ObjectiveOverviewTabV2({ formData, onChange, objective }: Object
       <div className="grid grid-cols-2 gap-4">
         {/* Start Date */}
         <div className="space-y-2">
-          <Label>Start Date</Label>
+          <Label className="text-sm font-medium text-[#24292F] dark:text-[#E6EDF3]">Start Date</Label>
           <Input
             type="date"
             value={formData.start_date || ''}
             onChange={(e) => handleFieldChange('start_date', e.target.value)}
+            className="bg-white dark:bg-[#0D1117] border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] focus:border-[#C69C6D] focus:ring-1 focus:ring-[rgba(198,156,109,0.3)]"
           />
         </div>
 
         {/* Due Date */}
         <div className="space-y-2">
-          <Label>Due Date</Label>
+          <Label className="text-sm font-medium text-[#24292F] dark:text-[#E6EDF3]">Due Date</Label>
           <Input
             type="date"
             value={formData.due_date || ''}
             onChange={(e) => handleFieldChange('due_date', e.target.value)}
+            className="bg-white dark:bg-[#0D1117] border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] focus:border-[#C69C6D] focus:ring-1 focus:ring-[rgba(198,156,109,0.3)]"
           />
         </div>
       </div>
 
       {/* Owner */}
       <div className="space-y-2">
-        <Label>Owner</Label>
+        <Label className="text-sm font-medium text-[#24292F] dark:text-[#E6EDF3]">Owner</Label>
         <Select
           value={formData.owner_id || '__unassigned__'}
           onValueChange={(v) => handleFieldChange('owner_id', v === '__unassigned__' ? '' : v)}
         >
-          <SelectTrigger>
+          <SelectTrigger className="bg-white dark:bg-[#0D1117] border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] focus:border-[#C69C6D] focus:ring-1 focus:ring-[rgba(198,156,109,0.3)]">
             <SelectValue placeholder="Select owner" />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="__unassigned__">Unassigned</SelectItem>
+          <SelectContent className="bg-white dark:bg-[#161B22] border-[#E1E4E8] dark:border-[#30363D]">
+            <SelectItem value="__unassigned__" className="text-[#24292F] dark:text-[#E6EDF3] focus:bg-[#F6F8FA] dark:focus:bg-[#21262D]">Unassigned</SelectItem>
             {users?.filter(user => user.id).map((user) => (
-              <SelectItem key={user.id} value={user.id}>
+              <SelectItem key={user.id} value={user.id} className="text-[#24292F] dark:text-[#E6EDF3] focus:bg-[#F6F8FA] dark:focus:bg-[#21262D]">
                 {user.full_name || 'Unknown'}
               </SelectItem>
             ))}
@@ -204,13 +213,14 @@ export function ObjectiveOverviewTabV2({ formData, onChange, objective }: Object
 
       {/* Notes */}
       <div className="space-y-2">
-        <Label htmlFor="notes">Notes</Label>
+        <Label htmlFor="notes" className="text-sm font-medium text-[#24292F] dark:text-[#E6EDF3]">Notes</Label>
         <Textarea
           id="notes"
           value={formData.notes}
           onChange={(e) => handleFieldChange('notes', e.target.value)}
           rows={3}
           placeholder="Add notes..."
+          className="bg-white dark:bg-[#0D1117] border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] placeholder:text-[#8B949E] dark:placeholder:text-[#6E7681] focus:border-[#C69C6D] focus:ring-1 focus:ring-[rgba(198,156,109,0.3)]"
         />
       </div>
     </div>

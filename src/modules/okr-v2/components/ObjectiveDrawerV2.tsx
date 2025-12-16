@@ -10,8 +10,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useObjectiveV2, useUpdateObjectiveV2, useDeleteObjectiveV2, useCreateObjectiveV2 } from '@/hooks/useObjectivesV2';
 import { useKeyResultsV2 } from '@/hooks/useKeyResultsV2';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   AlertDialog,
@@ -367,16 +365,16 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
     <div className="space-y-2">
       <div className="flex items-center gap-4">
         {objective.theme_name && (
-          <Badge variant="secondary" className="text-xs">
+          <span className="inline-flex px-2.5 py-1 rounded-md text-sm font-medium bg-[#F6F8FA] dark:bg-[#21262D] text-[#24292F] dark:text-[#E6EDF3] border border-[#E1E4E8] dark:border-[#30363D]">
             {objective.theme_name}
-          </Badge>
+          </span>
         )}
-        <Badge variant="outline" className="text-xs">
+        <span className="inline-flex px-2.5 py-1 rounded-md text-xs font-semibold uppercase tracking-wider bg-[rgba(92,124,92,0.1)] dark:bg-[rgba(92,124,92,0.15)] text-[#5C7C5C] dark:text-[#7DA37D] border border-[rgba(92,124,92,0.3)]">
           {objective.status?.replace('_', ' ')}
-        </Badge>
+        </span>
         <div className={`w-2 h-2 rounded-full ${getHealthColor(v2Health)}`} />
       </div>
-      <div className="flex items-center gap-6 text-sm text-muted-foreground">
+      <div className="flex items-center gap-6 text-sm text-[#8B949E] dark:text-[#6E7681]">
         {objective.owner_name && (
           <div className="flex items-center gap-1.5">
             <Users className="h-3.5 w-3.5" />
@@ -396,10 +394,15 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
       </div>
       <div>
         <div className="flex items-center justify-between text-sm mb-1">
-          <span className="text-muted-foreground">Overall Progress</span>
-          <span className="font-medium">{v2Progress}%</span>
+          <span className="text-[#8B949E] dark:text-[#6E7681]">Overall Progress</span>
+          <span className="font-semibold text-[#24292F] dark:text-[#E6EDF3]">{v2Progress}%</span>
         </div>
-        <Progress value={v2Progress} className="h-2" />
+        <div className="h-2 rounded-full bg-[#E1E4E8] dark:bg-[#30363D] overflow-hidden">
+          <div 
+            className="h-full rounded-full bg-[#5C7C5C] transition-all duration-300"
+            style={{ width: `${v2Progress}%` }}
+          />
+        </div>
       </div>
     </div>
   );
@@ -430,7 +433,7 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
     {
       value: 'links',
       label: 'Links',
-      content: <UnifiedLinksTab entityType="objective" entityId={objective.id} />,
+      content: <UnifiedLinksTab entityType="objective" entityId={objective.id} hideTiles={['knowledge-hub']} />,
     },
     {
       value: 'discussions',
