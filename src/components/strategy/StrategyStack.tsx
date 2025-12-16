@@ -306,7 +306,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                         </div>
                         <span 
                           className="text-sm font-medium"
-                          style={{ color: 'var(--text-1)' }}
+                          style={{ color: 'var(--text-primary)' }}
                         >
                           {layer.label}
                         </span>
@@ -317,7 +317,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                     <td className="px-6 py-4">
                       <span 
                         className="text-sm"
-                        style={{ color: data.count === 0 ? 'var(--text-3)' : 'var(--text-1)' }}
+                        style={{ color: data.count === 0 ? 'var(--text-muted)' : 'var(--text-primary)' }}
                       >
                         {isLoading || okrLoading ? '–' : data.count}
                       </span>
@@ -329,7 +329,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                         <div className="flex items-center gap-3">
                           <div 
                             className="flex-1 h-2 rounded-full overflow-hidden"
-                            style={{ backgroundColor: 'var(--surface-3)' }}
+                            style={{ backgroundColor: 'var(--progress-bg)' }}
                           >
                             <div 
                               className="h-full rounded-full transition-all"
@@ -339,12 +339,12 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                               }}
                             />
                           </div>
-                          <span className="text-xs w-10" style={{ color: 'var(--text-2)' }}>
+                          <span className="text-xs w-10" style={{ color: 'var(--text-secondary)' }}>
                             {data.coverage}%
                           </span>
                         </div>
                       ) : (
-                        <span className="text-sm" style={{ color: 'var(--text-2)' }}>—</span>
+                        <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>—</span>
                       )}
                     </td>
                     
@@ -352,7 +352,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                     <td className="px-6 py-4 text-right">
                       <span 
                         className="text-sm"
-                        style={{ color: 'var(--text-2)' }}
+                        style={{ color: 'var(--text-secondary)' }}
                       >
                         {data.count > 0 ? `${data.coverage}%` : '—'}
                       </span>
@@ -362,7 +362,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                     <td className="px-6 py-4 text-right">
                       <span 
                         className="text-sm"
-                        style={{ color: 'var(--text-2)' }}
+                        style={{ color: 'var(--text-secondary)' }}
                       >
                         {data.gap}
                       </span>
@@ -376,7 +376,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                           "transition-transform",
                           isSelected && "rotate-90"
                         )}
-                        style={{ color: 'var(--text-2)' }}
+                        style={{ color: 'var(--text-secondary)' }}
                       />
                     </td>
                   </tr>
@@ -388,15 +388,15 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                         <div 
                           className="border-t"
                           style={{ 
-                            backgroundColor: 'var(--surface-2)',
-                            borderColor: 'var(--divider-subtle)',
+                            backgroundColor: 'var(--surface-subtle)',
+                            borderColor: 'var(--border-subtle)',
                           }}
                         >
                           <div className="px-6 py-4">
                             <div className="flex items-center justify-between mb-4">
                               <h3 
                                 className="text-sm font-semibold"
-                                style={{ color: 'var(--text-1)' }}
+                                style={{ color: 'var(--text-primary)' }}
                               >
                                 {getLayerDetails(layer.key).title}
                               </h3>
@@ -406,8 +406,8 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                                   setSelectedLayer(null);
                                 }}
                                 className="p-1 rounded transition-colors"
-                                style={{ color: 'var(--text-2)' }}
-                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--surface-3)'}
+                                style={{ color: 'var(--text-secondary)' }}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--surface-hover)'}
                                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                               >
                                 <X size={16} />
@@ -419,14 +419,14 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                                   key={i} 
                                   className="p-3 rounded-lg"
                                   style={{
-                                    backgroundColor: 'var(--surface-1)',
+                                    backgroundColor: 'var(--surface-bg)',
                                     borderLeft: `3px solid ${getStatusBorderColor(item.status, item.isUnaligned)}`,
                                   }}
                                 >
                                   {item.isUnaligned && (
                                     <div 
                                       className="flex items-center gap-1 text-xs font-medium mb-1"
-                                      style={{ color: '#C69C6D' }}
+                                      style={{ color: 'var(--brand-gold)' }}
                                     >
                                       <AlertTriangle size={12} />
                                       <span>Unaligned Epic</span>
@@ -434,7 +434,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                                   )}
                                   <div 
                                     className="text-sm font-medium"
-                                    style={{ color: 'var(--text-1)' }}
+                                    style={{ color: 'var(--text-primary)' }}
                                   >
                                     {item.name}
                                   </div>
@@ -453,12 +453,12 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                                     </div>
                                   )}
                                   {item.linked && !item.isUnaligned && (
-                                    <p className="text-xs mt-1" style={{ color: 'var(--text-2)' }}>
+                                    <p className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>
                                       {layer.key === 'epics' ? `Linked to: ${item.linked}` : item.linked}
                                     </p>
                                   )}
                                   {item.isUnaligned && item.linked && (
-                                    <p className="text-xs mt-1" style={{ color: 'var(--text-2)' }}>
+                                    <p className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>
                                       {item.linked}
                                     </p>
                                   )}
