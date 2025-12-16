@@ -228,7 +228,7 @@ export function RiskDrawer({ risk, isOpen, onClose, onUpdate }: RiskDrawerProps)
         <SheetContent side="right" hideClose className={`executive-drawer ${drawerWidthClass} p-0 flex flex-col overflow-hidden bg-white`}>
           <SheetHeader className="executive-drawer-header flex-col space-y-0 shrink-0 p-0 bg-white">
             {/* Header row - identical structure to BusinessRequestDrawer */}
-            <div className="flex items-center justify-between px-4 md:px-5 pt-4 pb-3 border-b border-brand-gold bg-white">
+            <div className="flex items-center justify-between px-4 md:px-5 pt-4 pb-3 border-b border-brand-gold/50 bg-white">
               {/* Left side: Favourite + Risk Key + Title */}
               <div className="flex items-center gap-2.5 flex-1 min-w-0">
                 <button className="text-muted-foreground hover:text-brand-gold transition-colors p-0.5 shrink-0">

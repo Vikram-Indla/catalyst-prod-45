@@ -419,7 +419,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
         <SheetContent side="right" hideClose className={`executive-drawer ${drawerWidthClass} p-0`}>
           <SheetHeader className="executive-drawer-header flex-col space-y-0 shrink-0 p-0">
             {/* Header row with proper top spacing */}
-            <div className="flex items-center justify-between px-4 md:px-5 pt-4 pb-3 border-b border-brand-gold">
+            <div className="flex items-center justify-between px-4 md:px-5 pt-4 pb-3 border-b border-brand-gold/50">
               {/* Left side: Request ID + Title */}
               <div className="flex items-center gap-2.5 flex-1 min-w-0">
                 <div className="flex items-center gap-1 shrink-0">

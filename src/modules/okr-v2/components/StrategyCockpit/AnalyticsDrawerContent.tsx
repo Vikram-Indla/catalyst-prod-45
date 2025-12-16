@@ -159,7 +159,7 @@ export function AnalyticsDrawerContent({ selectedItem, themes }: AnalyticsDrawer
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="p-5 bg-card border-b border-brand-gold">
+      <div className="p-5 bg-card border-b border-brand-gold/50">
         <div className="flex items-center gap-2.5 mb-3">
           <span className="px-2.5 py-1 rounded text-xs font-semibold uppercase tracking-wider" style={{ backgroundColor: `${themeColor}15`, color: themeColor }}>
             {headerLabel}

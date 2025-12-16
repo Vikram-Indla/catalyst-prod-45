@@ -243,7 +243,7 @@ function DrawerContent({ analytics }: { analytics: WorkItemAnalyticsData }) {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="p-6 border-b border-brand-gold bg-card">
+      <div className="p-6 border-b border-brand-gold/50 bg-card">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2.5">
             <TypeBadge type={workItemType} />
