@@ -319,12 +319,25 @@ export function CreateEpicDialog({
   };
 
   // Validation: programId, name, theme, reporter, assignee are required
-  const isValid = 
-    !isProgramMissing &&
-    name.trim().length > 0 && 
-    themeId !== null && 
-    reporterId !== null && 
-    assigneeId !== null;
+  const missingFields: string[] = [];
+  if (isProgramMissing) missingFields.push('Program context');
+  if (!name.trim()) missingFields.push('Epic Name');
+  if (!themeId) missingFields.push('Strategic Theme');
+  if (!reporterId) missingFields.push('Reporter');
+  if (!assigneeId) missingFields.push('Assignee');
+  
+  const isValid = missingFields.length === 0;
+  
+  // TEMPORARY LOGGING - remove after fix confirmed
+  console.log('[CreateEpicDialog] Validation state:', {
+    missingFields,
+    isValid,
+    name: name.trim(),
+    themeId,
+    reporterId,
+    assigneeId,
+    programId,
+  });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -333,15 +346,17 @@ export function CreateEpicDialog({
           <DialogTitle>Create Epic</DialogTitle>
         </DialogHeader>
         
-        {/* ERROR STATE: Missing Program Context */}
-        {isProgramMissing && (
-          <div className="p-4 bg-destructive/10 border border-destructive/30 rounded-md mx-4 mt-2">
-            <p className="text-sm text-destructive font-medium">
-              Program context not loaded
+        {/* LIVE VALIDATION: Missing Required Fields Banner */}
+        {missingFields.length > 0 && (
+          <div className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-md mx-1">
+            <p className="text-sm font-medium text-amber-800 dark:text-amber-200 mb-1">
+              Missing required fields:
             </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              Please refresh the page or navigate to a program to create epics.
-            </p>
+            <ul className="text-sm text-amber-700 dark:text-amber-300 list-disc list-inside space-y-0.5">
+              {missingFields.map((field) => (
+                <li key={field}>{field}</li>
+              ))}
+            </ul>
           </div>
         )}
         
@@ -374,7 +389,42 @@ export function CreateEpicDialog({
               </div>
             </div>
 
-            {/* Section 2: Strategic Alignment */}
+            {/* Section 2: Ownership (moved up - required fields visible immediately) */}
+            <div className="space-y-3">
+              <h4 className="text-sm font-medium text-muted-foreground">Ownership</h4>
+              
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label>
+                    Reporter <span className="text-destructive">*</span>
+                  </Label>
+                  <UserPicker
+                    value={reporterId}
+                    onChange={(val) => {
+                      console.log('[CreateEpicDialog] Reporter changed:', val);
+                      setReporterId(val as string | null);
+                    }}
+                    placeholder="Select reporter..."
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label>
+                    Assignee <span className="text-destructive">*</span>
+                  </Label>
+                  <UserPicker
+                    value={assigneeId}
+                    onChange={(val) => {
+                      console.log('[CreateEpicDialog] Assignee changed:', val);
+                      setAssigneeId(val as string | null);
+                    }}
+                    placeholder="Select assignee..."
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Section 3: Strategic Alignment */}
             <div className="space-y-3">
               <h4 className="text-sm font-medium text-muted-foreground">Strategic Alignment</h4>
               
@@ -516,7 +566,7 @@ export function CreateEpicDialog({
               </div>
             </div>
 
-            {/* Section 3: Description */}
+            {/* Section 4: Description */}
             <div className="space-y-3">
               <h4 className="text-sm font-medium text-muted-foreground">Description</h4>
               <RichTextEditor
@@ -527,7 +577,7 @@ export function CreateEpicDialog({
               />
             </div>
 
-            {/* Section 4: Attachments */}
+            {/* Section 5: Attachments */}
             <div className="space-y-3">
               <h4 className="text-sm font-medium text-muted-foreground">Attachments</h4>
               
@@ -588,35 +638,6 @@ export function CreateEpicDialog({
                   ))}
                 </div>
               )}
-            </div>
-
-            {/* Section 5: Ownership */}
-            <div className="space-y-3">
-              <h4 className="text-sm font-medium text-muted-foreground">Ownership</h4>
-              
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <Label>
-                    Reporter <span className="text-destructive">*</span>
-                  </Label>
-                  <UserPicker
-                    value={reporterId}
-                    onChange={(val) => setReporterId(val as string | null)}
-                    placeholder="Select reporter..."
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label>
-                    Assignee <span className="text-destructive">*</span>
-                  </Label>
-                  <UserPicker
-                    value={assigneeId}
-                    onChange={(val) => setAssigneeId(val as string | null)}
-                    placeholder="Select assignee..."
-                  />
-                </div>
-              </div>
             </div>
           </div>
         </ScrollArea>
