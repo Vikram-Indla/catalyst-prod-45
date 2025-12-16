@@ -354,7 +354,7 @@ function TableRow({
         onClick={() => onSelect(item)}
         className={cn(
           'group cursor-pointer transition-colors border-b border-border/40',
-          isSelected ? 'bg-brand-gold/5' : 'hover:bg-[#fcfaf8]',
+          isSelected ? 'bg-muted/40' : 'hover:bg-muted/50 dark:hover:bg-muted/30',
           level > 0 && 'bg-muted/20'
         )}
         style={{
@@ -518,15 +518,18 @@ export function StrategyTree({
         <table className="w-full min-w-[800px]">
           {/* Table Header - Dynamic based on visible columns */}
           <thead className="sticky top-0 z-10">
-            <tr className="bg-[#faf7f1] border-b-2 border-border">
+            <tr
+              className="border-b border-border"
+              style={{ backgroundColor: 'var(--surface-1)' }}
+            >
               {visibleColumnKeys.map((colKey, idx) => (
                 <th 
                   key={colKey}
                   className={cn(
-                    "py-3.5 px-4 text-[11px] font-semibold text-secondary-bronze uppercase tracking-wider",
+                    "py-3.5 px-4 text-[11px] font-semibold uppercase tracking-wider",
                     idx === visibleColumnKeys.length - 1 ? "text-right" : "text-left"
                   )}
-                  style={{ width: COLUMN_CONFIG[colKey]?.width || '100px' }}
+                  style={{ color: 'var(--text-2)', width: COLUMN_CONFIG[colKey]?.width || '100px' }}
                 >
                   {COLUMN_CONFIG[colKey]?.label || colKey}
                 </th>
