@@ -53,6 +53,7 @@ export const ObjectiveRoadmapPage: React.FC = () => {
     appliedFilters,
     appliedViewport,
     draftFilters,
+    draftViewport,
     activeFilterCount,
     openFilters,
     applyFilters,
@@ -63,7 +64,8 @@ export const ObjectiveRoadmapPage: React.FC = () => {
     toggleOwner,
     toggleProgressRange,
     toggleKRCondition,
-    applyViewport,
+    updateDraftViewport,
+    isViewportAtDefault,
   } = useCanonicalRoadmapFilters();
   
   // Derive scale from viewport
@@ -77,9 +79,29 @@ export const ObjectiveRoadmapPage: React.FC = () => {
   const [columnWidth, setColumnWidth] = useState(340);
   const [searchQuery, setSearchQuery] = useState('');
   
-  // Timeline dates derived from viewport
-  const timelineStart = appliedViewport.start;
-  const timelineEnd = appliedViewport.end;
+  // Timeline dates derived from viewport (or dataset bounds when at default)
+  const timelineBounds = useMemo(() => {
+    if (isViewportAtDefault && objectives.length > 0) {
+      // Calculate dataset bounds when at default viewport
+      let minStart = objectives[0].startDate.getTime();
+      let maxEnd = objectives[0].endDate.getTime();
+      objectives.forEach(obj => {
+        minStart = Math.min(minStart, obj.startDate.getTime());
+        maxEnd = Math.max(maxEnd, obj.endDate.getTime());
+      });
+      return {
+        start: new Date(minStart),
+        end: new Date(maxEnd),
+      };
+    }
+    return {
+      start: appliedViewport.start,
+      end: appliedViewport.end,
+    };
+  }, [appliedViewport, objectives, isViewportAtDefault]);
+  
+  const timelineStart = timelineBounds.start;
+  const timelineEnd = timelineBounds.end;
   
   // Drawer state
   const [selectedObjectiveId, setSelectedObjectiveId] = useState<string | null>(null);
@@ -87,11 +109,13 @@ export const ObjectiveRoadmapPage: React.FC = () => {
   const objectivesListRef = useRef<HTMLDivElement>(null);
   const timelineGridRef = useRef<HTMLDivElement>(null);
   
-  // Filter by viewport overlap FIRST, then by canonical filters
-  const objectivesInViewport = useMemo(
-    () => filterByViewportOverlap(objectives, appliedViewport),
-    [objectives, appliedViewport]
-  );
+  // Skip viewport filtering when at default (show all objectives)
+  const objectivesInViewport = useMemo(() => {
+    if (isViewportAtDefault) {
+      return objectives; // Show all when at default
+    }
+    return filterByViewportOverlap(objectives, appliedViewport);
+  }, [objectives, appliedViewport, isViewportAtDefault]);
   
   // Apply canonical filters to objectives in viewport
   const filteredObjectives = useMemo(
@@ -147,19 +171,13 @@ export const ObjectiveRoadmapPage: React.FC = () => {
     setCollapsedGroups(new Set());
   }, []);
 
-  const handleApplyViewport = useCallback((viewport: RoadmapViewport) => {
-    applyViewport(viewport);
-    // Reset visible count when viewport changes
-    setVisibleCount(10);
-  }, [applyViewport]);
-
   // Handle scale change from external sources (sync back to viewport)
   const handleScaleChange = useCallback((newScale: Scale) => {
-    applyViewport({
-      ...appliedViewport,
+    updateDraftViewport({
+      ...draftViewport,
       scale: newScale,
     });
-  }, [applyViewport, appliedViewport]);
+  }, [updateDraftViewport, draftViewport]);
   
   // Handle clear all - also reset search and visible count
   const handleClearAll = useCallback(() => {
@@ -216,7 +234,8 @@ export const ObjectiveRoadmapPage: React.FC = () => {
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         appliedViewport={appliedViewport}
-        onApplyViewport={handleApplyViewport}
+        draftViewport={draftViewport}
+        onDraftViewportChange={updateDraftViewport}
         // Canonical filter props
         draftFilters={draftFilters}
         activeFilterCount={activeFilterCount}
@@ -282,6 +301,7 @@ export const ObjectiveRoadmapPage: React.FC = () => {
       {debugMode && (
         <RoadmapDebugOverlay
           appliedViewport={appliedViewport}
+          draftViewport={draftViewport}
           rowCountBefore={objectives.length}
           rowCountAfter={filteredObjectives.length}
         />

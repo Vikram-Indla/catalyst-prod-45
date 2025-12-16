@@ -15,8 +15,11 @@ interface RoadmapToolbarProps {
   onToggleMilestones: () => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
+  
+  // Viewport (now staged)
   appliedViewport: RoadmapViewport;
-  onApplyViewport: (viewport: RoadmapViewport) => void;
+  draftViewport: RoadmapViewport;
+  onDraftViewportChange: (viewport: RoadmapViewport) => void;
   
   // Canonical filter props
   draftFilters: FilterState;
@@ -46,7 +49,8 @@ export const RoadmapToolbar: React.FC<RoadmapToolbarProps> = ({
   searchQuery,
   onSearchChange,
   appliedViewport,
-  onApplyViewport,
+  draftViewport,
+  onDraftViewportChange,
   draftFilters,
   activeFilterCount,
   onToggleStatus,
@@ -86,25 +90,20 @@ export const RoadmapToolbar: React.FC<RoadmapToolbarProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [filtersOpen, onCancelFilters]);
   
-  // Handle viewport changes - sync scale with parent
-  const handleViewportApply = (viewport: RoadmapViewport) => {
-    onApplyViewport(viewport);
-    // Also sync scale to parent's scale state
-    if (viewport.scale !== scale) {
-      onScaleChange(viewport.scale);
-    }
-  };
-  
   // Handle opening filters panel
   const handleOpenFilters = () => {
     onOpenFilters(); // Sync draft = applied
     setFiltersOpen(true);
   };
   
-  // Handle apply filters
+  // Handle apply filters (applies both filters AND viewport)
   const handleApplyFilters = () => {
     onApplyFilters();
     setFiltersOpen(false);
+    // Sync scale to parent's scale state if changed
+    if (draftViewport.scale !== scale) {
+      onScaleChange(draftViewport.scale);
+    }
   };
   
   // Handle cancel filters
@@ -117,6 +116,15 @@ export const RoadmapToolbar: React.FC<RoadmapToolbarProps> = ({
   const handleClearAll = () => {
     onClearAll();
     setFiltersOpen(false);
+  };
+  
+  // Handle viewport apply from date filter popover
+  const handleViewportApply = () => {
+    onApplyFilters(); // This now applies both filters AND viewport
+    // Sync scale if changed
+    if (draftViewport.scale !== scale) {
+      onScaleChange(draftViewport.scale);
+    }
   };
   
   const groupByOptions: { key: GroupBy; label: string }[] = [
@@ -233,10 +241,13 @@ export const RoadmapToolbar: React.FC<RoadmapToolbarProps> = ({
         
         <div className="w-px h-6 bg-border" />
         
-        {/* Date Range Filter V2 */}
+        {/* Date Range Filter V2 (Controlled) */}
         <RoadmapDateFilterV2
+          draftViewport={draftViewport}
           appliedViewport={appliedViewport}
+          onDraftChange={onDraftViewportChange}
           onApply={handleViewportApply}
+          onClear={handleClearAll}
         />
       </div>
     </div>

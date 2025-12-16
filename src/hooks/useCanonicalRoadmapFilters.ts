@@ -11,6 +11,25 @@ import {
 } from '@/types/canonical-roadmap-filters';
 import { RoadmapViewport, getDefaultViewport } from '@/components/roadmaps/RoadmapDateFilterV2';
 
+// Check if viewport equals default (for skip-filtering logic)
+function isViewportDefault(viewport: RoadmapViewport): boolean {
+  const defaultVp = getDefaultViewport();
+  return (
+    viewport.scale === defaultVp.scale &&
+    JSON.stringify(viewport.selectedYears) === JSON.stringify(defaultVp.selectedYears) &&
+    JSON.stringify(viewport.selectedQuarters) === JSON.stringify(defaultVp.selectedQuarters)
+  );
+}
+
+// Compare two viewports for equality
+function areViewportsEqual(a: RoadmapViewport, b: RoadmapViewport): boolean {
+  return (
+    a.scale === b.scale &&
+    JSON.stringify(a.selectedYears) === JSON.stringify(b.selectedYears) &&
+    JSON.stringify(a.selectedQuarters) === JSON.stringify(b.selectedQuarters)
+  );
+}
+
 interface UseCanonicalRoadmapFiltersReturn {
   // Applied state (drives data display)
   appliedFilters: FilterState;
@@ -25,9 +44,9 @@ interface UseCanonicalRoadmapFiltersReturn {
   
   // Lifecycle actions
   openFilters: () => void;           // draftFilters = appliedFilters
-  applyFilters: () => void;          // appliedFilters = draftFilters, close
+  applyFilters: () => void;          // appliedFilters = draftFilters (AND viewport), close
   cancelFilters: () => void;         // draftFilters = appliedFilters, close
-  clearAll: () => void;              // Reset both filters AND timeline to defaults
+  clearAll: () => void;              // Reset both filters AND viewport to defaults
   
   // Draft mutation helpers
   toggleStatus: (status: string) => void;
@@ -36,11 +55,12 @@ interface UseCanonicalRoadmapFiltersReturn {
   toggleProgressRange: (range: ProgressRange) => void;
   toggleKRCondition: (condition: KRCondition) => void;
   
-  // Viewport handling
-  applyViewport: (viewport: RoadmapViewport) => void;
+  // Viewport handling (staged, not immediate)
+  updateDraftViewport: (viewport: RoadmapViewport) => void;
   
   // Computed
   hasPendingChanges: boolean;
+  isViewportAtDefault: boolean;
 }
 
 export function useCanonicalRoadmapFilters(): UseCanonicalRoadmapFiltersReturn {
@@ -58,10 +78,16 @@ export function useCanonicalRoadmapFilters(): UseCanonicalRoadmapFiltersReturn {
     [appliedFilters]
   );
   
-  // Check if there are pending changes
+  // Check if viewport is at default (for skip-filtering)
+  const isViewportAtDefault = useMemo(
+    () => isViewportDefault(appliedViewport),
+    [appliedViewport]
+  );
+  
+  // Check if there are pending changes (includes viewport)
   const hasPendingChanges = useMemo(
-    () => !areFiltersEqual(draftFilters, appliedFilters),
-    [draftFilters, appliedFilters]
+    () => !areFiltersEqual(draftFilters, appliedFilters) || !areViewportsEqual(draftViewport, appliedViewport),
+    [draftFilters, appliedFilters, draftViewport, appliedViewport]
   );
   
   // Lifecycle: Open filters panel
@@ -70,11 +96,11 @@ export function useCanonicalRoadmapFilters(): UseCanonicalRoadmapFiltersReturn {
     setDraftViewport({ ...appliedViewport });
   }, [appliedFilters, appliedViewport]);
   
-  // Lifecycle: Apply filters
+  // Lifecycle: Apply filters AND viewport together
   const applyFilters = useCallback(() => {
     setAppliedFilters({ ...draftFilters });
-    // Note: viewport is applied separately via applyViewport
-  }, [draftFilters]);
+    setAppliedViewport({ ...draftViewport });
+  }, [draftFilters, draftViewport]);
   
   // Lifecycle: Cancel (discard draft changes)
   const cancelFilters = useCallback(() => {
@@ -82,12 +108,13 @@ export function useCanonicalRoadmapFilters(): UseCanonicalRoadmapFiltersReturn {
     setDraftViewport({ ...appliedViewport });
   }, [appliedFilters, appliedViewport]);
   
-  // Lifecycle: Clear all (reset everything)
+  // Lifecycle: Clear all (reset everything to defaults)
   const clearAll = useCallback(() => {
+    const defaultViewport = getDefaultViewport();
     setAppliedFilters(EMPTY_FILTERS);
     setDraftFilters(EMPTY_FILTERS);
-    setAppliedViewport(getDefaultViewport());
-    setDraftViewport(getDefaultViewport());
+    setAppliedViewport(defaultViewport);
+    setDraftViewport(defaultViewport);
   }, []);
   
   // Draft mutations
@@ -136,9 +163,8 @@ export function useCanonicalRoadmapFilters(): UseCanonicalRoadmapFiltersReturn {
     }));
   }, []);
   
-  // Viewport handling (applied immediately, not staged)
-  const applyViewport = useCallback((viewport: RoadmapViewport) => {
-    setAppliedViewport(viewport);
+  // Viewport handling (staged - updates draft only)
+  const updateDraftViewport = useCallback((viewport: RoadmapViewport) => {
     setDraftViewport(viewport);
   }, []);
   
@@ -157,7 +183,8 @@ export function useCanonicalRoadmapFilters(): UseCanonicalRoadmapFiltersReturn {
     toggleOwner,
     toggleProgressRange,
     toggleKRCondition,
-    applyViewport,
+    updateDraftViewport,
     hasPendingChanges,
+    isViewportAtDefault,
   };
 }

@@ -1,11 +1,11 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // CATALYST ROADMAP DATE FILTER V2
 // Design #2: Scale-integrated period selector with multi-select years/quarters
-// Reusable across Enterprise Roadmap, Product Roadmap, etc.
+// Fully staged: changes update draft only, applied on explicit Apply click
 // ═══════════════════════════════════════════════════════════════════════════════
 
-import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Calendar, ChevronDown, Check, X } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Calendar, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
@@ -25,8 +25,12 @@ export interface RoadmapViewport {
 }
 
 interface RoadmapDateFilterV2Props {
+  // Controlled: receives draft viewport from parent
+  draftViewport: RoadmapViewport;
   appliedViewport: RoadmapViewport;
-  onApply: (viewport: RoadmapViewport) => void;
+  onDraftChange: (viewport: RoadmapViewport) => void;
+  onApply: () => void;
+  onClear: () => void;
   className?: string;
 }
 
@@ -55,7 +59,7 @@ export function getDefaultViewport(): RoadmapViewport {
   };
 }
 
-function computeDateRange(
+export function computeDateRange(
   selectedYears: number[],
   selectedQuarters: number[],
   mode: 'year' | 'quarter'
@@ -91,38 +95,29 @@ function computeDateRange(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────────
-// MAIN COMPONENT
+// MAIN COMPONENT (Controlled)
 // ─────────────────────────────────────────────────────────────────────────────────
 
 export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
+  draftViewport,
   appliedViewport,
+  onDraftChange,
   onApply,
+  onClear,
   className,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Draft state (user is selecting)
-  const [draftScale, setDraftScale] = useState<RoadmapScale>(appliedViewport.scale);
-  const [draftYears, setDraftYears] = useState<number[]>(appliedViewport.selectedYears);
-  const [draftQuarters, setDraftQuarters] = useState<number[]>(appliedViewport.selectedQuarters);
-
-  // Reset draft when popover opens
-  useEffect(() => {
-    if (isOpen) {
-      setDraftScale(appliedViewport.scale);
-      setDraftYears(appliedViewport.selectedYears);
-      setDraftQuarters(appliedViewport.selectedQuarters);
-    }
-  }, [isOpen, appliedViewport]);
-
+  // Derive mode from draft quarters
+  const draftMode = draftViewport.selectedQuarters.length > 0 && draftViewport.selectedQuarters.length < 4 ? 'quarter' : 'year';
+  
   // Derive draft date range
-  const draftMode = draftQuarters.length > 0 && draftQuarters.length < 4 ? 'quarter' : 'year';
   const draftDateRange = useMemo(
-    () => computeDateRange(draftYears, draftQuarters, draftMode),
-    [draftYears, draftQuarters, draftMode]
+    () => computeDateRange(draftViewport.selectedYears, draftViewport.selectedQuarters, draftMode),
+    [draftViewport.selectedYears, draftViewport.selectedQuarters, draftMode]
   );
 
-  // Year options: current year ± 3
+  // Year options: current year ± 2
   const yearOptions = useMemo(() => {
     const years: number[] = [];
     for (let y = CURRENT_YEAR - 2; y <= CURRENT_YEAR + 2; y++) {
@@ -131,56 +126,62 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
     return years;
   }, []);
 
-  const toggleYear = (year: number) => {
-    setDraftYears(prev => {
-      if (prev.includes(year)) {
-        // Don't allow deselecting all years
-        if (prev.length === 1) return prev;
-        return prev.filter(y => y !== year).sort((a, b) => a - b);
-      }
-      return [...prev, year].sort((a, b) => a - b);
+  const updateDraft = (updates: Partial<RoadmapViewport>) => {
+    const newDraft = { ...draftViewport, ...updates };
+    // Recompute dates based on new selections
+    const newMode = newDraft.selectedQuarters.length > 0 && newDraft.selectedQuarters.length < 4 ? 'quarter' : 'year';
+    const { start, end } = computeDateRange(newDraft.selectedYears, newDraft.selectedQuarters, newMode);
+    onDraftChange({
+      ...newDraft,
+      start,
+      end,
+      mode: newMode,
     });
+  };
+
+  const toggleYear = (year: number) => {
+    const prev = draftViewport.selectedYears;
+    let newYears: number[];
+    if (prev.includes(year)) {
+      // Don't allow deselecting all years
+      if (prev.length === 1) return;
+      newYears = prev.filter(y => y !== year).sort((a, b) => a - b);
+    } else {
+      newYears = [...prev, year].sort((a, b) => a - b);
+    }
+    updateDraft({ selectedYears: newYears });
   };
 
   const toggleQuarter = (q: number) => {
-    setDraftQuarters(prev => {
-      if (prev.includes(q)) {
-        return prev.filter(x => x !== q).sort((a, b) => a - b);
-      }
-      return [...prev, q].sort((a, b) => a - b);
-    });
+    const prev = draftViewport.selectedQuarters;
+    let newQuarters: number[];
+    if (prev.includes(q)) {
+      newQuarters = prev.filter(x => x !== q).sort((a, b) => a - b);
+    } else {
+      newQuarters = [...prev, q].sort((a, b) => a - b);
+    }
+    updateDraft({ selectedQuarters: newQuarters });
   };
 
   const selectAllQuarters = () => {
-    setDraftQuarters([1, 2, 3, 4]);
+    updateDraft({ selectedQuarters: [1, 2, 3, 4] });
+  };
+
+  const setScale = (scale: RoadmapScale) => {
+    updateDraft({ scale });
   };
 
   const handleApply = () => {
-    const { start, end } = computeDateRange(draftYears, draftQuarters, draftMode);
-    
-    const viewport: RoadmapViewport = {
-      scale: draftScale,
-      start,
-      end,
-      selectedYears: draftYears,
-      selectedQuarters: draftQuarters,
-      mode: draftMode,
-    };
-    
-    onApply(viewport);
+    onApply();
     setIsOpen(false);
   };
 
   const handleClear = () => {
-    const defaultViewport = getDefaultViewport();
-    setDraftScale(defaultViewport.scale);
-    setDraftYears(defaultViewport.selectedYears);
-    setDraftQuarters(defaultViewport.selectedQuarters);
-    onApply(defaultViewport);
+    onClear();
     setIsOpen(false);
   };
 
-  // Label for trigger button
+  // Label for trigger button (shows APPLIED state)
   const getAppliedLabel = (): string => {
     const years = appliedViewport.selectedYears;
     const quarters = appliedViewport.selectedQuarters;
@@ -207,9 +208,9 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
 
   // Check if there are unsaved changes
   const hasChanges = 
-    draftScale !== appliedViewport.scale ||
-    JSON.stringify(draftYears) !== JSON.stringify(appliedViewport.selectedYears) ||
-    JSON.stringify(draftQuarters) !== JSON.stringify(appliedViewport.selectedQuarters);
+    draftViewport.scale !== appliedViewport.scale ||
+    JSON.stringify(draftViewport.selectedYears) !== JSON.stringify(appliedViewport.selectedYears) ||
+    JSON.stringify(draftViewport.selectedQuarters) !== JSON.stringify(appliedViewport.selectedQuarters);
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -241,10 +242,10 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
             {scaleOptions.map(opt => (
               <button
                 key={opt.value}
-                onClick={() => setDraftScale(opt.value)}
+                onClick={() => setScale(opt.value)}
                 className={cn(
                   "flex-1 px-3 py-2 text-sm font-medium rounded-lg border transition-all",
-                  draftScale === opt.value
+                  draftViewport.scale === opt.value
                     ? "bg-brand-gold text-white border-brand-gold"
                     : "bg-background text-foreground border-border hover:border-brand-gold/50"
                 )}
@@ -260,7 +261,7 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
           <div className="text-sm font-semibold text-foreground mb-3">Select Years</div>
           <div className="flex gap-2 flex-wrap">
             {yearOptions.map(year => {
-              const isSelected = draftYears.includes(year);
+              const isSelected = draftViewport.selectedYears.includes(year);
               const isCurrent = year === CURRENT_YEAR;
               return (
                 <button
@@ -284,7 +285,7 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
         </div>
 
         {/* Select Quarters Section - only show when scale is quarterly or monthly */}
-        {(draftScale === 'quarterly' || draftScale === 'monthly') && (
+        {(draftViewport.scale === 'quarterly' || draftViewport.scale === 'monthly') && (
           <div className="p-4 border-b border-border">
             <div className="flex items-center justify-between mb-3">
               <span className="text-sm font-semibold text-foreground">Select Quarters</span>
@@ -292,7 +293,7 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
                 onClick={selectAllQuarters}
                 className={cn(
                   "text-xs font-medium transition-colors",
-                  draftQuarters.length === 4
+                  draftViewport.selectedQuarters.length === 4
                     ? "text-brand-gold"
                     : "text-muted-foreground hover:text-brand-gold"
                 )}
@@ -302,8 +303,8 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
             </div>
             <div className="grid grid-cols-4 gap-2">
               {[1, 2, 3, 4].map(q => {
-                const isSelected = draftQuarters.includes(q);
-                const isCurrent = q === CURRENT_QUARTER && draftYears.includes(CURRENT_YEAR);
+                const isSelected = draftViewport.selectedQuarters.includes(q);
+                const isCurrent = q === CURRENT_QUARTER && draftViewport.selectedYears.includes(CURRENT_YEAR);
                 return (
                   <button
                     key={q}
@@ -346,10 +347,10 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
             </button>
             <button
               onClick={handleApply}
-              disabled={!hasChanges && draftYears.length > 0}
+              disabled={!hasChanges && draftViewport.selectedYears.length > 0}
               className={cn(
                 "flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-colors",
-                hasChanges || draftYears.length === 0
+                hasChanges || draftViewport.selectedYears.length === 0
                   ? "bg-brand-gold text-white hover:bg-brand-gold-hover"
                   : "bg-brand-gold/50 text-white/70 cursor-not-allowed"
               )}
