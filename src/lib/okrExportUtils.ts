@@ -9,7 +9,7 @@ export interface OKRExportRow {
   program_increment: string;
   owner: string;
   start_date: string;
-  due_date: string;
+  end_date: string;
 }
 
 export function exportOKRsToCSV(objectives: OKRExportRow[], filename = 'okr-export.csv') {
@@ -24,7 +24,7 @@ export function exportOKRsToCSV(objectives: OKRExportRow[], filename = 'okr-expo
     'Program Increment',
     'Owner',
     'Start Date',
-    'Due Date',
+    'End Date',
   ];
 
   const rows = objectives.map((obj) => [
@@ -38,7 +38,7 @@ export function exportOKRsToCSV(objectives: OKRExportRow[], filename = 'okr-expo
     obj.program_increment || 'N/A',
     obj.owner || 'Unassigned',
     obj.start_date || 'N/A',
-    obj.due_date || 'N/A',
+    obj.end_date || 'N/A',
   ]);
 
   const csvContent = [

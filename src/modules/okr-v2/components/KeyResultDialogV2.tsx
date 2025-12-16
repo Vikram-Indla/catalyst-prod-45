@@ -73,7 +73,7 @@ export function KeyResultDialogV2({
       if (!objectiveId) return null;
       const { data, error } = await supabase
         .from('objectives')
-        .select('start_date, due_date')
+        .select('start_date, end_date')
         .eq('id', objectiveId)
         .single();
       if (error) return null;
@@ -102,7 +102,7 @@ export function KeyResultDialogV2({
       setCurrentValue("0");
       // Default to parent objective dates if available
       setStartDate(parentObjective?.start_date ? new Date(parentObjective.start_date) : undefined);
-      setEndDate(parentObjective?.due_date ? new Date(parentObjective.due_date) : undefined);
+      setEndDate(parentObjective?.end_date ? new Date(parentObjective.end_date) : undefined);
       setDateError(null);
     }
   }, [keyResult, open, parentObjective]);

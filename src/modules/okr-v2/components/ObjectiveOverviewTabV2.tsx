@@ -21,7 +21,7 @@ export interface ObjectiveFormData {
   status: string;
   health: string;
   start_date: string;
-  due_date: string;
+  end_date: string;
   owner_id: string;
 }
 
@@ -179,13 +179,13 @@ export function ObjectiveOverviewTabV2({ formData, onChange, objective }: Object
           />
         </div>
 
-        {/* Due Date */}
+        {/* End Date */}
         <div className="space-y-2">
-          <Label className="text-sm font-medium text-[#24292F] dark:text-[#E6EDF3]">Due Date</Label>
+          <Label className="text-sm font-medium text-[#24292F] dark:text-[#E6EDF3]">End Date</Label>
           <CatalystDatePicker
-            value={formData.due_date || null}
-            onChange={(date) => handleFieldChange('due_date', date ? date.toISOString().split('T')[0] : '')}
-            placeholder="Pick due date"
+            value={formData.end_date || null}
+            onChange={(date) => handleFieldChange('end_date', date ? date.toISOString().split('T')[0] : '')}
+            placeholder="Pick end date"
             dateFormat="dd/MM/yyyy"
           />
         </div>

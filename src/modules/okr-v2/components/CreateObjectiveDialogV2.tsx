@@ -32,7 +32,7 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
   const [themeId, setThemeId] = useState<string>('');
   const [ownerId, setOwnerId] = useState<string>('');
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
-  const [dueDate, setDueDate] = useState<Date | undefined>(undefined);
+  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
   const [status, setStatus] = useState<ObjectiveStatusV2>('pending');
   const [health, setHealth] = useState<ObjectiveHealthV2>('at_risk');
   const [notes, setNotes] = useState('');
@@ -83,7 +83,7 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
       theme_id: themeId,
       owner_id: ownerId || undefined,
       start_date: startDate ? startDate.toISOString().split('T')[0] : undefined,
-      due_date: dueDate ? dueDate.toISOString().split('T')[0] : undefined,
+      end_date: endDate ? endDate.toISOString().split('T')[0] : undefined,
       status,
     });
 
@@ -93,7 +93,7 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
     setThemeId('');
     setOwnerId('');
     setStartDate(undefined);
-    setDueDate(undefined);
+    setEndDate(undefined);
     setStatus('pending');
     setHealth('at_risk');
     setNotes('');
@@ -208,13 +208,13 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
               />
             </div>
 
-            {/* Due Date */}
+            {/* End Date */}
             <div className="space-y-2">
-              <label className={labelClasses}>Due Date</label>
+              <label className={labelClasses}>End Date</label>
               <CatalystDatePicker
-                value={dueDate}
-                onChange={setDueDate}
-                placeholder="Select due date"
+                value={endDate}
+                onChange={setEndDate}
+                placeholder="Select end date"
               />
             </div>
           </div>
