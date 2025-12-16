@@ -2,7 +2,7 @@
 // Route: /enterprise/roadmaps
 // Complete redesign with split-view Gantt chart
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { Plus, ChevronRight, Map } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PageChrome } from '@/components/layout/PageChrome';
@@ -11,18 +11,24 @@ import { ObjectiveAnalyticsDrawer } from '@/modules/okr-v2/components/ObjectiveA
 import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 import { 
   RoadmapToolbar, 
   RoadmapThemePanel, 
   RoadmapGanttChart,
   useRoadmapData,
+  exportRoadmapToPDF,
   TimeScale,
   RoadmapItem,
   Milestone
 } from '@/components/enterprise-roadmap';
 
 export default function EnterpriseRoadmapsPage() {
+  // Refs for PDF export
+  const ganttRef = useRef<HTMLDivElement>(null);
+  const themePanelRef = useRef<HTMLDivElement>(null);
+
   // State
   const [timeScale, setTimeScale] = useState<TimeScale>('quarterly');
   const [searchQuery, setSearchQuery] = useState('');
@@ -30,6 +36,7 @@ export default function EnterpriseRoadmapsPage() {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [selectedItem, setSelectedItem] = useState<RoadmapItem | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   // Fetch roadmap data
   const { items, milestones, isLoading } = useRoadmapData();
@@ -94,9 +101,32 @@ export default function EnterpriseRoadmapsPage() {
     console.log('Milestone clicked:', milestone);
   }, []);
 
-  const handleExportClick = useCallback(() => {
-    console.log('Export roadmap');
-  }, []);
+  const handleExportClick = useCallback(async () => {
+    if (!ganttRef.current) {
+      toast.error('Unable to export - roadmap not ready');
+      return;
+    }
+    
+    setIsExporting(true);
+    toast.info('Generating PDF...');
+    
+    try {
+      await exportRoadmapToPDF(
+        ganttRef.current,
+        themePanelRef.current,
+        {
+          title: 'Enterprise Roadmap',
+          subtitle: `Strategic Themes • ${selectedYear}`,
+        }
+      );
+      toast.success('PDF exported successfully');
+    } catch (error) {
+      console.error('Export failed:', error);
+      toast.error('Failed to export PDF');
+    } finally {
+      setIsExporting(false);
+    }
+  }, [selectedYear]);
 
   const handleFullscreenClick = useCallback(() => {
     if (document.fullscreenElement) {
@@ -172,27 +202,31 @@ export default function EnterpriseRoadmapsPage() {
         {/* Main Content: Split View */}
         <div className="flex-1 flex overflow-hidden min-h-0">
           {/* Left Panel: Theme List */}
-          <RoadmapThemePanel
-            items={items}
-            expandedIds={expandedIds}
-            selectedId={selectedItem?.id || null}
-            onToggleExpand={handleToggleExpand}
-            onSelectItem={handleSelectItem}
-            searchQuery={searchQuery}
-          />
+          <div ref={themePanelRef}>
+            <RoadmapThemePanel
+              items={items}
+              expandedIds={expandedIds}
+              selectedId={selectedItem?.id || null}
+              onToggleExpand={handleToggleExpand}
+              onSelectItem={handleSelectItem}
+              searchQuery={searchQuery}
+            />
+          </div>
 
           {/* Right Panel: Gantt Chart */}
-          <RoadmapGanttChart
-            items={items}
-            expandedIds={expandedIds}
-            selectedId={selectedItem?.id || null}
-            milestones={milestones}
-            showMilestones={showMilestones}
-            timeScale={timeScale}
-            selectedYear={selectedYear}
-            onItemClick={handleSelectItem}
-            onMilestoneClick={handleMilestoneClick}
-          />
+          <div ref={ganttRef} className="flex-1 overflow-auto">
+            <RoadmapGanttChart
+              items={items}
+              expandedIds={expandedIds}
+              selectedId={selectedItem?.id || null}
+              milestones={milestones}
+              showMilestones={showMilestones}
+              timeScale={timeScale}
+              selectedYear={selectedYear}
+              onItemClick={handleSelectItem}
+              onMilestoneClick={handleMilestoneClick}
+            />
+          </div>
         </div>
       </div>
 
