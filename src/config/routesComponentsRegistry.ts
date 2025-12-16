@@ -963,15 +963,6 @@ export const routesComponentsRegistry: RegistryEntry[] = [
     tags: ['drawer', 'epic']
   },
   {
-    id: 'objective-drawer-v2',
-    category: 'Shared',
-    name: 'ObjectiveDrawerV2',
-    filePath: 'src/modules/okr-v2/components/ObjectiveDrawerV2.tsx',
-    description: 'Objective detail drawer with Key Results, Linked Work tabs',
-    type: 'Drawer',
-    tags: ['drawer', 'objective', 'okr']
-  },
-  {
     id: 'objective-analytics-drawer',
     category: 'Shared',
     name: 'ObjectiveAnalyticsDrawer',

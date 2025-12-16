@@ -16,7 +16,7 @@ import {
   getLinkedWorkItemCountForObjective,
 } from '../lib/okrMetrics';
 import type { Objective, KeyResult, WorkItem, Theme, WorkItemKind } from '../lib/okrTypes';
-import { ObjectiveDrawerV2 } from './ObjectiveDrawerV2';
+import { ObjectiveAnalyticsDrawer } from './ObjectiveAnalyticsDrawer';
 import { OKRColumnChooser, DEFAULT_OKR_COLUMNS, type OKRColumn } from './OKRColumnChooser';
 import { OKRSmartFiltersDialog, OKRSmartFilters, countActiveFilters } from './OKRSmartFiltersDialog';
 import { OkrObjectivesTable, type OkrObjectiveRow } from './OkrObjectivesTable';
@@ -267,8 +267,8 @@ export function OKRHubV1({ snapshotId }: OKRHubV1Props) {
         onFiltersChange={setFilters}
       />
 
-      {/* Objective Drawer (editable) */}
-      <ObjectiveDrawerV2
+      {/* Objective Analytics Drawer */}
+      <ObjectiveAnalyticsDrawer
         objectiveId={selectedObjectiveId}
         open={isDrawerOpen}
         onClose={handleCloseDrawer}

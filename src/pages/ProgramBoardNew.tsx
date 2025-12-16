@@ -27,7 +27,7 @@ import { FeatureQuickView } from '@/components/program-board/FeatureQuickView';
 import { FeatureCardTooltip } from '@/components/program-board/FeatureCardTooltip';
 import { FeatureSymbolMarkers } from '@/components/program-board/FeatureSymbolMarkers';
 import { DependencyQuickView } from '@/components/program-board/DependencyQuickView';
-import { ObjectiveQuickView } from '@/components/program-board/ObjectiveQuickView';
+import { ObjectiveAnalyticsDrawer } from '@/modules/okr-v2';
 import { FeatureHistoryDialog } from '@/components/program-board/FeatureHistoryDialog';
 import { DependencyConnector } from '@/components/program-board/DependencyConnector';
 import { getFeatureStatusColor } from '@/lib/programBoardUtils';
@@ -732,7 +732,7 @@ export default function ProgramBoard() {
             <DependencyQuickView dependency={selectedItem} onClose={() => setQuickViewOpen(false)} />
           )}
           {quickViewType === 'objective' && selectedItem && (
-            <ObjectiveQuickView
+            <ObjectiveAnalyticsDrawer
               objectiveId={selectedItem.id}
               open={true}
               onClose={() => setQuickViewOpen(false)}

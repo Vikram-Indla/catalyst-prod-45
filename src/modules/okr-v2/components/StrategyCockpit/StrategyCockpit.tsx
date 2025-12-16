@@ -22,7 +22,6 @@ import { toast } from 'sonner';
 import { StrategyTree } from './StrategyTree';
 import { AnalyticsDrawerContent } from './AnalyticsDrawerContent';
 import { CreateObjectiveDialogV2 } from '../CreateObjectiveDialogV2';
-import { ObjectiveDrawerV2 } from '../ObjectiveDrawerV2';
 import { ObjectiveAnalyticsDrawer } from '../ObjectiveAnalyticsDrawer';
 import { KeyResultAnalyticsDrawer } from '../KeyResultAnalyticsDrawer';
 import { WorkItemAnalyticsDrawer } from '../WorkItemAnalyticsDrawer';

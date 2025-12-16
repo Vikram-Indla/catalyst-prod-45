@@ -43,7 +43,7 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
 import { ThemeDetailsDrawer } from '@/components/backlog/ThemeDetailsDrawer';
-import { ObjectiveDrawerV2 } from '@/modules/okr-v2';
+import { ObjectiveAnalyticsDrawer } from '@/modules/okr-v2';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 
 interface RiskLinksTabProps {
@@ -858,8 +858,8 @@ export function RiskLinksTab({ riskId, businessRequestId, relatedItemId, relatio
       />
     )}
 
-    {/* Objective Drawer */}
-    <ObjectiveDrawerV2
+    {/* Objective Analytics Drawer */}
+    <ObjectiveAnalyticsDrawer
       objectiveId={openObjectiveId}
       open={!!openObjectiveId}
       onClose={() => setOpenObjectiveId(null)}
