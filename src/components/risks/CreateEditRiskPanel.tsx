@@ -16,9 +16,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { CatalystDatePicker } from "@/components/ui/catalyst-date-picker";
 import { Risk, RiskFormData } from "@/types/risks";
 import { ROAM_STATUSES, RISK_STATUSES, SEVERITY_LEVELS, RELATIONSHIP_TYPES } from "@/constants/risks";
 import { RiskLinksSection } from "./RiskLinksSection";
+import { format, parseISO } from "date-fns";
 
 interface CreateEditRiskPanelProps {
   risk?: Risk;
@@ -297,12 +299,12 @@ export function CreateEditRiskPanel({
           {/* Target Resolution Date */}
           <div>
             <Label className="text-sm mb-2">Target Resolution Date</Label>
-            <Input
-              type="date"
-              value={formData.target_resolution_date || ""}
-              onChange={(e) =>
-                setFormData({ ...formData, target_resolution_date: e.target.value || null })
+            <CatalystDatePicker
+              value={formData.target_resolution_date ? parseISO(formData.target_resolution_date) : undefined}
+              onChange={(date) =>
+                setFormData({ ...formData, target_resolution_date: date ? format(date, 'yyyy-MM-dd') : null })
               }
+              placeholder="Select date"
             />
           </div>
 
