@@ -22,7 +22,8 @@ import { StrategicBacklogThemesSection } from '@/components/strategic-backlog/St
 import { StrategicBacklogObjectivesSection } from '@/components/strategic-backlog/StrategicBacklogObjectivesSection';
 import { StrategicBacklogEpicsSection } from '@/components/strategic-backlog/StrategicBacklogEpicsSection';
 import { AddToBacklogModal } from '@/components/strategic-backlog/AddToBacklogModal';
-import { StrategicBacklogQuickDrawer } from '@/components/strategic-backlog/StrategicBacklogQuickDrawer';
+import { ThemeDetailsDrawer } from '@/components/backlog/ThemeDetailsDrawer';
+import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
 import { ObjectiveAnalyticsDrawer } from '@/modules/okr-v2/components/ObjectiveAnalyticsDrawer';
 import { useStrategicThemes, useSnapshotStrategyLinks } from '@/hooks/useStrategicBacklog';
 import { cn } from '@/lib/utils';
@@ -232,13 +233,21 @@ export default function StrategicBacklog() {
             </div>
           </div>
 
-          {/* Quick Drawer - Renders as portal overlay */}
-          {selectedItem && selectedItemType && selectedItemType !== 'objective' && (
-            <StrategicBacklogQuickDrawer
-              item={selectedItem}
-              type={selectedItemType}
+          {/* Theme Details Drawer */}
+          {selectedItem && selectedItemType === 'theme' && (
+            <ThemeDetailsDrawer
+              theme={selectedItem}
+              isOpen={true}
               onClose={handleCloseDrawer}
-              themes={themes}
+            />
+          )}
+
+          {/* Epic Details Panel */}
+          {selectedItem && selectedItemType === 'epic' && (
+            <EpicDetailsPanel
+              epic={selectedItem}
+              open={true}
+              onClose={handleCloseDrawer}
             />
           )}
 
