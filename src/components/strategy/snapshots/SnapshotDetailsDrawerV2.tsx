@@ -12,7 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { ActivateSnapshotModal } from './ActivateSnapshotModal';
-import { ManageQuartersDrawer } from './ManageQuartersDrawer';
+import { ManageQuartersPanel } from './ManageQuartersPanel';
 import { ManageThemesPanel } from './ManageThemesPanel';
 import { RenameSnapshotModal } from './RenameSnapshotModal';
 import { EditSnapshotDetailsModal } from './EditSnapshotDetailsModal';
@@ -26,7 +26,7 @@ interface SnapshotDetailsDrawerV2Props {
   snapshot: StrategicSnapshot | null;
 }
 
-type DrawerView = 'details' | 'themes';
+type DrawerView = 'details' | 'themes' | 'quarters';
 
 export function SnapshotDetailsDrawerV2({ open, onClose, snapshot }: SnapshotDetailsDrawerV2Props) {
   const navigate = useNavigate();
@@ -34,7 +34,6 @@ export function SnapshotDetailsDrawerV2({ open, onClose, snapshot }: SnapshotDet
   const { data: links } = useSnapshotStrategyLinks(snapshot?.id);
   const { isAdmin } = useUserRole();
   const [activateModalOpen, setActivateModalOpen] = useState(false);
-  const [manageQuartersOpen, setManageQuartersOpen] = useState(false);
   const [renameModalOpen, setRenameModalOpen] = useState(false);
   const [editDetailsModalOpen, setEditDetailsModalOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -61,7 +60,6 @@ export function SnapshotDetailsDrawerV2({ open, onClose, snapshot }: SnapshotDet
 
   const isActive = snapshot.status === 'ACTIVE';
   const isArchived = snapshot.status === 'ARCHIVED';
-  const isDraft = snapshot.status === 'DRAFT';
 
   const formatDate = (dateStr: string | null | undefined) => {
     if (!dateStr) return '—';
@@ -125,6 +123,18 @@ export function SnapshotDetailsDrawerV2({ open, onClose, snapshot }: SnapshotDet
     onClose();
   };
 
+  const getDrawerTitle = () => {
+    if (currentView === 'themes') return `Manage themes for ${snapshot.name}`;
+    if (currentView === 'quarters') return `Manage quarters for ${snapshot.name}`;
+    return snapshot.name;
+  };
+
+  const getDrawerDescription = () => {
+    if (currentView === 'themes') return 'Select which strategic themes are included in this snapshot.';
+    if (currentView === 'quarters') return 'Select which quarters are included in this snapshot.';
+    return 'View snapshot details and manage scope, quarters, and themes.';
+  };
+
   return (
     <>
       <Sheet open={open} onOpenChange={(o) => !o && handleClose()}>
@@ -134,20 +144,24 @@ export function SnapshotDetailsDrawerV2({ open, onClose, snapshot }: SnapshotDet
           hideClose
         >
           <SheetHeader className="sr-only">
-            <SheetTitle>
-              {currentView === 'themes' ? `Manage themes for ${snapshot.name}` : snapshot.name}
-            </SheetTitle>
-            <SheetDescription>
-              {currentView === 'themes'
-                ? 'Select which strategic themes are included in this snapshot.'
-                : 'View snapshot details and manage scope, quarters, and themes.'}
-            </SheetDescription>
+            <SheetTitle>{getDrawerTitle()}</SheetTitle>
+            <SheetDescription>{getDrawerDescription()}</SheetDescription>
           </SheetHeader>
+
+          {/* Render based on current view */}
           {currentView === 'themes' ? (
             <div className="flex-1 overflow-hidden p-4">
               <ManageThemesPanel 
                 snapshot={snapshot} 
                 onBack={() => setCurrentView('details')} 
+              />
+            </div>
+          ) : currentView === 'quarters' ? (
+            <div className="flex-1 overflow-hidden p-4">
+              <ManageQuartersPanel 
+                snapshot={snapshot} 
+                onBack={() => setCurrentView('details')}
+                isAdmin={isAdmin}
               />
             </div>
           ) : (
@@ -258,7 +272,7 @@ export function SnapshotDetailsDrawerV2({ open, onClose, snapshot }: SnapshotDet
                   <div className="grid grid-cols-2 gap-3">
                     {/* Quarters Card */}
                     <button
-                      onClick={() => setManageQuartersOpen(true)}
+                      onClick={() => setCurrentView('quarters')}
                       className="p-4 rounded-lg transition-all text-left group bg-muted/50 border border-border hover:border-brand-gold/30"
                     >
                       <div className="flex items-center justify-between mb-2">
@@ -350,18 +364,8 @@ export function SnapshotDetailsDrawerV2({ open, onClose, snapshot }: SnapshotDet
           snapshot={snapshot}
           onOpenQuarters={() => {
             setActivateModalOpen(false);
-            setManageQuartersOpen(true);
+            setCurrentView('quarters');
           }}
-        />
-      )}
-
-      {/* Manage Quarters Drawer */}
-      {snapshot && (
-        <ManageQuartersDrawer
-          open={manageQuartersOpen}
-          onClose={() => setManageQuartersOpen(false)}
-          snapshot={snapshot}
-          isAdmin={isAdmin}
         />
       )}
 
