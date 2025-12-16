@@ -639,8 +639,8 @@ export default function RequestAccess() {
               className="font-semibold whitespace-nowrap"
               style={{ fontSize: '24px', lineHeight: '1', letterSpacing: '-0.02em' }}
             >
-              <span className="text-white">Cata</span>
-              <span className="text-[#C8A566]">lyst</span>
+              <span style={{ color: '#5C7C5C' }}>Cata</span>
+              <span style={{ color: '#C69C6D' }}>lyst</span>
             </span>
           </div>
           
