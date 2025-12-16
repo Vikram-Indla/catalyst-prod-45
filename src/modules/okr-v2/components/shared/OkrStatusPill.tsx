@@ -1,11 +1,11 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // OKR Status Pill — Shared Presentational Component
-// Status pills with Catalyst brand colors matching the executive OKR design
+// Status pills using Catalyst semantic tokens (NO hardcoded hex values)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { cn } from '@/lib/utils';
 
-// Status styles matching the reference design
+// Status styles using ONLY semantic tokens - no hex values
 const STATUS_STYLES: Record<string, { 
   bg: string; 
   text: string; 
@@ -13,10 +13,10 @@ const STATUS_STYLES: Record<string, {
   variant: 'filled' | 'outline';
 }> = {
   'pending': { 
-    bg: 'bg-transparent', 
+    bg: 'bg-muted', 
     text: 'text-muted-foreground', 
-    border: 'border-muted-foreground/50',
-    variant: 'outline'
+    border: 'border-border',
+    variant: 'filled'
   },
   'in-progress': { 
     bg: 'bg-transparent',
@@ -26,31 +26,31 @@ const STATUS_STYLES: Record<string, {
   },
   'on-track': { 
     bg: 'bg-secondary-green', 
-    text: 'text-white', 
+    text: 'text-white dark:text-white', 
     border: 'border-secondary-green',
     variant: 'filled'
   },
   'at-risk': { 
-    bg: 'bg-[#e07830]', 
-    text: 'text-white', 
-    border: 'border-[#e07830]',
+    bg: 'bg-secondary-bronze', 
+    text: 'text-white dark:text-white', 
+    border: 'border-secondary-bronze',
     variant: 'filled'
   },
   'off-track': { 
-    bg: 'bg-[#c44536]', 
-    text: 'text-white', 
-    border: 'border-[#c44536]',
+    bg: 'bg-destructive', 
+    text: 'text-destructive-foreground', 
+    border: 'border-destructive',
     variant: 'filled'
   },
   'blocked': { 
-    bg: 'bg-[#c44536]', 
-    text: 'text-white', 
-    border: 'border-[#c44536]',
+    bg: 'bg-destructive', 
+    text: 'text-destructive-foreground', 
+    border: 'border-destructive',
     variant: 'filled'
   },
   'completed': { 
     bg: 'bg-secondary-green', 
-    text: 'text-white', 
+    text: 'text-white dark:text-white', 
     border: 'border-secondary-green',
     variant: 'filled'
   },
