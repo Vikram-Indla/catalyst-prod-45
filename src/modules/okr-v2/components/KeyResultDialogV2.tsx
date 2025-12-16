@@ -16,14 +16,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
+import { CatalystDatePicker } from "@/components/ui/catalyst-date-picker";
 import { useState, useEffect } from "react";
 import { useCreateKeyResultV2, useUpdateKeyResultV2, MetricType, Direction } from "@/hooks/useKeyResultsV2";
 import { getCurrencyLabel } from "@/lib/currencyConfig";
-import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 
@@ -294,58 +290,24 @@ export function KeyResultDialogV2({
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
                 <span className="text-xs text-muted-foreground">Start Date</span>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !startDate && "text-muted-foreground"
-                      )}
-                      disabled={!!keyResult}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {startDate ? format(startDate, "PPP") : <span>Pick start date</span>}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 z-[500]" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={startDate}
-                      onSelect={setStartDate}
-                      initialFocus
-                      className="p-3 pointer-events-auto"
-                    />
-                  </PopoverContent>
-                </Popover>
+                <CatalystDatePicker
+                  value={startDate}
+                  onChange={(date) => setStartDate(date || undefined)}
+                  placeholder="Pick start date"
+                  disabled={!!keyResult}
+                  dateFormat="MMMM do, yyyy"
+                />
               </div>
 
               <div className="space-y-1">
                 <span className="text-xs text-muted-foreground">End Date</span>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !endDate && "text-muted-foreground"
-                      )}
-                      disabled={!!keyResult}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {endDate ? format(endDate, "PPP") : <span>Pick end date</span>}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 z-[500]" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={endDate}
-                      onSelect={setEndDate}
-                      initialFocus
-                      className="p-3 pointer-events-auto"
-                    />
-                  </PopoverContent>
-                </Popover>
+                <CatalystDatePicker
+                  value={endDate}
+                  onChange={(date) => setEndDate(date || undefined)}
+                  placeholder="Pick end date"
+                  disabled={!!keyResult}
+                  dateFormat="MMMM do, yyyy"
+                />
               </div>
             </div>
             {dateError && (
