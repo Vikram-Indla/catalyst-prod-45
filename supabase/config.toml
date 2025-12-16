@@ -5,3 +5,12 @@ verify_jwt = false
 
 [functions.login-with-audit]
 verify_jwt = false
+
+[functions.send-to-committee]
+verify_jwt = false
+
+[functions.submit-vote]
+verify_jwt = false
+
+[functions.convert-incident]
+verify_jwt = false
