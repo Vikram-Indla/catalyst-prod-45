@@ -59,7 +59,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 interface CreateEpicDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  programId: string;
+  programId: string | null | undefined; // Can be null/undefined - handled with error state
   onCreated?: (epicId: string) => void;
 }
 
@@ -77,6 +77,12 @@ export function CreateEpicDialog({
   onCreated,
 }: CreateEpicDialogProps) {
   const queryClient = useQueryClient();
+  
+  // TEMPORARY LOGGING - remove after fix confirmed
+  console.log('[CreateEpicDialog] Render', { open, programId });
+  
+  // Check if programId is missing - will show error state
+  const isProgramMissing = !programId;
   
   // Form state
   const [name, setName] = useState('');
@@ -284,12 +290,23 @@ export function CreateEpicDialog({
   };
 
   const handleSubmit = () => {
-    if (!isValid) return;
+    // TEMPORARY LOGGING - remove after fix confirmed
+    console.log('[CreateEpicDialog] handleSubmit called', { isValid, isProgramMissing, programId, name, themeId });
+    
+    if (!isValid) {
+      console.warn('[CreateEpicDialog] Form invalid, not submitting');
+      return;
+    }
+    if (isProgramMissing) {
+      console.error('[CreateEpicDialog] Cannot create epic without programId');
+      return;
+    }
     createEpicMutation.mutate();
   };
 
-  // Validation: name, theme, reporter, assignee are required
+  // Validation: programId, name, theme, reporter, assignee are required
   const isValid = 
+    !isProgramMissing &&
     name.trim().length > 0 && 
     themeId !== null && 
     reporterId !== null && 
@@ -302,6 +319,18 @@ export function CreateEpicDialog({
           <DialogTitle>Create Epic</DialogTitle>
         </DialogHeader>
         
+        {/* ERROR STATE: Missing Program Context */}
+        {isProgramMissing && (
+          <div className="p-4 bg-destructive/10 border border-destructive/30 rounded-md mx-4 mt-2">
+            <p className="text-sm text-destructive font-medium">
+              Program context not loaded
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Please refresh the page or navigate to a program to create epics.
+            </p>
+          </div>
+        )}
+        
         <ScrollArea className="flex-1 pr-4">
           <div className="flex flex-col gap-5 py-4">
             {/* Section 1: Identity */}
@@ -312,7 +341,7 @@ export function CreateEpicDialog({
               <div className="flex items-center gap-2 p-3 rounded-md bg-muted/50 border border-border">
                 <span className="text-sm text-muted-foreground">Epic Number:</span>
                 <span className="font-mono font-medium text-brand-gold">
-                  {getProgramKeyPreview()}-###
+                  {isProgramMissing ? '???-###' : `${getProgramKeyPreview()}-###`}
                 </span>
                 <span className="text-xs text-muted-foreground">(auto-generated)</span>
               </div>
@@ -585,9 +614,10 @@ export function CreateEpicDialog({
           <Button 
             onClick={handleSubmit} 
             disabled={!isValid || createEpicMutation.isPending}
-            className="bg-brand-gold hover:bg-brand-gold-hover text-background"
+            className="bg-brand-gold hover:bg-brand-gold-hover text-background disabled:opacity-50"
+            title={isProgramMissing ? 'Program context required to create epic' : undefined}
           >
-            {createEpicMutation.isPending ? 'Creating...' : 'Create Epic'}
+            {createEpicMutation.isPending ? 'Creating...' : isProgramMissing ? 'Create Epic (Disabled)' : 'Create Epic'}
           </Button>
         </DialogFooter>
       </DialogContent>
