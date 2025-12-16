@@ -10,7 +10,7 @@ import {
 import { CreateStrategyObjectDialog } from '@/components/strategic-backlog/CreateStrategyObjectDialog';
 import { CreateGoalDialog } from '@/components/strategic-backlog/CreateGoalDialog';
 import { CreateThemeDialog } from '@/components/strategic-backlog/CreateThemeDialog';
-import { CreateObjectiveDialog } from '@/modules/objectives/components/ObjectivePanel/CreateObjectiveDialog';
+import { CreateObjectiveDialogV2 } from '@/modules/okr-v2/components/CreateObjectiveDialogV2';
 
 interface CreateStrategyItemDropdownProps {
   snapshotId: string;
@@ -87,10 +87,9 @@ export function CreateStrategyItemDropdown({ snapshotId, isArchived }: CreateStr
 
       {/* Objective dialog */}
       {selectedType === 'objective' && (
-        <CreateObjectiveDialog
+        <CreateObjectiveDialogV2
           open={true}
           onOpenChange={(open) => !open && handleClose()}
-          tier="portfolio"
         />
       )}
     </>

@@ -12,7 +12,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
-import { CreateObjectiveDialog } from '@/modules/objectives/components/ObjectivePanel/CreateObjectiveDialog';
+import { CreateObjectiveDialogV2 } from '@/modules/okr-v2/components/CreateObjectiveDialogV2';
 
 interface AddToBacklogModalProps {
   open: boolean;
@@ -244,11 +244,10 @@ export function AddToBacklogModal({ open, onOpenChange, snapshotId }: AddToBackl
         </DialogContent>
       </Dialog>
 
-      {/* CreateObjectiveDialog - opens when objective is selected */}
-      <CreateObjectiveDialog
+      {/* CreateObjectiveDialogV2 - opens when objective is selected */}
+      <CreateObjectiveDialogV2
         open={showObjectiveDialog}
         onOpenChange={handleObjectiveDialogClose}
-        tier="portfolio"
       />
     </>
   );

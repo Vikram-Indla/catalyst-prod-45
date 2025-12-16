@@ -7,7 +7,7 @@ import { ObjectiveScoreBadge } from '../shared/ObjectiveScoreBadge';
 import { ProgressBar } from '../shared/ProgressBar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useState } from 'react';
-import { CreateObjectiveDialog } from '../ObjectivePanel/CreateObjectiveDialog';
+import { CreateObjectiveDialogV2 } from '@/modules/okr-v2/components/CreateObjectiveDialogV2';
 import { ObjectiveDetailsPanelNew } from '@/components/okr/ObjectiveDetailsPanelNew';
 import type { ObjectiveTier } from '../../types/objective.types';
 
@@ -149,12 +149,9 @@ export function ObjectivesWidget({
         )}
       </Card>
 
-      <CreateObjectiveDialog
+      <CreateObjectiveDialogV2
         open={createDialogOpen}
         onOpenChange={setCreateDialogOpen}
-        tier={tier}
-        portfolioId={portfolioId}
-        programId={programId}
       />
 
       {selectedObjectiveId && (

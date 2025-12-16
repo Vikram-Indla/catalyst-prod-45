@@ -7,10 +7,9 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { CreateObjectiveDialog } from '@/modules/objectives/components/ObjectivePanel/CreateObjectiveDialog';
+import { CreateObjectiveDialogV2 } from '@/modules/okr-v2/components/CreateObjectiveDialogV2';
 import { KeyResultDialog } from '@/components/forms/KeyResultDialog';
 import { Target, TrendingUp, Plus, ChevronRight } from 'lucide-react';
-import type { ObjectiveTier } from '@/modules/objectives/types/objective.types';
 import { PermissionGuard } from '@/components/shared/PermissionGuard';
 
 export default function StrategyRoom() {
@@ -291,10 +290,9 @@ export default function StrategyRoom() {
         </TabsContent>
       </Tabs>
 
-      <CreateObjectiveDialog
+      <CreateObjectiveDialogV2
         open={objectiveDialogOpen}
         onOpenChange={(open) => { setObjectiveDialogOpen(open); if (!open) setEditingObjectiveId(undefined); }}
-        tier={(activeTab === 'program' ? 'program' : 'portfolio') as ObjectiveTier}
       />
 
       <KeyResultDialog
