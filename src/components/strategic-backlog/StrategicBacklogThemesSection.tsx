@@ -87,16 +87,15 @@ export function StrategicBacklogThemesSection({
   const getStatusBadge = (status?: string) => {
     const isActive = status === 'active';
     return (
-      <Badge 
-        className={cn(
-          "text-xs font-medium px-2.5 py-0.5 border",
-          isActive 
-            ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800"
-            : "bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700"
-        )}
-      >
-        {isActive ? 'Active' : 'Draft'}
-      </Badge>
+      <span className={cn(
+        "inline-flex px-2 py-0.5 rounded",
+        "text-[10px] font-semibold uppercase tracking-wider",
+        isActive 
+          ? "bg-[rgba(92,124,92,0.1)] dark:bg-[rgba(92,124,92,0.15)] text-[#5C7C5C] dark:text-[#7DA37D] border border-[rgba(92,124,92,0.3)]"
+          : "bg-[#F6F8FA] dark:bg-[#21262D] text-[#57606A] dark:text-[#8B949E] border border-[#E1E4E8] dark:border-[#30363D]"
+      )}>
+        {isActive ? 'ACTIVE' : 'DRAFT'}
+      </span>
     );
   };
 
@@ -110,18 +109,23 @@ export function StrategicBacklogThemesSection({
   return (
     <div className="space-y-4">
       {/* Search */}
-      <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: 'var(--text-muted)' }} />
-        <Input
+      <div className={cn(
+        "flex items-center gap-2 px-3 py-2 rounded-lg max-w-md",
+        "bg-white dark:bg-[#0D1117]",
+        "border border-[#E1E4E8] dark:border-[#30363D]",
+        "focus-within:border-[#C69C6D] focus-within:ring-1 focus-within:ring-[rgba(198,156,109,0.3)]"
+      )}>
+        <Search className="h-4 w-4 text-[#8B949E] dark:text-[#6E7681]" />
+        <input
+          type="text"
           placeholder="Search themes..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10 h-10 rounded-lg"
-          style={{ 
-            background: 'var(--surface-bg)', 
-            border: '1px solid var(--border-default)',
-            color: 'var(--text-primary)',
-          }}
+          className={cn(
+            "flex-1 bg-transparent text-sm outline-none",
+            "text-[#24292F] dark:text-[#E6EDF3]",
+            "placeholder:text-[#8B949E] dark:placeholder:text-[#6E7681]"
+          )}
         />
       </div>
 

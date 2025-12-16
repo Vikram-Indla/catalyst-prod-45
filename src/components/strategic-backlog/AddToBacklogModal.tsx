@@ -114,13 +114,13 @@ export function AddToBacklogModal({ open, onOpenChange, snapshotId }: AddToBackl
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[480px] p-0 gap-0 overflow-hidden">
+      <DialogContent className="sm:max-w-[480px] p-0 gap-0 overflow-hidden bg-white dark:bg-[#161B22] border border-[#E1E4E8] dark:border-[#30363D]">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-border">
-          <h2 className="text-lg font-semibold text-foreground">Add to Strategic Backlog</h2>
+        <div className="flex items-center justify-between px-6 py-5 border-b border-[#E1E4E8] dark:border-[#30363D]">
+          <h2 className="text-lg font-semibold text-[#24292F] dark:text-[#E6EDF3]">Add to Strategic Backlog</h2>
           <button 
             onClick={handleClose}
-            className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+            className="p-1.5 rounded-md hover:bg-[#F6F8FA] dark:hover:bg-[#21262D] text-[#8B949E] hover:text-[#24292F] dark:hover:text-[#E6EDF3] transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
@@ -128,7 +128,7 @@ export function AddToBacklogModal({ open, onOpenChange, snapshotId }: AddToBackl
 
         {/* Content */}
         <div className="px-6 py-5">
-          <Label className="text-sm font-medium text-foreground block mb-4">
+          <Label className="text-sm font-medium text-[#24292F] dark:text-[#E6EDF3] block mb-4">
             What are you adding?
           </Label>
           
@@ -144,22 +144,23 @@ export function AddToBacklogModal({ open, onOpenChange, snapshotId }: AddToBackl
                   key={type}
                   onClick={() => setSelectedType(type)}
                   className={cn(
-                    "flex flex-col items-center py-5 px-3 border-2 rounded-xl transition-all",
+                    "flex flex-col items-center py-5 px-3 rounded-xl transition-all",
+                    "bg-white dark:bg-[#161B22]",
                     isSelected 
-                      ? "border-brand-gold bg-brand-gold/5" 
-                      : "border-border hover:border-muted-foreground/50"
+                      ? "border-2 border-[#C69C6D] shadow-sm" 
+                      : "border border-[#E1E4E8] dark:border-[#30363D] hover:border-[rgba(198,156,109,0.3)]"
                   )}
                 >
                   <div className={cn(
                     "w-12 h-12 rounded-full flex items-center justify-center mb-3",
                     isSelected 
-                      ? "bg-brand-gold text-white" 
-                      : "bg-muted text-muted-foreground"
+                      ? "bg-[#C69C6D] text-white" 
+                      : "bg-[#F6F8FA] dark:bg-[#21262D] text-[#8B949E]"
                   )}>
                     <Icon className="h-5 w-5" />
                   </div>
-                  <div className="text-sm font-medium text-foreground">{cfg.label}</div>
-                  <div className="text-xs text-muted-foreground mt-0.5">{cfg.subtitle}</div>
+                  <div className="text-sm font-medium text-[#24292F] dark:text-[#E6EDF3]">{cfg.label}</div>
+                  <div className="text-xs text-[#8B949E] mt-0.5">{cfg.subtitle}</div>
                 </button>
               );
             })}
@@ -169,26 +170,40 @@ export function AddToBacklogModal({ open, onOpenChange, snapshotId }: AddToBackl
           {selectedType && config && (
             <div className="mt-6 space-y-4">
               <div>
-                <Label className="text-sm font-medium text-foreground block mb-2">
+                <Label className="text-sm font-medium text-[#24292F] dark:text-[#E6EDF3] block mb-2">
                   {config.nameLabel}
                 </Label>
-                <Input
+                <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder={config.namePlaceholder}
-                  className="h-11 bg-background border-border"
+                  className={cn(
+                    "w-full px-3 py-2.5 rounded-lg text-sm",
+                    "bg-white dark:bg-[#0D1117]",
+                    "border border-[#E1E4E8] dark:border-[#30363D]",
+                    "text-[#24292F] dark:text-[#E6EDF3]",
+                    "placeholder:text-[#8B949E] dark:placeholder:text-[#6E7681]",
+                    "focus:border-[#C69C6D] focus:ring-1 focus:ring-[rgba(198,156,109,0.3)] outline-none"
+                  )}
                 />
               </div>
               <div>
-                <Label className="text-sm font-medium text-foreground block mb-2">
+                <Label className="text-sm font-medium text-[#24292F] dark:text-[#E6EDF3] block mb-2">
                   Description
                 </Label>
-                <Textarea
+                <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Enter description..."
                   rows={4}
-                  className="bg-background border-border resize-none"
+                  className={cn(
+                    "w-full px-3 py-2 rounded-lg text-sm resize-none",
+                    "bg-white dark:bg-[#0D1117]",
+                    "border border-[#E1E4E8] dark:border-[#30363D]",
+                    "text-[#24292F] dark:text-[#E6EDF3]",
+                    "placeholder:text-[#8B949E] dark:placeholder:text-[#6E7681]",
+                    "focus:border-[#C69C6D] focus:ring-1 focus:ring-[rgba(198,156,109,0.3)] outline-none"
+                  )}
                 />
               </div>
             </div>
@@ -196,21 +211,25 @@ export function AddToBacklogModal({ open, onOpenChange, snapshotId }: AddToBackl
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-border bg-muted/20">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#E1E4E8] dark:border-[#30363D] bg-[#F6F8FA] dark:bg-[#0D1117]">
           <Button 
             variant="ghost" 
             onClick={handleClose}
-            className="text-muted-foreground hover:text-foreground"
+            className="text-[#57606A] dark:text-[#8B949E] hover:text-[#24292F] dark:hover:text-[#E6EDF3]"
           >
             Cancel
           </Button>
-          <Button
+          <button
             onClick={handleCreate}
             disabled={!selectedType || !name.trim() || isSubmitting}
-            className="bg-brand-gold hover:bg-brand-gold-hover text-white disabled:opacity-50"
+            className={cn(
+              "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+              "bg-[#C69C6D] hover:bg-[#B8905F] text-white",
+              "disabled:opacity-50 disabled:cursor-not-allowed"
+            )}
           >
             {isSubmitting ? 'Creating...' : buttonLabel}
-          </Button>
+          </button>
         </div>
       </DialogContent>
     </Dialog>
