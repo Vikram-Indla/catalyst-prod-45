@@ -33,7 +33,7 @@ export interface Objective {
   keyResults: KeyResult[];
 }
 
-export type Scale = 'monthly' | 'quarterly' | 'yearly';
+export type Scale = 'weekly' | 'monthly' | 'quarterly' | 'yearly';
 export type GroupBy = 'theme' | 'quarter' | 'none';
 
 export interface ObjectiveGroup {

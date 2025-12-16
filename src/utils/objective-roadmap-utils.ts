@@ -24,7 +24,22 @@ export function generateTimeUnits(scale: Scale, timelineStart: Date, timelineEnd
   const end = new Date(timelineEnd);
   const now = new Date();
   
-  if (scale === 'monthly') {
+  if (scale === 'weekly') {
+    // Start from beginning of week containing timelineStart
+    const dayOfWeek = start.getDay();
+    start.setDate(start.getDate() - dayOfWeek);
+    
+    while (start <= end) {
+      const weekEnd = new Date(start);
+      weekEnd.setDate(weekEnd.getDate() + 6);
+      const isCurrent = now >= start && now <= weekEnd;
+      units.push({
+        label: `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`,
+        isCurrent
+      });
+      start.setDate(start.getDate() + 7);
+    }
+  } else if (scale === 'monthly') {
     while (start <= end) {
       const isCurrent = start.getMonth() === now.getMonth() && start.getFullYear() === now.getFullYear();
       units.push({
@@ -45,6 +60,7 @@ export function generateTimeUnits(scale: Scale, timelineStart: Date, timelineEnd
       start.setMonth(start.getMonth() + 3);
     }
   } else {
+    // yearly
     while (start <= end) {
       const isCurrent = start.getFullYear() === now.getFullYear();
       units.push({

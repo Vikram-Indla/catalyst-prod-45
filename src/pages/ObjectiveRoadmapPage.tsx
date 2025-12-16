@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { RoadmapToolbar } from '@/components/objective-roadmap/RoadmapToolbar';
 import { ObjectivesColumn } from '@/components/objective-roadmap/ObjectivesColumn';
 import { TimelineArea } from '@/components/objective-roadmap/TimelineArea';
@@ -14,82 +15,48 @@ import { useObjectiveRoadmapData } from '@/hooks/useObjectiveRoadmapData';
 import { ObjectiveAnalyticsDrawer } from '@/modules/okr-v2';
 import GlobalPageHeader from '@/components/layout/GlobalPageHeader';
 import { Loader2 } from 'lucide-react';
-import { AppliedDateFilter } from '@/components/roadmap/DateRangeFilter';
+import { 
+  RoadmapViewport, 
+  getDefaultViewport,
+  RoadmapDebugOverlay 
+} from '@/components/roadmaps/RoadmapDateFilterV2';
 
-// Helper to compute date range from AppliedDateFilter
-const getDateRangeFromFilter = (filter: AppliedDateFilter | null): { start: Date; end: Date } => {
-  if (!filter) {
-    // Default to current year
-    const year = new Date().getFullYear();
-    return {
-      start: new Date(year, 0, 1),
-      end: new Date(year, 11, 31),
-    };
-  }
+// ─────────────────────────────────────────────────────────────────────────────────
+// OVERLAP FILTER: Items must overlap viewport range (not just start inside)
+// ─────────────────────────────────────────────────────────────────────────────────
 
-  const { type, year, value, startDate, endDate } = filter;
+function filterByViewportOverlap<T extends { startDate: Date; endDate: Date }>(
+  items: T[],
+  viewport: RoadmapViewport
+): T[] {
+  return items.filter(item => {
+    const itemStart = item.startDate.getTime();
+    const itemEnd = item.endDate.getTime();
+    const viewStart = viewport.start.getTime();
+    const viewEnd = viewport.end.getTime();
+    
+    // Item overlaps if: itemStart <= viewport.end AND itemEnd >= viewport.start
+    return itemStart <= viewEnd && itemEnd >= viewStart;
+  });
+}
 
-  switch (type) {
-    case 'year': {
-      // Handle multi-select years - span from first to last selected year
-      const years = Array.isArray(value) ? value as number[] : [Number(value)];
-      const sortedYears = [...years].sort((a, b) => a - b);
-      const firstYear = sortedYears[0];
-      const lastYear = sortedYears[sortedYears.length - 1];
-      return {
-        start: new Date(firstYear, 0, 1),
-        end: new Date(lastYear, 11, 31),
-      };
-    }
-    case 'quarter': {
-      // Handle multi-select quarters
-      const quarters = Array.isArray(value) ? value as string[] : [String(value)];
-      const qIndices = quarters.map(q => parseInt(q[1]) - 1).sort((a, b) => a - b);
-      const firstQ = qIndices[0];
-      const lastQ = qIndices[qIndices.length - 1];
-      const startMonth = firstQ * 3;
-      const endMonth = lastQ * 3 + 2;
-      return {
-        start: new Date(year, startMonth, 1),
-        end: new Date(year, endMonth + 1, 0), // Last day of end month
-      };
-    }
-    case 'month': {
-      // Handle multi-select months
-      const months = Array.isArray(value) ? value as number[] : [Number(value)];
-      const sortedMonths = [...months].sort((a, b) => a - b);
-      const firstMonth = sortedMonths[0];
-      const lastMonth = sortedMonths[sortedMonths.length - 1];
-      return {
-        start: new Date(year, firstMonth, 1),
-        end: new Date(year, lastMonth + 1, 0), // Last day of last month
-      };
-    }
-    case 'custom':
-      if (startDate && endDate) {
-        return {
-          start: new Date(startDate),
-          end: new Date(endDate),
-        };
-      }
-      // Fallback
-      return {
-        start: new Date(year, 0, 1),
-        end: new Date(year, 11, 31),
-      };
-    default:
-      return {
-        start: new Date(year, 0, 1),
-        end: new Date(year, 11, 31),
-      };
-  }
-};
+// ─────────────────────────────────────────────────────────────────────────────────
+// MAIN COMPONENT
+// ─────────────────────────────────────────────────────────────────────────────────
 
 export const ObjectiveRoadmapPage: React.FC = () => {
+  const [searchParams] = useSearchParams();
+  const debugMode = searchParams.get('debugViewport') === '1';
+  
   // Fetch real data from Supabase
   const { objectives, themes, owners, isLoading } = useObjectiveRoadmapData();
   
-  const [scale, setScale] = useState<Scale>('monthly');
+  // Viewport state (single source of truth for date range + scale)
+  const [appliedViewport, setAppliedViewport] = useState<RoadmapViewport>(getDefaultViewport);
+  
+  // Derive scale from viewport
+  const scale = appliedViewport.scale;
+  
   const [groupBy, setGroupBy] = useState<GroupBy>('theme');
   const [showMilestones, setShowMilestones] = useState(true);
   const [visibleCount, setVisibleCount] = useState(10);
@@ -98,17 +65,9 @@ export const ObjectiveRoadmapPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilters, setActiveFilters] = useState<ActiveFilters>(DEFAULT_FILTERS);
   
-  // Date filter state
-  const currentYear = new Date().getFullYear();
-  const currentQuarter = `Q${Math.floor(new Date().getMonth() / 3) + 1}`;
-  const [appliedDateFilter, setAppliedDateFilter] = useState<AppliedDateFilter | null>({
-    type: 'year',
-    year: currentYear,
-    value: currentYear,
-  });
-  
-  // Compute timeline dates from filter
-  const { start: timelineStart, end: timelineEnd } = getDateRangeFromFilter(appliedDateFilter);
+  // Timeline dates derived from viewport
+  const timelineStart = appliedViewport.start;
+  const timelineEnd = appliedViewport.end;
   
   // Drawer state
   const [selectedObjectiveId, setSelectedObjectiveId] = useState<string | null>(null);
@@ -116,7 +75,13 @@ export const ObjectiveRoadmapPage: React.FC = () => {
   const objectivesListRef = useRef<HTMLDivElement>(null);
   const timelineGridRef = useRef<HTMLDivElement>(null);
   
-  const filteredObjectives = filterObjectives(objectives, activeFilters, searchQuery);
+  // Filter by viewport overlap FIRST, then by other filters
+  const objectivesInViewport = useMemo(
+    () => filterByViewportOverlap(objectives, appliedViewport),
+    [objectives, appliedViewport]
+  );
+  
+  const filteredObjectives = filterObjectives(objectivesInViewport, activeFilters, searchQuery);
   const visibleObjectives = filteredObjectives.slice(0, visibleCount);
   const groups = groupObjectives(visibleObjectives, groupBy, themes);
   
@@ -159,17 +124,19 @@ export const ObjectiveRoadmapPage: React.FC = () => {
     setCollapsedGroups(new Set());
   }, []);
 
-  const handleApplyDateFilter = useCallback((filter: AppliedDateFilter) => {
-    setAppliedDateFilter(filter);
+  const handleApplyViewport = useCallback((viewport: RoadmapViewport) => {
+    setAppliedViewport(viewport);
+    // Reset visible count when viewport changes
+    setVisibleCount(10);
   }, []);
 
-  const handleClearDateFilter = useCallback(() => {
-    setAppliedDateFilter({
-      type: 'year',
-      year: currentYear,
-      value: currentYear,
-    });
-  }, [currentYear]);
+  // Handle scale change from external sources (sync back to viewport)
+  const handleScaleChange = useCallback((newScale: Scale) => {
+    setAppliedViewport(prev => ({
+      ...prev,
+      scale: newScale,
+    }));
+  }, []);
   
   // Scroll sync (vertical only - horizontal is handled in TimelineArea)
   useEffect(() => {
@@ -205,16 +172,15 @@ export const ObjectiveRoadmapPage: React.FC = () => {
       
       <RoadmapToolbar
         scale={scale}
-        onScaleChange={setScale}
+        onScaleChange={handleScaleChange}
         groupBy={groupBy}
         onGroupByChange={handleGroupByChange}
         showMilestones={showMilestones}
         onToggleMilestones={() => setShowMilestones(!showMilestones)}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
-        appliedDateFilter={appliedDateFilter}
-        onApplyDateFilter={handleApplyDateFilter}
-        onClearDateFilter={handleClearDateFilter}
+        appliedViewport={appliedViewport}
+        onApplyViewport={handleApplyViewport}
         onScrollToToday={handleScrollToToday}
         activeFilters={activeFilters}
         onApplyFilters={(filters) => { setActiveFilters(filters); setVisibleCount(10); }}
@@ -265,6 +231,15 @@ export const ObjectiveRoadmapPage: React.FC = () => {
         open={!!selectedObjectiveId}
         onClose={handleCloseDrawer}
       />
+      
+      {/* Debug Overlay (enabled via ?debugViewport=1) */}
+      {debugMode && (
+        <RoadmapDebugOverlay
+          appliedViewport={appliedViewport}
+          rowCountBefore={objectives.length}
+          rowCountAfter={filteredObjectives.length}
+        />
+      )}
     </div>
   );
 };
