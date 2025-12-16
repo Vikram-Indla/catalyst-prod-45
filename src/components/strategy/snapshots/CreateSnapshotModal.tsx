@@ -9,7 +9,8 @@ import { Badge } from '@/components/ui/badge';
 import { Calendar, ChevronRight, ChevronLeft, X, AlertCircle } from 'lucide-react';
 import { useCreateSnapshot, generateQuarterOptions } from '@/hooks/useStrategicSnapshots';
 import { cn } from '@/lib/utils';
-
+import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
+import { format, parseISO } from 'date-fns';
 interface CreateSnapshotModalProps {
   open: boolean;
   onClose: () => void;
@@ -178,21 +179,25 @@ export function CreateSnapshotModal({ open, onClose }: CreateSnapshotModalProps)
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="start_date">Start Date *</Label>
-                <Input
-                  id="start_date"
-                  type="date"
-                  value={formData.start_date}
-                  onChange={(e) => setFormData(prev => ({ ...prev, start_date: e.target.value }))}
+                <Label>Start Date *</Label>
+                <CatalystDatePicker
+                  value={formData.start_date ? parseISO(formData.start_date) : undefined}
+                  onChange={(date) => setFormData(prev => ({ 
+                    ...prev, 
+                    start_date: date ? format(date, 'yyyy-MM-dd') : '' 
+                  }))}
+                  placeholder="Select start date"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="end_date">End Date *</Label>
-                <Input
-                  id="end_date"
-                  type="date"
-                  value={formData.end_date}
-                  onChange={(e) => setFormData(prev => ({ ...prev, end_date: e.target.value }))}
+                <Label>End Date *</Label>
+                <CatalystDatePicker
+                  value={formData.end_date ? parseISO(formData.end_date) : undefined}
+                  onChange={(date) => setFormData(prev => ({ 
+                    ...prev, 
+                    end_date: date ? format(date, 'yyyy-MM-dd') : '' 
+                  }))}
+                  placeholder="Select end date"
                 />
               </div>
             </div>
