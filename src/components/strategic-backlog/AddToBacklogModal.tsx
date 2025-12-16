@@ -6,10 +6,8 @@ import { useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Layers, Target, Box, X } from 'lucide-react';
+import { Layers, Target, X } from 'lucide-react';
 import { useCreateTheme } from '@/hooks/useStrategicBacklog';
-import { useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 import { cn } from '@/lib/utils';
 import { CreateObjectiveDialogV2 } from '@/modules/okr-v2/components/CreateObjectiveDialogV2';
@@ -20,7 +18,7 @@ interface AddToBacklogModalProps {
   snapshotId: string;
 }
 
-type ItemType = 'theme' | 'objective' | 'epic' | null;
+type ItemType = 'theme' | 'objective' | null;
 
 const TYPE_CONFIG = {
   theme: {
@@ -37,13 +35,6 @@ const TYPE_CONFIG = {
     nameLabel: 'Objective Name',
     namePlaceholder: 'Enter name...',
   },
-  epic: {
-    icon: Box,
-    label: 'Epic',
-    subtitle: 'Deliverable work',
-    nameLabel: 'Epic Name',
-    namePlaceholder: 'Enter name...',
-  },
 };
 
 export function AddToBacklogModal({ open, onOpenChange, snapshotId }: AddToBacklogModalProps) {
@@ -54,7 +45,6 @@ export function AddToBacklogModal({ open, onOpenChange, snapshotId }: AddToBackl
   const [showObjectiveDialog, setShowObjectiveDialog] = useState(false);
   
   const createTheme = useCreateTheme();
-  const queryClient = useQueryClient();
 
   const handleClose = () => {
     onOpenChange(false);
@@ -86,17 +76,6 @@ export function AddToBacklogModal({ open, onOpenChange, snapshotId }: AddToBackl
           snapshot_id: snapshotId,
           status: 'draft',
         });
-      } else if (selectedType === 'epic') {
-        const { error } = await supabase
-          .from('epics')
-          .insert({
-            name: name.trim(),
-            description: description.trim() || null,
-            status: 'proposed',
-          });
-        if (error) throw error;
-        queryClient.invalidateQueries({ queryKey: ['snapshot-epics'] });
-        catalystToast.success('Epic Created', 'Epic has been created successfully.');
       }
       handleClose();
     } catch (error: any) {
@@ -142,9 +121,9 @@ export function AddToBacklogModal({ open, onOpenChange, snapshotId }: AddToBackl
               What are you adding?
             </Label>
             
-            {/* Type Selector Cards */}
-            <div className="grid grid-cols-3 gap-3">
-              {(['theme', 'objective', 'epic'] as const).map((type) => {
+            {/* Type Selector Cards - 2 columns now */}
+            <div className="grid grid-cols-2 gap-3">
+              {(['theme', 'objective'] as const).map((type) => {
                 const cfg = TYPE_CONFIG[type];
                 const Icon = cfg.icon;
                 const isSelected = selectedType === type;
@@ -176,7 +155,7 @@ export function AddToBacklogModal({ open, onOpenChange, snapshotId }: AddToBackl
               })}
             </div>
 
-            {/* Form fields - only show for theme and epic, not objective */}
+            {/* Form fields - only show for theme, not objective */}
             {selectedType && selectedType !== 'objective' && config && (
               <div className="mt-6 space-y-4">
                 <div>
