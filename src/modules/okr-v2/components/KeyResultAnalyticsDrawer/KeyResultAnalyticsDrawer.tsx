@@ -29,7 +29,7 @@ interface KeyResultAnalyticsDrawerProps {
 
 function TypeBadge({ type }: { type: string }) {
   return (
-    <span className="inline-flex items-center px-2.5 py-1 rounded text-[11px] font-semibold uppercase tracking-wider bg-secondary-green/10 text-secondary-green border border-secondary-green/20">
+    <span className="inline-flex items-center px-2.5 py-1 rounded text-[11px] font-semibold uppercase tracking-wider bg-muted text-muted-foreground">
       {type}
     </span>
   );
