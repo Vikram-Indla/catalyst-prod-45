@@ -1,7 +1,7 @@
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { PremiumCard, PremiumCardHeader, PremiumCardContent } from '@/components/ui/premium-card';
 import { InlineEditTextarea } from '@/components/ui/InlineEditTextarea';
+import { Target, Eye, Star } from 'lucide-react';
 
 interface StrategyContextCardProps {
   snapshot: {
@@ -22,7 +22,7 @@ export function StrategyContextCard({ snapshot, onUpdate }: StrategyContextCardP
     : typeof snapshot?.values === 'string' 
       ? JSON.parse(snapshot.values) 
       : [];
-  const valuesString = valuesArray.join('\n');
+  const valuesString = valuesArray.join(', ');
 
   const handleSave = async (field: 'mission' | 'vision' | 'values', newValue: string) => {
     if (!snapshot?.id) {
@@ -37,7 +37,7 @@ export function StrategyContextCard({ snapshot, onUpdate }: StrategyContextCardP
     try {
       const updateData: Record<string, unknown> = {};
       if (field === 'values') {
-        updateData.values = newValue.split('\n').filter(v => v.trim());
+        updateData.values = newValue.split(',').map(v => v.trim()).filter(v => v);
       } else {
         updateData[field] = newValue || null;
       }
@@ -65,87 +65,113 @@ export function StrategyContextCard({ snapshot, onUpdate }: StrategyContextCardP
     }
   };
 
-  const ContextColumn = ({ 
-    title, 
-    helper, 
-    value, 
-    field,
-    placeholder,
-    isLast = false,
-  }: { 
-    title: string; 
-    helper: string; 
-    value: string; 
-    field: 'mission' | 'vision' | 'values';
-    placeholder: string;
-    isLast?: boolean;
-  }) => {
-    return (
-      <div 
-        className="flex flex-col gap-1.5 min-w-0 py-3 px-4"
-        style={{
-          borderRight: isLast ? 'none' : '1px solid var(--divider)',
-        }}
-      >
-        <div className="flex items-baseline gap-1.5 mb-1">
-          <span 
-            className="text-[11px] font-bold uppercase tracking-wider"
-            style={{ color: 'var(--text-2)' }}
-          >
-            {title}
-          </span>
-          <span 
-            className="text-[11px] italic"
-            style={{ color: 'var(--text-3)' }}
-          >
-            {helper}
-          </span>
-        </div>
-        <div className="min-h-[40px]">
-          <InlineEditTextarea
-            value={value}
-            onSave={(v) => handleSave(field, v)}
-            placeholder={placeholder}
-            emptyText="Not set"
-            aria-label={`Edit ${title}`}
-          />
-        </div>
-      </div>
-    );
-  };
+  const contextItems = [
+    {
+      icon: Target,
+      title: 'MISSION',
+      question: 'Why do we exist?',
+      value: snapshot?.mission || '',
+      field: 'mission' as const,
+      placeholder: 'Lead the industrial and mineral ecosystem...',
+    },
+    {
+      icon: Eye,
+      title: 'VISION',
+      question: 'What value do we provide?',
+      value: snapshot?.vision || '',
+      field: 'vision' as const,
+      placeholder: 'Make Saudi Arabia a global magnet...',
+    },
+    {
+      icon: Star,
+      title: 'VALUES',
+      question: 'How do we behave?',
+      value: valuesString,
+      field: 'values' as const,
+      placeholder: 'Ambition, Influence, Confidence...',
+    },
+  ];
 
   return (
-    <PremiumCard>
-      <PremiumCardHeader 
-        title="Strategy Context" 
-        subtitle="Mission, vision, and values guiding this snapshot" 
-      />
-      <PremiumCardContent noPadding>
-        <div className="grid grid-cols-1 md:grid-cols-3">
-          <ContextColumn
-            title="Mission"
-            helper="Why do we exist?"
-            value={snapshot?.mission || ''}
-            field="mission"
-            placeholder="Enter mission statement..."
-          />
-          <ContextColumn
-            title="Vision"
-            helper="What value do we provide?"
-            value={snapshot?.vision || ''}
-            field="vision"
-            placeholder="Enter vision statement..."
-          />
-          <ContextColumn
-            title="Values"
-            helper="How do we behave?"
-            value={valuesString}
-            field="values"
-            placeholder="Enter core values (one per line)..."
-            isLast
-          />
+    <section 
+      className="rounded-[10px] overflow-hidden"
+      style={{
+        backgroundColor: 'var(--surface-1)',
+        border: '1px solid var(--divider)',
+        borderLeft: '3px solid hsl(var(--secondary-green))',
+        boxShadow: 'var(--shadow-sm)',
+      }}
+    >
+      {/* Header */}
+      <div 
+        className="px-5 py-4"
+        style={{ borderBottom: '1px solid var(--divider-subtle)' }}
+      >
+        <h2 
+          className="text-[15px] font-semibold"
+          style={{ color: 'var(--text-1)' }}
+        >
+          Strategy Context
+        </h2>
+        <p 
+          className="text-[12px] mt-0.5"
+          style={{ color: 'var(--text-2)' }}
+        >
+          Mission, vision, and values guiding this snapshot
+        </p>
+      </div>
+
+      {/* Content Grid */}
+      <div className="p-5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {contextItems.map((item, index) => {
+            const Icon = item.icon;
+            return (
+              <div 
+                key={item.field}
+                className="p-4 rounded-lg transition-all duration-150 hover:border-[var(--border-accent)]"
+                style={{
+                  backgroundColor: 'var(--surface-2)',
+                  border: '1px solid var(--divider-subtle)',
+                }}
+              >
+                {/* Label with Icon */}
+                <div className="flex items-center gap-2 mb-2">
+                  <Icon 
+                    className="w-3.5 h-3.5" 
+                    style={{ color: 'hsl(var(--secondary-green))' }}
+                  />
+                  <span 
+                    className="text-[11px] font-semibold uppercase tracking-wide"
+                    style={{ color: 'hsl(var(--secondary-green))' }}
+                  >
+                    {item.title}
+                  </span>
+                </div>
+
+                {/* Question */}
+                <p 
+                  className="text-[11px] italic mb-2"
+                  style={{ color: 'var(--text-2)' }}
+                >
+                  {item.question}
+                </p>
+
+                {/* Editable Value */}
+                <div className="min-h-[40px]">
+                  <InlineEditTextarea
+                    value={item.value}
+                    onSave={(v) => handleSave(item.field, v)}
+                    placeholder={item.placeholder}
+                    emptyText="Not set"
+                    aria-label={`Edit ${item.title}`}
+                  />
+                </div>
+              </div>
+            );
+          })}
         </div>
-      </PremiumCardContent>
-    </PremiumCard>
+      </div>
+    </section>
   );
 }
