@@ -155,17 +155,16 @@ export const ObjectivesColumn = forwardRef<HTMLDivElement, ObjectivesColumnProps
                         <Target size={16} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-xs font-medium text-muted-foreground">{obj.id}</span>
-                          {groupBy !== 'theme' && (
+                        {groupBy !== 'theme' && (
+                          <div className="mb-1">
                             <span 
                               className="px-2 py-0.5 text-[10px] font-medium text-white rounded"
                               style={{ background: theme.color }}
                             >
                               {theme.name}
                             </span>
-                          )}
-                        </div>
+                          </div>
+                        )}
                         <div className="font-medium text-sm mb-1.5 truncate" title={obj.name}>
                           {obj.name}
                         </div>
