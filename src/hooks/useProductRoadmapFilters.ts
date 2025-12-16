@@ -1,0 +1,155 @@
+import { useState, useCallback, useMemo } from 'react';
+import {
+  DemandFilterState,
+  EMPTY_DEMAND_FILTERS,
+  countDemandFilterSelections,
+  areDemandFiltersEqual,
+} from '@/types/product-roadmap';
+import { RoadmapViewport, getDefaultViewport } from '@/components/roadmaps/RoadmapDateFilterV2';
+
+// Check if viewport equals default
+function isViewportDefault(viewport: RoadmapViewport): boolean {
+  const defaultVp = getDefaultViewport();
+  return (
+    viewport.scale === defaultVp.scale &&
+    JSON.stringify(viewport.selectedYears) === JSON.stringify(defaultVp.selectedYears) &&
+    JSON.stringify(viewport.selectedQuarters) === JSON.stringify(defaultVp.selectedQuarters)
+  );
+}
+
+// Compare viewports
+function areViewportsEqual(a: RoadmapViewport, b: RoadmapViewport): boolean {
+  return (
+    a.scale === b.scale &&
+    JSON.stringify(a.selectedYears) === JSON.stringify(b.selectedYears) &&
+    JSON.stringify(a.selectedQuarters) === JSON.stringify(b.selectedQuarters)
+  );
+}
+
+interface UseProductRoadmapFiltersReturn {
+  appliedFilters: DemandFilterState;
+  appliedViewport: RoadmapViewport;
+  draftFilters: DemandFilterState;
+  draftViewport: RoadmapViewport;
+  activeFilterCount: number;
+  
+  openFilters: () => void;
+  applyFilters: () => void;
+  cancelFilters: () => void;
+  clearAll: () => void;
+  
+  toggleStatus: (status: string) => void;
+  toggleOwner: (ownerId: string) => void;
+  togglePlatform: (platform: string) => void;
+  
+  updateDraftViewport: (viewport: RoadmapViewport) => void;
+  
+  hasPendingChanges: boolean;
+  isViewportAtDefault: boolean;
+}
+
+export function useProductRoadmapFilters(): UseProductRoadmapFiltersReturn {
+  // Applied state (drives data)
+  const [appliedFilters, setAppliedFilters] = useState<DemandFilterState>(EMPTY_DEMAND_FILTERS);
+  const [appliedViewport, setAppliedViewport] = useState<RoadmapViewport>(getDefaultViewport);
+  
+  // Draft state (for staged editing)
+  const [draftFilters, setDraftFilters] = useState<DemandFilterState>(EMPTY_DEMAND_FILTERS);
+  const [draftViewport, setDraftViewport] = useState<RoadmapViewport>(getDefaultViewport);
+  
+  // Badge count
+  const activeFilterCount = useMemo(
+    () => countDemandFilterSelections(appliedFilters),
+    [appliedFilters]
+  );
+  
+  // Check if viewport is at default
+  const isViewportAtDefault = useMemo(
+    () => isViewportDefault(appliedViewport),
+    [appliedViewport]
+  );
+  
+  // Check for pending changes
+  const hasPendingChanges = useMemo(
+    () => !areDemandFiltersEqual(draftFilters, appliedFilters) || !areViewportsEqual(draftViewport, appliedViewport),
+    [draftFilters, appliedFilters, draftViewport, appliedViewport]
+  );
+  
+  // Lifecycle: Open filters panel
+  const openFilters = useCallback(() => {
+    setDraftFilters({ ...appliedFilters });
+    setDraftViewport({ ...appliedViewport });
+  }, [appliedFilters, appliedViewport]);
+  
+  // Lifecycle: Apply filters AND viewport
+  const applyFilters = useCallback(() => {
+    setAppliedFilters({ ...draftFilters });
+    setAppliedViewport({ ...draftViewport });
+  }, [draftFilters, draftViewport]);
+  
+  // Lifecycle: Cancel (discard draft)
+  const cancelFilters = useCallback(() => {
+    setDraftFilters({ ...appliedFilters });
+    setDraftViewport({ ...appliedViewport });
+  }, [appliedFilters, appliedViewport]);
+  
+  // Lifecycle: Clear all (reset everything)
+  const clearAll = useCallback(() => {
+    const defaultViewport = getDefaultViewport();
+    setAppliedFilters(EMPTY_DEMAND_FILTERS);
+    setDraftFilters(EMPTY_DEMAND_FILTERS);
+    setAppliedViewport(defaultViewport);
+    setDraftViewport(defaultViewport);
+  }, []);
+  
+  // Draft mutations
+  const toggleStatus = useCallback((status: string) => {
+    setDraftFilters(prev => ({
+      ...prev,
+      status: prev.status.includes(status)
+        ? prev.status.filter(s => s !== status)
+        : [...prev.status, status],
+    }));
+  }, []);
+  
+  const toggleOwner = useCallback((ownerId: string) => {
+    setDraftFilters(prev => ({
+      ...prev,
+      ownerIds: prev.ownerIds.includes(ownerId)
+        ? prev.ownerIds.filter(o => o !== ownerId)
+        : [...prev.ownerIds, ownerId],
+    }));
+  }, []);
+  
+  const togglePlatform = useCallback((platform: string) => {
+    setDraftFilters(prev => ({
+      ...prev,
+      platforms: prev.platforms.includes(platform)
+        ? prev.platforms.filter(p => p !== platform)
+        : [...prev.platforms, platform],
+    }));
+  }, []);
+  
+  // Viewport handling
+  const updateDraftViewport = useCallback((viewport: RoadmapViewport) => {
+    setDraftViewport(viewport);
+  }, []);
+  
+  return {
+    appliedFilters,
+    appliedViewport,
+    draftFilters,
+    draftViewport,
+    activeFilterCount,
+    openFilters,
+    applyFilters,
+    cancelFilters,
+    clearAll,
+    toggleStatus,
+    toggleOwner,
+    togglePlatform,
+    updateDraftViewport,
+    hasPendingChanges,
+    isViewportAtDefault,
+  };
+}

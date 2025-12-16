@@ -156,6 +156,7 @@ import OKRTree from "./pages/enterprise/OKRTree";
 import OKRHub from "./pages/enterprise/OKRHub";
 // OKR v2 is now the single source - no separate portfolio/program/team OKR hubs
 import ObjectiveRoadmapPage from "./pages/ObjectiveRoadmapPage";
+import ProductRoadmapPage from "./pages/ProductRoadmapPage";
 import StrategicSnapshots from "./pages/enterprise/StrategicSnapshots";
 import StrategicBacklog from "./pages/enterprise/StrategicBacklog";
 import EnterpriseEpics from "./pages/enterprise/EnterpriseEpics";
@@ -262,7 +263,7 @@ const App = () => (
               <Route path="/industry/backlog" element={<ProductBacklogPage />} />
               <Route path="/industry/kanban" element={<BusinessRequestsKanbanPage />} />
               <Route path="/industry/dashboard" element={<DemandSummaryPage />} />
-              <Route path="/industry/roadmaps" element={<ExecutiveRoadmapPage />} />
+              <Route path="/industry/roadmaps" element={<ProductRoadmapPage />} />
               <Route path="/industry/reports" element={<IndustryComingSoon />} />
               
               <Route path="/search" element={<SearchPage />} />
