@@ -3,7 +3,7 @@
  * Pixel-perfect table with column selector
  */
 import { useState, useMemo } from 'react';
-import { Search, ChevronRight, ArrowUpDown, ArrowUp, Target } from 'lucide-react';
+import { Search, ChevronRight, ArrowUpDown, ArrowUp, Target, TrendingUp } from 'lucide-react';
 import type { StrategicTheme } from '@/types/strategicBacklog';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
@@ -18,7 +18,7 @@ const OBJECTIVE_COLUMNS: ColumnDefinition[] = [
   { key: 'theme', label: 'Theme', defaultVisible: true, width: 'w-44' },
   { key: 'owner', label: 'Owner', defaultVisible: false, width: 'w-36' },
   { key: 'status', label: 'Status', defaultVisible: true, width: 'w-28' },
-  { key: 'progress', label: 'Progress vs Plan', defaultVisible: true, width: 'w-32' },
+  { key: 'progress', label: 'Progress vs Plan', defaultVisible: true, width: 'w-44' },
   { key: 'startDate', label: 'Start Date', defaultVisible: false, width: 'w-28' },
   { key: 'endDate', label: 'End Date', defaultVisible: false, width: 'w-28' },
   { key: 'risks', label: 'Risks', defaultVisible: true, width: 'w-16' },
@@ -209,23 +209,48 @@ export function StrategicBacklogObjectivesSection({
   };
 
   const getStatusBadge = (status?: string | null) => {
+    // Status styling matching Image 1 reference
     const statusMap: Record<string, { label: string; className: string }> = {
-      pending: { label: 'PENDING', className: 'bg-muted text-muted-foreground border-border' },
-      in_progress: { label: 'IN PROGRESS', className: 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800' },
-      on_track: { label: 'ON TRACK', className: 'bg-[rgba(92,124,92,0.1)] dark:bg-[rgba(92,124,92,0.15)] text-[#5C7C5C] dark:text-[#7DA37D] border-[rgba(92,124,92,0.3)]' },
-      at_risk: { label: 'AT RISK', className: 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800' },
-      off_track: { label: 'OFF TRACK', className: 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800' },
-      completed: { label: 'COMPLETED', className: 'bg-[rgba(92,124,92,0.1)] dark:bg-[rgba(92,124,92,0.15)] text-[#5C7C5C] dark:text-[#7DA37D] border-[rgba(92,124,92,0.3)]' },
-      paused: { label: 'PAUSED', className: 'bg-muted text-muted-foreground border-border' },
-      canceled: { label: 'CANCELED', className: 'bg-muted text-muted-foreground border-border' },
+      pending: { 
+        label: 'Pending', 
+        className: 'bg-transparent text-muted-foreground border-[#c8ccd0]' 
+      },
+      in_progress: { 
+        label: 'In Progress', 
+        className: 'bg-transparent text-[#5c7c5c] border-[#5c7c5c]' 
+      },
+      on_track: { 
+        label: 'On track', 
+        className: 'bg-[#5c7c5c] text-white border-[#5c7c5c]' 
+      },
+      at_risk: { 
+        label: 'At risk', 
+        className: 'bg-[#8b7355] text-white border-[#8b7355]' 
+      },
+      off_track: { 
+        label: 'Off track', 
+        className: 'bg-[#c75a4a] text-white border-[#c75a4a]' 
+      },
+      completed: { 
+        label: 'Completed', 
+        className: 'bg-[#5c7c5c] text-white border-[#5c7c5c]' 
+      },
+      paused: { 
+        label: 'Paused', 
+        className: 'bg-transparent text-muted-foreground border-[#c8ccd0]' 
+      },
+      canceled: { 
+        label: 'Canceled', 
+        className: 'bg-transparent text-muted-foreground border-[#c8ccd0]' 
+      },
     };
     
-    const config = statusMap[status || ''] || { label: status?.toUpperCase() || 'DRAFT', className: 'bg-muted text-muted-foreground border-border' };
+    const config = statusMap[status || ''] || { label: 'Draft', className: 'bg-transparent text-muted-foreground border-[#c8ccd0]' };
     
     return (
       <span className={cn(
-        "inline-flex px-2 py-0.5 rounded border",
-        "text-[10px] font-semibold uppercase tracking-wider",
+        "inline-flex px-2.5 py-1 rounded-full border",
+        "text-[11px] font-medium capitalize whitespace-nowrap",
         config.className
       )}>
         {config.label}
@@ -233,23 +258,61 @@ export function StrategicBacklogObjectivesSection({
     );
   };
 
-  const getProgressBar = (progress?: number | null) => {
+  const getProgressBar = (progress?: number | null, status?: string | null) => {
     const value = progress || 0;
-    // Determine color based on progress
-    let barColor = 'bg-red-500';
-    if (value >= 75) barColor = 'bg-[#5C7C5C]';
-    else if (value >= 50) barColor = 'bg-brand-gold';
-    else if (value >= 25) barColor = 'bg-amber-500';
+    
+    // Determine bar color based on status (matching Image 1)
+    let dotColor = 'bg-[#c8ccd0]';
+    let barColor = 'bg-[#c8ccd0]';
+    
+    switch (status) {
+      case 'on_track':
+      case 'completed':
+        dotColor = 'bg-[#5c7c5c]';
+        barColor = 'bg-[#5c7c5c]';
+        break;
+      case 'in_progress':
+        dotColor = 'bg-[#5c7c5c]';
+        barColor = 'bg-[#5c7c5c]';
+        break;
+      case 'at_risk':
+        dotColor = 'bg-[#c69c6d]';
+        barColor = 'bg-[#c69c6d]';
+        break;
+      case 'off_track':
+        dotColor = 'bg-[#c75a4a]';
+        barColor = 'bg-[#c75a4a]';
+        break;
+      case 'pending':
+      default:
+        dotColor = 'bg-[#c69c6d]';
+        barColor = 'bg-[#c69c6d]';
+        break;
+    }
+
+    // Show trend icon only if there's progress
+    const showTrend = value > 0;
 
     return (
       <div className="flex items-center gap-2">
-        <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+        {/* Colored dot indicator */}
+        <div className={cn("w-2 h-2 rounded-full shrink-0", dotColor)} />
+        
+        {/* Progress bar track */}
+        <div className="flex-1 h-1.5 bg-[#e8e8e8] dark:bg-[#2d333b] rounded-full overflow-hidden">
           <div 
             className={cn("h-full rounded-full transition-all", barColor)}
             style={{ width: `${value}%` }}
           />
         </div>
-        <span className="text-xs text-muted-foreground w-8 text-right">{value}%</span>
+        
+        {/* Percentage */}
+        <span className="text-xs text-muted-foreground w-8 text-right tabular-nums">{value}%</span>
+        
+        {/* Trend icon */}
+        {showTrend && (
+          <TrendingUp className="h-3 w-3 text-muted-foreground shrink-0" />
+        )}
       </div>
     );
   };
@@ -338,7 +401,7 @@ export function StrategicBacklogObjectivesSection({
               )}
               {isColumnVisible('status') && (
                 <th 
-                  className="text-left px-3 py-3 text-xs font-medium text-muted-foreground w-28 cursor-pointer hover:text-foreground transition-colors"
+                  className="text-left px-3 py-3 text-xs font-medium text-muted-foreground w-28 cursor-pointer hover:text-foreground transition-colors uppercase"
                   onClick={() => handleSort('status')}
                 >
                   <button className="flex items-center">
@@ -348,11 +411,11 @@ export function StrategicBacklogObjectivesSection({
               )}
               {isColumnVisible('progress') && (
                 <th 
-                  className="text-left px-3 py-3 text-xs font-medium text-muted-foreground w-32 cursor-pointer hover:text-foreground transition-colors"
+                  className="text-left px-3 py-3 text-xs font-medium text-muted-foreground w-44 cursor-pointer hover:text-foreground transition-colors uppercase"
                   onClick={() => handleSort('progress')}
                 >
                   <button className="flex items-center">
-                    Progress <SortIcon column="progress" />
+                    Progress vs Plan <SortIcon column="progress" />
                   </button>
                 </th>
               )}
@@ -453,7 +516,7 @@ export function StrategicBacklogObjectivesSection({
                     )}
                     {isColumnVisible('progress') && (
                       <td className="px-3 py-3">
-                        {getProgressBar(obj.overall_progress)}
+                        {getProgressBar(obj.overall_progress, obj.status)}
                       </td>
                     )}
                     {isColumnVisible('startDate') && (
