@@ -19,7 +19,7 @@ export const ROUTE_REGISTRY: Record<string, RouteConfig> = {
   '/enterprise/strategy-room': { section: 'ENTERPRISE', pageTitle: 'Strategy Room' },
   '/enterprise/snapshots': { section: 'ENTERPRISE', pageTitle: 'Strategic Snapshots' },
   '/enterprise/backlog': { section: 'ENTERPRISE', pageTitle: 'Strategic Backlog' },
-  '/enterprise/okr-hub': { section: 'ENTERPRISE', pageTitle: 'OKR Hub' },
+  '/enterprise/okr-hub': { section: 'ENTERPRISE', pageTitle: 'Objectives tree' },
   '/enterprise/okr-tree': { section: 'ENTERPRISE', pageTitle: 'Objective Tree' },
   '/enterprise/okr-heatmap': { section: 'ENTERPRISE', pageTitle: 'OKR Heatmap' },
   '/enterprise/roadmaps': { section: 'ENTERPRISE', pageTitle: 'Roadmaps' },
