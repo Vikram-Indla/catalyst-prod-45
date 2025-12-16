@@ -442,7 +442,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
         <SheetContent
           side="right"
           hideClose
-          className={`executive-drawer ${drawerWidthClass} relative p-0 flex flex-col overflow-hidden bg-white dark:bg-[#161B22] z-[300]`}
+          className={`executive-drawer ${drawerWidthClass} relative p-0 flex flex-col overflow-hidden bg-white dark:bg-[#161B22]`}
         >
           {/* 🔒 GOLD VERTICAL LINE — ABSOLUTE FULL HEIGHT */}
           <div

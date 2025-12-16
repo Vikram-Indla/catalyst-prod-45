@@ -34,7 +34,7 @@ SheetOverlay.displayName = SheetPrimitive.Overlay.displayName;
 // DRAWER LAYOUT CONTRACT: left/right drawers use h-[100dvh] to guarantee full viewport height
 const sheetSideVariants = cva(
   cn(
-    "fixed z-[250] shadow-2xl transition ease-in-out",
+    "fixed z-[200] shadow-2xl transition ease-in-out",
     "data-[state=open]:animate-in data-[state=closed]:animate-out",
     "data-[state=closed]:duration-200 data-[state=open]:duration-300",
     "focus:outline-none"
