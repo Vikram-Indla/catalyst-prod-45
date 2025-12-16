@@ -12,7 +12,7 @@ export type RiskWithBR = Risk & {
   business_owner?: string | null;
 };
 
-export function useRisks(programId?: string, programIncrementId?: string) {
+export function useRisks(programId?: string) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -21,7 +21,7 @@ export function useRisks(programId?: string, programIncrementId?: string) {
     isLoading,
     error
   } = useQuery({
-    queryKey: ['risks', programId, programIncrementId],
+    queryKey: ['risks', programId],
     queryFn: async () => {
       // Fetch risks with business_requests join
       let query = supabase
@@ -40,10 +40,6 @@ export function useRisks(programId?: string, programIncrementId?: string) {
 
       if (programId) {
         query = query.eq('program_id', programId);
-      }
-
-      if (programIncrementId) {
-        query = query.eq('program_increment_id', programIncrementId);
       }
 
       const { data, error } = await query;

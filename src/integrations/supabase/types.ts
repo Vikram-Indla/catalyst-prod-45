@@ -8316,7 +8316,6 @@ export type Database = {
           occurrence: string | null
           owner_id: string | null
           program_id: string | null
-          program_increment_id: string | null
           related_item_id: string | null
           relationship: string
           resolution_method: string
@@ -8344,7 +8343,6 @@ export type Database = {
           occurrence?: string | null
           owner_id?: string | null
           program_id?: string | null
-          program_increment_id?: string | null
           related_item_id?: string | null
           relationship: string
           resolution_method?: string
@@ -8372,7 +8370,6 @@ export type Database = {
           occurrence?: string | null
           owner_id?: string | null
           program_id?: string | null
-          program_increment_id?: string | null
           related_item_id?: string | null
           relationship?: string
           resolution_method?: string
@@ -8390,13 +8387,6 @@ export type Database = {
             columns: ["program_id"]
             isOneToOne: false
             referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "fk_program_increment"
-            columns: ["program_increment_id"]
-            isOneToOne: false
-            referencedRelation: "program_increments"
             referencedColumns: ["id"]
           },
           {

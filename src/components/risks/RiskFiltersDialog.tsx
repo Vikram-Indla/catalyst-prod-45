@@ -35,7 +35,6 @@ export function RiskFiltersDialog({
 }: RiskFiltersDialogProps) {
   const handleClearAll = () => {
     onFiltersChange({
-      program_increment_id: null,
       owner_id: null,
       status: null,
       resolution_method: null,

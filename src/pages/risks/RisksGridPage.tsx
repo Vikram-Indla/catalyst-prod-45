@@ -48,7 +48,6 @@ export default function RisksGridPage() {
     'roam', 'title', 'pi', 'occurrence', 'impact', 'critical_path', 'status'
   ]);
   const [filters, setFilters] = useState<RiskGridFilters>({
-    program_increment_id: null,
     owner_id: null,
     status: "Open", // Default filter per Screenshot-Risk1
     resolution_method: null,
@@ -106,9 +105,7 @@ export default function RisksGridPage() {
   };
 
   const handleMassMove = (piId: string) => {
-    selectedRiskIds.forEach(riskId => {
-      updateRisk({ id: riskId, program_increment_id: piId });
-    });
+    // PI functionality removed
     setSelectedRiskIds([]);
     setIsMassMoveOpen(false);
   };
@@ -284,7 +281,7 @@ export default function RisksGridPage() {
                   )}
                   {visibleColumns.includes('pi') && (
                     <TableCell className="text-text-secondary text-xs sm:text-sm hidden md:table-cell">
-                      {risk.program_increment_id ? `PI-${risk.program_increment_id.substring(0, 8)}` : '—'}
+                      —
                     </TableCell>
                   )}
                   {visibleColumns.includes('occurrence') && (

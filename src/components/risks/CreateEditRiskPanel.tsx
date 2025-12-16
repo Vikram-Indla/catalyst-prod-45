@@ -54,7 +54,6 @@ export function CreateEditRiskPanel({
     related_item_id: null,
     owner_id: null,
     program_id: null,
-    program_increment_id: null,
   });
 
   const [links, setLinks] = useState<any[]>([]);
@@ -85,19 +84,6 @@ export function CreateEditRiskPanel({
     },
   });
 
-  // Fetch program increments
-  const { data: programIncrements = [] } = useQuery({
-    queryKey: ['program-increments'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('program_increments')
-        .select('id, name, start_date, end_date')
-        .order('start_date', { ascending: false })
-        .limit(10);
-      if (error) throw error;
-      return data || [];
-    },
-  });
 
   useEffect(() => {
     if (risk) {
@@ -118,7 +104,6 @@ export function CreateEditRiskPanel({
         related_item_id: risk.related_item_id,
         owner_id: risk.owner_id,
         program_id: risk.program_id,
-        program_increment_id: risk.program_increment_id,
       });
       setLinks([]); // TODO: Load links from database
     } else {
@@ -139,7 +124,6 @@ export function CreateEditRiskPanel({
         related_item_id: null,
         owner_id: null,
         program_id: null,
-        program_increment_id: null,
       });
       setLinks([]);
     }
@@ -400,26 +384,6 @@ export function CreateEditRiskPanel({
               </Select>
             </div>
 
-            <div>
-              <Label className="text-sm mb-2">Program Increment</Label>
-              <Select
-                value={formData.program_increment_id || undefined}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, program_increment_id: value || null })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select PI" />
-                </SelectTrigger>
-                <SelectContent>
-                  {programIncrements.map((pi) => (
-                    <SelectItem key={pi.id} value={pi.id}>
-                      {pi.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
           </div>
 
           {/* Relationship */}
