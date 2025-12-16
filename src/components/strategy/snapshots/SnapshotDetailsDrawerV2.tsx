@@ -130,7 +130,7 @@ export function SnapshotDetailsDrawerV2({ open, onClose, snapshot }: SnapshotDet
       <Sheet open={open} onOpenChange={(o) => !o && handleClose()}>
         <SheetContent 
           side="right" 
-          className="relative w-[520px] max-w-full p-0 flex flex-col bg-white dark:bg-[#161B22] border-l border-[#E1E4E8] dark:border-[#30363D] shadow-xl z-[1000]"
+          className="w-[520px] max-w-full p-0 flex flex-col bg-white dark:bg-[#161B22] border-l border-[#E1E4E8] dark:border-[#30363D] shadow-xl z-[1000]"
           hideClose
         >
           {/* Gold rail — full-height */}
