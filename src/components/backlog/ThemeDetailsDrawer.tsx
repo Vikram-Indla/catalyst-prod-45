@@ -384,7 +384,22 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
     },
   });
 
-  if (!theme) return null;
+  // TEMP DEBUG: if the overlay is visible but panel isn't, this helps prove whether the drawer mounted.
+  // NOTE: We still render a minimal drawer when theme is missing to avoid silent failures.
+  if (!theme || !theme.id) {
+    return (
+      <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
+        <SheetContent side="right" hideClose className="w-screen sm:w-[65vw] sm:max-w-[980px] p-0">
+          <div className="p-4">
+            <div className="mb-3 rounded-md border border-border bg-brand-gold/10 px-3 py-2 text-sm text-foreground">
+              THEME DRAWER MOUNTED (theme missing)
+            </div>
+            <div className="text-sm text-muted-foreground">Theme not found.</div>
+          </div>
+        </SheetContent>
+      </Sheet>
+    );
+  }
 
   const drawerWidthClass = isExpanded
     ? 'w-screen sm:w-[70vw] sm:max-w-[1120px]'
@@ -449,6 +464,13 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
             aria-hidden
             className="pointer-events-none absolute left-0 top-0 bottom-0 w-1 bg-brand-gold"
           />
+
+          {/* TEMP DEBUG marker */}
+          {isOpen && (
+            <div className="pointer-events-none fixed top-3 right-3 z-[999] rounded-md border border-border bg-brand-gold/90 px-3 py-2 text-xs font-semibold text-primary-foreground shadow-lg">
+              THEME DRAWER MOUNTED
+            </div>
+          )}
           <SheetHeader className="executive-drawer-header flex-col space-y-0 shrink-0 p-0 bg-white dark:bg-[#161B22]">
             {/* Header Row - thin gold border */}
             <div className="flex items-center justify-between px-4 md:px-5 pt-4 pb-3 border-b border-brand-gold/50">
