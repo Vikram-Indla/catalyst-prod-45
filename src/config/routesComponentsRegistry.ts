@@ -47,11 +47,11 @@ export const routesComponentsRegistry: RegistryEntry[] = [
     tags: ['authentication', 'login', 'signup']
   },
   {
-    id: 'request-access',
+    id: 'submit-request',
     category: 'Public',
-    name: 'RequestAccess',
-    route: '/request-access',
-    filePath: 'src/pages/RequestAccess.tsx',
+    name: 'SubmitDemandRequest',
+    route: '/submit-request',
+    filePath: 'src/pages/SubmitDemandRequest.tsx',
     description: 'External user demand submission form',
     type: 'Page',
     tags: ['external', 'demand', 'form']

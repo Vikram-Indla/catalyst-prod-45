@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 const LAST_ROUTE_KEY = 'catalyst_last_route';
-const EXCLUDED_ROUTES = ['/auth', '/request-access', '/'];
+const EXCLUDED_ROUTES = ['/auth', '/submit-request', '/'];
 
 /**
  * Sanitizes a URL path to prevent encoding issues
