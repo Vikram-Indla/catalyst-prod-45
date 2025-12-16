@@ -342,12 +342,12 @@ export function OkrObjectivesTable({ rows, columns = [], onRowClick, onToggleExp
         <table className="w-full min-w-[800px]">
           {/* Table Header - Dynamic based on visible columns */}
           <thead>
-            <tr className="bg-brand-gold/10 dark:bg-brand-gold/5 border-b border-border">
+            <tr className="bg-muted/50 dark:bg-muted/30 border-b border-border">
               {visibleColumnKeys.map((colKey, idx) => (
                 <th 
                   key={colKey}
                   className={cn(
-                    "py-3.5 px-4 text-[11px] font-semibold text-secondary-bronze dark:text-brand-gold/80 uppercase tracking-wider",
+                    "py-3.5 px-4 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider",
                     idx === visibleColumnKeys.length - 1 ? "text-right" : "text-left"
                   )}
                   style={{ width: COLUMN_CONFIG[colKey]?.width || '100px' }}
