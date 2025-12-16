@@ -196,12 +196,11 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
         </div>
       </div>
       
-      {/* Tooltip - positioned outside overflow-hidden container */}
+      {/* Tooltip - positioned BELOW the bar to stay within row bounds */}
       <div 
-        className="absolute top-0 left-0 -translate-y-full mb-2 px-4 py-3 bg-popover border border-border rounded-lg shadow-xl opacity-0 group-hover/bar:opacity-100 transition-opacity pointer-events-none z-[100]"
+        className="absolute bottom-0 translate-y-full mt-1 px-4 py-3 bg-popover border border-border rounded-lg shadow-xl opacity-0 group-hover/bar:opacity-100 transition-opacity pointer-events-none z-[100]"
         style={{ 
           left: `${barLeft}%`,
-          marginTop: '-8px'
         }}
       >
         <div className="text-sm font-semibold text-foreground mb-1">{objective.name}</div>
