@@ -1,26 +1,26 @@
-/**
- * CATALYST ENTERPRISE TABLE
- * Legacy component - maintained for backward compatibility
- * New implementations should use EnterpriseDataTable from @/components/tables
- */
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import { GripVertical, ChevronUp, ChevronDown, Filter, Check, MoreHorizontal, Undo2 } from 'lucide-react';
+import { GripVertical } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-// Color tokens - uses CSS variables for theme support
+// ============================================================================
+// CATALYST ENTERPRISE TABLE - STYLED EXACTLY LIKE THE REFERENCE
+// ============================================================================
+
+// Catalyst Golden Hour Color Palette - uses CSS tokens for dark mode support
+// These are fallback constants; components should prefer CSS variables
 const colors = {
-  olive: 'var(--secondary-green)',
-  bronze: 'var(--secondary-bronze)',
-  gold: 'var(--brand-accent)',
-  goldHover: 'var(--brand-accent-hover)',
-  champagne: 'var(--secondary-champagne)',
-  grey: 'var(--secondary-grey)',
-  cream: 'var(--surface-1)',
-  white: 'var(--surface-1)',
-  border: 'var(--border-color)',
-  muted: 'var(--text-2)',
-  danger: 'var(--status-danger)',
+  olive: 'var(--secondary-green, #5c7c5c)',
+  bronze: 'var(--secondary-bronze, #8b7355)',
+  gold: 'var(--brand-accent, #c69c6d)',
+  goldHover: 'var(--brand-accent-hover, #b8894f)',
+  champagne: 'var(--secondary-champagne, #d4b896)',
+  grey: 'var(--secondary-grey, #c8ccd0)',
+  cream: 'var(--surface-1, #faf7f1)',
+  white: 'var(--surface-1, #ffffff)',
+  border: 'var(--border-color, #e5e5e5)',
+  muted: 'var(--text-2, #6b7280)',
+  danger: '#dc2626',
 };
 
 export type SortDirection = 'asc' | 'desc' | null;
