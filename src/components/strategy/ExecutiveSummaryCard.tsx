@@ -54,8 +54,8 @@ function KPITile({
       onClick={onClick}
       className="relative flex flex-col items-start p-5 transition-all duration-200 text-left group flex-1 min-w-0 rounded-lg"
       style={{
-        backgroundColor: 'var(--surface-2)',
-        border: '1px solid var(--divider-subtle)',
+        backgroundColor: 'var(--surface-subtle)',
+        border: '1px solid var(--border-subtle)',
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.borderColor = 'var(--border-accent)';
@@ -63,7 +63,7 @@ function KPITile({
         e.currentTarget.style.transform = 'translateY(-2px)';
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = 'var(--divider-subtle)';
+        e.currentTarget.style.borderColor = 'var(--border-subtle)';
         e.currentTarget.style.boxShadow = 'none';
         e.currentTarget.style.transform = 'translateY(0)';
       }}
@@ -73,7 +73,7 @@ function KPITile({
       <div className="flex items-start justify-between w-full mb-3">
         <span 
           className="text-[11px] font-semibold uppercase tracking-wider"
-          style={{ color: 'var(--text-2)' }}
+          style={{ color: 'var(--text-secondary)' }}
         >
           {label}
         </span>
@@ -89,7 +89,7 @@ function KPITile({
       {isLoading ? (
         <span 
           className="text-3xl font-bold leading-none mb-1"
-          style={{ color: 'var(--text-3)' }}
+          style={{ color: 'var(--text-muted)' }}
         >
           —
         </span>
@@ -99,7 +99,7 @@ function KPITile({
           style={{ 
             color: accentColor === 'gold' && typeof value === 'number' && value > 0 
               ? '#C69C6D' 
-              : 'var(--text-1)' 
+              : 'var(--text-primary)' 
           }}
         >
           {value}
@@ -109,7 +109,7 @@ function KPITile({
       {/* Subtext */}
       <span 
         className="text-xs leading-snug"
-        style={{ color: 'var(--text-2)' }}
+        style={{ color: 'var(--text-secondary)' }}
       >
         {subtext}
       </span>
@@ -118,7 +118,7 @@ function KPITile({
       {showProgress && (
         <div 
           className="w-full h-2 rounded-full mt-3 overflow-hidden"
-          style={{ backgroundColor: 'var(--surface-3)' }}
+          style={{ backgroundColor: 'var(--progress-bg)' }}
         >
           <div 
             className="h-full rounded-full transition-all duration-300"
@@ -225,25 +225,25 @@ export function ExecutiveSummaryCard({ snapshotId }: ExecutiveSummaryCardProps) 
     <section 
       className="rounded-xl overflow-hidden"
       style={{
-        backgroundColor: 'var(--surface-1)',
-        border: '1px solid var(--divider)',
-        boxShadow: 'var(--shadow-sm)',
+        backgroundColor: 'var(--surface-bg)',
+        border: '1px solid var(--border-default)',
+        boxShadow: 'var(--shadow-card)',
       }}
     >
       {/* Header */}
       <div 
         className="px-6 py-4"
-        style={{ borderBottom: '1px solid var(--divider-subtle)' }}
+        style={{ borderBottom: '1px solid var(--border-subtle)' }}
       >
         <h2 
           className="text-lg font-semibold"
-          style={{ color: 'var(--text-1)' }}
+          style={{ color: 'var(--text-primary)' }}
         >
           Executive Summary
         </h2>
         <p 
           className="text-sm mt-0.5"
-          style={{ color: 'var(--text-2)' }}
+          style={{ color: 'var(--text-secondary)' }}
         >
           Key performance indicators at a glance
         </p>
