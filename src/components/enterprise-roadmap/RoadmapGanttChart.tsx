@@ -164,7 +164,7 @@ export function RoadmapGanttChart({
             </div>
           )}
 
-          {/* Gantt Bars */}
+          {/* Gantt Bars with Milestones INSIDE each row */}
           {visibleItems.map(({ item, level }, rowIndex) => {
             const itemStart = new Date(item.startDate);
             const itemEnd = new Date(item.endDate);
@@ -176,68 +176,121 @@ export function RoadmapGanttChart({
             const isSelected = selectedId === item.id;
             const barWidth = metrics.width;
 
+            // Calculate milestone positions for THIS item
+            const itemMilestones = showMilestones && item.milestones ? item.milestones : [];
+
             return (
               <div
                 key={item.id}
-                className="absolute h-8 group cursor-pointer"
+                className="absolute left-0 right-0"
                 style={{ 
-                  left: metrics.left, 
-                  width: barWidth,
-                  top: rowIndex * ROW_HEIGHT + (ROW_HEIGHT - 32) / 2
+                  top: rowIndex * ROW_HEIGHT,
+                  height: ROW_HEIGHT
                 }}
-                onClick={() => onItemClick(item)}
-                onMouseEnter={(e) => handleBarHover(item, e)}
-                onMouseLeave={() => setHoveredItem(null)}
               >
-                {/* Bar */}
-                <div className={cn(
-                  "h-full rounded-md border relative overflow-hidden",
-                  "transition-all duration-200",
-                  "hover:shadow-lg hover:scale-y-110",
-                  style.bg,
-                  style.border,
-                  isSelected && "ring-2 ring-[#C69C6D] ring-offset-1"
-                )}>
-                  {/* Progress Fill */}
-                  {item.progress > 0 && (
-                    <div 
-                      className="absolute inset-y-0 left-0 bg-black/20"
-                      style={{ width: `${item.progress}%` }}
-                    />
-                  )}
+                {/* Gantt Bar */}
+                <div
+                  className="absolute h-8 group cursor-pointer"
+                  style={{ 
+                    left: metrics.left, 
+                    width: barWidth,
+                    top: (ROW_HEIGHT - 32) / 2
+                  }}
+                  onClick={() => onItemClick(item)}
+                  onMouseEnter={(e) => handleBarHover(item, e)}
+                  onMouseLeave={() => setHoveredItem(null)}
+                >
+                  {/* Bar */}
+                  <div className={cn(
+                    "h-full rounded-md border relative overflow-hidden",
+                    "transition-all duration-200",
+                    "hover:shadow-lg hover:scale-y-110",
+                    style.bg,
+                    style.border,
+                    isSelected && "ring-2 ring-[#C69C6D] ring-offset-1"
+                  )}>
+                    {/* Progress Fill */}
+                    {item.progress > 0 && (
+                      <div 
+                        className="absolute inset-y-0 left-0 bg-black/20"
+                        style={{ width: `${item.progress}%` }}
+                      />
+                    )}
+                    
+                    {/* Label (if bar is wide enough) */}
+                    {barWidth > 100 && (
+                      <div className="absolute inset-0 flex items-center px-2">
+                        <span className="text-xs font-medium text-white truncate">
+                          {item.name}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Progress Text (if bar is wide enough) */}
+                    {barWidth > 60 && (
+                      <div className="absolute inset-y-0 right-2 flex items-center">
+                        <span className="text-xs font-bold text-white">
+                          {item.progress}%
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Date Labels on Hover */}
+                  <div className="absolute -bottom-5 left-0 text-[10px] text-[#8B949E] dark:text-[#6E7681] opacity-0 group-hover:opacity-100 transition-opacity">
+                    {formatRoadmapDate(item.startDate)}
+                  </div>
+                  <div className="absolute -bottom-5 right-0 text-[10px] text-[#8B949E] dark:text-[#6E7681] opacity-0 group-hover:opacity-100 transition-opacity">
+                    {formatRoadmapDate(item.endDate)}
+                  </div>
+                </div>
+
+                {/* Milestones for THIS row (positioned relative to row, not container) */}
+                {itemMilestones.map((milestone) => {
+                  const milestoneDate = new Date(milestone.date);
+                  const position = calculateTodayPosition(milestoneDate, timelineStart, timelineEnd, containerWidth);
                   
-                  {/* Label (if bar is wide enough) */}
-                  {barWidth > 100 && (
-                    <div className="absolute inset-0 flex items-center px-2">
-                      <span className="text-xs font-medium text-white truncate">
-                        {item.name}
-                      </span>
-                    </div>
-                  )}
+                  if (position === null) return null;
 
-                  {/* Progress Text (if bar is wide enough) */}
-                  {barWidth > 60 && (
-                    <div className="absolute inset-y-0 right-2 flex items-center">
-                      <span className="text-xs font-bold text-white">
-                        {item.progress}%
-                      </span>
+                  return (
+                    <div 
+                      key={milestone.id}
+                      className="absolute z-20 cursor-pointer group"
+                      style={{ 
+                        left: position, 
+                        top: '50%', 
+                        transform: 'translate(-50%, -50%)' 
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onMilestoneClick(milestone);
+                      }}
+                    >
+                      {/* Diamond Shape */}
+                      <div className={cn(
+                        "w-4 h-4 rotate-45 border-2",
+                        "bg-[#C69C6D] border-[#C69C6D]",
+                        "group-hover:scale-125 transition-transform"
+                      )} />
+                      
+                      {/* Tooltip */}
+                      <div className={cn(
+                        "absolute top-6 left-1/2 -translate-x-1/2 whitespace-nowrap",
+                        "px-2 py-1 rounded text-xs font-medium",
+                        "bg-[#24292F] dark:bg-[#E6EDF3] text-white dark:text-[#0D1117]",
+                        "opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+                      )}>
+                        {milestone.name}
+                      </div>
                     </div>
-                  )}
-                </div>
-
-                {/* Date Labels on Hover */}
-                <div className="absolute -bottom-5 left-0 text-[10px] text-[#8B949E] dark:text-[#6E7681] opacity-0 group-hover:opacity-100 transition-opacity">
-                  {formatRoadmapDate(item.startDate)}
-                </div>
-                <div className="absolute -bottom-5 right-0 text-[10px] text-[#8B949E] dark:text-[#6E7681] opacity-0 group-hover:opacity-100 transition-opacity">
-                  {formatRoadmapDate(item.endDate)}
-                </div>
+                  );
+                })}
               </div>
             );
           })}
 
-          {/* Milestones */}
-          {showMilestones && milestones.map((milestone) => {
+          {/* Global milestones (for milestones not attached to specific items) */}
+          {showMilestones && milestones.filter(m => !visibleItems.some(vi => vi.item.milestones?.some(im => im.id === m.id))).map((milestone) => {
             const milestoneDate = new Date(milestone.date);
             const position = calculateTodayPosition(milestoneDate, timelineStart, timelineEnd, containerWidth);
             
@@ -247,7 +300,7 @@ export function RoadmapGanttChart({
               <div 
                 key={milestone.id}
                 className="absolute z-20 cursor-pointer group"
-                style={{ left: position, top: '50%', transform: 'translate(-50%, -50%)' }}
+                style={{ left: position, top: 30 }}
                 onClick={() => onMilestoneClick(milestone)}
               >
                 {/* Diamond Shape */}

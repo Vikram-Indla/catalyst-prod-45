@@ -20,6 +20,7 @@ export interface RoadmapItem {
   risks?: number;
   children?: RoadmapItem[];
   parentId?: string;
+  milestones?: Milestone[];
 }
 
 export interface Milestone {
