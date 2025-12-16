@@ -430,7 +430,7 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
     {
       value: 'links',
       label: 'Links',
-      content: <UnifiedLinksTab entityType="objective" entityId={objective.id} />,
+      content: <UnifiedLinksTab entityType="objective" entityId={objective.id} hideTiles={['implementation', 'knowledge-hub']} />,
     },
     {
       value: 'discussions',
