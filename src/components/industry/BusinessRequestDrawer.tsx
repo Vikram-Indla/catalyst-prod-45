@@ -416,10 +416,10 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
   return (
     <>
       <Sheet open={isOpen} onOpenChange={(open) => !open && handleAttemptClose()}>
-        <SheetContent side="right" hideClose className={`executive-drawer ${drawerWidthClass} p-0 flex flex-col overflow-hidden bg-white`}>
-          <SheetHeader className="executive-drawer-header flex-col space-y-0 shrink-0 p-0 bg-white">
+        <SheetContent side="right" hideClose className={`executive-drawer ${drawerWidthClass} p-0`}>
+          <SheetHeader className="executive-drawer-header flex-col space-y-0 shrink-0 p-0">
             {/* Header row with proper top spacing */}
-            <div className="flex items-center justify-between px-4 md:px-5 pt-4 pb-3 border-b border-brand-gold bg-white">
+            <div className="flex items-center justify-between px-4 md:px-5 pt-4 pb-3 border-b border-brand-gold">
               {/* Left side: Request ID + Title */}
               <div className="flex items-center gap-2.5 flex-1 min-w-0">
                 <div className="flex items-center gap-1 shrink-0">
@@ -530,7 +530,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
           </SheetHeader>
 
           {/* Workflow Status - same size as tab labels */}
-          <div className="px-4 md:px-5 py-2 flex items-center bg-white shrink-0">
+          <div className="px-4 md:px-5 py-2 flex items-center shrink-0">
             <button 
               onClick={() => setWorkflowModalOpen(true)}
               className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
@@ -553,7 +553,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
 
           {/* Tabs with horizontal scroll */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
-            <TabsList className="executive-tabs-list w-full justify-start rounded-none border-b border-neutral-200 h-10 shrink-0 overflow-x-auto flex-nowrap bg-white px-4 md:px-5">
+            <TabsList className="executive-tabs-list w-full justify-start rounded-none border-b border-border h-10 shrink-0 overflow-x-auto flex-nowrap px-4 md:px-5">
               {VIEW_TABS.map((tab) => (
                 <TabsTrigger
                   key={tab.value}
@@ -566,7 +566,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
             </TabsList>
 
             {/* DRAWER BODY: Single scroll container - flex-1 min-h-0 overflow-y-auto */}
-            <div className="executive-drawer-content flex-1 min-h-0 overflow-y-auto bg-white">
+            <div className="executive-drawer-content flex-1 min-h-0 overflow-y-auto">
               <TabsContent value="demand-details" className="m-0 focus-visible:outline-none p-4 md:p-5 pb-6">
                 <DemandDetailsViewTab data={formData} onChange={handleFieldChange} />
               </TabsContent>
