@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Target, Layers, Zap, Grid3X3, ChevronRight, Plus, ExternalLink, X, AlertTriangle } from 'lucide-react';
+import { Target, Layers, Zap, Grid3X3, ChevronRight, X, AlertTriangle } from 'lucide-react';
 import { useStrategyPyramidCounts } from '@/hooks/useExecutionMetrics';
 import { useOKRv2StrategyMetrics } from '@/hooks/useOKRv2StrategyMetrics';
-import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
+
+
 import { cn } from '@/lib/utils';
 
 interface StrategyStackProps {
@@ -89,7 +89,7 @@ function getCoverageBarColor(coverage: number): string {
 }
 
 export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) {
-  const navigate = useNavigate();
+  
   const [selectedLayer, setSelectedLayer] = useState<LayerKey | null>(null);
   
   const { data: counts, isLoading } = useStrategyPyramidCounts(snapshotId);
@@ -176,7 +176,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
     onLayerClick(layerConfigs.find(l => l.key === key)?.label || '');
   };
 
-  const handleOpenOKRHub = () => navigate('/enterprise/okr-hub');
+  
 
   return (
     <section 
@@ -205,28 +205,6 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
           >
             Coverage across strategic layers
           </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button 
-            size="sm" 
-            className="gap-1.5 h-8 text-sm px-4 text-white"
-            style={{ backgroundColor: '#C69C6D' }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#B8905F'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#C69C6D'}
-          >
-            <Plus className="w-4 h-4" />
-            Create Objective
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="gap-1.5 h-8 text-sm px-4"
-            onClick={handleOpenOKRHub}
-            style={{ borderColor: 'var(--border-default)', color: 'var(--text-primary)' }}
-          >
-            <ExternalLink className="w-4 h-4" />
-            OKR Hub
-          </Button>
         </div>
       </div>
 
