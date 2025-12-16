@@ -91,17 +91,48 @@ export function useRisks(programId?: string) {
   const createRiskMutation = useMutation({
     mutationFn: async (formData: Partial<RiskFormData>) => {
       const user = await supabase.auth.getUser();
-      const { data, error } = await supabase
+      
+      // Build clean payload - explicitly remove any PI-related fields
+      const { program_increment_id, ...cleanFormData } = formData as any;
+      const payload = {
+        ...cleanFormData,
+        created_by: user.data.user?.id || ''
+      };
+      
+      // INSTRUMENTATION: Log payload keys before insert
+      console.log('[RISK CREATE] Payload keys:', Object.keys(payload));
+      console.log('[RISK CREATE] Full payload:', JSON.stringify(payload, null, 2));
+      
+      // Insert with minimal select to guarantee success
+      const { data: insertResult, error: insertError } = await supabase
         .from('risks')
-        .insert([{
-          ...formData,
-          created_by: user.data.user?.id || ''
-        }] as any)
-        .select()
+        .insert([payload] as any)
+        .select('id')
         .single();
 
-      if (error) throw error;
-      return data;
+      console.log('[RISK CREATE] Select string used: .select("id")');
+      
+      if (insertError) {
+        console.error('[RISK CREATE] Insert error:', insertError);
+        throw insertError;
+      }
+      
+      console.log('[RISK CREATE] Insert succeeded, id:', insertResult?.id);
+      
+      // Refetch the full risk in a separate query
+      if (insertResult?.id) {
+        const { data: refetchedRisk, error: refetchError } = await supabase
+          .from('risks')
+          .select('*')
+          .eq('id', insertResult.id)
+          .single();
+        
+        console.log('[RISK CREATE] Refetch result:', refetchedRisk?.id);
+        if (refetchError) console.warn('[RISK CREATE] Refetch warning:', refetchError);
+        return refetchedRisk || insertResult;
+      }
+      
+      return insertResult;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['risks'] });
@@ -111,6 +142,7 @@ export function useRisks(programId?: string) {
       });
     },
     onError: (error: Error) => {
+      console.error('[RISK CREATE] Mutation error:', error);
       toast({
         title: "Error",
         description: error.message,
@@ -121,15 +153,42 @@ export function useRisks(programId?: string) {
 
   const updateRiskMutation = useMutation({
     mutationFn: async ({ id, ...updates }: Partial<Risk> & { id: string }) => {
-      const { data, error } = await supabase
+      // Build clean payload - explicitly remove any PI-related fields
+      const { program_increment_id, ...cleanUpdates } = updates as any;
+      
+      // INSTRUMENTATION: Log payload keys before update
+      console.log('[RISK UPDATE] Payload keys:', Object.keys(cleanUpdates));
+      console.log('[RISK UPDATE] Full payload:', JSON.stringify(cleanUpdates, null, 2));
+      console.log('[RISK UPDATE] Risk ID:', id);
+      
+      // Update with minimal select to guarantee success
+      const { data: updateResult, error: updateError } = await supabase
         .from('risks')
-        .update(updates)
+        .update(cleanUpdates)
         .eq('id', id)
-        .select()
+        .select('id')
         .single();
 
-      if (error) throw error;
-      return data;
+      console.log('[RISK UPDATE] Select string used: .select("id")');
+      
+      if (updateError) {
+        console.error('[RISK UPDATE] Update error:', updateError);
+        throw updateError;
+      }
+      
+      console.log('[RISK UPDATE] Update succeeded, id:', updateResult?.id);
+      
+      // Refetch the full risk in a separate query
+      const { data: refetchedRisk, error: refetchError } = await supabase
+        .from('risks')
+        .select('*')
+        .eq('id', id)
+        .single();
+      
+      console.log('[RISK UPDATE] Refetch result:', refetchedRisk?.id);
+      if (refetchError) console.warn('[RISK UPDATE] Refetch warning:', refetchError);
+      
+      return refetchedRisk || updateResult;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['risks'] });
@@ -139,6 +198,7 @@ export function useRisks(programId?: string) {
       });
     },
     onError: (error: Error) => {
+      console.error('[RISK UPDATE] Mutation error:', error);
       toast({
         title: "Error",
         description: error.message,

@@ -14,20 +14,19 @@ interface RiskDialogProps {
   onOpenChange: (open: boolean) => void;
   risk?: any;
   defaultProgramId?: string;
-  defaultPiId?: string;
+  // NOTE: defaultPiId removed - program_increment_id column does not exist in risks table
 }
 
-export function RiskDialog({ open, onOpenChange, risk, defaultProgramId, defaultPiId }: RiskDialogProps) {
+export function RiskDialog({ open, onOpenChange, risk, defaultProgramId }: RiskDialogProps) {
   const [title, setTitle] = useState(risk?.title || '');
   const [description, setDescription] = useState(risk?.description || '');
   const [status, setStatus] = useState(risk?.status || 'Open');
   const [resolutionMethod, setResolutionMethod] = useState(risk?.resolution_method || 'Owned');
   const [programId, setProgramId] = useState(risk?.program_id || defaultProgramId || '');
-  const [piId, setPiId] = useState(risk?.program_increment_id || defaultPiId || '');
+  // NOTE: program_increment_id removed - column does not exist in risks table
   const [impact, setImpact] = useState(risk?.impact || 'Medium');
   const [occurrence, setOccurrence] = useState(risk?.occurrence || 'Medium');
   const [relationship, setRelationship] = useState(risk?.relationship || 'Program');
-
   const queryClient = useQueryClient();
 
   const { data: programs } = useQuery({
@@ -39,28 +38,64 @@ export function RiskDialog({ open, onOpenChange, risk, defaultProgramId, default
     },
   });
 
-  const { data: pis } = useQuery({
-    queryKey: ['program-increments'],
-    queryFn: async () => {
-      const { data, error } = await supabase.from('program_increments').select('*').order('name');
-      if (error) throw error;
-      return data;
-    },
-  });
+  // NOTE: PI query removed - program_increment_id column does not exist in risks table
 
   const mutation = useMutation({
     mutationFn: async (data: any) => {
+      // INSTRUMENTATION: Log payload keys
+      console.log('[RISK DIALOG] Payload keys:', Object.keys(data));
+      console.log('[RISK DIALOG] Full payload:', JSON.stringify(data, null, 2));
+      
       if (risk) {
-        const { error } = await supabase
+        console.log('[RISK DIALOG] Updating risk ID:', risk.id);
+        const { data: updateResult, error: updateError } = await supabase
           .from('risks')
           .update(data)
-          .eq('id', risk.id);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
+          .eq('id', risk.id)
+          .select('id')
+          .single();
+        
+        console.log('[RISK DIALOG UPDATE] Select string: .select("id")');
+        if (updateError) {
+          console.error('[RISK DIALOG UPDATE] Error:', updateError);
+          throw updateError;
+        }
+        console.log('[RISK DIALOG UPDATE] Success, id:', updateResult?.id);
+        
+        // Refetch after update
+        const { data: refetched } = await supabase
           .from('risks')
-          .insert([data]);
-        if (error) throw error;
+          .select('*')
+          .eq('id', risk.id)
+          .single();
+        console.log('[RISK DIALOG UPDATE] Refetched:', refetched?.id);
+        return refetched;
+      } else {
+        console.log('[RISK DIALOG] Creating new risk');
+        const { data: insertResult, error: insertError } = await supabase
+          .from('risks')
+          .insert([data])
+          .select('id')
+          .single();
+        
+        console.log('[RISK DIALOG INSERT] Select string: .select("id")');
+        if (insertError) {
+          console.error('[RISK DIALOG INSERT] Error:', insertError);
+          throw insertError;
+        }
+        console.log('[RISK DIALOG INSERT] Success, id:', insertResult?.id);
+        
+        // Refetch after insert
+        if (insertResult?.id) {
+          const { data: refetched } = await supabase
+            .from('risks')
+            .select('*')
+            .eq('id', insertResult.id)
+            .single();
+          console.log('[RISK DIALOG INSERT] Refetched:', refetched?.id);
+          return refetched;
+        }
+        return insertResult;
       }
     },
     onSuccess: () => {
@@ -77,7 +112,7 @@ export function RiskDialog({ open, onOpenChange, risk, defaultProgramId, default
       setOccurrence('Medium');
     },
     onError: (error: any) => {
-      console.error('Risk save error:', error);
+      console.error('[RISK DIALOG] Mutation error:', error);
       toast.error('Failed to save risk');
     },
   });
@@ -92,15 +127,13 @@ export function RiskDialog({ open, onOpenChange, risk, defaultProgramId, default
       toast.error('Please select a program');
       return;
     }
-    if (!piId) {
-      toast.error('Please select a PI');
-      return;
-    }
+    // NOTE: PI validation removed - program_increment_id column does not exist
     
     // Get a placeholder owner_id and created_by (in real app, use auth user)
     const placeholderId = '00000000-0000-0000-0000-000000000000';
     
-    mutation.mutate({
+    // Build payload WITHOUT program_increment_id
+    const payload = {
       title: title.trim(),
       description: description.trim() || title.trim(),
       status,
@@ -111,7 +144,10 @@ export function RiskDialog({ open, onOpenChange, risk, defaultProgramId, default
       relationship,
       owner_id: risk?.owner_id || placeholderId,
       created_by: risk?.created_by || placeholderId,
-    });
+    };
+    
+    console.log('[RISK DIALOG SUBMIT] Final payload (no PI field):', Object.keys(payload));
+    mutation.mutate(payload);
   };
 
   return (
@@ -155,21 +191,7 @@ export function RiskDialog({ open, onOpenChange, risk, defaultProgramId, default
                 </SelectContent>
               </Select>
             </div>
-            <div>
-              <Label htmlFor="pi">PI *</Label>
-              <Select value={piId} onValueChange={setPiId}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select PI" />
-                </SelectTrigger>
-                <SelectContent>
-                  {pis?.map((pi) => (
-                    <SelectItem key={pi.id} value={pi.id}>
-                      {pi.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            {/* NOTE: PI selector removed - program_increment_id column does not exist in risks table */}
             <div>
               <Label htmlFor="status">ROAM Status</Label>
               <Select value={resolutionMethod} onValueChange={setResolutionMethod}>
