@@ -5584,27 +5584,33 @@ export type Database = {
         Row: {
           created_at: string | null
           current_value: number | null
+          end_date: string | null
           id: string
           name: string
           objective_id: string
+          start_date: string | null
           target_value: number | null
           updated_at: string | null
         }
         Insert: {
           created_at?: string | null
           current_value?: number | null
+          end_date?: string | null
           id?: string
           name: string
           objective_id: string
+          start_date?: string | null
           target_value?: number | null
           updated_at?: string | null
         }
         Update: {
           created_at?: string | null
           current_value?: number | null
+          end_date?: string | null
           id?: string
           name?: string
           objective_id?: string
+          start_date?: string | null
           target_value?: number | null
           updated_at?: string | null
         }

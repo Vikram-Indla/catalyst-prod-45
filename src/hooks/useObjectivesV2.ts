@@ -15,7 +15,7 @@ export interface ObjectiveV2 {
   theme_id?: string;
   owner_id?: string;
   start_date?: string;
-  due_date?: string;
+  end_date?: string;
   status: ObjectiveStatusV2;
   health?: ObjectiveHealthV2;
   visibility?: string;
@@ -46,7 +46,7 @@ export interface CreateObjectiveInputV2 {
   theme_id: string; // Required in v2
   owner_id?: string;
   start_date?: string;
-  due_date?: string;
+  end_date?: string;
   status?: ObjectiveStatusV2;
   health?: ObjectiveHealthV2;
   notes?: string;
@@ -58,7 +58,7 @@ export interface UpdateObjectiveInputV2 {
   theme_id?: string;
   owner_id?: string;
   start_date?: string;
-  due_date?: string;
+  end_date?: string;
   status?: ObjectiveStatusV2;
   health?: ObjectiveHealthV2;
   notes?: string;
@@ -108,7 +108,7 @@ export function useObjectivesV2(filters?: ObjectiveFiltersV2) {
           theme_id,
           owner_id,
           start_date,
-          due_date,
+          end_date,
           status,
           health,
           visibility,
@@ -141,7 +141,7 @@ export function useObjectivesV2(filters?: ObjectiveFiltersV2) {
         query = query.gte('start_date', filters.timeframe.start);
       }
       if (filters?.timeframe?.end) {
-        query = query.lte('due_date', filters.timeframe.end);
+        query = query.lte('end_date', filters.timeframe.end);
       }
 
       const { data: objectives, error } = await query;
@@ -221,7 +221,7 @@ export function useObjectivesV2(filters?: ObjectiveFiltersV2) {
           theme_id: obj.theme_id,
           owner_id: obj.owner_id,
           start_date: obj.start_date,
-          due_date: obj.due_date,
+          end_date: obj.end_date,
           status: (obj.status || 'pending') as ObjectiveStatusV2,
           health: calculatedHealth,
           visibility: obj.visibility || 'org-wide',
@@ -310,7 +310,7 @@ export function useCreateObjectiveV2() {
           theme_id: input.theme_id, // Required in v2
           owner_id: input.owner_id || null,
           start_date: input.start_date || null,
-          due_date: input.due_date || null,
+          end_date: input.end_date || null,
           status: input.status || 'pending',
           health: input.health || 'at_risk',
           notes: input.notes || null,
@@ -366,7 +366,7 @@ export function useUpdateObjectiveV2() {
       if (input.theme_id !== undefined) updateData.theme_id = input.theme_id;
       if (input.owner_id !== undefined) updateData.owner_id = input.owner_id;
       if (input.start_date !== undefined) updateData.start_date = input.start_date;
-      if (input.due_date !== undefined) updateData.due_date = input.due_date;
+      if (input.end_date !== undefined) updateData.end_date = input.end_date;
       if (input.status !== undefined) updateData.status = input.status;
       if (input.health !== undefined) updateData.health = input.health;
       if (input.notes !== undefined) updateData.notes = input.notes;

@@ -218,8 +218,8 @@ export function ObjectiveDetailsPanel({ objectiveId }: ObjectiveDetailsPanelProp
                 <div className="font-medium">{objective.start_date || '—'}</div>
               </div>
               <div>
-                <div className="text-sm text-muted-foreground">Due Date</div>
-                <div className="font-medium">{objective.due_date || '—'}</div>
+                <div className="text-sm text-muted-foreground">End Date</div>
+                <div className="font-medium">{(objective as any).end_date || objective.due_date || '—'}</div>
               </div>
             </div>
           </div>

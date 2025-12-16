@@ -106,7 +106,7 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
         status: objective.status,
         health: objective.health || 'at_risk',
         start_date: objective.start_date || '',
-        due_date: objective.due_date || '',
+        end_date: objective.end_date || '',
         owner_id: objective.owner_id || '',
       };
       setFormData(data);
@@ -162,7 +162,7 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
         status: formData.status as any,
         health: formData.health as any,
         start_date: formData.start_date || null,
-        due_date: formData.due_date || null,
+        end_date: formData.end_date || null,
         owner_id: formData.owner_id || null,
       };
 
@@ -226,7 +226,7 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
         theme_id: objective.theme_id || '',
         owner_id: objective.owner_id || undefined,
         start_date: objective.start_date || undefined,
-        due_date: objective.due_date || undefined,
+        end_date: objective.end_date || undefined,
         status: objective.status,
         health: objective.health || 'at_risk',
         notes: (objective as any).notes || undefined,
@@ -259,7 +259,7 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
         status: objective.status,
         health: objective.health,
         start_date: objective.start_date,
-        due_date: objective.due_date,
+        end_date: objective.end_date,
         overall_progress: objective.overall_progress,
         key_results: keyResults?.map(kr => ({
           summary: kr.summary,
@@ -383,10 +383,10 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
             <span>{objective.owner_name}</span>
           </div>
         )}
-        {objective.due_date && (
+        {objective.end_date && (
           <div className="flex items-center gap-1.5">
             <Calendar className="h-3.5 w-3.5" />
-            <span>{new Date(objective.due_date).toLocaleDateString()}</span>
+            <span>{new Date(objective.end_date).toLocaleDateString()}</span>
           </div>
         )}
         <div className="flex items-center gap-1.5">
