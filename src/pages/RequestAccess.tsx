@@ -13,6 +13,12 @@ import { RichTextEditor } from '@/components/business-requests/RichTextEditor';
 import { useActiveOptionValues } from '@/hooks/useOptionSets';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings, getOwnerIdForDepartment } from '@/hooks/useDepartmentsAndOwners';
+
+// Force light mode for external portal
+const forceLightMode = () => {
+  document.documentElement.setAttribute('data-theme', 'light');
+  document.documentElement.classList.remove('dark');
+};
 import { DepartmentSelect } from '@/components/business-requests/DepartmentSelect';
 import { BusinessOwnerSelect } from '@/components/business-requests/BusinessOwnerSelect';
 import { 
@@ -95,7 +101,6 @@ const translations = {
     reviewHint: 'Review your details before submitting. You will receive a reference number after successful submission.',
     privacyHint: 'By submitting, you confirm the information provided is accurate.',
     back: 'Back',
-    saveDraft: 'Save Draft',
     continue: 'Continue',
     submit: 'Submit Request',
     sidebarBadge: 'What happens next',
@@ -162,7 +167,6 @@ const translations = {
     reviewHint: 'راجع تفاصيلك قبل الإرسال. ستتلقى رقم مرجعي بعد الإرسال بنجاح.',
     privacyHint: 'بالإرسال، تؤكد أن المعلومات المقدمة دقيقة.',
     back: 'رجوع',
-    saveDraft: 'حفظ كمسودة',
     continue: 'متابعة',
     submit: 'إرسال الطلب',
     sidebarBadge: 'ماذا يحدث بعد ذلك',
@@ -228,6 +232,11 @@ export default function RequestAccess() {
   const createSession = useCreateUploadSession();
   const stageAttachment = useStageAttachment();
   const commitAttachments = useCommitAttachments();
+  
+  // Force light mode for external portal - no dark mode allowed
+  useEffect(() => {
+    forceLightMode();
+  }, []);
   
   // Create upload session on mount
   useEffect(() => {
@@ -960,13 +969,6 @@ export default function RequestAccess() {
                 {currentStep === 0 ? t.backToLogin : t.back}
               </Button>
               <div className="flex gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="hidden sm:flex rounded-xl font-bold"
-                >
-                  {t.saveDraft}
-                </Button>
                 <Button
                   onClick={handleNext}
                   disabled={isSubmitting}

@@ -13,6 +13,12 @@ import { PasswordInput } from "@/components/auth/PasswordInput";
 
 const REMEMBERED_EMAIL_KEY = 'catalyst_remembered_email';
 
+// Force light mode for external portal - no dark mode, no theme toggle, no prefers-color-scheme
+const forceLightMode = () => {
+  document.documentElement.setAttribute('data-theme', 'light');
+  document.documentElement.classList.remove('dark');
+};
+
 export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,6 +38,11 @@ export default function Auth() {
   
   // Track if we've already checked this user to prevent infinite loops
   const checkedUserRef = useRef<string | null>(null);
+
+  // Force light mode on external portal - no dark mode allowed
+  useEffect(() => {
+    forceLightMode();
+  }, []);
 
   // Load remembered email on mount
   useEffect(() => {
