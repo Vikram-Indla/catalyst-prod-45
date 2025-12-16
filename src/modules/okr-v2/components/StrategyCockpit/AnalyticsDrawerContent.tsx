@@ -143,7 +143,7 @@ export function AnalyticsDrawerContent({ selectedItem, themes }: AnalyticsDrawer
       ? { workItemCount: (selectedItem as KeyResult).workItems?.length || 0, krsWithoutWork: 0 }
       : {};
 
-  const daysToDue = getDaysUntilDue((selectedItem as any).dueDate);
+  const daysToDue = getDaysUntilDue((selectedItem as any).endDate);
   const highRisks = getHighRiskCount(selectedItem);
   const blockedWork = getBlockedWorkCount(selectedItem, objective);
   const delayedWork = getDelayedWorkCount(selectedItem, objective);

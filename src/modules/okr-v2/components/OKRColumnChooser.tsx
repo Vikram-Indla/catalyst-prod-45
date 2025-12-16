@@ -28,7 +28,7 @@ export const DEFAULT_OKR_COLUMNS: OKRColumn[] = [
   { key: 'status', label: 'Status', visible: true },
   { key: 'progress', label: 'Progress vs Plan', visible: true },
   { key: 'startDate', label: 'Start Date', visible: false },
-  { key: 'dueDate', label: 'Due Date', visible: false },
+  { key: 'endDate', label: 'End Date', visible: false },
   { key: 'risks', label: 'Risks', visible: true },
   { key: 'krs', label: 'Linked', visible: true },
 ];

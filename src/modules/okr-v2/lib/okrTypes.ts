@@ -69,9 +69,8 @@ export interface KeyResult {
   baseline?: number;
   unit?: string;
   weight: number; // 0–1; we will normalise per objective
-  dueDate?: string;
   startDate?: string;  // KR timeframe start
-  endDate?: string;    // KR timeframe end
+  endDate?: string;    // KR timeframe end (canonical deadline field)
   ownRisks: OkrRiskSummary;      // Direct risks attached to this KR (usually empty)
   cascadedRisks: OkrRiskSummary; // Sum of work item ownRisks
   risks: OkrRiskSummary;         // Alias for analytics (= cascadedRisks)
@@ -98,7 +97,7 @@ export interface Objective {
   ownerId?: string;
   ownerName?: string;
   startDate?: string;
-  dueDate?: string;
+  endDate?: string; // Canonical deadline field (was dueDate)
 }
 
 export interface Theme {

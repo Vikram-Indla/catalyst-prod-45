@@ -300,7 +300,7 @@ export function computeProgressBaseline(
  */
 export function getObjectiveProgressBaseline(objective: Objective): ProgressBaseline {
   const actualProgress = computeObjectiveProgress(objective);
-  return computeProgressBaseline(actualProgress, objective.startDate, objective.dueDate);
+  return computeProgressBaseline(actualProgress, objective.startDate, objective.endDate);
 }
 
 /**
@@ -308,8 +308,8 @@ export function getObjectiveProgressBaseline(objective: Objective): ProgressBase
  */
 export function getKeyResultProgressBaseline(kr: KeyResult): ProgressBaseline {
   const actualProgress = computeKeyResultProgress(kr);
-  // KR now uses its own startDate and endDate for time-based trend
-  return computeProgressBaseline(actualProgress, kr.startDate, kr.endDate || kr.dueDate);
+  // KR uses its own startDate and endDate for time-based trend
+  return computeProgressBaseline(actualProgress, kr.startDate, kr.endDate);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────────
@@ -380,13 +380,13 @@ export function deriveKeyResultStatus(kr: KeyResult): StatusCode {
     wi => wi.status === 'blocked' || (wi.daysVariance && wi.daysVariance > VARIANCE_THRESHOLDS.BLOCKED)
   );
 
-  const daysToDue = getDaysUntilDue(kr.dueDate);
+  const daysToDue = getDaysUntilDue(kr.endDate);
   if (hasBlockedWork && daysToDue !== null && daysToDue < DUE_DATE_THRESHOLDS.WARNING) {
     return 'off-track';
   }
 
   const progress = computeKeyResultProgress(kr);
-  return deriveStatus(progress, kr.risks, kr.dueDate, hasBlockedWork);
+  return deriveStatus(progress, kr.risks, kr.endDate, hasBlockedWork);
 }
 
 /**
@@ -405,7 +405,7 @@ export function deriveObjectiveStatus(objective: Objective): StatusCode {
     return 'at-risk';
   }
 
-  return deriveStatus(progress, aggregatedRisks, objective.dueDate);
+  return deriveStatus(progress, aggregatedRisks, objective.endDate);
 }
 
 /**
@@ -774,7 +774,7 @@ export function getItemsDueWithinDays(themes: Theme[], days: number): Array<KeyR
   themes.forEach(theme => {
     theme.objectives.forEach(obj => {
       obj.keyResults.forEach(kr => {
-        const daysToDue = getDaysUntilDue(kr.dueDate);
+        const daysToDue = getDaysUntilDue(kr.endDate);
         if (daysToDue !== null && daysToDue > 0 && daysToDue <= days) {
           items.push(kr);
         }

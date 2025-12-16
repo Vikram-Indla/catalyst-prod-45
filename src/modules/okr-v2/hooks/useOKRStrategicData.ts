@@ -288,9 +288,8 @@ export function useOKRStrategicData(snapshotId?: string) {
           baseline: dbKr.baseline_value || 0,
           unit: dbKr.metric_type,
           weight: 1,
-          dueDate: dbKr.due_date,
           startDate: dbKr.start_date || undefined,  // KR timeframe start
-          endDate: dbKr.end_date || undefined,      // KR timeframe end
+          endDate: dbKr.end_date || undefined,      // KR timeframe end (canonical deadline)
           direction: (dbKr.direction as 'increase' | 'decrease' | 'maintain') || 'increase',
           ownRisks: krOwnRisks,                    // Direct KR risks (empty)
           cascadedRisks: cascadedRisksFromWorkItems, // Sum of work item ownRisks
@@ -358,7 +357,7 @@ export function useOKRStrategicData(snapshotId?: string) {
           ownerId: dbObj.owner_id || undefined,
           ownerName: dbObj.owner_id ? profileMap.get(dbObj.owner_id) : undefined,
           startDate: dbObj.start_date || undefined,
-          dueDate: dbObj.due_date || undefined,
+          endDate: dbObj.end_date || undefined,
         };
 
         // Calculate progress (status is preserved from database)
