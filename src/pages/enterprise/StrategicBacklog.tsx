@@ -186,51 +186,54 @@ export default function StrategicBacklog() {
           </div>
 
           {/* Main Content Area */}
-          <div className="flex-1 flex overflow-hidden px-6 pb-6 gap-6">
-            {/* Left: Coverage Panel */}
-            <div className="w-72 shrink-0">
-              <StrategicBacklogCoveragePanel
-                themes={themes.length}
-                themesWithObjectives={themesWithObjectives}
-                objectives={objectivesData.count}
-                epics={epicsData.aligned}
-                onNavigate={setActiveSection}
-              />
+          <div className="flex-1 flex overflow-hidden">
+            {/* Main Content with Padding */}
+            <div className="flex-1 flex gap-6 px-6 pb-6 overflow-hidden">
+              {/* Left: Coverage Panel */}
+              <div className="w-72 shrink-0">
+                <StrategicBacklogCoveragePanel
+                  themes={themes.length}
+                  themesWithObjectives={themesWithObjectives}
+                  objectives={objectivesData.count}
+                  epics={epicsData.aligned}
+                  onNavigate={setActiveSection}
+                />
+              </div>
+
+              {/* Right: Table Content */}
+              <div className="flex-1 overflow-auto">
+                {activeSection === 'themes' && (
+                  <StrategicBacklogThemesSection
+                    themes={themes}
+                    snapshotId={snapshotId}
+                    isArchived={isArchived}
+                    onSelectItem={(item) => handleSelectItem(item, 'theme')}
+                    selectedItemId={selectedItemType === 'theme' ? selectedItem?.id : undefined}
+                  />
+                )}
+                {activeSection === 'objectives' && (
+                  <StrategicBacklogObjectivesSection
+                    snapshotId={snapshotId}
+                    themes={themes}
+                    isArchived={isArchived}
+                    onSelectItem={(item) => handleSelectItem(item, 'objective')}
+                    selectedItemId={selectedItemType === 'objective' ? selectedItem?.id : undefined}
+                  />
+                )}
+                {activeSection === 'epics' && (
+                  <StrategicBacklogEpicsSection
+                    snapshotId={snapshotId}
+                    themes={themes}
+                    links={links || null}
+                    isArchived={isArchived}
+                    onSelectItem={(item) => handleSelectItem(item, 'epic')}
+                    selectedItemId={selectedItemType === 'epic' ? selectedItem?.id : undefined}
+                  />
+                )}
+              </div>
             </div>
 
-            {/* Right: Table Content */}
-            <div className="flex-1 overflow-auto">
-              {activeSection === 'themes' && (
-                <StrategicBacklogThemesSection
-                  themes={themes}
-                  snapshotId={snapshotId}
-                  isArchived={isArchived}
-                  onSelectItem={(item) => handleSelectItem(item, 'theme')}
-                  selectedItemId={selectedItemType === 'theme' ? selectedItem?.id : undefined}
-                />
-              )}
-              {activeSection === 'objectives' && (
-                <StrategicBacklogObjectivesSection
-                  snapshotId={snapshotId}
-                  themes={themes}
-                  isArchived={isArchived}
-                  onSelectItem={(item) => handleSelectItem(item, 'objective')}
-                  selectedItemId={selectedItemType === 'objective' ? selectedItem?.id : undefined}
-                />
-              )}
-              {activeSection === 'epics' && (
-                <StrategicBacklogEpicsSection
-                  snapshotId={snapshotId}
-                  themes={themes}
-                  links={links || null}
-                  isArchived={isArchived}
-                  onSelectItem={(item) => handleSelectItem(item, 'epic')}
-                  selectedItemId={selectedItemType === 'epic' ? selectedItem?.id : undefined}
-                />
-              )}
-            </div>
-
-            {/* Quick Drawer */}
+            {/* Quick Drawer - Outside padded container */}
             {selectedItem && selectedItemType && (
               <StrategicBacklogQuickDrawer
                 item={selectedItem}
