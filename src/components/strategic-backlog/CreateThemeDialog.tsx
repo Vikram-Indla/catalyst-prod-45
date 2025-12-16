@@ -4,30 +4,31 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Palette } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { useCreateTheme } from '@/hooks/useStrategicBacklog';
+import { CATALYST_BRAND_COLORS, DEFAULT_THEME_COLOR } from '@/constants/brandColors';
 
-const COLOR_OPTIONS = [
-  { value: '#c69c6d', label: 'Gold' },
-  { value: '#5c7c5c', label: 'Olive' },
-  { value: '#8b7355', label: 'Bronze' },
-  { value: '#d4b896', label: 'Champagne' },
-  { value: '#3b82f6', label: 'Blue' },
-  { value: '#8b5cf6', label: 'Purple' },
-  { value: '#ec4899', label: 'Pink' },
-  { value: '#14b8a6', label: 'Teal' },
+// Status options - these map to CreateThemeInput types
+const STATUS_OPTIONS = [
+  { value: 'draft', label: 'Proposed' },
+  { value: 'active', label: 'Active' },
+  { value: 'archived', label: 'Done' },
 ];
 
 interface CreateThemeDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  snapshotId: string;
+  snapshotId?: string;
 }
 
 export function CreateThemeDialog({ open, onOpenChange, snapshotId }: CreateThemeDialogProps) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [colorTag, setColorTag] = useState('#c69c6d');
+  const [colorTag, setColorTag] = useState(DEFAULT_THEME_COLOR);
+  const [status, setStatus] = useState<'draft' | 'active' | 'archived'>('draft');
+  const [startDate, setStartDate] = useState<Date | undefined>();
+  const [endDate, setEndDate] = useState<Date | undefined>();
 
   const createTheme = useCreateTheme();
 
@@ -39,12 +40,28 @@ export function CreateThemeDialog({ open, onOpenChange, snapshotId }: CreateThem
       description,
       color_tag: colorTag,
       snapshot_id: snapshotId,
-      status: 'active',
+      status: status,
+      start_date: startDate?.toISOString().split('T')[0],
+      end_date: endDate?.toISOString().split('T')[0],
     });
 
+    // Reset form
     setName('');
     setDescription('');
-    setColorTag('#c69c6d');
+    setColorTag(DEFAULT_THEME_COLOR);
+    setStatus('draft');
+    setStartDate(undefined);
+    setEndDate(undefined);
+    onOpenChange(false);
+  };
+
+  const handleCancel = () => {
+    setName('');
+    setDescription('');
+    setColorTag(DEFAULT_THEME_COLOR);
+    setStatus('draft');
+    setStartDate(undefined);
+    setEndDate(undefined);
     onOpenChange(false);
   };
 
@@ -52,15 +69,13 @@ export function CreateThemeDialog({ open, onOpenChange, snapshotId }: CreateThem
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
-          <div className="flex items-center gap-3">
-            <Palette className="h-5 w-5 text-brand-gold" />
-            <DialogTitle>Create Theme</DialogTitle>
-          </div>
+          <DialogTitle>Create Theme</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
+          {/* Name */}
           <div className="space-y-2">
-            <Label>Theme Name *</Label>
+            <Label>Name <span className="text-brand-gold">*</span></Label>
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -69,6 +84,7 @@ export function CreateThemeDialog({ open, onOpenChange, snapshotId }: CreateThem
             />
           </div>
 
+          {/* Description */}
           <div className="space-y-2">
             <Label>Description</Label>
             <Textarea
@@ -79,27 +95,67 @@ export function CreateThemeDialog({ open, onOpenChange, snapshotId }: CreateThem
             />
           </div>
 
-          <div className="space-y-2">
-            <Label>Color Tag</Label>
-            <div className="flex flex-wrap gap-2">
-              {COLOR_OPTIONS.map((color) => (
-                <button
-                  key={color.value}
-                  type="button"
-                  onClick={() => setColorTag(color.value)}
-                  className={`w-8 h-8 rounded-lg border-2 transition-all ${
-                    colorTag === color.value ? 'border-foreground scale-110' : 'border-transparent'
-                  }`}
-                  style={{ backgroundColor: color.value }}
-                  title={color.label}
-                />
-              ))}
+          {/* Status & Color Tag Row */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Status</Label>
+              <Select value={status} onValueChange={(value) => setStatus(value as 'draft' | 'active' | 'archived')}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent className="z-[400]">
+                  {STATUS_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Color Tag</Label>
+              <div className="flex gap-2 pt-1">
+                {CATALYST_BRAND_COLORS.map((color) => (
+                  <button
+                    key={color.value}
+                    type="button"
+                    onClick={() => setColorTag(color.value)}
+                    className={`w-8 h-8 rounded-lg border-2 transition-all ${
+                      colorTag === color.value ? 'border-foreground scale-110 ring-2 ring-offset-1 ring-foreground/20' : 'border-transparent hover:scale-105'
+                    }`}
+                    style={{ backgroundColor: color.value }}
+                    title={color.label}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Start Date & End Date Row */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Start Date</Label>
+              <CatalystDatePicker
+                value={startDate}
+                onChange={setStartDate}
+                placeholder="Select start date"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>End Date</Label>
+              <CatalystDatePicker
+                value={endDate}
+                onChange={setEndDate}
+                placeholder="Select end date"
+              />
             </div>
           </div>
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button variant="outline" onClick={handleCancel}>
             Cancel
           </Button>
           <Button
@@ -107,7 +163,7 @@ export function CreateThemeDialog({ open, onOpenChange, snapshotId }: CreateThem
             disabled={!name.trim() || createTheme.isPending}
             className="bg-brand-gold hover:bg-brand-gold/90"
           >
-            {createTheme.isPending ? 'Creating...' : 'Create'}
+            {createTheme.isPending ? 'Creating...' : 'Save'}
           </Button>
         </DialogFooter>
       </DialogContent>
