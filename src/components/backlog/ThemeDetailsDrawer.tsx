@@ -442,8 +442,13 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
         <SheetContent
           side="right"
           hideClose
-          className={`executive-drawer ${drawerWidthClass} p-0 flex flex-col overflow-hidden bg-white dark:bg-[#161B22]`}
+          className={`executive-drawer ${drawerWidthClass} relative p-0 flex flex-col overflow-hidden bg-white dark:bg-[#161B22]`}
         >
+          {/* 🔒 GOLD VERTICAL LINE — ABSOLUTE FULL HEIGHT */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute left-0 top-0 bottom-0 w-1 bg-brand-gold"
+          />
           <SheetHeader className="executive-drawer-header flex-col space-y-0 shrink-0 p-0 bg-white dark:bg-[#161B22]">
             {/* Header Row - thin gold border */}
             <div className="flex items-center justify-between px-4 md:px-5 pt-4 pb-3 border-b border-brand-gold/50">
@@ -540,14 +545,9 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
             <SheetDescription className="sr-only">Theme details panel</SheetDescription>
           </SheetHeader>
 
-          {/* Single-page scrollable content with gold vertical line */}
-          <div className="flex-1 flex overflow-hidden min-h-0">
-            {/* 🔒 GOLD VERTICAL LINE — FULL HEIGHT */}
-            <div className="w-1 bg-brand-gold flex-shrink-0 self-stretch" />
-            
-            {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto">
-              <div className="p-4 md:p-5 space-y-6">
+          {/* Scrollable Content */}
+          <div className="flex-1 overflow-y-auto min-h-0">
+            <div className="p-4 md:p-5 space-y-6">
               
               {/* SECTION 1: Strategic Context */}
               <section className="border border-[#E1E4E8] dark:border-[#30363D] rounded-lg bg-white dark:bg-[#0D1117] p-5 space-y-4">
@@ -693,7 +693,6 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
               </Collapsible>
               </div>
             </div>
-          </div>
         </SheetContent>
       </Sheet>
 
