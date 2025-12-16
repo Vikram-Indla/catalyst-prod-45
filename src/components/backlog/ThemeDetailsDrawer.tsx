@@ -384,7 +384,12 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
     },
   });
 
-  if (!theme) return null;
+  if (!theme) {
+    console.log('[ThemeDetailsDrawer] No theme provided, returning null');
+    return null;
+  }
+
+  console.log('[ThemeDetailsDrawer] Rendering with theme:', theme.id, 'isOpen:', isOpen);
 
   const drawerWidthClass = isExpanded
     ? 'w-screen sm:w-[70vw] sm:max-w-[1120px]'
@@ -442,7 +447,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
         <SheetContent
           side="right"
           hideClose
-          className={`executive-drawer ${drawerWidthClass} relative p-0 flex flex-col overflow-hidden bg-white dark:bg-[#161B22]`}
+          className={`executive-drawer ${drawerWidthClass} relative p-0 flex flex-col overflow-hidden bg-white dark:bg-[#161B22] z-[300]`}
         >
           {/* 🔒 GOLD VERTICAL LINE — ABSOLUTE FULL HEIGHT */}
           <div
