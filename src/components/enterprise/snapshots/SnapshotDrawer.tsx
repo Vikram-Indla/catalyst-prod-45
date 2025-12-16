@@ -49,7 +49,7 @@ import {
 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { UserPicker } from '@/components/ui/user-picker';
@@ -232,12 +232,12 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
       queryClient.invalidateQueries({ queryKey: ['snapshot-drawer', snapshotId] });
       queryClient.invalidateQueries({ queryKey: ['snapshot-configuration', snapshotId] });
       queryClient.invalidateQueries({ queryKey: ['strategic-snapshots'] });
-      toast.success('Snapshot saved successfully');
+      catalystToast.success('Success', 'Snapshot saved successfully');
       setIsDirty(false);
       onSave?.(formData);
     },
     onError: (error: any) => {
-      toast.error(`Failed to save: ${error.message}`);
+      catalystToast.error('Error', `Failed to save: ${error.message}`);
     },
   });
 
@@ -268,7 +268,7 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
   const handleCopyLink = () => {
     const url = `${window.location.origin}/enterprise/snapshots/${snapshotId}`;
     navigator.clipboard.writeText(url);
-    toast.success('Link copied to clipboard');
+    catalystToast.success('Copied', 'Link copied to clipboard');
   };
 
   const handleSave = () => {
@@ -393,11 +393,11 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="z-[400]">
-              <DropdownMenuItem onClick={() => toast.info('Duplicate not implemented')}>
+              <DropdownMenuItem onClick={() => catalystToast.info('Info', 'Duplicate not implemented')}>
                 <Copy className="h-4 w-4 mr-2" />
                 Duplicate
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => toast.info('Export not implemented')}>
+              <DropdownMenuItem onClick={() => catalystToast.info('Info', 'Export not implemented')}>
                 <FileDown className="h-4 w-4 mr-2" />
                 Export
               </DropdownMenuItem>
@@ -762,10 +762,10 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
                       <Badge 
                         variant="outline" 
                         className={cn(
-                          'text-[10px]',
+                          'text-[10px] font-medium',
                           theme.status === 'active' 
-                            ? 'text-[#5C7C5C] border-[#5C7C5C]/30' 
-                            : 'text-muted-foreground border-border'
+                            ? 'bg-secondary-green/15 text-secondary-green border-secondary-green/40 dark:bg-secondary-green/25 dark:text-[#8FBC8F] dark:border-secondary-green/50' 
+                            : 'bg-muted text-muted-foreground border-border'
                         )}
                       >
                         {theme.status === 'active' ? 'Active' : 'Proposed'}
