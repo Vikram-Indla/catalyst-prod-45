@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter, SheetBody } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter, SheetBody } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -135,9 +135,9 @@ export function ManageQuartersDrawer({ open, onClose, snapshot, isAdmin = false 
           <div className="flex items-center justify-between">
             <div>
               <SheetTitle>Manage quarters</SheetTitle>
-              <p className="text-sm text-muted-foreground mt-1">
+              <SheetDescription className="text-sm text-muted-foreground mt-1">
                 Snapshot: {snapshot.name}
-              </p>
+              </SheetDescription>
             </div>
             <Button
               variant="outline"

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Sheet, SheetContent } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { X, Calendar, MoreVertical, ExternalLink, Layers, Settings, CheckCircle2, AlertTriangle, ChevronRight, Pencil, Trash2 } from 'lucide-react';
@@ -133,6 +133,16 @@ export function SnapshotDetailsDrawerV2({ open, onClose, snapshot }: SnapshotDet
           className="w-[520px] max-w-full p-0 flex flex-col bg-white dark:bg-[#161B22] border-l border-border shadow-xl z-[1000]"
           hideClose
         >
+          <SheetHeader className="sr-only">
+            <SheetTitle>
+              {currentView === 'themes' ? `Manage themes for ${snapshot.name}` : snapshot.name}
+            </SheetTitle>
+            <SheetDescription>
+              {currentView === 'themes'
+                ? 'Select which strategic themes are included in this snapshot.'
+                : 'View snapshot details and manage scope, quarters, and themes.'}
+            </SheetDescription>
+          </SheetHeader>
           {currentView === 'themes' ? (
             <div className="flex-1 overflow-hidden p-4">
               <ManageThemesPanel 
