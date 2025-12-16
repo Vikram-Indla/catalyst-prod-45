@@ -246,13 +246,16 @@
   --btn-secondary-text: var(--text-1);
   --btn-ghost-hover: var(--surface-2);
   
-  /* Tables */
-  --table-header-bg: var(--surface-2);
+  /* Tables - Enterprise Data Table Tokens */
+  --table-header-bg: #F8FAFC;
   --table-header-text: var(--text-2);
   --table-row-bg: var(--surface-1);
-  --table-row-hover: var(--surface-2);
+  --table-row-hover: #F1F5F9;
   --table-row-selected: rgba(92, 124, 92, 0.08);
+  --table-row-stripe: rgba(0, 0, 0, 0.015);
   --table-border: var(--border-color);
+  --table-pinned-shadow: 4px 0 8px rgba(0, 0, 0, 0.05);
+  --cell-focus-ring: rgba(198, 156, 109, 0.4);
   
   /* Brand */
   --brand-accent: #C8A26A;
@@ -381,13 +384,16 @@ html[data-theme="dark"],
   --btn-secondary-text: var(--text-1);
   --btn-ghost-hover: var(--surface-2);
   
-  /* Tables */
-  --table-header-bg: var(--surface-2);
+  /* Tables - Enterprise Data Table Tokens (Dark) */
+  --table-header-bg: #1A2332;
   --table-header-text: var(--text-2);
   --table-row-bg: var(--surface-1);
-  --table-row-hover: var(--surface-2);
+  --table-row-hover: #1E2936;
   --table-row-selected: rgba(92, 124, 92, 0.12);
+  --table-row-stripe: rgba(255, 255, 255, 0.02);
   --table-border: var(--border-color);
+  --table-pinned-shadow: 4px 0 12px rgba(0, 0, 0, 0.2);
+  --cell-focus-ring: rgba(198, 156, 109, 0.5);
   
   /* Brand */
   --brand-accent: #C8A26A;
