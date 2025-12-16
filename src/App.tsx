@@ -155,7 +155,7 @@ import { AdminGuard } from "./components/admin/AdminGuard";
 import OKRTree from "./pages/enterprise/OKRTree";
 import OKRHub from "./pages/enterprise/OKRHub";
 // OKR v2 is now the single source - no separate portfolio/program/team OKR hubs
-import RoadmapsPage from "./pages/enterprise/Roadmaps";
+import ObjectiveRoadmapPage from "./pages/ObjectiveRoadmapPage";
 import StrategicSnapshots from "./pages/enterprise/StrategicSnapshots";
 import StrategicBacklog from "./pages/enterprise/StrategicBacklog";
 import EnterpriseEpics from "./pages/enterprise/EnterpriseEpics";
@@ -300,7 +300,7 @@ const App = () => (
               <Route path="/program/:programId/epic-balancing" element={<EpicBalancingPage />} />
               <Route path="/program/:programId/reports" element={<PlaceholderPage />} />
               <Route path="/team/:teamId/okr-hub" element={<OKRHub />} />
-              <Route path="/enterprise/roadmaps" element={<RoadmapsPage />} />
+              <Route path="/enterprise/roadmaps" element={<ObjectiveRoadmapPage />} />
               <Route path="/work-tree" element={<WorkTreePage />} />
               <Route path="/enterprise/work-tree" element={<WorkTreePage />} />
               <Route path="/enterprise/kanban-boards" element={<EnterpriseComingSoon />} />
