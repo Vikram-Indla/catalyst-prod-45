@@ -384,9 +384,9 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
         <SheetContent
           side="right"
           hideClose
-          className={`executive-drawer ${drawerWidthClass} p-0 flex flex-col overflow-hidden bg-white dark:bg-surface-1`}
+          className={`executive-drawer ${drawerWidthClass} p-0 flex flex-col overflow-hidden bg-white dark:bg-[#161B22]`}
         >
-          <SheetHeader className="executive-drawer-header flex-col space-y-0 shrink-0 p-0 bg-white dark:bg-surface-1">
+          <SheetHeader className="executive-drawer-header flex-col space-y-0 shrink-0 p-0 bg-white dark:bg-[#161B22]">
             {/* Header Row */}
             <div className="flex items-center justify-between px-4 md:px-5 pt-4 pb-3 border-b border-brand-gold">
               {/* Left: Theme Key + Title */}
@@ -487,7 +487,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
             <div className="p-4 md:p-5 space-y-6">
               
               {/* SECTION 1: Strategic Context */}
-              <section className="border border-border rounded-lg bg-card p-5 space-y-4">
+              <section className="border border-[#E1E4E8] dark:border-[#30363D] rounded-lg bg-white dark:bg-[#0D1117] p-5 space-y-4">
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-gold">
                   Strategic Context
                 </h3>
@@ -495,25 +495,25 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                 <div className="grid grid-cols-2 gap-4">
                   {/* Strategic Snapshot (read-only) */}
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-medium text-muted-foreground">Strategic Snapshot</Label>
-                    <div className="h-9 px-3 flex items-center bg-muted/50 border border-border rounded-md text-sm">
+                    <Label className="text-xs font-medium text-[#8B949E]">Strategic Snapshot</Label>
+                    <div className="h-9 px-3 flex items-center bg-[#F6F8FA] dark:bg-[#161B22] border border-[#E1E4E8] dark:border-[#30363D] rounded-md text-sm text-[#24292F] dark:text-[#E6EDF3]">
                       {snapshot?.name || 'No snapshot assigned'}
                     </div>
                   </div>
                   
                   {/* State */}
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-medium">State</Label>
+                    <Label className="text-xs font-medium text-[#8B949E]">State</Label>
                     <Select 
                       value={formData.status || 'proposed'} 
                       onValueChange={(v) => handleFieldChange('status', v)}
                     >
-                      <SelectTrigger className="h-9">
+                      <SelectTrigger className="h-9 bg-white dark:bg-[#0D1117] border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3]">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="z-[400]">
+                      <SelectContent className="z-[400] bg-white dark:bg-[#161B22] border-[#E1E4E8] dark:border-[#30363D]">
                         {Object.entries(THEME_STATES).map(([value, label]) => (
-                          <SelectItem key={value} value={value}>{label}</SelectItem>
+                          <SelectItem key={value} value={value} className="text-[#24292F] dark:text-[#E6EDF3]">{label}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -522,7 +522,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
 
                 {/* Description */}
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Description</Label>
+                  <Label className="text-xs font-medium text-[#8B949E]">Description</Label>
                   <RichTextEditor
                     value={formData.description || ''}
                     onChange={(value) => handleFieldChange('description', value)}
@@ -532,32 +532,32 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
               </section>
 
               {/* SECTION 2: Objectives */}
-              <section className="border border-border rounded-lg bg-card p-5 space-y-4">
+              <section className="border border-[#E1E4E8] dark:border-[#30363D] rounded-lg bg-white dark:bg-[#0D1117] p-5 space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Objectives {objectives.length > 0 && <span className="text-brand-gold">({objectives.length})</span>}
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-[#8B949E]">
+                    Objectives {objectives.length > 0 && <span className="text-[#C69C6D]">({objectives.length})</span>}
                   </h3>
-                  <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => setShowLinkObjectiveDialog(true)}>
+                  <Button size="sm" variant="outline" className="h-7 text-xs gap-1 bg-white dark:bg-[#21262D] border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] hover:bg-[#F6F8FA] dark:hover:bg-[#30363D]" onClick={() => setShowLinkObjectiveDialog(true)}>
                     <Plus className="h-3 w-3" />
                     Link Objective
                   </Button>
                 </div>
                 
                 {objectives.length === 0 ? (
-                  <div className="py-6 text-center text-muted-foreground text-sm">
+                  <div className="py-6 text-center text-[#8B949E] text-sm">
                     No objectives linked to this theme
                   </div>
                 ) : (
-                  <div className="divide-y divide-border">
+                  <div className="divide-y divide-[#E1E4E8] dark:divide-[#30363D]">
                     {objectives.map((obj) => (
                       <div key={obj.id} className="py-2.5 flex items-center justify-between gap-3">
-                        <span className="text-sm font-medium truncate">{obj.name}</span>
+                        <span className="text-sm font-medium truncate text-[#24292F] dark:text-[#E6EDF3]">{obj.name}</span>
                         <div className="flex items-center gap-2 shrink-0">
                           {obj.status && (
-                            <Badge variant="outline" className="text-xs">{obj.status}</Badge>
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium uppercase bg-[#21262D] dark:bg-[#30363D] text-[#8B949E] border border-[#30363D]">{obj.status}</span>
                           )}
                           {obj.overall_progress !== null && (
-                            <span className="text-xs text-muted-foreground">
+                            <span className="text-xs text-[#8B949E]">
                               {Math.round((obj.overall_progress || 0) * 100)}%
                             </span>
                           )}
@@ -569,40 +569,40 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
               </section>
 
               {/* SECTION 3: Aligned Epics */}
-              <section className="border border-border rounded-lg bg-card p-5 space-y-4">
+              <section className="border border-[#E1E4E8] dark:border-[#30363D] rounded-lg bg-white dark:bg-[#0D1117] p-5 space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Aligned Epics {epics.length > 0 && <span className="text-brand-gold">({epics.length})</span>}
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-[#8B949E]">
+                    Aligned Epics {epics.length > 0 && <span className="text-[#C69C6D]">({epics.length})</span>}
                   </h3>
-                  <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => setShowLinkEpicDialog(true)}>
+                  <Button size="sm" variant="outline" className="h-7 text-xs gap-1 bg-white dark:bg-[#21262D] border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] hover:bg-[#F6F8FA] dark:hover:bg-[#30363D]" onClick={() => setShowLinkEpicDialog(true)}>
                     <Plus className="h-3 w-3" />
                     Link Epic
                   </Button>
                 </div>
                 
                 {epics.length === 0 ? (
-                  <div className="py-6 text-center text-muted-foreground text-sm">
+                  <div className="py-6 text-center text-[#8B949E] text-sm">
                     No epics linked to this theme
                   </div>
                 ) : (
-                  <div className="divide-y divide-border">
+                  <div className="divide-y divide-[#E1E4E8] dark:divide-[#30363D]">
                     {epics.map((epic) => (
                       <div 
                         key={epic.id} 
-                        className="py-2.5 flex items-center justify-between gap-3 cursor-pointer hover:bg-muted/50 -mx-2 px-2 rounded transition-colors"
+                        className="py-2.5 flex items-center justify-between gap-3 cursor-pointer hover:bg-[#F6F8FA] dark:hover:bg-[#21262D] -mx-2 px-2 rounded transition-colors"
                         onClick={() => {
                           setSelectedEpic(epic);
                           setSelectedEpicId(epic.id);
                         }}
                       >
                         <div className="flex items-center gap-2 min-w-0">
-                          <span className="text-xs font-mono text-muted-foreground shrink-0">
+                          <span className="text-xs font-mono text-[#C69C6D] shrink-0">
                             {epic.epic_key || 'E-???'}
                           </span>
-                          <span className="text-sm font-medium truncate">{epic.name}</span>
+                          <span className="text-sm font-medium truncate text-[#24292F] dark:text-[#E6EDF3]">{epic.name}</span>
                         </div>
                         {epic.state && (
-                          <Badge variant="outline" className="text-xs shrink-0">{epic.state}</Badge>
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium uppercase bg-[#21262D] dark:bg-[#30363D] text-[#8B949E] border border-[#30363D] shrink-0">{epic.state}</span>
                         )}
                       </div>
                     ))}
@@ -613,15 +613,15 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
               {/* SECTION 4: Audit History (Collapsible) */}
               <Collapsible open={auditHistoryOpen} onOpenChange={setAuditHistoryOpen}>
                 <CollapsibleTrigger asChild>
-                  <button className="w-full flex items-center justify-between p-4 border border-border rounded-lg bg-card hover:bg-muted/30 transition-colors">
-                    <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  <button className="w-full flex items-center justify-between p-4 border border-[#E1E4E8] dark:border-[#30363D] rounded-lg bg-white dark:bg-[#0D1117] hover:bg-[#F6F8FA] dark:hover:bg-[#21262D] transition-colors">
+                    <h3 className="text-xs font-semibold uppercase tracking-wider text-[#8B949E]">
                       Audit History
                     </h3>
-                    <ChevronRight className={`h-4 w-4 text-muted-foreground transition-transform ${auditHistoryOpen ? 'rotate-90' : ''}`} />
+                    <ChevronRight className={`h-4 w-4 text-[#8B949E] transition-transform ${auditHistoryOpen ? 'rotate-90' : ''}`} />
                   </button>
                 </CollapsibleTrigger>
                 <CollapsibleContent>
-                  <div className="border border-t-0 border-border rounded-b-lg bg-card p-4 -mt-2">
+                  <div className="border border-t-0 border-[#E1E4E8] dark:border-[#30363D] rounded-b-lg bg-white dark:bg-[#0D1117] p-4 -mt-2">
                     <div className="h-[400px]">
                       <UnifiedAuditHistoryTab entityType="theme" entityId={theme.id} />
                     </div>
@@ -635,10 +635,10 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
 
       {/* Link Objective Dialog - Enterprise Grade */}
       <Dialog open={showLinkObjectiveDialog} onOpenChange={setShowLinkObjectiveDialog}>
-        <DialogContent className="sm:max-w-md bg-card border-border">
-          <DialogHeader className="border-b border-brand-gold/30 pb-4">
-            <DialogTitle className="text-lg font-semibold">Link Objective to Theme</DialogTitle>
-            <DialogDescription className="text-muted-foreground text-sm">
+        <DialogContent className="sm:max-w-md bg-white dark:bg-[#161B22] border-[#E1E4E8] dark:border-[#30363D]">
+          <DialogHeader className="border-b border-[rgba(198,156,109,0.3)] pb-4">
+            <DialogTitle className="text-lg font-semibold text-[#24292F] dark:text-[#E6EDF3]">Link Objective to Theme</DialogTitle>
+            <DialogDescription className="text-[#8B949E] text-sm">
               Select an objective to link to this strategic theme
             </DialogDescription>
           </DialogHeader>
@@ -651,26 +651,26 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                     <button
                       key={obj.id}
                       onClick={() => linkObjectiveMutation.mutate(obj.id)}
-                      className="w-full text-left p-3 border border-border rounded-lg hover:border-brand-gold hover:bg-brand-gold/5 transition-colors text-sm group"
+                      className="w-full text-left p-3 border border-[#E1E4E8] dark:border-[#30363D] rounded-lg hover:border-[#C69C6D] hover:bg-[rgba(198,156,109,0.05)] transition-colors text-sm group text-[#24292F] dark:text-[#E6EDF3]"
                     >
-                      <span className="group-hover:text-brand-gold transition-colors">{obj.name}</span>
+                      <span className="group-hover:text-[#C69C6D] transition-colors">{obj.name}</span>
                     </button>
                   ))}
                 </div>
               </ScrollArea>
             ) : (
               <div className="py-8 text-center">
-                <p className="text-muted-foreground text-sm">No unlinked objectives available</p>
-                <p className="text-xs text-muted-foreground/60 mt-1">Create objectives first to link them</p>
+                <p className="text-[#8B949E] text-sm">No unlinked objectives available</p>
+                <p className="text-xs text-[#6E7681] mt-1">Create objectives first to link them</p>
               </div>
             )}
           </div>
 
-          <DialogFooter className="border-t border-border pt-4">
+          <DialogFooter className="border-t border-[#E1E4E8] dark:border-[#30363D] pt-4">
             <Button 
               variant="outline" 
               onClick={() => setShowLinkObjectiveDialog(false)}
-              className="border-border hover:bg-muted"
+              className="border-[#E1E4E8] dark:border-[#30363D] hover:bg-[#F6F8FA] dark:hover:bg-[#21262D] text-[#24292F] dark:text-[#E6EDF3]"
             >
               Cancel
             </Button>
@@ -680,10 +680,10 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
 
       {/* Link Epic Dialog - Enterprise Grade */}
       <Dialog open={showLinkEpicDialog} onOpenChange={setShowLinkEpicDialog}>
-        <DialogContent className="sm:max-w-md bg-card border-border">
-          <DialogHeader className="border-b border-brand-gold/30 pb-4">
-            <DialogTitle className="text-lg font-semibold">Link Epic to Theme</DialogTitle>
-            <DialogDescription className="text-muted-foreground text-sm">
+        <DialogContent className="sm:max-w-md bg-white dark:bg-[#161B22] border-[#E1E4E8] dark:border-[#30363D]">
+          <DialogHeader className="border-b border-[rgba(198,156,109,0.3)] pb-4">
+            <DialogTitle className="text-lg font-semibold text-[#24292F] dark:text-[#E6EDF3]">Link Epic to Theme</DialogTitle>
+            <DialogDescription className="text-[#8B949E] text-sm">
               Select an epic to align with this strategic theme
             </DialogDescription>
           </DialogHeader>
@@ -696,27 +696,27 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                     <button
                       key={epic.id}
                       onClick={() => linkEpicMutation.mutate(epic.id)}
-                      className="w-full text-left p-3 border border-border rounded-lg hover:border-brand-gold hover:bg-brand-gold/5 transition-colors text-sm group"
+                      className="w-full text-left p-3 border border-[#E1E4E8] dark:border-[#30363D] rounded-lg hover:border-[#C69C6D] hover:bg-[rgba(198,156,109,0.05)] transition-colors text-sm group text-[#24292F] dark:text-[#E6EDF3]"
                     >
-                      <span className="font-mono text-xs text-brand-gold mr-2">{epic.epic_key}</span>
-                      <span className="group-hover:text-brand-gold transition-colors">{epic.name}</span>
+                      <span className="font-mono text-xs text-[#C69C6D] mr-2">{epic.epic_key}</span>
+                      <span className="group-hover:text-[#C69C6D] transition-colors">{epic.name}</span>
                     </button>
                   ))}
                 </div>
               </ScrollArea>
             ) : (
               <div className="py-8 text-center">
-                <p className="text-muted-foreground text-sm">No unlinked epics available</p>
-                <p className="text-xs text-muted-foreground/60 mt-1">Create epics first to link them</p>
+                <p className="text-[#8B949E] text-sm">No unlinked epics available</p>
+                <p className="text-xs text-[#6E7681] mt-1">Create epics first to link them</p>
               </div>
             )}
           </div>
 
-          <DialogFooter className="border-t border-border pt-4">
+          <DialogFooter className="border-t border-[#E1E4E8] dark:border-[#30363D] pt-4">
             <Button 
               variant="outline" 
               onClick={() => setShowLinkEpicDialog(false)}
-              className="border-border hover:bg-muted"
+              className="border-[#E1E4E8] dark:border-[#30363D] hover:bg-[#F6F8FA] dark:hover:bg-[#21262D] text-[#24292F] dark:text-[#E6EDF3]"
             >
               Cancel
             </Button>
