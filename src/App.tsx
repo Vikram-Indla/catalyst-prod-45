@@ -182,6 +182,7 @@ import ExecutiveRoadmapPage from "./pages/enterprise/ExecutiveRoadmapPage";
 import BusinessRequestsKanbanPage from "./modules/kanban/pages/BusinessRequestsKanbanPage";
 import ProductBacklogPage from "./modules/product-backlog/pages/ProductBacklogPage";
 import RequestAccess from "./pages/RequestAccess";
+import SubmitDemandRequest from "./pages/SubmitDemandRequest";
 import ResetPassword from "./pages/ResetPassword";
 import TeamComingSoon from "./pages/team/ComingSoon";
 import SelfTest from "./pages/dev/SelfTest";
@@ -232,6 +233,7 @@ const App = () => (
               <Route path="/auth" element={<Auth />} />
               {/* Jira test routes removed */}
               <Route path="/request-access" element={<RequestAccess />} />
+              <Route path="/submit-request" element={<SubmitDemandRequest />} />
               
               {/* Work Hub Test Route */}
               <Route path="/work-hub-test" element={<WorkHubLayout />}>
