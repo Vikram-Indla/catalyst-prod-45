@@ -1,9 +1,9 @@
 /**
  * Add to Strategic Backlog Modal
- * Pixel-perfect implementation with type selector cards
+ * Pixel-perfect implementation matching mockups exactly
  */
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -58,7 +58,6 @@ export function AddToBacklogModal({ open, onOpenChange, snapshotId }: AddToBackl
 
   const handleClose = () => {
     onOpenChange(false);
-    // Reset after animation
     setTimeout(() => {
       setSelectedType(null);
       setName('');
@@ -79,7 +78,6 @@ export function AddToBacklogModal({ open, onOpenChange, snapshotId }: AddToBackl
           status: 'draft',
         });
       } else if (selectedType === 'objective') {
-        // Create objective
         const { error } = await supabase
           .from('objectives')
           .insert([{
@@ -92,7 +90,6 @@ export function AddToBacklogModal({ open, onOpenChange, snapshotId }: AddToBackl
         queryClient.invalidateQueries({ queryKey: ['snapshot-objectives'] });
         catalystToast.success('Objective Created', 'Objective has been created successfully.');
       } else if (selectedType === 'epic') {
-        // Create epic
         const { error } = await supabase
           .from('epics')
           .insert({
@@ -113,25 +110,29 @@ export function AddToBacklogModal({ open, onOpenChange, snapshotId }: AddToBackl
   };
 
   const config = selectedType ? TYPE_CONFIG[selectedType] : null;
+  const buttonLabel = selectedType && config ? `Create ${config.label}` : 'Create';
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg p-0 gap-0">
-        <DialogHeader className="flex flex-row items-center justify-between p-5 border-b border-border">
-          <DialogTitle className="text-lg font-semibold">Add to Strategic Backlog</DialogTitle>
+      <DialogContent className="sm:max-w-[480px] p-0 gap-0 overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-5 border-b border-border">
+          <h2 className="text-lg font-semibold text-foreground">Add to Strategic Backlog</h2>
           <button 
             onClick={handleClose}
-            className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+            className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
-        </DialogHeader>
+        </div>
 
-        <div className="p-5">
-          <Label className="text-sm font-medium text-foreground block mb-3">
+        {/* Content */}
+        <div className="px-6 py-5">
+          <Label className="text-sm font-medium text-foreground block mb-4">
             What are you adding?
           </Label>
           
+          {/* Type Selector Cards */}
           <div className="grid grid-cols-3 gap-3">
             {(['theme', 'objective', 'epic'] as const).map((type) => {
               const cfg = TYPE_CONFIG[type];
@@ -143,14 +144,14 @@ export function AddToBacklogModal({ open, onOpenChange, snapshotId }: AddToBackl
                   key={type}
                   onClick={() => setSelectedType(type)}
                   className={cn(
-                    "p-4 border-2 rounded-lg text-center transition-all",
+                    "flex flex-col items-center py-5 px-3 border-2 rounded-xl transition-all",
                     isSelected 
                       ? "border-brand-gold bg-brand-gold/5" 
-                      : "border-border hover:border-muted-foreground"
+                      : "border-border hover:border-muted-foreground/50"
                   )}
                 >
                   <div className={cn(
-                    "w-10 h-10 mx-auto mb-2 rounded-full flex items-center justify-center",
+                    "w-12 h-12 rounded-full flex items-center justify-center mb-3",
                     isSelected 
                       ? "bg-brand-gold text-white" 
                       : "bg-muted text-muted-foreground"
@@ -158,35 +159,35 @@ export function AddToBacklogModal({ open, onOpenChange, snapshotId }: AddToBackl
                     <Icon className="h-5 w-5" />
                   </div>
                   <div className="text-sm font-medium text-foreground">{cfg.label}</div>
-                  <div className="text-xs text-muted-foreground mt-1">{cfg.subtitle}</div>
+                  <div className="text-xs text-muted-foreground mt-0.5">{cfg.subtitle}</div>
                 </button>
               );
             })}
           </div>
 
-          {/* Form fields appear when type is selected */}
+          {/* Form fields */}
           {selectedType && config && (
             <div className="mt-6 space-y-4">
               <div>
-                <Label className="text-sm font-medium text-foreground block mb-1.5">
+                <Label className="text-sm font-medium text-foreground block mb-2">
                   {config.nameLabel}
                 </Label>
                 <Input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder={config.namePlaceholder}
-                  className="bg-background border-border"
+                  className="h-11 bg-background border-border"
                 />
               </div>
               <div>
-                <Label className="text-sm font-medium text-foreground block mb-1.5">
+                <Label className="text-sm font-medium text-foreground block mb-2">
                   Description
                 </Label>
                 <Textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Enter description..."
-                  rows={3}
+                  rows={4}
                   className="bg-background border-border resize-none"
                 />
               </div>
@@ -194,21 +195,21 @@ export function AddToBacklogModal({ open, onOpenChange, snapshotId }: AddToBackl
           )}
         </div>
 
-        <div className="flex items-center justify-end gap-3 p-5 border-t border-border bg-muted/30">
-          <Button variant="ghost" onClick={handleClose}>
+        {/* Footer */}
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-border bg-muted/20">
+          <Button 
+            variant="ghost" 
+            onClick={handleClose}
+            className="text-muted-foreground hover:text-foreground"
+          >
             Cancel
           </Button>
           <Button
             onClick={handleCreate}
             disabled={!selectedType || !name.trim() || isSubmitting}
-            className={cn(
-              "transition-colors",
-              selectedType && name.trim()
-                ? "bg-brand-gold hover:bg-brand-gold-hover text-white"
-                : "bg-muted text-muted-foreground cursor-not-allowed"
-            )}
+            className="bg-brand-gold hover:bg-brand-gold-hover text-white disabled:opacity-50"
           >
-            {isSubmitting ? 'Creating...' : `Create ${config?.label || ''}`}
+            {isSubmitting ? 'Creating...' : buttonLabel}
           </Button>
         </div>
       </DialogContent>
