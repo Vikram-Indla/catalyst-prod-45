@@ -105,25 +105,25 @@ export function StrategyContextCard({ snapshot, onUpdate }: StrategyContextCardP
     <section 
       className="rounded-xl overflow-hidden"
       style={{
-        backgroundColor: 'var(--surface-1)',
-        border: '1px solid var(--divider)',
-        boxShadow: 'var(--shadow-sm)',
+        backgroundColor: 'var(--surface-bg)',
+        border: '1px solid var(--border-default)',
+        boxShadow: 'var(--shadow-card)',
       }}
     >
       {/* Header */}
       <div 
         className="px-6 py-4"
-        style={{ borderBottom: '1px solid var(--divider-subtle)' }}
+        style={{ borderBottom: '1px solid var(--border-subtle)' }}
       >
         <h2 
           className="text-lg font-semibold"
-          style={{ color: 'var(--text-1)' }}
+          style={{ color: 'var(--text-primary)' }}
         >
           Strategy Context
         </h2>
         <p 
           className="text-sm mt-0.5"
-          style={{ color: 'var(--text-2)' }}
+          style={{ color: 'var(--text-secondary)' }}
         >
           Mission, vision, and values guiding this snapshot
         </p>
@@ -139,8 +139,8 @@ export function StrategyContextCard({ snapshot, onUpdate }: StrategyContextCardP
                 key={item.field}
                 className="p-4 rounded-lg transition-all duration-150"
                 style={{
-                  backgroundColor: 'var(--surface-2)',
-                  border: '1px solid var(--divider-subtle)',
+                  backgroundColor: 'var(--surface-subtle)',
+                  border: '1px solid var(--border-subtle)',
                 }}
               >
                 {/* Label with Colored Icon Background */}
@@ -165,7 +165,7 @@ export function StrategyContextCard({ snapshot, onUpdate }: StrategyContextCardP
                 {/* Question */}
                 <p 
                   className="text-xs italic mb-2"
-                  style={{ color: 'var(--text-2)' }}
+                  style={{ color: 'var(--text-secondary)' }}
                 >
                   {item.question}
                 </p>

@@ -78,7 +78,7 @@ function getStatusTextColor(status?: string): string {
     case 'On Track': return '#5C7C5C';
     case 'At Risk': return '#C69C6D';
     case 'Behind': return '#B85C5C';
-    default: return 'var(--text-2)';
+    default: return 'var(--text-secondary)';
   }
 }
 
@@ -182,26 +182,26 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
     <section 
       className="rounded-xl overflow-hidden"
       style={{
-        backgroundColor: 'var(--surface-1)',
-        border: '1px solid var(--divider)',
-        boxShadow: 'var(--shadow-sm)',
+        backgroundColor: 'var(--surface-bg)',
+        border: '1px solid var(--border-default)',
+        boxShadow: 'var(--shadow-card)',
       }}
     >
       {/* Header */}
       <div 
         className="px-6 py-4 flex items-center justify-between"
-        style={{ borderBottom: '1px solid var(--divider-subtle)' }}
+        style={{ borderBottom: '1px solid var(--border-subtle)' }}
       >
         <div>
           <h2 
             className="text-lg font-semibold"
-            style={{ color: 'var(--text-1)' }}
+            style={{ color: 'var(--text-primary)' }}
           >
             Strategy Coverage & Alignment
           </h2>
           <p 
             className="text-sm mt-0.5"
-            style={{ color: 'var(--text-2)' }}
+            style={{ color: 'var(--text-secondary)' }}
           >
             Coverage across strategic layers
           </p>
@@ -222,7 +222,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
             size="sm" 
             className="gap-1.5 h-8 text-sm px-4"
             onClick={handleOpenOKRHub}
-            style={{ borderColor: 'var(--divider)', color: 'var(--text-1)' }}
+            style={{ borderColor: 'var(--border-default)', color: 'var(--text-primary)' }}
           >
             <ExternalLink className="w-4 h-4" />
             OKR Hub
@@ -237,37 +237,37 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
           <thead>
             <tr 
               style={{ 
-                backgroundColor: 'var(--surface-2)',
-                borderBottom: '1px solid var(--divider)',
+                backgroundColor: 'var(--surface-subtle)',
+                borderBottom: '1px solid var(--border-default)',
               }}
             >
               <th 
                 className="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider w-48"
-                style={{ color: 'var(--text-2)' }}
+                style={{ color: 'var(--text-secondary)' }}
               >
                 Layer
               </th>
               <th 
                 className="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider w-24"
-                style={{ color: 'var(--text-2)' }}
+                style={{ color: 'var(--text-secondary)' }}
               >
                 Count
               </th>
               <th 
                 className="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider"
-                style={{ color: 'var(--text-2)' }}
+                style={{ color: 'var(--text-secondary)' }}
               >
                 Coverage
               </th>
               <th 
                 className="px-6 py-3 text-right text-[11px] font-semibold uppercase tracking-wider w-28"
-                style={{ color: 'var(--text-2)' }}
+                style={{ color: 'var(--text-secondary)' }}
               >
                 % Aligned
               </th>
               <th 
                 className="px-6 py-3 text-right text-[11px] font-semibold uppercase tracking-wider w-20"
-                style={{ color: 'var(--text-2)' }}
+                style={{ color: 'var(--text-secondary)' }}
               >
                 Gap
               </th>

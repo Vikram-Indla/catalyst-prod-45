@@ -38,6 +38,14 @@
   --nav-active-bg: rgba(92, 124, 92, 0.12);
   
   /* ══════════════════════════════════════════════════════════
+     ACCENT TOKENS (For Create Button and Primary CTAs)
+     ══════════════════════════════════════════════════════════ */
+  --accent-color: #C69C6D;
+  --accent-hover: #B8905F;
+  --border-color: #E1E4E8;
+  --focus-ring-color: rgba(198, 156, 109, 0.4);
+  
+  /* ══════════════════════════════════════════════════════════
      FONT STACK
      ══════════════════════════════════════════════════════════ */
   --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
@@ -188,6 +196,23 @@
 
 [data-theme="light"],
 :root {
+  /* ══════════════════════════════════════════════════════════
+     SEMANTIC SURFACE ALIASES (Required by Components)
+     ══════════════════════════════════════════════════════════ */
+  --bg: #FFFFFF;
+  --surface-1: #FFFFFF;
+  --surface-2: #FAFBFC;
+  --nav-bg: #FFFFFF;
+  --text-1: #24292F;
+  --text-2: #57606A;
+  --text-3: #8B949E;
+  --text-inverse: #FFFFFF;
+  --brand-active: #5C7C5C;
+  --nav-text: #57606A;
+  --icon-default: #8B949E;
+  --icon-muted: #B1B8C0;
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  
   /* Backgrounds */
   --page-bg: #FFFFFF;
   --surface-bg: #FFFFFF;
@@ -264,6 +289,23 @@
    ════════════════════════════════════════════════════════════════════════════ */
 
 [data-theme="dark"] {
+  /* ══════════════════════════════════════════════════════════
+     SEMANTIC SURFACE ALIASES (Required by Components)
+     ══════════════════════════════════════════════════════════ */
+  --bg: #0D1117;
+  --surface-1: #0D1117;
+  --surface-2: #161B22;
+  --nav-bg: #0D1117;
+  --text-1: #E6EDF3;
+  --text-2: #8B949E;
+  --text-3: #6E7681;
+  --text-inverse: #0D1117;
+  --brand-active: #7DA37D;
+  --nav-text: #8B949E;
+  --icon-default: #6E7681;
+  --icon-muted: #484F58;
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  
   /* Tailwind/Shadcn Overrides */
   --background: 220 13% 5%;
   --foreground: 210 20% 94%;
