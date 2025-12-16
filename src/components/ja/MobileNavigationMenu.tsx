@@ -47,8 +47,8 @@ export function MobileNavigationMenu() {
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b">
             <span className="font-extrabold text-xl tracking-tight">
-              <span className="text-foreground">Cata</span>
-              <span className="text-brand-gold">lyst</span>
+              <span style={{ color: '#5C7C5C' }}>Cata</span>
+              <span style={{ color: '#C69C6D' }}>lyst</span>
             </span>
           </div>
 
