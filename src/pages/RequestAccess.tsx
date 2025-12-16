@@ -509,59 +509,182 @@ export default function RequestAccess() {
   const handleDownloadPDF = async () => {
     const { jsPDF } = await import('jspdf');
     const doc = new jsPDF();
+    const pageWidth = 210;
+    const pageHeight = 297;
+    const margin = 20;
     
-    doc.setFillColor(26, 26, 26);
-    doc.rect(0, 0, 210, 35, 'F');
-    doc.setTextColor(254, 255, 255);
-    doc.setFontSize(22);
-    doc.text('Demand Request Confirmation', 15, 22);
+    // === PREMIUM HEADER SECTION ===
+    // Dark header background
+    doc.setFillColor(26, 26, 26); // brand-dark #1A1A1A
+    doc.rect(0, 0, pageWidth, 50, 'F');
     
-    doc.setFontSize(12);
-    doc.setTextColor(198, 156, 109);
-    doc.text(`Ticket: ${ticketNumber}`, 15, 30);
+    // Catalyst logo text - "Cata" in olive, "lyst" in gold
+    doc.setFontSize(28);
+    doc.setTextColor(92, 124, 92); // #5C7C5C olive
+    doc.text('Cata', margin, 28);
+    doc.setTextColor(198, 156, 109); // #C69C6D gold
+    doc.text('lyst', margin + 36, 28);
     
+    // Tagline
+    doc.setFontSize(9);
+    doc.setTextColor(255, 255, 255, 0.7);
+    doc.text('ENTERPRISE DEMAND MANAGEMENT', margin, 38);
+    
+    // Document type badge on right
+    doc.setFillColor(198, 156, 109); // gold
+    doc.roundedRect(pageWidth - margin - 50, 18, 50, 18, 3, 3, 'F');
+    doc.setFontSize(9);
     doc.setTextColor(26, 26, 26);
-    doc.setFontSize(14);
-    doc.text('Request Details', 15, 50);
+    doc.text('CONFIRMATION', pageWidth - margin - 45, 29);
     
-    doc.setFontSize(11);
-    let yPos = 65;
-    const lineHeight = 8;
+    // === REQUEST ID HIGHLIGHT BOX ===
+    doc.setFillColor(245, 237, 227); // #f5ede3 pale gold
+    doc.roundedRect(margin, 60, pageWidth - margin * 2, 35, 4, 4, 'F');
+    doc.setDrawColor(198, 156, 109);
+    doc.setLineWidth(0.5);
+    doc.roundedRect(margin, 60, pageWidth - margin * 2, 35, 4, 4, 'S');
     
-    doc.text(`Summary: ${formData.summary}`, 15, yPos);
-    yPos += lineHeight * 2;
-    
-    doc.text(`Description:`, 15, yPos);
-    yPos += lineHeight;
-    const descLines = doc.splitTextToSize(formData.description, 180);
-    doc.text(descLines, 15, yPos);
-    yPos += descLines.length * lineHeight + 5;
-    
-    doc.text(`Delivery Platform: ${formData.deliveryPlatform}`, 15, yPos);
-    yPos += lineHeight;
-    doc.text(`Department: ${formData.department}`, 15, yPos);
-    yPos += lineHeight;
-    doc.text(`Business Owner: ${formData.businessOwner}`, 15, yPos);
-    yPos += lineHeight;
-    doc.text(`Requested By: ${formData.reporter}`, 15, yPos);
-    yPos += lineHeight;
-    doc.text(`Email: ${formData.email}`, 15, yPos);
-    yPos += lineHeight * 2;
-    
-    yPos += 10;
+    // Request ID label
     doc.setFontSize(10);
-    doc.setTextColor(100, 100, 100);
-    doc.text('This request has been logged with the MIM Demand Team.', 15, yPos);
-    yPos += 6;
-    doc.text('You will be kept informed of its progress.', 15, yPos);
-    yPos += 6;
-    doc.text('Thank you for submitting your request.', 15, yPos);
+    doc.setTextColor(107, 114, 128); // gray-500
+    doc.text('Request ID', margin + 10, 73);
     
+    // Request ID value (large, bold)
+    doc.setFontSize(22);
+    doc.setTextColor(198, 156, 109); // gold
+    doc.text(ticketNumber, margin + 10, 87);
+    
+    // Submitted date on right
+    doc.setFontSize(10);
+    doc.setTextColor(107, 114, 128);
+    doc.text('Submitted', pageWidth - margin - 55, 73);
+    doc.setFontSize(11);
+    doc.setTextColor(26, 26, 26);
+    doc.text(format(new Date(), 'dd MMM yyyy'), pageWidth - margin - 55, 85);
+    
+    // === REQUEST DETAILS SECTION ===
+    let yPos = 110;
+    
+    // Section header
+    doc.setFillColor(248, 249, 250);
+    doc.rect(margin, yPos - 7, pageWidth - margin * 2, 14, 'F');
+    doc.setFontSize(11);
+    doc.setTextColor(26, 26, 26);
+    doc.text('REQUEST DETAILS', margin + 5, yPos + 2);
+    yPos += 18;
+    
+    // Summary
+    doc.setFontSize(9);
+    doc.setTextColor(107, 114, 128);
+    doc.text('Summary', margin, yPos);
+    yPos += 5;
+    doc.setFontSize(11);
+    doc.setTextColor(26, 26, 26);
+    const summaryLines = doc.splitTextToSize(formData.summary, pageWidth - margin * 2);
+    doc.text(summaryLines, margin, yPos);
+    yPos += summaryLines.length * 5 + 10;
+    
+    // Description (strip HTML)
+    const plainDesc = formData.description
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    
+    if (plainDesc) {
+      doc.setFontSize(9);
+      doc.setTextColor(107, 114, 128);
+      doc.text('Description', margin, yPos);
+      yPos += 5;
+      doc.setFontSize(10);
+      doc.setTextColor(26, 26, 26);
+      const descLines = doc.splitTextToSize(plainDesc, pageWidth - margin * 2);
+      const maxDescLines = descLines.slice(0, 8); // Limit to prevent overflow
+      doc.text(maxDescLines, margin, yPos);
+      yPos += maxDescLines.length * 4 + 12;
+    }
+    
+    // Two-column layout for metadata
+    const col1X = margin;
+    const col2X = margin + 85;
+    
+    // Platform & Department
+    doc.setFontSize(9);
+    doc.setTextColor(107, 114, 128);
+    doc.text('Delivery Platform', col1X, yPos);
+    doc.text('Department', col2X, yPos);
+    yPos += 5;
+    doc.setFontSize(10);
+    doc.setTextColor(26, 26, 26);
+    doc.text(formData.deliveryPlatform || '—', col1X, yPos);
+    doc.text(formData.department || '—', col2X, yPos);
+    yPos += 12;
+    
+    // Business Owner & Requested By
+    doc.setFontSize(9);
+    doc.setTextColor(107, 114, 128);
+    doc.text('Business Owner', col1X, yPos);
+    doc.text('Requested By', col2X, yPos);
+    yPos += 5;
+    doc.setFontSize(10);
+    doc.setTextColor(26, 26, 26);
+    doc.text(formData.businessOwner || '—', col1X, yPos);
+    doc.text(formData.reporter || '—', col2X, yPos);
+    yPos += 12;
+    
+    // Email
+    doc.setFontSize(9);
+    doc.setTextColor(107, 114, 128);
+    doc.text('Contact Email', col1X, yPos);
+    yPos += 5;
+    doc.setFontSize(10);
+    doc.setTextColor(26, 26, 26);
+    doc.text(formData.email || '—', col1X, yPos);
+    yPos += 18;
+    
+    // === NEXT STEPS SECTION ===
+    doc.setFillColor(248, 249, 250);
+    doc.rect(margin, yPos - 7, pageWidth - margin * 2, 14, 'F');
+    doc.setFontSize(11);
+    doc.setTextColor(26, 26, 26);
+    doc.text('WHAT HAPPENS NEXT', margin + 5, yPos + 2);
+    yPos += 18;
+    
+    doc.setFontSize(10);
+    doc.setTextColor(75, 85, 99);
+    const nextSteps = [
+      '• Your request has been logged with the MIM Demand Team',
+      '• Initial triage will occur within 1-3 business days',
+      '• You will be notified of any updates via email',
+      '• Keep your Request ID for future reference'
+    ];
+    nextSteps.forEach(step => {
+      doc.text(step, margin, yPos);
+      yPos += 7;
+    });
+    
+    // === FOOTER ===
+    // Footer line
+    doc.setDrawColor(229, 231, 235);
+    doc.setLineWidth(0.3);
+    doc.line(margin, pageHeight - 25, pageWidth - margin, pageHeight - 25);
+    
+    // Footer text
     doc.setFontSize(8);
-    doc.text(`Generated: ${format(new Date(), 'dd/MM/yyyy HH:mm')}`, 15, 285);
-    doc.text('Catalyst - MIM Demand Management', 150, 285);
+    doc.setTextColor(156, 163, 175);
+    doc.text(`Generated: ${format(new Date(), 'dd/MM/yyyy HH:mm')}`, margin, pageHeight - 17);
+    doc.text(`Reference: ${ticketNumber}`, margin, pageHeight - 12);
     
-    doc.save(`${ticketNumber}-demand-request.pdf`);
+    // Catalyst footer branding on right
+    doc.setTextColor(92, 124, 92);
+    doc.text('Cata', pageWidth - margin - 30, pageHeight - 15);
+    doc.setTextColor(198, 156, 109);
+    doc.text('lyst', pageWidth - margin - 18, pageHeight - 15);
+    doc.setTextColor(156, 163, 175);
+    doc.text('TM', pageWidth - margin - 6, pageHeight - 17, { baseline: 'top' });
+    
+    // Save the PDF
+    doc.save(`${ticketNumber}-demand-confirmation.pdf`);
   };
 
   const resetForm = () => {
