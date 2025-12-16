@@ -45,7 +45,6 @@ const CHART_COLORS = {
 };
 
 const DEFAULT_FILTERS: RiskGridFilters = {
-  program_increment_id: null,
   owner_id: null,
   status: 'Open',
   resolution_method: null,

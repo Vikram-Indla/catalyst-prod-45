@@ -21,7 +21,7 @@ export const RELATIONSHIP_TYPES: RelationshipType[] = [
   'Epic',
   'Capability',
   'Feature',
-  'Program Increment'
+  'Demand'
 ];
 
 // ROAM badge color mapping using Catalyst L9 Gold theme

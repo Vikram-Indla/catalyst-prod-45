@@ -16,7 +16,7 @@ export type SeverityLevel = 'Low' | 'Medium' | 'High' | 'Critical';
 export type YesNo = 'Yes' | 'No';
 
 // Relationship Types (Source: FieldValidation-Risks)
-export type RelationshipType = 'Theme' | 'Epic' | 'Capability' | 'Feature' | 'Program Increment' | 'Demand';
+export type RelationshipType = 'Theme' | 'Epic' | 'Capability' | 'Feature' | 'Demand';
 
 // Risk Entity (Source: FieldValidation-Risks, Screenshot-Risk1)
 export interface Risk {
@@ -29,7 +29,6 @@ export interface Risk {
   impact: SeverityLevel | null;
   critical_path: YesNo | null;
   program_id: string;
-  program_increment_id: string;
   owner_id: string;
   relationship: RelationshipType;
   related_item_id: string | null;
@@ -57,7 +56,6 @@ export interface RiskFormData {
   impact: SeverityLevel | null;
   critical_path: YesNo | null;
   program_id: string | null;
-  program_increment_id: string | null;
   owner_id: string | null;
   relationship: RelationshipType | null;
   related_item_id: string | null;
@@ -73,7 +71,6 @@ export interface RiskFormData {
 
 // Grid filter state (Source: Screenshot-Filter)
 export interface RiskGridFilters {
-  program_increment_id: string | null;
   owner_id: string | null;
   status: RiskStatus | null;
   resolution_method: RoamStatus | null;
