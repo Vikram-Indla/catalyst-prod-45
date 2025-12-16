@@ -53,6 +53,7 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { UserPicker } from '@/components/ui/user-picker';
+import { UnifiedAuditHistoryTab } from '@/components/shared/UnifiedAuditHistoryTab';
 
 interface SnapshotDrawerProps {
   isOpen: boolean;
@@ -776,10 +777,14 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
             </TabsContent>
 
             {/* Audit History Tab */}
-            <TabsContent value="audit" className="p-4 m-0">
-              <div className="text-center py-12 text-muted-foreground">
-                No audit history available
-              </div>
+            <TabsContent value="audit" className="p-0 m-0 h-[500px]">
+              {snapshotId ? (
+                <UnifiedAuditHistoryTab entityType="snapshot" entityId={snapshotId} />
+              ) : (
+                <div className="text-center py-12 text-muted-foreground">
+                  No audit history available
+                </div>
+              )}
             </TabsContent>
           </ScrollArea>
         </Tabs>
