@@ -216,6 +216,10 @@ import {
   ReleaseSettings
 } from "./pages/release";
 
+// Incident Room (New)
+import IncidentRoomList from "./pages/release/IncidentRoomList";
+import IncidentRoomDetail from "./pages/release/IncidentRoomDetail";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -589,8 +593,10 @@ const App = () => (
               <Route path="/knowledge-hub/documents/:documentId" element={<KnowledgeHubDocumentPage />} />
               
               {/* Release Management Routes */}
-              <Route path="/release" element={<Navigate to="/release/incidents" replace />} />
+              <Route path="/release" element={<Navigate to="/release/incident-room" replace />} />
               <Route path="/release/overview" element={<ReleaseOverview />} />
+              <Route path="/release/incident-room" element={<IncidentRoomList />} />
+              <Route path="/release/incident-room/:incidentId" element={<IncidentRoomDetail />} />
               <Route path="/release/incidents" element={<IncidentsList />} />
               <Route path="/release/incidents/dashboard" element={<IncidentsDashboard />} />
               <Route path="/release/incidents/:id" element={<IncidentDetail />} />

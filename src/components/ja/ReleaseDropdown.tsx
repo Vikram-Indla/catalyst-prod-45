@@ -1,10 +1,10 @@
 /**
  * Release Dropdown - Revamped for Catalyst Menu
- * Shows: Create Release, Manage Releases (admin only)
+ * Shows: Incident Room, Create Release, Manage Releases (admin only)
  */
 import React, { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Settings } from 'lucide-react';
+import { Plus, Settings, Siren } from 'lucide-react';
 import { useUserRole } from '@/hooks/useUserRole';
 
 interface ReleaseDropdownProps {
@@ -14,6 +14,11 @@ interface ReleaseDropdownProps {
 export function ReleaseDropdown({ onClose }: ReleaseDropdownProps) {
   const navigate = useNavigate();
   const { isAdmin } = useUserRole();
+
+  const handleIncidentRoom = useCallback(() => {
+    navigate('/release/incident-room');
+    onClose();
+  }, [navigate, onClose]);
 
   const handleCreateRelease = useCallback(() => {
     navigate('/release/versions?create=true');
@@ -32,6 +37,15 @@ export function ReleaseDropdown({ onClose }: ReleaseDropdownProps) {
       </div>
       
       <div className="divide-y divide-border/50">
+        {/* Incident Room - always visible */}
+        <button
+          onClick={handleIncidentRoom}
+          className="flex items-center gap-2 w-full px-3 py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
+        >
+          <Siren className="h-4 w-4 text-destructive" />
+          Incident Room
+        </button>
+        
         {isAdmin && (
           <button
             onClick={handleCreateRelease}
@@ -49,11 +63,6 @@ export function ReleaseDropdown({ onClose }: ReleaseDropdownProps) {
             <Settings className="h-4 w-4 text-muted-foreground" />
             Manage Releases
           </button>
-        )}
-        {!isAdmin && (
-          <div className="px-3 py-4 text-center text-sm text-muted-foreground">
-            No actions available
-          </div>
         )}
       </div>
     </div>

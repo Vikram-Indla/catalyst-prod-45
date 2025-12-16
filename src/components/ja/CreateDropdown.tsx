@@ -1,4 +1,4 @@
-import { useState, useMemo, lazy, Suspense } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { useEnabledModules } from "@/hooks/useModules";
@@ -10,12 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { toast } from "@/hooks/use-toast";
-import type { IncidentFormData } from "@/components/incidents/CreateIncidentModal";
 import { workItemConfig, getWorkItemsByCategory } from "@/config/workItemConfig";
-
-// Lazy load the heavy modal component
-const CreateIncidentModal = lazy(() => import("@/components/incidents/CreateIncidentModal").then(m => ({ default: m.CreateIncidentModal })));
 
 // Get items organized by category from centralized config
 const enterpriseItems = getWorkItemsByCategory('enterprise').map(item => ({
@@ -61,7 +56,6 @@ const otherItems = getWorkItemsByCategory('other').map(item => ({
 export function CreateDropdown() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const [incidentModalOpen, setIncidentModalOpen] = useState(false);
   const { isModuleEnabled } = useEnabledModules();
 
   // Filter items based on enabled modules
@@ -93,9 +87,9 @@ export function CreateDropdown() {
   const handleItemClick = (type: string) => {
     setOpen(false);
     
-    // Handle incident creation via modal
+    // Handle incident creation - route to incident room with create param
     if (type === 'incident') {
-      setIncidentModalOpen(true);
+      navigate('/release/incident-room?create=true');
       return;
     }
     
@@ -110,28 +104,12 @@ export function CreateDropdown() {
       'objective': '/enterprise/okr-hub?create=true',
       'dependency': '/dependencies?create=true',
       'risk': '/enterprise/risks?create=true',
-      'incident': '/release/incidents?create=true',
     };
 
     const route = routeMap[type];
     if (route) {
       navigate(route);
     }
-  };
-
-  const handleCreateIncident = (data: IncidentFormData) => {
-    // Generate incident number
-    const incidentNumber = `INC-${1000 + Math.floor(Math.random() * 1000)}`;
-    
-    console.log('Creating incident:', { incidentNumber, ...data });
-    
-    toast({
-      title: "Incident Created",
-      description: `Incident ${incidentNumber} created successfully!`,
-    });
-    
-    // Optionally navigate to incidents list
-    navigate('/release/incidents');
   };
 
   const renderSection = (label: string, items: typeof enterpriseItems) => {
@@ -225,16 +203,6 @@ export function CreateDropdown() {
           {renderSection('Other', filteredOtherItems)}
         </DropdownMenuContent>
       </DropdownMenu>
-
-      {incidentModalOpen && (
-        <Suspense fallback={null}>
-          <CreateIncidentModal
-            isOpen={incidentModalOpen}
-            onClose={() => setIncidentModalOpen(false)}
-            onSubmit={handleCreateIncident}
-          />
-        </Suspense>
-      )}
     </>
   );
 }
