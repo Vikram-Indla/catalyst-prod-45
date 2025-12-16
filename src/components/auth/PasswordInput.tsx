@@ -38,24 +38,16 @@ export function PasswordInput({
         onChange={e => onChange(e.target.value)}
         placeholder={placeholder}
         required={required}
-        className="w-full transition-all outline-none pr-12 font-body text-base py-3.5 px-4 rounded-[10px] border-2 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/10"
-        style={{
-          backgroundColor: 'var(--input-bg)',
-          borderColor: hasError ? 'hsl(var(--destructive))' : isFocused ? 'hsl(var(--brand-gold))' : 'var(--input-border)',
-          color: 'var(--input-text)',
-        }}
+        className={`w-full transition-all outline-none pr-12 font-body text-base py-3.5 px-4 rounded-[10px] border-2 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/10 bg-white text-gray-900 placeholder:text-gray-400 ${
+          hasError ? 'border-red-500' : 'border-gray-200'
+        }`}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
       />
       <button
         type="button"
         onClick={toggleVisibility}
-        className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1.5 rounded-md transition-colors"
-        style={{
-          color: 'var(--icon-default)',
-        }}
-        onMouseEnter={(e) => e.currentTarget.style.color = 'var(--icon-hover)'}
-        onMouseLeave={(e) => e.currentTarget.style.color = 'var(--icon-default)'}
+        className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1.5 rounded-md transition-colors text-gray-400 hover:text-gray-600"
         aria-label={showPassword ? "Hide password" : "Show password"}
       >
         {showPassword ? (
