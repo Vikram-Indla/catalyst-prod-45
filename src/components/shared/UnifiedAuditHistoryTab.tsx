@@ -162,14 +162,14 @@ export function UnifiedAuditHistoryTab({ entityId, entityType }: UnifiedAuditHis
   };
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 bg-white rounded-lg overflow-hidden">
+    <div className="flex flex-col flex-1 min-h-0 bg-white dark:bg-[#0D1117] rounded-lg overflow-hidden">
       {/* Header */}
-      <div className="flex flex-nowrap items-end gap-2 px-5 py-4 border-b border-border shrink-0">
-        <History className="h-4 w-4 text-brand-gold flex-shrink-0" />
-        <span className="text-[13px] font-semibold text-brand-gold uppercase tracking-[0.5px] leading-none whitespace-nowrap">
+      <div className="flex flex-nowrap items-end gap-2 px-5 py-4 border-b border-[#EAECEF] dark:border-[#21262D] shrink-0">
+        <History className="h-4 w-4 text-[#C69C6D] flex-shrink-0" />
+        <span className="text-[13px] font-semibold text-[#C69C6D] uppercase tracking-[0.5px] leading-none whitespace-nowrap">
           Audit History
         </span>
-        <span className="text-[13px] text-[#6B7280] font-normal leading-none whitespace-nowrap">
+        <span className="text-[13px] text-[#8B949E] dark:text-[#6E7681] font-normal leading-none whitespace-nowrap">
           ({totalCount} {totalCount === 1 ? 'change' : 'changes'})
         </span>
       </div>
