@@ -98,7 +98,7 @@ export function StrategyContextCard({ snapshot, onUpdate }: StrategyContextCardP
       style={{
         backgroundColor: 'var(--surface-1)',
         border: '1px solid var(--divider)',
-        borderLeft: '3px solid hsl(var(--secondary-green))',
+        borderLeft: '3px solid var(--secondary-green)',
         boxShadow: 'var(--shadow-sm)',
       }}
     >
@@ -139,11 +139,11 @@ export function StrategyContextCard({ snapshot, onUpdate }: StrategyContextCardP
                 <div className="flex items-center gap-2 mb-2">
                   <Icon 
                     className="w-3.5 h-3.5" 
-                    style={{ color: 'hsl(var(--secondary-green))' }}
+                    style={{ color: 'var(--secondary-green)' }}
                   />
                   <span 
                     className="text-[11px] font-semibold uppercase tracking-wide"
-                    style={{ color: 'hsl(var(--secondary-green))' }}
+                    style={{ color: 'var(--secondary-green)' }}
                   >
                     {item.title}
                   </span>

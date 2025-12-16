@@ -26,25 +26,25 @@ const layerConfigs: LayerConfig[] = [
     key: 'objectives', 
     label: 'Objectives', 
     icon: Target,
-    color: 'hsl(var(--secondary-green))',
+    color: 'var(--secondary-green)',
     bgColor: 'rgba(92, 124, 92, 0.15)',
-    barColor: 'hsl(var(--secondary-green))',
+    barColor: 'var(--secondary-green)',
   },
   { 
     key: 'themes', 
     label: 'Themes', 
     icon: Layers,
-    color: 'hsl(var(--brand-gold))',
+    color: 'var(--brand-gold)',
     bgColor: 'rgba(198, 156, 109, 0.15)',
-    barColor: 'hsl(var(--brand-gold))',
+    barColor: 'var(--brand-gold)',
   },
   { 
     key: 'epics', 
     label: 'Epics', 
     icon: Box,
-    color: 'hsl(var(--secondary-bronze))',
+    color: 'var(--secondary-bronze)',
     bgColor: 'rgba(139, 115, 85, 0.15)',
-    barColor: 'hsl(var(--secondary-bronze))',
+    barColor: 'var(--secondary-bronze)',
   },
   { 
     key: 'features', 
@@ -52,7 +52,7 @@ const layerConfigs: LayerConfig[] = [
     icon: LayoutGrid,
     color: 'var(--text-2)',
     bgColor: 'rgba(200, 204, 208, 0.25)',
-    barColor: 'hsl(var(--secondary-green))',
+    barColor: 'var(--secondary-green)',
   },
 ];
 
@@ -157,7 +157,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
       style={{
         backgroundColor: 'var(--surface-1)',
         border: '1px solid var(--divider)',
-        borderLeft: '3px solid hsl(var(--secondary-bronze))',
+        borderLeft: '3px solid var(--secondary-bronze)',
         boxShadow: 'var(--shadow-sm)',
       }}
     >
@@ -184,7 +184,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
           <Button 
             size="sm" 
             className="gap-1.5 h-8 text-[13px] px-3"
-            style={{ backgroundColor: 'hsl(var(--brand-gold))', color: 'white' }}
+            style={{ backgroundColor: 'var(--brand-gold)', color: 'white' }}
           >
             <Plus className="w-3.5 h-3.5" />
             Create Objective
@@ -260,7 +260,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                 style={{ 
                   gridTemplateColumns: '200px 80px 1fr 100px 60px',
                   borderBottom: isLast && !isSelected ? 'none' : '1px solid var(--divider-subtle)',
-                  backgroundColor: isSelected ? 'hsl(var(--brand-gold) / 0.05)' : 'transparent',
+                  backgroundColor: isSelected ? 'rgba(198, 156, 109, 0.05)' : 'transparent',
                 }}
               >
                 {/* Layer icon + label */}
@@ -335,8 +335,8 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                 <div 
                   className="mx-5 mb-4 p-5 rounded-lg"
                   style={{
-                    backgroundColor: 'hsl(var(--brand-gold) / 0.05)',
-                    border: '1px solid hsl(var(--brand-gold) / 0.2)',
+                    backgroundColor: 'rgba(198, 156, 109, 0.05)',
+                    border: '1px solid rgba(198, 156, 109, 0.2)',
                   }}
                 >
                   <div className="flex items-center justify-between mb-4">
@@ -366,21 +366,21 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                         className="py-2 px-3 rounded-md"
                         style={{
                           borderLeft: item.isUnaligned 
-                            ? '3px solid hsl(var(--destructive))' 
+                            ? '3px solid var(--destructive)' 
                             : item.status === 'On Track' 
-                              ? '3px solid hsl(var(--secondary-green))'
+                              ? '3px solid var(--secondary-green)'
                               : item.status === 'At Risk'
-                                ? '3px solid hsl(var(--brand-gold))'
+                                ? '3px solid var(--brand-gold)'
                                 : item.status === 'Behind'
-                                  ? '3px solid hsl(var(--destructive))'
-                                  : '3px solid hsl(var(--brand-gold))',
-                          backgroundColor: item.isUnaligned ? 'hsl(var(--destructive) / 0.05)' : 'transparent',
+                                  ? '3px solid var(--destructive)'
+                                  : '3px solid var(--brand-gold)',
+                          backgroundColor: item.isUnaligned ? 'rgba(220, 38, 38, 0.05)' : 'transparent',
                         }}
                       >
                         {item.isUnaligned && (
                           <span 
                             className="text-[12px] font-medium flex items-center gap-1 mb-1"
-                            style={{ color: 'hsl(var(--destructive))' }}
+                            style={{ color: 'var(--destructive)' }}
                           >
                             ⚠ Unaligned Epic
                           </span>

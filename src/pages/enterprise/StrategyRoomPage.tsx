@@ -79,7 +79,7 @@ export default function StrategyRoomPage() {
         <div className="flex-1 flex items-center justify-center">
           <div 
             className="animate-spin rounded-full h-8 w-8 border-b-2" 
-            style={{ borderColor: 'hsl(var(--brand-gold))' }}
+            style={{ borderColor: 'var(--brand-gold)' }}
           />
         </div>
       </PageChrome>
