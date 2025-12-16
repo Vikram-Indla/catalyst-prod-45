@@ -1,24 +1,24 @@
 /**
  * Strategic Backlog - Objectives Section
- * Enterprise-grade table for objectives management
+ * Pixel-perfect table matching mockups
  */
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Plus, Search, ChevronRight, AlertTriangle } from 'lucide-react';
-import { ObjectiveDrawerV2 } from '@/modules/okr-v2';
-import { StrategicBacklogEmptyState } from './StrategicBacklogEmptyState';
+import { Search, ChevronRight, ArrowUpDown, ArrowUp } from 'lucide-react';
 import { format } from 'date-fns';
 import type { StrategicTheme } from '@/types/strategicBacklog';
+import { cn } from '@/lib/utils';
 
 interface ObjectivesSectionProps {
   snapshotId: string;
   themes: StrategicTheme[];
   isArchived: boolean;
+  onSelectItem: (item: any) => void;
+  selectedItemId?: string;
 }
 
 interface Objective {
@@ -28,15 +28,19 @@ interface Objective {
   status?: string | null;
   overall_progress?: number | null;
   theme_id?: string | null;
-  owner_id?: string | null;
   created_at: string;
   updated_at: string;
 }
 
-export function StrategicBacklogObjectivesSection({ snapshotId, themes, isArchived }: ObjectivesSectionProps) {
-  const [selectedObjectiveId, setSelectedObjectiveId] = useState<string | null>(null);
+export function StrategicBacklogObjectivesSection({ 
+  snapshotId, 
+  themes, 
+  isArchived,
+  onSelectItem,
+  selectedItemId,
+}: ObjectivesSectionProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortColumn, setSortColumn] = useState<'name' | 'theme' | 'progress' | 'updated'>('name');
+  const [sortColumn, setSortColumn] = useState<'name' | 'theme' | 'status' | 'krs' | 'progress'>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   const themeIds = themes.map(t => t.id);
@@ -61,7 +65,26 @@ export function StrategicBacklogObjectivesSection({ snapshotId, themes, isArchiv
     enabled: themeIds.length > 0,
   });
 
-  const riskCounts: Record<string, number> = {};
+  // Get KR counts
+  const { data: krCounts = {} } = useQuery({
+    queryKey: ['objectives-kr-counts', objectives.map(o => o.id)],
+    queryFn: async () => {
+      if (objectives.length === 0) return {};
+      const objectiveIds = objectives.map(o => o.id);
+      const { data } = await supabase
+        .from('key_results')
+        .select('objective_id')
+        .in('objective_id', objectiveIds);
+      
+      const counts: Record<string, number> = {};
+      objectiveIds.forEach(id => counts[id] = 0);
+      (data || []).forEach(kr => {
+        if (kr.objective_id) counts[kr.objective_id] = (counts[kr.objective_id] || 0) + 1;
+      });
+      return counts;
+    },
+    enabled: objectives.length > 0,
+  });
 
   const filteredObjectives = useMemo(() => {
     let result = objectives;
@@ -87,13 +110,17 @@ export function StrategicBacklogObjectivesSection({ snapshotId, themes, isArchiv
           aVal = a.theme_id ? themeLookup[a.theme_id] || '' : '';
           bVal = b.theme_id ? themeLookup[b.theme_id] || '' : '';
           break;
+        case 'status':
+          aVal = a.status || '';
+          bVal = b.status || '';
+          break;
+        case 'krs':
+          aVal = krCounts[a.id] || 0;
+          bVal = krCounts[b.id] || 0;
+          break;
         case 'progress':
           aVal = a.overall_progress || 0;
           bVal = b.overall_progress || 0;
-          break;
-        case 'updated':
-          aVal = a.updated_at || '';
-          bVal = b.updated_at || '';
           break;
         default:
           return 0;
@@ -105,7 +132,7 @@ export function StrategicBacklogObjectivesSection({ snapshotId, themes, isArchiv
     });
 
     return result;
-  }, [objectives, searchQuery, sortColumn, sortDirection, themeLookup]);
+  }, [objectives, searchQuery, sortColumn, sortDirection, themeLookup, krCounts]);
 
   const handleSort = (column: typeof sortColumn) => {
     if (sortColumn === column) {
@@ -116,151 +143,152 @@ export function StrategicBacklogObjectivesSection({ snapshotId, themes, isArchiv
     }
   };
 
-  const SortIndicator = ({ column }: { column: typeof sortColumn }) => {
-    if (sortColumn !== column) return <span className="text-muted-foreground/30 ml-1">⇅</span>;
-    return <span className="text-brand-gold ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>;
+  const getStatusBadge = (status?: string | null) => {
+    const isActive = status === 'active';
+    return (
+      <Badge 
+        variant="outline" 
+        className={cn(
+          "text-[11px] font-medium px-2.5 py-1",
+          isActive 
+            ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800"
+            : "bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700"
+        )}
+      >
+        {isActive ? 'Active' : 'Draft'}
+      </Badge>
+    );
   };
 
-  // Empty states
-  if (themes.length === 0) {
-    return (
-      <StrategicBacklogEmptyState
-        type="objective"
-        hasSnapshot={!!snapshotId}
-        hasThemes={false}
-        isArchived={isArchived}
-      />
-    );
-  }
-
-  if (objectives.length === 0 && !searchQuery && !isLoading) {
-    return (
-      <StrategicBacklogEmptyState
-        type="objective"
-        hasSnapshot={!!snapshotId}
-        hasThemes={true}
-        isArchived={isArchived}
-        onCreate={() => {/* TODO: Open create objective dialog */}}
-      />
-    );
-  }
+  const SortIcon = ({ column }: { column: typeof sortColumn }) => {
+    if (sortColumn === column) {
+      return <ArrowUp className={cn("h-3 w-3 ml-1", sortDirection === 'desc' && "rotate-180")} />;
+    }
+    return <ArrowUpDown className="h-3 w-3 ml-1 opacity-40" />;
+  };
 
   return (
     <div className="space-y-4">
-      {/* Toolbar */}
-      <div className="flex items-center justify-between gap-4">
-        <div className="relative flex-1 max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search objectives..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 h-9"
-          />
-        </div>
-
-        {!isArchived && (
-          <Button size="sm" className="bg-brand-gold hover:bg-brand-gold-hover text-white">
-            <Plus className="h-3.5 w-3.5 mr-1.5" />
-            Create
-          </Button>
-        )}
+      {/* Search */}
+      <div className="relative max-w-md">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Search objectives..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-10 h-10 bg-surface border-border"
+        />
       </div>
 
       {/* Table */}
-      {isLoading ? (
-        <div className="text-center py-12 text-muted-foreground">Loading objectives...</div>
-      ) : filteredObjectives.length === 0 ? (
-        <div className="text-center py-12 text-muted-foreground">
-          No objectives match your search.
-        </div>
-      ) : (
-        <div className="border border-border rounded-lg overflow-hidden bg-surface">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-brand-gold/5 border-b border-border">
-                <th
-                  className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-brand-gold/10 transition-colors"
-                  onClick={() => handleSort('name')}
-                >
-                  Objective <SortIndicator column="name" />
-                </th>
-                <th
-                  className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider w-40 cursor-pointer hover:bg-brand-gold/10 transition-colors"
-                  onClick={() => handleSort('theme')}
-                >
-                  Theme <SortIndicator column="theme" />
-                </th>
-                <th
-                  className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider w-36 cursor-pointer hover:bg-brand-gold/10 transition-colors"
-                  onClick={() => handleSort('progress')}
-                >
-                  Progress <SortIndicator column="progress" />
-                </th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider w-20">
-                  Risks
-                </th>
-                <th
-                  className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider w-28 cursor-pointer hover:bg-brand-gold/10 transition-colors"
-                  onClick={() => handleSort('updated')}
-                >
-                  Updated <SortIndicator column="updated" />
-                </th>
-                <th className="w-10"></th>
+      <div className="bg-surface border border-border rounded-lg overflow-hidden">
+        <table className="w-full">
+          <thead className="bg-muted/50 border-b border-border">
+            <tr>
+              <th 
+                className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider cursor-pointer hover:text-foreground transition-colors"
+                onClick={() => handleSort('name')}
+              >
+                <button className="flex items-center">
+                  Objective <SortIcon column="name" />
+                </button>
+              </th>
+              <th 
+                className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider w-52 cursor-pointer hover:text-foreground transition-colors"
+                onClick={() => handleSort('theme')}
+              >
+                <button className="flex items-center">
+                  Theme <SortIcon column="theme" />
+                </button>
+              </th>
+              <th 
+                className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider w-24 cursor-pointer hover:text-foreground transition-colors"
+                onClick={() => handleSort('status')}
+              >
+                <button className="flex items-center">
+                  State <SortIcon column="status" />
+                </button>
+              </th>
+              <th 
+                className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider w-16 cursor-pointer hover:text-foreground transition-colors"
+                onClick={() => handleSort('krs')}
+              >
+                <button className="flex items-center">
+                  KRs <SortIcon column="krs" />
+                </button>
+              </th>
+              <th 
+                className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider w-32 cursor-pointer hover:text-foreground transition-colors"
+                onClick={() => handleSort('progress')}
+              >
+                <button className="flex items-center">
+                  Progress <SortIcon column="progress" />
+                </button>
+              </th>
+              <th className="w-10"></th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border/50">
+            {isLoading ? (
+              <tr>
+                <td colSpan={6} className="px-4 py-12 text-center text-muted-foreground">
+                  Loading objectives...
+                </td>
               </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {filteredObjectives.map((obj) => (
-                <tr
-                  key={obj.id}
-                  onClick={() => setSelectedObjectiveId(obj.id)}
-                  className="cursor-pointer hover:bg-[rgba(92,124,92,0.06)] transition-colors"
-                >
-                  <td className="px-4 py-3">
-                    <span className="font-medium text-foreground">{obj.name}</span>
-                  </td>
-                  <td className="px-4 py-3 text-sm text-muted-foreground truncate max-w-[160px]">
-                    {obj.theme_id ? themeLookup[obj.theme_id] || '—' : '—'}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <Progress value={(obj.overall_progress || 0) * 100} className="h-2 flex-1" />
-                      <span className="text-xs text-muted-foreground w-10 text-right">
-                        {Math.round((obj.overall_progress || 0) * 100)}%
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    {(riskCounts[obj.id] || 0) > 0 ? (
-                      <Badge variant="outline" className="text-xs gap-1">
-                        <AlertTriangle className="h-3 w-3" />
-                        {riskCounts[obj.id]}
-                      </Badge>
-                    ) : (
-                      <span className="text-xs text-muted-foreground">—</span>
+            ) : filteredObjectives.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="px-4 py-12 text-center text-muted-foreground">
+                  No objectives found
+                </td>
+              </tr>
+            ) : (
+              filteredObjectives.map((obj) => {
+                const isSelected = selectedItemId === obj.id;
+                const progress = Math.round((obj.overall_progress || 0) * 100);
+                return (
+                  <tr
+                    key={obj.id}
+                    onClick={() => onSelectItem(obj)}
+                    className={cn(
+                      "cursor-pointer hover:bg-[rgba(92,124,92,0.08)] transition-colors",
+                      isSelected && "bg-[rgba(92,124,92,0.08)] border-l-2 border-l-brand-gold"
                     )}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-muted-foreground">
-                    {obj.updated_at ? format(new Date(obj.updated_at), 'MMM d') : '—'}
-                  </td>
-                  <td className="px-4 py-3">
-                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {/* Objective Drawer */}
-      {selectedObjectiveId && (
-        <ObjectiveDrawerV2
-          objectiveId={selectedObjectiveId}
-          open={!!selectedObjectiveId}
-          onClose={() => setSelectedObjectiveId(null)}
-        />
-      )}
+                  >
+                    <td className="px-4 py-3">
+                      <span className="text-sm font-medium text-foreground">{obj.name}</span>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-muted-foreground">
+                      {obj.theme_id ? themeLookup[obj.theme_id] || '—' : '—'}
+                    </td>
+                    <td className="px-4 py-3">
+                      {getStatusBadge(obj.status)}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-muted-foreground">
+                      {krCounts[obj.id] || 0}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <div className="flex-1 h-1.5 bg-border rounded-full overflow-hidden">
+                          <div 
+                            className="bg-secondary-green h-full rounded-full" 
+                            style={{ width: `${progress}%` }}
+                          />
+                        </div>
+                        <span className="text-xs text-muted-foreground w-9 text-right">
+                          {progress}%
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
