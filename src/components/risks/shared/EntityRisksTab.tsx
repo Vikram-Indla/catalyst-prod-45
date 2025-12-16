@@ -184,6 +184,7 @@ export function EntityRisksTab({ entityType, entityId }: EntityRisksTabProps) {
       // Get current user
       const { data: { user } } = await supabase.auth.getUser();
 
+      // Build payload WITHOUT program_increment_id (column doesn't exist)
       const insertPayload = {
         title: data.title,
         description: data.description,
@@ -209,8 +210,6 @@ export function EntityRisksTab({ entityType, entityId }: EntityRisksTabProps) {
       };
 
       // Set the correct ID column and relationship based on entity type
-      // Note: program_id FK references projects table, not programs - so we don't set it for epic/feature/theme risks
-      // The check constraint now allows: program_id OR business_request_id OR (related_item_id + relationship)
       if (entityType === 'business_request') {
         insertPayload.business_request_id = entityId;
         insertPayload.relationship = 'Demand';
@@ -224,7 +223,6 @@ export function EntityRisksTab({ entityType, entityId }: EntityRisksTabProps) {
         insertPayload.related_item_id = entityId;
         insertPayload.relationship = 'Theme';
       } else if (entityType === 'program') {
-        // program_id is for projects, not programs - skip setting it
         insertPayload.related_item_id = entityId;
         insertPayload.relationship = 'Program';
       } else if (relationship) {
@@ -232,8 +230,37 @@ export function EntityRisksTab({ entityType, entityId }: EntityRisksTabProps) {
         insertPayload.relationship = relationship;
       }
 
-      const { error } = await supabase.from('risks').insert(insertPayload);
-      if (error) throw error;
+      // INSTRUMENTATION: Log payload keys
+      console.log('[ENTITY RISK CREATE] Payload keys:', Object.keys(insertPayload));
+      console.log('[ENTITY RISK CREATE] Full payload:', JSON.stringify(insertPayload, null, 2));
+
+      // Insert with minimal select to guarantee success
+      const { data: insertResult, error: insertError } = await supabase
+        .from('risks')
+        .insert(insertPayload)
+        .select('id')
+        .single();
+      
+      console.log('[ENTITY RISK CREATE] Select string: .select("id")');
+      
+      if (insertError) {
+        console.error('[ENTITY RISK CREATE] Error:', insertError);
+        throw insertError;
+      }
+      
+      console.log('[ENTITY RISK CREATE] Success, id:', insertResult?.id);
+      
+      // Refetch after insert
+      if (insertResult?.id) {
+        const { data: refetched } = await supabase
+          .from('risks')
+          .select('*')
+          .eq('id', insertResult.id)
+          .single();
+        console.log('[ENTITY RISK CREATE] Refetched:', refetched?.id);
+        return refetched;
+      }
+      return insertResult;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['entity-risks', entityType, entityId] });
@@ -241,14 +268,49 @@ export function EntityRisksTab({ entityType, entityId }: EntityRisksTabProps) {
       resetForm();
       setShowAddForm(false);
     },
-    onError: (e: any) => toast.error(e.message)
+    onError: (e: any) => {
+      console.error('[ENTITY RISK CREATE] Mutation error:', e);
+      toast.error(e.message);
+    }
   });
 
   // Update mutation
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: RiskFormDataV2 }) => {
-      const { error } = await supabase.from('risks').update(data).eq('id', id);
-      if (error) throw error;
+      // Remove any PI-related fields that might sneak in
+      const { program_increment_id, ...cleanData } = data as any;
+      
+      // INSTRUMENTATION: Log payload keys
+      console.log('[ENTITY RISK UPDATE] Payload keys:', Object.keys(cleanData));
+      console.log('[ENTITY RISK UPDATE] Full payload:', JSON.stringify(cleanData, null, 2));
+      console.log('[ENTITY RISK UPDATE] Risk ID:', id);
+      
+      // Update with minimal select to guarantee success
+      const { data: updateResult, error: updateError } = await supabase
+        .from('risks')
+        .update(cleanData)
+        .eq('id', id)
+        .select('id')
+        .single();
+      
+      console.log('[ENTITY RISK UPDATE] Select string: .select("id")');
+      
+      if (updateError) {
+        console.error('[ENTITY RISK UPDATE] Error:', updateError);
+        throw updateError;
+      }
+      
+      console.log('[ENTITY RISK UPDATE] Success, id:', updateResult?.id);
+      
+      // Refetch after update
+      const { data: refetched } = await supabase
+        .from('risks')
+        .select('*')
+        .eq('id', id)
+        .single();
+      console.log('[ENTITY RISK UPDATE] Refetched:', refetched?.id);
+      
+      return refetched || updateResult;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['entity-risks', entityType, entityId] });
@@ -256,7 +318,10 @@ export function EntityRisksTab({ entityType, entityId }: EntityRisksTabProps) {
       setEditingId(null);
       resetForm();
     },
-    onError: (e: any) => toast.error(e.message)
+    onError: (e: any) => {
+      console.error('[ENTITY RISK UPDATE] Mutation error:', e);
+      toast.error(e.message);
+    }
   });
 
   // Delete mutation
