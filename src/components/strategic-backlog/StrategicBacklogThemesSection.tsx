@@ -184,11 +184,11 @@ export function StrategicBacklogThemesSection({
                     key={theme.id}
                     onClick={() => onSelectItem(theme)}
                     className="cursor-pointer transition-colors group"
-                    style={{ 
+                    style={{
                       borderBottom: '1px solid var(--border-subtle)',
                       background: isSelected ? 'var(--row-selected)' : 'transparent',
                     }}
-                    onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = '#F6F8FA'; }}
+                    onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = 'var(--row-hover)'; }}
                     onMouseLeave={(e) => { e.currentTarget.style.background = isSelected ? 'var(--row-selected)' : 'transparent'; }}
                   >
                     <td className="px-4 py-3.5 min-w-0">

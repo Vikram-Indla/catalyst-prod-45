@@ -140,10 +140,13 @@ function CatalystShellContent() {
         <div className="relative flex-shrink-0 mr-3">
           {renderSidebar()}
         </div>
-        
-        <main className="flex-1 overflow-auto">
+
+        {/* Route content scroll container (single scroll parent) */}
+        <main className="flex-1 min-w-0 flex flex-col overflow-hidden">
           <AnnouncementBanner />
-          <Outlet />
+          <div className="flex-1 min-h-0 overflow-auto">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>
