@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Scale, GroupBy, ActiveFilters, Theme, Owner } from '@/types/objective-roadmap';
 import { countActiveFilters } from '@/utils/objective-roadmap-utils';
-import { Search, Layers, Filter, Clock, ChevronDown, Check, X } from 'lucide-react';
+import { Search, Layers, Filter, ChevronDown, Check, X } from 'lucide-react';
 import { SmartFiltersPanel } from './SmartFiltersPanel';
 import { DateRangeFilter, AppliedDateFilter } from '@/components/roadmap/DateRangeFilter';
 import { cn } from '@/lib/utils';
@@ -179,37 +179,12 @@ export const RoadmapToolbar: React.FC<RoadmapToolbarProps> = ({
         
         <div className="w-px h-6 bg-border" />
         
-        {/* Scale Toggle */}
-        <div className="flex bg-muted rounded-lg p-0.5">
-          {(['monthly', 'quarterly', 'yearly'] as Scale[]).map(s => (
-            <button
-              key={s}
-              className={cn(
-                "w-8 h-7 flex items-center justify-center text-xs font-medium rounded-md transition-colors",
-                scale === s ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-              )}
-              onClick={() => onScaleChange(s)}
-            >
-              {s.charAt(0).toUpperCase()}
-            </button>
-          ))}
-        </div>
-        
         {/* Date Range Filter */}
         <DateRangeFilter
           appliedFilter={appliedDateFilter}
           onApplyFilter={onApplyDateFilter}
           onClearFilter={onClearDateFilter}
         />
-        
-        {/* Today Button */}
-        <button 
-          className="w-9 h-9 flex items-center justify-center border border-border rounded-lg bg-background hover:bg-muted"
-          onClick={onScrollToToday}
-          title="Jump to Today"
-        >
-          <Clock size={16} />
-        </button>
       </div>
     </div>
   );
