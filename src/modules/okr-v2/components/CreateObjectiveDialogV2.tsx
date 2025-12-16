@@ -9,10 +9,6 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -106,46 +102,51 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
 
   const isValid = name.trim() && themeId;
 
+  const inputClasses = "w-full px-3 py-2.5 rounded-lg text-sm bg-white dark:bg-[#0D1117] border border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] placeholder:text-[#8B949E] dark:placeholder:text-[#6E7681] focus:border-[#C69C6D] focus:ring-1 focus:ring-[rgba(198,156,109,0.3)] outline-none";
+  const labelClasses = "text-sm font-medium text-[#24292F] dark:text-[#E6EDF3]";
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] bg-white dark:bg-[#161B22] border-[#E1E4E8] dark:border-[#30363D]">
         <DialogHeader>
-          <DialogTitle>Create Objective</DialogTitle>
+          <DialogTitle className="text-[#24292F] dark:text-[#E6EDF3]">Create Objective</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Name (required) */}
           <div className="space-y-2">
-            <Label htmlFor="name">Name *</Label>
-            <Input
+            <label htmlFor="name" className={labelClasses}>Name *</label>
+            <input
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Enter objective name"
               required
+              className={inputClasses}
             />
           </div>
 
           {/* Description */}
           <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
+            <label htmlFor="description" className={labelClasses}>Description</label>
+            <textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Describe this objective"
               rows={3}
+              className={inputClasses}
             />
           </div>
 
           {/* Theme (required) */}
           <div className="space-y-2">
-            <Label>Theme *</Label>
+            <label className={labelClasses}>Theme *</label>
             <Select value={themeId} onValueChange={setThemeId} disabled={!themes?.length}>
-              <SelectTrigger className={!themeId ? 'border-destructive' : ''}>
+              <SelectTrigger className={`${inputClasses} ${!themeId ? 'border-2 border-[#B85C5C]' : ''}`}>
                 <SelectValue placeholder={themes?.length ? "Select theme (required)" : "No themes available"} />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white dark:bg-[#161B22] border-[#E1E4E8] dark:border-[#30363D]">
                 {themes?.filter(theme => theme.id).map((theme) => (
                   <SelectItem key={theme.id} value={theme.id}>
                     {theme.name}
@@ -154,22 +155,22 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
               </SelectContent>
             </Select>
             {!themeId && themes?.length ? (
-              <p className="text-xs text-destructive">Theme is required</p>
+              <p className="text-xs text-[#B85C5C]">Theme is required</p>
             ) : null}
             {!themes?.length && (
-              <p className="text-xs text-muted-foreground">Create a theme first to create objectives</p>
+              <p className="text-xs text-[#8B949E] dark:text-[#6E7681]">Create a theme first to create objectives</p>
             )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             {/* Status */}
             <div className="space-y-2">
-              <Label>Status</Label>
+              <label className={labelClasses}>Status</label>
               <Select value={status} onValueChange={(v) => setStatus(v as ObjectiveStatusV2)}>
-                <SelectTrigger>
+                <SelectTrigger className={inputClasses}>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white dark:bg-[#161B22] border-[#E1E4E8] dark:border-[#30363D]">
                   <SelectItem value="pending">Pending</SelectItem>
                   <SelectItem value="in_progress">In Progress</SelectItem>
                   <SelectItem value="on_track">On Track</SelectItem>
@@ -181,12 +182,12 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
 
             {/* Health */}
             <div className="space-y-2">
-              <Label>Health</Label>
+              <label className={labelClasses}>Health</label>
               <Select value={health} onValueChange={(v) => setHealth(v as ObjectiveHealthV2)}>
-                <SelectTrigger>
+                <SelectTrigger className={inputClasses}>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white dark:bg-[#161B22] border-[#E1E4E8] dark:border-[#30363D]">
                   <SelectItem value="good">Good</SelectItem>
                   <SelectItem value="fair">Fair</SelectItem>
                   <SelectItem value="poor">Poor</SelectItem>
@@ -199,7 +200,7 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
           <div className="grid grid-cols-2 gap-4">
             {/* Start Date */}
             <div className="space-y-2">
-              <Label>Start Date</Label>
+              <label className={labelClasses}>Start Date</label>
               <CatalystDatePicker
                 value={startDate}
                 onChange={setStartDate}
@@ -209,7 +210,7 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
 
             {/* Due Date */}
             <div className="space-y-2">
-              <Label>Due Date</Label>
+              <label className={labelClasses}>Due Date</label>
               <CatalystDatePicker
                 value={dueDate}
                 onChange={setDueDate}
@@ -220,12 +221,12 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
 
           {/* Owner */}
           <div className="space-y-2">
-            <Label>Owner</Label>
+            <label className={labelClasses}>Owner</label>
             <Select value={ownerId || "__unassigned__"} onValueChange={(v) => setOwnerId(v === "__unassigned__" ? "" : v)}>
-              <SelectTrigger>
+              <SelectTrigger className={inputClasses}>
                 <SelectValue placeholder="Select owner" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white dark:bg-[#161B22] border-[#E1E4E8] dark:border-[#30363D]">
                 <SelectItem value="__unassigned__">Unassigned</SelectItem>
                 {users?.filter(user => user.id).map((user) => (
                   <SelectItem key={user.id} value={user.id}>
@@ -238,23 +239,32 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
 
           {/* Notes */}
           <div className="space-y-2">
-            <Label htmlFor="notes">Notes</Label>
-            <Textarea
+            <label htmlFor="notes" className={labelClasses}>Notes</label>
+            <textarea
               id="notes"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Add notes..."
               rows={2}
+              className={inputClasses}
             />
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <button 
+              type="button" 
+              onClick={() => onOpenChange(false)}
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-white dark:bg-[#161B22] border border-[#E1E4E8] dark:border-[#30363D] text-[#57606A] dark:text-[#8B949E] hover:bg-[#F6F8FA] dark:hover:bg-[#21262D]"
+            >
               Cancel
-            </Button>
-            <Button type="submit" disabled={!isValid || createObjective.isPending}>
+            </button>
+            <button 
+              type="submit" 
+              disabled={!isValid || createObjective.isPending}
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-[#C69C6D] hover:bg-[#B8905F] text-white disabled:opacity-50"
+            >
               {createObjective.isPending ? 'Creating...' : 'Create Objective'}
-            </Button>
+            </button>
           </DialogFooter>
         </form>
       </DialogContent>

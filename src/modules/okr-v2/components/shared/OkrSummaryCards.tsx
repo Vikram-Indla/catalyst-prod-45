@@ -24,15 +24,19 @@ interface SummaryCardProps {
 
 function SummaryCard({ label, value, variant = 'default' }: SummaryCardProps) {
   const valueColors = {
-    default: 'text-foreground',
-    success: 'text-secondary-green',
-    warning: 'text-[#e07830]',
-    danger: 'text-[#c44536]',
+    default: 'text-[#24292F] dark:text-[#E6EDF3]',
+    success: 'text-[#5C7C5C] dark:text-[#7DA37D]',
+    warning: 'text-[#C69C6D] dark:text-[#D4B896]',
+    danger: 'text-[#B85C5C] dark:text-[#D88888]',
   };
 
   return (
-    <div className="flex flex-col gap-2 px-5 py-4 bg-[#faf7f1] border border-border rounded-lg min-w-0">
-      <span className="text-[11px] font-semibold text-secondary-bronze uppercase tracking-wider truncate">
+    <div className={cn(
+      "flex flex-col gap-2 px-5 py-4 rounded-lg min-w-0",
+      "bg-[#FAFBFC] dark:bg-[#161B22]",
+      "border border-[#E1E4E8] dark:border-[#30363D]"
+    )}>
+      <span className="text-[11px] font-semibold text-[#8B949E] dark:text-[#6E7681] uppercase tracking-wider truncate">
         {label}
       </span>
       <span className={cn(
