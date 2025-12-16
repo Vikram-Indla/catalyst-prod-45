@@ -69,7 +69,18 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
 
   const [isOpen, setIsOpen] = useState(false);
   const [mode, setMode] = useState<FilterMode>(appliedFilter?.type || 'quarter');
+  
+  // Single year for quarter/month context
   const [selectedYear, setSelectedYear] = useState(appliedFilter?.year || currentYear);
+  
+  // Multi-select for years
+  const [selectedYears, setSelectedYears] = useState<number[]>(() => {
+    if (appliedFilter?.type === 'year') {
+      const val = appliedFilter.value;
+      return Array.isArray(val) ? val as number[] : [Number(val)];
+    }
+    return [currentYear];
+  });
   
   // Multi-select for quarters
   const [selectedQuarters, setSelectedQuarters] = useState<string[]>(() => {
@@ -108,6 +119,14 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const toggleYear = (year: number) => {
+    setSelectedYears(prev => 
+      prev.includes(year) 
+        ? prev.filter(y => y !== year) 
+        : [...prev, year].sort((a, b) => a - b)
+    );
+  };
+
   const toggleQuarter = (qId: string) => {
     setSelectedQuarters(prev => 
       prev.includes(qId) 
@@ -126,8 +145,14 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
 
   const getPreviewText = (): string => {
     switch (mode) {
-      case 'year':
-        return `01 Jan – 31 Dec ${selectedYear}`;
+      case 'year': {
+        if (selectedYears.length === 0) return 'Select years';
+        if (selectedYears.length === 1) {
+          return `01 Jan – 31 Dec ${selectedYears[0]}`;
+        }
+        const sorted = [...selectedYears].sort((a, b) => a - b);
+        return `${sorted[0]} – ${sorted[sorted.length - 1]}`;
+      }
       case 'quarter': {
         if (selectedQuarters.length === 0) return 'Select quarters';
         if (selectedQuarters.length === 1) {
@@ -160,8 +185,14 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   const getAppliedLabel = (): string => {
     if (!appliedFilter) return 'Select Range';
     switch (appliedFilter.type) {
-      case 'year':
-        return String(appliedFilter.year);
+      case 'year': {
+        const val = appliedFilter.value;
+        if (Array.isArray(val)) {
+          if (val.length === 1) return String(val[0]);
+          return `${val.length} Years`;
+        }
+        return String(val);
+      }
       case 'quarter': {
         const val = appliedFilter.value;
         if (Array.isArray(val)) {
@@ -190,7 +221,7 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
     
     switch (mode) {
       case 'year':
-        filter = { type: 'year', year: selectedYear, value: selectedYear };
+        filter = { type: 'year', year: selectedYears[0] || currentYear, value: selectedYears };
         break;
       case 'quarter':
         filter = { type: 'quarter', year: selectedYear, value: selectedQuarters };
@@ -218,6 +249,7 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   const handleClear = () => {
     onClearFilter();
     setSelectedYear(currentYear);
+    setSelectedYears([currentYear]);
     setSelectedQuarters([currentQuarter]);
     setSelectedMonths([currentMonth]);
     setCustomStartDate('');
@@ -227,7 +259,11 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   const years = Array.from({ length: 12 }, (_, i) => yearGridStart + i);
 
   const getDisplayText = (): string => {
-    if (mode === 'year') return String(selectedYear);
+    if (mode === 'year') {
+      if (selectedYears.length === 0) return 'None';
+      if (selectedYears.length === 1) return String(selectedYears[0]);
+      return `${selectedYears.length} Years`;
+    }
     if (mode === 'quarter') {
       if (selectedQuarters.length === 0) return 'None';
       if (selectedQuarters.length === 1) return `${selectedQuarters[0]} ${selectedYear}`;
@@ -242,6 +278,7 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   };
 
   const canApply = (): boolean => {
+    if (mode === 'year') return selectedYears.length > 0;
     if (mode === 'quarter') return selectedQuarters.length > 0;
     if (mode === 'month') return selectedMonths.length > 0;
     if (mode === 'custom') return !!(customStartDate && customEndDate);
@@ -316,7 +353,7 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
             {/* Content Area - Compact */}
             <div className="p-3">
               
-              {/* Year Mode */}
+              {/* Year Mode - Multi-select */}
               {mode === 'year' && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
@@ -339,12 +376,12 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
                   
                   <div className="grid grid-cols-4 gap-1">
                     {years.map((year) => {
-                      const isSelected = selectedYear === year;
+                      const isSelected = selectedYears.includes(year);
                       const isCurrent = currentYear === year;
                       return (
                         <button
                           key={year}
-                          onClick={() => setSelectedYear(year)}
+                          onClick={() => toggleYear(year)}
                           className={cn(
                             "relative py-2 rounded-lg text-xs font-medium transition-all duration-200",
                             isSelected 
@@ -356,10 +393,16 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
                           {isCurrent && !isSelected && (
                             <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-brand-gold" />
                           )}
+                          {isSelected && (
+                            <div className="absolute top-0.5 right-0.5">
+                              <Check className="w-2.5 h-2.5 text-white" />
+                            </div>
+                          )}
                         </button>
                       );
                     })}
                   </div>
+                  <p className="text-[10px] text-muted-foreground text-center">Click to select multiple years</p>
                 </div>
               )}
 
