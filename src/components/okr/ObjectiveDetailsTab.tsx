@@ -43,8 +43,8 @@ export function ObjectiveDetailsTab({ objective }: ObjectiveDetailsTabProps) {
   const [startDate, setStartDate] = useState<Date | undefined>(
     objective.start_date ? new Date(objective.start_date) : undefined
   );
-  const [dueDate, setDueDate] = useState<Date | undefined>(
-    objective.due_date ? new Date(objective.due_date) : undefined
+  const [endDate, setEndDate] = useState<Date | undefined>(
+    objective.end_date ? new Date(objective.end_date) : undefined
   );
   const [themePopoverOpen, setThemePopoverOpen] = useState(false);
 
@@ -88,7 +88,7 @@ export function ObjectiveDetailsTab({ objective }: ObjectiveDetailsTabProps) {
     if (field === "start_date") {
       setStartDate(date);
     } else {
-      setDueDate(date);
+      setEndDate(date);
     }
     handleFieldUpdate(field, date ? date.toISOString() : null);
   };
@@ -286,10 +286,10 @@ export function ObjectiveDetailsTab({ objective }: ObjectiveDetailsTabProps) {
             </div>
 
             <div className="space-y-2">
-              <Label className="mb-1.5 block">Due Date</Label>
+              <Label className="mb-1.5 block">End Date</Label>
               <CatalystDatePicker
-                value={dueDate ? format(dueDate, "yyyy-MM-dd") : null}
-                onChange={(date) => handleDateUpdate("due_date", date)}
+                value={endDate ? format(endDate, "yyyy-MM-dd") : null}
+                onChange={(date) => handleDateUpdate("end_date", date)}
                 placeholder="Pick a date"
               />
             </div>

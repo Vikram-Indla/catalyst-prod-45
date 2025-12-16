@@ -33,7 +33,7 @@ const FIELD_LABELS: Record<string, string> = {
   health: 'Health',
   owner_id: 'Owner',
   start_date: 'Start Date',
-  due_date: 'End Date',
+  end_date: 'End Date',
   is_blocked: 'Blocked',
   current_value: 'Current Value',
   goal_value: 'Goal Value',

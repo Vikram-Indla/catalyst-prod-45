@@ -46,7 +46,7 @@ export interface Objective {
   theme_id?: string; // LEGACY: Use objective_theme_links junction table instead
   anchor_sprint_id?: string;
   start_date?: string;
-  due_date?: string;
+  end_date?: string;
   program_increment_ids: string[];
   contributors: string[];
   planned_value?: number;
@@ -540,7 +540,7 @@ export const useCreateObjective = () => {
         // theme_id: REMOVED - use objective_theme_links junction table instead
         anchor_sprint_id: objective.anchor_sprint_id,
         start_date: objective.start_date,
-        due_date: objective.due_date,
+        end_date: objective.end_date,
         program_increment_ids: objective.program_increment_ids || [],
         contributors: objective.contributors || [],
         planned_value: objective.planned_value,

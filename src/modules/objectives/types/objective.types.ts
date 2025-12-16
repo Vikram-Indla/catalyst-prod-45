@@ -43,7 +43,7 @@ export interface ObjectiveBase {
   theme_id?: string; // LEGACY: Use objective_theme_links junction table instead
   anchor_sprint_id?: string;
   start_date?: string;
-  due_date?: string;
+  end_date?: string;
   program_increment_ids: string[];
   contributors: string[];
   planned_value?: number;
@@ -94,7 +94,7 @@ export interface CreateObjectiveInput {
   theme_id?: string; // LEGACY: Use objective_theme_links junction table instead
   anchor_sprint_id?: string;
   start_date?: string;
-  due_date?: string;
+  end_date?: string;
   program_increment_ids?: string[];
   contributors?: string[];
   planned_value?: number;
@@ -118,7 +118,7 @@ export interface UpdateObjectiveInput {
   theme_id?: string; // LEGACY: Use objective_theme_links junction table instead
   anchor_sprint_id?: string;
   start_date?: string;
-  due_date?: string;
+  end_date?: string;
   program_increment_ids?: string[];
   contributors?: string[];
   planned_value?: number;
