@@ -79,12 +79,16 @@ export const ObjectivesColumn = forwardRef<HTMLDivElement, ObjectivesColumnProps
       }
     };
     
+    // Fixed row heights for perfect sync
+    const GROUP_ROW_HEIGHT = 40; // h-10
+    const OBJECTIVE_ROW_HEIGHT = 48; // h-12
+    
     return (
       <div 
         className="relative flex flex-col bg-background border-r border-border"
         style={{ width: `${width}px`, minWidth: `${width}px` }}
       >
-        <div className="h-10 px-4 flex items-center border-b border-border bg-muted/50">
+        <div className="h-10 px-3 flex items-center border-b border-border bg-muted/50">
           <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Objectives</span>
         </div>
         
@@ -101,40 +105,41 @@ export const ObjectivesColumn = forwardRef<HTMLDivElement, ObjectivesColumnProps
                 {groupBy !== 'none' && (
                   <div 
                     className={cn(
-                      "flex items-center gap-2.5 px-4 py-3 cursor-pointer hover:bg-muted/50 border-b border-border bg-muted/30",
+                      "flex items-center gap-2 px-3 cursor-pointer hover:bg-muted/50 border-b border-border bg-muted/30",
                       isCollapsed && "border-b-0"
                     )}
+                    style={{ height: `${GROUP_ROW_HEIGHT}px` }}
                     onClick={() => onToggleGroup(group.key)}
                   >
                     <ChevronDown 
-                      size={16} 
+                      size={14} 
                       className={cn(
-                        "text-muted-foreground transition-transform",
+                        "text-muted-foreground transition-transform flex-shrink-0",
                         isCollapsed && "-rotate-90"
                       )} 
                     />
                     <div 
-                      className="w-1 h-8 rounded-full" 
+                      className="w-1 h-6 rounded-full flex-shrink-0" 
                       style={{ background: group.color }} 
                     />
                     <div className="flex-1 min-w-0">
-                      <div className="font-semibold text-sm truncate">{group.name}</div>
-                      <div className="text-xs text-muted-foreground">
+                      <div className="font-semibold text-xs truncate">{group.name}</div>
+                      <div className="text-[10px] text-muted-foreground">
                         {group.items.length} objective{group.items.length !== 1 ? 's' : ''}
                       </div>
                     </div>
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-0.5 flex-shrink-0">
                       {statusCounts['on-track'] && (
-                        <span className="w-2 h-2 rounded-full bg-secondary-green" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-secondary-green" />
                       )}
                       {statusCounts['at-risk'] && (
-                        <span className="w-2 h-2 rounded-full bg-secondary-bronze" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-secondary-bronze" />
                       )}
                       {(statusCounts['off-track'] || statusCounts['delayed']) && (
-                        <span className="w-2 h-2 rounded-full bg-destructive" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-destructive" />
                       )}
                       {statusCounts['in-progress'] && (
-                        <span className="w-2 h-2 rounded-full bg-brand-gold" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-brand-gold" />
                       )}
                     </div>
                   </div>
@@ -148,41 +153,32 @@ export const ObjectivesColumn = forwardRef<HTMLDivElement, ObjectivesColumnProps
                   return (
                     <div 
                       key={obj.id}
-                      className="flex items-start gap-3 px-4 py-3 border-b border-border cursor-pointer hover:bg-muted/30 transition-colors"
+                      className="flex items-center gap-2 px-3 border-b border-border cursor-pointer hover:bg-muted/30 transition-colors"
+                      style={{ height: `${OBJECTIVE_ROW_HEIGHT}px` }}
                       onClick={() => onObjectiveClick(obj.id)}
                     >
-                      <div className="mt-0.5 w-8 h-8 flex items-center justify-center rounded-full bg-muted text-muted-foreground">
-                        <Target size={16} />
+                      <div className="w-6 h-6 flex items-center justify-center rounded-full bg-muted text-muted-foreground flex-shrink-0">
+                        <Target size={12} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        {groupBy !== 'theme' && (
-                          <div className="mb-1">
-                            <span 
-                              className="px-2 py-0.5 text-[10px] font-medium text-white rounded"
-                              style={{ background: theme.color }}
-                            >
-                              {theme.name}
-                            </span>
-                          </div>
-                        )}
-                        <div className="font-medium text-sm mb-1.5 truncate" title={obj.name}>
+                        <div className="font-medium text-xs truncate leading-tight" title={obj.name}>
                           {obj.name}
                         </div>
-                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                          <span>
+                        <div className="flex items-center gap-2 text-[10px] text-muted-foreground mt-0.5">
+                          <span className="truncate">
                             {formatShortDate(obj.startDate)} → {formatShortDate(obj.endDate)}
                           </span>
-                          <div className="flex items-center gap-1">
-                            <span className="w-5 h-5 flex items-center justify-center text-[9px] font-semibold bg-muted rounded-full">
+                          <div className="flex items-center gap-1 flex-shrink-0">
+                            <span className="w-4 h-4 flex items-center justify-center text-[8px] font-semibold bg-muted rounded-full">
                               {owner.initials}
                             </span>
-                            <span>{owner.name}</span>
+                            <span className="truncate max-w-[60px]">{owner.name}</span>
                           </div>
                         </div>
                       </div>
-                      {/* Status pill - compact size */}
+                      {/* Status pill - compact */}
                       <div 
-                        className="flex items-center px-1.5 py-px text-[8px] font-medium rounded uppercase whitespace-nowrap"
+                        className="flex items-center px-1.5 py-px text-[7px] font-semibold rounded uppercase whitespace-nowrap flex-shrink-0"
                         style={statusConfig.variant === 'filled' 
                           ? { background: statusConfig.color, color: 'white' }
                           : { background: 'transparent', color: statusConfig.color, border: `1px solid ${statusConfig.color}` }
