@@ -1205,6 +1205,96 @@ export type Database = {
         }
         Relationships: []
       }
+      committee_members: {
+        Row: {
+          committee_id: string
+          created_at: string
+          has_veto: boolean | null
+          id: string
+          role: string | null
+          user_id: string
+        }
+        Insert: {
+          committee_id: string
+          created_at?: string
+          has_veto?: boolean | null
+          id?: string
+          role?: string | null
+          user_id: string
+        }
+        Update: {
+          committee_id?: string
+          created_at?: string
+          has_veto?: boolean | null
+          id?: string
+          role?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "committee_members_committee_id_fkey"
+            columns: ["committee_id"]
+            isOneToOne: false
+            referencedRelation: "incident_committees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "committee_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "incident_user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      committee_votes: {
+        Row: {
+          comment: string | null
+          committee_id: string
+          created_at: string
+          id: string
+          member_id: string
+          updated_at: string
+          vote: Database["public"]["Enums"]["vote_status"]
+          voted_at: string | null
+        }
+        Insert: {
+          comment?: string | null
+          committee_id: string
+          created_at?: string
+          id?: string
+          member_id: string
+          updated_at?: string
+          vote?: Database["public"]["Enums"]["vote_status"]
+          voted_at?: string | null
+        }
+        Update: {
+          comment?: string | null
+          committee_id?: string
+          created_at?: string
+          id?: string
+          member_id?: string
+          updated_at?: string
+          vote?: Database["public"]["Enums"]["vote_status"]
+          voted_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "committee_votes_committee_id_fkey"
+            columns: ["committee_id"]
+            isOneToOne: false
+            referencedRelation: "incident_committees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "committee_votes_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "committee_members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       custom_field_defs: {
         Row: {
           created_at: string | null
@@ -4118,6 +4208,436 @@ export type Database = {
           total_records?: number
         }
         Relationships: []
+      }
+      incident_attachments: {
+        Row: {
+          created_at: string
+          deleted_at: string | null
+          file_name: string
+          file_size: number
+          file_type: string
+          id: string
+          incident_id: string
+          storage_path: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          deleted_at?: string | null
+          file_name: string
+          file_size: number
+          file_type: string
+          id?: string
+          incident_id: string
+          storage_path: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          deleted_at?: string | null
+          file_name?: string
+          file_size?: number
+          file_type?: string
+          id?: string
+          incident_id?: string
+          storage_path?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incident_attachments_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incidents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incident_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "incident_user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      incident_comments: {
+        Row: {
+          author_id: string | null
+          author_name: string | null
+          comment_type: Database["public"]["Enums"]["comment_type"] | null
+          content: string
+          created_at: string
+          deleted_at: string | null
+          id: string
+          incident_id: string
+          is_pinned: boolean | null
+          is_system: boolean | null
+          updated_at: string
+        }
+        Insert: {
+          author_id?: string | null
+          author_name?: string | null
+          comment_type?: Database["public"]["Enums"]["comment_type"] | null
+          content: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          incident_id: string
+          is_pinned?: boolean | null
+          is_system?: boolean | null
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string | null
+          author_name?: string | null
+          comment_type?: Database["public"]["Enums"]["comment_type"] | null
+          content?: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          incident_id?: string
+          is_pinned?: boolean | null
+          is_system?: boolean | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incident_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "incident_user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incident_comments_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incidents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      incident_committees: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          decided_at: string | null
+          decision_note: string | null
+          id: string
+          incident_id: string | null
+          required_approvals: number | null
+          status: Database["public"]["Enums"]["committee_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          decided_at?: string | null
+          decision_note?: string | null
+          id?: string
+          incident_id?: string | null
+          required_approvals?: number | null
+          status?: Database["public"]["Enums"]["committee_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          decided_at?: string | null
+          decision_note?: string | null
+          id?: string
+          incident_id?: string | null
+          required_approvals?: number | null
+          status?: Database["public"]["Enums"]["committee_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incident_committees_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incidents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      incident_history: {
+        Row: {
+          changed_at: string
+          changed_by: string | null
+          field_name: string
+          id: string
+          incident_id: string
+          new_value: string | null
+          old_value: string | null
+        }
+        Insert: {
+          changed_at?: string
+          changed_by?: string | null
+          field_name: string
+          id?: string
+          incident_id: string
+          new_value?: string | null
+          old_value?: string | null
+        }
+        Update: {
+          changed_at?: string
+          changed_by?: string | null
+          field_name?: string
+          id?: string
+          incident_id?: string
+          new_value?: string | null
+          old_value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incident_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "incident_user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incident_history_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incidents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      incident_label_defs: {
+        Row: {
+          color: string | null
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      incident_labels: {
+        Row: {
+          created_at: string
+          incident_id: string
+          label_id: string
+        }
+        Insert: {
+          created_at?: string
+          incident_id: string
+          label_id: string
+        }
+        Update: {
+          created_at?: string
+          incident_id?: string
+          label_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incident_labels_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incidents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incident_labels_label_id_fkey"
+            columns: ["label_id"]
+            isOneToOne: false
+            referencedRelation: "incident_label_defs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      incident_user_profiles: {
+        Row: {
+          avatar_initials: string | null
+          created_at: string
+          email: string
+          full_name: string
+          has_veto_power: boolean | null
+          id: string
+          incident_role: string | null
+          updated_at: string
+          workgroup_id: string | null
+        }
+        Insert: {
+          avatar_initials?: string | null
+          created_at?: string
+          email: string
+          full_name: string
+          has_veto_power?: boolean | null
+          id: string
+          incident_role?: string | null
+          updated_at?: string
+          workgroup_id?: string | null
+        }
+        Update: {
+          avatar_initials?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          has_veto_power?: boolean | null
+          id?: string
+          incident_role?: string | null
+          updated_at?: string
+          workgroup_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incident_user_profiles_workgroup_id_fkey"
+            columns: ["workgroup_id"]
+            isOneToOne: false
+            referencedRelation: "workgroups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      incidents: {
+        Row: {
+          assignee_id: string | null
+          assignee_workgroup_id: string | null
+          committee_id: string | null
+          conversion_reason: string | null
+          converted_at: string | null
+          converted_to_id: string | null
+          converted_to_type: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          delivery_stage: Database["public"]["Enums"]["delivery_stage"] | null
+          description: string | null
+          id: string
+          impact: Database["public"]["Enums"]["impact_level"] | null
+          incident_key: string | null
+          is_major_incident: boolean | null
+          priority: Database["public"]["Enums"]["priority_level"] | null
+          release_version_id: string | null
+          reporter_id: string | null
+          reporter_name: string | null
+          requires_committee: boolean | null
+          resolved_at: string | null
+          severity: Database["public"]["Enums"]["severity_level"]
+          status: Database["public"]["Enums"]["incident_status"]
+          support_level: Database["public"]["Enums"]["support_level"] | null
+          target_date: string | null
+          title: string
+          updated_at: string
+          updated_by: string | null
+          urgency: Database["public"]["Enums"]["urgency_level"] | null
+        }
+        Insert: {
+          assignee_id?: string | null
+          assignee_workgroup_id?: string | null
+          committee_id?: string | null
+          conversion_reason?: string | null
+          converted_at?: string | null
+          converted_to_id?: string | null
+          converted_to_type?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          delivery_stage?: Database["public"]["Enums"]["delivery_stage"] | null
+          description?: string | null
+          id?: string
+          impact?: Database["public"]["Enums"]["impact_level"] | null
+          incident_key?: string | null
+          is_major_incident?: boolean | null
+          priority?: Database["public"]["Enums"]["priority_level"] | null
+          release_version_id?: string | null
+          reporter_id?: string | null
+          reporter_name?: string | null
+          requires_committee?: boolean | null
+          resolved_at?: string | null
+          severity: Database["public"]["Enums"]["severity_level"]
+          status?: Database["public"]["Enums"]["incident_status"]
+          support_level?: Database["public"]["Enums"]["support_level"] | null
+          target_date?: string | null
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+          urgency?: Database["public"]["Enums"]["urgency_level"] | null
+        }
+        Update: {
+          assignee_id?: string | null
+          assignee_workgroup_id?: string | null
+          committee_id?: string | null
+          conversion_reason?: string | null
+          converted_at?: string | null
+          converted_to_id?: string | null
+          converted_to_type?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          delivery_stage?: Database["public"]["Enums"]["delivery_stage"] | null
+          description?: string | null
+          id?: string
+          impact?: Database["public"]["Enums"]["impact_level"] | null
+          incident_key?: string | null
+          is_major_incident?: boolean | null
+          priority?: Database["public"]["Enums"]["priority_level"] | null
+          release_version_id?: string | null
+          reporter_id?: string | null
+          reporter_name?: string | null
+          requires_committee?: boolean | null
+          resolved_at?: string | null
+          severity?: Database["public"]["Enums"]["severity_level"]
+          status?: Database["public"]["Enums"]["incident_status"]
+          support_level?: Database["public"]["Enums"]["support_level"] | null
+          target_date?: string | null
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+          urgency?: Database["public"]["Enums"]["urgency_level"] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incidents_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "incident_user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_assignee_workgroup_id_fkey"
+            columns: ["assignee_workgroup_id"]
+            isOneToOne: false
+            referencedRelation: "workgroups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_committee_id_fkey"
+            columns: ["committee_id"]
+            isOneToOne: false
+            referencedRelation: "incident_committees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_release_version_id_fkey"
+            columns: ["release_version_id"]
+            isOneToOne: false
+            referencedRelation: "release_versions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "incident_user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       initiatives: {
         Row: {
@@ -8070,6 +8590,33 @@ export type Database = {
           },
         ]
       }
+      release_versions: {
+        Row: {
+          created_at: string
+          id: string
+          name: string | null
+          release_date: string | null
+          status: string | null
+          version: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name?: string | null
+          release_date?: string | null
+          status?: string | null
+          version: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string | null
+          release_date?: string | null
+          status?: string | null
+          version?: string
+        }
+        Relationships: []
+      }
       releases: {
         Row: {
           created_at: string | null
@@ -8894,6 +9441,83 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      sla_configs: {
+        Row: {
+          created_at: string
+          id: string
+          resolution_minutes: number
+          response_minutes: number
+          severity: Database["public"]["Enums"]["severity_level"]
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          resolution_minutes: number
+          response_minutes: number
+          severity: Database["public"]["Enums"]["severity_level"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          resolution_minutes?: number
+          response_minutes?: number
+          severity?: Database["public"]["Enums"]["severity_level"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      sla_records: {
+        Row: {
+          created_at: string
+          id: string
+          incident_id: string
+          resolution_breached: boolean | null
+          resolution_due_at: string
+          resolution_met_at: string | null
+          response_breached: boolean | null
+          response_due_at: string
+          response_met_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          incident_id: string
+          resolution_breached?: boolean | null
+          resolution_due_at: string
+          resolution_met_at?: string | null
+          response_breached?: boolean | null
+          response_due_at: string
+          response_met_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          incident_id?: string
+          resolution_breached?: boolean | null
+          resolution_due_at?: string
+          resolution_met_at?: string | null
+          response_breached?: boolean | null
+          response_due_at?: string
+          response_met_at?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sla_records_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incidents"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       snapshot_configurations: {
         Row: {
@@ -13241,6 +13865,39 @@ export type Database = {
           },
         ]
       }
+      workgroups: {
+        Row: {
+          code: string
+          created_at: string
+          deleted_at: string | null
+          description: string | null
+          id: string
+          name: string
+          support_level_default: string | null
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          deleted_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          support_level_default?: string | null
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          deleted_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          support_level_default?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -13352,7 +14009,17 @@ export type Database = {
         | "in_progress"
         | "done"
         | "cancelled"
+      comment_type:
+        | "update"
+        | "investigation"
+        | "mitigation"
+        | "handover"
+        | "decision"
+        | "rca"
+        | "system"
+      committee_status: "pending" | "approved" | "rejected"
       confidence_level: "high" | "med" | "low"
+      delivery_stage: "stage" | "qa" | "beta" | "prod"
       dependency_status:
         | "open"
         | "in_progress"
@@ -13386,6 +14053,15 @@ export type Database = {
         | "multi_select"
         | "boolean"
       health_status: "green" | "yellow" | "red"
+      impact_level: "high" | "medium" | "low"
+      incident_status:
+        | "open"
+        | "triage"
+        | "to_committee"
+        | "in_progress"
+        | "resolved"
+        | "converted"
+        | "closed"
       initiative_status: "proposed" | "active" | "done" | "cancelled"
       integration_type:
         | "slack"
@@ -13425,6 +14101,7 @@ export type Database = {
       permission_scope: "global" | "portfolio" | "program" | "team"
       pi_state: "planned" | "active" | "closed"
       portfolio_status: "active" | "archived"
+      priority_level: "P1" | "P2" | "P3" | "P4"
       program_status: "active" | "archived"
       release_status: "planned" | "ready" | "shipped"
       release_vehicle_type: "program" | "team" | "portfolio"
@@ -13440,6 +14117,7 @@ export type Database = {
         | "objective"
         | "roadmap"
         | "product"
+      severity_level: "SEV1" | "SEV2" | "SEV3" | "SEV4"
       skill_category:
         | "technical"
         | "cloud_infrastructure"
@@ -13457,6 +14135,7 @@ export type Database = {
         | "expert"
       story_status: "todo" | "in_progress" | "done"
       subtask_status: "todo" | "in_progress" | "done"
+      support_level: "L1" | "L2" | "L3"
       team_status: "active" | "archived"
       team_type:
         | "AGILE"
@@ -13485,11 +14164,13 @@ export type Database = {
       test_type: "manual" | "automated" | "bdd"
       theme_status: "proposed" | "active" | "done" | "cancelled"
       track_by_type: "POINTS" | "HOURS"
+      urgency_level: "high" | "medium" | "low"
       user_approval_status:
         | "PENDING_APPROVAL"
         | "APPROVED"
         | "REJECTED"
         | "DISABLED"
+      vote_status: "pending" | "approved" | "rejected" | "vetoed"
       work_item_type_enum: "epic" | "feature" | "story" | "task" | "defect"
     }
     CompositeTypes: {
@@ -13631,7 +14312,18 @@ export const Constants = {
         "done",
         "cancelled",
       ],
+      comment_type: [
+        "update",
+        "investigation",
+        "mitigation",
+        "handover",
+        "decision",
+        "rca",
+        "system",
+      ],
+      committee_status: ["pending", "approved", "rejected"],
       confidence_level: ["high", "med", "low"],
+      delivery_stage: ["stage", "qa", "beta", "prod"],
       dependency_status: [
         "open",
         "in_progress",
@@ -13669,6 +14361,16 @@ export const Constants = {
         "boolean",
       ],
       health_status: ["green", "yellow", "red"],
+      impact_level: ["high", "medium", "low"],
+      incident_status: [
+        "open",
+        "triage",
+        "to_committee",
+        "in_progress",
+        "resolved",
+        "converted",
+        "closed",
+      ],
       initiative_status: ["proposed", "active", "done", "cancelled"],
       integration_type: [
         "slack",
@@ -13712,6 +14414,7 @@ export const Constants = {
       permission_scope: ["global", "portfolio", "program", "team"],
       pi_state: ["planned", "active", "closed"],
       portfolio_status: ["active", "archived"],
+      priority_level: ["P1", "P2", "P3", "P4"],
       program_status: ["active", "archived"],
       release_status: ["planned", "ready", "shipped"],
       release_vehicle_type: ["program", "team", "portfolio"],
@@ -13728,6 +14431,7 @@ export const Constants = {
         "roadmap",
         "product",
       ],
+      severity_level: ["SEV1", "SEV2", "SEV3", "SEV4"],
       skill_category: [
         "technical",
         "cloud_infrastructure",
@@ -13747,6 +14451,7 @@ export const Constants = {
       ],
       story_status: ["todo", "in_progress", "done"],
       subtask_status: ["todo", "in_progress", "done"],
+      support_level: ["L1", "L2", "L3"],
       team_status: ["active", "archived"],
       team_type: [
         "AGILE",
@@ -13778,12 +14483,14 @@ export const Constants = {
       test_type: ["manual", "automated", "bdd"],
       theme_status: ["proposed", "active", "done", "cancelled"],
       track_by_type: ["POINTS", "HOURS"],
+      urgency_level: ["high", "medium", "low"],
       user_approval_status: [
         "PENDING_APPROVAL",
         "APPROVED",
         "REJECTED",
         "DISABLED",
       ],
+      vote_status: ["pending", "approved", "rejected", "vetoed"],
       work_item_type_enum: ["epic", "feature", "story", "task", "defect"],
     },
   },
