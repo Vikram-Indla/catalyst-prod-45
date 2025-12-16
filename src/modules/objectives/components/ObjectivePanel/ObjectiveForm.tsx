@@ -27,7 +27,7 @@ const objectiveFormSchema = z.object({
   category: z.enum(['critical_path', 'stretch_goal'] as const).optional(),
   type: z.enum(['feature_finisher', 'non_code', 'incremental_delivery', 'event'] as const).optional(),
   start_date: z.date().optional(),
-  due_date: z.date().optional(),
+  end_date: z.date().optional(),
   planned_value: z.number().min(0).max(100).optional(),
   delivered_value: z.number().min(0).max(100).optional(),
   is_blocked: z.boolean().default(false),
@@ -365,10 +365,10 @@ export function ObjectiveForm({ initialValues, onSubmit, onCancel, isSubmitting 
 
           <FormField
             control={form.control}
-            name="due_date"
+            name="end_date"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Due Date</FormLabel>
+                <FormLabel>End Date</FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>

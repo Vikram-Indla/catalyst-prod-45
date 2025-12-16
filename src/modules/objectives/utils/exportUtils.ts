@@ -16,7 +16,7 @@ export function exportObjectivesToCSV(objectives: Objective[], filename = 'objec
     'Portfolio ID',
     'Program ID',
     'Start Date',
-    'Due Date',
+    'End Date',
     'Is Blocked',
     'Created At',
   ];
@@ -36,7 +36,7 @@ export function exportObjectivesToCSV(objectives: Objective[], filename = 'objec
     obj.portfolio_id || '',
     obj.program_id || '',
     obj.start_date || '',
-    obj.due_date || '',
+    (obj as any).end_date || '',
     obj.is_blocked ? 'Yes' : 'No',
     new Date(obj.created_at).toISOString(),
   ]);

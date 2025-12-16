@@ -31,7 +31,7 @@ export function CreateObjectiveDialog({
         category: values.category,
         type: values.type,
         start_date: values.start_date?.toISOString(),
-        due_date: values.due_date?.toISOString(),
+        end_date: values.end_date?.toISOString(),
         planned_value: values.planned_value,
         delivered_value: values.delivered_value,
         is_blocked: values.is_blocked,
