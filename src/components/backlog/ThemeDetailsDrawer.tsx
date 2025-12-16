@@ -93,6 +93,52 @@ function formatThemeKey(id: string): string {
   return `TH-${id.slice(0, 4)}`;
 }
 
+// Status badge formatter
+const STATUS_STYLES: Record<string, { label: string; className: string }> = {
+  'ON_TRACK': { 
+    label: 'On Track', 
+    className: 'bg-[rgba(92,124,92,0.1)] dark:bg-[rgba(92,124,92,0.2)] text-[#5C7C5C] dark:text-[#7DA37D] border-[rgba(92,124,92,0.3)]' 
+  },
+  'AT_RISK': { 
+    label: 'At Risk', 
+    className: 'bg-[rgba(198,156,109,0.1)] dark:bg-[rgba(198,156,109,0.2)] text-[#C69C6D] dark:text-[#D4B896] border-[rgba(198,156,109,0.3)]' 
+  },
+  'OFF_TRACK': { 
+    label: 'Off Track', 
+    className: 'bg-[rgba(184,92,92,0.1)] dark:bg-[rgba(184,92,92,0.2)] text-[#B85C5C] dark:text-[#D88888] border-[rgba(184,92,92,0.3)]' 
+  },
+  'NOT_STARTED': { 
+    label: 'Not Started', 
+    className: 'bg-[#F6F8FA] dark:bg-[#21262D] text-[#57606A] dark:text-[#8B949E] border-[#E1E4E8] dark:border-[#30363D]' 
+  },
+  'IN_PROGRESS': { 
+    label: 'In Progress', 
+    className: 'bg-[rgba(198,156,109,0.1)] dark:bg-[rgba(198,156,109,0.2)] text-[#C69C6D] dark:text-[#D4B896] border-[rgba(198,156,109,0.3)]' 
+  },
+  'ACTIVE': { 
+    label: 'Active', 
+    className: 'bg-[rgba(92,124,92,0.1)] dark:bg-[rgba(92,124,92,0.2)] text-[#5C7C5C] dark:text-[#7DA37D] border-[rgba(92,124,92,0.3)]' 
+  },
+  'DONE': { 
+    label: 'Done', 
+    className: 'bg-[rgba(92,124,92,0.1)] dark:bg-[rgba(92,124,92,0.2)] text-[#5C7C5C] dark:text-[#7DA37D] border-[rgba(92,124,92,0.3)]' 
+  },
+  'CANCELLED': { 
+    label: 'Cancelled', 
+    className: 'bg-[#F6F8FA] dark:bg-[#21262D] text-[#57606A] dark:text-[#8B949E] border-[#E1E4E8] dark:border-[#30363D]' 
+  },
+};
+
+function StatusBadge({ status }: { status: string }) {
+  const upperStatus = status.toUpperCase().replace(/-/g, '_');
+  const { label, className } = STATUS_STYLES[upperStatus] || STATUS_STYLES['NOT_STARTED'];
+  return (
+    <span className={`inline-flex px-2.5 py-1 rounded-md text-xs font-semibold border ${className}`}>
+      {label}
+    </span>
+  );
+}
+
 // Strategic theme states - maps DB values to strategic labels
 const THEME_STATES: Record<string, string> = {
   'proposed': 'Draft',
@@ -178,19 +224,31 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
     enabled: !!theme?.id,
   });
 
-  // Fetch available objectives for linking
+  // Fetch available objectives for linking (not linked to THIS theme)
   const { data: availableObjectives = [] } = useQuery({
     queryKey: ['available-objectives-for-theme', theme?.id],
     queryFn: async () => {
+      if (!theme?.id) return [];
       const { data, error } = await supabase
         .from('objectives')
-        .select('id, name')
-        .is('theme_id', null)
+        .select('id, name, status')
+        .neq('theme_id', theme.id)
         .order('name');
       if (error) throw error;
-      return data || [];
+      // Also include objectives with null theme_id
+      const { data: unlinkedData } = await supabase
+        .from('objectives')
+        .select('id, name, status')
+        .is('theme_id', null)
+        .order('name');
+      const combined = [...(data || []), ...(unlinkedData || [])];
+      // Remove duplicates by id
+      const unique = combined.filter((item, index, self) => 
+        index === self.findIndex((t) => t.id === item.id)
+      );
+      return unique;
     },
-    enabled: showLinkObjectiveDialog,
+    enabled: showLinkObjectiveDialog && !!theme?.id,
   });
 
   // Fetch available epics for linking
@@ -482,9 +540,14 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
             <SheetDescription className="sr-only">Theme details panel</SheetDescription>
           </SheetHeader>
 
-          {/* Single-page scrollable content */}
-          <div className="flex-1 overflow-y-auto">
-            <div className="p-4 md:p-5 space-y-6">
+          {/* Single-page scrollable content with gold vertical line */}
+          <div className="flex-1 flex overflow-hidden">
+            {/* 🔒 GOLD VERTICAL LINE — MANDATORY */}
+            <div className="w-1 bg-[#C69C6D] flex-shrink-0" />
+            
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto">
+              <div className="p-4 md:p-5 space-y-6">
               
               {/* SECTION 1: Strategic Context */}
               <section className="border border-[#E1E4E8] dark:border-[#30363D] rounded-lg bg-white dark:bg-[#0D1117] p-5 space-y-4">
@@ -554,7 +617,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                         <span className="text-sm font-medium truncate text-[#24292F] dark:text-[#E6EDF3]">{obj.name}</span>
                         <div className="flex items-center gap-2 shrink-0">
                           {obj.status && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium uppercase bg-[#21262D] dark:bg-[#30363D] text-[#8B949E] border border-[#30363D]">{obj.status}</span>
+                            <StatusBadge status={obj.status} />
                           )}
                           {obj.overall_progress !== null && (
                             <span className="text-xs text-[#8B949E]">
@@ -602,7 +665,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                           <span className="text-sm font-medium truncate text-[#24292F] dark:text-[#E6EDF3]">{epic.name}</span>
                         </div>
                         {epic.state && (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium uppercase bg-[#21262D] dark:bg-[#30363D] text-[#8B949E] border border-[#30363D] shrink-0">{epic.state}</span>
+                          <StatusBadge status={epic.state} />
                         )}
                       </div>
                     ))}
@@ -628,6 +691,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                   </div>
                 </CollapsibleContent>
               </Collapsible>
+              </div>
             </div>
           </div>
         </SheetContent>
