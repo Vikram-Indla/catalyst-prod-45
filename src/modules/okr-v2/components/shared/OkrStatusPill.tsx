@@ -13,13 +13,13 @@ const STATUS_STYLES: Record<string, {
   variant: 'filled' | 'outline';
 }> = {
   'pending': { 
-    bg: 'bg-[#f5f3f0]', 
-    text: 'text-[#8b8178]', 
-    border: 'border-[#e8e4dc]',
-    variant: 'filled'
+    bg: 'bg-transparent', 
+    text: 'text-muted-foreground', 
+    border: 'border-muted-foreground/50',
+    variant: 'outline'
   },
   'in-progress': { 
-    bg: 'bg-transparent', 
+    bg: 'bg-transparent',
     text: 'text-brand-gold', 
     border: 'border-brand-gold',
     variant: 'outline'
