@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useOKRv2StrategyMetrics } from '@/hooks/useOKRv2StrategyMetrics';
 import { useStrategyPyramidCounts } from '@/hooks/useExecutionMetrics';
 import { supabase } from '@/integrations/supabase/client';
-import { BarChart3, AlertTriangle, Info, Shield } from 'lucide-react';
+import { BarChart3, AlertTriangle, Target, Shield } from 'lucide-react';
 
 interface ExecutiveSummaryCardProps {
   snapshotId?: string;
@@ -23,8 +23,9 @@ interface KPITileProps {
   subtext: string;
   onClick: () => void;
   isLoading?: boolean;
-  accentColor: 'green' | 'gold' | 'bronze' | 'neutral';
+  accentColor: 'green' | 'gold' | 'bronze' | 'red';
   icon: React.ReactNode;
+  iconBgColor: string;
   showProgress?: boolean;
   progressValue?: number;
 }
@@ -37,61 +38,48 @@ function KPITile({
   isLoading = false,
   accentColor,
   icon,
+  iconBgColor,
   showProgress = false,
   progressValue = 0,
 }: KPITileProps) {
   const accentStyles: Record<string, string> = {
-    green: 'var(--secondary-green)',
-    gold: 'var(--brand-gold)',
-    bronze: 'var(--secondary-bronze)',
-    neutral: 'var(--text-2)',
-  };
-  
-  const progressColors: Record<string, string> = {
-    green: 'var(--secondary-green)',
-    gold: 'var(--brand-gold)',
-    bronze: 'var(--secondary-bronze)',
-    neutral: 'var(--text-3)',
+    green: '#5C7C5C',
+    gold: '#C69C6D',
+    bronze: '#8B7355',
+    red: '#B85C5C',
   };
 
   return (
     <button
       onClick={onClick}
-      className="relative flex flex-col items-start p-5 transition-all duration-200 text-left group flex-1 min-w-0 hover:-translate-y-0.5"
+      className="relative flex flex-col items-start p-5 transition-all duration-200 text-left group flex-1 min-w-0 rounded-lg"
       style={{
         backgroundColor: 'var(--surface-2)',
         border: '1px solid var(--divider-subtle)',
-        borderRadius: '8px',
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.borderColor = 'var(--border-accent)';
         e.currentTarget.style.boxShadow = 'var(--shadow-md)';
+        e.currentTarget.style.transform = 'translateY(-2px)';
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.borderColor = 'var(--divider-subtle)';
         e.currentTarget.style.boxShadow = 'none';
+        e.currentTarget.style.transform = 'translateY(0)';
       }}
       aria-label={`${label}: ${value}`}
     >
-      {/* Top accent bar */}
-      <div 
-        className="absolute top-0 left-0 right-0 h-[3px] opacity-0 group-hover:opacity-100 transition-opacity rounded-t-lg"
-        style={{ backgroundColor: accentStyles[accentColor] }}
-      />
-      
       {/* Header with label and icon */}
       <div className="flex items-start justify-between w-full mb-3">
         <span 
-          className="text-[11px] font-semibold uppercase tracking-wide"
+          className="text-[11px] font-semibold uppercase tracking-wider"
           style={{ color: 'var(--text-2)' }}
         >
           {label}
         </span>
         <div 
           className="w-8 h-8 rounded-lg flex items-center justify-center"
-          style={{ 
-            backgroundColor: 'rgba(198, 156, 109, 0.1)',
-          }}
+          style={{ backgroundColor: iconBgColor }}
         >
           {icon}
         </div>
@@ -100,15 +88,19 @@ function KPITile({
       {/* Value */}
       {isLoading ? (
         <span 
-          className="text-[32px] font-bold leading-none mb-1"
+          className="text-3xl font-bold leading-none mb-1"
           style={{ color: 'var(--text-3)' }}
         >
           —
         </span>
       ) : (
         <span 
-          className="text-[32px] font-bold leading-none mb-1 tabular-nums"
-          style={{ color: 'var(--text-1)' }}
+          className="text-3xl font-bold leading-none mb-1 tabular-nums"
+          style={{ 
+            color: accentColor === 'gold' && typeof value === 'number' && value > 0 
+              ? '#C69C6D' 
+              : 'var(--text-1)' 
+          }}
         >
           {value}
         </span>
@@ -116,7 +108,7 @@ function KPITile({
       
       {/* Subtext */}
       <span 
-        className="text-[12px] leading-snug"
+        className="text-xs leading-snug"
         style={{ color: 'var(--text-2)' }}
       >
         {subtext}
@@ -125,14 +117,14 @@ function KPITile({
       {/* Progress bar (only for Overall Progress) */}
       {showProgress && (
         <div 
-          className="w-full h-1 rounded-full mt-3 overflow-hidden"
+          className="w-full h-2 rounded-full mt-3 overflow-hidden"
           style={{ backgroundColor: 'var(--surface-3)' }}
         >
           <div 
             className="h-full rounded-full transition-all duration-300"
             style={{ 
               width: `${progressValue}%`,
-              backgroundColor: progressColors[accentColor],
+              backgroundColor: accentStyles[accentColor],
             }}
           />
         </div>
@@ -213,48 +205,44 @@ export function ExecutiveSummaryCard({ snapshotId }: ExecutiveSummaryCardProps) 
     : 'Create objectives to start tracking';
   const progressColor = hasObjectives 
     ? (overallProgress! >= 70 ? 'green' : 'gold') 
-    : 'neutral';
+    : 'green';
 
   // Card B: At Risk
   const atRiskSubtext = !hasObjectives 
     ? 'No objectives yet' 
-    : (atRiskCount > 0 ? 'Objective behind schedule' : 'All objectives healthy');
-  const atRiskColor = atRiskCount > 0 ? 'gold' : 'neutral';
+    : (atRiskCount > 0 ? 'Objectives need attention' : 'All objectives healthy');
 
   // Card C: Alignment Gaps
   const gapValue = hasAlignmentData ? alignmentGaps : '—';
   const gapSubtext = !hasAlignmentData 
     ? 'Setup required' 
-    : (alignmentGaps > 0 ? 'Items need attention' : 'All items aligned');
-  const gapColor = alignmentGaps > 0 ? 'bronze' : 'neutral';
+    : (alignmentGaps > 0 ? 'Unaligned items' : 'All items aligned');
 
   // Card D: Risk Exposure
-  const riskSubtext = openRisks > 0 ? 'Open risks identified' : 'No open risks';
-  const riskColor = openRisks > 0 ? 'bronze' : 'neutral';
+  const riskSubtext = openRisks > 0 ? 'Open risks to mitigate' : 'No open risks';
 
   return (
     <section 
-      className="rounded-[10px] overflow-hidden"
+      className="rounded-xl overflow-hidden"
       style={{
         backgroundColor: 'var(--surface-1)',
         border: '1px solid var(--divider)',
-        borderLeft: '3px solid var(--brand-gold)',
         boxShadow: 'var(--shadow-sm)',
       }}
     >
       {/* Header */}
       <div 
-        className="px-5 py-4"
+        className="px-6 py-4"
         style={{ borderBottom: '1px solid var(--divider-subtle)' }}
       >
         <h2 
-          className="text-[15px] font-semibold"
+          className="text-lg font-semibold"
           style={{ color: 'var(--text-1)' }}
         >
           Executive Summary
         </h2>
         <p 
-          className="text-[12px] mt-0.5"
+          className="text-sm mt-0.5"
           style={{ color: 'var(--text-2)' }}
         >
           Key performance indicators at a glance
@@ -262,8 +250,9 @@ export function ExecutiveSummaryCard({ snapshotId }: ExecutiveSummaryCardProps) 
       </div>
 
       {/* KPI Grid */}
-      <div className="p-5">
+      <div className="p-6">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Overall Progress - Green */}
           <KPITile
             label="Overall Progress"
             value={progressValue}
@@ -271,36 +260,43 @@ export function ExecutiveSummaryCard({ snapshotId }: ExecutiveSummaryCardProps) 
             onClick={() => navigate('/enterprise/okr-hub')}
             isLoading={okrLoading}
             accentColor={progressColor}
-            icon={<BarChart3 className="w-[18px] h-[18px]" style={{ color: 'var(--brand-gold)' }} />}
+            iconBgColor="rgba(92, 124, 92, 0.1)"
+            icon={<BarChart3 size={16} style={{ color: '#5C7C5C' }} />}
             showProgress={hasObjectives}
             progressValue={overallProgress ?? 0}
           />
+          {/* At Risk - Gold */}
           <KPITile
             label="At Risk"
             value={atRiskCount}
             subtext={atRiskSubtext}
             onClick={() => navigate('/enterprise/okr-hub')}
             isLoading={okrLoading}
-            accentColor={atRiskColor}
-            icon={<AlertTriangle className="w-[18px] h-[18px]" style={{ color: 'var(--brand-gold)' }} />}
+            accentColor="gold"
+            iconBgColor="rgba(198, 156, 109, 0.1)"
+            icon={<AlertTriangle size={16} style={{ color: '#C69C6D' }} />}
           />
+          {/* Alignment Gaps - Bronze */}
           <KPITile
             label="Alignment Gaps"
             value={gapValue}
             subtext={gapSubtext}
             onClick={() => navigate('/enterprise/strategic-backlog')}
             isLoading={countsLoading}
-            accentColor={gapColor}
-            icon={<Info className="w-[18px] h-[18px]" style={{ color: 'var(--brand-gold)' }} />}
+            accentColor="bronze"
+            iconBgColor="rgba(139, 115, 85, 0.1)"
+            icon={<Target size={16} style={{ color: '#8B7355' }} />}
           />
+          {/* Risk Exposure - Muted Red */}
           <KPITile
             label="Risk Exposure"
             value={openRisks}
             subtext={riskSubtext}
             onClick={() => navigate('/enterprise/risks')}
             isLoading={risksLoading}
-            accentColor={riskColor}
-            icon={<Shield className="w-[18px] h-[18px]" style={{ color: 'var(--brand-gold)' }} />}
+            accentColor="red"
+            iconBgColor="rgba(184, 92, 92, 0.1)"
+            icon={<Shield size={16} style={{ color: '#B85C5C' }} />}
           />
         </div>
       </div>
