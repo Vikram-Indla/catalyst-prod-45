@@ -18,7 +18,7 @@ interface KeyResult {
   goal_value: number;
   current_value: number | null;
   owner_user_id: string | null;
-  due_date: string | null;
+  end_date: string | null;
 }
 
 interface KeyResultItemProps {
@@ -109,25 +109,25 @@ export function KeyResultItem({ keyResult, onOpenCheckIn, onUpdate }: KeyResultI
           </div>
 
           <div>
-            <div className="text-xs text-muted-foreground mb-1">Due date</div>
+            <div className="text-xs text-muted-foreground mb-1">End date</div>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
                   className={cn(
                     "w-full justify-start text-left font-normal h-8",
-                    !keyResult.due_date && "text-muted-foreground"
+                    !keyResult.end_date && "text-muted-foreground"
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {keyResult.due_date ? format(new Date(keyResult.due_date), "PPP") : <span>Select a date</span>}
+                  {keyResult.end_date ? format(new Date(keyResult.end_date), "PPP") : <span>Select a date</span>}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">
                 <Calendar
                   mode="single"
-                  selected={keyResult.due_date ? new Date(keyResult.due_date) : undefined}
-                  onSelect={(date) => date && onUpdate({ due_date: date.toISOString() })}
+                  selected={keyResult.end_date ? new Date(keyResult.end_date) : undefined}
+                  onSelect={(date) => date && onUpdate({ end_date: date.toISOString() })}
                   initialFocus
                 />
               </PopoverContent>
