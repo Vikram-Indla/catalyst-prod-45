@@ -435,11 +435,11 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                     />
                   )}
                   {CustomIcon ? (
-                    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: active ? 'var(--text-1)' : 'var(--icon-default)', flexShrink: 0 }}>
+                    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: active ? '#5C7C5C' : 'var(--icon-default)', flexShrink: 0 }}>
                       <CustomIcon className="w-5 h-5" />
                     </span>
                   ) : (
-                    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: active ? 'var(--text-1)' : 'var(--icon-default)', flexShrink: 0 }}>
+                    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: active ? '#5C7C5C' : 'var(--icon-default)', flexShrink: 0 }}>
                       <LucideIcon style={{ width: '20px', height: '20px' }} />
                     </span>
                   )}

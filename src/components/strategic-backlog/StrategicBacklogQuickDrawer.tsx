@@ -102,22 +102,34 @@ export function StrategicBacklogQuickDrawer({ item, type, onClose, themes }: Qui
   const progress = type === 'objective' ? Math.round((item.overall_progress || 0) * 100) : 0;
 
   return (
-    <div className="w-80 shrink-0 bg-surface border-l border-border h-full overflow-y-auto animate-in slide-in-from-right duration-200">
+    <div 
+      className="w-[420px] shrink-0 h-full overflow-y-auto animate-in slide-in-from-right duration-200"
+      style={{ background: 'var(--surface-bg)', borderLeft: '1px solid var(--border-default)' }}
+    >
       {/* Header */}
-      <div className="sticky top-0 bg-surface border-b border-border p-4 z-10">
+      <div 
+        className="sticky top-0 z-10 p-5"
+        style={{ background: 'var(--surface-bg)', borderBottom: '1px solid var(--border-default)' }}
+      >
         <div className="flex items-start justify-between">
           <div className="flex-1 pr-4">
-            <div className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1">
+            <div 
+              className="mb-1"
+              style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#8B949E' }}
+            >
               {getTypeLabel()}
             </div>
-            <h2 className="text-base font-semibold text-foreground leading-tight">{item.name}</h2>
+            <h2 className="text-lg font-semibold leading-tight" style={{ color: 'var(--text-primary)' }}>{item.name}</h2>
             <div className="mt-2">
               {getStatusBadge()}
             </div>
           </div>
           <button 
             onClick={onClose}
-            className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+            className="p-1.5 rounded-md transition-colors"
+            style={{ color: 'var(--text-muted)' }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--surface-hover)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
           >
             <X className="h-4 w-4" />
           </button>
@@ -125,13 +137,16 @@ export function StrategicBacklogQuickDrawer({ item, type, onClose, themes }: Qui
       </div>
 
       {/* Content */}
-      <div className="p-4 space-y-5">
+      <div className="p-5 space-y-6">
         {/* Description */}
         <div>
-          <label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider block mb-2">
+          <label 
+            className="block mb-2"
+            style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#8B949E' }}
+          >
             Description
           </label>
-          <p className="text-sm text-muted-foreground leading-relaxed">
+          <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
             {getDescription()}
           </p>
         </div>
@@ -139,14 +154,23 @@ export function StrategicBacklogQuickDrawer({ item, type, onClose, themes }: Qui
         {/* Theme-specific: Linked Objectives */}
         {type === 'theme' && (
           <div>
-            <label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider block mb-3">
+            <label 
+              className="block mb-3"
+              style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#8B949E' }}
+            >
               Linked Objectives
             </label>
-            <div className="flex flex-col items-center py-5 bg-muted/50 rounded-lg border border-border">
-              <Target className="h-5 w-5 text-muted-foreground mb-2" />
-              <p className="text-sm text-muted-foreground">
+            <div 
+              className="flex flex-col items-center justify-center py-8 px-4 rounded-lg text-center"
+              style={{ 
+                border: '2px dashed var(--border-default)',
+                background: 'var(--surface-subtle)',
+              }}
+            >
+              <Target className="h-8 w-8 mb-2" style={{ color: '#8B949E' }} />
+              <span className="text-sm" style={{ color: '#8B949E' }}>
                 {objectiveCount} objectives linked
-              </p>
+              </span>
             </div>
           </div>
         )}
@@ -154,18 +178,24 @@ export function StrategicBacklogQuickDrawer({ item, type, onClose, themes }: Qui
         {/* Objective-specific: Progress */}
         {type === 'objective' && (
           <div>
-            <label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider block mb-3">
+            <label 
+              className="block mb-3"
+              style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#8B949E' }}
+            >
               Progress
             </label>
-            <div className="p-4 bg-muted/50 rounded-lg border border-border">
+            <div 
+              className="p-4 rounded-lg"
+              style={{ background: 'var(--surface-subtle)', border: '1px solid var(--border-default)' }}
+            >
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-muted-foreground">{krCount} Key Results</span>
-                <span className="text-lg font-semibold text-foreground">{progress}%</span>
+                <span className="text-sm" style={{ color: 'var(--text-muted)' }}>{krCount} Key Results</span>
+                <span className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>{progress}%</span>
               </div>
-              <div className="h-2 bg-border rounded-full overflow-hidden">
+              <div className="h-2 rounded-full overflow-hidden" style={{ background: 'var(--border-default)' }}>
                 <div 
-                  className="bg-secondary-green h-full rounded-full transition-all" 
-                  style={{ width: `${progress}%` }}
+                  className="h-full rounded-full transition-all" 
+                  style={{ width: `${progress}%`, background: '#5C7C5C' }}
                 />
               </div>
             </div>
@@ -175,17 +205,26 @@ export function StrategicBacklogQuickDrawer({ item, type, onClose, themes }: Qui
         {/* Epic-specific: Work Items */}
         {type === 'epic' && (
           <div>
-            <label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider block mb-3">
+            <label 
+              className="block mb-3"
+              style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#8B949E' }}
+            >
               Work Items
             </label>
             <div className="grid grid-cols-2 gap-3">
-              <div className="p-3 bg-muted/50 rounded-lg border border-border text-center">
-                <div className="text-xl font-semibold text-foreground">{epicCounts.features}</div>
-                <div className="text-xs text-muted-foreground">Features</div>
+              <div 
+                className="p-3 rounded-lg text-center"
+                style={{ background: 'var(--surface-subtle)', border: '1px solid var(--border-default)' }}
+              >
+                <div className="text-xl font-semibold" style={{ color: 'var(--text-primary)' }}>{epicCounts.features}</div>
+                <div className="text-xs" style={{ color: 'var(--text-muted)' }}>Features</div>
               </div>
-              <div className="p-3 bg-muted/50 rounded-lg border border-border text-center">
-                <div className="text-xl font-semibold text-foreground">{epicCounts.stories}</div>
-                <div className="text-xs text-muted-foreground">Stories</div>
+              <div 
+                className="p-3 rounded-lg text-center"
+                style={{ background: 'var(--surface-subtle)', border: '1px solid var(--border-default)' }}
+              >
+                <div className="text-xl font-semibold" style={{ color: 'var(--text-primary)' }}>{epicCounts.stories}</div>
+                <div className="text-xs" style={{ color: 'var(--text-muted)' }}>Stories</div>
               </div>
             </div>
           </div>
@@ -193,17 +232,42 @@ export function StrategicBacklogQuickDrawer({ item, type, onClose, themes }: Qui
 
         {/* Quick Actions */}
         <div>
-          <label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider block mb-3">
+          <label 
+            className="block mb-3"
+            style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#8B949E' }}
+          >
             Quick Actions
           </label>
           <div className="space-y-2">
-            <button className="w-full flex items-center gap-3 px-3 py-2.5 border border-border rounded-lg hover:bg-muted/50 transition-colors group text-left">
-              <ExternalLink className="h-4 w-4 text-muted-foreground group-hover:text-secondary-green" />
-              <span className="text-sm text-foreground">View in Strategy Room</span>
+            <button 
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-left group"
+              style={{ background: 'var(--surface-bg)', border: '1px solid var(--border-default)' }}
+              onMouseEnter={(e) => { 
+                e.currentTarget.style.borderColor = 'rgba(198, 156, 109, 0.4)'; 
+                e.currentTarget.style.background = 'var(--surface-hover)'; 
+              }}
+              onMouseLeave={(e) => { 
+                e.currentTarget.style.borderColor = 'var(--border-default)'; 
+                e.currentTarget.style.background = 'var(--surface-bg)'; 
+              }}
+            >
+              <ExternalLink className="h-4 w-4" style={{ color: 'var(--text-muted)' }} />
+              <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>View in Strategy Room</span>
             </button>
-            <button className="w-full flex items-center gap-3 px-3 py-2.5 border border-border rounded-lg hover:bg-muted/50 transition-colors group text-left">
-              <FileText className="h-4 w-4 text-muted-foreground group-hover:text-secondary-green" />
-              <span className="text-sm text-foreground">Export to PDF</span>
+            <button 
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-left group"
+              style={{ background: 'var(--surface-bg)', border: '1px solid var(--border-default)' }}
+              onMouseEnter={(e) => { 
+                e.currentTarget.style.borderColor = 'rgba(198, 156, 109, 0.4)'; 
+                e.currentTarget.style.background = 'var(--surface-hover)'; 
+              }}
+              onMouseLeave={(e) => { 
+                e.currentTarget.style.borderColor = 'var(--border-default)'; 
+                e.currentTarget.style.background = 'var(--surface-bg)'; 
+              }}
+            >
+              <FileText className="h-4 w-4" style={{ color: 'var(--text-muted)' }} />
+              <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Export to PDF</span>
             </button>
           </div>
         </div>
