@@ -2,7 +2,7 @@ import React, { forwardRef, useMemo, useRef, useEffect, useImperativeHandle } fr
 import { ObjectiveGroup, GroupBy, Scale, Objective, KeyResult } from '@/types/objective-roadmap';
 import { generateTimeUnits, calcPosition, formatShortDate } from '@/utils/objective-roadmap-utils';
 import { cn } from '@/lib/utils';
-
+import { getKRStatusStyle } from '@/constants/krStatusStyles';
 interface TimelineAreaProps {
   groups: ObjectiveGroup[];
   groupBy: GroupBy;
@@ -91,12 +91,15 @@ export const TimelineArea = forwardRef<HTMLDivElement, TimelineAreaProps>(
               ))}
             </div>
             
-            {/* Today Line */}
+            {/* Today Line - Bronze */}
             <div 
-              className="absolute top-0 bottom-0 w-px bg-brand-gold z-10"
-              style={{ left: `${todayPosition}%` }}
+              className="absolute top-0 bottom-0 w-px z-10"
+              style={{ left: `${todayPosition}%`, backgroundColor: '#8b7355' }}
             >
-              <span className="absolute -top-0 left-1/2 -translate-x-1/2 px-1.5 py-0.5 text-[10px] font-semibold text-white bg-brand-gold rounded">
+              <span 
+                className="absolute -top-0 left-1/2 -translate-x-1/2 px-1.5 py-0.5 text-[10px] font-semibold text-white rounded"
+                style={{ backgroundColor: '#8b7355' }}
+              >
                 TODAY
               </span>
             </div>
@@ -248,31 +251,16 @@ const KRMarker: React.FC<KRMarkerProps> = ({
     return 10 + spacing * (index + 1);
   }, [keyResult.dueDate, objectiveStart, objectiveEnd, index, totalKRs]);
   
-  // KR status colors using Catalyst brand tokens (CSS variable values)
-  const getKRColor = (status: string) => {
-    switch (status) {
-      case 'complete': return 'hsl(142, 71%, 45%)'; // secondary-green
-      case 'overdue': return 'hsl(0, 84%, 60%)'; // destructive
-      case 'in-progress': return 'hsl(35, 46%, 60%)'; // brand-gold
-      case 'not-started': 
-      default: return 'hsl(215, 16%, 47%)'; // muted-foreground grey
-    }
-  };
-  
-  const isFilledStatus = (status: string) => {
-    return status === 'complete' || status === 'overdue';
-  };
-  
-  const krColor = getKRColor(keyResult.status);
-  const isFilled = isFilledStatus(keyResult.status);
+  // Use shared status style map
+  const statusStyle = getKRStatusStyle(keyResult.status);
   
   return (
     <div 
       className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rotate-45 border-2 z-10 group/kr cursor-pointer"
       style={{ 
         left: `${position}%`,
-        background: isFilled ? krColor : 'transparent',
-        borderColor: krColor
+        background: statusStyle.filled ? statusStyle.color : '#ffffff',
+        borderColor: statusStyle.color
       }}
     >
       {/* Tooltip - counter-rotated for readability */}
