@@ -77,22 +77,30 @@ export default function StrategyRoomPage() {
     return (
       <PageChrome>
         <div className="flex-1 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <div 
+            className="animate-spin rounded-full h-8 w-8 border-b-2" 
+            style={{ borderColor: 'hsl(var(--brand-gold))' }}
+          />
         </div>
       </PageChrome>
     );
   }
 
   const snapshotSelector = (
-    <div className="flex items-center gap-2">
-      <span className="text-[12px] font-medium" style={{ color: 'var(--text-2)' }}>Snapshot:</span>
+    <div className="flex items-center gap-3">
+      <span 
+        className="text-[12px] font-medium"
+        style={{ color: 'var(--text-2)' }}
+      >
+        Snapshot:
+      </span>
       <div className="w-56">
         <Select value={effectiveSelectedSnapshotId} onValueChange={handleSnapshotChange}>
           <SelectTrigger 
-            className="h-8 text-[13px]"
+            className="h-8 text-[13px] rounded-md"
             style={{ 
-              backgroundColor: 'var(--input-bg)', 
-              borderColor: 'var(--input-border)',
+              backgroundColor: 'var(--surface-2)', 
+              borderColor: 'var(--divider)',
               color: 'var(--text-1)'
             }}
           >
@@ -106,9 +114,9 @@ export default function StrategyRoomPage() {
                 onChange={(e) => setSnapshotSearchQuery(e.target.value)}
                 className="mb-2 h-7 text-[12px]"
                 style={{ 
-                  backgroundColor: 'var(--input-bg)', 
-                  borderColor: 'var(--input-border)',
-                  color: 'var(--input-text)'
+                  backgroundColor: 'var(--surface-2)', 
+                  borderColor: 'var(--divider)',
+                  color: 'var(--text-1)'
                 }}
               />
             </div>
@@ -125,7 +133,10 @@ export default function StrategyRoomPage() {
 
   return (
     <PageChrome rightActions={snapshotSelector}>
-      <div className="px-6 py-4 space-y-5 pb-8 max-w-[1600px] mx-auto">
+      <div 
+        className="px-6 py-5 space-y-5 pb-8 max-w-[1400px] mx-auto"
+        style={{ backgroundColor: 'var(--page-bg)' }}
+      >
         {/* Section 1: Strategy Context - Mission/Vision/Values */}
         <StrategyContextCard snapshot={selectedSnapshot} onUpdate={refetchSnapshots} />
 

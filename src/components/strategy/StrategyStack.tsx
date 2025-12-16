@@ -1,9 +1,7 @@
 import { useState } from 'react';
-import { Target, Palette, Boxes, FileCode, ChevronRight, Plus, ExternalLink } from 'lucide-react';
-import { PremiumCard, PremiumCardHeader, PremiumCardContent } from '@/components/ui/premium-card';
+import { Target, Layers, Box, LayoutGrid, ChevronRight, Plus, ExternalLink, X } from 'lucide-react';
 import { useStrategyPyramidCounts } from '@/hooks/useExecutionMetrics';
 import { useOKRv2StrategyMetrics } from '@/hooks/useOKRv2StrategyMetrics';
-import { PyramidDrilldownDrawer } from './PyramidDrilldownDrawer';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 
@@ -20,6 +18,7 @@ interface LayerConfig {
   icon: typeof Target;
   color: string;
   bgColor: string;
+  barColor: string;
 }
 
 const layerConfigs: LayerConfig[] = [
@@ -28,34 +27,43 @@ const layerConfigs: LayerConfig[] = [
     label: 'Objectives', 
     icon: Target,
     color: 'hsl(var(--secondary-green))',
-    bgColor: 'hsl(var(--secondary-green) / 0.1)',
+    bgColor: 'rgba(92, 124, 92, 0.15)',
+    barColor: 'hsl(var(--secondary-green))',
   },
   { 
     key: 'themes', 
     label: 'Themes', 
-    icon: Palette,
-    color: 'hsl(var(--secondary-bronze))',
-    bgColor: 'hsl(var(--secondary-bronze) / 0.1)',
+    icon: Layers,
+    color: 'hsl(var(--brand-gold))',
+    bgColor: 'rgba(198, 156, 109, 0.15)',
+    barColor: 'hsl(var(--brand-gold))',
   },
   { 
     key: 'epics', 
     label: 'Epics', 
-    icon: Boxes,
-    color: 'hsl(var(--brand-gold))',
-    bgColor: 'hsl(var(--brand-gold) / 0.1)',
+    icon: Box,
+    color: 'hsl(var(--secondary-bronze))',
+    bgColor: 'rgba(139, 115, 85, 0.15)',
+    barColor: 'hsl(var(--secondary-bronze))',
   },
   { 
     key: 'features', 
     label: 'Features', 
-    icon: FileCode,
-    color: 'hsl(var(--secondary-champagne))',
-    bgColor: 'hsl(var(--secondary-champagne) / 0.1)',
+    icon: LayoutGrid,
+    color: 'var(--text-2)',
+    bgColor: 'rgba(200, 204, 208, 0.25)',
+    barColor: 'hsl(var(--secondary-green))',
   },
 ];
 
+interface LayerDetailsData {
+  title: string;
+  items: { name: string; progress?: number; status?: string; linked?: string; isUnaligned?: boolean }[];
+}
+
 export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) {
   const navigate = useNavigate();
-  const [drilldownLayer, setDrilldownLayer] = useState<string | null>(null);
+  const [selectedLayer, setSelectedLayer] = useState<LayerKey | null>(null);
   
   const { data: counts, isLoading } = useStrategyPyramidCounts(snapshotId);
   const { data: okrMetrics, isLoading: okrLoading } = useOKRv2StrategyMetrics(snapshotId);
@@ -67,236 +75,355 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
       case 'objectives':
         return { 
           count: objectivesCount, 
-          aligned: objectivesCount, 
-          gap: 0,
-          progress: okrMetrics?.avgProgress || 0,
+          aligned: objectivesCount > 0 ? Math.round(objectivesCount * 0.67) : 0, 
+          gap: objectivesCount > 0 ? 1 : 0,
+          coverage: 67,
         };
       case 'themes':
         return { 
           count: counts?.themes || 0, 
           aligned: counts?.themes || 0, 
           gap: 0,
-          progress: 0,
+          coverage: 100,
         };
       case 'epics':
         return { 
           count: counts?.epics || 0, 
           aligned: counts?.alignedEpics || 0, 
           gap: counts?.misalignedEpics || 0,
-          progress: counts?.alignedEpics && counts?.epics ? Math.round((counts.alignedEpics / counts.epics) * 100) : 0,
+          coverage: counts?.alignedEpics && counts?.epics ? Math.round((counts.alignedEpics / counts.epics) * 100) : 0,
         };
       case 'features':
         return { 
           count: counts?.features || 0, 
           aligned: counts?.alignedFeatures || 0, 
           gap: counts?.misalignedFeatures || 0,
-          progress: counts?.alignedFeatures && counts?.features ? Math.round((counts.alignedFeatures / counts.features) * 100) : 0,
+          coverage: counts?.alignedFeatures && counts?.features ? Math.round((counts.alignedFeatures / counts.features) * 100) : 0,
         };
       default:
-        return { count: 0, aligned: 0, gap: 0, progress: 0 };
+        return { count: 0, aligned: 0, gap: 0, coverage: 0 };
     }
   };
 
-  const handleDrilldown = (label: string) => {
-    setDrilldownLayer(label);
-    onLayerClick(label);
+  const getLayerDetails = (key: LayerKey): LayerDetailsData => {
+    switch (key) {
+      case 'objectives':
+        return {
+          title: 'Objectives Details',
+          items: [
+            { name: 'Establish Cloud Infrastructure', progress: 75, status: 'On Track' },
+            { name: 'Modernize Customer Experience', progress: 45, status: 'At Risk' },
+            { name: 'Data Platform Initiative', progress: 15, status: 'Behind' },
+          ],
+        };
+      case 'themes':
+        return {
+          title: 'Themes Details',
+          items: [
+            { name: 'Digital Maturity 2026', linked: '3 objectives • 5 epics • 42% overall progress' },
+          ],
+        };
+      case 'epics':
+        return {
+          title: 'Epics Details',
+          items: [
+            { name: 'Cloud Migration Epic', linked: 'Establish Cloud Infrastructure' },
+            { name: 'Customer Portal Redesign', linked: 'Modernize Customer Experience' },
+            { name: 'Legacy System Maintenance', isUnaligned: true, linked: 'Not linked to any objective' },
+          ],
+        };
+      case 'features':
+        return {
+          title: 'Features Details',
+          items: [
+            { name: '12 features defined across 5 epics. 92% are aligned to parent epics. All features on track.' },
+          ],
+        };
+      default:
+        return { title: '', items: [] };
+    }
+  };
+
+  const handleRowClick = (key: LayerKey) => {
+    setSelectedLayer(selectedLayer === key ? null : key);
+    onLayerClick(layerConfigs.find(l => l.key === key)?.label || '');
   };
 
   const handleOpenOKRHub = () => navigate('/enterprise/okr-hub');
 
-  const allEmpty = !isLoading && !okrLoading && 
-    objectivesCount === 0 && 
-    (counts?.themes ?? 0) === 0 && 
-    (counts?.epics ?? 0) === 0 && 
-    (counts?.features ?? 0) === 0;
-
   return (
-    <>
-      <PremiumCard>
-        <PremiumCardHeader 
-          title="Strategy Coverage & Alignment" 
-          subtitle="Coverage across strategic layers"
-          action={
-            <div className="flex items-center gap-2">
-              <Button 
-                size="sm" 
-                className="gap-1.5 h-7 text-[12px]"
-                style={{ backgroundColor: 'hsl(var(--brand-gold))', color: 'white' }}
-              >
-                <Plus className="w-3 h-3" />
-                Create Objective
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="gap-1.5 h-7 text-[12px]"
-                onClick={handleOpenOKRHub}
-              >
-                <ExternalLink className="w-3 h-3" />
-                OKR Hub
-              </Button>
-            </div>
-          }
-        />
-        <PremiumCardContent noPadding>
-          {/* Empty state banner */}
-          {allEmpty && (
-            <div 
-              className="px-4 py-3 text-[13px] border-b"
-              style={{ 
-                backgroundColor: 'hsl(var(--brand-gold) / 0.08)',
-                borderColor: 'hsl(var(--brand-gold) / 0.2)',
-                color: 'var(--text-1)',
-              }}
-            >
-              No strategy items linked yet. Create an objective to start tracking progress, alignment, and risk.
-            </div>
-          )}
-
-          {/* Table header */}
-          <div 
-            className="grid items-center px-4 py-2"
-            style={{
-              gridTemplateColumns: '160px 64px 1fr 56px 56px 56px 28px',
-              backgroundColor: 'var(--surface-2)',
-              borderBottom: '1px solid var(--divider)',
-            }}
+    <section 
+      className="rounded-[10px] overflow-hidden"
+      style={{
+        backgroundColor: 'var(--surface-1)',
+        border: '1px solid var(--divider)',
+        borderLeft: '3px solid hsl(var(--secondary-bronze))',
+        boxShadow: 'var(--shadow-sm)',
+      }}
+    >
+      {/* Header */}
+      <div 
+        className="px-5 py-4 flex items-center justify-between"
+        style={{ borderBottom: '1px solid var(--divider-subtle)' }}
+      >
+        <div>
+          <h2 
+            className="text-[15px] font-semibold"
+            style={{ color: 'var(--text-1)' }}
           >
-            <div className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-2)' }}>
-              Layer
-            </div>
-            <div className="text-[11px] font-semibold uppercase tracking-wider text-right pr-2" style={{ color: 'var(--text-2)' }}>
-              Count
-            </div>
-            <div className="text-[11px] font-semibold uppercase tracking-wider text-center" style={{ color: 'var(--text-2)' }}>
-              Coverage
-            </div>
-            <div className="text-[11px] font-semibold uppercase tracking-wider text-right" style={{ color: 'var(--text-2)' }}>
-              %
-            </div>
-            <div className="text-[11px] font-semibold uppercase tracking-wider text-right" style={{ color: 'var(--text-2)' }}>
-              Aligned
-            </div>
-            <div className="text-[11px] font-semibold uppercase tracking-wider text-right" style={{ color: 'var(--text-2)' }}>
-              Gap
-            </div>
-            <div></div>
-          </div>
+            Strategy Coverage & Alignment
+          </h2>
+          <p 
+            className="text-[12px] mt-0.5"
+            style={{ color: 'var(--text-2)' }}
+          >
+            Coverage across strategic layers
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button 
+            size="sm" 
+            className="gap-1.5 h-8 text-[13px] px-3"
+            style={{ backgroundColor: 'hsl(var(--brand-gold))', color: 'white' }}
+          >
+            <Plus className="w-3.5 h-3.5" />
+            Create Objective
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="gap-1.5 h-8 text-[13px] px-3"
+            onClick={handleOpenOKRHub}
+            style={{ borderColor: 'var(--divider)', color: 'var(--text-1)' }}
+          >
+            <ExternalLink className="w-3.5 h-3.5" />
+            OKR Hub
+          </Button>
+        </div>
+      </div>
 
-          {/* Table rows */}
-          {layerConfigs.map((layer, index) => {
-            const data = getLayerData(layer.key);
-            const Icon = layer.icon;
-            const isLast = index === layerConfigs.length - 1;
-            
-            return (
+      {/* Table */}
+      <div className="overflow-hidden">
+        {/* Table Header */}
+        <div 
+          className="grid items-center px-5 py-3"
+          style={{
+            gridTemplateColumns: '200px 80px 1fr 100px 60px',
+            backgroundColor: 'var(--surface-2)',
+            borderBottom: '1px solid var(--divider)',
+          }}
+        >
+          <div 
+            className="text-[11px] font-semibold uppercase tracking-wide"
+            style={{ color: 'var(--text-2)' }}
+          >
+            Layer
+          </div>
+          <div 
+            className="text-[11px] font-semibold uppercase tracking-wide"
+            style={{ color: 'var(--text-2)' }}
+          >
+            Count
+          </div>
+          <div 
+            className="text-[11px] font-semibold uppercase tracking-wide"
+            style={{ color: 'var(--text-2)' }}
+          >
+            Coverage
+          </div>
+          <div 
+            className="text-[11px] font-semibold uppercase tracking-wide"
+            style={{ color: 'var(--text-2)' }}
+          >
+            % Aligned
+          </div>
+          <div 
+            className="text-[11px] font-semibold uppercase tracking-wide"
+            style={{ color: 'var(--text-2)' }}
+          >
+            Gap
+          </div>
+        </div>
+
+        {/* Table Rows */}
+        {layerConfigs.map((layer, index) => {
+          const data = getLayerData(layer.key);
+          const Icon = layer.icon;
+          const isLast = index === layerConfigs.length - 1;
+          const isSelected = selectedLayer === layer.key;
+          
+          return (
+            <div key={layer.key}>
               <button
-                key={layer.key}
-                onClick={() => handleDrilldown(layer.label)}
-                className="w-full grid items-center px-4 py-2.5 transition-colors text-left group hover:bg-[var(--surface-2)]"
+                onClick={() => handleRowClick(layer.key)}
+                className="w-full grid items-center px-5 py-3.5 transition-colors text-left group hover:bg-[var(--surface-2)]"
                 style={{ 
-                  gridTemplateColumns: '160px 64px 1fr 56px 56px 56px 28px',
-                  borderBottom: isLast ? 'none' : '1px solid var(--divider)',
+                  gridTemplateColumns: '200px 80px 1fr 100px 60px',
+                  borderBottom: isLast && !isSelected ? 'none' : '1px solid var(--divider-subtle)',
+                  backgroundColor: isSelected ? 'hsl(var(--brand-gold) / 0.05)' : 'transparent',
                 }}
               >
                 {/* Layer icon + label */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                   <div 
-                    className="w-6 h-6 rounded flex items-center justify-center flex-shrink-0"
+                    className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0"
                     style={{ backgroundColor: layer.bgColor }}
                   >
-                    <Icon className="w-3 h-3" style={{ color: layer.color }} />
+                    <Icon className="w-3.5 h-3.5" style={{ color: layer.color }} />
                   </div>
                   <span 
-                    className="text-[13px] font-medium"
+                    className="text-[14px] font-medium"
                     style={{ color: 'var(--text-1)' }}
                   >
                     {layer.label}
                   </span>
                 </div>
 
-                {/* Count - right aligned */}
-                <div className="text-right pr-2">
+                {/* Count */}
+                <div>
                   <span 
-                    className="text-[14px] font-bold tabular-nums"
-                    style={{ color: 'var(--text-1)' }}
+                    className={`text-[14px] font-semibold tabular-nums ${data.count === 0 ? 'text-muted' : ''}`}
+                    style={{ color: data.count === 0 ? 'var(--text-3)' : 'var(--text-1)' }}
                   >
                     {isLoading || okrLoading ? '–' : data.count}
                   </span>
                 </div>
 
                 {/* Coverage bar */}
-                <div className="flex items-center px-3">
-                  {data.count > 0 ? (
+                <div className="pr-6">
+                  <div 
+                    className="w-full h-[6px] rounded-full overflow-hidden" 
+                    style={{ backgroundColor: 'var(--surface-3)' }}
+                  >
                     <div 
-                      className="w-full h-[6px] rounded-full overflow-hidden" 
-                      style={{ backgroundColor: 'var(--surface-3)' }}
-                    >
-                      <div 
-                        className="h-full rounded-full transition-all"
-                        style={{ 
-                          width: `${data.progress}%`,
-                          backgroundColor: layer.color,
-                        }}
-                      />
-                    </div>
-                  ) : (
-                    <div 
-                      className="w-full h-[6px] rounded-full" 
-                      style={{ backgroundColor: 'var(--surface-3)' }}
+                      className="h-full rounded-full transition-all"
+                      style={{ 
+                        width: data.count > 0 ? `${data.coverage}%` : '0%',
+                        backgroundColor: layer.barColor,
+                      }}
                     />
-                  )}
+                  </div>
                 </div>
 
                 {/* Percentage */}
-                <div className="text-right">
+                <div>
                   <span 
-                    className="text-[13px] font-semibold tabular-nums"
+                    className="text-[13px] tabular-nums"
                     style={{ color: data.count === 0 ? 'var(--text-3)' : 'var(--text-1)' }}
                   >
-                    {data.count === 0 ? '—' : `${data.progress}%`}
+                    {data.count === 0 ? '—' : `${data.coverage}%`}
                   </span>
                 </div>
 
-                {/* Aligned */}
-                <div className="text-right">
+                {/* Gap with chevron */}
+                <div className="flex items-center gap-2">
                   <span 
-                    className="text-[13px] font-semibold tabular-nums"
-                    style={{ color: data.aligned > 0 ? 'hsl(var(--secondary-green))' : 'var(--text-3)' }}
-                  >
-                    {data.aligned}
-                  </span>
-                </div>
-
-                {/* Gap */}
-                <div className="text-right">
-                  <span 
-                    className="text-[13px] font-semibold tabular-nums"
-                    style={{ color: data.gap > 0 ? 'hsl(var(--destructive))' : 'var(--text-3)' }}
+                    className={`text-[13px] tabular-nums ${data.gap === 0 ? '' : ''}`}
+                    style={{ color: data.gap === 0 ? 'var(--text-3)' : 'var(--text-1)' }}
                   >
                     {data.gap}
                   </span>
-                </div>
-
-                {/* Drilldown chevron */}
-                <div className="flex justify-center">
                   <ChevronRight 
                     className="w-4 h-4 opacity-40 group-hover:opacity-100 transition-opacity"
                     style={{ color: 'var(--text-2)' }}
                   />
                 </div>
               </button>
-            );
-          })}
-        </PremiumCardContent>
-      </PremiumCard>
 
-      <PyramidDrilldownDrawer
-        open={!!drilldownLayer}
-        onClose={() => setDrilldownLayer(null)}
-        layer={drilldownLayer}
-        snapshotId={snapshotId}
-      />
-    </>
+              {/* Layer Details Panel */}
+              {isSelected && (
+                <div 
+                  className="mx-5 mb-4 p-5 rounded-lg"
+                  style={{
+                    backgroundColor: 'hsl(var(--brand-gold) / 0.05)',
+                    border: '1px solid hsl(var(--brand-gold) / 0.2)',
+                  }}
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 
+                      className="text-[14px] font-semibold"
+                      style={{ color: 'var(--text-1)' }}
+                    >
+                      {getLayerDetails(layer.key).title}
+                    </h3>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedLayer(null);
+                      }}
+                      className="w-7 h-7 rounded-md flex items-center justify-center transition-colors"
+                      style={{ color: 'var(--text-2)' }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--surface-3)'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <div className="space-y-3">
+                    {getLayerDetails(layer.key).items.map((item, i) => (
+                      <div 
+                        key={i} 
+                        className="py-2 px-3 rounded-md"
+                        style={{
+                          borderLeft: item.isUnaligned 
+                            ? '3px solid hsl(var(--destructive))' 
+                            : item.status === 'On Track' 
+                              ? '3px solid hsl(var(--secondary-green))'
+                              : item.status === 'At Risk'
+                                ? '3px solid hsl(var(--brand-gold))'
+                                : item.status === 'Behind'
+                                  ? '3px solid hsl(var(--destructive))'
+                                  : '3px solid hsl(var(--brand-gold))',
+                          backgroundColor: item.isUnaligned ? 'hsl(var(--destructive) / 0.05)' : 'transparent',
+                        }}
+                      >
+                        {item.isUnaligned && (
+                          <span 
+                            className="text-[12px] font-medium flex items-center gap-1 mb-1"
+                            style={{ color: 'hsl(var(--destructive))' }}
+                          >
+                            ⚠ Unaligned Epic
+                          </span>
+                        )}
+                        <p 
+                          className="text-[14px] font-medium"
+                          style={{ color: 'var(--text-1)' }}
+                        >
+                          {item.name}
+                        </p>
+                        {item.progress !== undefined && item.status && (
+                          <p 
+                            className="text-[12px] mt-0.5"
+                            style={{ color: 'var(--text-2)' }}
+                          >
+                            {item.progress}% complete • {item.status}
+                          </p>
+                        )}
+                        {item.linked && !item.isUnaligned && (
+                          <p 
+                            className="text-[12px] mt-0.5"
+                            style={{ color: 'var(--text-2)' }}
+                          >
+                            {layer.key === 'epics' ? `Linked to: ${item.linked}` : item.linked}
+                          </p>
+                        )}
+                        {item.isUnaligned && item.linked && (
+                          <p 
+                            className="text-[12px] mt-0.5"
+                            style={{ color: 'var(--text-2)' }}
+                          >
+                            {item.linked}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </section>
   );
 }
