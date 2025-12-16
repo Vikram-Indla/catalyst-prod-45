@@ -89,15 +89,15 @@ const SheetContent = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Con
           className={cn(
             sheetSideVariants({ side }), 
             isHorizontal && sheetWidthVariants({ width }),
-            // DRAWER LAYOUT CONTRACT: flex-col + overflow-hidden ensures single scroll container pattern
-            "flex flex-col overflow-hidden",
+            // DRAWER LAYOUT CONTRACT: 
+            // 1. flex-col + overflow-hidden ensures single scroll container pattern
+            // 2. bg-background ensures opaque panel (NOT transparent)
+            // 3. text-foreground ensures readable text
+            "flex flex-col overflow-hidden bg-background text-foreground",
+            // Border styling
+            isHorizontal ? "border-l border-border" : "border-t border-border",
             className
           )}
-          style={{
-            backgroundColor: 'var(--surface-1)',
-            borderColor: 'var(--border-color)',
-            borderWidth: side === 'left' || side === 'right' ? '0 0 0 1px' : '1px 0 0 0',
-          }}
           {...props}
         >
           {children}

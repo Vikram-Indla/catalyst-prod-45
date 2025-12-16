@@ -446,14 +446,12 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
           side="right" 
           hideClose 
           className={cn(
-            "enterprise-drawer p-0 flex flex-col overflow-hidden",
+            "enterprise-drawer p-0",
             drawerWidthClass
           )}
-          style={{ background: 'var(--surface-1)' }}
         >
           <SheetHeader 
-            className="enterprise-drawer-header flex-col space-y-0 shrink-0 p-0" 
-            style={{ background: 'var(--surface-1)' }}
+            className="enterprise-drawer-header flex-col space-y-0 shrink-0 p-0"
           >
           {/* CIO Briefing Header - Compact Breadcrumb */}
             <div className="px-4 md:px-5 pt-2.5 pb-1 flex items-center gap-1.5">
@@ -636,18 +634,13 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
           {/* Tabs with horizontal scroll - using semantic tokens */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
             <TabsList 
-              className="executive-tabs-list w-full justify-start rounded-none h-10 shrink-0 overflow-x-auto flex-nowrap px-4 md:px-5"
-              style={{ 
-                background: 'var(--surface-1)', 
-                borderBottom: '1px solid var(--border-color)' 
-              }}
+              className="executive-tabs-list w-full justify-start rounded-none h-10 shrink-0 overflow-x-auto flex-nowrap px-4 md:px-5 border-b border-border"
             >
               {VIEW_TABS.map((tab) => (
                 <TabsTrigger
                   key={tab.value}
                   value={tab.value}
                   className="executive-tab whitespace-nowrap text-xs"
-                  style={{ color: 'var(--text-2)' }}
                 >
                   {tab.label}
                 </TabsTrigger>
@@ -655,10 +648,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
             </TabsList>
 
             {/* DRAWER BODY: Single scroll container - flex-1 min-h-0 overflow-y-auto */}
-            <div 
-              className="executive-drawer-content flex-1 min-h-0 overflow-y-auto"
-              style={{ background: 'var(--bg)' }}
-            >
+            <div className="executive-drawer-content flex-1 min-h-0 overflow-y-auto">
               <TabsContent value="demand-details" className="m-0 focus-visible:outline-none p-4 md:p-5 pb-6">
                 <DemandDetailsViewTab data={formData} onChange={handleFieldChange} onNavigateToTab={setActiveTab} />
               </TabsContent>
