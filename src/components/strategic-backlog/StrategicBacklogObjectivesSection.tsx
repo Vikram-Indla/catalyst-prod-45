@@ -249,8 +249,8 @@ export function StrategicBacklogObjectivesSection({
     
     return (
       <span className={cn(
-        "inline-flex px-2 py-0.5 rounded-full border",
-        "text-[10px] font-medium capitalize whitespace-nowrap",
+        "inline-flex items-center justify-center rounded-full border text-center",
+        "min-w-[70px] px-2 py-[3px] text-[10px] font-medium capitalize whitespace-nowrap",
         config.className
       )}>
         {config.label}
