@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, Eye, Share2, MoreVertical, Users, Plus, 
   AlertTriangle, FileText, Paperclip, Clock, Check, X,
-  Upload, Link as LinkIcon, MessageSquare, History
+  Upload, Link as LinkIcon, MessageSquare, History, Download, Trash2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +15,8 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { useIncident, useUpdateIncident, useAddComment, useReleaseVersions } from '@/hooks/useIncidents';
+import { useUploadIncidentAttachment, useDeleteIncidentAttachment, useDownloadIncidentAttachment } from '@/hooks/useIncidentAttachments';
+import { SlaStatusCard } from '@/components/incidents/SlaStatusCard';
 import { supabase } from '@/integrations/supabase/client';
 import type { IncidentStatus, SeverityLevel, CommentType, ImpactLevel, UrgencyLevel, DeliveryStage } from '@/types/incident';
 import { cn } from '@/lib/utils';
@@ -45,8 +47,12 @@ export default function IncidentRoomDetail() {
   const { data: releaseVersions } = useReleaseVersions();
   const updateIncident = useUpdateIncident();
   const addComment = useAddComment();
+  const uploadAttachment = useUploadIncidentAttachment();
+  const deleteAttachment = useDeleteIncidentAttachment();
+  const downloadAttachment = useDownloadIncidentAttachment();
 
   const queryClient = useQueryClient();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [commentText, setCommentText] = useState('');
   const [commentType, setCommentType] = useState<CommentType>('update');
@@ -322,24 +328,74 @@ export default function IncidentRoomDetail() {
           <div className="border border-border rounded-lg overflow-hidden">
             <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-muted/30">
               <h2 className="font-medium">Attachments ({incident.attachments?.length || 0})</h2>
-              <Button variant="ghost" size="sm" disabled={isConverted}>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                disabled={isConverted || uploadAttachment.isPending}
+                onClick={() => fileInputRef.current?.click()}
+              >
                 <Upload className="h-4 w-4 mr-1" />
-                Upload
+                {uploadAttachment.isPending ? 'Uploading...' : 'Upload'}
               </Button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file && id) {
+                    uploadAttachment.mutate({ incidentId: id, file });
+                    e.target.value = '';
+                  }
+                }}
+              />
             </div>
             <div className="p-4">
               {incident.attachments?.length ? (
                 <div className="space-y-2">
                   {incident.attachments.map(att => (
-                    <div key={att.id} className="flex items-center gap-3 p-2 rounded hover:bg-muted/50">
+                    <div key={att.id} className="flex items-center gap-3 p-2 rounded hover:bg-muted/50 group">
                       <Paperclip className="h-4 w-4 text-muted-foreground" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate text-brand-gold hover:underline cursor-pointer">
+                        <p 
+                          className="text-sm font-medium truncate text-brand-gold hover:underline cursor-pointer"
+                          onClick={() => downloadAttachment.mutate({ 
+                            storagePath: att.storage_path, 
+                            fileName: att.file_name 
+                          })}
+                        >
                           {att.file_name}
                         </p>
                         <p className="text-xs text-muted-foreground">
                           {(att.file_size / 1024).toFixed(1)} KB • {new Date(att.created_at).toLocaleDateString()}
                         </p>
+                      </div>
+                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 w-7 p-0"
+                          onClick={() => downloadAttachment.mutate({ 
+                            storagePath: att.storage_path, 
+                            fileName: att.file_name 
+                          })}
+                        >
+                          <Download className="h-3.5 w-3.5 text-muted-foreground" />
+                        </Button>
+                        {!isConverted && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 w-7 p-0 hover:text-destructive"
+                            onClick={() => deleteAttachment.mutate({ 
+                              attachmentId: att.id, 
+                              incidentId: id!,
+                              storagePath: att.storage_path 
+                            })}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -517,34 +573,10 @@ export default function IncidentRoomDetail() {
           </div>
 
           {/* SLA Widget */}
-          {incident.sla && (
-            <div className="p-3 rounded-lg border border-border bg-background">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-xs text-muted-foreground">Response SLA</span>
-                {incident.sla.response_breached ? (
-                  <Badge variant="destructive" className="text-[10px]">Breached</Badge>
-                ) : (
-                  <Badge variant="outline" className="text-[10px] bg-green-100 text-green-800">
-                    <Check className="h-3 w-3 mr-1" />
-                    Met
-                  </Badge>
-                )}
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-muted-foreground">Resolution SLA</span>
-                {incident.sla.resolution_breached ? (
-                  <Badge variant="destructive" className="text-[10px]">
-                    <AlertTriangle className="h-3 w-3 mr-1" />
-                    Breached
-                  </Badge>
-                ) : (
-                  <span className="text-xs text-muted-foreground">
-                    Due {new Date(incident.sla.resolution_due_at).toLocaleString()}
-                  </span>
-                )}
-              </div>
-            </div>
-          )}
+          <div>
+            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2 block">SLA Status</label>
+            <SlaStatusCard slaRecord={incident.sla} createdAt={incident.created_at} />
+          </div>
 
           {/* Release Version */}
           <div>
