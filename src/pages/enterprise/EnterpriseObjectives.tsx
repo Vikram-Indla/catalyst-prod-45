@@ -9,7 +9,7 @@ import { ObjectiveStatusBadge } from '@/modules/objectives/components/shared/Obj
 import { ObjectiveScoreBadge } from '@/modules/objectives/components/shared/ObjectiveScoreBadge';
 import { ObjectiveTierBadge } from '@/modules/objectives/components/shared/ObjectiveTierBadge';
 import { ProgressBar } from '@/modules/objectives/components/shared/ProgressBar';
-import { CreateObjectiveDialog } from '@/modules/objectives/components/ObjectivePanel';
+import { CreateObjectiveDialogV2 } from '@/modules/okr-v2/components/CreateObjectiveDialogV2';
 import { ObjectiveDetailsPanelNew } from '@/components/okr/ObjectiveDetailsPanelNew';
 import { ObjectiveHierarchyDialog } from '@/modules/objectives/components/ObjectiveHierarchyDialog';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -197,10 +197,9 @@ export default function EnterpriseObjectives() {
       </Card>
 
       {/* Create Dialog */}
-      <CreateObjectiveDialog
+      <CreateObjectiveDialogV2
         open={createDialogOpen}
         onOpenChange={setCreateDialogOpen}
-        tier="portfolio"
       />
 
       {/* Details Panel */}

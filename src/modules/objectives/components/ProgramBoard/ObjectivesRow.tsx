@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Target, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useObjectives } from '@/hooks/useObjectives';
-import { CreateObjectiveDialog } from '../ObjectivePanel/CreateObjectiveDialog';
+import { CreateObjectiveDialogV2 } from '@/modules/okr-v2/components/CreateObjectiveDialogV2';
 import { ObjectiveDetailsPanelNew } from '@/components/okr/ObjectiveDetailsPanelNew';
 import { ObjectiveScoreBadge } from '../shared/ObjectiveScoreBadge';
 import { cn } from '@/lib/utils';
@@ -68,11 +68,9 @@ export function ObjectivesRow({ programId, piId, sprints = [] }: ObjectivesRowPr
         </div>
       </div>
 
-      <CreateObjectiveDialog
+      <CreateObjectiveDialogV2
         open={createDialogOpen}
         onOpenChange={setCreateDialogOpen}
-        tier="program"
-        programId={programId}
       />
 
       {selectedObjectiveId && (
