@@ -105,20 +105,33 @@ export function useObjectiveRoadmapData() {
   // Transform objectives
   const objectives: Objective[] = objectivesData.map(obj => {
     const objKRs = krsByObjective[obj.id] || [];
-    const keyResults: KeyResult[] = objKRs.map(kr => ({
-      id: kr.id,
-      title: kr.name,
-      dueDate: new Date(kr.created_at), // Using created_at as fallback for due date
-      progress: kr.target_value && kr.target_value > 0 
-        ? Math.round(((kr.current_value || 0) / kr.target_value) * 100) 
-        : 0,
-      status: mapKRStatus(kr.current_value, kr.target_value),
-    }));
+    
+    // Calculate objective dates for KR distribution
+    const currentDate = new Date();
+    const objStartDate = obj.start_date ? new Date(obj.start_date) : new Date(currentDate.getFullYear(), 0, 1);
+    const objEndDate = obj.end_date ? new Date(obj.end_date) : new Date(currentDate.getFullYear(), 11, 31);
+    const objDuration = objEndDate.getTime() - objStartDate.getTime();
+    
+    const keyResults: KeyResult[] = objKRs.map((kr, index) => {
+      // Distribute KRs evenly across the objective timeline
+      const krCount = objKRs.length;
+      const spacing = objDuration / (krCount + 1);
+      const krDueDate = new Date(objStartDate.getTime() + spacing * (index + 1));
+      
+      return {
+        id: kr.id,
+        title: kr.name,
+        dueDate: krDueDate,
+        progress: kr.target_value && kr.target_value > 0 
+          ? Math.round(((kr.current_value || 0) / kr.target_value) * 100) 
+          : 0,
+        status: mapKRStatus(kr.current_value, kr.target_value),
+      };
+    });
 
     // Calculate default dates if not provided
-    const now = new Date();
-    const startDate = obj.start_date ? new Date(obj.start_date) : new Date(now.getFullYear(), 0, 1);
-    const endDate = obj.end_date ? new Date(obj.end_date) : new Date(now.getFullYear(), 11, 31);
+    const startDate = obj.start_date ? new Date(obj.start_date) : new Date(currentDate.getFullYear(), 0, 1);
+    const endDate = obj.end_date ? new Date(obj.end_date) : new Date(currentDate.getFullYear(), 11, 31);
 
     return {
       id: obj.id,

@@ -1,4 +1,4 @@
-import React, { forwardRef, useMemo } from 'react';
+import React, { forwardRef, useMemo, useRef, useEffect, useImperativeHandle } from 'react';
 import { ObjectiveGroup, GroupBy, Scale, Objective, KeyResult } from '@/types/objective-roadmap';
 import { generateTimeUnits, calcPosition, formatShortDate } from '@/utils/objective-roadmap-utils';
 import { cn } from '@/lib/utils';
@@ -14,8 +14,15 @@ interface TimelineAreaProps {
   onObjectiveClick: (objectiveId: string) => void;
 }
 
+export interface TimelineAreaRef {
+  scrollToToday: () => void;
+}
+
 export const TimelineArea = forwardRef<HTMLDivElement, TimelineAreaProps>(
   ({ groups, groupBy, collapsedGroups, scale, showMilestones, timelineStart, timelineEnd, onObjectiveClick }, ref) => {
+    const headerRef = useRef<HTMLDivElement>(null);
+    const contentRef = useRef<HTMLDivElement>(null);
+    
     const timeUnits = useMemo(() => 
       generateTimeUnits(scale, timelineStart, timelineEnd), 
       [scale, timelineStart, timelineEnd]
@@ -25,11 +32,31 @@ export const TimelineArea = forwardRef<HTMLDivElement, TimelineAreaProps>(
       calcPosition(new Date(), timelineStart, timelineEnd),
       [timelineStart, timelineEnd]
     );
+
+    // Sync horizontal scroll between header and content
+    useEffect(() => {
+      const content = contentRef.current;
+      const header = headerRef.current;
+      if (!content || !header) return;
+
+      const syncHeaderFromContent = () => {
+        if (header) header.scrollLeft = content.scrollLeft;
+      };
+
+      content.addEventListener('scroll', syncHeaderFromContent);
+      return () => content.removeEventListener('scroll', syncHeaderFromContent);
+    }, []);
+
+    // Forward ref to content for vertical scroll sync with objectives column
+    useImperativeHandle(ref, () => contentRef.current as HTMLDivElement);
     
     return (
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Timeline Header */}
-        <div className="h-10 flex items-center border-b border-border bg-muted/50 overflow-x-auto">
+        {/* Timeline Header - syncs horizontally with content */}
+        <div 
+          ref={headerRef}
+          className="h-10 flex items-center border-b border-border bg-muted/50 overflow-x-hidden"
+        >
           <div 
             className="flex min-w-max"
             style={{ width: `${timeUnits.length * 120}px` }}
@@ -48,8 +75,8 @@ export const TimelineArea = forwardRef<HTMLDivElement, TimelineAreaProps>(
           </div>
         </div>
         
-        {/* Timeline Grid */}
-        <div className="flex-1 overflow-auto" ref={ref}>
+        {/* Timeline Grid - scrolls both horizontally and vertically */}
+        <div ref={contentRef} className="flex-1 overflow-auto">
           <div 
             className="relative min-w-max"
             style={{ width: `${timeUnits.length * 120}px` }}
@@ -149,11 +176,13 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
         {/* Bar Content */}
         <div className="relative h-full flex items-center px-2">
           {/* KR Markers or Count */}
-          {showMilestones ? (
-            objective.keyResults.map((kr) => (
+          {showMilestones && objective.keyResults.length > 0 ? (
+            objective.keyResults.map((kr, index) => (
               <KRMarker
                 key={kr.id}
                 keyResult={kr}
+                index={index}
+                totalKRs={objective.keyResults.length}
                 objectiveStart={objective.startDate}
                 objectiveEnd={objective.endDate}
                 statusColor="#c69c6d"
@@ -172,6 +201,8 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
 
 interface KRMarkerProps {
   keyResult: KeyResult;
+  index: number;
+  totalKRs: number;
   objectiveStart: Date;
   objectiveEnd: Date;
   statusColor: string;
@@ -179,15 +210,29 @@ interface KRMarkerProps {
 
 const KRMarker: React.FC<KRMarkerProps> = ({
   keyResult,
+  index,
+  totalKRs,
   objectiveStart,
   objectiveEnd,
   statusColor,
 }) => {
+  // Distribute KRs evenly across the bar if no specific due date
   const position = useMemo(() => {
-    const barDuration = objectiveEnd.getTime() - objectiveStart.getTime();
-    const krPosition = keyResult.dueDate.getTime() - objectiveStart.getTime();
-    return Math.max(5, Math.min(95, (krPosition / barDuration) * 100));
-  }, [keyResult.dueDate, objectiveStart, objectiveEnd]);
+    // If dueDate is valid and within objective range, use it
+    const dueTime = keyResult.dueDate.getTime();
+    const startTime = objectiveStart.getTime();
+    const endTime = objectiveEnd.getTime();
+    
+    if (dueTime >= startTime && dueTime <= endTime) {
+      const barDuration = endTime - startTime;
+      const krPosition = dueTime - startTime;
+      return Math.max(10, Math.min(90, (krPosition / barDuration) * 100));
+    }
+    
+    // Otherwise distribute evenly
+    const spacing = 80 / (totalKRs + 1);
+    return 10 + spacing * (index + 1);
+  }, [keyResult.dueDate, objectiveStart, objectiveEnd, index, totalKRs]);
   
   const getKRColor = (status: string) => {
     switch (status) {
@@ -214,7 +259,7 @@ const KRMarker: React.FC<KRMarkerProps> = ({
         <div className="text-[10px] font-medium text-muted-foreground mb-1">Key Result</div>
         <div className="text-xs font-medium mb-1 max-w-[200px] truncate">{keyResult.title}</div>
         <div className="text-[10px] text-muted-foreground">
-          Due: {formatShortDate(keyResult.dueDate)} • {keyResult.progress}%
+          {keyResult.progress}% complete
         </div>
       </div>
     </div>

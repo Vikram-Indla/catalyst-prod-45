@@ -11,6 +11,7 @@ import {
 } from '@/utils/objective-roadmap-utils';
 import { Scale, GroupBy, ActiveFilters } from '@/types/objective-roadmap';
 import { useObjectiveRoadmapData } from '@/hooks/useObjectiveRoadmapData';
+import { ObjectiveAnalyticsDrawer } from '@/modules/okr-v2';
 import GlobalPageHeader from '@/components/layout/GlobalPageHeader';
 import { Loader2 } from 'lucide-react';
 
@@ -28,6 +29,9 @@ export const ObjectiveRoadmapPage: React.FC = () => {
   const [activeFilters, setActiveFilters] = useState<ActiveFilters>(DEFAULT_FILTERS);
   const [filterStartDate, setFilterStartDate] = useState('2025-01-01');
   const [filterEndDate, setFilterEndDate] = useState('2025-12-31');
+  
+  // Drawer state
+  const [selectedObjectiveId, setSelectedObjectiveId] = useState<string | null>(null);
   
   const objectivesListRef = useRef<HTMLDivElement>(null);
   const timelineGridRef = useRef<HTMLDivElement>(null);
@@ -66,8 +70,11 @@ export const ObjectiveRoadmapPage: React.FC = () => {
   }, [timelineStart, timelineEnd]);
   
   const handleObjectiveClick = useCallback((objectiveId: string) => {
-    console.log('Objective clicked:', objectiveId);
-    // TODO: Open ObjectiveDrawerV2
+    setSelectedObjectiveId(objectiveId);
+  }, []);
+
+  const handleCloseDrawer = useCallback(() => {
+    setSelectedObjectiveId(null);
   }, []);
   
   const handleGroupByChange = useCallback((newGroupBy: GroupBy) => {
@@ -75,7 +82,7 @@ export const ObjectiveRoadmapPage: React.FC = () => {
     setCollapsedGroups(new Set());
   }, []);
   
-  // Scroll sync
+  // Scroll sync (vertical only - horizontal is handled in TimelineArea)
   useEffect(() => {
     const objectivesList = objectivesListRef.current;
     const timelineGrid = timelineGridRef.current;
@@ -161,6 +168,13 @@ export const ObjectiveRoadmapPage: React.FC = () => {
         needAttentionCount={needAttentionCount}
         onLoadMore={handleLoadMore}
         hasMore={visibleCount < filteredObjectives.length}
+      />
+
+      {/* Objective Analytics Drawer */}
+      <ObjectiveAnalyticsDrawer
+        objectiveId={selectedObjectiveId}
+        open={!!selectedObjectiveId}
+        onClose={handleCloseDrawer}
       />
     </div>
   );
