@@ -78,7 +78,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
           role={isClickable ? 'button' : undefined}
           tabIndex={isClickable ? 0 : -1}
           style={{
-            gridTemplateColumns: '1fr 200px 50px 80px',
+            gridTemplateColumns: '1fr 200px 60px 140px',
             borderBottom: '1px solid var(--border-subtle)',
             backgroundColor: isTheme ? 'var(--surface-subtle)' : 'transparent',
           }}
@@ -305,7 +305,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
       <div
         className="grid items-center py-3"
         style={{
-          gridTemplateColumns: '1fr 200px 50px 80px',
+          gridTemplateColumns: '1fr 200px 60px 140px',
           backgroundColor: 'var(--surface-subtle)',
           borderBottom: '1px solid var(--border-default)',
         }}
