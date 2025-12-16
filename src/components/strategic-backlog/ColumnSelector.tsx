@@ -16,6 +16,7 @@ export interface ColumnDefinition {
   key: string;
   label: string;
   defaultVisible: boolean;
+  required?: boolean; // If true, column cannot be hidden
   width?: string;
 }
 
@@ -87,31 +88,38 @@ export function ColumnSelector({
           {columns.map((column) => {
             const isVisible = visibleColumns.includes(column.key);
             const isOnlyVisible = visibleColumns.length === 1 && isVisible;
+            const isRequired = column.required === true;
+            const isDisabled = isRequired || isOnlyVisible;
 
             return (
               <button
                 key={column.key}
-                onClick={() => toggleColumn(column.key)}
-                disabled={isOnlyVisible}
+                onClick={() => !isDisabled && toggleColumn(column.key)}
+                disabled={isDisabled}
                 className={cn(
-                  "w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm",
-                  "transition-colors cursor-pointer",
+                  "w-full flex items-center justify-between gap-2 px-3 py-2 rounded-md text-sm",
+                  "transition-colors",
                   isVisible
                     ? "text-foreground"
                     : "text-muted-foreground",
-                  !isOnlyVisible && "hover:bg-muted dark:hover:bg-[#21262D]",
-                  isOnlyVisible && "opacity-50 cursor-not-allowed"
+                  !isDisabled && "hover:bg-muted dark:hover:bg-[#21262D] cursor-pointer",
+                  isDisabled && "cursor-not-allowed"
                 )}
               >
-                <div className={cn(
-                  "w-4 h-4 rounded border flex items-center justify-center",
-                  isVisible
-                    ? "bg-brand-gold border-brand-gold"
-                    : "border-muted-foreground/40"
-                )}>
-                  {isVisible && <Check className="h-3 w-3 text-white" />}
+                <div className="flex items-center gap-2">
+                  <div className={cn(
+                    "w-4 h-4 rounded border flex items-center justify-center",
+                    isVisible
+                      ? "bg-brand-gold border-brand-gold"
+                      : "border-muted-foreground/40"
+                  )}>
+                    {isVisible && <Check className="h-3 w-3 text-white" />}
+                  </div>
+                  <span>{column.label}</span>
                 </div>
-                <span>{column.label}</span>
+                {isRequired && (
+                  <span className="text-xs text-muted-foreground">Required</span>
+                )}
               </button>
             );
           })}
