@@ -3,10 +3,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useKeyResultsV2 } from '@/hooks/useKeyResultsV2';
 import { useUpdateContributionPercent, useRemoveWorkContribution } from '@/hooks/useKRWorkContributions';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
@@ -206,10 +204,10 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
   const hasAnyKRs = (workGroups?.length || 0) > 0;
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="p-6 space-y-4 bg-white dark:bg-[#161B22]">
       {hasAnyKRs ? (
         <>
-          <div className="text-sm text-muted-foreground">
+          <div className="text-sm text-[#57606A] dark:text-[#8B949E]">
             Work items linked via Key Results. Edit contributions directly in this tab or from Key Results.
           </div>
 
@@ -220,37 +218,39 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
               const isExpanded = expandedKRs.has(group.krId);
 
               return (
-                <div key={group.krId} className="border border-border rounded-lg overflow-hidden">
+                <div key={group.krId} className="border border-[#E1E4E8] dark:border-[#30363D] rounded-lg overflow-hidden">
                   {/* Collapsible KR header */}
                   <div
-                    className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-muted/50 bg-card"
+                    className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-[#F6F8FA] dark:hover:bg-[#21262D] bg-white dark:bg-[#161B22]"
                     onClick={() => toggleKRExpanded(group.krId)}
                   >
-                    <Button variant="ghost" size="icon" className="h-6 w-6 flex-shrink-0 p-0">
+                    <Button variant="ghost" size="icon" className="h-6 w-6 flex-shrink-0 p-0 text-[#57606A] dark:text-[#8B949E]">
                       {isExpanded ? (
                         <ChevronDown className="h-4 w-4" />
                       ) : (
                         <ChevronRight className="h-4 w-4" />
                       )}
                     </Button>
-                    <Target className="h-4 w-4 text-brand-gold flex-shrink-0" />
+                    <Target className="h-4 w-4 text-[#C69C6D] flex-shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <span className="text-sm font-medium truncate block">KR – {group.krName}</span>
+                      <span className="text-sm font-medium truncate block text-[#24292F] dark:text-[#E6EDF3]">KR – {group.krName}</span>
                     </div>
                     <div className="flex items-center gap-3 flex-shrink-0">
-                      <Progress value={group.krProgress} className="w-20 h-2" />
-                      <span className="text-sm text-muted-foreground w-10 text-right">{Math.round(group.krProgress)}%</span>
+                      <div className="w-20 h-2 rounded-full bg-[#E1E4E8] dark:bg-[#30363D] overflow-hidden">
+                        <div className="h-full rounded-full bg-[#5C7C5C] transition-all" style={{ width: `${group.krProgress}%` }} />
+                      </div>
+                      <span className="text-sm text-[#57606A] dark:text-[#8B949E] w-10 text-right">{Math.round(group.krProgress)}%</span>
                     </div>
                   </div>
 
                   {/* Expanded content */}
                   {isExpanded && (
-                    <div className="border-t border-border bg-muted/20">
+                    <div className="border-t border-[#E1E4E8] dark:border-[#30363D] bg-[#F6F8FA] dark:bg-[#0D1117]">
                       {/* Contribution total */}
                       {hasWorkItems && (
-                        <div className="flex items-center justify-between text-xs px-4 py-2 border-b border-border">
-                          <span className="text-muted-foreground">Contribution Total</span>
-                          <span className={`font-semibold ${status.valid ? 'text-emerald-600' : status.overweight ? 'text-destructive' : 'text-amber-600'}`}>
+                        <div className="flex items-center justify-between text-xs px-4 py-2 border-b border-[#E1E4E8] dark:border-[#30363D]">
+                          <span className="text-[#57606A] dark:text-[#8B949E]">Contribution Total</span>
+                          <span className={`font-semibold ${status.valid ? 'text-[#5C7C5C]' : status.overweight ? 'text-red-600' : 'text-amber-600'}`}>
                             {group.totalContribution}% / 100%
                           </span>
                         </div>
@@ -276,7 +276,7 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
                         <div className="px-4 py-2">
                           <table className="w-full text-sm">
                             <thead>
-                              <tr className="text-left text-xs text-muted-foreground uppercase tracking-wide border-b border-border">
+                              <tr className="text-left text-xs text-[#57606A] dark:text-[#8B949E] uppercase tracking-wide border-b border-[#E1E4E8] dark:border-[#30363D]">
                                 <th className="pb-2 font-medium">Work Item</th>
                                 <th className="pb-2 font-medium w-16 text-center">Type</th>
                                 <th className="pb-2 font-medium w-24 text-center">Progress</th>
@@ -286,27 +286,29 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
                             </thead>
                             <tbody>
                               {group.workItems.map((item) => (
-                                <tr key={item.id} className="border-b border-border last:border-0 hover:bg-muted/30">
+                                <tr key={item.id} className="border-b border-[#E1E4E8] dark:border-[#30363D] last:border-0 hover:bg-[#F6F8FA] dark:hover:bg-[#21262D]">
                                   <td className="py-2.5">
                                     <div className="flex items-center gap-2">
-                                      <Target className="h-3.5 w-3.5 text-brand-gold flex-shrink-0" />
+                                      <Target className="h-3.5 w-3.5 text-[#C69C6D] flex-shrink-0" />
                                       <button
                                         onClick={() => setSelectedWorkItem({ id: item.work_item_id, type: item.type })}
-                                        className="truncate text-left hover:text-brand-gold hover:underline transition-colors cursor-pointer"
+                                        className="truncate text-left hover:text-[#C69C6D] hover:underline transition-colors cursor-pointer text-[#24292F] dark:text-[#E6EDF3]"
                                       >
                                         {item.name}
                                       </button>
                                     </div>
                                   </td>
                                   <td className="py-2.5 text-center">
-                                    <Badge variant="outline" className="text-xs capitalize">
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium uppercase bg-[#F6F8FA] dark:bg-[#21262D] text-[#57606A] dark:text-[#8B949E] border border-[#E1E4E8] dark:border-[#30363D] capitalize">
                                       {item.type}
-                                    </Badge>
+                                    </span>
                                   </td>
                                   <td className="py-2.5">
                                     <div className="flex items-center justify-center gap-2">
-                                      <Progress value={item.progress} className="w-12 h-1.5" />
-                                      <span className="text-xs text-muted-foreground w-8">{item.progress}%</span>
+                                      <div className="w-12 h-1.5 rounded-full bg-[#E1E4E8] dark:bg-[#30363D] overflow-hidden">
+                                        <div className="h-full rounded-full bg-[#5C7C5C]" style={{ width: `${item.progress}%` }} />
+                                      </div>
+                                      <span className="text-xs text-[#57606A] dark:text-[#8B949E] w-8">{item.progress}%</span>
                                     </div>
                                   </td>
                                   <td className="py-2.5 text-center">
@@ -323,12 +325,12 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
                                           if (e.key === 'Enter') handleContributionChange(item.id, group.krId, editingItem.value);
                                           else if (e.key === 'Escape') setEditingItem(null);
                                         }}
-                                        className="w-16 h-7 text-xs text-center mx-auto"
+                                        className="w-16 h-7 text-xs text-center mx-auto bg-white dark:bg-[#0D1117] border-[#E1E4E8] dark:border-[#30363D]"
                                       />
                                     ) : (
                                       <button
                                         onClick={() => setEditingItem({ id: item.id, value: item.contributionPercent })}
-                                        className="text-sm font-medium hover:text-brand-gold transition-colors px-2 py-0.5 rounded hover:bg-muted"
+                                        className="text-sm font-medium hover:text-[#C69C6D] transition-colors px-2 py-0.5 rounded hover:bg-[#F6F8FA] dark:hover:bg-[#21262D] text-[#24292F] dark:text-[#E6EDF3]"
                                       >
                                         {item.contributionPercent}%
                                       </button>
@@ -339,7 +341,7 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
                                       <Button
                                         variant="ghost"
                                         size="icon"
-                                        className="h-7 w-7 text-muted-foreground hover:text-brand-gold"
+                                        className="h-7 w-7 text-[#57606A] dark:text-[#8B949E] hover:text-[#C69C6D]"
                                         onClick={() => setEditingItem({ id: item.id, value: item.contributionPercent })}
                                         title="Edit contribution"
                                       >
@@ -348,7 +350,7 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
                                       <Button
                                         variant="ghost"
                                         size="icon"
-                                        className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                                        className="h-7 w-7 text-[#57606A] dark:text-[#8B949E] hover:text-red-600"
                                         onClick={() => setUnlinkConfirm({ id: item.id, krId: group.krId, name: item.name })}
                                         title="Remove link"
                                       >
@@ -364,11 +366,11 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
                       )}
 
                       {/* Add Work Item CTA */}
-                      <div className="px-4 py-3 border-t border-border">
+                      <div className="px-4 py-3 border-t border-[#E1E4E8] dark:border-[#30363D]">
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="w-full justify-center text-muted-foreground hover:text-foreground gap-1.5"
+                          className="w-full justify-center text-[#57606A] dark:text-[#8B949E] hover:text-[#24292F] dark:hover:text-[#E6EDF3] gap-1.5 hover:bg-[#F6F8FA] dark:hover:bg-[#21262D]"
                           onClick={() => openAlignDrawer(group.krId)}
                         >
                           <Plus className="h-4 w-4" />
@@ -383,9 +385,9 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
           </div>
         </>
       ) : (
-        <div className="text-center py-12 text-muted-foreground">
+        <div className="text-center py-12 text-[#57606A] dark:text-[#8B949E] bg-white dark:bg-[#161B22]">
           <Target className="h-10 w-10 mx-auto mb-3 opacity-50" />
-          <p className="text-sm font-medium">No Key Results yet</p>
+          <p className="text-sm font-medium text-[#24292F] dark:text-[#E6EDF3]">No Key Results yet</p>
           <p className="text-xs mt-1">Create Key Results first, then link work items.</p>
         </div>
       )}

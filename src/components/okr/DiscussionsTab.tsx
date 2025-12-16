@@ -1,6 +1,3 @@
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -62,58 +59,58 @@ export function DiscussionsTab({ objectiveId }: DiscussionsTabProps) {
   };
 
   if (isLoading) {
-    return <div className="p-4 text-center text-muted-foreground">Loading discussions...</div>;
+    return <div className="p-4 text-center text-[#57606A] dark:text-[#8B949E]">Loading discussions...</div>;
   }
 
   return (
-    <div className="space-y-4">
-      <Card className="p-4">
+    <div className="space-y-4 bg-white dark:bg-[#161B22]">
+      <div className="p-4 border border-[#E1E4E8] dark:border-[#30363D] rounded-lg bg-white dark:bg-[#0D1117]">
         <div className="space-y-3">
-          <Textarea
+          <textarea
             placeholder="Add a comment..."
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
             rows={3}
-            className="resize-none"
+            className="w-full resize-none rounded-md border border-[#E1E4E8] dark:border-[#30363D] bg-white dark:bg-[#0D1117] px-3 py-2 text-sm text-[#24292F] dark:text-[#E6EDF3] placeholder:text-[#8B949E] dark:placeholder:text-[#6E7681] focus:outline-none focus:ring-1 focus:ring-[#C69C6D] focus:border-[#C69C6D]"
           />
           <div className="flex justify-end">
-            <Button
+            <button
               onClick={handleSubmit}
               disabled={!newComment.trim() || addCommentMutation.isPending}
-              size="sm"
+              className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md bg-[#C69C6D] hover:bg-[#B8905F] text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              <Send className="w-4 h-4 mr-2" />
+              <Send className="w-4 h-4" />
               Post Comment
-            </Button>
+            </button>
           </div>
         </div>
-      </Card>
+      </div>
 
       <div className="space-y-3">
         {comments.length === 0 ? (
-          <Card className="p-8 text-center text-muted-foreground">
+          <div className="p-8 text-center text-[#57606A] dark:text-[#8B949E] border border-[#E1E4E8] dark:border-[#30363D] rounded-lg bg-white dark:bg-[#0D1117]">
             No discussions yet. Start the conversation!
-          </Card>
+          </div>
         ) : (
           comments.map((comment) => (
-            <Card key={comment.id} className="p-4">
+            <div key={comment.id} className="p-4 border border-[#E1E4E8] dark:border-[#30363D] rounded-lg bg-white dark:bg-[#0D1117]">
               <div className="flex gap-3">
                 <Avatar className="h-8 w-8">
-                  <AvatarFallback>U</AvatarFallback>
+                  <AvatarFallback className="bg-[#F6F8FA] dark:bg-[#21262D] text-[#57606A] dark:text-[#8B949E]">U</AvatarFallback>
                 </Avatar>
                 <div className="flex-1 space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">User</span>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-sm font-medium text-[#24292F] dark:text-[#E6EDF3]">User</span>
+                    <span className="text-xs text-[#8B949E] dark:text-[#6E7681]">
                       {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
                     </span>
                   </div>
-                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                  <p className="text-sm text-[#57606A] dark:text-[#8B949E] whitespace-pre-wrap">
                     {comment.content}
                   </p>
                 </div>
               </div>
-            </Card>
+            </div>
           ))
         )}
       </div>
