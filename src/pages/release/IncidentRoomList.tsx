@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Plus, Filter, Search, AlertCircle, Clock, Users, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,9 +7,9 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
 import { useIncidents } from '@/hooks/useIncidents';
+import { CreateIncidentDialog } from '@/components/incidents/CreateIncidentDialog';
 import type { Incident, IncidentStatus, SeverityLevel } from '@/types/incident';
 import { cn } from '@/lib/utils';
-
 const STATUS_CONFIG: Record<IncidentStatus, { label: string; className: string }> = {
   open: { label: 'Open', className: 'bg-blue-100 text-blue-800 border-blue-200' },
   triage: { label: 'Triage', className: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
@@ -93,9 +93,18 @@ function LoadingSkeleton() {
 }
 
 export default function IncidentRoomList() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const { data: incidents, isLoading, error } = useIncidents();
 
+  // Handle ?create=true query param
+  useEffect(() => {
+    if (searchParams.get('create') === 'true') {
+      setCreateDialogOpen(true);
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
   const filteredIncidents = incidents?.filter(incident =>
     incident.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     incident.incident_key.toLowerCase().includes(searchQuery.toLowerCase())
@@ -113,12 +122,13 @@ export default function IncidentRoomList() {
         sectionLabel="RELEASE"
         pageTitle="Incident Room"
         rightActions={
-          <Link to="/release/incident-room/new">
-            <Button className="bg-brand-gold hover:bg-brand-gold-hover text-white">
-              <Plus className="h-4 w-4 mr-2" />
-              Create Incident
-            </Button>
-          </Link>
+          <Button 
+            className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+            onClick={() => setCreateDialogOpen(true)}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Create Incident
+          </Button>
         }
         toolbar={
           <div className="flex items-center gap-3">
@@ -170,12 +180,15 @@ export default function IncidentRoomList() {
             <p className="text-sm text-muted-foreground">
               {searchQuery ? 'No incidents match your search' : 'No incidents yet'}
             </p>
-            <Link to="/release/incident-room/new" className="mt-4">
-              <Button variant="outline" size="sm">
-                <Plus className="h-4 w-4 mr-2" />
-                Create First Incident
-              </Button>
-            </Link>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="mt-4"
+              onClick={() => setCreateDialogOpen(true)}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Create First Incident
+            </Button>
           </div>
         ) : (
           <div>
@@ -185,6 +198,11 @@ export default function IncidentRoomList() {
           </div>
         )}
       </div>
+
+      <CreateIncidentDialog 
+        open={createDialogOpen} 
+        onOpenChange={setCreateDialogOpen} 
+      />
     </div>
   );
 }
