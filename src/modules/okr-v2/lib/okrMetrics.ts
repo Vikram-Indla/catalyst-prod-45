@@ -19,7 +19,7 @@ import {
   PROGRESS_THRESHOLDS,
   RISK_SEVERITY_WEIGHTS,
   RISK_SCORE_THRESHOLDS,
-  DUE_DATE_THRESHOLDS,
+  DEADLINE_THRESHOLDS,
   VARIANCE_THRESHOLDS,
   VALUE_THRESHOLDS,
   HEALTH_FROM_PROGRESS,
@@ -239,12 +239,12 @@ import type { ProgressBaseline, TrendCode } from './okrTypes';
 export function computeProgressBaseline(
   actual: number,
   startDate?: string,
-  dueDate?: string
+  endDate?: string
 ): ProgressBaseline {
   const today = new Date().toISOString().split('T')[0];
   
   // If no dates, cannot compute expected
-  if (!startDate || !dueDate) {
+  if (!startDate || !endDate) {
     return {
       actual,
       expected: null,
@@ -253,7 +253,7 @@ export function computeProgressBaseline(
     };
   }
   
-  const totalDays = daysBetween(startDate, dueDate);
+  const totalDays = daysBetween(startDate, endDate);
   if (totalDays <= 0) {
     return {
       actual,
@@ -323,7 +323,7 @@ export function getKeyResultProgressBaseline(kr: KeyResult): ProgressBaseline {
 export function deriveStatus(
   progress: number,
   risks: OkrRiskSummary,
-  dueDate?: string,
+  endDate?: string,
   isBlocked?: boolean,
   daysVariance?: number
 ): StatusCode {
@@ -350,8 +350,8 @@ export function deriveStatus(
     return 'at-risk';
   }
 
-  // Due date urgency
-  const daysToDue = getDaysUntilDue(dueDate);
+  // End date urgency
+  const daysToDue = getDaysUntilDue(endDate);
   if (daysToDue !== null && daysToDue < 0) {
     // Overdue
     return progress < PROGRESS_THRESHOLDS.IN_PROGRESS ? 'off-track' : 'at-risk';
@@ -381,7 +381,7 @@ export function deriveKeyResultStatus(kr: KeyResult): StatusCode {
   );
 
   const daysToDue = getDaysUntilDue(kr.endDate);
-  if (hasBlockedWork && daysToDue !== null && daysToDue < DUE_DATE_THRESHOLDS.WARNING) {
+  if (hasBlockedWork && daysToDue !== null && daysToDue < DEADLINE_THRESHOLDS.WARNING) {
     return 'off-track';
   }
 

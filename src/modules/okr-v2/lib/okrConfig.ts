@@ -25,8 +25,8 @@ export const RISK_SCORE_THRESHOLDS = {
   // < 2 = success/green styling
 } as const;
 
-// Due date warning thresholds (days)
-export const DUE_DATE_THRESHOLDS = {
+// Deadline warning thresholds (days)
+export const DEADLINE_THRESHOLDS = {
   CRITICAL: 30, // Due within 30 days = critical
   WARNING: 60, // Due within 60 days = warning
   HORIZON: 90, // Due within 90 days = visible in horizon filter

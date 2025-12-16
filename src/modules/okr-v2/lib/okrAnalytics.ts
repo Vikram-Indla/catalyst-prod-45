@@ -131,9 +131,9 @@ const BASELINE_TOLERANCE = 5; // percentage points
 function computeBaselineInfo(
   actual: number,
   startDate?: string,
-  dueDate?: string
+  endDate?: string
 ): BaselineInfo {
-  const baseline = computeProgressBaseline(actual, startDate, dueDate);
+  const baseline = computeProgressBaseline(actual, startDate, endDate);
   
   let trend: TrendDirection = 'no-baseline';
   if (baseline.expected !== null) {

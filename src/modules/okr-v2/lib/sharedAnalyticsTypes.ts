@@ -83,10 +83,10 @@ export function getTimingLabel(daysToTarget: number | null): string {
 export function computeBaselineInfo(
   actual: number,
   startDate?: string,
-  dueDate?: string
+  endDate?: string
 ): BaselineInfo {
-  const baseline = computeProgressBaseline(actual, startDate, dueDate);
-  const daysToTarget = getDaysUntilDue(dueDate);
+  const baseline = computeProgressBaseline(actual, startDate, endDate);
+  const daysToTarget = getDaysUntilDue(endDate);
   
   let trend: TrendDirection = 'no-baseline';
   if (baseline.expected !== null) {

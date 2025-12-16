@@ -20,7 +20,7 @@ export interface OkrRisk {
   probability?: number; // 0–1 (optional, for future)
   impactValue?: number; // SAR value of impact (optional, for future)
   status: 'open' | 'closed';
-  dueDate?: string;
+  targetResolutionDate?: string; // When risk mitigation is due
 }
 
 export interface OkrRiskSummary {
@@ -97,7 +97,7 @@ export interface Objective {
   ownerId?: string;
   ownerName?: string;
   startDate?: string;
-  endDate?: string; // Canonical deadline field (was dueDate)
+  endDate?: string; // Canonical deadline field
 }
 
 export interface Theme {
