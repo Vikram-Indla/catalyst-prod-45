@@ -30,11 +30,17 @@ const getDateRangeFromFilter = (filter: AppliedDateFilter | null): { start: Date
   const { type, year, value, startDate, endDate } = filter;
 
   switch (type) {
-    case 'year':
+    case 'year': {
+      // Handle multi-select years - span from first to last selected year
+      const years = Array.isArray(value) ? value as number[] : [Number(value)];
+      const sortedYears = [...years].sort((a, b) => a - b);
+      const firstYear = sortedYears[0];
+      const lastYear = sortedYears[sortedYears.length - 1];
       return {
-        start: new Date(year, 0, 1),
-        end: new Date(year, 11, 31),
+        start: new Date(firstYear, 0, 1),
+        end: new Date(lastYear, 11, 31),
       };
+    }
     case 'quarter': {
       // Handle multi-select quarters
       const quarters = Array.isArray(value) ? value as string[] : [String(value)];
