@@ -106,7 +106,6 @@ export function RiskDialog({ open, onOpenChange, risk, defaultProgramId, default
       status,
       resolution_method: resolutionMethod,
       program_id: programId,
-      program_increment_id: piId,
       impact,
       occurrence,
       relationship,

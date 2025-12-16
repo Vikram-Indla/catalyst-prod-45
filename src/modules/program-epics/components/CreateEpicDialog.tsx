@@ -341,7 +341,7 @@ export function CreateEpicDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-hidden flex flex-col">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-hidden flex flex-col min-h-0">
         <DialogHeader>
           <DialogTitle>Create Epic</DialogTitle>
         </DialogHeader>
