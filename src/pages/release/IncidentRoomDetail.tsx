@@ -12,10 +12,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import { useIncident, useUpdateIncident, useAddComment, useReleaseVersions } from '@/hooks/useIncidents';
+import { supabase } from '@/integrations/supabase/client';
 import type { IncidentStatus, SeverityLevel, CommentType, ImpactLevel, UrgencyLevel, DeliveryStage } from '@/types/incident';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
 
 const STATUS_CONFIG: Record<IncidentStatus, { label: string; className: string }> = {
   open: { label: 'Open', className: 'bg-blue-100 text-blue-800' },
@@ -42,9 +46,15 @@ export default function IncidentRoomDetail() {
   const updateIncident = useUpdateIncident();
   const addComment = useAddComment();
 
+  const queryClient = useQueryClient();
+
   const [commentText, setCommentText] = useState('');
   const [commentType, setCommentType] = useState<CommentType>('update');
   const [activeTab, setActiveTab] = useState('all');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [convertDialogOpen, setConvertDialogOpen] = useState(false);
+  const [convertType, setConvertType] = useState<'business_request' | 'epic' | 'feature' | 'story'>('business_request');
+  const [convertReason, setConvertReason] = useState('');
 
   const isConverted = incident?.status === 'converted';
   const canConvert = incident?.status !== 'converted' && 
@@ -77,14 +87,76 @@ export default function IncidentRoomDetail() {
     });
   };
 
-  const handleSendToCommittee = () => {
-    // TODO: Implement via edge function
-    toast.info('Send to Committee functionality coming soon');
+  const handleSendToCommittee = async () => {
+    if (!id) return;
+    setIsSubmitting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('send-to-committee', {
+        body: { incident_id: id },
+      });
+      
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      
+      toast.success('Incident sent to committee for approval');
+      queryClient.invalidateQueries({ queryKey: ['incident', id] });
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to send to committee');
+      console.error('Send to committee error:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleConvert = () => {
-    // TODO: Implement via edge function
-    toast.info('Convert functionality coming soon');
+  const handleConvert = async () => {
+    if (!id) return;
+    setIsSubmitting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('convert-incident', {
+        body: { 
+          incident_id: id, 
+          convert_to: convertType,
+          reason: convertReason || undefined,
+        },
+      });
+      
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      
+      toast.success(`Incident converted to ${convertType}`);
+      setConvertDialogOpen(false);
+      queryClient.invalidateQueries({ queryKey: ['incident', id] });
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to convert incident');
+      console.error('Convert incident error:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleVote = async (vote: 'approved' | 'rejected', isVeto?: boolean) => {
+    if (!incident?.committee?.id) return;
+    setIsSubmitting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('submit-vote', {
+        body: { 
+          committee_id: incident.committee.id, 
+          vote,
+          is_veto: isVeto,
+        },
+      });
+      
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      
+      toast.success(data.message || 'Vote submitted');
+      queryClient.invalidateQueries({ queryKey: ['incident', id] });
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to submit vote');
+      console.error('Submit vote error:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isLoading) {
@@ -166,15 +238,15 @@ export default function IncidentRoomDetail() {
               variant="outline" 
               size="sm"
               onClick={handleSendToCommittee}
-              disabled={incident.status === 'to_committee' || isConverted}
+              disabled={incident.status === 'to_committee' || isConverted || isSubmitting}
             >
               <Users className="h-4 w-4 mr-1" />
               Send to Committee
             </Button>
             <Button 
               size="sm"
-              onClick={handleConvert}
-              disabled={!canConvert}
+              onClick={() => setConvertDialogOpen(true)}
+              disabled={!canConvert || isSubmitting}
               className="bg-brand-gold hover:bg-brand-gold-hover text-white"
             >
               <Plus className="h-4 w-4 mr-1" />
@@ -183,6 +255,51 @@ export default function IncidentRoomDetail() {
           </div>
         </div>
       </div>
+
+      {/* Convert Dialog */}
+      <Dialog open={convertDialogOpen} onOpenChange={setConvertDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Convert Incident</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Convert to</Label>
+              <Select value={convertType} onValueChange={(v: any) => setConvertType(v)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="business_request">Business Request</SelectItem>
+                  <SelectItem value="epic">Epic</SelectItem>
+                  <SelectItem value="feature">Feature</SelectItem>
+                  <SelectItem value="story">Story</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Reason (optional)</Label>
+              <Textarea
+                value={convertReason}
+                onChange={(e) => setConvertReason(e.target.value)}
+                placeholder="Why is this incident being converted?"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConvertDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleConvert} 
+              disabled={isSubmitting}
+              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+            >
+              {isSubmitting ? 'Converting...' : 'Convert'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
@@ -705,17 +822,30 @@ export default function IncidentRoomDetail() {
                   ))}
                 </div>
 
-                {/* Vote Actions */}
-                <div className="flex gap-2 pt-2">
-                  <Button size="sm" className="flex-1 bg-secondary-green hover:bg-secondary-green/90 text-white">
-                    <Check className="h-3 w-3 mr-1" />
-                    Approve
-                  </Button>
-                  <Button size="sm" variant="destructive" className="flex-1">
-                    <X className="h-3 w-3 mr-1" />
-                    Reject
-                  </Button>
-                </div>
+                {/* Vote Actions - only show if committee is pending */}
+                {incident.committee.status === 'pending' && (
+                  <div className="flex gap-2 pt-2">
+                    <Button 
+                      size="sm" 
+                      className="flex-1 bg-secondary-green hover:bg-secondary-green/90 text-white"
+                      onClick={() => handleVote('approved')}
+                      disabled={isSubmitting}
+                    >
+                      <Check className="h-3 w-3 mr-1" />
+                      Approve
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="destructive" 
+                      className="flex-1"
+                      onClick={() => handleVote('rejected')}
+                      disabled={isSubmitting}
+                    >
+                      <X className="h-3 w-3 mr-1" />
+                      Reject
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           )}
