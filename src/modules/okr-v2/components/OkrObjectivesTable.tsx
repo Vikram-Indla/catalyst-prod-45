@@ -1,13 +1,13 @@
 // ═══════════════════════════════════════════════════════════════════════════════
-// CATALYST OKR OBJECTIVES TABLE — Proper Tabular View (V1)
-// HTML table structure with aligned columns and expandable hierarchy
-// Respects column visibility from OKRColumnChooser
+// CATALYST OKR OBJECTIVES TABLE — Using Canonical Catalyst Table Component
+// Reuses @/components/ui/table for consistent styling across light/dark modes
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { ChevronRight, ChevronDown } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow as CatalystTableRow } from '@/components/ui/table';
 import type { TrendCode, WorkItemKind } from '../lib/okrTypes';
 import type { OKRColumn } from './OKRColumnChooser';
 
@@ -86,10 +86,10 @@ function formatDate(dateStr?: string | null): string {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────────
-// TABLE ROW COMPONENT
+// TABLE ROW COMPONENT (uses canonical CatalystTableRow)
 // ─────────────────────────────────────────────────────────────────────────────────
 
-interface TableRowProps {
+interface OkrTableRowProps {
   row: OkrObjectiveRow;
   level: number;
   visibleColumnKeys: string[];
@@ -98,7 +98,7 @@ interface TableRowProps {
   expandedIds: Set<string>;
 }
 
-function TableRow({ row, level, visibleColumnKeys, onRowClick, onToggleExpand, expandedIds }: TableRowProps) {
+function OkrTableRowComponent({ row, level, visibleColumnKeys, onRowClick, onToggleExpand, expandedIds }: OkrTableRowProps) {
   const isExpanded = expandedIds.has(row.id);
   const indentPx = level * 24;
 
@@ -288,7 +288,7 @@ function TableRow({ row, level, visibleColumnKeys, onRowClick, onToggleExpand, e
 
       {/* Render children if expanded */}
       {isExpanded && row.children?.map((child) => (
-        <TableRow
+        <OkrTableRowComponent
           key={child.id}
           row={child}
           level={level + 1}
@@ -337,50 +337,48 @@ export function OkrObjectivesTable({ rows, columns = [], onRowClick, onToggleExp
   };
 
   return (
-    <div className="w-full bg-card rounded-xl border border-border overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[800px]">
-          {/* Table Header - Dynamic based on visible columns */}
-          <thead>
-            <tr className="bg-surface-1 border-b border-border" style={{ backgroundColor: 'var(--surface-1)' }}>
-              {visibleColumnKeys.map((colKey, idx) => (
-                <th 
-                  key={colKey}
-                  className={cn(
-                    "py-3.5 px-4 text-[11px] font-semibold uppercase tracking-wider",
-                    idx === visibleColumnKeys.length - 1 ? "text-right" : "text-left"
-                  )}
-                  style={{ color: 'var(--text-2)', width: COLUMN_CONFIG[colKey]?.width || '100px' }}
-                >
-                  {COLUMN_CONFIG[colKey]?.label || colKey}
-                </th>
-              ))}
-            </tr>
-          </thead>
+    <Table>
+      <TableHeader>
+        <CatalystTableRow>
+          {visibleColumnKeys.map((colKey, idx) => (
+            <TableHead 
+              key={colKey}
+              className={cn(
+                "text-[11px] font-semibold uppercase tracking-wider",
+                idx === visibleColumnKeys.length - 1 ? "text-right" : "text-left"
+              )}
+              style={{ width: COLUMN_CONFIG[colKey]?.width || '100px' }}
+            >
+              {COLUMN_CONFIG[colKey]?.label || colKey}
+            </TableHead>
+          ))}
+        </CatalystTableRow>
+      </TableHeader>
 
-          {/* Table Body */}
-          <tbody>
-            {rows.map((row) => (
-              <TableRow
-                key={row.id}
-                row={row}
-                level={row.level ?? 0}
-                visibleColumnKeys={visibleColumnKeys}
-                onRowClick={onRowClick}
-                onToggleExpand={handleToggle}
-                expandedIds={expandedIds}
-              />
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <TableBody>
+        {rows.map((row) => (
+          <OkrTableRowComponent
+            key={row.id}
+            row={row}
+            level={row.level ?? 0}
+            visibleColumnKeys={visibleColumnKeys}
+            onRowClick={onRowClick}
+            onToggleExpand={handleToggle}
+            expandedIds={expandedIds}
+          />
+        ))}
+      </TableBody>
 
       {/* Empty State */}
       {rows.length === 0 && (
-        <div className="flex items-center justify-center py-12 text-muted-foreground text-sm">
-          No objectives found
-        </div>
+        <TableBody>
+          <CatalystTableRow>
+            <TableCell colSpan={visibleColumnKeys.length} className="text-center py-12 text-muted-foreground text-sm">
+              No objectives found
+            </TableCell>
+          </CatalystTableRow>
+        </TableBody>
       )}
-    </div>
+    </Table>
   );
 }
