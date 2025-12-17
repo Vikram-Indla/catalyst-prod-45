@@ -591,7 +591,7 @@ export function EpicValueTab({ epic }: EpicValueTabProps) {
               </div>
 
               <Button 
-                className="w-full bg-brand-gold hover:bg-brand-gold-hover text-[#1a1a1a] font-medium"
+                className="w-full bg-brand-primary hover:bg-brand-primary-hover text-[#1a1a1a] font-medium"
                 onClick={() => setShowAnalysis(true)}
               >
                 <BarChart3 className="w-4 h-4 mr-2" />

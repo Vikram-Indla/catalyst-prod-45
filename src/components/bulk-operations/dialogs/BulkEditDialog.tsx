@@ -207,7 +207,7 @@ export function BulkEditDialog({
               <Button 
                 onClick={handleExecute} 
                 disabled={!canExecute || isExecuting}
-                className="bg-brand-gold hover:bg-brand-gold/90 text-white"
+                className="bg-brand-primary hover:bg-brand-primary/90 text-white"
               >
                 {isExecuting ? (
                   <>

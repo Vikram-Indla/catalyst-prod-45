@@ -106,7 +106,7 @@ export function DependencyWheelDetailsPanel({
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'DONE': return 'text-success';
-      case 'COMMITTED': return 'text-brand-gold';
+      case 'COMMITTED': return 'text-brand-primary';
       case 'NOT_COMMITTED': return 'text-destructive';
       case 'BLOCKED': return 'text-warning';
       default: return 'text-muted-foreground';
@@ -116,7 +116,7 @@ export function DependencyWheelDetailsPanel({
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'DONE': return <Circle className="h-3 w-3 fill-success text-success" />;
-      case 'COMMITTED': return <Circle className="h-3 w-3 fill-brand-gold text-brand-gold" />;
+      case 'COMMITTED': return <Circle className="h-3 w-3 fill-brand-primary text-brand-primary" />;
       case 'NOT_COMMITTED': return <Circle className="h-3 w-3 fill-destructive text-destructive" />;
       case 'BLOCKED': return <Circle className="h-3 w-3 fill-warning text-warning" />;
       default: return <Circle className="h-3 w-3 fill-muted text-muted" />;

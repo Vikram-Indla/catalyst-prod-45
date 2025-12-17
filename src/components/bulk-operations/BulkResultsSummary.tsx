@@ -109,7 +109,7 @@ export function BulkResultsSummary({ results, entityLabel, onClose }: BulkResult
 
       {/* Close Button */}
       <div className="flex justify-end pt-2">
-        <Button onClick={onClose} className="bg-brand-gold hover:bg-brand-gold/90 text-white">
+        <Button onClick={onClose} className="bg-brand-primary hover:bg-brand-primary/90 text-white">
           Done
         </Button>
       </div>

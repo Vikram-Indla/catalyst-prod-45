@@ -119,7 +119,7 @@ export function ProductSelectorDropdown({ onClose, onCreateClick }: ProductSelec
                 <div className="flex-1 min-w-0 flex items-center gap-1.5">
                   <span className={cn(
                     "text-sm truncate",
-                    isCurrentRoute ? "text-brand-gold font-medium" : "text-foreground"
+                    isCurrentRoute ? "text-brand-primary font-medium" : "text-foreground"
                   )}>
                     {line.name}
                   </span>

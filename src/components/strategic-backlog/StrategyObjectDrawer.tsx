@@ -162,7 +162,7 @@ export function StrategyObjectDrawer({ open, onOpenChange, type, data, isArchive
                 Cancel
               </Button>
               {!isArchived && (
-                <Button onClick={handleSave} className="bg-brand-gold hover:bg-brand-gold/90">
+                <Button onClick={handleSave} className="bg-brand-primary hover:bg-brand-primary/90">
                   Save
                 </Button>
               )}

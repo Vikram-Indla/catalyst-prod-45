@@ -253,7 +253,7 @@ export function ManageQuartersPanel({ snapshot, onBack, isAdmin = false }: Manag
             </ScrollArea>
             <Button
               size="sm"
-              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
               onClick={handleAddSelected}
               disabled={selectedToAdd.length === 0 || saving}
             >

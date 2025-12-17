@@ -311,7 +311,7 @@ export function RichTextEditor({ value, onChange, placeholder, className, minHei
               <Button
                 size="sm"
                 onClick={insertLink}
-                className="w-full h-8 bg-brand-gold hover:bg-brand-gold-hover text-white"
+                className="w-full h-8 bg-brand-primary hover:bg-brand-primary-hover text-white"
               >
                 Insert Link
               </Button>

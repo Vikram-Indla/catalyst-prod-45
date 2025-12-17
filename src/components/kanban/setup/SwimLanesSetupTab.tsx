@@ -59,7 +59,7 @@ export function SwimLanesSetupTab({ boardId, swimLanes }: SwimLanesSetupTabProps
           <Button
             onClick={handleAddSwimLane}
             disabled={!newLaneName || createSwimLane.isPending}
-            className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+            className="bg-brand-primary hover:bg-brand-primary-hover text-white"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Swim Lane

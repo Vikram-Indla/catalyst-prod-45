@@ -122,7 +122,7 @@ export function RiskDiscussionsTab({ riskId }: RiskDiscussionsTabProps) {
           <Button
             type="submit"
             disabled={!newComment.trim() || addCommentMutation.isPending}
-            className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+            className="bg-brand-primary hover:bg-brand-primary-hover text-white"
           >
             <Send className="h-4 w-4 mr-2" />
             {addCommentMutation.isPending ? 'Posting...' : 'Post Comment'}

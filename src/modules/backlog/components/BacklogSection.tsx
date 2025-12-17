@@ -61,7 +61,7 @@ export function BacklogSection({
       {/* Section Content - No header row with "All Items" */}
       <div>
         {/* Column Headers - Light gold background with title case */}
-        <div className="flex items-center gap-3 px-4 py-2.5 bg-brand-gold/10 border-b border-brand-gold/30 text-xs font-semibold text-foreground capitalize tracking-wide">
+        <div className="flex items-center gap-3 px-4 py-2.5 bg-brand-primary/10 border-b border-brand-primary/30 text-xs font-semibold text-foreground capitalize tracking-wide">
           {/* Drag handle column - LEFTMOST */}
           <div className="w-8" />
           
@@ -246,7 +246,7 @@ function BacklogItemRow({
       <Badge 
         key={i} 
         variant="outline" 
-        className="text-[10px] px-1.5 py-0 h-5 border-brand-gold/50 text-brand-gold"
+        className="text-[10px] px-1.5 py-0 h-5 border-brand-primary/50 text-brand-primary"
       >
         {q}
       </Badge>
@@ -363,7 +363,7 @@ function BacklogItemRow({
                 {linkedFeatures.map((feature: any) => (
                   <div 
                     key={feature.id}
-                    className="flex items-center gap-3 px-8 py-2 hover:bg-muted/50 cursor-pointer ml-6 border-l-2 border-brand-gold/30"
+                    className="flex items-center gap-3 px-8 py-2 hover:bg-muted/50 cursor-pointer ml-6 border-l-2 border-brand-primary/30"
                   >
                     <div className="w-4 h-4 rounded bg-secondary-green/20 flex items-center justify-center">
                       <span className="text-[10px] font-bold text-secondary-green">F</span>

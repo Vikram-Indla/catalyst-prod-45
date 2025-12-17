@@ -190,7 +190,7 @@ export function CreateProgramDialog({ open, onOpenChange, onSuccess }: CreatePro
             <Button
               type="submit"
               disabled={!name.trim() || !key || key.length !== 3 || !!keyError || createMutation.isPending}
-              className="bg-brand-gold hover:bg-brand-gold-hover"
+              className="bg-brand-primary hover:bg-brand-primary-hover"
             >
               {createMutation.isPending ? 'Creating...' : 'Create program'}
             </Button>

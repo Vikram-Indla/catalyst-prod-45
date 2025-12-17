@@ -220,7 +220,7 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
                 size="sm" 
                 onClick={handleSaveAndClose}
                 disabled={saveMutation.isPending}
-                className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+                className="bg-brand-primary hover:bg-brand-primary-hover text-white"
               >
                 Save & Close
               </Button>

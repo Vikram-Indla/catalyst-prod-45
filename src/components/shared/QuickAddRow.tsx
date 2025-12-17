@@ -145,7 +145,7 @@ export function QuickAddRow({
               size="sm"
               onClick={handleSubmit}
               disabled={createMutation.isPending || !inputValue.trim()}
-              className="h-8 bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="h-8 bg-brand-primary hover:bg-brand-primary-hover text-white"
             >
               Add
             </Button>
