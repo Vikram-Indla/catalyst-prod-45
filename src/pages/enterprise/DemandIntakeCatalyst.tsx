@@ -474,7 +474,7 @@ export default function DemandIntakeCatalyst() {
             <Button
               onClick={() => setCreateModalOpen(true)}
               size="icon"
-              className="h-8 w-8 bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="h-8 w-8 bg-brand-primary hover:bg-brand-primary-hover text-white"
               title="Create"
             >
               <Plus className="h-4 w-4" />

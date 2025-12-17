@@ -412,16 +412,16 @@ export function RiskLinksTab({ riskId, businessRequestId, relatedItemId, relatio
                   onClick={() => setOpenBusinessRequestId(linkedBusinessRequest.id)}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-brand-gold/10 flex items-center justify-center shrink-0">
-                      <FileText className="h-4 w-4 text-brand-gold" />
+                    <div className="w-8 h-8 rounded-lg bg-brand-primary/10 flex items-center justify-center shrink-0">
+                      <FileText className="h-4 w-4 text-brand-primary" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
-                        <span className="px-1.5 py-0.5 text-[10px] font-medium uppercase rounded bg-brand-gold/10 text-brand-gold">
+                        <span className="px-1.5 py-0.5 text-[10px] font-medium uppercase rounded bg-brand-primary/10 text-brand-primary">
                           Business Request
                         </span>
                       </div>
-                      <div className="text-[13px] font-medium text-foreground group-hover:text-brand-gold transition-colors">
+                      <div className="text-[13px] font-medium text-foreground group-hover:text-brand-primary transition-colors">
                         {linkedBusinessRequest.request_key} – {linkedBusinessRequest.title}
                       </div>
                     </div>
@@ -512,16 +512,16 @@ export function RiskLinksTab({ riskId, businessRequestId, relatedItemId, relatio
                   onClick={() => setOpenObjectiveId(linkedObjective.id)}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-brand-gold/10 flex items-center justify-center shrink-0">
-                      <Target className="h-4 w-4 text-brand-gold" />
+                    <div className="w-8 h-8 rounded-lg bg-brand-primary/10 flex items-center justify-center shrink-0">
+                      <Target className="h-4 w-4 text-brand-primary" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
-                        <span className="px-1.5 py-0.5 text-[10px] font-medium uppercase rounded bg-brand-gold/10 text-brand-gold">
+                        <span className="px-1.5 py-0.5 text-[10px] font-medium uppercase rounded bg-brand-primary/10 text-brand-primary">
                           Objective
                         </span>
                       </div>
-                      <div className="text-[13px] font-medium text-foreground group-hover:text-brand-gold transition-colors">
+                      <div className="text-[13px] font-medium text-foreground group-hover:text-brand-primary transition-colors">
                         {linkedObjective.name}
                       </div>
                     </div>

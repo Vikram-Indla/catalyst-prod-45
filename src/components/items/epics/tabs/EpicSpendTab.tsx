@@ -108,22 +108,22 @@ export function EpicSpendTab({ epic }: EpicSpendTabProps) {
         <Card className="border border-border/60 rounded-lg cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setDrilldownType('accepted'); setDrilldownOpen(true); }}>
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-2">
-              <DollarSign className="h-4 w-4 text-brand-gold" />
+              <DollarSign className="h-4 w-4 text-brand-primary" />
               <span className="text-sm font-medium">Accepted Spend</span>
             </div>
             <div className="text-2xl font-bold">{formatCurrency(formData.accepted_spend)}</div>
-            <Button variant="link" size="sm" className="mt-2 p-0 h-auto text-xs text-brand-gold">View breakdown</Button>
+            <Button variant="link" size="sm" className="mt-2 p-0 h-auto text-xs text-brand-primary">View breakdown</Button>
           </CardContent>
         </Card>
 
         <Card className="border border-border/60 rounded-lg cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setDrilldownType('forecasted'); setDrilldownOpen(true); }}>
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-2">
-              <TrendingUp className="h-4 w-4 text-brand-gold" />
+              <TrendingUp className="h-4 w-4 text-brand-primary" />
               <span className="text-sm font-medium">Forecasted Spend</span>
             </div>
             <div className="text-2xl font-bold">{formatCurrency(formData.forecasted_spend)}</div>
-            <Button variant="link" size="sm" className="mt-2 p-0 h-auto text-xs text-brand-gold">View breakdown</Button>
+            <Button variant="link" size="sm" className="mt-2 p-0 h-auto text-xs text-brand-primary">View breakdown</Button>
           </CardContent>
         </Card>
 
@@ -134,7 +134,7 @@ export function EpicSpendTab({ epic }: EpicSpendTabProps) {
               <span className="text-sm font-medium">Estimated Spend</span>
             </div>
             <div className="text-2xl font-bold">{formatCurrency(formData.estimated_spend)}</div>
-            <Button variant="link" size="sm" className="mt-2 p-0 h-auto text-xs text-brand-gold">View breakdown</Button>
+            <Button variant="link" size="sm" className="mt-2 p-0 h-auto text-xs text-brand-primary">View breakdown</Button>
           </CardContent>
         </Card>
       </div>

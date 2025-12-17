@@ -29,7 +29,7 @@ const iconMap: Record<CatalystToastType, LucideIcon> = {
 
 const typeStyles = {
   info: {
-    iconColor: 'text-brand-gold',
+    iconColor: 'text-brand-primary',
   },
   success: {
     iconColor: 'text-emerald-500',
@@ -107,11 +107,11 @@ export const CatalystToast: React.FC<CatalystToastProps> = ({
             <button
               onClick={action.onClick}
               className={cn(
-                'text-[13px] font-medium text-brand-gold',
+                'text-[13px] font-medium text-brand-primary',
                 'bg-transparent border-none cursor-pointer p-0',
-                'hover:text-brand-gold-dark hover:underline',
+                'hover:text-brand-primary-dark hover:underline',
                 'transition-all duration-150 ease-out',
-                'focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2 rounded'
+                'focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2 rounded'
               )}
             >
               {action.label}

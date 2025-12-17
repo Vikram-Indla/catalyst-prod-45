@@ -147,7 +147,7 @@ export default function ProgramBacklog() {
         pageTitle="Program Backlog"
         rightActions={
           <div className="flex items-center gap-2">
-            <Button size="sm" className="bg-brand-gold hover:bg-brand-gold-hover h-8" onClick={() => setIsCreateFeatureOpen(true)}>
+            <Button size="sm" className="bg-brand-primary hover:bg-brand-primary-hover h-8" onClick={() => setIsCreateFeatureOpen(true)}>
               <Plus className="h-4 w-4 mr-1" />
               Create Feature
             </Button>

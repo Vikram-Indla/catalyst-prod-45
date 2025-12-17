@@ -151,13 +151,13 @@ export function CapacityFilter({ filters, onFiltersChange, resources, viewMode }
             size="sm"
             className={cn(
               'gap-1.5 h-9',
-              activeFilterCount > 0 && 'bg-brand-gold/10 border-brand-gold/30 text-brand-gold hover:bg-brand-gold/20'
+              activeFilterCount > 0 && 'bg-brand-primary/10 border-brand-primary/30 text-brand-primary hover:bg-brand-primary/20'
             )}
           >
             <Filter className="h-4 w-4" />
             Filter
             {activeFilterCount > 0 && (
-              <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs bg-brand-gold text-white">
+              <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs bg-brand-primary text-white">
                 {activeFilterCount}
               </Badge>
             )}
@@ -344,12 +344,12 @@ export function CapacityFilter({ filters, onFiltersChange, resources, viewMode }
             <Badge
               key={chip.key}
               variant="outline"
-              className="h-6 gap-1 pl-2 pr-1 text-xs bg-brand-gold/10 border-brand-gold/30 text-brand-gold"
+              className="h-6 gap-1 pl-2 pr-1 text-xs bg-brand-primary/10 border-brand-primary/30 text-brand-primary"
             >
               {chip.label}
               <button
                 onClick={chip.remove}
-                className="h-4 w-4 rounded-full hover:bg-brand-gold/20 flex items-center justify-center"
+                className="h-4 w-4 rounded-full hover:bg-brand-primary/20 flex items-center justify-center"
               >
                 <X className="h-3 w-3" />
               </button>

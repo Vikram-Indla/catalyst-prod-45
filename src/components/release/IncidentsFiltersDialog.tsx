@@ -115,13 +115,13 @@ function MultiSelectDropdown({
             key={option.value}
             className={cn(
               "flex items-center gap-2 px-3 py-2 cursor-pointer rounded-sm transition-colors text-sm",
-              selected.includes(option.value) ? "bg-brand-gold/10 text-foreground" : "hover:bg-muted/50 text-foreground"
+              selected.includes(option.value) ? "bg-brand-primary/10 text-foreground" : "hover:bg-muted/50 text-foreground"
             )}
             onClick={() => toggleOption(option.value)}
           >
             <div className={cn(
               "h-4 w-4 border rounded flex items-center justify-center shrink-0",
-              selected.includes(option.value) ? "bg-brand-gold border-brand-gold" : "border-border"
+              selected.includes(option.value) ? "bg-brand-primary border-brand-primary" : "border-border"
             )}>
               {selected.includes(option.value) && (
                 <svg className="h-3 w-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
@@ -285,8 +285,8 @@ export function IncidentsFiltersDialog({
                       className={cn(
                         "px-3 py-1.5 border rounded-md text-sm cursor-pointer transition-all whitespace-nowrap font-medium",
                         localFilters.activeSmartFilter === sf.id
-                          ? "bg-brand-gold border-brand-gold text-white"
-                          : "bg-white border-border text-foreground hover:border-brand-gold hover:bg-brand-gold/5"
+                          ? "bg-brand-primary border-brand-primary text-white"
+                          : "bg-white border-border text-foreground hover:border-brand-primary hover:bg-brand-primary/5"
                       )}
                       onClick={() => handleSmartFilterClick(sf.id)}
                     >

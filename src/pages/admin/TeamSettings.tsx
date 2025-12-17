@@ -31,7 +31,7 @@ export default function TeamSettings() {
                 Configure team-level estimation and point system settings
               </p>
             </div>
-            <Button onClick={handleSave} className="bg-brand-gold hover:bg-brand-gold-hover flex-shrink-0">
+            <Button onClick={handleSave} className="bg-brand-primary hover:bg-brand-primary-hover flex-shrink-0">
               Save Settings
             </Button>
           </div>

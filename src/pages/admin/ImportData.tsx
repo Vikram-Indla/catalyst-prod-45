@@ -285,7 +285,7 @@ export default function ImportData() {
             <Button
               onClick={() => setCurrentStep(s => s + 1)}
               disabled={!canProceed() || isImporting}
-              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
             >
               Next
             </Button>

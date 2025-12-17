@@ -224,7 +224,7 @@ export default function Portfolios() {
           title="Programs"
           description="Configure program structure and enterprise associations"
           actions={
-            <Button className="bg-brand-gold hover:bg-brand-gold-hover" onClick={openAddDialog}>
+            <Button className="bg-brand-primary hover:bg-brand-primary-hover" onClick={openAddDialog}>
               <Plus className="h-4 w-4 mr-2" />
               Add Program
             </Button>
@@ -366,7 +366,7 @@ export default function Portfolios() {
               <Button 
                 onClick={handleCreate} 
                 disabled={createMutation.isPending}
-                className="bg-brand-gold hover:bg-brand-gold-hover"
+                className="bg-brand-primary hover:bg-brand-primary-hover"
               >
                 {createMutation.isPending ? 'Creating...' : 'Create'}
               </Button>
@@ -397,7 +397,7 @@ export default function Portfolios() {
               <Button 
                 onClick={handleSave} 
                 disabled={updateMutation.isPending}
-                className="bg-brand-gold hover:bg-brand-gold-hover"
+                className="bg-brand-primary hover:bg-brand-primary-hover"
               >
                 {updateMutation.isPending ? 'Saving...' : 'Save'}
               </Button>

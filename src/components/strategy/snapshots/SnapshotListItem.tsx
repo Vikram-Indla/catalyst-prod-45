@@ -48,7 +48,7 @@ export function SnapshotListItem({ snapshot, onViewDetails, onDelete }: Snapshot
   };
 
   const getStatusBadgeStyles = () => {
-    if (isActive) return 'bg-brand-gold/10 text-brand-gold border-brand-gold/30';
+    if (isActive) return 'bg-brand-primary/10 text-brand-primary border-brand-primary/30';
     if (isArchived) return 'bg-muted text-muted-foreground border-muted';
     return 'bg-amber-50 text-amber-700 border-amber-200';
   };
@@ -59,7 +59,7 @@ export function SnapshotListItem({ snapshot, onViewDetails, onDelete }: Snapshot
         className={cn(
           'flex items-center justify-between p-4 border-b last:border-b-0 hover:bg-accent/50 cursor-pointer transition-colors',
           isArchived && 'opacity-70 bg-muted/30',
-          isActive && 'ring-l-2 ring-brand-gold/30 bg-brand-gold/5'
+          isActive && 'ring-l-2 ring-brand-primary/30 bg-brand-primary/5'
         )}
         onClick={() => onViewDetails(snapshot)}
       >
@@ -92,7 +92,7 @@ export function SnapshotListItem({ snapshot, onViewDetails, onDelete }: Snapshot
                 setManageQuartersOpen(true);
               }}
             >
-              <Layers className="h-3.5 w-3.5 text-brand-gold" />
+              <Layers className="h-3.5 w-3.5 text-brand-primary" />
               <span>{quarterCount} Quarters</span>
             </div>
             
@@ -103,7 +103,7 @@ export function SnapshotListItem({ snapshot, onViewDetails, onDelete }: Snapshot
                 navigate(`/enterprise/strategic-backlog?snapshot=${snapshot.id}&tab=themes`);
               }}
             >
-              <Users className="h-3.5 w-3.5 text-brand-gold" />
+              <Users className="h-3.5 w-3.5 text-brand-primary" />
               <span>{themeCount} Themes</span>
             </div>
           </div>

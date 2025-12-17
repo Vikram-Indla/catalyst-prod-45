@@ -449,8 +449,8 @@ export function ForecastTab({ workItemId, workItemType, estimationSystem = 'poin
     <div className="p-6 space-y-6">
       {/* WSJF Info Banner */}
       {estimationSystem === 'wsjf' && (
-        <Alert className="executive-card border-brand-gold/30">
-          <Info className="h-4 w-4 text-brand-gold" />
+        <Alert className="executive-card border-brand-primary/30">
+          <Info className="h-4 w-4 text-brand-primary" />
           <AlertDescription className="text-sm">
             <strong>WSJF is for prioritisation, not effort estimation.</strong> The Job Size from the WSJF tab can be used as an effort proxy for forecasting.
             Visit the WSJF tab to calculate priority scores.
@@ -530,7 +530,7 @@ export function ForecastTab({ workItemId, workItemType, estimationSystem = 'poin
                 const isExpanded = expandedPrograms.has(program.id);
                 
                 return (
-                  <Card key={program.id} className="overflow-hidden border-brand-gold">
+                  <Card key={program.id} className="overflow-hidden border-brand-primary">
                     <Collapsible open={isExpanded} onOpenChange={() => toggleProgram(program.id)}>
                       <CollapsibleTrigger className="w-full">
                         <div className="flex items-center gap-2 p-3 hover:bg-muted/50 transition-colors">
@@ -559,7 +559,7 @@ export function ForecastTab({ workItemId, workItemType, estimationSystem = 'poin
                           {/* Program Estimate Total */}
                           <div className="p-3 pl-10 bg-muted/30 border-t flex items-center justify-between">
                             <Label className="text-sm font-semibold">Program Estimate</Label>
-                            <div className="text-lg font-bold text-brand-gold">
+                            <div className="text-lg font-bold text-brand-primary">
                               {getProgramTotal(program.id)} <span className="text-sm text-muted-foreground">{unitLabel}</span>
                             </div>
                           </div>

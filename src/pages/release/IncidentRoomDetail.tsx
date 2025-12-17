@@ -243,7 +243,7 @@ export default function IncidentRoomDetail() {
               size="sm"
               onClick={() => toggleWatch.mutate(isWatching)}
               disabled={toggleWatch.isPending}
-              className={isWatching ? 'bg-brand-gold hover:bg-brand-gold-hover text-white' : ''}
+              className={isWatching ? 'bg-brand-primary hover:bg-brand-primary-hover text-white' : ''}
             >
               {isWatching ? <EyeOff className="h-4 w-4 mr-1" /> : <Eye className="h-4 w-4 mr-1" />}
               {isWatching ? 'Unwatch' : 'Watch'}
@@ -269,7 +269,7 @@ export default function IncidentRoomDetail() {
               size="sm"
               onClick={() => setConvertDialogOpen(true)}
               disabled={!canConvert || isSubmitting}
-              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
             >
               <Plus className="h-4 w-4 mr-1" />
               Convert
@@ -315,7 +315,7 @@ export default function IncidentRoomDetail() {
             <Button 
               onClick={handleConvert} 
               disabled={isSubmitting}
-              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
             >
               {isSubmitting ? 'Converting...' : 'Convert'}
             </Button>
@@ -334,7 +334,7 @@ export default function IncidentRoomDetail() {
               {isEditingDescription ? (
                 <div className="flex gap-2">
                   <Button variant="ghost" size="sm" onClick={() => setIsEditingDescription(false)}>Cancel</Button>
-                  <Button size="sm" className="bg-brand-gold hover:bg-brand-gold-hover text-white" onClick={() => {
+                  <Button size="sm" className="bg-brand-primary hover:bg-brand-primary-hover text-white" onClick={() => {
                     if (id) {
                       handleFieldChange('description', editedDescription);
                       setIsEditingDescription(false);
@@ -681,7 +681,7 @@ export default function IncidentRoomDetail() {
                     <Button 
                       onClick={handlePostComment} 
                       disabled={!commentText.trim() || addComment.isPending}
-                      className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+                      className="bg-brand-primary hover:bg-brand-primary-hover text-white"
                     >
                       Post Comment
                     </Button>

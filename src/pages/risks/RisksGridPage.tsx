@@ -162,7 +162,7 @@ export default function RisksGridPage() {
             
             <Button 
               size="sm"
-              className="bg-brand-gold hover:bg-brand-gold-hover text-white flex-shrink-0"
+              className="bg-brand-primary hover:bg-brand-primary-hover text-white flex-shrink-0"
               onClick={() => {
                 setEditingRisk(null);
                 setIsCreateEditOpen(true);
