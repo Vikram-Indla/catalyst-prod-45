@@ -19,7 +19,7 @@ interface MilestoneData {
   title: string;
   description: string | null;
   start_date: string | null;
-  due_date: string;
+  end_date: string;
   state: string | null;
   category: string | null;
   business_request_id: string;
@@ -52,13 +52,13 @@ export function MilestonesViewTab({ data }: MilestonesViewTabProps) {
   const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingMilestone, setEditingMilestone] = useState<MilestoneData | null>(null);
-  const [sortBy, setSortBy] = useState('due_date');
+  const [sortBy, setSortBy] = useState('end_date');
   
   // Form state
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [startDate, setStartDate] = useState('');
-  const [dueDate, setDueDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [state, setState] = useState('Pending');
   const [category, setCategory] = useState('');
 
@@ -134,7 +134,7 @@ export function MilestonesViewTab({ data }: MilestonesViewTabProps) {
     setTitle('');
     setDescription('');
     setStartDate('');
-    setDueDate('');
+    setEndDate('');
     setState('Pending');
     setCategory('');
   };
@@ -150,7 +150,7 @@ export function MilestonesViewTab({ data }: MilestonesViewTabProps) {
     setTitle(milestone.title);
     setDescription(milestone.description || '');
     setStartDate(milestone.start_date || '');
-    setDueDate(milestone.due_date);
+    setEndDate(milestone.end_date);
     setState(milestone.state || 'Pending');
     setCategory(milestone.category || '');
     setIsDialogOpen(true);
@@ -161,8 +161,8 @@ export function MilestonesViewTab({ data }: MilestonesViewTabProps) {
       toast.error('Title is required');
       return;
     }
-    if (!dueDate) {
-      toast.error('Due date is required');
+    if (!endDate) {
+      toast.error('End date is required');
       return;
     }
 
@@ -170,7 +170,7 @@ export function MilestonesViewTab({ data }: MilestonesViewTabProps) {
       title: title.trim(),
       description: description.trim() || null,
       start_date: startDate || null,
-      due_date: dueDate,
+      end_date: endDate,
       state,
       category: category || null,
       business_request_id: requestId!,
@@ -211,7 +211,7 @@ export function MilestonesViewTab({ data }: MilestonesViewTabProps) {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="due_date">Due Date</SelectItem>
+              <SelectItem value="end_date">End Date</SelectItem>
               <SelectItem value="title">Name</SelectItem>
               <SelectItem value="state">State</SelectItem>
             </SelectContent>
@@ -263,7 +263,7 @@ export function MilestonesViewTab({ data }: MilestonesViewTabProps) {
                 <Calendar className="h-4 w-4" />
                 {milestone.start_date && <span>Start: {format(new Date(milestone.start_date), 'MMM d, yyyy')}</span>}
                 {milestone.start_date && <span>—</span>}
-                <span>Due: {format(new Date(milestone.due_date), 'MMM d, yyyy')}</span>
+                <span>End: {format(new Date(milestone.end_date), 'MMM d, yyyy')}</span>
               </div>
 
               {milestone.description && (
@@ -317,12 +317,12 @@ export function MilestonesViewTab({ data }: MilestonesViewTabProps) {
               </div>
               <div>
                 <Label className="text-sm font-medium">
-                  Due Date <span className="text-destructive">*</span>
+                  End Date <span className="text-destructive">*</span>
                 </Label>
                 <Input
                   type="date"
-                  value={dueDate}
-                  onChange={(e) => setDueDate(e.target.value)}
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
                   className="mt-1"
                 />
               </div>

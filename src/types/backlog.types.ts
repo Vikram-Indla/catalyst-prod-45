@@ -170,7 +170,7 @@ export interface Milestone {
   id: string;
   name: string;
   startDate: string | null;
-  dueDate: string | null;
+  endDate: string | null;
   description: string;
   state: 'Pending' | 'In Progress' | 'Complete' | 'Blocked';
   category: string | null;

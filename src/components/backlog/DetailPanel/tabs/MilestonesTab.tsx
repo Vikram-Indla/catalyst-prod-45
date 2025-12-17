@@ -73,7 +73,7 @@ export function MilestonesTab({ milestones, onAddMilestone, onUpdateMilestone }:
               <Calendar className="h-4 w-4" />
               <span>Start: {milestone.startDate || 'Not set'}</span>
               <span>—</span>
-              <span>Due: {milestone.dueDate || 'Not set'}</span>
+              <span>End: {milestone.endDate || 'Not set'}</span>
             </div>
 
             {milestone.description && (

@@ -38,7 +38,7 @@ const MILESTONE_CATEGORIES = [
 
 const SORT_OPTIONS = [
   { value: 'title', label: 'Name' },
-  { value: 'due_date', label: 'Due Date' },
+  { value: 'end_date', label: 'End Date' },
   { value: 'start_date', label: 'Start Date' },
   { value: 'state', label: 'State' },
 ];
@@ -54,7 +54,7 @@ export function MilestonesTab({ entityId, entityType, hideCategory = false }: Mi
   const [formData, setFormData] = useState({
     title: '',
     start_date: '',
-    due_date: '',
+    end_date: '',
     description: '',
     state: 'pending',
     category: '',
@@ -73,7 +73,7 @@ export function MilestonesTab({ entityId, entityType, hideCategory = false }: Mi
         .from('milestones')
         .select('*')
         .eq(entityColumn, entityId)
-        .order('due_date');
+        .order('end_date');
       if (error) throw error;
       return data || [];
     }
@@ -83,7 +83,7 @@ export function MilestonesTab({ entityId, entityType, hideCategory = false }: Mi
   const sortedMilestones = [...milestones].sort((a, b) => {
     let aVal = a[sortBy] || '';
     let bVal = b[sortBy] || '';
-    if (sortBy === 'due_date' || sortBy === 'start_date') {
+    if (sortBy === 'end_date' || sortBy === 'start_date') {
       aVal = aVal ? new Date(aVal).getTime() : 0;
       bVal = bVal ? new Date(bVal).getTime() : 0;
     }
@@ -156,7 +156,7 @@ export function MilestonesTab({ entityId, entityType, hideCategory = false }: Mi
     setFormData({
       title: '',
       start_date: '',
-      due_date: '',
+      end_date: '',
       description: '',
       state: 'pending',
       category: '',
@@ -173,7 +173,7 @@ export function MilestonesTab({ entityId, entityType, hideCategory = false }: Mi
     const payload = {
       title: formData.title,
       start_date: formData.start_date || null,
-      due_date: formData.due_date || null,
+      end_date: formData.end_date || null,
       description: formData.description || null,
       state: formData.state,
       category: hideCategory ? null : formData.category || null,
@@ -197,7 +197,7 @@ export function MilestonesTab({ entityId, entityType, hideCategory = false }: Mi
     setFormData({
       title: milestone.title || '',
       start_date: milestone.start_date || '',
-      due_date: milestone.due_date || '',
+      end_date: milestone.end_date || '',
       description: milestone.description || '',
       state: milestone.state || 'pending',
       category: milestone.category || '',
@@ -209,7 +209,7 @@ export function MilestonesTab({ entityId, entityType, hideCategory = false }: Mi
     const copyPayload = {
       title: `${milestone.title} (Copy)`,
       start_date: milestone.start_date || null,
-      due_date: milestone.due_date || null,
+      end_date: milestone.end_date || null,
       description: milestone.description || null,
       state: 'pending', // Reset state to pending for the copy
       category: hideCategory ? null : milestone.category || null,
@@ -335,7 +335,7 @@ export function MilestonesTab({ entityId, entityType, hideCategory = false }: Mi
                       <Calendar className="h-3.5 w-3.5" />
                       <span>Start: {formatDate(milestone.start_date)}</span>
                       <span className="mx-1">—</span>
-                      <span>Due: {formatDate(milestone.due_date)}</span>
+                      <span>End: {formatDate(milestone.end_date)}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
@@ -499,12 +499,12 @@ function MilestoneForm({
         </div>
         <div>
           <Label className="text-xs font-medium mb-1.5 block">
-            Due date
+            End date
           </Label>
           <CatalystDatePicker
-            value={formData.due_date || null}
-            onChange={(date) => setFormData({ ...formData, due_date: date ? format(date, 'yyyy-MM-dd') : '' })}
-            placeholder="Select due date"
+            value={formData.end_date || null}
+            onChange={(date) => setFormData({ ...formData, end_date: date ? format(date, 'yyyy-MM-dd') : '' })}
+            placeholder="Select end date"
           />
         </div>
       </div>

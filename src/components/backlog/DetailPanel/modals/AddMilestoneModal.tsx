@@ -11,7 +11,7 @@ interface AddMilestoneModalProps {
   onSave: (milestone: {
     name: string;
     startDate: string | null;
-    dueDate: string | null;
+    endDate: string | null;
     description: string;
     state: 'Pending' | 'In Progress' | 'Complete' | 'Blocked';
     category: string | null;
@@ -21,7 +21,7 @@ interface AddMilestoneModalProps {
 export function AddMilestoneModal({ isOpen, onClose, onSave }: AddMilestoneModalProps) {
   const [name, setName] = useState('');
   const [startDate, setStartDate] = useState('');
-  const [dueDate, setDueDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [description, setDescription] = useState('');
   const [state, setState] = useState<'Pending' | 'In Progress' | 'Complete' | 'Blocked'>('Pending');
   const [category, setCategory] = useState<string>('');
@@ -38,7 +38,7 @@ export function AddMilestoneModal({ isOpen, onClose, onSave }: AddMilestoneModal
     onSave({
       name: name.trim(),
       startDate: startDate || null,
-      dueDate: dueDate || null,
+      endDate: endDate || null,
       description: description.trim(),
       state,
       category: category || null,
@@ -47,7 +47,7 @@ export function AddMilestoneModal({ isOpen, onClose, onSave }: AddMilestoneModal
     // Reset form
     setName('');
     setStartDate('');
-    setDueDate('');
+    setEndDate('');
     setDescription('');
     setState('Pending');
     setCategory('');
@@ -58,7 +58,7 @@ export function AddMilestoneModal({ isOpen, onClose, onSave }: AddMilestoneModal
   const handleCancel = () => {
     setName('');
     setStartDate('');
-    setDueDate('');
+    setEndDate('');
     setDescription('');
     setState('Pending');
     setCategory('');
@@ -112,13 +112,13 @@ export function AddMilestoneModal({ isOpen, onClose, onSave }: AddMilestoneModal
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
-                Due date <span className="text-muted-foreground">ⓘ</span>
+                End date <span className="text-muted-foreground">ⓘ</span>
               </label>
               <div className="relative">
                 <Input
                   type="text"
-                  value={dueDate}
-                  onChange={(e) => setDueDate(e.target.value)}
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
                   placeholder="mm/dd/yyyy"
                   className="w-full pr-10"
                 />

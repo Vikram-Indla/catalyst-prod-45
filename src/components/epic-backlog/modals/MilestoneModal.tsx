@@ -15,7 +15,7 @@ interface Milestone {
   title: string;
   description?: string;
   startDate?: Date;
-  dueDate?: Date;
+  endDate?: Date;
   state: "not_started" | "in_progress" | "complete" | "blocked";
   category?: string;
 }
@@ -49,7 +49,7 @@ export function MilestoneModal({ open, onClose, milestone, onSave }: MilestoneMo
   const [title, setTitle] = useState(milestone?.title || "");
   const [description, setDescription] = useState(milestone?.description || "");
   const [startDate, setStartDate] = useState<Date | undefined>(milestone?.startDate);
-  const [dueDate, setDueDate] = useState<Date | undefined>(milestone?.dueDate);
+  const [endDate, setEndDate] = useState<Date | undefined>(milestone?.endDate);
   const [state, setState] = useState<Milestone["state"]>(milestone?.state || "not_started");
   const [category, setCategory] = useState(milestone?.category || "");
 
@@ -61,7 +61,7 @@ export function MilestoneModal({ open, onClose, milestone, onSave }: MilestoneMo
       title: title.trim(),
       description: description.trim() || undefined,
       startDate,
-      dueDate,
+      endDate,
       state,
       category: category || undefined,
     });
@@ -74,7 +74,7 @@ export function MilestoneModal({ open, onClose, milestone, onSave }: MilestoneMo
     setTitle(milestone?.title || "");
     setDescription(milestone?.description || "");
     setStartDate(milestone?.startDate);
-    setDueDate(milestone?.dueDate);
+    setEndDate(milestone?.endDate);
     setState(milestone?.state || "not_started");
     setCategory(milestone?.category || "");
     onClose();
@@ -135,7 +135,7 @@ export function MilestoneModal({ open, onClose, milestone, onSave }: MilestoneMo
             </div>
 
             <div className="space-y-2">
-              <Label>Due Date *</Label>
+              <Label>End Date *</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -143,14 +143,14 @@ export function MilestoneModal({ open, onClose, milestone, onSave }: MilestoneMo
                     className="w-full justify-start text-left font-normal"
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dueDate ? format(dueDate, "PPP") : "Select date"}
+                    {endDate ? format(endDate, "PPP") : "Select date"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
-                    selected={dueDate}
-                    onSelect={setDueDate}
+                    selected={endDate}
+                    onSelect={setEndDate}
                     initialFocus
                   />
                 </PopoverContent>
@@ -197,7 +197,7 @@ export function MilestoneModal({ open, onClose, milestone, onSave }: MilestoneMo
           <Button variant="outline" onClick={handleCancel}>
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={!title.trim() || !dueDate}>
+          <Button onClick={handleSave} disabled={!title.trim() || !endDate}>
             {milestone ? "Update" : "Create"} Milestone
           </Button>
         </DialogFooter>
