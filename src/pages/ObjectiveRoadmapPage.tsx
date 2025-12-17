@@ -73,7 +73,7 @@ export const ObjectiveRoadmapPage: React.FC = () => {
   
   const [groupBy, setGroupBy] = useState<GroupBy>('theme');
   const [showMilestones, setShowMilestones] = useState(true);
-  const [showLegend, setShowLegend] = useState(true);
+  const [showLegend, setShowLegend] = useState(false);
   const [visibleCount, setVisibleCount] = useState(10);
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
   const [columnWidth, setColumnWidth] = useState(340);
