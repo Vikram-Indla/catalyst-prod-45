@@ -15,8 +15,8 @@ export function ProgressBar({
   showLabel = false,
   className 
 }: ProgressBarProps) {
-  // Progress bar is always gold - trend icon shows status
-  const getColor = () => "bg-brand-gold";
+  // Progress bar is always primary - trend icon shows status
+  const getColor = () => "bg-brand-primary";
 
   const heightClass = height === "sm" ? "h-1.5" : height === "lg" ? "h-3" : "h-2";
   const clampedProgress = Math.min(100, Math.max(0, progress));

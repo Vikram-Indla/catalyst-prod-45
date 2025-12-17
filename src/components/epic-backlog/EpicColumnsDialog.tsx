@@ -132,7 +132,7 @@ export function EpicColumnsDialog({
             <Button variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button onClick={handleApply} className="bg-brand-gold hover:bg-brand-gold-hover text-white">
+            <Button onClick={handleApply} className="bg-brand-primary hover:bg-brand-primary-hover text-white">
               Apply
             </Button>
           </div>

@@ -119,7 +119,7 @@ export function EpicMassMoveDialog({
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Move className="h-5 w-5 text-brand-gold" />
+            <Move className="h-5 w-5 text-brand-primary" />
             Mass Move Epics
           </DialogTitle>
           <DialogDescription>
@@ -203,7 +203,7 @@ export function EpicMassMoveDialog({
           <Button 
             onClick={handleMove}
             disabled={moveMutation.isPending || epicIds.length === 0}
-            className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+            className="bg-brand-primary hover:bg-brand-primary-hover text-white"
           >
             {moveMutation.isPending ? 'Updating...' : 'Update Epics'}
           </Button>

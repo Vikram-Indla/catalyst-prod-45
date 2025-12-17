@@ -348,21 +348,21 @@ export default function SkillsInventory() {
       {/* Main Content */}
       <div className="px-8 pb-8">
         {/* Table Area */}
-        <div className="rounded-xl overflow-hidden bg-card border border-brand-gold-border">
+        <div className="rounded-xl overflow-hidden bg-card border border-border">
           {/* Table Header */}
-          <div className="px-5 py-4 flex items-center justify-between border-b border-brand-gold-border">
+          <div className="px-5 py-4 flex items-center justify-between border-b border-border">
             <h2 className="text-base font-semibold text-foreground">Skills Inventory</h2>
             <div className="flex items-center gap-3">
               <Button
                 variant="outline"
                 size="sm"
-                className="border-brand-gold-border text-muted-foreground hover:bg-secondary relative"
+                className="border-border text-muted-foreground hover:bg-secondary relative"
                 onClick={() => setFiltersDialogOpen(true)}
               >
                 <Filter className="h-4 w-4 mr-2" />
                 Filters
                 {activeFilterCount > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-brand-gold text-white text-xs flex items-center justify-center font-medium">
+                  <span className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-brand-primary text-white text-xs flex items-center justify-center font-medium">
                     {activeFilterCount}
                   </span>
                 )}
@@ -370,13 +370,13 @@ export default function SkillsInventory() {
               <Button
                 variant="outline"
                 size="sm"
-                className="border-brand-gold-border text-muted-foreground hover:bg-secondary"
+                className="border-border text-muted-foreground hover:bg-secondary"
                 onClick={exportToCSV}
               >
                 <Download className="h-4 w-4 mr-2" />
                 Export CSV
               </Button>
-              <Button variant="gold" size="sm" onClick={() => setAddSkillOpen(true)}>
+              <Button variant="default" size="sm" onClick={() => setAddSkillOpen(true)}>
                 <UserPlus className="h-4 w-4 mr-2" />
                 Add Team Member
               </Button>
@@ -386,32 +386,32 @@ export default function SkillsInventory() {
           {/* Table - Catalyst Table Style */}
           <div className="overflow-x-auto">
             <table className="w-full border-separate border-spacing-0">
-              <thead style={{ background: 'hsl(35 46% 97%)' }}>
-                <tr style={{ background: 'hsl(35 46% 97%)' }}>
-                  <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-500 border-b border-neutral-200" style={{ background: 'hsl(35 46% 97%)' }}>Team Member</th>
-                  <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-500 border-b border-neutral-200" style={{ background: 'hsl(35 46% 97%)' }}>Primary Skill</th>
-                  <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-500 border-b border-neutral-200" style={{ background: 'hsl(35 46% 97%)' }}>Proficiency</th>
-                  <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-500 border-b border-neutral-200" style={{ background: 'hsl(35 46% 97%)' }}>Coverage</th>
-                  <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-500 border-b border-neutral-200" style={{ background: 'hsl(35 46% 97%)' }}>Last Updated</th>
-                  <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-500 border-b border-neutral-200" style={{ background: 'hsl(35 46% 97%)' }}>Actions</th>
+              <thead style={{ background: 'hsl(var(--muted))' }}>
+                <tr style={{ background: 'hsl(var(--muted))' }}>
+                  <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-500 border-b border-neutral-200" style={{ background: 'hsl(var(--muted))' }}>Team Member</th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-500 border-b border-neutral-200" style={{ background: 'hsl(var(--muted))' }}>Primary Skill</th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-500 border-b border-neutral-200" style={{ background: 'hsl(var(--muted))' }}>Proficiency</th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-500 border-b border-neutral-200" style={{ background: 'hsl(var(--muted))' }}>Coverage</th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-500 border-b border-neutral-200" style={{ background: 'hsl(var(--muted))' }}>Last Updated</th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-500 border-b border-neutral-200" style={{ background: 'hsl(var(--muted))' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredData.map(member => (
                   <tr
                     key={member.id}
-                    className="transition-colors hover:bg-brand-gold/5 border-b border-brand-gold-border"
+                    className="transition-colors hover:bg-brand-primary/5 border-b border-border"
                   >
                     <td className="px-5 py-3.5">
                       <button
                         onClick={() => handleEditClick(member)}
                         className="flex items-center gap-3 group cursor-pointer"
                       >
-                        <div className="h-9 w-9 rounded-lg flex items-center justify-center text-xs font-semibold bg-gradient-to-br from-brand-gold to-brand-gold-dark text-brand-dark">
+                        <div className="h-9 w-9 rounded-lg flex items-center justify-center text-xs font-semibold bg-gradient-to-br from-brand-primary to-brand-primary-hover text-white">
                           {getInitials(member.name)}
                         </div>
                         <div className="text-left">
-                          <div className="text-sm font-medium text-foreground group-hover:text-brand-gold group-hover:underline transition-colors">{member.name}</div>
+                          <div className="text-sm font-medium text-foreground group-hover:text-brand-primary group-hover:underline transition-colors">{member.name}</div>
                           <div className="text-xs text-muted-foreground">{member.role}</div>
                         </div>
                       </button>
@@ -419,7 +419,7 @@ export default function SkillsInventory() {
                     <td className="px-5 py-3.5">
                       <button
                         onClick={() => handleEditClick(member)}
-                        className="text-sm text-foreground hover:text-brand-gold hover:underline transition-colors cursor-pointer"
+                        className="text-sm text-foreground hover:text-brand-primary hover:underline transition-colors cursor-pointer"
                       >
                         {member.skill}
                       </button>
@@ -431,9 +431,9 @@ export default function SkillsInventory() {
                     </td>
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-2">
-                        <div className="w-24 h-2 rounded-full overflow-hidden bg-white border border-brand-gold/30">
+                        <div className="w-24 h-2 rounded-full overflow-hidden bg-white border border-brand-primary/30">
                           <div
-                            className="h-full rounded-full bg-brand-gold"
+                            className="h-full rounded-full bg-brand-primary"
                             style={{ width: `${member.coverage}%` }}
                           />
                         </div>
@@ -447,7 +447,7 @@ export default function SkillsInventory() {
                       <div className="flex items-center gap-1">
                         <button
                           onClick={() => handleEditClick(member)}
-                          className="p-2 hover:bg-brand-gold/10 rounded-lg transition-colors text-muted-foreground hover:text-brand-gold"
+                          className="p-2 hover:bg-brand-primary/10 rounded-lg transition-colors text-muted-foreground hover:text-brand-primary"
                           title="Edit skill"
                         >
                           <Edit2 className="w-4 h-4" />
@@ -487,7 +487,7 @@ export default function SkillsInventory() {
 
       {/* View Mode Tabs - Below header */}
       <div className="px-4 sm:px-6 py-3 bg-card border-b border-border">
-        <div className="flex gap-1 p-1 bg-white border border-brand-gold rounded-lg w-fit">
+        <div className="flex gap-1 p-1 bg-white border border-brand-primary rounded-lg w-fit">
           {viewTabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = viewMode === tab.id;
@@ -497,8 +497,8 @@ export default function SkillsInventory() {
                 onClick={() => setViewMode(tab.id)}
                 className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
                   isActive
-                    ? 'bg-brand-gold text-white'
-                    : 'text-brand-dark hover:text-brand-gold hover:bg-brand-gold/10'
+                    ? 'bg-brand-primary text-white'
+                    : 'text-brand-dark hover:text-brand-primary hover:bg-brand-primary/10'
                 }`}
               >
                 <Icon className="h-4 w-4" />
@@ -572,10 +572,10 @@ function StatsCard({ icon: Icon, label, value, change, positive }: {
   positive: boolean;
 }) {
   return (
-    <div className="rounded-lg p-3 bg-card border border-brand-gold-border">
+    <div className="rounded-lg p-3 bg-card border border-border">
       <div className="flex items-start justify-between">
-        <div className="p-2 rounded-md bg-brand-gold/15">
-          <Icon className="h-4 w-4 text-brand-gold" />
+        <div className="p-2 rounded-md bg-brand-primary/15">
+          <Icon className="h-4 w-4 text-brand-primary" />
         </div>
         <div className="flex items-center gap-1 text-xs font-medium text-foreground">
           {positive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
