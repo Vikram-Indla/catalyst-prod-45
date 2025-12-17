@@ -10,7 +10,7 @@ import { Risk, RiskGridFilters } from "@/types/risks";
 import { RoamBadge } from "@/components/risks/RoamBadge";
 import { RiskDetailPanel } from "@/components/risks/RiskDetailPanel";
 import { RiskFiltersDialog } from "@/components/risks/RiskFiltersDialog";
-import { CreateEditRiskPanel } from "@/components/risks/CreateEditRiskPanel";
+import { CreateEditRiskDialog } from "@/components/risks/CreateEditRiskDialog";
 import { DeleteRiskDialog } from "@/components/risks/DeleteRiskDialog";
 import { MassMoveDialog } from "@/components/risks/MassMoveDialog";
 import { ColumnsDialog } from "@/components/risks/ColumnsDialog";
@@ -360,12 +360,14 @@ export default function RisksGridPage() {
       />
 
       {/* Create/Edit Risk Panel */}
-      <CreateEditRiskPanel
+      <CreateEditRiskDialog
         risk={editingRisk || undefined}
-        isOpen={isCreateEditOpen}
-        onClose={() => {
-          setIsCreateEditOpen(false);
-          setEditingRisk(null);
+        open={isCreateEditOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            setIsCreateEditOpen(false);
+            setEditingRisk(null);
+          }
         }}
         onSave={handleCreateEditSave}
         isSubmitting={isCreating || isUpdating}
