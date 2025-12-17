@@ -1,11 +1,15 @@
 import { Moon, Sun } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
+import { cn } from '@/lib/utils';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+
+// Unified focus ring class
+const focusRingClass = "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-1 focus-visible:ring-offset-[var(--surface-1)]";
 
 export function ThemeToggle() {
   const { theme, toggleTheme, isAdminRoute } = useTheme();
@@ -21,18 +25,18 @@ export function ThemeToggle() {
             aria-checked={isDark}
             aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
             disabled={isAdminRoute}
-            className="relative inline-flex items-center justify-center shrink-0 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+            className={cn(
+              "relative inline-flex items-center shrink-0 transition-all rounded-full",
+              focusRingClass,
+              isAdminRoute && "opacity-40 cursor-not-allowed"
+            )}
             style={{
               width: '44px',
               height: '24px',
-              borderRadius: '12px',
               padding: '2px',
-              border: '1px solid var(--border-color)',
+              border: '1px solid var(--border-default)',
               cursor: isAdminRoute ? 'not-allowed' : 'pointer',
-              opacity: isAdminRoute ? 0.4 : 1,
               background: isDark ? 'var(--accent-color)' : 'var(--surface-3)',
-              transition: 'background 0.2s ease, border-color 0.2s ease',
-              outline: 'none',
             }}
           >
             <span
@@ -60,11 +64,7 @@ export function ThemeToggle() {
           </button>
         </TooltipTrigger>
         <TooltipContent 
-          style={{ 
-            background: 'var(--surface-2)', 
-            color: 'var(--text-1)', 
-            border: '1px solid var(--border-color)' 
-          }}
+          className="bg-[var(--surface-2)] text-[var(--text-1)] border border-[var(--border-color)]"
         >
           {isAdminRoute 
             ? "Dark mode not available in Admin" 
