@@ -118,11 +118,11 @@ function ProjectCard({
     <div 
       className={cn(
         "rounded-lg overflow-hidden transition-all cursor-pointer group",
-        "border bg-[var(--surface-1)]",
+        "border-2 bg-[var(--surface-1)] shadow-sm",
         isPinned 
-          ? "border-[var(--brand-gold)]/50" 
+          ? "border-[var(--brand-gold)]/60" 
           : "border-[var(--border-color)]",
-        "hover:border-[var(--brand-primary)]/30 hover:shadow-sm"
+        "hover:border-[var(--brand-primary)]/40 hover:shadow-md"
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -399,15 +399,15 @@ function DataGrid({
   const hasMore = visibleCount < filteredItems.length;
 
   return (
-    <div className="mt-2 rounded-lg border border-[var(--border-color)] overflow-hidden">
-      {/* Sticky Header (NO checkbox column) - calmer styling */}
+    <div className="mt-2 rounded-lg border-2 border-[var(--border-color)] overflow-hidden bg-[var(--surface-1)] shadow-sm">
+      {/* Sticky Header (NO checkbox column) - stronger light mode visibility */}
       <div 
-        className="grid items-center py-2 px-3 text-[10px] font-medium uppercase tracking-wide sticky top-0 z-10"
+        className="grid items-center py-2.5 px-3 text-[10px] font-semibold uppercase tracking-wide sticky top-0 z-10"
         style={{ 
           gridTemplateColumns: GRID_COLS,
-          color: 'var(--text-3)',
+          color: 'var(--text-2)',
           backgroundColor: 'var(--surface-2)',
-          borderBottom: '1px solid var(--divider)',
+          borderBottom: '2px solid var(--divider)',
         }}
       >
         <div>Key</div>
@@ -619,8 +619,8 @@ export function HomeContent() {
           />
         </div>
 
-        {/* Divider */}
-        <div className="h-px mt-3 mb-3 bg-[var(--divider)]" />
+        {/* Divider - stronger for light mode visibility */}
+        <div className="h-px mt-3 mb-3 bg-[var(--border-color)]" />
 
         {/* Recent Projects Section */}
         <div className="mb-4">
@@ -672,9 +672,9 @@ export function HomeContent() {
         <div className="grid grid-cols-1 xl:grid-cols-[1fr_240px] gap-4">
           {/* Left Column - Your Work */}
           <div>
-            {/* Section title with active filter indicator */}
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-sm font-medium text-[var(--text-1)]">
+            {/* Section title with active filter indicator - stronger hierarchy */}
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-sm font-semibold text-[var(--text-1)]">
                 Your work
               </span>
               {activeFilter !== 'all' && (
@@ -744,16 +744,16 @@ export function HomeContent() {
             )}
           </div>
 
-          {/* Right Column - My Focus (sticky triage panel) - contained card */}
+          {/* Right Column - My Focus (sticky triage panel) - strongly contained card */}
           <div className="xl:sticky xl:top-20 xl:self-start">
             <div 
               className={cn(
-                "rounded-lg border shadow-sm",
+                "rounded-xl border-2 shadow-md",
                 "bg-[var(--surface-1)] border-[var(--border-color)]",
-                "p-3"
+                "p-4"
               )}
             >
-              <div className="text-[11px] font-semibold uppercase tracking-wider mb-2 text-[var(--text-3)]">
+              <div className="text-[11px] font-bold uppercase tracking-wider mb-3 text-[var(--text-2)] border-b border-[var(--divider)] pb-2">
                 My focus
               </div>
               
