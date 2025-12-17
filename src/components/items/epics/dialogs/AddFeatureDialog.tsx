@@ -217,7 +217,7 @@ export function AddFeatureDialog({ epicId, open, onOpenChange }: AddFeatureDialo
             <Button 
               onClick={handleLinkFeatures} 
               disabled={selectedFeatureIds.length === 0 || linkFeaturesMutation.isPending}
-              className="bg-brand-gold hover:bg-brand-gold-hover"
+              className="bg-brand-primary hover:bg-brand-primary-hover"
             >
               {linkFeaturesMutation.isPending ? (
                 <>
@@ -235,7 +235,7 @@ export function AddFeatureDialog({ epicId, open, onOpenChange }: AddFeatureDialo
             <Button 
               onClick={handleCreateFeature} 
               disabled={!newFeatureName.trim() || createFeatureMutation.isPending}
-              className="bg-brand-gold hover:bg-brand-gold-hover"
+              className="bg-brand-primary hover:bg-brand-primary-hover"
             >
               {createFeatureMutation.isPending ? (
                 <>

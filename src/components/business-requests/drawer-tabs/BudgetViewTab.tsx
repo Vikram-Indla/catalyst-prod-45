@@ -92,13 +92,13 @@ function POTagsInput({
           <Badge 
             key={index} 
             variant="secondary" 
-            className="h-6 px-2 gap-1 bg-brand-gold/10 text-brand-gold border-brand-gold/20"
+            className="h-6 px-2 gap-1 bg-brand-primary/10 text-brand-primary border-brand-primary/20"
           >
             {tag}
             <button 
               type="button"
               onClick={() => removeTag(tag)}
-              className="hover:bg-brand-gold/20 rounded-full p-0.5"
+              className="hover:bg-brand-primary/20 rounded-full p-0.5"
             >
               <X className="h-3 w-3" />
             </button>
@@ -144,8 +144,8 @@ function BudgetTypeChips({
           className={cn(
             "px-3 py-1.5 rounded-full text-xs font-medium transition-all border",
             selected.includes(type)
-              ? "bg-brand-gold text-white border-brand-gold"
-              : "bg-background text-muted-foreground border-border hover:border-brand-gold/50"
+              ? "bg-brand-primary text-white border-brand-primary"
+              : "bg-background text-muted-foreground border-border hover:border-brand-primary/50"
           )}
         >
           {type}

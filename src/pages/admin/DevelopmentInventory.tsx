@@ -221,7 +221,7 @@ export default function DevelopmentInventory() {
                 Manage development team resources and assignments
               </p>
             </div>
-            <Button onClick={() => setAddDialogOpen(true)} className="bg-brand-gold hover:bg-brand-gold-hover text-white">
+            <Button onClick={() => setAddDialogOpen(true)} className="bg-brand-primary hover:bg-brand-primary-hover text-white">
               <Plus className="h-4 w-4 mr-2" />
               Add Resource
             </Button>
@@ -471,7 +471,7 @@ export default function DevelopmentInventory() {
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setAddDialogOpen(false)}>Cancel</Button>
-              <Button onClick={handleCreate} className="bg-brand-gold hover:bg-brand-gold-hover text-white">
+              <Button onClick={handleCreate} className="bg-brand-primary hover:bg-brand-primary-hover text-white">
                 Add Resource
               </Button>
             </DialogFooter>

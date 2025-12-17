@@ -149,7 +149,7 @@ export function ThemeAlignmentView({ themes, snapshotId, isArchived }: ThemeAlig
                   }}
                   className={`w-full text-left p-2.5 rounded-md transition-colors ${
                     selectedThemeId === theme.id
-                      ? 'bg-brand-gold/10 border border-brand-gold/30'
+                      ? 'bg-brand-primary/10 border border-brand-primary/30'
                       : 'hover:bg-muted/50 border border-transparent'
                   }`}
                 >

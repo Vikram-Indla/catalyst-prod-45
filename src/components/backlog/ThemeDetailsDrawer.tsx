@@ -447,15 +447,15 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
           {/* 🔒 GOLD VERTICAL LINE — FIXED FULL HEIGHT (uses fixed to match SheetContent positioning) */}
           <div
             aria-hidden
-            className="pointer-events-none fixed left-0 top-0 bottom-0 w-1 bg-brand-gold z-[201]"
+            className="pointer-events-none fixed left-0 top-0 bottom-0 w-1 bg-brand-primary z-[201]"
           />
           <SheetHeader className="executive-drawer-header flex-col space-y-0 shrink-0 p-0 bg-white dark:bg-[#161B22]">
             {/* Header Row - thin gold border */}
-            <div className="flex items-center justify-between px-4 md:px-5 pt-4 pb-3 border-b border-brand-gold/50">
+            <div className="flex items-center justify-between px-4 md:px-5 pt-4 pb-3 border-b border-brand-primary/50">
               {/* Left: Theme Key + Title */}
               <div className="flex items-center gap-2.5 flex-1 min-w-0">
                 <div className="flex items-center gap-1 shrink-0">
-                  <span className="text-sm font-medium text-brand-gold">
+                  <span className="text-sm font-medium text-brand-primary">
                     {formatThemeKey(theme.id)}
                   </span>
                   <button
@@ -501,7 +501,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                   <DropdownMenuTrigger asChild>
                     <Button
                       size="sm"
-                      className="h-8 px-3 text-sm font-medium bg-brand-gold hover:bg-brand-gold-hover text-white"
+                      className="h-8 px-3 text-sm font-medium bg-brand-primary hover:bg-brand-primary-hover text-white"
                       disabled={saveMutation.isPending}
                     >
                       {saveMutation.isPending ? 'Saving...' : 'Save'}
@@ -801,7 +801,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
             <AlertDialogAction onClick={() => { setShowUnsavedChangesDialog(false); onClose(); }} className="bg-destructive text-destructive-foreground">
               Discard
             </AlertDialogAction>
-            <AlertDialogAction onClick={() => { setShowUnsavedChangesDialog(false); handleSaveAndClose(); }} className="bg-brand-gold text-white hover:bg-brand-gold-hover">
+            <AlertDialogAction onClick={() => { setShowUnsavedChangesDialog(false); handleSaveAndClose(); }} className="bg-brand-primary text-white hover:bg-brand-primary-hover">
               Save & Close
             </AlertDialogAction>
           </AlertDialogFooter>

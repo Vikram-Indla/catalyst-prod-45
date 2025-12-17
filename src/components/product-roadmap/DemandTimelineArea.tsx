@@ -258,7 +258,7 @@ const DemandTimelineRow: React.FC<DemandTimelineRowProps> = ({
       >
         {/* Demand Key + Title */}
         <div className="flex items-start gap-2 mb-1">
-          <span className="text-[10px] font-semibold text-brand-gold bg-brand-gold/10 px-1.5 py-0.5 rounded flex-shrink-0">
+          <span className="text-[10px] font-semibold text-brand-primary bg-brand-primary/10 px-1.5 py-0.5 rounded flex-shrink-0">
             {demand.key}
           </span>
           <div className="text-xs font-semibold text-foreground leading-tight flex-1">

@@ -156,7 +156,7 @@ export function MVVTab({ missions, visions, values, links, snapshotId, isArchive
                       onClick={() => setSelectedObject({ type: section.type, data: item })}
                     >
                       <div className="flex items-center gap-3 min-w-0 flex-1">
-                        <Badge variant="outline" className="bg-brand-gold/10 text-brand-gold border-brand-gold/30 text-[10px]">
+                        <Badge variant="outline" className="bg-brand-primary/10 text-brand-primary border-brand-primary/30 text-[10px]">
                           Linked
                         </Badge>
                         <span className="text-sm font-medium text-foreground truncate">{item.title}</span>

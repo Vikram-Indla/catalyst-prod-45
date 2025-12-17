@@ -256,7 +256,7 @@ export default function KanbanSettings() {
         <Button 
           onClick={handleSave} 
           disabled={!hasChanges || saveSettings.isPending}
-          className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+          className="bg-brand-primary hover:bg-brand-primary-hover text-white"
         >
           {saveSettings.isPending ? (
             <Loader2 className="h-4 w-4 mr-2 animate-spin" />

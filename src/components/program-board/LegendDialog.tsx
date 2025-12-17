@@ -34,7 +34,7 @@ export function LegendDialog({ open, onOpenChange }: LegendDialogProps) {
                   <span className="text-sm">Risks Apply</span>
                 </li>
                 <li className="flex items-center gap-2.5">
-                  <span className="inline-block w-5 h-5 bg-brand-gold rounded"></span>
+                  <span className="inline-block w-5 h-5 bg-brand-primary rounded"></span>
                   <span className="text-sm">Scheduling Issues</span>
                 </li>
                 <li className="flex items-center gap-2.5">

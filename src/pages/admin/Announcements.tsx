@@ -42,7 +42,7 @@ export default function Announcements() {
               Notify users about system updates and announcements
             </p>
           </div>
-          <Button className="bg-brand-gold hover:bg-brand-gold-hover flex-shrink-0">
+          <Button className="bg-brand-primary hover:bg-brand-primary-hover flex-shrink-0">
             <Plus className="h-4 w-4 mr-2" />
             Create Announcement
           </Button>

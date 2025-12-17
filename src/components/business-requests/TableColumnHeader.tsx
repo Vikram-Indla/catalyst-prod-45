@@ -185,7 +185,7 @@ export function TableColumnHeader({
                 <Button
                   size="sm"
                   onClick={handleApplyFilters}
-                  className="w-full h-7 text-xs bg-brand-gold hover:bg-brand-gold-hover text-white"
+                  className="w-full h-7 text-xs bg-brand-primary hover:bg-brand-primary-hover text-white"
                 >
                   <Check className="h-3 w-3 mr-1" />
                   Apply Filters
@@ -198,7 +198,7 @@ export function TableColumnHeader({
 
       {/* Active Filter Badge */}
       {hasActiveFilters && (
-        <span className="ml-0.5 px-1 py-0.5 text-[10px] bg-brand-gold/20 text-brand-gold rounded">
+        <span className="ml-0.5 px-1 py-0.5 text-[10px] bg-brand-primary/20 text-brand-primary rounded">
           {activeFilters.length}
         </span>
       )}
