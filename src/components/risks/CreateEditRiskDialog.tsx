@@ -40,7 +40,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { CatalystDatePicker } from "@/components/ui/catalyst-date-picker";
 import { Risk, RiskFormData } from "@/types/risks";
-import { ROAM_STATUSES, RISK_STATUSES, SEVERITY_LEVELS, RELATIONSHIP_TYPES } from "@/constants/risks";
+import { ROAM_STATUSES, RISK_STATUSES, SEVERITY_LEVELS } from "@/constants/risks";
 import { format, parseISO } from "date-fns";
 
 interface CreateEditRiskDialogProps {
@@ -64,10 +64,7 @@ const getInitialFormData = (risk?: Risk | null): Partial<RiskFormData> => ({
   contingency: risk?.contingency || "",
   resolution_status: risk?.resolution_status || "",
   target_resolution_date: risk?.target_resolution_date || null,
-  relationship: risk?.relationship || null,
-  related_item_id: risk?.related_item_id || null,
   owner_id: risk?.owner_id || null,
-  program_id: risk?.program_id || null,
 });
 
 export function CreateEditRiskDialog({
@@ -99,19 +96,6 @@ export function CreateEditRiskDialog({
         .from('profiles')
         .select('id, full_name, email')
         .order('full_name');
-      if (error) throw error;
-      return data || [];
-    },
-  });
-
-  // Fetch programs
-  const { data: programs = [] } = useQuery({
-    queryKey: ['programs'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('programs')
-        .select('id, name')
-        .order('name');
       if (error) throw error;
       return data || [];
     },
@@ -388,58 +372,6 @@ export function CreateEditRiskDialog({
                 </Select>
               </div>
 
-              {/* Program */}
-              <div className="space-y-2">
-                <label className={labelClasses}>Program</label>
-                <Select
-                  value={formData.program_id || "__none__"}
-                  onValueChange={(value) => setFormData({ ...formData, program_id: value === "__none__" ? null : value })}
-                >
-                  <SelectTrigger className={inputClasses}>
-                    <SelectValue placeholder="Select program" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white dark:bg-[#161B22] border-[#E1E4E8] dark:border-[#30363D] z-[400]">
-                    <SelectItem value="__none__">None</SelectItem>
-                    {programs.map((program) => (
-                      <SelectItem key={program.id} value={program.id}>
-                        {program.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Relationship */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className={labelClasses}>Relationship Type</label>
-                  <Select
-                    value={formData.relationship || "__none__"}
-                    onValueChange={(value) => setFormData({ ...formData, relationship: value === "__none__" ? null : value as any })}
-                  >
-                    <SelectTrigger className={inputClasses}>
-                      <SelectValue placeholder="—" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[#161B22] border-[#E1E4E8] dark:border-[#30363D] z-[400]">
-                      <SelectItem value="__none__">—</SelectItem>
-                      {RELATIONSHIP_TYPES.map((type) => (
-                        <SelectItem key={type} value={type}>
-                          {type}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <label className={labelClasses}>Related Item ID</label>
-                  <input
-                    value={formData.related_item_id || ""}
-                    onChange={(e) => setFormData({ ...formData, related_item_id: e.target.value || null })}
-                    placeholder="Related item ID"
-                    className={inputClasses}
-                  />
-                </div>
-              </div>
             </div>
 
             <DialogFooter className="mt-4 pt-4 border-t border-[#E1E4E8] dark:border-[#30363D]">
