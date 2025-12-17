@@ -10,7 +10,7 @@ import {
   QUARTER_CONFIG,
   MILESTONE_CONDITION_CONFIG,
 } from '@/types/product-roadmap';
-import { Search, Filter, Check, X, ChevronDown } from 'lucide-react';
+import { Search, Filter, Check, X, ChevronDown, Info } from 'lucide-react';
 import { RoadmapDateFilterV2, RoadmapViewport } from '@/components/roadmaps/RoadmapDateFilterV2';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -493,12 +493,12 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
             <TooltipTrigger asChild>
               <button
                 className={cn(
-                  "h-9 w-9 flex items-center justify-center border border-border rounded-lg transition-colors",
-                  showLegend ? "bg-brand-gold/10 border-brand-gold text-brand-gold" : "bg-background hover:bg-muted text-muted-foreground"
+                  "h-10 w-10 flex items-center justify-center border border-border rounded-xl transition-colors bg-background",
+                  showLegend ? "border-brand-gold text-brand-gold" : "hover:bg-muted text-muted-foreground"
                 )}
                 onClick={onToggleLegend}
               >
-                <span className="text-xs font-semibold">i</span>
+                <Info size={18} strokeWidth={1.5} />
               </button>
             </TooltipTrigger>
             <TooltipContent side="bottom">
