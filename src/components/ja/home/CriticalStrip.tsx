@@ -8,42 +8,12 @@ interface CriticalPill {
   label: string;
   icon: React.ElementType;
   count: number;
-  variant: 'danger' | 'warning' | 'info' | 'blocked';
+  hasBreach?: boolean;
+  hasRisk?: boolean;
   breached?: number;
   atRisk?: number;
   route: string;
 }
-
-const variantStyles = {
-  danger: {
-    bg: 'bg-[hsl(var(--destructive)/0.1)]',
-    border: 'border-[hsl(var(--destructive)/0.3)]',
-    hoverBg: 'hover:bg-[hsl(var(--destructive)/0.15)]',
-    iconColor: 'text-[hsl(var(--destructive))]',
-    countColor: 'text-[hsl(var(--destructive))]',
-  },
-  warning: {
-    bg: 'bg-[hsl(var(--warning)/0.1)]',
-    border: 'border-[hsl(var(--warning)/0.3)]',
-    hoverBg: 'hover:bg-[hsl(var(--warning)/0.15)]',
-    iconColor: 'text-[hsl(var(--warning))]',
-    countColor: 'text-[hsl(var(--warning))]',
-  },
-  info: {
-    bg: 'bg-[var(--accent-muted)]',
-    border: 'border-[var(--border-accent)]',
-    hoverBg: 'hover:bg-[var(--surface-3)]',
-    iconColor: 'text-[var(--accent-color)]',
-    countColor: 'text-[var(--accent-color)]',
-  },
-  blocked: {
-    bg: 'bg-[var(--surface-2)]',
-    border: 'border-[var(--border-color)]',
-    hoverBg: 'hover:bg-[var(--surface-3)]',
-    iconColor: 'text-[var(--text-2)]',
-    countColor: 'text-[var(--text-1)]',
-  },
-};
 
 interface CriticalStripProps {
   majorIncidents: { open: number; breached: number; atRisk: number };
@@ -61,7 +31,8 @@ export function CriticalStrip({ majorIncidents, slaAtRisk, awaitingMe, blocked }
       label: 'Major Incidents',
       icon: AlertTriangle,
       count: majorIncidents.open,
-      variant: majorIncidents.breached > 0 ? 'danger' : majorIncidents.atRisk > 0 ? 'warning' : 'info',
+      hasBreach: majorIncidents.breached > 0,
+      hasRisk: majorIncidents.atRisk > 0,
       breached: majorIncidents.breached,
       atRisk: majorIncidents.atRisk,
       route: '/release/incident-room?filter=major',
@@ -71,7 +42,7 @@ export function CriticalStrip({ majorIncidents, slaAtRisk, awaitingMe, blocked }
       label: 'SLA at Risk',
       icon: Clock,
       count: slaAtRisk,
-      variant: slaAtRisk > 0 ? 'warning' : 'info',
+      hasRisk: slaAtRisk > 0,
       route: '/release/incident-room?filter=sla-risk',
     },
     {
@@ -79,7 +50,6 @@ export function CriticalStrip({ majorIncidents, slaAtRisk, awaitingMe, blocked }
       label: 'Awaiting me',
       icon: Bell,
       count: awaitingMe,
-      variant: awaitingMe > 0 ? 'info' : 'blocked',
       route: '/home?tab=awaiting',
     },
     {
@@ -87,7 +57,7 @@ export function CriticalStrip({ majorIncidents, slaAtRisk, awaitingMe, blocked }
       label: 'Blocked',
       icon: Ban,
       count: blocked,
-      variant: blocked > 0 ? 'danger' : 'blocked',
+      hasBreach: blocked > 0,
       route: '/home?tab=blocked',
     },
   ];
@@ -95,7 +65,6 @@ export function CriticalStrip({ majorIncidents, slaAtRisk, awaitingMe, blocked }
   return (
     <div className="flex items-stretch gap-2 overflow-x-auto pb-1">
       {pills.map((pill) => {
-        const styles = variantStyles[pill.variant];
         const Icon = pill.icon;
         
         return (
@@ -105,24 +74,40 @@ export function CriticalStrip({ majorIncidents, slaAtRisk, awaitingMe, blocked }
             className={cn(
               "flex items-center gap-2.5 px-3 py-2 rounded-lg border transition-all cursor-pointer min-w-fit",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-1",
-              styles.bg,
-              styles.border,
-              styles.hoverBg
+              // Champagne gray surface with gold border
+              "bg-[var(--surface-champagne)] border-[var(--border-gold)]",
+              "hover:bg-[var(--surface-2)] hover:border-[var(--brand-gold)]"
             )}
           >
-            <Icon className={cn("w-4 h-4 shrink-0", styles.iconColor)} />
+            {/* Icon - red only for confirmed breach, gold otherwise */}
+            <Icon 
+              className={cn(
+                "w-4 h-4 shrink-0",
+                pill.hasBreach ? "text-[hsl(var(--destructive))]" : "text-[var(--brand-gold)]"
+              )} 
+            />
             <span className="text-sm font-medium text-[var(--text-1)] whitespace-nowrap">
               {pill.label}
             </span>
-            <span className={cn("text-sm font-bold tabular-nums", styles.countColor)}>
+            {/* Count - olive green for normal, red only for breached */}
+            <span 
+              className={cn(
+                "text-sm font-bold tabular-nums",
+                pill.hasBreach ? "text-[hsl(var(--destructive))]" : "text-[var(--brand-primary)]"
+              )}
+            >
               {pill.count}
             </span>
-            {/* Sub-counts for Major Incidents */}
+            {/* Sub-counts for Major Incidents - breached in red, at-risk in gold */}
             {pill.id === 'major-incidents' && (pill.breached || pill.atRisk) ? (
-              <span className="text-[10px] text-[var(--text-3)] whitespace-nowrap">
-                {pill.breached ? `${pill.breached} breached` : ''}
-                {pill.breached && pill.atRisk ? ' · ' : ''}
-                {pill.atRisk ? `${pill.atRisk} at risk` : ''}
+              <span className="text-[10px] whitespace-nowrap">
+                {pill.breached ? (
+                  <span className="text-[hsl(var(--destructive))] font-medium">{pill.breached} breached</span>
+                ) : null}
+                {pill.breached && pill.atRisk ? <span className="text-[var(--text-3)]"> · </span> : null}
+                {pill.atRisk ? (
+                  <span className="text-[var(--brand-gold)] font-medium">{pill.atRisk} at risk</span>
+                ) : null}
               </span>
             ) : null}
           </button>

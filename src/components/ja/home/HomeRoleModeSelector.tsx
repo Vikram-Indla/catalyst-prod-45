@@ -17,7 +17,7 @@ const modes: { value: HomeRoleMode; label: string }[] = [
 export function HomeRoleModeSelector({ value, onChange }: HomeRoleModeSelectorProps) {
   return (
     <div 
-      className="inline-flex items-center p-0.5 rounded-md border border-[var(--border-color)] bg-[var(--surface-2)]"
+      className="inline-flex items-center p-0.5 rounded-md border border-[var(--border-gold)] bg-[var(--surface-champagne)]"
       role="tablist"
     >
       {modes.map((mode) => (
@@ -30,8 +30,9 @@ export function HomeRoleModeSelector({ value, onChange }: HomeRoleModeSelectorPr
             "px-2.5 py-1 text-xs font-medium rounded transition-all",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-1",
             value === mode.value
-              ? "bg-[var(--surface-1)] text-[var(--text-1)] shadow-sm"
-              : "text-[var(--text-3)] hover:text-[var(--text-2)] hover:bg-[var(--surface-3)]"
+              // Active: olive green text with gold accent underline
+              ? "bg-[var(--surface-1)] text-[var(--brand-primary)] shadow-sm border-b-2 border-[var(--brand-gold)]"
+              : "text-[var(--text-3)] hover:text-[var(--text-2)] hover:bg-[var(--surface-2)]"
           )}
         >
           {mode.label}

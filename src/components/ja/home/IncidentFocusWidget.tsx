@@ -34,19 +34,16 @@ export function IncidentFocusWidget({
   };
 
   const Icon = getIcon();
-  const hasDanger = breached && breached > 0;
-  const hasWarning = atRisk && atRisk > 0;
+  const hasBreach = breached && breached > 0;
 
   return (
     <div 
       className={cn(
-        "p-3 rounded-lg transition-all cursor-pointer group",
+        "p-2.5 rounded-lg transition-all cursor-pointer group",
         "border",
-        hasDanger 
-          ? "bg-[hsl(var(--destructive)/0.08)] border-[hsl(var(--destructive)/0.25)] hover:border-[hsl(var(--destructive)/0.4)]"
-          : hasWarning
-          ? "bg-[hsl(var(--warning)/0.08)] border-[hsl(var(--warning)/0.25)] hover:border-[hsl(var(--warning)/0.4)]"
-          : "bg-[var(--surface-2)] border-[var(--border-color)] hover:border-[var(--border-accent)] hover:bg-[var(--surface-3)]"
+        // Champagne gray surface with gold border - no red backgrounds
+        "bg-[var(--surface-champagne)] border-[var(--border-gold)]",
+        "hover:border-[var(--brand-gold)] hover:bg-[var(--surface-2)]"
       )}
       onClick={() => route && navigate(route)}
     >
@@ -55,21 +52,15 @@ export function IncidentFocusWidget({
           <div 
             className={cn(
               "w-7 h-7 rounded-md flex items-center justify-center",
-              hasDanger 
-                ? "bg-[hsl(var(--destructive)/0.15)]"
-                : hasWarning
-                ? "bg-[hsl(var(--warning)/0.15)]"
-                : "bg-[var(--surface-3)]"
+              // Gold background for icon container
+              "bg-[var(--brand-gold)]/10"
             )}
           >
+            {/* Icon: red only for confirmed breach, gold otherwise */}
             <Icon 
               className={cn(
                 "w-3.5 h-3.5",
-                hasDanger 
-                  ? "text-[hsl(var(--destructive))]"
-                  : hasWarning
-                  ? "text-[hsl(var(--warning))]"
-                  : "text-[var(--icon-default)]"
+                hasBreach ? "text-[hsl(var(--destructive))]" : "text-[var(--brand-gold)]"
               )} 
             />
           </div>
@@ -77,13 +68,15 @@ export function IncidentFocusWidget({
             <div className="text-sm font-medium text-[var(--text-1)]">{title}</div>
             {(breached !== undefined || atRisk !== undefined) && (
               <div className="flex items-center gap-2 mt-0.5">
+                {/* Breached count in red - this is true severity */}
                 {breached !== undefined && breached > 0 && (
                   <span className="text-[10px] font-medium text-[hsl(var(--destructive))]">
                     {breached} breached
                   </span>
                 )}
+                {/* At risk count in gold */}
                 {atRisk !== undefined && atRisk > 0 && (
-                  <span className="text-[10px] font-medium text-[hsl(var(--warning))]">
+                  <span className="text-[10px] font-medium text-[var(--brand-gold)]">
                     {atRisk} at risk
                   </span>
                 )}
@@ -91,14 +84,11 @@ export function IncidentFocusWidget({
             )}
           </div>
         </div>
+        {/* Count: red only for breach, olive otherwise */}
         <div 
           className={cn(
             "text-lg font-bold tabular-nums",
-            hasDanger 
-              ? "text-[hsl(var(--destructive))]"
-              : hasWarning
-              ? "text-[hsl(var(--warning))]"
-              : "text-[var(--text-1)]"
+            hasBreach ? "text-[hsl(var(--destructive))]" : "text-[var(--brand-primary)]"
           )}
         >
           {count}
