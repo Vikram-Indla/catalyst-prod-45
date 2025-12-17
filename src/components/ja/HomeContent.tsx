@@ -467,34 +467,6 @@ export function HomeContent() {
             {projects.map((project) => (
               <ProjectTile key={project.id} project={project} />
             ))}
-            {/* Placeholder tile when fewer than 4 projects */}
-            {projects.length < 4 && (
-              <div 
-                className="w-full min-h-[180px] rounded-lg overflow-hidden transition-all cursor-pointer flex flex-col items-center justify-center gap-2"
-                style={{ 
-                  border: '1px dashed var(--border-color)',
-                  backgroundColor: 'var(--surface-1)',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = 'var(--surface-2)';
-                  e.currentTarget.style.borderStyle = 'solid';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'var(--surface-1)';
-                  e.currentTarget.style.borderStyle = 'dashed';
-                }}
-              >
-                <div 
-                  className="w-10 h-10 rounded-lg flex items-center justify-center"
-                  style={{ backgroundColor: 'var(--surface-3)' }}
-                >
-                  <ExternalLink className="w-5 h-5" style={{ color: 'var(--icon-muted)' }} />
-                </div>
-                <span className="text-sm font-medium" style={{ color: 'var(--text-2)' }}>
-                  Browse projects
-                </span>
-              </div>
-            )}
           </div>
         </div>
 
