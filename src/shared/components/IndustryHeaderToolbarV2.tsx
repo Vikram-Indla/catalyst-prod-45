@@ -6,7 +6,9 @@
 
 import React, { useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from './IndustryHeaderToolbarV2.module.css';
+import { IndustryViewSwitchButton } from '@/components/industry/IndustryViewSwitchButton';
+
+export type DensityMode = 'compact' | 'regular' | 'relaxed';
 
 // Avatar type
 export interface ToolbarAvatar {
@@ -31,84 +33,48 @@ export interface IndustryHeaderToolbarV2Props {
   // Scoring filter
   scoringFilter?: 'all' | 'scored' | 'unscored';
   onScoringFilterChange?: (filter: 'all' | 'scored' | 'unscored') => void;
-  onViewSettings?: () => void;
+
+  /** Kanban density mode (compact/regular/relaxed) */
+  densityMode?: DensityMode;
+  onDensityModeChange?: (mode: DensityMode) => void;
+
   onExport?: () => void;
   onColumnsConfig?: () => void;
 }
 
-// Icons - exact SVGs from FILE-1
+// Icons - inline SVGs (tree-shakeable)
 const Icons = {
-  List: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-      <line x1="3" y1="9" x2="21" y2="9"/>
-      <line x1="3" y1="15" x2="21" y2="15"/>
-      <line x1="9" y1="9" x2="9" y2="21"/>
-    </svg>
-  ),
-  Board: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="3" width="5" height="18" rx="1"/>
-      <rect x="10" y="3" width="5" height="12" rx="1"/>
-      <rect x="17" y="3" width="5" height="15" rx="1"/>
-    </svg>
-  ),
   Search: () => (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="11" cy="11" r="8"/>
-      <path d="M21 21l-4.35-4.35"/>
+      <circle cx="11" cy="11" r="8" />
+      <path d="M21 21l-4.35-4.35" />
     </svg>
   ),
-  QuickActions: () => (
+  X: () => (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
     </svg>
   ),
-  Insights: () => (
+  Density: () => (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="18" y1="20" x2="18" y2="10"/>
-      <line x1="12" y1="20" x2="12" y2="4"/>
-      <line x1="6" y1="20" x2="6" y2="14"/>
-    </svg>
-  ),
-  ViewSettings: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="4" y1="21" x2="4" y2="14"/>
-      <line x1="4" y1="10" x2="4" y2="3"/>
-      <line x1="12" y1="21" x2="12" y2="12"/>
-      <line x1="12" y1="8" x2="12" y2="3"/>
-      <line x1="20" y1="21" x2="20" y2="16"/>
-      <line x1="20" y1="12" x2="20" y2="3"/>
-      <line x1="1" y1="14" x2="7" y2="14"/>
-      <line x1="9" y1="8" x2="15" y2="8"/>
-      <line x1="17" y1="16" x2="23" y2="16"/>
+      <line x1="3" y1="6" x2="21" y2="6" />
+      <line x1="3" y1="12" x2="21" y2="12" />
+      <line x1="3" y1="18" x2="21" y2="18" />
     </svg>
   ),
   Export: () => (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-      <polyline points="7 10 12 15 17 10"/>
-      <line x1="12" y1="15" x2="12" y2="3"/>
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <polyline points="7 10 12 15 17 10" />
+      <line x1="12" y1="15" x2="12" y2="3" />
     </svg>
   ),
   Columns: () => (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-      <line x1="9" y1="3" x2="9" y2="21"/>
-      <line x1="15" y1="3" x2="15" y2="21"/>
-    </svg>
-  ),
-  Overflow: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="1"/>
-      <circle cx="19" cy="12" r="1"/>
-      <circle cx="5" cy="12" r="1"/>
-    </svg>
-  ),
-  Plus: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="12" y1="5" x2="12" y2="19"/>
-      <line x1="5" y1="12" x2="19" y2="12"/>
+      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+      <line x1="9" y1="3" x2="9" y2="21" />
+      <line x1="15" y1="3" x2="15" y2="21" />
     </svg>
   ),
 };
@@ -133,7 +99,8 @@ export function IndustryHeaderToolbarV2({
   onSelectAllAvatars,
   scoringFilter = 'all',
   onScoringFilterChange,
-  onViewSettings,
+  densityMode = 'regular',
+  onDensityModeChange,
   onExport,
   onColumnsConfig,
 }: IndustryHeaderToolbarV2Props) {

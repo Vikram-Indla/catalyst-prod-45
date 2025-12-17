@@ -43,7 +43,8 @@ export default function BusinessRequestsKanbanPage() {
   
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
   const [collapsedColumns, setCollapsedColumns] = useState<StatusId[]>([]);
-  const [compactMode, setCompactMode] = useState(false);
+  const [densityMode, setDensityMode] = useState<'compact' | 'regular' | 'relaxed'>('regular');
+  const compactMode = densityMode === 'compact';
   const [groupBy, setGroupBy] = useState<GroupByOption>('none');
   const [expandedSwimlanes, setExpandedSwimlanes] = useState<Record<string, boolean>>({});
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -157,7 +158,8 @@ export default function BusinessRequestsKanbanPage() {
       onSearchChange={setSearchQuery}
       scoringFilter={scoringFilter}
       onScoringFilterChange={setScoringFilter}
-      onViewSettings={() => setCompactMode(!compactMode)}
+      densityMode={densityMode}
+      onDensityModeChange={setDensityMode}
       onExport={() => {
         const headers = ['ID', 'Summary', 'Status', 'Score', 'Assignee'];
         const csvRows = [headers.join(',')];

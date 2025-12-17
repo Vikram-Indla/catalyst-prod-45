@@ -1268,32 +1268,15 @@ export function ExecutiveTable({
               </div>
 
               {/* Right Zone: Actions */}
-              <div className="flex items-center gap-3">
-                {/* Avatar Group Placeholder */}
-                <div className="flex items-center gap-1">
-                  <div className="w-7 h-7 rounded-full bg-info border-2 border-background flex items-center justify-center text-white text-[11px] font-semibold">J</div>
-                  <div className="w-7 h-7 rounded-full bg-info border-2 border-background -ml-1.5 flex items-center justify-center text-white text-[11px] font-semibold">VI</div>
-                  <div className="w-7 h-7 rounded-full bg-brand-gold border-2 border-background -ml-1.5 flex items-center justify-center text-white text-[11px] font-semibold">VI</div>
-                </div>
-
-                {/* Vertical Separator */}
-                <div className="w-px h-6 bg-border" />
-
-                {/* Icon Buttons - 32x32 */}
-                <button className="w-8 h-8 border border-border rounded-md bg-background text-muted-foreground flex items-center justify-center cursor-pointer hover:bg-muted" title="Quick Actions">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/>
-                  </svg>
-                </button>
-                <button className="w-8 h-8 border border-border rounded-md bg-background text-muted-foreground flex items-center justify-center cursor-pointer hover:bg-muted" title="Analytics">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <line x1="18" y1="20" x2="18" y2="10"/>
-                    <line x1="12" y1="20" x2="12" y2="4"/>
-                    <line x1="6" y1="20" x2="6" y2="14"/>
-                  </svg>
-                </button>
+              <div className="flex items-center justify-end gap-2">
                 <DensitySelector value={density} onChange={(v) => setDensity(v as any)} />
-                <ColumnManager columns={ALL_COLUMNS} visibleColumns={visibleColumns} onChange={setVisibleColumns} externalOpen={externalColumnsOpen} onExternalOpenChange={externalOnColumnsChange} />
+                <ColumnManager
+                  columns={ALL_COLUMNS}
+                  visibleColumns={visibleColumns}
+                  onChange={setVisibleColumns}
+                  externalOpen={externalColumnsOpen}
+                  onExternalOpenChange={externalOnColumnsChange}
+                />
                 <button
                   onClick={externalOnExport || handleExport}
                   className="w-8 h-8 border border-border rounded-md bg-background text-muted-foreground flex items-center justify-center cursor-pointer hover:bg-muted"
