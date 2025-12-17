@@ -84,12 +84,13 @@ const QUARTERS = [
 
 // All columns configuration - NO frozen columns by default
 // Note: Department options are loaded dynamically inside the component via useDepartments hook
+// IMPORTANT: minWidth must accommodate header text without wrapping
 const ALL_COLUMNS = [
-  { id: 'id', header: 'Request ID', accessor: 'id', minWidth: 100, sortable: true },
+  { id: 'id', header: 'Request ID', accessor: 'id', minWidth: 110, sortable: true },
   { id: 'summary', header: 'Summary', accessor: 'summary', minWidth: 200, sortable: true, editable: true },
   { id: 'processStep', header: 'Status', accessor: 'processStep', minWidth: 140, sortable: true, filterable: true, editable: true, type: 'select', options: STATUS_OPTIONS },
-  { id: 'score', header: 'Score', accessor: 'score', minWidth: 100, sortable: true, type: 'number', align: 'right' },
-  { id: 'autoPriority', header: 'Auto Priority', accessor: 'autoPriority', minWidth: 100, sortable: true, filterable: true, type: 'select', options: [
+  { id: 'score', header: 'Score', accessor: 'score', minWidth: 80, sortable: true, type: 'number', align: 'right' },
+  { id: 'autoPriority', header: 'Priority', accessor: 'autoPriority', minWidth: 100, sortable: true, filterable: true, type: 'select', options: [
     { value: 'high', label: 'High' },
     { value: 'medium', label: 'Medium' },
     { value: 'low', label: 'Low' },
@@ -97,16 +98,16 @@ const ALL_COLUMNS = [
     { value: 'unscored', label: 'Unscored' },
   ] },
   { id: 'rank', header: 'Rank', accessor: 'rank', minWidth: 70, sortable: true, type: 'number', align: 'center' },
-  { id: 'reporter', header: 'Reporter', accessor: 'reporter', minWidth: 110, sortable: true },
-  { id: 'assignee', header: 'Assignee', accessor: 'assignee', minWidth: 110, sortable: true },
+  { id: 'reporter', header: 'Reporter', accessor: 'reporter', minWidth: 120, sortable: true },
+  { id: 'assignee', header: 'Signee', accessor: 'assignee', minWidth: 110, sortable: true },
   { id: 'department', header: 'Department', accessor: 'department', minWidth: 140, sortable: true, filterable: true, editable: true, type: 'select', options: [] }, // Populated dynamically
-  { id: 'businessOwner', header: 'Business Owner', accessor: 'businessOwner', minWidth: 130, sortable: true },
-  { id: 'businessAsk', header: 'Business Ask', accessor: 'businessAsk', minWidth: 100, sortable: true, type: 'date' },
+  { id: 'businessOwner', header: 'Business Owner', accessor: 'businessOwner', minWidth: 150, sortable: true },
+  { id: 'businessAsk', header: 'Business Ask', accessor: 'businessAsk', minWidth: 120, sortable: true, type: 'date' },
   { id: 'kickoff', header: 'Kickoff', accessor: 'kickoff', minWidth: 100, sortable: true, type: 'date' },
-  { id: 'targetComplete', header: 'Target Complete', accessor: 'targetComplete', minWidth: 120, sortable: true, type: 'date' },
-  { id: 'deliveryTrack', header: 'Delivery Track', accessor: 'deliveryTrack', minWidth: 120, sortable: true, filterable: true, editable: true, type: 'select', options: DELIVERY_TRACKS },
-  { id: 'platform', header: 'Delivery Platform', accessor: 'platform', minWidth: 130, sortable: true, filterable: true, editable: true, type: 'select', options: PLATFORMS },
-  { id: 'quarter', header: 'Quarter', accessor: 'quarter', minWidth: 90, sortable: true, filterable: true, editable: true, type: 'select', options: QUARTERS },
+  { id: 'targetComplete', header: 'Target Complete', accessor: 'targetComplete', minWidth: 140, sortable: true, type: 'date' },
+  { id: 'deliveryTrack', header: 'Delivery Track', accessor: 'deliveryTrack', minWidth: 130, sortable: true, filterable: true, editable: true, type: 'select', options: DELIVERY_TRACKS },
+  { id: 'platform', header: 'Platform', accessor: 'platform', minWidth: 120, sortable: true, filterable: true, editable: true, type: 'select', options: PLATFORMS },
+  { id: 'quarter', header: 'Quarter', accessor: 'quarter', minWidth: 100, sortable: true, filterable: true, editable: true, type: 'select', options: QUARTERS },
   { id: 'createdAt', header: 'Created', accessor: 'createdAt', minWidth: 100, sortable: true },
 ];
 
@@ -1326,7 +1327,7 @@ export function ExecutiveTable({
         >
           {/* Scrollable Table Area - owns horizontal + vertical scroll */}
           <div className="flex-1 overflow-auto min-h-0">
-            <table className="w-full border-collapse table-fixed" style={{ minWidth: columns.reduce((acc, col) => acc + (col.minWidth || 100), 48 + 48) }}>
+            <table className="w-full border-collapse" style={{ minWidth: columns.reduce((acc, col) => acc + (col.minWidth || 100), 48 + 48), tableLayout: 'auto' }}>
               <thead className="sticky top-0 z-20">
                 <tr>
                   {/* Checkbox column - 44px header height, pinned */}
@@ -1361,12 +1362,13 @@ export function ExecutiveTable({
                         onDragLeave={() => setDragOverColumn(null)}
                         onDrop={(e) => handleColumnDrop(e, col.id)}
                         onDragEnd={() => { setDraggingColumn(null); setDragOverColumn(null); }}
-                        className={`group px-3 text-left whitespace-nowrap transition-colors ${
+                        className={`group px-4 text-left whitespace-nowrap transition-colors ${
                           draggingColumn === col.id ? 'opacity-50' : ''
                         } ${isPinned ? 'sticky z-30' : ''}`}
                         style={{ 
                           height: '44px',
                           minWidth: col.minWidth,
+                          width: col.minWidth,
                           backgroundColor: dragOverColumn === col.id ? 'var(--accent-muted)' : 'var(--surface-1)',
                           borderBottom: isSorted ? '2px solid var(--accent-color)' : '2px solid var(--divider)',
                           borderLeft: dragOverColumn === col.id ? '2px solid var(--accent-color)' : 'none',
@@ -1374,21 +1376,22 @@ export function ExecutiveTable({
                           ...(isPinned && leftOffset ? { left: leftOffset } : {}),
                         }}
                       >
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1.5">
                           {/* Drag handle - visible on hover, not for pinned columns */}
                           {!isPinned && (
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0 cursor-grab opacity-0 group-hover:opacity-40 transition-opacity" style={{ color: 'var(--text-3)' }}>
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0 cursor-grab opacity-0 group-hover:opacity-40 transition-opacity" style={{ color: 'var(--text-3)' }}>
                               <circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/>
                               <circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/>
                             </svg>
                           )}
-                          {/* Header label - 12px semibold uppercase for enterprise legibility */}
+                          {/* Header label - 11px semibold uppercase for enterprise legibility */}
                           <span 
-                            className="select-none font-semibold uppercase tracking-wide"
+                            className="select-none font-semibold uppercase tracking-wider"
                             style={{ 
                               color: 'var(--text-secondary)',
                               fontSize: '11px',
-                              letterSpacing: '0.05em',
+                              letterSpacing: '0.04em',
+                              whiteSpace: 'nowrap',
                             }}
                           >
                             {col.header}
