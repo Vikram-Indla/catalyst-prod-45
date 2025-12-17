@@ -254,6 +254,7 @@ export default function ProductBacklogPage() {
           onColumnsDialogChange={setColumnsDialogOpen}
           selectedRows={selectedRows}
           onSelectedRowsChange={setSelectedRows}
+          externalHeader={<></>}
         />
 
         {/* Bulk Actions Bar */}
