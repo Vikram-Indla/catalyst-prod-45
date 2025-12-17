@@ -25,10 +25,7 @@ export default function BusinessRequestsKanbanPage() {
     searchQuery, 
     setSearchQuery, 
     scoringFilter, 
-    setScoringFilter,
-    selectedAssignees,
-    toggleAssignee,
-    clearAssignees
+    setScoringFilter
   } = useIndustryViewStore();
   
   const { tickets, isLoading, updateStatus } = useKanbanData();
@@ -68,16 +65,12 @@ export default function BusinessRequestsKanbanPage() {
           return false;
         }
       }
-      // Assignee filter
-      if (selectedAssignees.length > 0 && !selectedAssignees.includes(ticket.assignee || '')) {
-        return false;
-      }
       // Scoring filter
       if (scoringFilter === 'scored' && ticket.score === null) return false;
       if (scoringFilter === 'unscored' && ticket.score !== null) return false;
       return true;
     });
-  }, [tickets, searchQuery, selectedAssignees, scoringFilter]);
+  }, [tickets, searchQuery, scoringFilter]);
 
   // Group tickets by column
   const ticketsByColumn = useMemo(() => {
@@ -162,15 +155,6 @@ export default function BusinessRequestsKanbanPage() {
       activeView="board"
       searchValue={searchQuery}
       onSearchChange={setSearchQuery}
-      avatars={teamMembers.slice(0, 6).map(m => ({
-        id: m.id,
-        name: m.name,
-        initials: m.name.split(' ').map(n => n[0]).join('').substring(0, 2),
-        color: m.color
-      }))}
-      selectedAvatarIds={selectedAssignees}
-      onToggleAvatar={toggleAssignee}
-      onSelectAllAvatars={clearAssignees}
       scoringFilter={scoringFilter}
       onScoringFilterChange={setScoringFilter}
       onViewSettings={() => setCompactMode(!compactMode)}
