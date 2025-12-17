@@ -3,9 +3,18 @@ import { Demand, Scale, DemandMilestone, DEMAND_STATUS_CONFIG } from '@/types/pr
 import { generateTimeUnits, calcPosition } from '@/utils/objective-roadmap-utils';
 import { cn } from '@/lib/utils';
 import { TODAY_LINE_COLOR, getKRStatusStyle } from '@/constants/krStatusStyles';
+import { DemandGroupBy } from './ProductRoadmapToolbar';
+
+interface DemandGroup {
+  key: string;
+  label: string;
+  demands: Demand[];
+}
 
 interface DemandTimelineAreaProps {
   demands: Demand[];
+  groups: DemandGroup[];
+  groupBy: DemandGroupBy;
   scale: Scale;
   showMilestones: boolean;
   timelineStart: Date;
@@ -15,9 +24,10 @@ interface DemandTimelineAreaProps {
 
 // Final approved Product density: 64px row height
 const DEMAND_ROW_HEIGHT = 64;
+const GROUP_HEADER_HEIGHT = 40;
 
 export const DemandTimelineArea = forwardRef<HTMLDivElement, DemandTimelineAreaProps>(
-  ({ demands, scale, showMilestones, timelineStart, timelineEnd, onDemandClick }, ref) => {
+  ({ demands, groups, groupBy, scale, showMilestones, timelineStart, timelineEnd, onDemandClick }, ref) => {
     const headerRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
     
@@ -33,8 +43,14 @@ export const DemandTimelineArea = forwardRef<HTMLDivElement, DemandTimelineAreaP
 
     // Calculate total content height (for grid lines to stop at last row)
     const totalContentHeight = useMemo(() => {
-      return demands.length * DEMAND_ROW_HEIGHT;
-    }, [demands.length]);
+      if (groupBy === 'none') {
+        return demands.length * DEMAND_ROW_HEIGHT;
+      }
+      // Account for group headers
+      const groupHeadersHeight = groups.length * GROUP_HEADER_HEIGHT;
+      const demandsHeight = demands.length * DEMAND_ROW_HEIGHT;
+      return groupHeadersHeight + demandsHeight;
+    }, [demands.length, groups.length, groupBy]);
 
     // Sync horizontal scroll between header and content
     useEffect(() => {
@@ -118,17 +134,48 @@ export const DemandTimelineArea = forwardRef<HTMLDivElement, DemandTimelineAreaP
             )}
             
             {/* Demand Rows */}
-            {demands.map(demand => (
-              <DemandTimelineRow
-                key={demand.id}
-                demand={demand}
-                showMilestones={showMilestones}
-                timelineStart={timelineStart}
-                timelineEnd={timelineEnd}
-                onClick={() => onDemandClick(demand.id)}
-                rowHeight={DEMAND_ROW_HEIGHT}
-              />
-            ))}
+            {groupBy === 'none' ? (
+              // Flat list
+              demands.map(demand => (
+                <DemandTimelineRow
+                  key={demand.id}
+                  demand={demand}
+                  showMilestones={showMilestones}
+                  timelineStart={timelineStart}
+                  timelineEnd={timelineEnd}
+                  onClick={() => onDemandClick(demand.id)}
+                  rowHeight={DEMAND_ROW_HEIGHT}
+                />
+              ))
+            ) : (
+              // Grouped list
+              groups.map(group => (
+                <div key={group.key}>
+                  {/* Group Header Row - visual separator */}
+                  <div 
+                    className="flex items-center bg-muted/50 border-b border-border"
+                    style={{ height: `${GROUP_HEADER_HEIGHT}px` }}
+                  >
+                    <span className="px-4 text-xs font-semibold text-foreground uppercase tracking-wide">
+                      {group.label}
+                    </span>
+                    <span className="text-xs text-muted-foreground">({group.demands.length})</span>
+                  </div>
+                  {/* Group's demands */}
+                  {group.demands.map(demand => (
+                    <DemandTimelineRow
+                      key={demand.id}
+                      demand={demand}
+                      showMilestones={showMilestones}
+                      timelineStart={timelineStart}
+                      timelineEnd={timelineEnd}
+                      onClick={() => onDemandClick(demand.id)}
+                      rowHeight={DEMAND_ROW_HEIGHT}
+                    />
+                  ))}
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>
