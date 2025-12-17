@@ -504,6 +504,49 @@ textarea:focus-visible {
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
+   CHECKBOX DARK MODE VISIBILITY FIX
+   ════════════════════════════════════════════════════════════════════════════ */
+
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--checkbox-border);
+  border-radius: 3px;
+  background-color: var(--input-bg);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.15s ease;
+}
+
+input[type="checkbox"]:hover {
+  border-color: var(--brand-gold);
+}
+
+input[type="checkbox"]:checked {
+  background-color: var(--brand-gold);
+  border-color: var(--brand-gold);
+}
+
+input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 4px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+input[type="checkbox"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
    TYPOGRAPHY COMPONENTS (V2)
    ════════════════════════════════════════════════════════════════════════════ */
 
