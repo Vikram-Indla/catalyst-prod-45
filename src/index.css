@@ -303,157 +303,217 @@
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
-   DARK THEME (V2)
+   DARK THEME (V2) — CATALYST ENTERPRISE DARK MODE
+   WCAG 2.1 AA Compliant | 4-Tier Layered Surface System
    ════════════════════════════════════════════════════════════════════════════ */
 
 [data-theme="dark"] {
-  /* ══════════════════════════════════════════════════════════
+  /* ═══════════════════════════════════════════════════════════════
+     BACKGROUND LAYERS (4-tier elevation system)
+     ═══════════════════════════════════════════════════════════════ */
+  --bg-base: #0D1117;           /* L*: 6  — Page background */
+  --bg-surface-1: #151B23;      /* L*: 10 — Cards, panels */
+  --bg-surface-2: #1C232D;      /* L*: 14 — Elevated surfaces */
+  --bg-surface-3: #242C38;      /* L*: 18 — Hover, dropdowns */
+  --bg-overlay: rgba(0, 0, 0, 0.6);
+  
+  /* ═══════════════════════════════════════════════════════════════
+     INTERACTIVE SURFACES
+     ═══════════════════════════════════════════════════════════════ */
+  --bg-interactive: #1E2632;
+  --bg-interactive-hover: #262F3D;
+  --bg-interactive-active: #2D3848;
+  
+  /* ═══════════════════════════════════════════════════════════════
+     BRAND COLORS (Adjusted for dark mode - lighter olive)
+     ═══════════════════════════════════════════════════════════════ */
+  --brand-primary: #6B8E6B;         /* Lighter olive for dark */
+  --brand-primary-hover: #7DA37D;
+  --brand-primary-muted: rgba(107, 142, 107, 0.15);
+  --brand-primary-subtle: rgba(107, 142, 107, 0.08);
+  
+  /* ═══════════════════════════════════════════════════════════════
+     SECONDARY PALETTE (Warmer tones for dark)
+     ═══════════════════════════════════════════════════════════════ */
+  --secondary-bronze: #C4A574;
+  --secondary-champagne: #E8D5B5;
+  --secondary-gold: #D4A855;        /* Charts only */
+  
+  /* ═══════════════════════════════════════════════════════════════
      SEMANTIC SURFACE ALIASES (Required by Components)
-     ══════════════════════════════════════════════════════════ */
+     ═══════════════════════════════════════════════════════════════ */
   --bg: #0D1117;
-  --surface-1: #0D1117;
-  --surface-2: #161B22;
+  --surface-1: #151B23;
+  --surface-2: #1C232D;
+  --surface-3: #242C38;
   --nav-bg: #0D1117;
-  --text-1: #E6EDF3;
-  --text-2: #8B949E;
-  --text-3: #6E7681;
-  --text-inverse: #0D1117;
   --brand-active: #7DA37D;
-  --nav-text: #8B949E;
-  --icon-default: #6E7681;
-  --icon-muted: #484F58;
-  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --icon-default: #768390;
+  --icon-muted: #545D68;
+  --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.2);
   
-  /* Tailwind/Shadcn Overrides */
-  --background: 220 13% 5%;
-  --foreground: 210 20% 94%;
-  --card: 220 13% 8%;
-  --card-foreground: 210 20% 94%;
-  --popover: 220 13% 8%;
-  --popover-foreground: 210 20% 94%;
-  --primary: 120 15% 55%;
-  --primary-foreground: 220 13% 5%;
-  --secondary: 220 13% 12%;
-  --secondary-foreground: 210 20% 94%;
-  --muted: 220 13% 12%;
-  --muted-foreground: 215 14% 55%;
-  --accent: 220 13% 15%;
-  --accent-foreground: 210 20% 94%;
-  --destructive: 0 63% 45%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 220 13% 18%;
-  --input: 220 13% 12%;
-  --ring: 120 15% 55%;
+  /* ═══════════════════════════════════════════════════════════════
+     TEXT COLORS (WCAG AA Compliant)
+     ═══════════════════════════════════════════════════════════════ */
+  --text-1: #E6EDF3;            /* Contrast: 15.4:1 */
+  --text-2: #A8B4C2;            /* Contrast: 7.8:1 */
+  --text-3: #768390;            /* Contrast: 4.8:1 */
+  --text-inverse: #0D1117;
+  --nav-text: #A8B4C2;
+  --text-primary: #E6EDF3;
+  --text-secondary: #A8B4C2;
+  --text-muted: #768390;
+  --text-faint: #545D68;        /* Decorative only */
+  --text-link: #6B8E6B;
+  --text-link-hover: #7DA37D;
   
-  /* Sidebar */
-  --sidebar-background: 220 13% 8%;
-  --sidebar-foreground: 215 14% 55%;
-  --sidebar-primary: 120 15% 55%;
-  --sidebar-primary-foreground: 220 13% 5%;
-  --sidebar-accent: 220 13% 12%;
-  --sidebar-accent-foreground: 210 20% 94%;
-  --sidebar-border: 220 13% 18%;
-  --sidebar-ring: 120 15% 55%;
+  /* ═══════════════════════════════════════════════════════════════
+     BORDER COLORS (Three-tier system)
+     ═══════════════════════════════════════════════════════════════ */
+  --border-subtle: #262C36;
+  --border-default: #30363D;
+  --border-strong: #444D5A;
+  --border-focus: #6B8E6B;
+  --border-muted: #262C36;
+  --border-accent: rgba(107, 142, 107, 0.4);
+  --border-card: rgba(107, 142, 107, 0.3);
+  --border-visible: #444D5A;
   
-  /* Backgrounds */
+  /* ═══════════════════════════════════════════════════════════════
+     STATUS COLORS (Enhanced visibility with borders)
+     ═══════════════════════════════════════════════════════════════ */
+  --status-success: #7DA37D;
+  --status-success-bg: rgba(125, 163, 125, 0.15);
+  --status-success-border: rgba(125, 163, 125, 0.3);
+  
+  --status-warning: #D4A855;
+  --status-warning-bg: rgba(212, 168, 85, 0.15);
+  --status-warning-border: rgba(212, 168, 85, 0.3);
+  
+  --status-danger: #E57373;
+  --status-danger-bg: rgba(229, 115, 115, 0.15);
+  --status-danger-border: rgba(229, 115, 115, 0.3);
+  
+  --status-info: #7EB8DA;
+  --status-info-bg: rgba(126, 184, 218, 0.15);
+  --status-info-border: rgba(126, 184, 218, 0.3);
+  
+  /* ═══════════════════════════════════════════════════════════════
+     SHADOWS (Dark-optimized with stronger opacity)
+     ═══════════════════════════════════════════════════════════════ */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.15);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5), 0 6px 10px rgba(0, 0, 0, 0.25);
+  --shadow-glow: 0 0 20px rgba(107, 142, 107, 0.15);
+  --shadow-card: 0 4px 6px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.2);
+  --shadow-card-hover: 0 8px 16px rgba(0, 0, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.25);
+  --shadow-dropdown: 0 10px 25px rgba(0, 0, 0, 0.5), 0 6px 10px rgba(0, 0, 0, 0.25);
+  
+  /* ═══════════════════════════════════════════════════════════════
+     FOCUS RING (Olive glow for accessibility)
+     ═══════════════════════════════════════════════════════════════ */
+  --focus-ring: 0 0 0 3px rgba(107, 142, 107, 0.4);
+  --focus-ring-color: rgba(107, 142, 107, 0.4);
+  
+  /* ═══════════════════════════════════════════════════════════════
+     BACKGROUNDS (Layered surfaces)
+     ═══════════════════════════════════════════════════════════════ */
   --page-bg: #0D1117;
   --surface-bg: #0D1117;
-  --surface-elevated: #161B22;
-  --surface-subtle: #161B22;
-  --surface-hover: #1C2128;
-  --surface-tinted: rgba(92, 124, 92, 0.05);
-  --surface-gold-tint: rgba(198, 156, 109, 0.06);
+  --surface-elevated: #151B23;
+  --surface-subtle: #151B23;
+  --surface-hover: #1C232D;
+  --surface-tinted: rgba(107, 142, 107, 0.05);
+  --surface-gold-tint: rgba(212, 168, 85, 0.06);
   
-  /* Borders */
-  --border-default: #30363D;
-  --border-subtle: #21262D;
-  --border-muted: #21262D;
-  --border-accent: rgba(92, 124, 92, 0.4);
-  --border-card: rgba(92, 124, 92, 0.3);
-  
-  /* Text */
-  --text-primary: #E6EDF3;
-  --text-secondary: #8B949E;
-  --text-muted: #6E7681;
-  --text-faint: #484F58;
-  --text-link: #7A9A7A;
-  --text-link-hover: #8DAA8D;
-  
-  /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.2);
-  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.3);
-  --shadow-dropdown: 0 8px 24px rgba(0, 0, 0, 0.4);
-  
-  /* Interactive States */
-  --row-hover: #161B22;
-  --row-stripe: rgba(255, 255, 255, 0.015);
-  --row-selected: rgba(92, 124, 92, 0.12);
-  --focus-ring: rgba(92, 124, 92, 0.5);
+  /* ═══════════════════════════════════════════════════════════════
+     INTERACTIVE STATES
+     ═══════════════════════════════════════════════════════════════ */
+  --row-hover: #1C232D;
+  --row-stripe: rgba(255, 255, 255, 0.02);
+  --row-selected: rgba(107, 142, 107, 0.12);
   
   /* Navigation */
-  --sidebar-bg: #161B22;
+  --sidebar-bg: #151B23;
+  --sidebar-border: #30363D;
   
   /* Form Elements */
-  --input-bg: #0D1117;
+  --input-bg: #1E2632;
   --input-border: #30363D;
-  --input-border-focus: #7A9A7A;
-  --input-placeholder: #6E7681;
+  --input-border-focus: #6B8E6B;
+  --input-placeholder: #768390;
   --checkbox-border: #30363D;
-  --checkbox-checked-bg: #5C7C5C;
-  
-  /* Status Colors */
-  --status-success: #7DA37D;
-  --status-success-bg: rgba(92, 124, 92, 0.15);
-  --status-warning: #D4B896;
-  --status-warning-bg: rgba(198, 156, 109, 0.15);
-  --status-danger: #D88888;
-  --status-danger-bg: rgba(184, 92, 92, 0.15);
-  --status-info: #8B9DC8;
-  --status-info-bg: rgba(92, 108, 140, 0.15);
+  --checkbox-checked-bg: #6B8E6B;
   
   /* Progress Bars */
-  --progress-bg: #30363D;
-  --progress-track: #484F58;
-  
-  /* Additional surface tokens */
-  --surface-3: #21262D;
-  --progress-fill-low: #D88888;
-  --progress-fill-medium: #D4B896;
+  --progress-bg: #262C36;
+  --progress-track: #30363D;
+  --progress-fill-low: #E57373;
+  --progress-fill-medium: #D4A855;
   --progress-fill-high: #7DA37D;
   
   /* Dividers */
   --divider: #30363D;
-  --divider-subtle: #21262D;
+  --divider-subtle: #262C36;
   
   /* Table/Data tokens */
-  --empty-value: #6E7681;
-  --border-visible: #484F58;
+  --empty-value: #768390;
+  
+  /* ═══════════════════════════════════════════════════════════════
+     TAILWIND/SHADCN OVERRIDES (HSL Format)
+     ═══════════════════════════════════════════════════════════════ */
+  --background: 216 28% 7%;
+  --foreground: 210 25% 93%;
+  --card: 215 24% 11%;
+  --card-foreground: 210 25% 93%;
+  --popover: 215 22% 14%;
+  --popover-foreground: 210 25% 93%;
+  --primary: 120 15% 49%;
+  --primary-foreground: 216 28% 7%;
+  --secondary: 215 22% 14%;
+  --secondary-foreground: 210 25% 93%;
+  --muted: 215 22% 14%;
+  --muted-foreground: 212 12% 52%;
+  --accent: 215 20% 17%;
+  --accent-foreground: 210 25% 93%;
+  --destructive: 0 65% 67%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 215 16% 21%;
+  --input: 215 22% 14%;
+  --ring: 120 15% 49%;
+  
+  /* Sidebar Overrides */
+  --sidebar-background: 215 24% 11%;
+  --sidebar-foreground: 212 12% 52%;
+  --sidebar-primary: 120 15% 49%;
+  --sidebar-primary-foreground: 216 28% 7%;
+  --sidebar-accent: 215 22% 14%;
+  --sidebar-accent-foreground: 210 25% 93%;
+  --sidebar-border: 215 16% 21%;
+  --sidebar-ring: 120 15% 49%;
 }
 
 /* .dark class for Tailwind compatibility */
 .dark {
-  --background: 220 13% 5%;
-  --foreground: 210 20% 94%;
-  --card: 220 13% 8%;
-  --card-foreground: 210 20% 94%;
-  --popover: 220 13% 8%;
-  --popover-foreground: 210 20% 94%;
-  --primary: 120 15% 55%;
-  --primary-foreground: 220 13% 5%;
-  --secondary: 220 13% 12%;
-  --secondary-foreground: 210 20% 94%;
-  --muted: 220 13% 12%;
-  --muted-foreground: 215 14% 55%;
-  --accent: 220 13% 15%;
-  --accent-foreground: 210 20% 94%;
-  --destructive: 0 63% 45%;
+  --background: 216 28% 7%;
+  --foreground: 210 25% 93%;
+  --card: 215 24% 11%;
+  --card-foreground: 210 25% 93%;
+  --popover: 215 22% 14%;
+  --popover-foreground: 210 25% 93%;
+  --primary: 120 15% 49%;
+  --primary-foreground: 216 28% 7%;
+  --secondary: 215 22% 14%;
+  --secondary-foreground: 210 25% 93%;
+  --muted: 215 22% 14%;
+  --muted-foreground: 212 12% 52%;
+  --accent: 215 20% 17%;
+  --accent-foreground: 210 25% 93%;
+  --destructive: 0 65% 67%;
   --destructive-foreground: 0 0% 100%;
-  --border: 220 13% 18%;
-  --input: 220 13% 12%;
-  --ring: 120 15% 55%;
+  --border: 215 16% 21%;
+  --input: 215 22% 14%;
+  --ring: 120 15% 49%;
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -1656,6 +1716,192 @@ input[type="checkbox"]:focus-visible {
 .executive-table-checkbox:focus {
   outline: none;
   box-shadow: 0 0 0 2px var(--focus-ring);
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   DARK MODE COMPONENT ENHANCEMENTS
+   Enterprise-grade styling for extended dark mode usage
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* Dark mode cards with visible elevation */
+[data-theme="dark"] .card,
+.dark .card {
+  background: var(--bg-surface-1);
+  border: 1px solid var(--border-default);
+  box-shadow: var(--shadow-md);
+}
+
+[data-theme="dark"] .card-header,
+.dark .card-header {
+  background: linear-gradient(180deg, var(--bg-surface-2) 0%, var(--bg-surface-1) 100%);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Dark mode section titles with brand color */
+[data-theme="dark"] .section-title,
+.dark .section-title,
+[data-theme="dark"] .card-title,
+.dark .card-title {
+  color: var(--brand-primary);
+}
+
+/* Dark mode status badges with borders */
+[data-theme="dark"] .badge-success,
+.dark .badge-success {
+  background: var(--status-success-bg);
+  color: var(--status-success);
+  border: 1px solid var(--status-success-border);
+}
+
+[data-theme="dark"] .badge-warning,
+.dark .badge-warning {
+  background: var(--status-warning-bg);
+  color: var(--status-warning);
+  border: 1px solid var(--status-warning-border);
+}
+
+[data-theme="dark"] .badge-danger,
+.dark .badge-danger {
+  background: var(--status-danger-bg);
+  color: var(--status-danger);
+  border: 1px solid var(--status-danger-border);
+}
+
+[data-theme="dark"] .badge-info,
+.dark .badge-info {
+  background: var(--status-info-bg);
+  color: var(--status-info);
+  border: 1px solid var(--status-info-border);
+}
+
+/* Dark mode inputs with interactive background */
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea,
+.dark input,
+.dark select,
+.dark textarea {
+  background: var(--bg-interactive);
+  border-color: var(--border-default);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] input:hover,
+[data-theme="dark"] select:hover,
+[data-theme="dark"] textarea:hover,
+.dark input:hover,
+.dark select:hover,
+.dark textarea:hover {
+  border-color: var(--border-strong);
+}
+
+[data-theme="dark"] input:focus,
+[data-theme="dark"] select:focus,
+[data-theme="dark"] textarea:focus,
+.dark input:focus,
+.dark select:focus,
+.dark textarea:focus {
+  border-color: var(--brand-primary);
+  box-shadow: var(--focus-ring);
+}
+
+/* Dark mode placeholder text */
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder,
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* Dark mode tabs with olive indicator */
+[data-theme="dark"] .tabs,
+.dark .tabs {
+  background: var(--bg-surface-1);
+  border-bottom: 1px solid var(--border-default);
+}
+
+[data-theme="dark"] .tab,
+.dark .tab {
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .tab:hover,
+.dark .tab:hover {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .tab.active,
+.dark .tab.active {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .tab.active::after,
+.dark .tab.active::after {
+  background: var(--brand-primary);
+}
+
+/* Dark mode table styling */
+[data-theme="dark"] table th,
+.dark table th {
+  background: var(--bg-surface-2);
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-default);
+}
+
+[data-theme="dark"] table td,
+.dark table td {
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] table tr:hover,
+.dark table tr:hover {
+  background: var(--bg-surface-2);
+}
+
+/* Dark mode buttons */
+[data-theme="dark"] .btn-primary,
+.dark .btn-primary {
+  background: var(--brand-primary);
+  color: white;
+  box-shadow: 0 2px 4px rgba(107, 142, 107, 0.25);
+}
+
+[data-theme="dark"] .btn-primary:hover,
+.dark .btn-primary:hover {
+  background: var(--brand-primary-hover);
+  box-shadow: 0 4px 8px rgba(107, 142, 107, 0.35);
+}
+
+[data-theme="dark"] .btn-secondary,
+.dark .btn-secondary {
+  background: var(--bg-surface-2);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-default);
+}
+
+[data-theme="dark"] .btn-secondary:hover,
+.dark .btn-secondary:hover {
+  background: var(--bg-surface-3);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+/* Dark mode popovers and dropdowns */
+[data-theme="dark"] .catalyst-popover,
+.dark .catalyst-popover,
+[data-theme="dark"] [data-radix-popper-content-wrapper] > div,
+.dark [data-radix-popper-content-wrapper] > div {
+  background: var(--bg-surface-2);
+  border-color: var(--border-default);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Dark mode focus visible states */
+[data-theme="dark"] *:focus-visible,
+.dark *:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(107, 142, 107, 0.4);
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
