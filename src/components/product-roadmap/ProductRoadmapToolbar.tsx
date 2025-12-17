@@ -10,11 +10,16 @@ import {
   QUARTER_CONFIG,
   MILESTONE_CONDITION_CONFIG,
 } from '@/types/product-roadmap';
-import { Search, Filter, Check, X, Info, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, Filter, Check, X, ChevronDown } from 'lucide-react';
 import { RoadmapDateFilterV2, RoadmapViewport } from '@/components/roadmaps/RoadmapDateFilterV2';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuCheckboxItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface ProductRoadmapToolbarProps {
   scale: Scale;
@@ -53,75 +58,167 @@ interface ProductRoadmapToolbarProps {
   matchingDemands: number;
 }
 
-// Collapsible filter section component
-const FilterSection: React.FC<{
-  title: string;
-  children: React.ReactNode;
-  defaultOpen?: boolean;
-}> = ({ title, children, defaultOpen = true }) => {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
+// Multi-select dropdown component
+const MultiSelectDropdown: React.FC<{
+  label: string;
+  options: { key: string; label: string }[];
+  selectedKeys: string[];
+  onToggle: (key: string) => void;
+  placeholder?: string;
+}> = ({ label, options, selectedKeys, onToggle, placeholder = "Select..." }) => {
+  const selectedCount = selectedKeys.length;
+  const displayText = selectedCount === 0 
+    ? placeholder 
+    : selectedCount === 1 
+      ? options.find(o => o.key === selectedKeys[0])?.label || placeholder
+      : `${selectedCount} selected`;
   
   return (
-    <div className="border-b border-border/50 last:border-b-0">
-      <button
-        className="w-full flex items-center justify-between px-4 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:bg-muted/30"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        {title}
-        {isOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-      </button>
-      {isOpen && <div className="px-4 pb-3">{children}</div>}
+    <div className="space-y-1.5">
+      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+        {label}
+      </label>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button className="w-full h-9 px-3 flex items-center justify-between text-sm border border-border rounded-lg bg-background hover:bg-muted/50 focus:outline-none focus:border-brand-gold">
+            <span className={cn(
+              "truncate",
+              selectedCount === 0 && "text-muted-foreground"
+            )}>
+              {displayText}
+            </span>
+            <ChevronDown size={14} className="text-muted-foreground flex-shrink-0 ml-2" />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent 
+          className="w-64 max-h-60 overflow-y-auto z-[400]" 
+          align="start"
+        >
+          {options.map(option => (
+            <DropdownMenuCheckboxItem
+              key={option.key}
+              checked={selectedKeys.includes(option.key)}
+              onCheckedChange={() => onToggle(option.key)}
+              onSelect={(e) => e.preventDefault()}
+            >
+              {option.label}
+            </DropdownMenuCheckboxItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 };
 
-// Searchable list for owners/assignees
-const SearchableList: React.FC<{
+// Searchable user dropdown - only shows results after typing
+const UserSearchDropdown: React.FC<{
+  label: string;
   items: { id: string; name: string; initials: string }[];
   selectedIds: string[];
   onToggle: (id: string) => void;
-  placeholder: string;
-}> = ({ items, selectedIds, onToggle, placeholder }) => {
+  placeholder?: string;
+}> = ({ label, items, selectedIds, onToggle, placeholder = "Type to search..." }) => {
   const [search, setSearch] = useState('');
-  const filtered = items.filter(item => 
-    item.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Only show results after user types
+  const filtered = search.trim().length > 0 
+    ? items.filter(item => item.name.toLowerCase().includes(search.toLowerCase()))
+    : [];
+  
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+  
+  const selectedCount = selectedIds.length;
   
   return (
-    <div className="space-y-2">
+    <div className="space-y-1.5" ref={containerRef}>
+      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+        {label}
+        {selectedCount > 0 && (
+          <span className="ml-2 text-brand-gold">({selectedCount})</span>
+        )}
+      </label>
       <div className="relative">
-        <Search size={12} className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
+        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
         <input
           type="text"
-          className="w-full h-7 pl-7 pr-2 text-xs border border-border rounded bg-background focus:outline-none focus:border-brand-gold"
+          className="w-full h-9 pl-9 pr-3 text-sm border border-border rounded-lg bg-background focus:outline-none focus:border-brand-gold"
           placeholder={placeholder}
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setIsOpen(true);
+          }}
+          onFocus={() => setIsOpen(true)}
         />
-      </div>
-      <div className="max-h-28 overflow-y-auto space-y-0.5">
-        {filtered.slice(0, 15).map(item => (
-          <button
-            key={item.id}
-            className={cn(
-              "w-full flex items-center gap-2 px-2 py-1.5 text-xs rounded hover:bg-muted/50",
-              selectedIds.includes(item.id) && "bg-brand-gold/10"
+        
+        {isOpen && search.trim().length > 0 && (
+          <div className="absolute top-full mt-1 left-0 right-0 bg-background border border-border rounded-lg shadow-lg z-[400] max-h-48 overflow-y-auto">
+            {filtered.length === 0 ? (
+              <div className="px-3 py-2 text-xs text-muted-foreground text-center">
+                No matches found
+              </div>
+            ) : (
+              filtered.slice(0, 10).map(item => (
+                <button
+                  key={item.id}
+                  className={cn(
+                    "w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted/50 text-left",
+                    selectedIds.includes(item.id) && "bg-brand-gold/10"
+                  )}
+                  onClick={() => onToggle(item.id)}
+                >
+                  <span className="w-6 h-6 flex items-center justify-center text-[10px] font-semibold bg-muted rounded-full flex-shrink-0">
+                    {item.initials}
+                  </span>
+                  <span className="flex-1 truncate">{item.name}</span>
+                  {selectedIds.includes(item.id) && (
+                    <Check size={14} className="text-brand-gold flex-shrink-0" />
+                  )}
+                </button>
+              ))
             )}
-            onClick={() => onToggle(item.id)}
-          >
-            <span className="w-5 h-5 flex items-center justify-center text-[9px] font-semibold bg-muted rounded-full flex-shrink-0">
-              {item.initials}
-            </span>
-            <span className="flex-1 text-left truncate">{item.name}</span>
-            {selectedIds.includes(item.id) && (
-              <Check size={12} className="text-brand-gold flex-shrink-0" />
-            )}
-          </button>
-        ))}
-        {filtered.length === 0 && (
-          <div className="text-xs text-muted-foreground text-center py-2">No matches</div>
+          </div>
         )}
       </div>
+      
+      {/* Show selected items as small chips */}
+      {selectedIds.length > 0 && (
+        <div className="flex flex-wrap gap-1 mt-1.5">
+          {selectedIds.slice(0, 3).map(id => {
+            const item = items.find(i => i.id === id);
+            return item ? (
+              <span 
+                key={id}
+                className="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-brand-gold/10 text-brand-gold rounded-full"
+              >
+                {item.name.split(' ')[0]}
+                <button 
+                  className="hover:text-brand-gold-hover"
+                  onClick={() => onToggle(id)}
+                >
+                  <X size={10} />
+                </button>
+              </span>
+            ) : null;
+          })}
+          {selectedIds.length > 3 && (
+            <span className="text-xs text-muted-foreground">
+              +{selectedIds.length - 3} more
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 };
@@ -203,6 +300,9 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
       onScaleChange(draftViewport.scale);
     }
   };
+
+  // Prepare platform options
+  const platformOptions = platforms.map(p => ({ key: p, label: p }));
   
   return (
     <div className="flex items-center justify-between px-6 py-3 border-b border-border bg-surface-1">
@@ -246,157 +346,86 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
           </button>
           
           {filtersOpen && (
-            <div className="absolute top-full mt-2 left-0 w-80 bg-background border border-border rounded-lg shadow-xl z-50 overflow-hidden">
-              <ScrollArea className="max-h-[480px]">
+            <div className="absolute top-full mt-2 left-0 w-80 bg-background border border-border rounded-lg shadow-xl z-50 flex flex-col max-h-[520px]">
+              {/* Scrollable filter body */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-4">
                 {/* Status / Workflow */}
-                <FilterSection title="Status / Workflow">
-                  <div className="flex flex-wrap gap-1.5">
-                    {DEMAND_STATUS_CONFIG.map(status => (
-                      <button
-                        key={status.key}
-                        className={cn(
-                          "px-2 py-1 text-xs font-medium rounded-full border transition-colors",
-                          draftFilters.status.includes(status.key)
-                            ? "bg-brand-gold text-white border-brand-gold"
-                            : "bg-muted/50 text-muted-foreground border-border hover:border-brand-gold/50"
-                        )}
-                        onClick={() => onToggleStatus(status.key)}
-                      >
-                        {status.label}
-                      </button>
-                    ))}
-                  </div>
-                </FilterSection>
+                <MultiSelectDropdown
+                  label="Status / Workflow"
+                  options={DEMAND_STATUS_CONFIG}
+                  selectedKeys={draftFilters.status}
+                  onToggle={onToggleStatus}
+                  placeholder="All statuses"
+                />
                 
                 {/* Planned Quarter */}
-                <FilterSection title="Planned Quarter">
-                  <div className="flex flex-wrap gap-1.5">
-                    {QUARTER_CONFIG.map(q => (
-                      <button
-                        key={q.key}
-                        className={cn(
-                          "px-2.5 py-1 text-xs font-medium rounded-full border transition-colors",
-                          draftFilters.quarters.includes(q.key)
-                            ? "bg-brand-gold text-white border-brand-gold"
-                            : "bg-muted/50 text-muted-foreground border-border hover:border-brand-gold/50"
-                        )}
-                        onClick={() => onToggleQuarter(q.key)}
-                      >
-                        {q.label}
-                      </button>
-                    ))}
-                  </div>
-                </FilterSection>
+                <MultiSelectDropdown
+                  label="Planned Quarter"
+                  options={QUARTER_CONFIG}
+                  selectedKeys={draftFilters.quarters}
+                  onToggle={onToggleQuarter}
+                  placeholder="All quarters"
+                />
                 
                 {/* Delivery Platform */}
                 {platforms.length > 0 && (
-                  <FilterSection title="Delivery Platform">
-                    <div className="flex flex-wrap gap-1.5">
-                      {platforms.map(platform => (
-                        <button
-                          key={platform}
-                          className={cn(
-                            "px-2 py-1 text-xs font-medium rounded-full border transition-colors",
-                            draftFilters.platforms.includes(platform)
-                              ? "bg-brand-gold text-white border-brand-gold"
-                              : "bg-muted/50 text-muted-foreground border-border hover:border-brand-gold/50"
-                          )}
-                          onClick={() => onTogglePlatform(platform)}
-                        >
-                          {platform}
-                        </button>
-                      ))}
-                    </div>
-                  </FilterSection>
+                  <MultiSelectDropdown
+                    label="Delivery Platform"
+                    options={platformOptions}
+                    selectedKeys={draftFilters.platforms}
+                    onToggle={onTogglePlatform}
+                    placeholder="All platforms"
+                  />
                 )}
                 
-                {/* Business Owner */}
-                {owners.length > 0 && (
-                  <FilterSection title="Business Owner">
-                    <SearchableList
-                      items={owners}
-                      selectedIds={draftFilters.ownerIds}
-                      onToggle={onToggleOwner}
-                      placeholder="Search owners..."
-                    />
-                  </FilterSection>
-                )}
+                {/* Business Owner - Type-ahead searchable */}
+                <UserSearchDropdown
+                  label="Business Owner"
+                  items={owners}
+                  selectedIds={draftFilters.ownerIds}
+                  onToggle={onToggleOwner}
+                  placeholder="Type to search owners..."
+                />
                 
-                {/* Assignee */}
-                {assignees.length > 0 && (
-                  <FilterSection title="Assignee">
-                    <SearchableList
-                      items={assignees}
-                      selectedIds={draftFilters.assigneeIds}
-                      onToggle={onToggleAssignee}
-                      placeholder="Search assignees..."
-                    />
-                  </FilterSection>
-                )}
+                {/* Assignee - Type-ahead searchable */}
+                <UserSearchDropdown
+                  label="Assignee"
+                  items={assignees}
+                  selectedIds={draftFilters.assigneeIds}
+                  onToggle={onToggleAssignee}
+                  placeholder="Type to search assignees..."
+                />
                 
                 {/* Priority Tier */}
-                <FilterSection title="Priority Tier">
-                  <div className="flex flex-wrap gap-1.5">
-                    {PRIORITY_TIER_CONFIG.filter(t => t.key !== 'unscored').map(tier => (
-                      <button
-                        key={tier.key}
-                        className={cn(
-                          "px-2.5 py-1 text-xs font-medium rounded-full border transition-colors",
-                          draftFilters.priorityTiers.includes(tier.key)
-                            ? "bg-brand-gold text-white border-brand-gold"
-                            : "bg-muted/50 text-muted-foreground border-border hover:border-brand-gold/50"
-                        )}
-                        onClick={() => onTogglePriorityTier(tier.key)}
-                      >
-                        {tier.label}
-                      </button>
-                    ))}
-                  </div>
-                </FilterSection>
+                <MultiSelectDropdown
+                  label="Priority Tier"
+                  options={PRIORITY_TIER_CONFIG.filter(t => t.key !== 'unscored')}
+                  selectedKeys={draftFilters.priorityTiers}
+                  onToggle={onTogglePriorityTier}
+                  placeholder="All priorities"
+                />
                 
                 {/* Health */}
-                <FilterSection title="Health">
-                  <div className="flex flex-wrap gap-1.5">
-                    {HEALTH_CONFIG.filter(h => h.key !== 'unknown').map(health => (
-                      <button
-                        key={health.key}
-                        className={cn(
-                          "px-2.5 py-1 text-xs font-medium rounded-full border transition-colors",
-                          draftFilters.health.includes(health.key)
-                            ? "bg-brand-gold text-white border-brand-gold"
-                            : "bg-muted/50 text-muted-foreground border-border hover:border-brand-gold/50"
-                        )}
-                        onClick={() => onToggleHealth(health.key)}
-                      >
-                        {health.label}
-                      </button>
-                    ))}
-                  </div>
-                </FilterSection>
+                <MultiSelectDropdown
+                  label="Health"
+                  options={HEALTH_CONFIG.filter(h => h.key !== 'unknown')}
+                  selectedKeys={draftFilters.health}
+                  onToggle={onToggleHealth}
+                  placeholder="All health statuses"
+                />
                 
                 {/* Milestone Condition */}
-                <FilterSection title="Milestone Condition" defaultOpen={false}>
-                  <div className="flex flex-wrap gap-1.5">
-                    {MILESTONE_CONDITION_CONFIG.map(condition => (
-                      <button
-                        key={condition.key}
-                        className={cn(
-                          "px-2 py-1 text-xs font-medium rounded-full border transition-colors",
-                          draftFilters.milestoneConditions.includes(condition.key)
-                            ? "bg-brand-gold text-white border-brand-gold"
-                            : "bg-muted/50 text-muted-foreground border-border hover:border-brand-gold/50"
-                        )}
-                        onClick={() => onToggleMilestoneCondition(condition.key)}
-                      >
-                        {condition.label}
-                      </button>
-                    ))}
-                  </div>
-                </FilterSection>
-              </ScrollArea>
+                <MultiSelectDropdown
+                  label="Milestone Condition"
+                  options={MILESTONE_CONDITION_CONFIG}
+                  selectedKeys={draftFilters.milestoneConditions}
+                  onToggle={onToggleMilestoneCondition}
+                  placeholder="All conditions"
+                />
+              </div>
               
-              {/* Footer */}
-              <div className="border-t border-border p-3 space-y-2 bg-muted/30">
+              {/* Sticky Footer */}
+              <div className="border-t border-border p-3 space-y-2 bg-muted/30 flex-shrink-0">
                 {/* Matching Count */}
                 <div className="text-xs text-muted-foreground text-center">
                   {matchingDemands} demand{matchingDemands !== 1 ? 's' : ''} match
@@ -465,18 +494,15 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
               <button
                 className={cn(
                   "h-9 w-9 flex items-center justify-center border border-border rounded-lg transition-colors",
-                  showLegend 
-                    ? "bg-brand-gold text-white border-brand-gold" 
-                    : "bg-background text-muted-foreground hover:bg-muted"
+                  showLegend ? "bg-brand-gold/10 border-brand-gold text-brand-gold" : "bg-background hover:bg-muted text-muted-foreground"
                 )}
                 onClick={onToggleLegend}
-                aria-pressed={showLegend}
               >
-                <Info size={16} />
+                <span className="text-xs font-semibold">i</span>
               </button>
             </TooltipTrigger>
             <TooltipContent side="bottom">
-              {showLegend ? 'Hide legend' : 'Show legend'}
+              <p>{showLegend ? 'Hide legend' : 'Show legend'}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
