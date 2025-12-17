@@ -9,7 +9,6 @@ import { useBusinessRequests } from '@/hooks/useBusinessRequests';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { ExecutiveTable } from '../components/ExecutiveTable';
-import { IndustryHeaderToolbarV2 } from '@/shared/components/IndustryHeaderToolbarV2';
 import { DemandBulkActionsBar } from '@/components/demand/DemandBulkActionsBar';
 import { DemandBulkStatusModal } from '@/components/demand/DemandBulkStatusModal';
 import { DemandBulkDeleteModal } from '@/components/demand/DemandBulkDeleteModal';
@@ -198,46 +197,8 @@ export default function ProductBacklogPage() {
     toast.success(`Deleted ${dbIds.length} request(s)`);
   };
 
-  // Toolbar content
-  const toolbarElement = (
-    <IndustryHeaderToolbarV2
-      title="Product Backlog"
-      countText={`${tableData.length}`}
-      activeView="list"
-      searchValue={searchQuery}
-      onSearchChange={setSearchQuery}
-      scoringFilter={scoringFilter}
-      onScoringFilterChange={setScoringFilter}
-      onColumnsConfig={() => setColumnsDialogOpen(true)}
-      onExport={() => {
-        // Export CSV
-        const headers = ['Request ID', 'Summary', 'Status', 'Score', 'Rank', 'Department', 'Platform', 'Created'];
-        const csvRows = [headers.join(',')];
-        tableData.forEach(row => {
-          csvRows.push([
-            row.id,
-            `"${(row.summary || '').replace(/"/g, '""')}"`,
-            row.processStep,
-            row.score ?? '',
-            row.rank ?? '',
-            row.department ?? '',
-            row.platform ?? '',
-            row.createdAt ?? ''
-          ].join(','));
-        });
-        const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'business-requests.csv';
-        a.click();
-        URL.revokeObjectURL(url);
-      }}
-    />
-  );
-
   return (
-    <PageChrome toolbar={toolbarElement}>
+    <PageChrome>
       <div className="h-full flex flex-col" style={{ backgroundColor: 'var(--bg)' }}>
         <ExecutiveTable
           data={tableData}
