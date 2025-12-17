@@ -77,9 +77,9 @@ export function UnifiedToolbar({
             value={searchValue}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder={searchPlaceholder}
-            style={{ outline: 'none', boxShadow: 'none', border: 'none' }}
+            style={{ outline: 'none', boxShadow: 'none', border: 'none', backgroundColor: 'transparent' }}
             className={cn(
-              "flex-1 min-w-0 bg-transparent text-sm text-[var(--text-1)] pl-1",
+              "flex-1 min-w-0 !bg-transparent bg-transparent text-sm text-[var(--text-1)] pl-1",
               "placeholder:text-[var(--text-3)]",
               "!outline-none !border-none !ring-0 !shadow-none",
               "focus:!outline-none focus:!border-none focus:!ring-0 focus:!shadow-none"
