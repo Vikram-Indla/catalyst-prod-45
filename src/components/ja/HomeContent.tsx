@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   ChevronDown, ChevronUp, Star, MoreHorizontal, ExternalLink, CheckCircle, 
-  Clock, Sparkles, Pin, Settings, Kanban, List, AlertTriangle, Briefcase
+  Clock, Pin, Settings, Kanban, List, AlertTriangle, Briefcase
 } from 'lucide-react';
 import { projects, activityItems, Project, ActivityItem, groupItemsByTimePeriod } from '@/data/homePageData';
 import { WorkItemTypeIcon } from './icons/WorkItemTypeIcon';
@@ -39,6 +39,7 @@ const mockIncidentData = {
 // ============================================
 // FOCUS WIDGET COMPONENT (Brand-aligned)
 // ============================================
+// Calmer, restrained focus widget - triage panel style
 function FocusWidget({ 
   title, 
   icon: Icon, 
@@ -46,7 +47,6 @@ function FocusWidget({
   secondaryLabel,
   secondaryCount,
   subtitle,
-  accent = false,
   onClick,
 }: { 
   title: string; 
@@ -55,71 +55,57 @@ function FocusWidget({
   secondaryLabel?: string;
   secondaryCount?: number;
   subtitle?: string;
-  accent?: boolean;
   onClick?: () => void;
 }) {
   return (
-    <div 
+    <button 
       className={cn(
-        "p-2.5 rounded-lg transition-all cursor-pointer group",
-        "bg-[var(--surface-1)] border border-[var(--border-color)]",
-        "hover:bg-[var(--surface-2)] hover:border-[var(--brand-gold)]"
+        "w-full p-2.5 rounded-md transition-all text-left",
+        "bg-transparent border border-transparent",
+        "hover:bg-[var(--surface-2)] hover:border-[var(--border-color)]",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
       )}
       onClick={onClick}
     >
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <div 
-            className={cn(
-              "w-7 h-7 rounded-md flex items-center justify-center",
-              "bg-[var(--brand-gold)]/5"
-            )}
-          >
-            <Icon className="w-3.5 h-3.5 text-[var(--brand-gold)]" />
-          </div>
-          <div>
-            <div className="text-sm font-medium text-[var(--text-1)]">{title}</div>
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2 min-w-0">
+          <Icon className="w-4 h-4 shrink-0 text-[var(--icon-muted)]" />
+          <div className="min-w-0">
+            <div className="text-sm font-medium text-[var(--text-1)] truncate">{title}</div>
             {subtitle && (
-              <div className="text-[10px] mt-0.5 text-[var(--text-3)]">{subtitle}</div>
+              <div className="text-[10px] text-[var(--text-3)]">{subtitle}</div>
             )}
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 shrink-0">
           {secondaryLabel && secondaryCount !== undefined && (
-            <div className="text-right">
-              <div className="text-sm font-semibold tabular-nums leading-tight text-[var(--text-1)]">
-                {secondaryCount}
-              </div>
-              <div className="text-[9px] uppercase tracking-wider font-medium mt-0.5 text-[var(--text-3)]">
-                {secondaryLabel}
-              </div>
-            </div>
+            <span className="text-xs tabular-nums text-[var(--text-3)]">
+              {secondaryCount} {secondaryLabel.toLowerCase()}
+            </span>
           )}
-          <div className="text-right">
-            <div className="text-lg font-bold tabular-nums leading-tight text-[var(--brand-primary)]">
-              {primaryCount}
-            </div>
-            <div className="text-[9px] uppercase tracking-wider font-medium mt-0.5 text-[var(--text-3)]">
-              Open
-            </div>
-          </div>
+          <span className="text-sm font-semibold tabular-nums text-[var(--brand-primary)]">
+            {primaryCount}
+          </span>
         </div>
       </div>
-    </div>
+    </button>
   );
 }
 
 // ============================================
 // PROJECT CARD COMPONENT
 // ============================================
+// Sleeker project card with optional urgency indicator
 function ProjectCard({ 
   project, 
   isPinned,
-  onPin 
+  onPin,
+  hasUrgency = false, // subtle urgency indicator
 }: { 
   project: Project; 
   isPinned: boolean;
   onPin: () => void;
+  hasUrgency?: boolean;
 }) {
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
@@ -134,29 +120,29 @@ function ProjectCard({
         "rounded-lg overflow-hidden transition-all cursor-pointer group",
         "border bg-[var(--surface-1)]",
         isPinned 
-          ? "border-[var(--brand-gold)] ring-1 ring-[var(--brand-gold)]/20" 
+          ? "border-[var(--brand-gold)]/50" 
           : "border-[var(--border-color)]",
-        "hover:border-[var(--brand-gold)] hover:shadow-[var(--shadow-card-hover)]"
+        "hover:border-[var(--brand-primary)]/30 hover:shadow-sm"
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleCardClick}
     >
-      {/* Header accent bar */}
-      <div className="h-1" style={{ backgroundColor: project.color }} />
+      {/* Header accent bar - thinner */}
+      <div className="h-0.5" style={{ backgroundColor: project.color }} />
       
-      {/* Card content - sleeker layout */}
-      <div className="p-2.5 relative">
+      {/* Card content - sleeker, reduced padding */}
+      <div className="p-2 relative">
         {/* Quick actions - visible on hover */}
         <div 
           className={cn(
-            "absolute top-1.5 right-1.5 flex items-center gap-0.5 transition-opacity z-10",
+            "absolute top-1 right-1 flex items-center gap-0.5 transition-opacity z-10",
             isHovered ? "opacity-100" : "opacity-0"
           )}
         >
           <button 
             className={cn(
-              "w-6 h-6 rounded flex items-center justify-center hover:bg-[var(--surface-2)]",
+              "w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--surface-3)]",
               isPinned ? "text-[var(--brand-gold)]" : "text-[var(--icon-muted)]"
             )}
             onClick={(e) => { e.stopPropagation(); onPin(); }}
@@ -167,10 +153,10 @@ function ProjectCard({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button 
-                className="w-6 h-6 rounded flex items-center justify-center hover:bg-[var(--surface-3)] text-[var(--icon-muted)]"
+                className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--surface-3)] text-[var(--icon-muted)]"
                 onClick={(e) => e.stopPropagation()}
               >
-                <MoreHorizontal className="w-3.5 h-3.5" />
+                <MoreHorizontal className="w-3 h-3" />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent 
@@ -226,45 +212,46 @@ function ProjectCard({
           </DropdownMenu>
         </div>
 
-        {/* Pinned indicator - gold */}
+        {/* Pinned indicator - subtle */}
         {isPinned && !isHovered && (
-          <div className="absolute top-1.5 right-1.5">
-            <Pin className="w-3 h-3 text-[var(--brand-gold)] fill-current" />
+          <div className="absolute top-1 right-1">
+            <Pin className="w-2.5 h-2.5 text-[var(--brand-gold)] fill-current" />
           </div>
         )}
 
-        {/* Project info - sleeker: removed type label */}
-        <div className="flex items-center gap-2 mb-2">
+        {/* Project info row */}
+        <div className="flex items-center gap-2">
           <div 
-            className="w-7 h-7 rounded-md flex items-center justify-center text-white text-[10px] font-bold shrink-0"
+            className="w-6 h-6 rounded flex items-center justify-center text-white text-[9px] font-bold shrink-0"
             style={{ backgroundColor: project.color }}
           >
             {project.key.slice(0, 2)}
           </div>
-          <div className="min-w-0 pr-10 flex-1">
-            <div className="text-sm font-semibold leading-5 truncate text-[var(--text-1)]">
+          <div className="min-w-0 pr-8 flex-1">
+            <div className="text-sm font-medium leading-tight truncate text-[var(--text-1)]">
               {project.name}
             </div>
           </div>
         </div>
 
-        {/* Stats row + last opened - single compact row */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5">
-            <span 
-              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-[var(--brand-primary-muted)] text-[var(--text-1)]"
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-[var(--brand-primary)]" />
-              {project.openCount} open
+        {/* Stats row - more compact */}
+        <div className="flex items-center justify-between mt-1.5">
+          <div className="flex items-center gap-1">
+            <span className="text-[10px] tabular-nums text-[var(--text-2)]">
+              <span className="font-medium text-[var(--brand-primary)]">{project.openCount}</span> open
             </span>
-            <span 
-              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-[var(--brand-primary-subtle)] text-[var(--text-1)]"
-            >
-              <CheckCircle className="w-2.5 h-2.5 text-[var(--brand-primary)]" />
+            <span className="text-[var(--text-3)]">·</span>
+            <span className="text-[10px] tabular-nums text-[var(--text-3)]">
               {project.doneCount} done
             </span>
           </div>
-          <span className="text-[10px] text-[var(--text-3)]">2h ago</span>
+          <div className="flex items-center gap-1">
+            {/* Subtle urgency indicator */}
+            {hasUrgency && (
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--brand-gold)]" title="Has incidents" />
+            )}
+            <span className="text-[9px] text-[var(--text-3)]">2h ago</span>
+          </div>
         </div>
       </div>
     </div>
@@ -412,13 +399,13 @@ function DataGrid({
   const hasMore = visibleCount < filteredItems.length;
 
   return (
-    <div className="mt-2">
-      {/* Sticky Header (NO checkbox column) */}
+    <div className="mt-2 rounded-lg border border-[var(--border-color)] overflow-hidden">
+      {/* Sticky Header (NO checkbox column) - calmer styling */}
       <div 
-        className="grid items-center py-1.5 px-3 text-[10px] font-semibold uppercase tracking-wide sticky top-0 z-10 rounded-t-lg"
+        className="grid items-center py-2 px-3 text-[10px] font-medium uppercase tracking-wide sticky top-0 z-10"
         style={{ 
           gridTemplateColumns: GRID_COLS,
-          color: 'var(--text-2)',
+          color: 'var(--text-3)',
           backgroundColor: 'var(--surface-2)',
           borderBottom: '1px solid var(--divider)',
         }}
@@ -668,12 +655,13 @@ export function HomeContent() {
           {/* Project cards grid - 4 columns at xl */}
           {!isProjectsCollapsed && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
-              {sortedProjects.map((project) => (
+              {sortedProjects.map((project, index) => (
                 <ProjectCard 
                   key={project.id} 
                   project={project}
                   isPinned={pinnedProjects.includes(project.id)}
                   onPin={() => togglePinProject(project.id)}
+                  hasUrgency={index === 0} // Mock: first project has urgency
                 />
               ))}
             </div>
@@ -756,40 +744,41 @@ export function HomeContent() {
             )}
           </div>
 
-          {/* Right Column - My Focus (sticky triage panel) */}
-          <div className="xl:sticky xl:top-20 xl:self-start space-y-1.5">
-            <div className="text-sm font-medium mb-1.5 text-[var(--text-1)]">
+          {/* Right Column - My Focus (sticky triage panel) - calmer, restrained */}
+          <div className="xl:sticky xl:top-20 xl:self-start">
+            <div className="text-xs font-medium uppercase tracking-wide mb-2 text-[var(--text-3)]">
               My focus
             </div>
             
-            {/* My workload */}
-            <FocusWidget 
-              title="My workload"
-              icon={Briefcase}
-              primaryCount={mockIncidentData.myWorkload.incidents + mockIncidentData.myWorkload.workItems}
-              secondaryLabel="Incidents"
-              secondaryCount={mockIncidentData.myWorkload.incidents}
-              accent={roleMode === 'ops'}
-              onClick={() => handleTabChange('worked-on')}
-            />
-            
-            {/* Recently updated */}
-            <FocusWidget 
-              title="Recently updated"
-              icon={Sparkles}
-              primaryCount={recentlyUpdatedCount}
-              subtitle="Last 7 days"
-              onClick={() => handleTabChange('worked-on')}
-            />
-            
-            {/* Starred - optional */}
-            <FocusWidget 
-              title="Starred"
-              icon={Star}
-              primaryCount={starredCount}
-              subtitle="Quick access"
-              onClick={() => handleTabChange('starred')}
-            />
+            <div className="space-y-0.5">
+              {/* My workload */}
+              <FocusWidget 
+                title="My workload"
+                icon={Briefcase}
+                primaryCount={mockIncidentData.myWorkload.incidents + mockIncidentData.myWorkload.workItems}
+                secondaryLabel="incidents"
+                secondaryCount={mockIncidentData.myWorkload.incidents}
+                onClick={() => handleTabChange('worked-on')}
+              />
+              
+              {/* Recently updated */}
+              <FocusWidget 
+                title="Recently updated"
+                icon={Clock}
+                primaryCount={recentlyUpdatedCount}
+                subtitle="Last 7 days"
+                onClick={() => handleTabChange('worked-on')}
+              />
+              
+              {/* Starred */}
+              <FocusWidget 
+                title="Starred"
+                icon={Star}
+                primaryCount={starredCount}
+                subtitle="Quick access"
+                onClick={() => handleTabChange('starred')}
+              />
+            </div>
           </div>
         </div>
       </div>
