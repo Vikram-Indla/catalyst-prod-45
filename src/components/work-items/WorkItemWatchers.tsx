@@ -36,7 +36,7 @@ export function WorkItemWatchers({ workItemType, workItemId }: WorkItemWatchersP
               size="sm"
               onClick={toggleWatch}
               disabled={isPending || !currentUser}
-              className={isWatching ? "bg-brand-gold hover:bg-brand-gold-hover h-8 px-2" : "h-8 px-2"}
+              className={isWatching ? "bg-brand-primary hover:bg-brand-primary-hover h-8 px-2" : "h-8 px-2"}
             >
               {isWatching ? (
                 <Eye className="h-4 w-4" />
@@ -68,7 +68,7 @@ export function WorkItemWatchers({ workItemType, workItemId }: WorkItemWatchersP
                 {watchers.map((watcher) => (
                   <div key={watcher.id} className="flex items-center gap-2">
                     <Avatar className="h-6 w-6">
-                      <AvatarFallback className="bg-brand-gold/20 text-brand-gold text-xs">
+                      <AvatarFallback className="bg-brand-primary/20 text-brand-primary text-xs">
                         {getInitials(watcher.user_id)}
                       </AvatarFallback>
                     </Avatar>

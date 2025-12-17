@@ -402,7 +402,7 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
                   <DropdownMenuTrigger asChild>
                     <Button
                       size="sm"
-                      className="h-8 px-3 text-sm font-medium bg-brand-gold hover:bg-brand-gold-hover text-white"
+                      className="h-8 px-3 text-sm font-medium bg-brand-primary hover:bg-brand-primary-hover text-white"
                     >
                       Save
                       <ChevronDown className="h-3.5 w-3.5 ml-1" />
@@ -471,7 +471,7 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
               className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
             >
               <span>Status:</span>
-              <span className="text-brand-gold capitalize underline underline-offset-2">
+              <span className="text-brand-primary capitalize underline underline-offset-2">
                 {getStatusLabel(formData.state)}
               </span>
               <span className="text-xs font-normal text-muted-foreground/70">(click to update)</span>
@@ -555,7 +555,7 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
             </AlertDialogAction>
             <AlertDialogAction 
               onClick={handleSaveAndClose}
-              className="bg-brand-gold text-white hover:bg-brand-gold-hover"
+              className="bg-brand-primary text-white hover:bg-brand-primary-hover"
             >
               Save & Close
             </AlertDialogAction>

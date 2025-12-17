@@ -54,7 +54,7 @@ const typeStyles: Record<ToastType, { bg: string; border: string; icon: string }
   info: {
     bg: 'bg-card',
     border: 'border-l-[3px] border-l-[var(--accent-color)]',
-    icon: 'text-brand-gold',
+    icon: 'text-brand-primary',
   },
   loading: {
     bg: 'bg-card',
@@ -118,7 +118,7 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
         {toast.action && (
           <button
             onClick={toast.action.onClick}
-            className="mt-2 text-sm font-medium text-brand-gold hover:text-brand-gold-hover transition-colors"
+            className="mt-2 text-sm font-medium text-brand-primary hover:text-brand-primary-hover transition-colors"
           >
             {toast.action.label}
           </button>

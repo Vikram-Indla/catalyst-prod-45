@@ -29,7 +29,7 @@ export function RolesList({ roles, selectedRoleId, onSelectRole, isLoading }: Ro
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-brand-gold" />
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-brand-primary" />
           </div>
         </CardContent>
       </Card>
@@ -61,7 +61,7 @@ export function RolesList({ roles, selectedRoleId, onSelectRole, isLoading }: Ro
               className={cn(
                 "flex items-center justify-between px-3 py-3 rounded-md cursor-pointer transition-colors",
                 selectedRoleId === role.id
-                  ? "bg-brand-gold/10"
+                  ? "bg-brand-primary/10"
                   : "hover:bg-muted"
               )}
               onClick={() => onSelectRole(role.id)}

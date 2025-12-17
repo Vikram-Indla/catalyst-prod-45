@@ -657,10 +657,10 @@ export function LinksViewTab({ requestId, onNavigateToEpic }: LinksViewTabProps)
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {/* Implementation Links - FIRST */}
             <button
-              className="p-4 border-2 border-dashed border-border rounded-xl text-center cursor-pointer transition-all hover:border-brand-gold/50 hover:bg-brand-gold/5 group"
+              className="p-4 border-2 border-dashed border-border rounded-xl text-center cursor-pointer transition-all hover:border-brand-primary/50 hover:bg-brand-primary/5 group"
               onClick={() => setFormView('implementation')}
             >
-              <div className="w-10 h-10 mx-auto mb-2 flex items-center justify-center bg-muted/50 rounded-lg group-hover:bg-brand-gold group-hover:text-white transition-all">
+              <div className="w-10 h-10 mx-auto mb-2 flex items-center justify-center bg-muted/50 rounded-lg group-hover:bg-brand-primary group-hover:text-white transition-all">
                 <LinkIcon className="h-5 w-5 text-muted-foreground group-hover:text-white" />
               </div>
               <div className="font-medium text-[13px] text-foreground mb-0.5">Implementation Links</div>
@@ -669,10 +669,10 @@ export function LinksViewTab({ requestId, onNavigateToEpic }: LinksViewTabProps)
 
             {/* Upload Documents */}
             <button
-              className="p-4 border-2 border-dashed border-border rounded-xl text-center cursor-pointer transition-all hover:border-brand-gold/50 hover:bg-brand-gold/5 group"
+              className="p-4 border-2 border-dashed border-border rounded-xl text-center cursor-pointer transition-all hover:border-brand-primary/50 hover:bg-brand-primary/5 group"
               onClick={() => setFormView('document')}
             >
-              <div className="w-10 h-10 mx-auto mb-2 flex items-center justify-center bg-muted/50 rounded-lg group-hover:bg-brand-gold group-hover:text-white transition-all">
+              <div className="w-10 h-10 mx-auto mb-2 flex items-center justify-center bg-muted/50 rounded-lg group-hover:bg-brand-primary group-hover:text-white transition-all">
                 <FilePlus className="h-5 w-5 text-muted-foreground group-hover:text-white" />
               </div>
               <div className="font-medium text-[13px] text-foreground mb-0.5">Upload Documents</div>
@@ -681,10 +681,10 @@ export function LinksViewTab({ requestId, onNavigateToEpic }: LinksViewTabProps)
 
             {/* External Link - LAST */}
             <button
-              className="p-4 border-2 border-dashed border-border rounded-xl text-center cursor-pointer transition-all hover:border-brand-gold/50 hover:bg-brand-gold/5 group"
+              className="p-4 border-2 border-dashed border-border rounded-xl text-center cursor-pointer transition-all hover:border-brand-primary/50 hover:bg-brand-primary/5 group"
               onClick={() => setFormView('external')}
             >
-              <div className="w-10 h-10 mx-auto mb-2 flex items-center justify-center bg-muted/50 rounded-lg group-hover:bg-brand-gold group-hover:text-white transition-all">
+              <div className="w-10 h-10 mx-auto mb-2 flex items-center justify-center bg-muted/50 rounded-lg group-hover:bg-brand-primary group-hover:text-white transition-all">
                 <ExternalLink className="h-5 w-5 text-muted-foreground group-hover:text-white" />
               </div>
               <div className="font-medium text-[13px] text-foreground mb-0.5">External Link</div>
