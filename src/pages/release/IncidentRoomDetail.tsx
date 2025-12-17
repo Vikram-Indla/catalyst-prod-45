@@ -18,6 +18,7 @@ import { useIncident, useUpdateIncident, useAddComment, useReleaseVersions } fro
 import { useUploadIncidentAttachment, useDeleteIncidentAttachment, useDownloadIncidentAttachment } from '@/hooks/useIncidentAttachments';
 import { useIsWatching, useWatcherCount, useToggleWatch } from '@/hooks/useIncidentWatchers';
 import { SlaStatusCard } from '@/components/incidents/SlaStatusCard';
+import { IncidentWatchersWidget } from '@/components/incidents/IncidentWatchersWidget';
 import { supabase } from '@/integrations/supabase/client';
 import type { IncidentStatus, SeverityLevel, CommentType, ImpactLevel, UrgencyLevel, DeliveryStage } from '@/types/incident';
 import { cn } from '@/lib/utils';
@@ -67,6 +68,8 @@ export default function IncidentRoomDetail() {
   const [convertDialogOpen, setConvertDialogOpen] = useState(false);
   const [convertType, setConvertType] = useState<'business_request' | 'epic' | 'feature' | 'story'>('business_request');
   const [convertReason, setConvertReason] = useState('');
+  const [isEditingDescription, setIsEditingDescription] = useState(false);
+  const [editedDescription, setEditedDescription] = useState('');
 
   const isConverted = incident?.status === 'converted';
   const canConvert = incident?.status !== 'converted' && 
@@ -328,12 +331,36 @@ export default function IncidentRoomDetail() {
           <div className="border border-border rounded-lg overflow-hidden">
             <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-muted/30">
               <h2 className="font-medium">Description</h2>
-              <Button variant="ghost" size="sm" disabled={isConverted}>Edit</Button>
+              {isEditingDescription ? (
+                <div className="flex gap-2">
+                  <Button variant="ghost" size="sm" onClick={() => setIsEditingDescription(false)}>Cancel</Button>
+                  <Button size="sm" className="bg-brand-gold hover:bg-brand-gold-hover text-white" onClick={() => {
+                    if (id) {
+                      handleFieldChange('description', editedDescription);
+                      setIsEditingDescription(false);
+                    }
+                  }}>Save</Button>
+                </div>
+              ) : (
+                <Button variant="ghost" size="sm" disabled={isConverted} onClick={() => {
+                  setEditedDescription(incident.description || '');
+                  setIsEditingDescription(true);
+                }}>Edit</Button>
+              )}
             </div>
             <div className="p-4">
-              <p className="text-sm text-foreground whitespace-pre-wrap">
-                {incident.description || 'No description provided.'}
-              </p>
+              {isEditingDescription ? (
+                <Textarea
+                  value={editedDescription}
+                  onChange={(e) => setEditedDescription(e.target.value)}
+                  className="min-h-[120px] resize-y"
+                  placeholder="Describe the incident..."
+                />
+              ) : (
+                <p className="text-sm text-foreground whitespace-pre-wrap">
+                  {incident.description || 'No description provided.'}
+                </p>
+              )}
             </div>
           </div>
 
@@ -848,7 +875,18 @@ export default function IncidentRoomDetail() {
               ) : (
                 <span className="text-sm text-muted-foreground">Unassigned</span>
               )}
-              <Button variant="link" size="sm" className="text-xs text-brand-gold p-0 h-auto">
+              <Button 
+                variant="link" 
+                size="sm" 
+                className="text-xs text-brand-gold p-0 h-auto"
+                onClick={async () => {
+                  const { data: { user } } = await supabase.auth.getUser();
+                  if (user && id) {
+                    handleFieldChange('assignee_id', user.id);
+                  }
+                }}
+                disabled={isConverted}
+              >
                 Assign to me
               </Button>
             </div>
@@ -901,6 +939,9 @@ export default function IncidentRoomDetail() {
               {incident.target_date ? new Date(incident.target_date).toLocaleDateString() : 'Not set'}
             </div>
           </div>
+
+          {/* Watchers Widget */}
+          <IncidentWatchersWidget incidentId={id || ''} />
 
           {/* Created/Updated */}
           <div className="pt-4 border-t border-border space-y-2">
