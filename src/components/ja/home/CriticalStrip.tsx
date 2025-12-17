@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { AlertTriangle, Clock, Bell, Ban } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+type ActiveFilter = 'all' | 'major-incidents' | 'sla-at-risk' | 'awaiting-me' | 'blocked';
+
 interface CriticalPill {
-  id: string;
+  id: ActiveFilter;
   label: string;
   icon: React.ElementType;
   count: number;
@@ -20,9 +22,18 @@ interface CriticalStripProps {
   slaAtRisk: number;
   awaitingMe: number;
   blocked: number;
+  activeFilter?: ActiveFilter;
+  onFilterChange?: (filter: ActiveFilter) => void;
 }
 
-export function CriticalStrip({ majorIncidents, slaAtRisk, awaitingMe, blocked }: CriticalStripProps) {
+export function CriticalStrip({ 
+  majorIncidents, 
+  slaAtRisk, 
+  awaitingMe, 
+  blocked,
+  activeFilter = 'all',
+  onFilterChange,
+}: CriticalStripProps) {
   const navigate = useNavigate();
 
   const pills: CriticalPill[] = [
@@ -62,28 +73,46 @@ export function CriticalStrip({ majorIncidents, slaAtRisk, awaitingMe, blocked }
     },
   ];
 
+  const handlePillClick = (pill: CriticalPill) => {
+    if (onFilterChange) {
+      // Toggle filter - if already active, clear it
+      if (activeFilter === pill.id) {
+        onFilterChange('all');
+      } else {
+        onFilterChange(pill.id);
+      }
+    } else {
+      // Fallback to navigation if no filter handler
+      navigate(pill.route);
+    }
+  };
+
   return (
     <div className="flex items-stretch gap-2.5 overflow-x-auto pb-1">
       {pills.map((pill) => {
         const Icon = pill.icon;
+        const isActive = activeFilter === pill.id;
         
         return (
           <button
             key={pill.id}
-            onClick={() => navigate(pill.route)}
+            onClick={() => handlePillClick(pill)}
             className={cn(
               "flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg border transition-all cursor-pointer min-w-fit",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-1",
-              // Consistent champagne surface with gold border
-              "bg-[var(--surface-champagne)] border-[var(--border-gold)]",
-              "hover:bg-[var(--surface-2)] hover:border-[var(--brand-gold)]"
+              // Active state uses olive green highlight
+              isActive
+                ? "bg-[var(--brand-primary)]/10 border-[var(--brand-primary)] ring-1 ring-[var(--brand-primary)]/20"
+                : "bg-[var(--surface-champagne)] border-[var(--border-gold)] hover:bg-[var(--surface-2)] hover:border-[var(--brand-gold)]"
             )}
           >
             {/* Icon - red only for confirmed breach, gold otherwise */}
             <Icon 
               className={cn(
                 "w-4 h-4 shrink-0",
-                pill.hasBreach ? "text-[hsl(var(--destructive))]" : "text-[var(--brand-gold)]"
+                isActive 
+                  ? "text-[var(--brand-primary)]"
+                  : pill.hasBreach ? "text-[hsl(var(--destructive))]" : "text-[var(--brand-gold)]"
               )} 
             />
             <span className="text-sm font-medium text-[var(--text-1)] whitespace-nowrap">
@@ -93,7 +122,9 @@ export function CriticalStrip({ majorIncidents, slaAtRisk, awaitingMe, blocked }
             <span 
               className={cn(
                 "text-sm font-bold tabular-nums min-w-[1.25rem] text-center",
-                pill.hasBreach ? "text-[hsl(var(--destructive))]" : "text-[var(--brand-primary)]"
+                isActive
+                  ? "text-[var(--brand-primary)]"
+                  : pill.hasBreach ? "text-[hsl(var(--destructive))]" : "text-[var(--brand-primary)]"
               )}
             >
               {pill.count}
