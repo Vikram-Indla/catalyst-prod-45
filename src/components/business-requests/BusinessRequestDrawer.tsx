@@ -544,6 +544,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                     departmentId={formData.department_id}
                     targetDate={formData.end_date}
                     deliveryPlatform={formData.delivery_platform}
+                    priorityScore={formData.business_score}
                     onBusinessOwnerChange={(id) => handleFieldChange('business_owner_id', id)}
                     onDepartmentChange={(id) => handleFieldChange('department_id', id)}
                     onTargetDateChange={(date) => handleFieldChange('end_date', date)}
