@@ -1,18 +1,69 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { ProductRoadmapToolbar } from '@/components/product-roadmap/ProductRoadmapToolbar';
+import { ProductRoadmapToolbar, DemandGroupBy } from '@/components/product-roadmap/ProductRoadmapToolbar';
 import { DemandColumn } from '@/components/product-roadmap/DemandColumn';
 import { DemandTimelineArea } from '@/components/product-roadmap/DemandTimelineArea';
 import { ProductRoadmapLegend } from '@/components/product-roadmap/ProductRoadmapLegend';
 import { LoadMoreStrip } from '@/components/objective-roadmap/LoadMoreStrip';
 import { filterDemandsCanonical, countMatchingDemands, filterByViewportOverlap } from '@/utils/product-roadmap-filter-utils';
-import { Scale } from '@/types/product-roadmap';
+import { Scale, Demand } from '@/types/product-roadmap';
 import { useProductRoadmapData } from '@/hooks/useProductRoadmapData';
 import { useProductRoadmapFilters } from '@/hooks/useProductRoadmapFilters';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import GlobalPageHeader from '@/components/layout/GlobalPageHeader';
 import { Loader2 } from 'lucide-react';
 import { RoadmapViewport, RoadmapDebugOverlay } from '@/components/roadmaps/RoadmapDateFilterV2';
+
+// Group demands by a specific field
+export interface DemandGroup {
+  key: string;
+  label: string;
+  demands: Demand[];
+}
+
+function groupDemands(demands: Demand[], groupBy: DemandGroupBy): DemandGroup[] {
+  if (groupBy === 'none') {
+    return [{ key: 'all', label: '', demands }];
+  }
+  
+  const groups = new Map<string, Demand[]>();
+  
+  demands.forEach(demand => {
+    let key: string;
+    switch (groupBy) {
+      case 'platform':
+        key = demand.platform || 'Unassigned';
+        break;
+      case 'owner':
+        key = demand.ownerName || 'Unassigned';
+        break;
+      case 'quarter':
+        key = demand.plannedQuarter === 'unplanned' ? 'Unplanned' : demand.plannedQuarter || 'Unplanned';
+        break;
+      default:
+        key = 'Unassigned';
+    }
+    
+    if (!groups.has(key)) {
+      groups.set(key, []);
+    }
+    groups.get(key)!.push(demand);
+  });
+  
+  // Sort groups, putting "Unassigned"/"Unplanned" last
+  const sortedEntries = Array.from(groups.entries()).sort((a, b) => {
+    const unassigned = ['Unassigned', 'Unplanned'];
+    if (unassigned.includes(a[0]) && !unassigned.includes(b[0])) return 1;
+    if (!unassigned.includes(a[0]) && unassigned.includes(b[0])) return -1;
+    return a[0].localeCompare(b[0]);
+  });
+  
+  return sortedEntries.map(([key, demands]) => ({
+    key,
+    label: key,
+    demands,
+  }));
+}
 
 export const ProductRoadmapPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -52,6 +103,7 @@ export const ProductRoadmapPage: React.FC = () => {
   const [visibleCount, setVisibleCount] = useState(20);
   const [columnWidth, setColumnWidth] = useState(380);
   const [searchQuery, setSearchQuery] = useState('');
+  const [groupBy, setGroupBy] = useState<DemandGroupBy>('none');
   
   // Timeline dates derived from viewport (or dataset bounds)
   const timelineBounds = useMemo(() => {
@@ -100,6 +152,12 @@ export const ProductRoadmapPage: React.FC = () => {
   const draftMatchingCount = useMemo(
     () => countMatchingDemands(demandsInViewport, draftFilters, searchQuery),
     [demandsInViewport, draftFilters, searchQuery]
+  );
+  
+  // Group filtered demands
+  const groupedDemands = useMemo(
+    () => groupDemands(filteredDemands, groupBy),
+    [filteredDemands, groupBy]
   );
   
   const visibleDemands = filteredDemands.slice(0, visibleCount);
@@ -183,6 +241,8 @@ export const ProductRoadmapPage: React.FC = () => {
         onToggleLegend={() => setShowLegend(!showLegend)}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
+        groupBy={groupBy}
+        onGroupByChange={setGroupBy}
         appliedViewport={appliedViewport}
         draftViewport={draftViewport}
         onDraftViewportChange={updateDraftViewport}
@@ -210,6 +270,8 @@ export const ProductRoadmapPage: React.FC = () => {
         <DemandColumn
           ref={demandListRef}
           demands={visibleDemands}
+          groups={groupedDemands}
+          groupBy={groupBy}
           owners={owners}
           onDemandClick={handleDemandClick}
           width={columnWidth}
@@ -218,6 +280,8 @@ export const ProductRoadmapPage: React.FC = () => {
         <DemandTimelineArea
           ref={timelineGridRef}
           demands={visibleDemands}
+          groups={groupedDemands}
+          groupBy={groupBy}
           scale={scale}
           showMilestones={showMilestones}
           timelineStart={timelineStart}

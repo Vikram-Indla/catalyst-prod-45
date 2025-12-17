@@ -10,7 +10,7 @@ import {
   QUARTER_CONFIG,
   MILESTONE_CONDITION_CONFIG,
 } from '@/types/product-roadmap';
-import { Search, Filter, Check, X, ChevronDown, Info } from 'lucide-react';
+import { Search, Filter, Check, X, ChevronDown, Info, Layers } from 'lucide-react';
 import { RoadmapDateFilterV2, RoadmapViewport } from '@/components/roadmaps/RoadmapDateFilterV2';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -18,8 +18,19 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuCheckboxItem,
+  DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+
+// Group By types
+export type DemandGroupBy = 'none' | 'platform' | 'owner' | 'quarter';
+
+const GROUP_BY_OPTIONS: { value: DemandGroupBy; label: string }[] = [
+  { value: 'none', label: 'None' },
+  { value: 'platform', label: 'Delivery Platform' },
+  { value: 'owner', label: 'Business Owner' },
+  { value: 'quarter', label: 'Planned Quarter' },
+];
 
 interface ProductRoadmapToolbarProps {
   scale: Scale;
@@ -30,6 +41,10 @@ interface ProductRoadmapToolbarProps {
   onToggleLegend: () => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
+  
+  // Group By
+  groupBy: DemandGroupBy;
+  onGroupByChange: (groupBy: DemandGroupBy) => void;
   
   // Viewport (staged)
   appliedViewport: RoadmapViewport;
@@ -232,6 +247,8 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
   onToggleLegend,
   searchQuery,
   onSearchChange,
+  groupBy,
+  onGroupByChange,
   appliedViewport,
   draftViewport,
   onDraftViewportChange,
@@ -456,6 +473,42 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
             </div>
           )}
         </div>
+        
+        {/* Group By Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              className={cn(
+                "h-9 px-3 flex items-center gap-2 text-sm border border-border rounded-lg bg-background hover:bg-muted",
+                groupBy !== 'none' && "border-brand-gold text-brand-gold"
+              )}
+            >
+              <Layers size={16} />
+              Group
+              <ChevronDown size={14} />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-48 z-[400]">
+            <div className="px-2 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+              Group by
+            </div>
+            {GROUP_BY_OPTIONS.map((option) => (
+              <DropdownMenuItem
+                key={option.value}
+                className={cn(
+                  "flex items-center justify-between cursor-pointer",
+                  groupBy === option.value && "bg-brand-gold/10"
+                )}
+                onClick={() => onGroupByChange(option.value)}
+              >
+                <span>{option.label}</span>
+                {groupBy === option.value && (
+                  <Check size={14} className="text-brand-gold" />
+                )}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       
       <div className="flex items-center gap-3">
