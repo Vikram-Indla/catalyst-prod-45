@@ -630,7 +630,7 @@ export type Database = {
           on_hold_reason: string | null
           outcome_summary: string | null
           planned_external_spend_sar: number | null
-          planned_quarter: string | null
+          planned_quarter: string[] | null
           platform: string | null
           po_numbers: string[] | null
           portfolio_comments: string | null
@@ -727,7 +727,7 @@ export type Database = {
           on_hold_reason?: string | null
           outcome_summary?: string | null
           planned_external_spend_sar?: number | null
-          planned_quarter?: string | null
+          planned_quarter?: string[] | null
           platform?: string | null
           po_numbers?: string[] | null
           portfolio_comments?: string | null
@@ -824,7 +824,7 @@ export type Database = {
           on_hold_reason?: string | null
           outcome_summary?: string | null
           planned_external_spend_sar?: number | null
-          planned_quarter?: string | null
+          planned_quarter?: string[] | null
           platform?: string | null
           po_numbers?: string[] | null
           portfolio_comments?: string | null

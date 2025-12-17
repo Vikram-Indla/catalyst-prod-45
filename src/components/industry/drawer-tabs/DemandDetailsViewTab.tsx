@@ -3,7 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { BusinessRequest, PROCESS_STEPS, HEALTH_OPTIONS, COMPLEXITY_OPTIONS, URGENCY_OPTIONS } from '@/types/business-request';
-import { DeliveryPlatformSelect } from '@/components/ui/lookup-select';
+import { DeliveryPlatformSelect, PlannedQuarterSelect as PlannedQuarterMultiSelect } from '@/components/ui/lookup-select';
 import { DepartmentSelect } from '@/components/business-requests/DepartmentSelect';
 import { BusinessOwnerSelect } from '@/components/business-requests/BusinessOwnerSelect';
 import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings, getOwnerIdForDepartment } from '@/hooks/useDepartmentsAndOwners';
@@ -209,16 +209,10 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label className="text-sm font-medium">Planned Quarter</Label>
-            <Select value={data.planned_quarter || ''} onValueChange={(v) => handleChange('planned_quarter', v)}>
-              <SelectTrigger className="bg-background">
-                <SelectValue placeholder="Select quarter" />
-              </SelectTrigger>
-              <SelectContent>
-                {QUARTER_OPTIONS.map((q) => (
-                  <SelectItem key={q} value={q}>{q}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <PlannedQuarterMultiSelect 
+              value={data.planned_quarter || []} 
+              onChange={(v) => handleChange('planned_quarter', v)}
+            />
           </div>
 
           <div className="space-y-2">

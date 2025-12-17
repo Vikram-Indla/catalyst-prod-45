@@ -128,8 +128,130 @@ export function DeliveryTrackSelect(props: Omit<LookupSelectProps, 'optionSetKey
   return <LookupSelect optionSetKey="DELIVERY_TRACK" placeholder="Select track..." {...props} />;
 }
 
-export function PlannedQuarterSelect(props: Omit<LookupSelectProps, 'optionSetKey'>) {
-  return <LookupSelect optionSetKey="PLANNED_QUARTER" placeholder="Select quarter..." {...props} />;
+// Multi-select version of LookupSelect
+export interface LookupMultiSelectProps {
+  optionSetKey: string;
+  value: string[] | null | undefined;
+  onChange: (value: string[]) => void;
+  placeholder?: string;
+  disabled?: boolean;
+  className?: string;
+  triggerClassName?: string;
+}
+
+export function LookupMultiSelect({
+  optionSetKey,
+  value,
+  onChange,
+  placeholder = 'Select...',
+  disabled = false,
+  className,
+  triggerClassName,
+}: LookupMultiSelectProps) {
+  const { data: options = [], isLoading, error } = useActiveOptionValues(optionSetKey);
+  const [open, setOpen] = React.useState(false);
+  
+  const selectedValues = value || [];
+
+  const toggleValue = (valueKey: string) => {
+    if (selectedValues.includes(valueKey)) {
+      onChange(selectedValues.filter(v => v !== valueKey));
+    } else {
+      onChange([...selectedValues, valueKey]);
+    }
+  };
+
+  const getDisplayText = () => {
+    if (selectedValues.length === 0) return placeholder;
+    if (selectedValues.length === 1) {
+      const opt = options.find(o => o.value_key === selectedValues[0]);
+      return opt?.label || selectedValues[0];
+    }
+    return `${selectedValues.length} quarters selected`;
+  };
+
+  if (isLoading) {
+    return (
+      <div className={cn("flex items-center h-9 px-3 border rounded-md bg-muted/30", className)}>
+        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+        <span className="ml-2 text-sm text-muted-foreground">Loading...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={cn("flex items-center h-9 px-3 border border-destructive rounded-md", className)}>
+        <span className="text-sm text-destructive">Failed to load options</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className={cn("relative", className)}>
+      <button
+        type="button"
+        onClick={() => !disabled && setOpen(!open)}
+        className={cn(
+          "flex h-9 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background",
+          "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+          disabled && "cursor-not-allowed opacity-50",
+          triggerClassName
+        )}
+        disabled={disabled}
+      >
+        <span className={cn(selectedValues.length === 0 && "text-muted-foreground")}>
+          {getDisplayText()}
+        </span>
+        <svg className="h-4 w-4 opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="m6 9 6 6 6-6"/>
+        </svg>
+      </button>
+      
+      {open && (
+        <>
+          <div className="fixed inset-0 z-[399]" onClick={() => setOpen(false)} />
+          <div className="absolute z-[400] mt-1 w-full rounded-md border bg-popover shadow-lg">
+            <div className="max-h-60 overflow-auto p-1">
+              {options.map((option) => (
+                <div
+                  key={option.id}
+                  onClick={() => toggleValue(option.value_key)}
+                  className={cn(
+                    "flex items-center gap-2 px-2 py-1.5 text-sm cursor-pointer rounded hover:bg-accent",
+                    selectedValues.includes(option.value_key) && "bg-accent/50"
+                  )}
+                >
+                  <div className={cn(
+                    "h-4 w-4 rounded border flex items-center justify-center",
+                    selectedValues.includes(option.value_key) 
+                      ? "bg-primary border-primary text-primary-foreground" 
+                      : "border-input"
+                  )}>
+                    {selectedValues.includes(option.value_key) && (
+                      <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    )}
+                  </div>
+                  <span>{option.label}</span>
+                </div>
+              ))}
+              {options.length === 0 && (
+                <div className="py-2 px-3 text-sm text-muted-foreground text-center">
+                  No options available
+                </div>
+              )}
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+export function PlannedQuarterSelect(props: Omit<LookupMultiSelectProps, 'optionSetKey'>) {
+  return <LookupMultiSelect optionSetKey="PLANNED_QUARTER" placeholder="Select quarters..." {...props} />;
 }
 
 export function PrioritySelect(props: Omit<LookupSelectProps, 'optionSetKey'>) {

@@ -19,7 +19,7 @@ interface BusinessRequest {
   id: string;
   request_key: string | null;
   title: string;
-  planned_quarter?: string | null;
+  planned_quarter?: string[] | null;
   rank?: number | null;
   impl_start_date?: string | null;
 }

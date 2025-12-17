@@ -144,7 +144,7 @@ export function useCreateBusinessRequest() {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: async (data: CreateBusinessRequestFormData & { delivery_platform?: string; planned_quarter?: string }) => {
+    mutationFn: async (data: CreateBusinessRequestFormData & { delivery_platform?: string; planned_quarter?: string[] | null }) => {
       // Get current user for audit logging
       const { data: { user } } = await supabase.auth.getUser();
       

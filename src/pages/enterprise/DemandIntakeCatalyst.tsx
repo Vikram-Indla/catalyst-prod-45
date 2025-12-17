@@ -60,7 +60,7 @@ interface BusinessRequest {
   created_at: string | null;
   end_date: string | null;
   department: string | null;
-  planned_quarter: string | null;
+  planned_quarter: string[] | null;
   [key: string]: any;
 }
 
