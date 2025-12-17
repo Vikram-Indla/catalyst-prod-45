@@ -1,9 +1,13 @@
-import { useState } from 'react';
+/**
+ * DemandDetailsViewTab - Catalyst Design System
+ * Executive-grade form cards with olive accents
+ */
+
+import { useState, ReactNode } from 'react';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { Button } from '@/components/ui/button';
-import { Lock, Unlock } from 'lucide-react';
+import { Lock, Unlock, ChevronDown, ChevronRight } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -13,12 +17,85 @@ import { BusinessRequest } from '@/types/business-request';
 import { PlannedQuarterSelect, DeliveryPlatformSelect } from '@/components/ui/lookup-select';
 import { getTierDisplayInfo, PriorityTier } from '@/hooks/usePrioritizationConfig';
 import { DepartmentSelect } from '@/components/business-requests/DepartmentSelect';
-import { BusinessOwnerSelect } from '@/components/business-requests/BusinessOwnerSelect';
 
 interface DemandDetailsViewTabProps {
   data: Partial<BusinessRequest> & Record<string, any>;
   onChange: (field: string, value: any) => void;
   onNavigateToTab?: (tabKey: string) => void;
+}
+
+// Catalyst Form Card Component
+function FormCard({ 
+  title, 
+  children, 
+  collapsible = false,
+  defaultExpanded = true 
+}: { 
+  title: string; 
+  children: ReactNode; 
+  collapsible?: boolean;
+  defaultExpanded?: boolean;
+}) {
+  const [expanded, setExpanded] = useState(defaultExpanded);
+
+  return (
+    <section 
+      className="rounded-lg overflow-hidden"
+      style={{
+        background: 'var(--surface-bg, hsl(var(--background)))',
+        border: '1px solid var(--border-default, hsl(var(--border)))',
+        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
+      }}
+    >
+      <header 
+        className={cn(
+          "px-4 py-3 flex items-center justify-between",
+          collapsible && "cursor-pointer hover:bg-[var(--surface-hover,hsl(var(--muted)))]"
+        )}
+        style={{
+          background: 'linear-gradient(180deg, var(--surface-bg, hsl(var(--background))) 0%, var(--surface-subtle, hsl(var(--muted)/0.3)) 100%)',
+          borderBottom: expanded ? '1px solid var(--border-subtle, hsl(var(--border)/0.5))' : 'none',
+        }}
+        onClick={collapsible ? () => setExpanded(!expanded) : undefined}
+      >
+        <h2 
+          className="text-[11px] font-semibold uppercase tracking-[0.5px]"
+          style={{ color: '#5C7C5C' }}
+        >
+          {title}
+        </h2>
+        {collapsible && (
+          <button 
+            className="p-1 rounded hover:bg-[var(--surface-hover,hsl(var(--muted)))]"
+            style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
+          >
+            {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+          </button>
+        )}
+      </header>
+      {expanded && (
+        <div className="p-4 space-y-4">
+          {children}
+        </div>
+      )}
+    </section>
+  );
+}
+
+// Catalyst Field Component
+function Field({ label, required, children }: { label: string; required?: boolean; children: ReactNode }) {
+  return (
+    <div className="space-y-1.5">
+      <label 
+        className="text-[12px] font-medium"
+        style={{ color: 'var(--text-secondary, hsl(var(--muted-foreground)))' }}
+      >
+        {label}
+        {required && <span style={{ color: '#B85C5C' }}> *</span>}
+      </label>
+      {children}
+    </div>
+  );
 }
 
 export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: DemandDetailsViewTabProps) {
@@ -50,161 +127,143 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
     }
   };
 
-  return (
-    <div className="flex flex-col h-full space-y-4" style={{ background: 'var(--bg)' }}>
-      {/* SECTION 1: Request Metadata - TOP CARD */}
-      <div className="border rounded-lg p-4" style={{ borderColor: 'var(--border-color)', background: 'var(--surface-1)' }}>
-        <h3 className="text-[11px] font-medium uppercase tracking-wide mb-3" style={{ color: 'var(--text-3)' }}>
-          Request Metadata
-        </h3>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>Requestor</Label>
-            <div className="mt-1">
-              <UserPicker
-                value={data.requestor || null}
-                onChange={(value) => onChange('requestor', value as string | null)}
-                placeholder="Select requestor..."
-              />
-            </div>
-          </div>
-          <div>
-            <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>Department</Label>
-            <div className="mt-1">
-              <DepartmentSelect
-                value={data.department_id || null}
-                onChange={(id) => onChange('department_id', id)}
-                placeholder="Select department..."
-              />
-            </div>
-          </div>
-          <div>
-            <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>Product / Platform</Label>
-            <div className="mt-1">
-              <DeliveryPlatformSelect
-                value={data.delivery_platform || null}
-                onChange={(value) => onChange('delivery_platform', value)}
-              />
-            </div>
-          </div>
-          <div>
-            <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>Target Completion Date</Label>
-            <div className="mt-1">
-              <CatalystDatePicker
-                value={data.end_date || null}
-                onChange={(date) => onChange('end_date', date ? format(date, 'yyyy-MM-dd') : null)}
-                placeholder="Select date"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
+  // Input styles matching Catalyst
+  const inputStyle = {
+    background: 'var(--input-bg, hsl(var(--background)))',
+    borderColor: 'var(--input-border, hsl(var(--border)))',
+    color: 'var(--text-primary, hsl(var(--foreground)))',
+  };
 
-      {/* SECTION 2: Details */}
-      <div className="border rounded-lg p-4 space-y-4" style={{ borderColor: 'var(--border-color)', background: 'var(--surface-1)' }}>
-        <h3 className="text-[11px] font-medium uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>Details</h3>
-          
-        {/* Summary */}
-        <div>
-          <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>
-            Summary <span className="text-destructive">*</span>
-          </Label>
+  return (
+    <div className="space-y-4">
+      
+      {/* ═══════════════════════════════════════════════════════════
+          REQUEST METADATA CARD
+          ═══════════════════════════════════════════════════════════ */}
+      <FormCard title="Request Metadata">
+        <div className="grid grid-cols-2 gap-4">
+          <Field label="Requestor">
+            <UserPicker
+              value={data.requestor || null}
+              onChange={(value) => onChange('requestor', value as string | null)}
+              placeholder="Select requestor..."
+            />
+          </Field>
+
+          <Field label="Department">
+            <DepartmentSelect
+              value={data.department_id || null}
+              onChange={(id) => onChange('department_id', id)}
+              placeholder="Select department..."
+            />
+          </Field>
+
+          <Field label="Delivery Platform">
+            <DeliveryPlatformSelect
+              value={data.delivery_platform || null}
+              onChange={(value) => onChange('delivery_platform', value)}
+            />
+          </Field>
+
+          <Field label="Target Completion Date">
+            <CatalystDatePicker
+              value={data.end_date || null}
+              onChange={(date) => onChange('end_date', date ? format(date, 'yyyy-MM-dd') : null)}
+              placeholder="Select date"
+            />
+          </Field>
+        </div>
+      </FormCard>
+
+      {/* ═══════════════════════════════════════════════════════════
+          DETAILS CARD
+          ═══════════════════════════════════════════════════════════ */}
+      <FormCard title="Details">
+        <Field label="Summary" required>
           <Input
             value={data.title || ''}
             onChange={(e) => onChange('title', e.target.value)}
             placeholder="Enter demand summary"
-            className="mt-1 h-8 text-[13px]"
-            style={{ background: 'var(--input-bg)', borderColor: 'var(--input-border)' }}
+            className="h-9 text-[14px]"
+            style={inputStyle}
           />
-        </div>
+        </Field>
 
-        {/* Auto Priority - Read-only with navigation */}
-        <div>
-          <Label className="text-[11px] font-medium" style={{ color: 'var(--text-3)' }}>Auto Priority</Label>
-          <div 
-            className="mt-1 px-2.5 py-1.5 rounded text-[12px] flex items-center gap-2" 
-            style={{ background: 'var(--surface-2)', border: '1px solid var(--border-color)', color: 'var(--text-2)' }}
-          >
-            <Lock className="h-3 w-3" style={{ color: 'var(--text-3)' }} />
+        {/* Auto Priority Link */}
+        <div 
+          className="flex items-center justify-between px-3.5 py-2.5 rounded-md"
+          style={{
+            background: 'var(--surface-subtle, hsl(var(--muted)/0.3))',
+            border: '1px solid var(--border-subtle, hsl(var(--border)/0.5))',
+          }}
+        >
+          <div className="flex items-center gap-2 text-[13px]" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>
+            <Lock className="h-4 w-4" />
             {(() => {
               const tier = (data.priority_tier as PriorityTier) || 'unscored';
               const { label } = getTierDisplayInfo(tier);
               return label.charAt(0) + label.slice(1).toLowerCase();
             })()}
-            <button
-              type="button"
-              onClick={() => onNavigateToTab?.('business-score')}
-              className="ml-auto text-[11px] hover:underline"
-              style={{ color: 'var(--accent-color)' }}
-            >
-              View scoring →
-            </button>
           </div>
+          <button
+            onClick={() => onNavigateToTab?.('business-score')}
+            className="flex items-center gap-1 text-[13px] font-medium hover:underline"
+            style={{ color: '#5C7C5C' }}
+          >
+            View scoring
+            <ChevronRight className="h-4 w-4" />
+          </button>
         </div>
 
-        {/* Description */}
-        <div>
-          <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>Description</Label>
-          <div className="mt-1">
-            <RichTextEditor
-              value={data.description || ''}
-              onChange={(value) => onChange('description', value)}
-              placeholder="Enter description..."
+        <Field label="Description">
+          <RichTextEditor
+            value={data.description || ''}
+            onChange={(value) => onChange('description', value)}
+            placeholder="Enter detailed description..."
+          />
+        </Field>
+
+        <div className="grid grid-cols-2 gap-4">
+          <Field label="Reporter">
+            <UserPicker
+              value={data.requestor || null}
+              onChange={(value) => onChange('requestor', value as string | null)}
+              placeholder="Select reporter..."
             />
-          </div>
-        </div>
+          </Field>
 
-        {/* Reporter + Assignee */}
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>Reporter</Label>
-            <div className="mt-1">
-              <UserPicker
-                value={data.requestor || null}
-                onChange={(value) => onChange('requestor', value as string | null)}
-                placeholder="Select reporter..."
-              />
-            </div>
-          </div>
-          <div>
-            <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>Assignee</Label>
-            <div className="mt-1">
-              <UserPicker
-                value={data.assignee || null}
-                onChange={(value) => onChange('assignee', value as string | null)}
-                placeholder="Select assignee..."
-              />
-            </div>
-          </div>
+          <Field label="Assignee">
+            <UserPicker
+              value={data.assignee || null}
+              onChange={(value) => onChange('assignee', value as string | null)}
+              placeholder="Select assignee..."
+            />
+          </Field>
         </div>
-      </div>
+      </FormCard>
 
-      {/* SECTION 3: Planning & Delivery */}
-      <div className="border rounded-lg p-4 space-y-4 flex-1" style={{ borderColor: 'var(--border-color)', background: 'var(--surface-1)' }}>
-        <h3 className="text-[11px] font-medium uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>Planning & Delivery</h3>
-          
-        {/* Dates */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div>
-            <Label className="text-[11px] font-medium mb-1 block" style={{ color: 'var(--text-2)' }}>Business Ask Date</Label>
+      {/* ═══════════════════════════════════════════════════════════
+          PLANNING & DELIVERY CARD
+          ═══════════════════════════════════════════════════════════ */}
+      <FormCard title="Planning & Delivery">
+        <div className="grid grid-cols-3 gap-4">
+          <Field label="Business Ask Date">
             <CatalystDatePicker
               value={data.start_date || null}
               onChange={(date) => onChange('start_date', date ? format(date, 'yyyy-MM-dd') : null)}
               placeholder="Select"
             />
-          </div>
+          </Field>
 
-          <div>
-            <Label className="text-[11px] font-medium mb-1 block" style={{ color: 'var(--text-2)' }}>Kickoff Date</Label>
+          <Field label="Kickoff Date">
             <CatalystDatePicker
               value={data.impl_start_date || null}
               onChange={(date) => onChange('impl_start_date', date ? format(date, 'yyyy-MM-dd') : null)}
               placeholder="Select"
             />
-          </div>
+          </Field>
 
-          <div>
-            <Label className="text-[11px] font-medium mb-1 block" style={{ color: 'var(--text-2)' }}>Target Complete Date</Label>
+          <Field label="Target Complete Date">
             <div className="flex gap-1">
               <div className="flex-1">
                 <CatalystDatePicker
@@ -219,31 +278,52 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
                 size="icon"
                 onClick={handleLockToggle}
                 className={cn(
-                  "shrink-0 h-8 w-8",
-                  targetDateLocked && "border-[var(--accent-color)]"
+                  "shrink-0 h-9 w-9",
+                  targetDateLocked && "border-[#5C7C5C]"
                 )}
-                style={targetDateLocked ? { background: 'var(--surface-2)', color: 'var(--accent-color)' } : undefined}
+                style={targetDateLocked ? { 
+                  background: 'rgba(92, 124, 92, 0.1)', 
+                  color: '#5C7C5C' 
+                } : undefined}
                 title={targetDateLocked ? `Locked by ${lockedByUser}` : 'Lock date'}
               >
-                {targetDateLocked ? <Lock className="h-3 w-3" /> : <Unlock className="h-3 w-3" />}
+                {targetDateLocked ? <Lock className="h-3.5 w-3.5" /> : <Unlock className="h-3.5 w-3.5" />}
               </Button>
             </div>
-          </div>
+          </Field>
         </div>
 
-        {/* Quarter */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>Planned Quarter</Label>
-            <div className="mt-1">
-              <PlannedQuarterSelect
-                value={data.planned_quarter || null}
-                onChange={(value) => onChange('planned_quarter', value)}
-              />
-            </div>
-          </div>
+        <div className="grid grid-cols-2 gap-4">
+          <Field label="Planned Quarter">
+            <PlannedQuarterSelect
+              value={data.planned_quarter || null}
+              onChange={(value) => onChange('planned_quarter', value)}
+            />
+          </Field>
         </div>
-      </div>
+      </FormCard>
+
+      {/* ═══════════════════════════════════════════════════════════
+          ACCEPTANCE CRITERIA CARD
+          ═══════════════════════════════════════════════════════════ */}
+      <FormCard title="Acceptance Criteria" collapsible defaultExpanded={false}>
+        <RichTextEditor
+          value={data.acceptance_criteria || ''}
+          onChange={(value) => onChange('acceptance_criteria', value)}
+          placeholder="Define the acceptance criteria..."
+        />
+      </FormCard>
+
+      {/* ═══════════════════════════════════════════════════════════
+          DEPENDENCIES CARD
+          ═══════════════════════════════════════════════════════════ */}
+      <FormCard title="Dependencies" collapsible defaultExpanded={false}>
+        <RichTextEditor
+          value={data.dependencies || ''}
+          onChange={(value) => onChange('dependencies', value)}
+          placeholder="List any dependencies..."
+        />
+      </FormCard>
     </div>
   );
 }
