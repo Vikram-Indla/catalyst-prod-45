@@ -106,7 +106,7 @@ function InlineCellEditor<T>({
     "w-full h-8 px-2 text-sm border rounded focus:outline-none focus:ring-2",
     error 
       ? "border-red-400 focus:ring-red-200" 
-      : "border-brand-gold focus:ring-brand-gold/30"
+      : "border-brand-primary focus:ring-brand-primary/30"
   );
 
   // Custom render if provided
@@ -256,7 +256,7 @@ function RowEditMode<T extends { id: string }>({
   };
 
   return (
-    <tr className="bg-brand-gold/5 border-2 border-brand-gold/30">
+    <tr className="bg-brand-primary/5 border-2 border-brand-primary/30">
       {columns.map((column) => (
         <td key={column.id} className="px-4 py-2">
           {column.editable ? (
@@ -870,7 +870,7 @@ export function EnterpriseTable<T extends { id: string }>({
                         column.renderCell(value, row)
                       ) : (
                         <span className={cn(
-                          column.editable && editMode === 'cell' && "border-b border-dashed border-transparent hover:border-brand-gold/30"
+                          column.editable && editMode === 'cell' && "border-b border-dashed border-transparent hover:border-brand-primary/30"
                         )}>
                           {value ?? '—'}
                         </span>

@@ -75,8 +75,8 @@ export function ResizableColumnHeader({
       <div
         className={cn(
           "absolute right-0 top-0 h-full w-1 cursor-col-resize z-10 transition-colors",
-          "hover:bg-brand-gold/60 active:bg-brand-gold",
-          isResizing && "bg-brand-gold"
+          "hover:bg-brand-primary/60 active:bg-brand-primary",
+          isResizing && "bg-brand-primary"
         )}
         onMouseDown={handleMouseDown}
         onClick={(e) => e.stopPropagation()}
@@ -89,7 +89,7 @@ export function ResizableColumnHeader({
       <div 
         className={cn(
           "absolute right-0 top-0 w-px h-full bg-border opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none",
-          isResizing && "opacity-100 bg-brand-gold"
+          isResizing && "opacity-100 bg-brand-primary"
         )}
       />
     </th>

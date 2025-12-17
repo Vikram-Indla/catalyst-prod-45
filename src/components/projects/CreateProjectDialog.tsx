@@ -269,7 +269,7 @@ export function CreateProjectDialog({ open, onOpenChange, onSuccess, defaultProg
             <Button 
               type="submit" 
               disabled={!name.trim() || !key || key.length !== 3 || !!keyError || !programId || createProject.isPending}
-              className="bg-brand-gold hover:bg-brand-gold-hover"
+              className="bg-brand-primary hover:bg-brand-primary-hover"
             >
               {createProject.isPending ? 'Creating...' : 'Create project'}
             </Button>

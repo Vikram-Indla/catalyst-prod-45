@@ -131,7 +131,7 @@ export function ManageQuartersDrawer({ open, onClose, snapshot, isAdmin = false 
   return (
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
       <SheetContent side="right" width="medium" className="flex flex-col" hideClose>
-        <SheetHeader className="border-b border-brand-gold pb-4">
+        <SheetHeader className="border-b border-brand-primary pb-4">
           <div className="flex items-center justify-between">
             <div>
               <SheetTitle>Manage quarters</SheetTitle>
@@ -142,7 +142,7 @@ export function ManageQuartersDrawer({ open, onClose, snapshot, isAdmin = false 
             <Button
               variant="outline"
               size="icon"
-              className="h-8 w-8 rounded-md border-brand-gold/30"
+              className="h-8 w-8 rounded-md border-brand-primary/30"
               onClick={onClose}
             >
               <X className="h-4 w-4" />

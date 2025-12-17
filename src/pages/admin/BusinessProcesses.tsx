@@ -107,7 +107,7 @@ export default function BusinessProcesses() {
             Manage business processes for Epic linking
           </p>
         </div>
-        <Button onClick={() => handleOpenDialog()} className="bg-brand-gold hover:bg-brand-gold-hover text-white">
+        <Button onClick={() => handleOpenDialog()} className="bg-brand-primary hover:bg-brand-primary-hover text-white">
           <Plus className="h-4 w-4 mr-2" />
           Add Business Process
         </Button>
@@ -258,7 +258,7 @@ export default function BusinessProcesses() {
             <Button
               onClick={handleSubmit}
               disabled={!formData.name_en.trim()}
-              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
             >
               {editingProcess ? 'Update' : 'Create'}
             </Button>

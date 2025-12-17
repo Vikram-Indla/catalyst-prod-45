@@ -436,7 +436,7 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
                           className={cn(
                             "relative p-2.5 rounded-lg text-left transition-all duration-200 border",
                             isSelected 
-                              ? "border-brand-gold bg-brand-gold text-white" 
+                              ? "border-brand-primary bg-brand-primary text-white" 
                               : "border-border hover:border-muted-foreground hover:bg-muted"
                           )}
                         >
@@ -525,7 +525,7 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
                         type="date" 
                         value={customStartDate}
                         onChange={(e) => setCustomStartDate(e.target.value)}
-                        className="w-full px-2 py-1.5 rounded-lg border border-border text-xs bg-background focus:outline-none focus:border-brand-gold"
+                        className="w-full px-2 py-1.5 rounded-lg border border-border text-xs bg-background focus:outline-none focus:border-brand-primary"
                       />
                     </div>
                     <div>
@@ -534,7 +534,7 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
                         type="date" 
                         value={customEndDate}
                         onChange={(e) => setCustomEndDate(e.target.value)}
-                        className="w-full px-2 py-1.5 rounded-lg border border-border text-xs bg-background focus:outline-none focus:border-brand-gold"
+                        className="w-full px-2 py-1.5 rounded-lg border border-border text-xs bg-background focus:outline-none focus:border-brand-primary"
                       />
                     </div>
                   </div>

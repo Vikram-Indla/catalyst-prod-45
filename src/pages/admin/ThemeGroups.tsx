@@ -39,7 +39,7 @@ export default function ThemeGroups() {
               Manage strategic theme categorizations and portfolio groupings
             </p>
           </div>
-          <Button className="bg-brand-gold hover:bg-brand-gold-hover">
+          <Button className="bg-brand-primary hover:bg-brand-primary-hover">
             <Plus className="h-4 w-4 mr-2" />
             Add Theme Group
           </Button>

@@ -156,7 +156,7 @@ export const SkillsInventoryReport: React.FC = () => {
               onClick={() => setSelectedProgram(program.id)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 selectedProgram === program.id
-                  ? 'bg-brand-gold text-brand-dark'
+                  ? 'bg-brand-primary text-brand-dark'
                   : 'bg-card text-muted-foreground hover:bg-secondary'
               }`}
             >
@@ -195,8 +195,8 @@ export const SkillsInventoryReport: React.FC = () => {
                 className="bg-card rounded-xl p-5 border border-brand-gold-border"
               >
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-brand-gold/15 flex items-center justify-center flex-shrink-0">
-                    <Icon className="w-6 h-6 text-brand-gold" />
+                  <div className="w-12 h-12 rounded-xl bg-brand-primary/15 flex items-center justify-center flex-shrink-0">
+                    <Icon className="w-6 h-6 text-brand-primary" />
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-foreground">{stat.value}</div>

@@ -381,7 +381,7 @@ export default function KeyManagement() {
                 ))}
               </div>
               <Button 
-                className="mt-4 bg-brand-gold hover:bg-brand-gold-hover" 
+                className="mt-4 bg-brand-primary hover:bg-brand-primary-hover" 
                 onClick={() => { setMigrationType('programs'); setShowConfirmDialog(true); }} 
                 disabled={programsToMigrate.length === 0}
               >
@@ -440,7 +440,7 @@ export default function KeyManagement() {
                 ))}
               </div>
               <Button 
-                className="mt-4 bg-brand-gold hover:bg-brand-gold-hover" 
+                className="mt-4 bg-brand-primary hover:bg-brand-primary-hover" 
                 onClick={() => { setMigrationType('projects'); setShowConfirmDialog(true); }} 
                 disabled={projectsToMigrate.length === 0}
               >
@@ -473,7 +473,7 @@ export default function KeyManagement() {
             <Button 
               onClick={handleRunMigration} 
               disabled={confirmText !== 'MIGRATE KEYS'} 
-              className="bg-brand-gold hover:bg-brand-gold-hover"
+              className="bg-brand-primary hover:bg-brand-primary-hover"
             >
               Run Migration
             </Button>
