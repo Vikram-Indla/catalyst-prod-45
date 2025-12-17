@@ -96,30 +96,23 @@ export function GlobalSearchPalette({ open, onOpenChange }: GlobalSearchPaletteP
           )}
           shouldFilter={false} // We handle filtering ourselves
         >
-          {/* Search Input - contained within a bordered search bar */}
-          <div className="p-3 border-b border-[var(--divider)] bg-[var(--surface-1)]">
-            <div className={cn(
-              "flex items-center gap-3 px-3 py-2 rounded-lg",
-              "border border-[var(--border-color)] bg-[var(--surface-2)]",
-              "focus-within:border-[var(--brand-primary)] focus-within:ring-1 focus-within:ring-[var(--brand-primary)]/30",
-              "transition-colors"
-            )}>
-              <Search className="h-4 w-4 text-[var(--icon-muted)] shrink-0" />
-              <Command.Input
-                ref={inputRef}
-                value={search}
-                onValueChange={setSearch}
-                placeholder="Search work items…"
-                className={cn(
-                  "flex-1 h-7 bg-transparent text-sm text-[var(--text-1)]",
-                  "placeholder:text-[var(--text-3)]",
-                  "outline-none border-none"
-                )}
-              />
-              <kbd className="hidden sm:inline-flex h-5 items-center gap-1 rounded border border-[var(--border-color)] bg-[var(--surface-3)] px-1.5 text-[10px] font-medium text-[var(--text-3)]">
-                ESC
-              </kbd>
-            </div>
+          {/* Search Input - clean, no inner border */}
+          <div className="flex items-center gap-3 px-4 py-3 border-b border-[var(--divider)]">
+            <Search className="h-4 w-4 text-[var(--icon-muted)] shrink-0" />
+            <Command.Input
+              ref={inputRef}
+              value={search}
+              onValueChange={setSearch}
+              placeholder="Search work items…"
+              className={cn(
+                "flex-1 h-7 bg-transparent text-sm text-[var(--text-1)]",
+                "placeholder:text-[var(--text-3)]",
+                "outline-none border-none"
+              )}
+            />
+            <kbd className="hidden sm:inline-flex h-5 items-center gap-1 rounded border border-[var(--border-color)] bg-[var(--surface-2)] px-1.5 text-[10px] font-medium text-[var(--text-3)]">
+              ESC
+            </kbd>
           </div>
 
           {/* Results List */}
