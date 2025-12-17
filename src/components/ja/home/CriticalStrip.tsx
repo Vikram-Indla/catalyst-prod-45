@@ -63,7 +63,7 @@ export function CriticalStrip({ majorIncidents, slaAtRisk, awaitingMe, blocked }
   ];
 
   return (
-    <div className="flex items-stretch gap-2 overflow-x-auto pb-1">
+    <div className="flex items-stretch gap-2.5 overflow-x-auto pb-1">
       {pills.map((pill) => {
         const Icon = pill.icon;
         
@@ -72,9 +72,9 @@ export function CriticalStrip({ majorIncidents, slaAtRisk, awaitingMe, blocked }
             key={pill.id}
             onClick={() => navigate(pill.route)}
             className={cn(
-              "flex items-center gap-2.5 px-3 py-2 rounded-lg border transition-all cursor-pointer min-w-fit",
+              "flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg border transition-all cursor-pointer min-w-fit",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-1",
-              // Champagne gray surface with gold border
+              // Consistent champagne surface with gold border
               "bg-[var(--surface-champagne)] border-[var(--border-gold)]",
               "hover:bg-[var(--surface-2)] hover:border-[var(--brand-gold)]"
             )}
@@ -92,7 +92,7 @@ export function CriticalStrip({ majorIncidents, slaAtRisk, awaitingMe, blocked }
             {/* Count - olive green for normal, red only for breached */}
             <span 
               className={cn(
-                "text-sm font-bold tabular-nums",
+                "text-sm font-bold tabular-nums min-w-[1.25rem] text-center",
                 pill.hasBreach ? "text-[hsl(var(--destructive))]" : "text-[var(--brand-primary)]"
               )}
             >
@@ -100,7 +100,7 @@ export function CriticalStrip({ majorIncidents, slaAtRisk, awaitingMe, blocked }
             </span>
             {/* Sub-counts for Major Incidents - breached in red, at-risk in gold */}
             {pill.id === 'major-incidents' && (pill.breached || pill.atRisk) ? (
-              <span className="text-[10px] whitespace-nowrap">
+              <span className="text-[11px] whitespace-nowrap text-[var(--text-2)]">
                 {pill.breached ? (
                   <span className="text-[hsl(var(--destructive))] font-medium">{pill.breached} breached</span>
                 ) : null}
