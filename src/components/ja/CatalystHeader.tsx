@@ -10,7 +10,7 @@ import { useEnabledModules } from "@/hooks/useModules";
 import { useSingleItemNavigation } from "@/hooks/useSingleItemNavigation";
 import { Button } from "@/components/ui/button";
 import { CreateDropdown } from "./CreateDropdown";
-import { CommandPalette } from "@/components/ui/command-palette";
+import { GlobalSearchPalette } from "@/components/ui/global-search-palette";
 import { NotificationsPanel } from "./NotificationsPanel";
 import { ProgramSelectorDropdown } from "./ProgramSelectorDropdown";
 import { ProjectSelectorDropdown } from "./ProjectSelectorDropdown";
@@ -512,7 +512,7 @@ export function CatalystHeader() {
               )}
             >
               <Search className="h-4 w-4" />
-              <span className="text-sm">Search...</span>
+              <span className="text-sm">Search Catalyst…</span>
               <kbd className="hidden md:inline-flex h-5 items-center gap-0.5 rounded border px-1.5 text-[10px] font-medium border-[var(--border-color)] bg-[var(--surface-2)] text-[var(--text-3)]">
                 ⌘K
               </kbd>
@@ -567,8 +567,8 @@ export function CatalystHeader() {
         </div>
       </header>
 
-      {/* Command Palette */}
-      <CommandPalette open={isSearchOpen} onOpenChange={setIsSearchOpen} />
+      {/* Global Search Command Palette */}
+      <GlobalSearchPalette open={isSearchOpen} onOpenChange={setIsSearchOpen} />
 
       {/* Create Entity Dialog - lifted from dropdowns to prevent stacking */}
       {createDialogType && (
