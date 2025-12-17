@@ -85,8 +85,9 @@ export function useKanbanData() {
     return map;
   }, [departments]);
   
+  // Use the same query key as useBusinessRequests for data sync
   const { data: rawRequests, isLoading, error } = useQuery({
-    queryKey: ['kanban-business-requests'],
+    queryKey: ['business-requests'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('business_requests')
@@ -145,7 +146,7 @@ export function useKanbanData() {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['kanban-business-requests'] });
+      // Invalidate the shared query key
       queryClient.invalidateQueries({ queryKey: ['business-requests'] });
     },
     onError: (error) => {

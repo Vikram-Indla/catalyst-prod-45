@@ -1,6 +1,7 @@
 /**
  * Product Backlog Page - Executive Table view for Business Requests
  * Uses PageChrome for consistent header + IndustryHeaderToolbarV2 for toolbar
+ * Shares state with Kanban view via useIndustryViewStore
  */
 
 import React, { useState, useMemo } from 'react';
@@ -16,14 +17,30 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { PageChrome } from '@/components/layout/PageChrome';
+import { useIndustryViewStore } from '@/stores/useIndustryViewStore';
+import { useTeamMembers } from '@/modules/kanban/hooks/useKanbanData';
 
 export default function ProductBacklogPage() {
   const queryClient = useQueryClient();
-  const { data: businessRequests = [], isLoading } = useBusinessRequests();
+  
+  // Shared state from store
+  const { 
+    searchQuery, 
+    setSearchQuery, 
+    scoringFilter, 
+    setScoringFilter,
+    selectedAssignees,
+    toggleAssignee,
+    clearAssignees
+  } = useIndustryViewStore();
+  
+  // Team members for avatar filter
+  const teamMembers = useTeamMembers();
+  
+  // Use the shared query with search
+  const { data: businessRequests = [], isLoading } = useBusinessRequests(searchQuery);
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [searchValue, setSearchValue] = useState('');
-  const [scoringFilter, setScoringFilter] = useState<'all' | 'scored' | 'unscored'>('all');
   const [columnsDialogOpen, setColumnsDialogOpen] = useState(false);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   
@@ -42,7 +59,8 @@ export default function ProductBacklogPage() {
       autoPriority: br.priority_tier || 'unscored',
       rank: br.rank ?? null,
       reporter: br.requestor_name || null,
-      assignee: br.assignee_name || null,
+      assignee: br.assignee_name || br.assignee || null,
+      assigneeId: br.assignee || null,
       department: br.department?.toLowerCase().replace(/ /g, '_') || null,
       businessOwner: br.business_owner || null,
       businessAsk: br.start_date?.split('T')[0] || null,
@@ -62,8 +80,15 @@ export default function ProductBacklogPage() {
       data = data.filter(row => row.score === null);
     }
     
+    // Apply assignee filter
+    if (selectedAssignees.length > 0) {
+      data = data.filter(row => 
+        row.assigneeId && selectedAssignees.includes(row.assigneeId)
+      );
+    }
+    
     return data;
-  }, [businessRequests, scoringFilter]);
+  }, [businessRequests, scoringFilter, selectedAssignees]);
 
   const getDbIdFromDisplayId = (displayId: string) => {
     const originalRequest = businessRequests.find((br: any) => 
@@ -193,8 +218,17 @@ export default function ProductBacklogPage() {
       title="Product Backlog"
       countText={`${tableData.length}`}
       activeView="list"
-      searchValue={searchValue}
-      onSearchChange={setSearchValue}
+      searchValue={searchQuery}
+      onSearchChange={setSearchQuery}
+      avatars={teamMembers.slice(0, 6).map(m => ({
+        id: m.id,
+        name: m.name,
+        initials: m.initials,
+        color: m.color
+      }))}
+      selectedAvatarIds={selectedAssignees}
+      onToggleAvatar={toggleAssignee}
+      onSelectAllAvatars={clearAssignees}
       scoringFilter={scoringFilter}
       onScoringFilterChange={setScoringFilter}
       onColumnsConfig={() => setColumnsDialogOpen(true)}
@@ -237,8 +271,8 @@ export default function ProductBacklogPage() {
           onCreateNew={() => setCreateModalOpen(true)}
           onDuplicate={handleDuplicate}
           onDelete={handleDelete}
-          searchValue={searchValue}
-          onSearchChange={setSearchValue}
+          searchValue={searchQuery}
+          onSearchChange={setSearchQuery}
           columnsDialogOpen={columnsDialogOpen}
           onColumnsDialogChange={setColumnsDialogOpen}
           selectedRows={selectedRows}
