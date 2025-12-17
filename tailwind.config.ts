@@ -19,6 +19,13 @@ export default {
            ══════════════════════════════════════════════════════════ */
         brand: {
           dark: "#1A1A1A",
+          // Primary action color - OLIVE
+          primary: "#5C7C5C",
+          "primary-hover": "#4A6A4A",
+          "primary-light": "#7A9A7A",
+          "primary-muted": "rgba(92, 124, 92, 0.15)",
+          "primary-subtle": "rgba(92, 124, 92, 0.08)",
+          // Legacy gold - DECORATIVE ONLY
           gold: "#C69C6D",
           "gold-hover": "#B8905F",
           "gold-muted": "rgba(198, 156, 109, 0.15)",
@@ -173,7 +180,7 @@ export default {
          TYPOGRAPHY (V2)
          ══════════════════════════════════════════════════════════ */
       fontFamily: {
-        sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', '"Noto Sans"', 'Helvetica', 'Arial', 'sans-serif'],
+        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', '"Noto Sans"', 'Helvetica', 'Arial', 'sans-serif'],
         mono: ['"SF Mono"', 'Monaco', 'Consolas', '"Liberation Mono"', '"Courier New"', 'monospace'],
       },
       fontSize: {

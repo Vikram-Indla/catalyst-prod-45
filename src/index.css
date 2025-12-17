@@ -16,15 +16,24 @@
 
 :root {
   /* ══════════════════════════════════════════════════════════
-     BRAND COLORS (IMMUTABLE)
+     BRAND COLORS
      ══════════════════════════════════════════════════════════ */
   --brand-dark: #1A1A1A;
+  
+  /* Primary Action Color — OLIVE (Main interactive color) */
+  --brand-primary: #5C7C5C;
+  --brand-primary-hover: #4A6A4A;
+  --brand-primary-light: #7A9A7A;
+  --brand-primary-muted: rgba(92, 124, 92, 0.15);
+  --brand-primary-subtle: rgba(92, 124, 92, 0.08);
+  
+  /* Legacy Gold — DECORATIVE ONLY (charts, gauges, accents) */
   --brand-gold: #C69C6D;
   --brand-gold-hover: #B8905F;
   --brand-gold-muted: rgba(198, 156, 109, 0.15);
   
   /* ══════════════════════════════════════════════════════════
-     SECONDARY PALETTE — Golden Hour (IMMUTABLE)
+     SECONDARY PALETTE — Golden Hour
      ══════════════════════════════════════════════════════════ */
   --secondary-green: #5C7C5C;
   --secondary-bronze: #8B7355;
@@ -32,23 +41,23 @@
   --secondary-grey: #C8CCD0;
   
   /* ══════════════════════════════════════════════════════════
-     NAVIGATION TOKENS (MANDATORY)
+     NAVIGATION TOKENS
      ══════════════════════════════════════════════════════════ */
   --nav-hover-bg: rgba(92, 124, 92, 0.08);
   --nav-active-bg: rgba(92, 124, 92, 0.12);
   
   /* ══════════════════════════════════════════════════════════
-     ACCENT TOKENS (For Create Button and Primary CTAs)
+     ACCENT TOKENS (For Primary CTAs)
      ══════════════════════════════════════════════════════════ */
-  --accent-color: #C69C6D;
-  --accent-hover: #B8905F;
+  --accent-color: #5C7C5C;
+  --accent-hover: #4A6A4A;
   --border-color: #E1E4E8;
-  --focus-ring-color: rgba(198, 156, 109, 0.4);
+  --focus-ring-color: rgba(92, 124, 92, 0.4);
   
   /* ══════════════════════════════════════════════════════════
      FONT STACK
      ══════════════════════════════════════════════════════════ */
-  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
   --font-mono: 'SF Mono', Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
   
   /* ══════════════════════════════════════════════════════════
@@ -164,7 +173,7 @@
   --card-foreground: 0 0% 15%;
   --popover: 0 0% 100%;
   --popover-foreground: 0 0% 15%;
-  --primary: 35 46% 60%;
+  --primary: 120 15% 42%;
   --primary-foreground: 0 0% 100%;
   --secondary: 210 14% 97%;
   --secondary-foreground: 0 0% 15%;
@@ -176,18 +185,18 @@
   --destructive-foreground: 0 0% 100%;
   --border: 214 14% 89%;
   --input: 214 14% 89%;
-  --ring: 35 46% 60%;
+  --ring: 120 15% 42%;
   --radius: 6px;
   
   /* Sidebar */
   --sidebar-background: 0 0% 100%;
   --sidebar-foreground: 215 14% 45%;
-  --sidebar-primary: 35 46% 60%;
+  --sidebar-primary: 120 15% 42%;
   --sidebar-primary-foreground: 0 0% 100%;
   --sidebar-accent: 210 14% 97%;
   --sidebar-accent-foreground: 0 0% 15%;
   --sidebar-border: 214 14% 89%;
-  --sidebar-ring: 35 46% 60%;
+  --sidebar-ring: 120 15% 42%;
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -226,16 +235,16 @@
   --border-default: #E1E4E8;
   --border-subtle: #EAECEF;
   --border-muted: #F0F2F5;
-  --border-accent: rgba(198, 156, 109, 0.3);
-  --border-card: rgba(198, 156, 109, 0.25);
+  --border-accent: rgba(92, 124, 92, 0.3);
+  --border-card: rgba(92, 124, 92, 0.25);
   
   /* Text */
   --text-primary: #24292F;
   --text-secondary: #57606A;
   --text-muted: #8B949E;
   --text-faint: #B1B8C0;
-  --text-link: #C69C6D;
-  --text-link-hover: #B8905F;
+  --text-link: #5C7C5C;
+  --text-link-hover: #4A6A4A;
   
   /* Shadows */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
@@ -248,8 +257,8 @@
   /* Interactive States */
   --row-hover: #F6F8FA;
   --row-stripe: rgba(0, 0, 0, 0.015);
-  --row-selected: rgba(198, 156, 109, 0.08);
-  --focus-ring: rgba(198, 156, 109, 0.4);
+  --row-selected: rgba(92, 124, 92, 0.08);
+  --focus-ring: rgba(92, 124, 92, 0.4);
   
   /* Navigation */
   --sidebar-bg: #FFFFFF;
@@ -258,10 +267,10 @@
   /* Form Elements */
   --input-bg: #FFFFFF;
   --input-border: #D0D7DE;
-  --input-border-focus: #C69C6D;
+  --input-border-focus: #5C7C5C;
   --input-placeholder: #8B949E;
   --checkbox-border: #D0D7DE;
-  --checkbox-checked-bg: #C69C6D;
+  --checkbox-checked-bg: #5C7C5C;
   
   /* Status Colors */
   --status-success: #5C7C5C;
@@ -321,7 +330,7 @@
   --card-foreground: 210 20% 94%;
   --popover: 220 13% 8%;
   --popover-foreground: 210 20% 94%;
-  --primary: 35 46% 60%;
+  --primary: 120 15% 55%;
   --primary-foreground: 220 13% 5%;
   --secondary: 220 13% 12%;
   --secondary-foreground: 210 20% 94%;
@@ -333,17 +342,17 @@
   --destructive-foreground: 0 0% 100%;
   --border: 220 13% 18%;
   --input: 220 13% 12%;
-  --ring: 35 46% 60%;
+  --ring: 120 15% 55%;
   
   /* Sidebar */
   --sidebar-background: 220 13% 8%;
   --sidebar-foreground: 215 14% 55%;
-  --sidebar-primary: 35 46% 60%;
+  --sidebar-primary: 120 15% 55%;
   --sidebar-primary-foreground: 220 13% 5%;
   --sidebar-accent: 220 13% 12%;
   --sidebar-accent-foreground: 210 20% 94%;
   --sidebar-border: 220 13% 18%;
-  --sidebar-ring: 35 46% 60%;
+  --sidebar-ring: 120 15% 55%;
   
   /* Backgrounds */
   --page-bg: #0D1117;
@@ -358,16 +367,16 @@
   --border-default: #30363D;
   --border-subtle: #21262D;
   --border-muted: #21262D;
-  --border-accent: rgba(198, 156, 109, 0.4);
-  --border-card: rgba(198, 156, 109, 0.3);
+  --border-accent: rgba(92, 124, 92, 0.4);
+  --border-card: rgba(92, 124, 92, 0.3);
   
   /* Text */
   --text-primary: #E6EDF3;
   --text-secondary: #8B949E;
   --text-muted: #6E7681;
   --text-faint: #484F58;
-  --text-link: #C69C6D;
-  --text-link-hover: #D4B896;
+  --text-link: #7A9A7A;
+  --text-link-hover: #8DAA8D;
   
   /* Shadows */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
@@ -380,8 +389,8 @@
   /* Interactive States */
   --row-hover: #161B22;
   --row-stripe: rgba(255, 255, 255, 0.015);
-  --row-selected: rgba(198, 156, 109, 0.12);
-  --focus-ring: rgba(198, 156, 109, 0.5);
+  --row-selected: rgba(92, 124, 92, 0.12);
+  --focus-ring: rgba(92, 124, 92, 0.5);
   
   /* Navigation */
   --sidebar-bg: #161B22;
@@ -389,10 +398,10 @@
   /* Form Elements */
   --input-bg: #0D1117;
   --input-border: #30363D;
-  --input-border-focus: #C69C6D;
+  --input-border-focus: #7A9A7A;
   --input-placeholder: #6E7681;
   --checkbox-border: #30363D;
-  --checkbox-checked-bg: #C69C6D;
+  --checkbox-checked-bg: #5C7C5C;
   
   /* Status Colors */
   --status-success: #7DA37D;
@@ -531,12 +540,12 @@ input[type="checkbox"] {
 }
 
 input[type="checkbox"]:hover {
-  border-color: var(--brand-gold);
+  border-color: var(--brand-primary);
 }
 
 input[type="checkbox"]:checked {
-  background-color: var(--brand-gold);
-  border-color: var(--brand-gold);
+  background-color: var(--brand-primary);
+  border-color: var(--brand-primary);
 }
 
 input[type="checkbox"]:checked::after {
