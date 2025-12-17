@@ -13,8 +13,8 @@ interface DemandTimelineAreaProps {
   onDemandClick: (demandId: string) => void;
 }
 
-// Row height for sync with DemandColumn (keeping current height for now per guardrail B)
-const DEMAND_ROW_HEIGHT = 76;
+// Final approved Product density: 64px row height
+const DEMAND_ROW_HEIGHT = 64;
 
 export const DemandTimelineArea = forwardRef<HTMLDivElement, DemandTimelineAreaProps>(
   ({ demands, scale, showMilestones, timelineStart, timelineEnd, onDemandClick }, ref) => {
@@ -123,7 +123,6 @@ export const DemandTimelineArea = forwardRef<HTMLDivElement, DemandTimelineAreaP
                 key={demand.id}
                 demand={demand}
                 showMilestones={showMilestones}
-                showMilestonesInTooltip={showMilestones}
                 timelineStart={timelineStart}
                 timelineEnd={timelineEnd}
                 onClick={() => onDemandClick(demand.id)}
@@ -142,7 +141,6 @@ DemandTimelineArea.displayName = 'DemandTimelineArea';
 interface DemandTimelineRowProps {
   demand: Demand;
   showMilestones: boolean;
-  showMilestonesInTooltip: boolean; // Separate prop for tooltip visibility
   timelineStart: Date;
   timelineEnd: Date;
   onClick: () => void;
@@ -152,7 +150,6 @@ interface DemandTimelineRowProps {
 const DemandTimelineRow: React.FC<DemandTimelineRowProps> = ({
   demand,
   showMilestones,
-  showMilestonesInTooltip,
   timelineStart,
   timelineEnd,
   onClick,
@@ -172,13 +169,14 @@ const DemandTimelineRow: React.FC<DemandTimelineRowProps> = ({
       style={{ height: `${rowHeight}px` }}
       onClick={onClick}
     >
-      {/* Timeline Bar - keeping current style for now (Step 3 will address bar thickness) */}
+      {/* Timeline Bar - Final approved: 8px height, no text inside */}
       <div 
-        className="absolute top-1/2 -translate-y-1/2 h-6 rounded-full overflow-hidden"
+        className="absolute top-1/2 -translate-y-1/2 rounded-full overflow-hidden"
         style={{ 
           left: `${barLeft}%`, 
           width: `${barWidth}%`,
-          background: '#E5E7EB',
+          height: '8px',
+          background: 'hsl(var(--muted))',
           minWidth: '40px'
         }}
       >
@@ -190,19 +188,6 @@ const DemandTimelineRow: React.FC<DemandTimelineRowProps> = ({
             backgroundColor: statusColor
           }}
         />
-        
-        {/* Status label inside bar */}
-        <div className="relative h-full flex items-center justify-center px-2">
-          <span 
-            className="text-xs font-medium whitespace-nowrap px-2 py-0.5 rounded"
-            style={{ 
-              backgroundColor: `${statusColor}20`,
-              color: statusColor
-            }}
-          >
-            {statusConfig?.label || demand.status}
-          </span>
-        </div>
       </div>
       
       {/* Milestone Markers - visual only, NO tooltips */}
@@ -273,8 +258,8 @@ const DemandTimelineRow: React.FC<DemandTimelineRowProps> = ({
           </div>
         )}
         
-        {/* Milestones Section (only if toggle is ON and milestones exist) */}
-        {showMilestonesInTooltip && demand.milestones.length > 0 && (
+        {/* Milestones Section - derived from single showMilestones toggle */}
+        {showMilestones && demand.milestones.length > 0 && (
           <div className="border-t border-border/50 pt-2 mt-2">
             <div className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wide mb-1.5">
               Milestones ({demand.milestones.length})
