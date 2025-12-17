@@ -97,7 +97,7 @@ export function GlobalSearchPalette({ open, onOpenChange }: GlobalSearchPaletteP
           shouldFilter={false} // We handle filtering ourselves
         >
           {/* Search Input - clean, no inner border */}
-          <div className="flex items-center gap-3 px-4 py-3 border-b border-[var(--divider)]">
+          <div className="flex items-center gap-4 px-5 py-3.5 border-b border-[var(--divider)]">
             <Search className="h-4 w-4 text-[var(--icon-muted)] shrink-0" />
             <Command.Input
               ref={inputRef}
