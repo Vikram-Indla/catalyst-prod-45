@@ -30,7 +30,7 @@ export default function ProgressBars() {
                 Set progress alert thresholds for Late and Warning indicators
               </p>
             </div>
-            <Button onClick={handleSave} className="bg-brand-gold hover:bg-brand-gold-hover flex-shrink-0">
+            <Button onClick={handleSave} className="bg-brand-primary hover:bg-brand-primary-hover flex-shrink-0">
               Save Configuration
             </Button>
           </div>

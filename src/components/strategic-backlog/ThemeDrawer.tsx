@@ -193,7 +193,7 @@ export function ThemeDrawer({ open, onOpenChange, theme, isArchived }: ThemeDraw
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Target className="h-4 w-4 text-brand-gold" />
+                      <Target className="h-4 w-4 text-brand-primary" />
                       <Label className="text-sm font-medium">Aligned Objectives</Label>
                     </div>
                     {!isReadOnly && (
@@ -212,7 +212,7 @@ export function ThemeDrawer({ open, onOpenChange, theme, isArchived }: ThemeDraw
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Layers className="h-4 w-4 text-brand-gold" />
+                      <Layers className="h-4 w-4 text-brand-primary" />
                       <Label className="text-sm font-medium">Aligned Epics</Label>
                     </div>
                     {!isReadOnly && (

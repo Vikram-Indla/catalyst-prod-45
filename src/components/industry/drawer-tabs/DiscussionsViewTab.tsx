@@ -92,7 +92,7 @@ export function DiscussionsViewTab({ data }: DiscussionsViewTabProps) {
           discussions.map((discussion: any) => (
             <div key={discussion.id} className="flex gap-3">
               <Avatar className="h-8 w-8">
-                <AvatarFallback className="text-xs bg-brand-gold/20 text-brand-gold">
+                <AvatarFallback className="text-xs bg-brand-primary/20 text-brand-primary">
                   {discussion.user_id?.substring(0, 2).toUpperCase() || 'U'}
                 </AvatarFallback>
               </Avatar>
@@ -124,7 +124,7 @@ export function DiscussionsViewTab({ data }: DiscussionsViewTabProps) {
           <Button
             onClick={handleSubmit}
             disabled={!newMessage.trim() || addDiscussion.isPending}
-            className="bg-brand-gold hover:bg-brand-gold-hover self-end"
+            className="bg-brand-primary hover:bg-brand-primary-hover self-end"
           >
             <Send className="h-4 w-4" />
           </Button>

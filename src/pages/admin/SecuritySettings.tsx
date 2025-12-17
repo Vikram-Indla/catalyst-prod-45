@@ -13,7 +13,7 @@ export default function SecuritySettings() {
       <div className="p-6 space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Shield className="h-8 w-8 text-brand-gold" />
+            <Shield className="h-8 w-8 text-brand-primary" />
             <div>
               <h1 className="text-3xl font-bold tracking-tight">Security Settings</h1>
               <p className="text-muted-foreground mt-2">

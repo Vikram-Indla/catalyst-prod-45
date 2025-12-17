@@ -140,7 +140,7 @@ export default function KanbanBoardView() {
             </div>
             <Button
               onClick={() => navigate(`${basePath}/${boardId}/setup`)}
-              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
             >
               <Settings className="w-4 h-4 mr-2" />
               Board Setup

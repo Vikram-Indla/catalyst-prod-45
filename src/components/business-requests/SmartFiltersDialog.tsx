@@ -202,7 +202,7 @@ export function SmartFiltersDialog({
 
         {/* Smart Filters Section */}
         <div className="space-y-3">
-          <Label className="text-sm font-medium text-brand-gold">Smart Filters</Label>
+          <Label className="text-sm font-medium text-brand-primary">Smart Filters</Label>
           <div className="grid grid-cols-3 gap-2">
             {SMART_FILTERS.map((sf) => (
               <Button
@@ -212,8 +212,8 @@ export function SmartFiltersDialog({
                 className={cn(
                   "justify-start gap-2 h-auto py-2 px-3 text-left",
                   localFilters.activeSmartFilter === sf.id
-                    ? "border-brand-gold bg-brand-gold/10 text-brand-gold"
-                    : "border-border hover:border-brand-gold/50 hover:bg-brand-gold/5"
+                    ? "border-brand-primary bg-brand-primary/10 text-brand-primary"
+                    : "border-border hover:border-brand-primary/50 hover:bg-brand-primary/5"
                 )}
                 onClick={() => handleSmartFilterClick(sf.id)}
               >
@@ -254,7 +254,7 @@ export function SmartFiltersDialog({
                     size="sm"
                     className={cn(
                       "h-7 w-7 p-0",
-                      localFilters.rank?.includes(rank) && "border-brand-gold bg-brand-gold/10 text-brand-gold"
+                      localFilters.rank?.includes(rank) && "border-brand-primary bg-brand-primary/10 text-brand-primary"
                     )}
                     onClick={() => toggleMultiSelect('rank', rank)}
                   >
@@ -312,7 +312,7 @@ export function SmartFiltersDialog({
                     size="sm"
                     className={cn(
                       "h-7 text-xs",
-                      localFilters.processStep?.includes(step.value) && "border-brand-gold bg-brand-gold/10 text-brand-gold"
+                      localFilters.processStep?.includes(step.value) && "border-brand-primary bg-brand-primary/10 text-brand-primary"
                     )}
                     onClick={() => toggleMultiSelect('processStep', step.value)}
                   >
@@ -363,7 +363,7 @@ export function SmartFiltersDialog({
                     size="sm"
                     className={cn(
                       "h-7 text-xs",
-                      localFilters.ageing?.includes(bucket.value) && "border-brand-gold bg-brand-gold/10 text-brand-gold"
+                      localFilters.ageing?.includes(bucket.value) && "border-brand-primary bg-brand-primary/10 text-brand-primary"
                     )}
                     onClick={() => toggleMultiSelect('ageing', bucket.value)}
                   >

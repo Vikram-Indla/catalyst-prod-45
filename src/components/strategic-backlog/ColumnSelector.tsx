@@ -110,7 +110,7 @@ export function ColumnSelector({
                   <div className={cn(
                     "w-4 h-4 rounded border flex items-center justify-center",
                     isVisible
-                      ? "bg-brand-gold border-brand-gold"
+                      ? "bg-brand-primary border-brand-primary"
                       : "border-muted-foreground/40"
                   )}>
                     {isVisible && <Check className="h-3 w-3 text-white" />}

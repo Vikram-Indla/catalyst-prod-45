@@ -40,7 +40,7 @@ function IncidentRow({ incident }: { incident: Incident }) {
     >
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
-          <span className="text-sm font-medium text-brand-gold">{incident.incident_key}</span>
+          <span className="text-sm font-medium text-brand-primary">{incident.incident_key}</span>
           <Badge variant="outline" className={cn('text-[10px] px-1.5 py-0 border', severityConfig.className)}>
             {severityConfig.label}
           </Badge>
@@ -132,7 +132,7 @@ export default function IncidentRoomList() {
         pageTitle="Incident Room"
         rightActions={
           <Button 
-            className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+            className="bg-brand-primary hover:bg-brand-primary-hover text-white"
             onClick={() => setCreateDialogOpen(true)}
           >
             <Plus className="h-4 w-4 mr-2" />
