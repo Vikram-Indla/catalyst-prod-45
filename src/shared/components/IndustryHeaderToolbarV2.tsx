@@ -5,7 +5,6 @@
  */
 
 import React, { useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { IndustryViewSwitchButton } from '@/components/industry/IndustryViewSwitchButton';
 
 export type DensityMode = 'compact' | 'regular' | 'relaxed';
@@ -104,7 +103,6 @@ export function IndustryHeaderToolbarV2({
   onExport,
   onColumnsConfig,
 }: IndustryHeaderToolbarV2Props) {
-  const navigate = useNavigate();
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Keyboard shortcut: Cmd+K / Ctrl+K focuses search
@@ -119,65 +117,38 @@ export function IndustryHeaderToolbarV2({
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Navigation handlers
-  const handleSwitchToList = useCallback(() => {
-    navigate('/industry/backlog');
-  }, [navigate]);
-
-  const handleSwitchToBoard = useCallback(() => {
-    navigate('/industry/kanban');
-  }, [navigate]);
-
-  // Avatar "All" active when none selected
-  const isAllActive = selectedAvatarIds.length === 0;
-
   // Get initials from name
   const getInitials = (name: string): string => {
     const parts = name.split(' ').filter(Boolean);
     if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
     return (parts[0][0] + (parts[1]?.[0] || '')).toUpperCase();
   };
-
   // Detect Mac for shortcut display
   const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
   const shortcutKey = isMac ? '⌘K' : 'Ctrl+K';
 
+  const cycleDensity = useCallback(() => {
+    if (!onDensityModeChange) return;
+    const order: DensityMode[] = ['compact', 'regular', 'relaxed'];
+    const idx = Math.max(0, order.indexOf(densityMode));
+    const next = order[(idx + 1) % order.length];
+    onDensityModeChange(next);
+  }, [densityMode, onDensityModeChange]);
+
+  const showAvatarFilter = avatars.length > 0 && !!onToggleAvatar;
+
   return (
-    <div className="w-full flex items-center justify-between gap-4">
-      {/* Left Zone: View Toggle */}
-      <div className="flex items-center gap-2">
-        <button
-          onClick={handleSwitchToList}
-          className={`w-9 h-9 flex items-center justify-center rounded-lg border transition-colors ${
-            activeView === 'list'
-              ? 'bg-brand-gold/10 border-brand-gold text-brand-gold'
-              : 'bg-transparent border-border text-muted-foreground hover:bg-muted'
-          }`}
-          title="List View"
-        >
-          <div className="w-4 h-4">
-            <Icons.List />
-          </div>
-        </button>
-        <button
-          onClick={handleSwitchToBoard}
-          className={`w-9 h-9 flex items-center justify-center rounded-lg border transition-colors ${
-            activeView === 'board'
-              ? 'bg-brand-gold/10 border-brand-gold text-brand-gold'
-              : 'bg-transparent border-border text-muted-foreground hover:bg-muted'
-          }`}
-          title="Board View"
-        >
-          <div className="w-4 h-4">
-            <Icons.Board />
-          </div>
-        </button>
+    <div className="w-full grid grid-cols-[auto_1fr_auto] items-center gap-4">
+      {/* Left: Single view switch (only shows the OTHER view) */}
+      <div className="flex items-center">
+        <IndustryViewSwitchButton currentView={activeView === 'board' ? 'kanban' : 'list'} />
       </div>
 
-      {/* Center Zone: Search */}
-      <div className="flex-1 max-w-md">
-        <div 
-          className="h-9 flex items-center gap-2 px-3 rounded-lg border border-border bg-background"
+      {/* Center: Search (unified styling) */}
+      <div className="flex justify-center">
+        <div
+          className="w-full max-w-[480px] h-10 flex items-center gap-2 px-3 rounded-lg bg-muted/50"
+          style={{ border: '1px solid var(--border-visible)' }}
         >
           <div className="w-4 h-4 text-muted-foreground">
             <Icons.Search />
@@ -190,14 +161,61 @@ export function IndustryHeaderToolbarV2({
             placeholder="Search..."
             className="flex-1 border-none outline-none text-sm bg-transparent text-foreground placeholder:text-muted-foreground"
           />
+          {searchValue && (
+            <button
+              onClick={() => onSearchChange('')}
+              className="border-none bg-transparent cursor-pointer text-muted-foreground p-0.5"
+              title="Clear search"
+            >
+              <div className="w-4 h-4">
+                <Icons.X />
+              </div>
+            </button>
+          )}
           <span className="text-[10px] text-muted-foreground font-medium px-1.5 py-0.5 rounded bg-muted">
             {shortcutKey}
           </span>
         </div>
       </div>
 
-      {/* Right Zone: Actions */}
-      <div className="flex items-center gap-2">
+      {/* Right: Actions */}
+      <div className="flex items-center justify-end gap-2">
+        {showAvatarFilter && (
+          <div className="flex items-center gap-1">
+            {avatars.slice(0, 4).map((a, idx) => {
+              const initials = a.initials || getInitials(a.name);
+              const isActive = selectedAvatarIds.includes(a.id);
+              const bg = a.color || AVATAR_COLORS[idx % AVATAR_COLORS.length];
+              return (
+                <button
+                  key={a.id}
+                  onClick={() => onToggleAvatar?.(a.id)}
+                  title={a.name}
+                  className={`w-7 h-7 rounded-full border-2 flex items-center justify-center text-[11px] font-semibold text-white ${idx > 0 ? '-ml-1.5' : ''}`}
+                  style={{
+                    backgroundColor: bg,
+                    borderColor: isActive ? 'hsl(var(--secondary-green))' : 'hsl(var(--background))',
+                  }}
+                >
+                  {initials}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {onDensityModeChange && (
+          <button
+            onClick={cycleDensity}
+            className="w-9 h-9 flex items-center justify-center rounded-lg border bg-background border-border text-muted-foreground hover:bg-muted transition-colors"
+            title={`Density: ${densityMode[0].toUpperCase()}${densityMode.slice(1)}`}
+          >
+            <div className="w-4 h-4">
+              <Icons.Density />
+            </div>
+          </button>
+        )}
+
         {onColumnsConfig && (
           <button
             onClick={onColumnsConfig}
@@ -209,6 +227,7 @@ export function IndustryHeaderToolbarV2({
             </div>
           </button>
         )}
+
         {onExport && (
           <button
             onClick={onExport}
