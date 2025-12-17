@@ -38,12 +38,16 @@ export function GlobalSearchPalette({ open, onOpenChange }: GlobalSearchPaletteP
     return getRecentSearchItems(displayCount);
   }, [search, displayCount]);
 
-  // Handle keyboard shortcuts (Cmd+K / Ctrl+K)
+  // Handle keyboard shortcuts (Cmd+K / Ctrl+K and Escape)
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if ((e.key === "k" && (e.metaKey || e.ctrlKey))) {
         e.preventDefault();
         onOpenChange(!open);
+      }
+      if (e.key === "Escape" && open) {
+        e.preventDefault();
+        onOpenChange(false);
       }
     };
 
