@@ -255,7 +255,7 @@ export function ThemeAuditProbe() {
           <Button
             onClick={runAudit}
             disabled={isRunning}
-            className="gap-2 bg-brand-gold hover:bg-brand-gold-hover text-white"
+            className="gap-2 bg-brand-primary hover:bg-brand-primary-hover text-white"
           >
             <RefreshCw className={cn('h-4 w-4', isRunning && 'animate-spin')} />
             {isRunning ? 'Running...' : 'Run Audit'}

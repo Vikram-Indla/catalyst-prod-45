@@ -102,7 +102,7 @@ export function FieldConfigurationsSettings() {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Settings2 className="h-5 w-5 text-brand-gold" />
+          <Settings2 className="h-5 w-5 text-brand-primary" />
           Field Configurations
         </CardTitle>
         <CardDescription>

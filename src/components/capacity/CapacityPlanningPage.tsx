@@ -115,7 +115,7 @@ export function CapacityPlanningPage() {
               variant={showSummary ? "default" : "outline"} 
               size="sm"
               onClick={() => setShowSummary(!showSummary)}
-              className={showSummary ? "bg-brand-gold hover:bg-brand-gold-hover text-white" : ""}
+              className={showSummary ? "bg-brand-primary hover:bg-brand-primary-hover text-white" : ""}
             >
               <Info className="h-4 w-4 mr-2" />
               Summary
@@ -140,45 +140,45 @@ export function CapacityPlanningPage() {
 
         {/* Tabs - 6 tabs - Moved ABOVE search */}
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as CapacityTab)}>
-          <TabsList className="bg-transparent border border-brand-gold/30 rounded-full p-1 gap-1">
+          <TabsList className="bg-transparent border border-brand-primary/30 rounded-full p-1 gap-1">
             <TabsTrigger 
               value="roster" 
-              className="rounded-full px-4 py-2 data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=inactive]:text-foreground"
+              className="rounded-full px-4 py-2 data-[state=active]:bg-brand-primary data-[state=active]:text-white data-[state=inactive]:text-foreground"
             >
               <Users className="h-4 w-4 mr-2" />
               People Roster
             </TabsTrigger>
             <TabsTrigger 
               value="grid" 
-              className="rounded-full px-4 py-2 data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=inactive]:text-foreground"
+              className="rounded-full px-4 py-2 data-[state=active]:bg-brand-primary data-[state=active]:text-white data-[state=inactive]:text-foreground"
             >
               <LayoutGrid className="h-4 w-4 mr-2" />
               Project Grid
             </TabsTrigger>
             <TabsTrigger 
               value="timeline" 
-              className="rounded-full px-4 py-2 data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=inactive]:text-foreground"
+              className="rounded-full px-4 py-2 data-[state=active]:bg-brand-primary data-[state=active]:text-white data-[state=inactive]:text-foreground"
             >
               <Calendar className="h-4 w-4 mr-2" />
               Timeline
             </TabsTrigger>
             <TabsTrigger 
               value="available" 
-              className="rounded-full px-4 py-2 data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=inactive]:text-foreground"
+              className="rounded-full px-4 py-2 data-[state=active]:bg-brand-primary data-[state=active]:text-white data-[state=inactive]:text-foreground"
             >
               <Clock className="h-4 w-4 mr-2" />
               Available Capacity
             </TabsTrigger>
             <TabsTrigger 
               value="vacancies" 
-              className="rounded-full px-4 py-2 data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=inactive]:text-foreground"
+              className="rounded-full px-4 py-2 data-[state=active]:bg-brand-primary data-[state=active]:text-white data-[state=inactive]:text-foreground"
             >
               Vacancies
               <Badge variant="secondary" className="ml-2 text-xs">{openVacancies}</Badge>
             </TabsTrigger>
             <TabsTrigger 
               value="reports" 
-              className="rounded-full px-4 py-2 data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=inactive]:text-foreground"
+              className="rounded-full px-4 py-2 data-[state=active]:bg-brand-primary data-[state=active]:text-white data-[state=inactive]:text-foreground"
             >
               <FileText className="h-4 w-4 mr-2" />
               Executive Reports
@@ -242,7 +242,7 @@ export function CapacityPlanningPage() {
                       key={`${yearNum}-${weekNum}`}
                       className={`px-3 py-1.5 text-xs font-medium rounded-md cursor-pointer transition-colors ${
                         isCurrentWeek 
-                          ? 'bg-brand-gold text-white' 
+                          ? 'bg-brand-primary text-white' 
                           : 'text-muted-foreground hover:bg-card hover:text-foreground'
                       }`}
                       onClick={() => {
@@ -306,7 +306,7 @@ export function CapacityPlanningPage() {
                   <Button 
                     size="icon" 
                     onClick={() => setNewAllocationOpen(true)} 
-                    className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+                    className="bg-brand-primary hover:bg-brand-primary-hover text-white"
                     disabled={isLocked}
                   >
                     <Plus className="h-4 w-4" />
@@ -324,7 +324,7 @@ export function CapacityPlanningPage() {
                   >
                     <Filter className="h-4 w-4" />
                     {filterCount > 0 && (
-                      <Badge className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center bg-brand-gold text-white text-xs">
+                      <Badge className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center bg-brand-primary text-white text-xs">
                         {filterCount}
                       </Badge>
                     )}

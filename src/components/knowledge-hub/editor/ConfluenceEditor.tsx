@@ -53,7 +53,7 @@ export function ConfluenceEditor({
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: 'text-brand-gold hover:underline cursor-pointer',
+          class: 'text-brand-primary hover:underline cursor-pointer',
         },
       }),
       Image.configure({
@@ -130,7 +130,7 @@ export function ConfluenceEditor({
         .confluence-editor .ProseMirror h3 { font-size: 1.17em; font-weight: bold; margin: 1em 0; }
         .confluence-editor .ProseMirror ul, .confluence-editor .ProseMirror ol { padding-left: 1.5em; }
         .confluence-editor .ProseMirror blockquote { 
-          border-left: 3px solid hsl(var(--brand-gold)); 
+          border-left: 3px solid hsl(var(--brand-primary)); 
           padding-left: 1em; 
           margin-left: 0;
           color: hsl(var(--muted-foreground));

@@ -120,7 +120,7 @@ export function VacancyCards({
       case 'high':
         return 'bg-warning/10 text-warning';
       case 'medium':
-        return 'bg-brand-gold/10 text-brand-gold';
+        return 'bg-brand-primary/10 text-brand-primary';
       default:
         return 'bg-muted text-muted-foreground';
     }
@@ -296,7 +296,7 @@ export function VacancyCards({
                 <Button 
                   size="sm" 
                   onClick={handleAddVacancy}
-                  className="h-7 text-xs bg-brand-gold hover:bg-brand-gold/90 text-white"
+                  className="h-7 text-xs bg-brand-primary hover:bg-brand-primary/90 text-white"
                 >
                   Add Vacancy
                 </Button>
@@ -366,7 +366,7 @@ export function VacancyCards({
               <div className="flex justify-end pt-2 border-t border-border">
                 <Button 
                   size="sm"
-                  className="h-7 px-3 text-xs bg-brand-gold hover:bg-brand-gold/90 text-white"
+                  className="h-7 px-3 text-xs bg-brand-primary hover:bg-brand-primary/90 text-white"
                   onClick={() => handleFillGapClick(vacancy)}
                 >
                   Fill Gap

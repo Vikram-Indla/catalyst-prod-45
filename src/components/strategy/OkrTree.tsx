@@ -14,7 +14,7 @@ interface OkrTreeProps {
 function getProgressBarColor(progress: number): string {
   if (progress < 30) return 'hsl(var(--destructive))';
   if (progress >= 70) return 'hsl(var(--secondary-green))';
-  return 'hsl(var(--brand-gold))';
+  return 'hsl(var(--brand-primary))';
 }
 
 export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: OkrTreeProps) {
@@ -184,7 +184,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
               <>
                 <div 
                   className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-medium"
-                  style={{ backgroundColor: 'var(--brand-gold)' }}
+                  style={{ backgroundColor: 'var(--brand-primary)' }}
                 >
                   {item.owner.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                 </div>
@@ -265,7 +265,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
           >
             <span className="font-medium" style={{ color: 'var(--secondary-green)' }}>Theme</span>
             <ArrowRight size={14} style={{ color: 'var(--text-muted)' }} />
-            <span className="font-medium" style={{ color: 'var(--brand-gold)' }}>Objective</span>
+            <span className="font-medium" style={{ color: 'var(--brand-primary)' }}>Objective</span>
             <ArrowRight size={14} style={{ color: 'var(--text-muted)' }} />
             <span className="font-medium" style={{ color: 'var(--secondary-bronze)' }}>Key Results</span>
           </div>

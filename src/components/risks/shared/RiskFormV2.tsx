@@ -201,7 +201,7 @@ export function RiskFormV2({
     <div className="space-y-5">
       {/* RISK DETAILS Section - Wrapped in bordered card */}
       <div className="border border-border rounded-lg p-5 bg-white">
-        <h4 className="text-xs font-semibold uppercase tracking-wider text-brand-gold mb-4">Risk Details</h4>
+        <h4 className="text-xs font-semibold uppercase tracking-wider text-brand-primary mb-4">Risk Details</h4>
         
         {/* Status and Resolution Method - 2 column */}
         <div className="grid grid-cols-2 gap-4 mb-4">
@@ -387,7 +387,7 @@ export function RiskFormV2({
 
       {/* MITIGATION Section - Wrapped in bordered card */}
       <div className="border border-border rounded-lg p-5 bg-white">
-        <h4 className="text-xs font-semibold uppercase tracking-wider text-brand-gold mb-4">Mitigation</h4>
+        <h4 className="text-xs font-semibold uppercase tracking-wider text-brand-primary mb-4">Mitigation</h4>
 
         {/* Mitigation Plan */}
         <div className="mb-4">

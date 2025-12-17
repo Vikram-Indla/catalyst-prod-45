@@ -22,7 +22,7 @@ function getWorkItemIcon(type: WorkItemBadgeType) {
     case 'epic':
       return <Hexagon className="h-3.5 w-3.5 text-secondary-green flex-shrink-0" />;
     case 'feature':
-      return <Layers className="h-3.5 w-3.5 text-brand-gold flex-shrink-0" />;
+      return <Layers className="h-3.5 w-3.5 text-brand-primary flex-shrink-0" />;
     case 'story':
       return <Layers className="h-3 w-3 text-secondary-bronze flex-shrink-0" />;
     default:

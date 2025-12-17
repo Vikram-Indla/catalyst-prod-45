@@ -167,7 +167,7 @@ export function EmailNotificationsPanel({ settings, onSave }: EmailNotifications
             <Card key={category.key} className={!localSettings.emailNotificationsEnabled ? 'opacity-50' : ''}>
               <CardHeader className="flex flex-row items-center justify-between p-4">
                 <div className="flex items-center gap-3">
-                  <Icon className="h-5 w-5 text-brand-gold" />
+                  <Icon className="h-5 w-5 text-brand-primary" />
                   <div>
                     <CardTitle className="text-base">{category.title}</CardTitle>
                     <CardDescription className="text-xs">{category.description}</CardDescription>
@@ -191,7 +191,7 @@ export function EmailNotificationsPanel({ settings, onSave }: EmailNotifications
 
       <div className="flex justify-end gap-3 pt-4 border-t">
         <Button variant="outline" onClick={handleReset}>Reset to Defaults</Button>
-        <Button onClick={handleSave} className="bg-brand-gold hover:bg-brand-gold-hover text-white">Save Settings</Button>
+        <Button onClick={handleSave} className="bg-brand-primary hover:bg-brand-primary-hover text-white">Save Settings</Button>
       </div>
     </div>
   );

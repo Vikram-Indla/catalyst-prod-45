@@ -107,7 +107,7 @@ export function InsightsPanel({ resources, bookings, visible }: InsightsPanelPro
             <div className="text-[10px] text-muted-foreground uppercase">Resources</div>
           </div>
           <div className="bg-muted/50 rounded-md p-2">
-            <div className="text-lg font-bold text-brand-gold">{stats.activeBookings}</div>
+            <div className="text-lg font-bold text-brand-primary">{stats.activeBookings}</div>
             <div className="text-[10px] text-muted-foreground uppercase">Active</div>
           </div>
           <div className="bg-muted/50 rounded-md p-2">
@@ -124,12 +124,12 @@ export function InsightsPanel({ resources, bookings, visible }: InsightsPanelPro
       {/* Booking Types */}
       <InsightCard 
         title="By Type" 
-        icon={<Calendar className="h-4 w-4 text-brand-gold" />}
+        icon={<Calendar className="h-4 w-4 text-brand-primary" />}
       >
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-brand-gold" />
+              <div className="w-2 h-2 rounded-full bg-brand-primary" />
               <span className="text-sm">Tickets</span>
             </div>
             <span className="text-sm font-medium">{stats.bookingsByType.ticket}</span>
@@ -177,7 +177,7 @@ export function InsightsPanel({ resources, bookings, visible }: InsightsPanelPro
             {recentBookings.map(booking => (
               <div 
                 key={booking.id}
-                className="p-2 bg-muted/50 rounded-md hover:bg-brand-gold/10 cursor-pointer transition-colors"
+                className="p-2 bg-muted/50 rounded-md hover:bg-brand-primary/10 cursor-pointer transition-colors"
               >
                 <div className="text-sm font-medium truncate">
                   {booking.booking_type === 'ticket' 

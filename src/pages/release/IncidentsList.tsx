@@ -220,7 +220,7 @@ export default function IncidentsList() {
               className={cn(
                 "px-3 py-1.5 text-sm font-medium flex items-center gap-1.5 transition-colors",
                 viewMode === 'list' 
-                  ? "text-brand-gold bg-brand-gold/10" 
+                  ? "text-brand-primary bg-brand-primary/10" 
                   : "text-muted-foreground hover:bg-muted/50"
               )}
             >
@@ -232,7 +232,7 @@ export default function IncidentsList() {
               className={cn(
                 "px-3 py-1.5 text-sm font-medium flex items-center gap-1.5 transition-colors border-l border-border",
                 viewMode === 'kanban' 
-                  ? "text-brand-gold bg-brand-gold/10" 
+                  ? "text-brand-primary bg-brand-primary/10" 
                   : "text-muted-foreground hover:bg-muted/50"
               )}
             >
@@ -268,13 +268,13 @@ export default function IncidentsList() {
             <Button 
               variant="outline" 
               size="sm" 
-              className={cn("border-border", activeFilterCount > 0 && "border-brand-gold text-brand-gold")}
+              className={cn("border-border", activeFilterCount > 0 && "border-brand-primary text-brand-primary")}
               onClick={() => setFiltersDialogOpen(true)}
             >
               <Filter className="h-4 w-4 mr-2" />
               Filters
               {activeFilterCount > 0 && (
-                <Badge variant="secondary" className="ml-1 h-5 px-1.5 bg-brand-gold text-white rounded-full text-xs">
+                <Badge variant="secondary" className="ml-1 h-5 px-1.5 bg-brand-primary text-white rounded-full text-xs">
                   {activeFilterCount}
                 </Badge>
               )}
@@ -300,7 +300,7 @@ export default function IncidentsList() {
                         <Checkbox 
                           checked={selectedIds.length === paginatedIncidents.length && paginatedIncidents.length > 0}
                           onCheckedChange={handleSelectAll}
-                          className="border-border data-[state=checked]:bg-brand-gold data-[state=checked]:border-brand-gold"
+                          className="border-border data-[state=checked]:bg-brand-primary data-[state=checked]:border-brand-primary"
                         />
                       </th>
                       <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-r border-border whitespace-nowrap">
@@ -333,13 +333,13 @@ export default function IncidentsList() {
                           <Checkbox 
                             checked={selectedIds.includes(incident.id)}
                             onCheckedChange={(checked) => handleSelectOne(incident.id, !!checked)}
-                            className="border-border data-[state=checked]:bg-brand-gold data-[state=checked]:border-brand-gold"
+                            className="border-border data-[state=checked]:bg-brand-primary data-[state=checked]:border-brand-primary"
                           />
                         </td>
                         <td className="px-4 py-3.5 border-b border-r border-border bg-card">
                           <button 
                             onClick={() => setSelectedIncident(incident)}
-                            className="font-mono text-sm font-medium text-brand-gold hover:underline cursor-pointer"
+                            className="font-mono text-sm font-medium text-brand-primary hover:underline cursor-pointer"
                           >
                             {incident.id}
                           </button>
@@ -381,14 +381,14 @@ export default function IncidentsList() {
               </div>
               <div className="flex items-center gap-1">
                 <button 
-                  className="min-w-8 h-8 flex items-center justify-center rounded-md text-sm text-muted-foreground hover:bg-brand-gold/10"
+                  className="min-w-8 h-8 flex items-center justify-center rounded-md text-sm text-muted-foreground hover:bg-brand-primary/10"
                   onClick={() => goToPage(1)}
                   disabled={currentPage === 1}
                 >
                   «
                 </button>
                 <button 
-                  className="min-w-8 h-8 flex items-center justify-center rounded-md text-sm text-muted-foreground hover:bg-brand-gold/10"
+                  className="min-w-8 h-8 flex items-center justify-center rounded-md text-sm text-muted-foreground hover:bg-brand-primary/10"
                   onClick={() => goToPage(currentPage - 1)}
                   disabled={currentPage === 1}
                 >
@@ -400,8 +400,8 @@ export default function IncidentsList() {
                     className={cn(
                       "min-w-8 h-8 flex items-center justify-center rounded-md text-sm font-medium",
                       currentPage === page 
-                        ? "bg-brand-gold text-white" 
-                        : "text-muted-foreground hover:bg-brand-gold/10"
+                        ? "bg-brand-primary text-white" 
+                        : "text-muted-foreground hover:bg-brand-primary/10"
                     )}
                     onClick={() => goToPage(page)}
                   >
@@ -409,14 +409,14 @@ export default function IncidentsList() {
                   </button>
                 ))}
                 <button 
-                  className="min-w-8 h-8 flex items-center justify-center rounded-md text-sm text-muted-foreground hover:bg-brand-gold/10"
+                  className="min-w-8 h-8 flex items-center justify-center rounded-md text-sm text-muted-foreground hover:bg-brand-primary/10"
                   onClick={() => goToPage(currentPage + 1)}
                   disabled={currentPage === totalPages}
                 >
                   ›
                 </button>
                 <button 
-                  className="min-w-8 h-8 flex items-center justify-center rounded-md text-sm text-muted-foreground hover:bg-brand-gold/10"
+                  className="min-w-8 h-8 flex items-center justify-center rounded-md text-sm text-muted-foreground hover:bg-brand-primary/10"
                   onClick={() => goToPage(totalPages)}
                   disabled={currentPage === totalPages}
                 >
@@ -442,7 +442,7 @@ export default function IncidentsList() {
                         className="flex-shrink-0 w-12 cursor-pointer group"
                         onClick={() => toggleColumnCollapse(column.id)}
                       >
-                        <Card className="h-full bg-card/50 backdrop-blur-sm border-border/50 hover:border-brand-gold/30 transition-colors">
+                        <Card className="h-full bg-card/50 backdrop-blur-sm border-border/50 hover:border-brand-primary/30 transition-colors">
                           <div className="h-full flex flex-col items-center py-4">
                             <div className={cn("w-3 h-3 rounded-full shadow-sm mb-3", column.color)} />
                             <Badge variant="secondary" className="rounded-full text-xs font-medium px-2 py-0.5 bg-muted/80 mb-3">
@@ -491,14 +491,14 @@ export default function IncidentsList() {
                           {columnIncidents.map((incident) => (
                             <Card 
                               key={incident.id} 
-                              className="cursor-pointer hover:shadow-lg hover:border-brand-gold/30 transition-all duration-200 bg-card border-border/60"
+                              className="cursor-pointer hover:shadow-lg hover:border-brand-primary/30 transition-all duration-200 bg-card border-border/60"
                             >
                               <CardContent className="p-4 space-y-3">
                                 <div className="flex items-start justify-between gap-2">
                                   <span className="text-sm font-medium line-clamp-2 text-foreground/90">{incident.summary}</span>
                                 </div>
                                 
-                                <div className="text-xs text-brand-gold font-mono font-medium">
+                                <div className="text-xs text-brand-primary font-mono font-medium">
                                   {incident.id}
                                 </div>
 

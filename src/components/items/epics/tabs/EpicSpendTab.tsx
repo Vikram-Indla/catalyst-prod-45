@@ -336,7 +336,7 @@ export function EpicSpendTab({ epic }: EpicSpendTabProps) {
         </CardContent>
       </Card>
 
-      <Button onClick={handleSave} disabled={saveMutation.isPending} className="bg-brand-gold hover:bg-brand-gold-hover text-white">
+      <Button onClick={handleSave} disabled={saveMutation.isPending} className="bg-brand-primary hover:bg-brand-primary-hover text-white">
         Save Spend Data
       </Button>
 

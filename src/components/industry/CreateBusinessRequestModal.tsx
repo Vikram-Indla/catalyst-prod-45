@@ -103,7 +103,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[900px] max-h-[90vh] p-0 flex flex-col bg-[#feffff] overflow-hidden [&>button]:hidden">
         {/* Gold Bar */}
-        <div className="h-1 bg-brand-gold flex-shrink-0" />
+        <div className="h-1 bg-brand-primary flex-shrink-0" />
 
         {/* Success Message Overlay */}
         {showSuccessMessage && (
@@ -150,7 +150,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
           <Button 
             onClick={handleSave}
             disabled={createMutation.isPending || showSuccessMessage}
-            className="bg-brand-gold text-white hover:bg-brand-gold-hover"
+            className="bg-brand-primary text-white hover:bg-brand-primary-hover"
           >
             <Save className="h-4 w-4 mr-2" />
             {createMutation.isPending ? 'Saving...' : 'Save Request'}

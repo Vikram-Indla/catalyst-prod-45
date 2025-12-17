@@ -818,13 +818,13 @@ export default function IndustryPage() {
                 onClick={() => setFiltersDialogOpen(true)}
                 className={cn(
                   "min-h-[44px]",
-                  activeFilterCount > 0 ? "border-brand-gold text-brand-gold" : "border-border"
+                  activeFilterCount > 0 ? "border-brand-primary text-brand-primary" : "border-border"
                 )}
               >
                 <Filter className="h-4 w-4 sm:mr-2" />
                 <span className="hidden sm:inline">Filters</span>
                 {activeFilterCount > 0 && (
-                  <span className="ml-1.5 px-1.5 py-0.5 text-xs rounded-full bg-brand-gold text-white">
+                  <span className="ml-1.5 px-1.5 py-0.5 text-xs rounded-full bg-brand-primary text-white">
                     {activeFilterCount}
                   </span>
                 )}
@@ -943,7 +943,7 @@ export default function IndustryPage() {
                                 }}
                               >
                                 {/* Visual indicator line */}
-                                <div className="absolute right-0 top-0 h-full w-0.5 bg-transparent group-hover/resize:bg-brand-gold/60 transition-colors" />
+                                <div className="absolute right-0 top-0 h-full w-0.5 bg-transparent group-hover/resize:bg-brand-primary/60 transition-colors" />
                               </div>
                             </th>
                           );
@@ -1264,7 +1264,7 @@ export default function IndustryPage() {
                             onClick={() => setCurrentPage(pageNum)}
                             className={cn(
                               "h-8 w-8 text-[13px]",
-                              currentPage === pageNum && "bg-brand-gold text-white hover:bg-brand-gold/90"
+                              currentPage === pageNum && "bg-brand-primary text-white hover:bg-brand-primary/90"
                             )}
                           >
                             {pageNum}

@@ -79,7 +79,7 @@ export function ImportStepConfirm({
         
         <div className="border-t pt-6">
           <div className="text-center py-12">
-            <Upload className="h-12 w-12 text-brand-gold mx-auto mb-4 animate-pulse" />
+            <Upload className="h-12 w-12 text-brand-primary mx-auto mb-4 animate-pulse" />
             <h3 className="text-lg font-semibold text-foreground mb-4">
               Importing {moduleConfig.label}
             </h3>
@@ -114,7 +114,7 @@ export function ImportStepConfirm({
             {/* Summary Card */}
             <div className="bg-muted/50 rounded-lg p-6">
               <div className="flex items-center gap-3 mb-6">
-                <FileText className="h-8 w-8 text-brand-gold" />
+                <FileText className="h-8 w-8 text-brand-primary" />
                 <div>
                   <h3 className="font-semibold text-foreground">
                     Import {moduleConfig.label}
@@ -172,7 +172,7 @@ export function ImportStepConfirm({
               <Button
                 onClick={onBeginImport}
                 disabled={summary.valid === 0}
-                className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+                className="bg-brand-primary hover:bg-brand-primary-hover text-white"
               >
                 Begin Import
               </Button>

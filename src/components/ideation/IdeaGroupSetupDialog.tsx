@@ -196,7 +196,7 @@ export function IdeaGroupSetupDialog({
                         <div key={admin.id} className="flex items-center gap-1 bg-muted rounded-full pl-1 pr-2 py-1">
                           <Avatar className="h-5 w-5">
                             <AvatarImage src={admin.profile?.avatar_url || undefined} />
-                            <AvatarFallback className="bg-brand-gold/20 text-brand-gold text-[10px]">
+                            <AvatarFallback className="bg-brand-primary/20 text-brand-primary text-[10px]">
                               {getInitials(admin.profile?.full_name, admin.profile?.email)}
                             </AvatarFallback>
                           </Avatar>
@@ -235,7 +235,7 @@ export function IdeaGroupSetupDialog({
                         <div key={contributor.id} className="flex items-center gap-1 bg-muted rounded-full pl-1 pr-2 py-1">
                           <Avatar className="h-5 w-5">
                             <AvatarImage src={contributor.profile?.avatar_url || undefined} />
-                            <AvatarFallback className="bg-brand-gold/20 text-brand-gold text-[10px]">
+                            <AvatarFallback className="bg-brand-primary/20 text-brand-primary text-[10px]">
                               {getInitials(contributor.profile?.full_name, contributor.profile?.email)}
                             </AvatarFallback>
                           </Avatar>
@@ -277,7 +277,7 @@ export function IdeaGroupSetupDialog({
                     </Select>
                     <Button
                       variant="link"
-                      className="text-brand-gold hover:text-brand-gold-hover p-0 h-auto"
+                      className="text-brand-primary hover:text-brand-primary-hover p-0 h-auto"
                       onClick={() => setShowManageForms(true)}
                     >
                       Manage Forms
@@ -471,14 +471,14 @@ export function IdeaGroupSetupDialog({
               <Button 
                 onClick={() => handleSave(false)} 
                 disabled={updateGroup.isPending}
-                className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+                className="bg-brand-primary hover:bg-brand-primary-hover text-white"
               >
                 Save
               </Button>
               <Button 
                 onClick={() => handleSave(true)} 
                 disabled={updateGroup.isPending}
-                className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+                className="bg-brand-primary hover:bg-brand-primary-hover text-white"
               >
                 Save & Close
               </Button>

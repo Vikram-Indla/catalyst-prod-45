@@ -107,14 +107,14 @@ export function TeamSelectorDropdown({ onClose }: TeamSelectorDropdownProps) {
                     </div>
                     <button
                       onClick={(e) => handleToggleStar(e, team)}
-                      className="p-1 rounded hover:bg-muted transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-brand-gold"
+                      className="p-1 rounded hover:bg-muted transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-brand-primary"
                       aria-label={starred ? "Unstar team" : "Star team"}
                     >
                       <Star
                         className={`h-4 w-4 ${
                           starred
-                            ? "text-brand-gold fill-brand-gold"
-                            : "text-muted-foreground hover:text-brand-gold"
+                            ? "text-brand-primary fill-brand-primary"
+                            : "text-muted-foreground hover:text-brand-primary"
                         }`}
                       />
                     </button>

@@ -90,7 +90,7 @@ export function MassMoveDialog({
           <Button
             onClick={handleConfirm}
             disabled={!selectedPiId}
-            className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+            className="bg-brand-primary hover:bg-brand-primary-hover text-white"
           >
             Move to PI
           </Button>

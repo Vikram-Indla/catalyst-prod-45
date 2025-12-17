@@ -69,7 +69,7 @@ export default function ProgressBarsConfig() {
       <div className="p-6 space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <BarChart3 className="h-8 w-8 text-brand-gold" />
+            <BarChart3 className="h-8 w-8 text-brand-primary" />
             <div>
               <h1 className="text-3xl font-bold tracking-tight">Progress Bars</h1>
               <p className="text-muted-foreground mt-2">
@@ -87,7 +87,7 @@ export default function ProgressBarsConfig() {
             </Button>
             <Button
               onClick={handleSave}
-              className="bg-brand-gold hover:bg-brand-gold-hover"
+              className="bg-brand-primary hover:bg-brand-primary-hover"
             >
               <Save className="h-4 w-4 mr-2" />
               Save Changes

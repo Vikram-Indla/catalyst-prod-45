@@ -90,7 +90,7 @@ export function IndustryFilterBar() {
             size="sm"
             className={cn(
               "h-8 border-dashed font-normal",
-              deliveryPlatforms.length > 0 && "border-brand-gold text-brand-gold"
+              deliveryPlatforms.length > 0 && "border-brand-primary text-brand-primary"
             )}
           >
             {getDeliveryPlatformDisplayText()}
@@ -107,7 +107,7 @@ export function IndustryFilterBar() {
               >
                 <div className={cn(
                   "h-4 w-4 border rounded flex items-center justify-center",
-                  deliveryPlatforms.includes(platform.value) ? "bg-brand-gold border-brand-gold" : "border-border"
+                  deliveryPlatforms.includes(platform.value) ? "bg-brand-primary border-brand-primary" : "border-border"
                 )}>
                   {deliveryPlatforms.includes(platform.value) && <Check className="h-3 w-3 text-white" />}
                 </div>
@@ -138,7 +138,7 @@ export function IndustryFilterBar() {
             size="sm"
             className={cn(
               "h-8 border-dashed font-normal",
-              processSteps.length > 0 && "border-brand-gold text-brand-gold"
+              processSteps.length > 0 && "border-brand-primary text-brand-primary"
             )}
           >
             {getProcessStepDisplayText()}
@@ -155,7 +155,7 @@ export function IndustryFilterBar() {
               >
                 <div className={cn(
                   "h-4 w-4 border rounded flex items-center justify-center",
-                  processSteps.includes(step.value) ? "bg-brand-gold border-brand-gold" : "border-border"
+                  processSteps.includes(step.value) ? "bg-brand-primary border-brand-primary" : "border-border"
                 )}>
                   {processSteps.includes(step.value) && <Check className="h-3 w-3 text-white" />}
                 </div>
@@ -186,7 +186,7 @@ export function IndustryFilterBar() {
             size="sm"
             className={cn(
               "h-8 border-dashed font-normal",
-              quarters.length > 0 && "border-brand-gold text-brand-gold"
+              quarters.length > 0 && "border-brand-primary text-brand-primary"
             )}
           >
             {getQuarterDisplayText()}
@@ -203,7 +203,7 @@ export function IndustryFilterBar() {
               >
                 <div className={cn(
                   "h-4 w-4 border rounded flex items-center justify-center",
-                  quarters.includes(quarter.value) ? "bg-brand-gold border-brand-gold" : "border-border"
+                  quarters.includes(quarter.value) ? "bg-brand-primary border-brand-primary" : "border-border"
                 )}>
                   {quarters.includes(quarter.value) && <Check className="h-3 w-3 text-white" />}
                 </div>

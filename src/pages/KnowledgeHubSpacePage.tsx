@@ -133,7 +133,7 @@ export default function KnowledgeHubSpacePage() {
               Back
             </Button>
             <div className="flex items-center gap-3">
-              <FolderOpen className="h-6 w-6 text-brand-gold" />
+              <FolderOpen className="h-6 w-6 text-brand-primary" />
               <div>
                 <h1 className="text-xl font-semibold">{space.name}</h1>
                 {space.description && (
@@ -174,7 +174,7 @@ export default function KnowledgeHubSpacePage() {
               {filteredDocs.map((doc) => (
                 <Card 
                   key={doc.id}
-                  className="p-4 hover:border-brand-gold/50 transition-colors"
+                  className="p-4 hover:border-brand-primary/50 transition-colors"
                 >
                   <div className="flex items-center gap-4">
                     <FileText 

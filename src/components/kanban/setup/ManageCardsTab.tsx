@@ -33,7 +33,7 @@ export function ManageCardsTab({ boardId, board }: ManageCardsTabProps) {
               placeholder="Enter custom card name..."
             />
           </div>
-          <Button className="bg-brand-gold hover:bg-brand-gold-hover text-white">
+          <Button className="bg-brand-primary hover:bg-brand-primary-hover text-white">
             <Plus className="w-4 h-4 mr-2" />
             Add
           </Button>

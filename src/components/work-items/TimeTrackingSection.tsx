@@ -50,7 +50,7 @@ export function TimeTrackingSection({ workItemId, workItemType }: TimeTrackingSe
       <Card className="bg-white border border-neutral-200 rounded-xl shadow-none">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
-            <Clock className="h-4 w-4 text-brand-gold" />
+            <Clock className="h-4 w-4 text-brand-primary" />
             Time Tracking
           </CardTitle>
         </CardHeader>
@@ -71,7 +71,7 @@ export function TimeTrackingSection({ workItemId, workItemType }: TimeTrackingSe
     <Card className="bg-white border border-neutral-200 rounded-xl shadow-none">
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
-          <Clock className="h-4 w-4 text-brand-gold" />
+          <Clock className="h-4 w-4 text-brand-primary" />
           Time Tracking
         </CardTitle>
       </CardHeader>

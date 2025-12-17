@@ -139,7 +139,7 @@ export default function ResourceInventory() {
               Manage team resources and their default capacity allocations
             </p>
           </div>
-          <Button className="bg-brand-gold hover:bg-brand-gold-hover" onClick={openAddDialog}>
+          <Button className="bg-brand-primary hover:bg-brand-primary-hover" onClick={openAddDialog}>
             <Plus className="h-4 w-4 mr-2" />
             Add Resource
           </Button>
@@ -197,7 +197,7 @@ export default function ResourceInventory() {
                   variant={roleFilter.includes(role.code) ? 'default' : 'outline'}
                   className={`cursor-pointer ${
                     roleFilter.includes(role.code)
-                      ? 'bg-brand-gold hover:bg-brand-gold-hover text-white'
+                      ? 'bg-brand-primary hover:bg-brand-primary-hover text-white'
                       : 'hover:bg-muted'
                   }`}
                   onClick={() => toggleRoleFilter(role.code)}
@@ -338,7 +338,7 @@ export default function ResourceInventory() {
                 Cancel
               </Button>
               <Button
-                className="bg-brand-gold hover:bg-brand-gold-hover"
+                className="bg-brand-primary hover:bg-brand-primary-hover"
                 onClick={handleSave}
                 disabled={!formName.trim() || createResource.isPending || updateResource.isPending}
               >

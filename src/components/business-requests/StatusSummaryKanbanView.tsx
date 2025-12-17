@@ -108,7 +108,7 @@ export function StatusSummaryKanbanView({ requests, onRequestSelect }: StatusSum
               onClick={() => setExpandedColumn(column.id)}
               className="flex-shrink-0 cursor-pointer group"
             >
-              <div className="bg-card border rounded-xl p-4 hover:border-brand-gold/50 hover:shadow-md transition-all min-h-[180px] w-[56px] flex flex-col items-center">
+              <div className="bg-card border rounded-xl p-4 hover:border-brand-primary/50 hover:shadow-md transition-all min-h-[180px] w-[56px] flex flex-col items-center">
                 {/* Status Dot */}
                 <div className={cn("w-3.5 h-3.5 rounded-full mb-3", column.color)} />
                 

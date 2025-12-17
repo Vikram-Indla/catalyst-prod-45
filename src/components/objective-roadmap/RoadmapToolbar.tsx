@@ -146,7 +146,7 @@ export const RoadmapToolbar: React.FC<RoadmapToolbarProps> = ({
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input
             type="text"
-            className="h-9 w-52 pl-9 pr-8 text-sm border border-border rounded-lg bg-background focus:outline-none focus:border-brand-gold"
+            className="h-9 w-52 pl-9 pr-8 text-sm border border-border rounded-lg bg-background focus:outline-none focus:border-brand-primary"
             placeholder="Search objectives..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
@@ -178,12 +178,12 @@ export const RoadmapToolbar: React.FC<RoadmapToolbarProps> = ({
                   key={opt.key}
                   className={cn(
                     "flex items-center justify-between px-3 py-2 text-sm cursor-pointer hover:bg-muted",
-                    groupBy === opt.key && "text-brand-gold"
+                    groupBy === opt.key && "text-brand-primary"
                   )}
                   onClick={() => { onGroupByChange(opt.key); setGroupByOpen(false); }}
                 >
                   {opt.label}
-                  {groupBy === opt.key && <Check size={16} className="text-brand-gold" />}
+                  {groupBy === opt.key && <Check size={16} className="text-brand-primary" />}
                 </div>
               ))}
             </div>
@@ -195,14 +195,14 @@ export const RoadmapToolbar: React.FC<RoadmapToolbarProps> = ({
           <button 
             className={cn(
               "h-9 px-3 flex items-center gap-2 text-sm border border-border rounded-lg bg-background hover:bg-muted",
-              activeFilterCount > 0 && "border-brand-gold text-brand-gold"
+              activeFilterCount > 0 && "border-brand-primary text-brand-primary"
             )}
             onClick={handleOpenFilters}
           >
             <Filter size={16} />
             Filters
             {activeFilterCount > 0 && (
-              <span className="min-w-[20px] h-5 px-1.5 flex items-center justify-center text-xs font-semibold bg-brand-gold text-white rounded-full">
+              <span className="min-w-[20px] h-5 px-1.5 flex items-center justify-center text-xs font-semibold bg-brand-primary text-white rounded-full">
                 {activeFilterCount}
               </span>
             )}
@@ -233,7 +233,7 @@ export const RoadmapToolbar: React.FC<RoadmapToolbarProps> = ({
           <div 
             className={cn(
               "w-10 h-5 rounded-full cursor-pointer transition-colors relative",
-              showMilestones ? "bg-brand-gold" : "bg-muted"
+              showMilestones ? "bg-brand-primary" : "bg-muted"
             )}
             onClick={onToggleMilestones}
           >
@@ -263,7 +263,7 @@ export const RoadmapToolbar: React.FC<RoadmapToolbarProps> = ({
                 className={cn(
                   "h-9 w-9 flex items-center justify-center border border-border rounded-lg transition-colors",
                   showLegend 
-                    ? "bg-brand-gold text-white border-brand-gold" 
+                    ? "bg-brand-primary text-white border-brand-primary" 
                     : "bg-background text-muted-foreground hover:bg-muted"
                 )}
                 onClick={onToggleLegend}

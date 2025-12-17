@@ -78,7 +78,7 @@ export function WSJFInlineScores({ epicId, epicTitle, epicKey }: WSJFInlineScore
               <span className="text-sm text-foreground font-medium">
                 {piName} WSJF Prioritization:
               </span>
-              <div className="flex items-center gap-1 text-brand-gold group-hover:text-brand-gold-hover transition-colors">
+              <div className="flex items-center gap-1 text-brand-primary group-hover:text-brand-primary-hover transition-colors">
                 <TrendingUp className="h-4 w-4" />
                 <span className="text-sm font-semibold">{wsjfValue.toFixed(2)}</span>
               </div>

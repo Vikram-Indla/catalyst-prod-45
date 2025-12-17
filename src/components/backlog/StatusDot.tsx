@@ -8,7 +8,7 @@ export function StatusDot({ status }: StatusDotProps) {
   const getStatusColor = () => {
     switch (status) {
       case 'in_progress':
-        return 'bg-brand-gold';
+        return 'bg-brand-primary';
       case 'done':
       case 'accepted':
         return 'bg-primary';

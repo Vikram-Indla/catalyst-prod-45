@@ -126,7 +126,7 @@ export function OKRHubV1({ snapshotId }: OKRHubV1Props) {
             id: wi.id,
             name: wi.name,
             themeName: theme.name,
-            themeColor: theme.color || 'hsl(var(--brand-gold))',
+            themeColor: theme.color || 'hsl(var(--brand-primary))',
             status: getStatusLabel(wi.status),
             progressActual: wi.progress,
             progressTrend: 'none',
@@ -149,7 +149,7 @@ export function OKRHubV1({ snapshotId }: OKRHubV1Props) {
           id: kr.id,
           name: kr.name,
           themeName: theme.name,
-          themeColor: theme.color || 'hsl(var(--brand-gold))',
+          themeColor: theme.color || 'hsl(var(--brand-primary))',
           status: getStatusLabel(kr.status),
           progressActual: krBaseline.actual,
           progressTrend: krBaseline.trend,
@@ -172,7 +172,7 @@ export function OKRHubV1({ snapshotId }: OKRHubV1Props) {
         id: objective.id,
         name: objective.name,
         themeName: theme.name,
-        themeColor: theme.color || 'hsl(var(--brand-gold))',
+        themeColor: theme.color || 'hsl(var(--brand-primary))',
         status: getStatusLabel(objective.status),
         progressActual: baseline.actual,
         progressTrend: baseline.trend,
@@ -244,7 +244,7 @@ export function OKRHubV1({ snapshotId }: OKRHubV1Props) {
           <Filter className="h-3.5 w-3.5" />
           Filters
           {activeFilterCount > 0 && (
-            <Badge variant="secondary" className="ml-1 bg-brand-gold/20 text-brand-gold">
+            <Badge variant="secondary" className="ml-1 bg-brand-primary/20 text-brand-primary">
               {activeFilterCount}
             </Badge>
           )}

@@ -213,7 +213,7 @@ export default function IncidentRoomDetail() {
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-xl font-semibold text-foreground flex items-center gap-2">
-              <span className="text-brand-gold">{incident.incident_key}</span>
+              <span className="text-brand-primary">{incident.incident_key}</span>
               <span>—</span>
               <span>{incident.title}</span>
             </h1>
@@ -398,7 +398,7 @@ export default function IncidentRoomDetail() {
                       <Paperclip className="h-4 w-4 text-muted-foreground" />
                       <div className="flex-1 min-w-0">
                         <p 
-                          className="text-sm font-medium truncate text-brand-gold hover:underline cursor-pointer"
+                          className="text-sm font-medium truncate text-brand-primary hover:underline cursor-pointer"
                           onClick={() => downloadAttachment.mutate({ 
                             storagePath: att.storage_path, 
                             fileName: att.file_name 
@@ -579,7 +579,7 @@ export default function IncidentRoomDetail() {
                           <div key={member.id} className="flex items-center justify-between p-3 border border-border rounded-lg">
                             <div className="flex items-center gap-3">
                               <Avatar className="h-8 w-8">
-                                <AvatarFallback className="text-xs bg-brand-gold text-white">
+                                <AvatarFallback className="text-xs bg-brand-primary text-white">
                                   {member.user?.full_name?.split(' ').map(n => n[0]).join('').slice(0, 2) || '??'}
                                 </AvatarFallback>
                               </Avatar>
@@ -878,7 +878,7 @@ export default function IncidentRoomDetail() {
               <Button 
                 variant="link" 
                 size="sm" 
-                className="text-xs text-brand-gold p-0 h-auto"
+                className="text-xs text-brand-primary p-0 h-auto"
                 onClick={async () => {
                   const { data: { user } } = await supabase.auth.getUser();
                   if (user && id) {

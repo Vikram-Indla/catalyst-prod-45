@@ -97,7 +97,7 @@ export function EpicWSJFTab({ epic }: EpicWSJFTabProps) {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <TrendingUp className="h-5 w-5 text-brand-gold" />
+              <TrendingUp className="h-5 w-5 text-brand-primary" />
               WSJF Prioritization Scores
             </CardTitle>
           </CardHeader>
@@ -116,7 +116,7 @@ export function EpicWSJFTab({ epic }: EpicWSJFTabProps) {
                       <span className="text-sm text-muted-foreground">WSJF Prioritization:</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-lg font-bold text-brand-gold">
+                      <span className="text-lg font-bold text-brand-primary">
                         {(score.wsjf_score || 0).toFixed(2)}
                       </span>
                       <ExternalLink className="h-4 w-4 text-muted-foreground" />
@@ -160,7 +160,7 @@ export function EpicWSJFTab({ epic }: EpicWSJFTabProps) {
           {selectedPiId && (
             <Button 
               onClick={() => openModal(selectedPiId)}
-              className="w-full bg-brand-gold text-white hover:bg-brand-gold-hover"
+              className="w-full bg-brand-primary text-white hover:bg-brand-primary-hover"
             >
               <Calculator className="h-4 w-4 mr-2" />
               Score WSJF
@@ -171,15 +171,15 @@ export function EpicWSJFTab({ epic }: EpicWSJFTabProps) {
 
       {/* Current Score Display */}
       {selectedPiId && wsjfData && (
-        <Card className="border-brand-gold">
+        <Card className="border-brand-primary">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Calculator className="h-5 w-5 text-brand-gold" />
+              <Calculator className="h-5 w-5 text-brand-primary" />
               Current WSJF Score
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-4xl font-bold text-brand-gold mb-4">
+            <div className="text-4xl font-bold text-brand-primary mb-4">
               {(wsjfData.wsjf_score || 0).toFixed(2)}
             </div>
             <div className="grid grid-cols-2 gap-4 text-sm">

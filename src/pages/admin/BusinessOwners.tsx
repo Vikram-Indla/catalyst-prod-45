@@ -178,7 +178,7 @@ export default function BusinessOwners() {
               Manage business owners and their department mappings
             </p>
           </div>
-          <Button className="bg-brand-gold hover:bg-brand-gold-hover" onClick={openAddDialog}>
+          <Button className="bg-brand-primary hover:bg-brand-primary-hover" onClick={openAddDialog}>
             <Plus className="h-4 w-4 mr-2" />
             Add Business Owner
           </Button>
@@ -268,7 +268,7 @@ export default function BusinessOwners() {
                           <td className="p-3 text-sm font-medium">{owner.name}</td>
                           <td className="p-3 text-sm">
                             {dept ? (
-                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-brand-gold/10 text-brand-gold">
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-brand-primary/10 text-brand-primary">
                                 {dept.name}
                               </span>
                             ) : (
@@ -337,7 +337,7 @@ export default function BusinessOwners() {
                 Cancel
               </Button>
               <Button
-                className="bg-brand-gold hover:bg-brand-gold-hover"
+                className="bg-brand-primary hover:bg-brand-primary-hover"
                 onClick={editingOwner ? handleUpdateOwner : handleAddOwner}
               >
                 {editingOwner ? 'Update' : 'Add'}

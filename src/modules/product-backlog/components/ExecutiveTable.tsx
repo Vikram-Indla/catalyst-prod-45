@@ -164,7 +164,7 @@ function StatusBadge({ value, options }: { value: string; options: { value: stri
   
   // Accent dot color based on status category
   const accentClasses: Record<string, string> = {
-    gold: 'bg-brand-gold',
+    gold: 'bg-brand-primary',
     green: 'bg-secondary-green',
     neutral: 'bg-muted-foreground/50',
   };
@@ -268,7 +268,7 @@ function InlineCellEditor({ value, type, options, onSave, onCancel }: {
         onChange={(e) => { setLocalValue(e.target.value); onSave(e.target.value); }}
         onBlur={onCancel}
         onKeyDown={handleKeyDown}
-        className="w-full px-2 py-1 border-2 border-brand-gold rounded text-xs outline-none bg-background shadow-md min-w-[120px] cursor-pointer"
+        className="w-full px-2 py-1 border-2 border-brand-primary rounded text-xs outline-none bg-background shadow-md min-w-[120px] cursor-pointer"
       >
         <option value="">Select...</option>
         {options.map(opt => (
@@ -287,7 +287,7 @@ function InlineCellEditor({ value, type, options, onSave, onCancel }: {
         onChange={(e) => { setLocalValue(e.target.value); onSave(e.target.value || null); }}
         onBlur={onCancel}
         onKeyDown={handleKeyDown}
-        className="w-full px-2 py-1 border-2 border-brand-gold rounded text-xs outline-none bg-background shadow-md min-w-[130px] cursor-pointer"
+        className="w-full px-2 py-1 border-2 border-brand-primary rounded text-xs outline-none bg-background shadow-md min-w-[130px] cursor-pointer"
       />
     );
   }
@@ -300,7 +300,7 @@ function InlineCellEditor({ value, type, options, onSave, onCancel }: {
       onChange={(e) => setLocalValue(e.target.value)}
       onBlur={() => onSave(localValue === '' ? null : (type === 'number' ? Number(localValue) : localValue))}
       onKeyDown={handleKeyDown}
-      className="w-full px-2 py-1 border-2 border-brand-gold rounded text-xs outline-none bg-background shadow-md"
+      className="w-full px-2 py-1 border-2 border-brand-primary rounded text-xs outline-none bg-background shadow-md"
     />
   );
 }
@@ -356,7 +356,7 @@ function EditableCell({ value, type, options, displayValue, onSave, columnId }: 
           setIsEditing(true);
         }
       }}
-      className={`flex items-center gap-1 px-1 py-0.5 -mx-1 rounded transition-all ${isQuickEdit ? 'cursor-pointer hover:bg-brand-gold/10 hover:border-brand-gold/40' : ''} ${isSaving ? 'bg-success/15' : ''}`}
+      className={`flex items-center gap-1 px-1 py-0.5 -mx-1 rounded transition-all ${isQuickEdit ? 'cursor-pointer hover:bg-brand-primary/10 hover:border-brand-primary/40' : ''} ${isSaving ? 'bg-success/15' : ''}`}
       style={{ border: '1px solid transparent' }}
     >
       {displayValue}
@@ -447,7 +447,7 @@ function ColumnFilterDropdown({ column, options, selected, onApply, onClear }: {
                   type="checkbox"
                   checked={localSelected.includes(opt.value)}
                   onChange={() => handleToggle(opt.value)}
-                  className="accent-brand-gold"
+                  className="accent-brand-primary"
                 />
                 {opt.label}
               </label>
@@ -467,7 +467,7 @@ function ColumnFilterDropdown({ column, options, selected, onApply, onClear }: {
             </button>
             <button
               onClick={() => { onApply(localSelected); setIsOpen(false); }}
-              className="flex-1 py-1.5 border-none rounded bg-brand-gold text-white text-[11px] font-semibold cursor-pointer hover:bg-brand-gold-hover"
+              className="flex-1 py-1.5 border-none rounded bg-brand-primary text-white text-[11px] font-semibold cursor-pointer hover:bg-brand-primary-hover"
             >
               Apply
             </button>
@@ -615,7 +615,7 @@ function ColumnManager({ columns, visibleColumns, onChange, externalOpen, onExte
                 type="checkbox"
                 checked={visibleColumns.includes(col.id)}
                 onChange={() => toggleColumn(col.id)}
-                className="accent-brand-gold"
+                className="accent-brand-primary"
               />
               {col.header}
             </label>
@@ -671,7 +671,7 @@ function ColumnManager({ columns, visibleColumns, onChange, externalOpen, onExte
                   type="checkbox"
                   checked={visibleColumns.includes(col.id)}
                   onChange={() => toggleColumn(col.id)}
-                  className="accent-brand-gold"
+                  className="accent-brand-primary"
                 />
                 {col.header}
               </label>
@@ -1326,7 +1326,7 @@ export function ExecutiveTable({
                       type="checkbox"
                       checked={paginatedData.length > 0 && selectedRows.length === paginatedData.length}
                       onChange={handleSelectAll}
-                      className="executive-table-checkbox w-4 h-4 accent-brand-gold cursor-pointer rounded"
+                      className="executive-table-checkbox w-4 h-4 accent-brand-primary cursor-pointer rounded"
                     />
                   </th>
                   {columns.map((col, colIndex) => {
@@ -1479,7 +1479,7 @@ export function ExecutiveTable({
                           type="checkbox"
                           checked={selectedRows.includes(row.id)}
                           onChange={() => handleSelectRow(row.id)}
-                          className="executive-table-checkbox w-4 h-4 accent-brand-gold cursor-pointer rounded"
+                          className="executive-table-checkbox w-4 h-4 accent-brand-primary cursor-pointer rounded"
                         />
                       </td>
                       {columns.map((col, colIndex) => {

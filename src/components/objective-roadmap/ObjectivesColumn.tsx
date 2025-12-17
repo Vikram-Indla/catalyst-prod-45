@@ -67,7 +67,7 @@ export const ObjectivesColumn = forwardRef<HTMLDivElement, ObjectivesColumnProps
     // On track: Filled, Green (secondary-green #5c7c5c)
     // At risk: Filled, Bronze (secondary-bronze #8b7355)
     // Off track: Filled, Red (destructive)
-    // In Progress: Outline, Gold (brand-gold #c69c6d)
+    // In Progress: Outline, Gold (brand-primary #c69c6d)
     // Pending: Outline, Grey (muted)
     const getStatusConfig = (status: string) => {
       switch (status) {
@@ -140,7 +140,7 @@ export const ObjectivesColumn = forwardRef<HTMLDivElement, ObjectivesColumnProps
                         <span className="w-1.5 h-1.5 rounded-full bg-destructive" />
                       )}
                       {statusCounts['in-progress'] && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-brand-gold" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-brand-primary" />
                       )}
                     </div>
                   </div>
@@ -205,7 +205,7 @@ export const ObjectivesColumn = forwardRef<HTMLDivElement, ObjectivesColumnProps
         {/* Resize Handle */}
         <div 
           ref={resizeRef}
-          className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-brand-gold/30 transition-colors"
+          className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-brand-primary/30 transition-colors"
           onMouseDown={handleMouseDown}
         />
       </div>

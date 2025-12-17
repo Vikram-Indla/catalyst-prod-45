@@ -163,7 +163,7 @@ export function ExportModal({
           </Button>
           <Button 
             onClick={handleDownload}
-            className="bg-brand-gold hover:bg-brand-gold-hover text-white gap-1"
+            className="bg-brand-primary hover:bg-brand-primary-hover text-white gap-1"
           >
             <Download className="h-4 w-4" />
             Download

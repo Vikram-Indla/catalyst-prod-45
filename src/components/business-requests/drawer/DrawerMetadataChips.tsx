@@ -62,7 +62,7 @@ export function DrawerMetadataChips({
       icon: Hash,
       label: 'Rank',
       value: rank ? `#${rank}` : null,
-      colorClass: rank ? 'text-brand-gold' : undefined,
+      colorClass: rank ? 'text-brand-primary' : undefined,
     },
   ].filter(chip => chip.value);
 

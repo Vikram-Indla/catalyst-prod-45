@@ -71,7 +71,7 @@ const ToastDemo = () => {
           <Button onClick={showWarningToast} className="bg-amber-500 hover:bg-amber-600 text-white">
             Warning Toast
           </Button>
-          <Button onClick={showMultipleToasts} className="bg-brand-gold hover:bg-brand-gold-hover text-white">
+          <Button onClick={showMultipleToasts} className="bg-brand-primary hover:bg-brand-primary-hover text-white">
             Multiple Toasts
           </Button>
         </CardContent>

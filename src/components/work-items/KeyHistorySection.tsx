@@ -18,7 +18,7 @@ export function KeyHistorySection({ workItemId, workItemType, currentKey }: KeyH
       <Card className="bg-white border border-neutral-200 rounded-xl shadow-none">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
-            <History className="h-4 w-4 text-brand-gold" />
+            <History className="h-4 w-4 text-brand-primary" />
             Key History
           </CardTitle>
         </CardHeader>
@@ -34,7 +34,7 @@ export function KeyHistorySection({ workItemId, workItemType, currentKey }: KeyH
       <Card className="bg-white border border-neutral-200 rounded-xl shadow-none">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
-            <History className="h-4 w-4 text-brand-gold" />
+            <History className="h-4 w-4 text-brand-primary" />
             Key History
           </CardTitle>
         </CardHeader>
@@ -52,7 +52,7 @@ export function KeyHistorySection({ workItemId, workItemType, currentKey }: KeyH
     <Card className="bg-white border border-neutral-200 rounded-xl shadow-none">
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
-          <History className="h-4 w-4 text-brand-gold" />
+          <History className="h-4 w-4 text-brand-primary" />
           Key History
         </CardTitle>
       </CardHeader>

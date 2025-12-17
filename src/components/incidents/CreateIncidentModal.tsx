@@ -715,7 +715,7 @@ export function CreateIncidentModal({ isOpen, onClose, onSubmit }: CreateInciden
             type="button"
             onClick={handleSubmit}
             disabled={!isFormValid()}
-            className="bg-brand-gold hover:bg-brand-gold-hover text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-brand-primary hover:bg-brand-primary-hover text-white disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Create Incident
           </Button>

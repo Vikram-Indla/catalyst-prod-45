@@ -54,7 +54,7 @@ export function ObjectiveSummaryCard({
   return (
     <Card className="p-[var(--s6)]">
       <div className="flex items-center gap-[var(--s2)] mb-[var(--s4)]">
-        <Target className="h-5 w-5 text-brand-gold" />
+        <Target className="h-5 w-5 text-brand-primary" />
         <h3 className="font-semibold">Objectives Summary</h3>
       </div>
 

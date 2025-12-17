@@ -148,7 +148,7 @@ export default function ChangesLog() {
               <CardTitle className="text-sm font-medium text-muted-foreground">Total Changes</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-brand-gold">{stats.total}</div>
+              <div className="text-2xl font-bold text-brand-primary">{stats.total}</div>
             </CardContent>
           </Card>
           <Card>

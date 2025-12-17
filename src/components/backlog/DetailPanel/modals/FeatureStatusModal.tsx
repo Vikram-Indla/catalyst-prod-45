@@ -103,7 +103,7 @@ export function FeatureStatusModal({ isOpen, onClose, feature }: FeatureStatusMo
             <h4 className="text-lg font-semibold mb-3">Scope</h4>
             <div className="h-4 bg-primary-foreground/20 rounded-full overflow-hidden mb-2">
               <div
-                className="h-full rounded-full bg-brand-gold"
+                className="h-full rounded-full bg-brand-primary"
                 style={{ width: `${scopePercent}%` }}
               />
             </div>

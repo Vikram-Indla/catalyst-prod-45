@@ -62,7 +62,7 @@ export function SyncLogsViewer({ open, onOpenChange, connectionId }: SyncLogsVie
       warning: "outline",
     };
     return (
-      <Badge variant={variants[status] || "outline"} className={status === "success" ? "bg-brand-gold" : ""}>
+      <Badge variant={variants[status] || "outline"} className={status === "success" ? "bg-brand-primary" : ""}>
         {status}
       </Badge>
     );
@@ -80,7 +80,7 @@ export function SyncLogsViewer({ open, onOpenChange, connectionId }: SyncLogsVie
 
         {loading ? (
           <div className="flex justify-center items-center h-64">
-            <Loader2 className="w-8 h-8 animate-spin text-brand-gold" />
+            <Loader2 className="w-8 h-8 animate-spin text-brand-primary" />
           </div>
         ) : (
           <ScrollArea className="h-[600px] pr-4">

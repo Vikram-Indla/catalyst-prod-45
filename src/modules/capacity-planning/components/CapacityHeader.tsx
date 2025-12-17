@@ -92,7 +92,7 @@ export function CapacityHeader({
               className={cn(
                 'flex items-center gap-1.5 px-3 py-1.5 rounded text-sm font-medium transition-colors',
                 viewMode === 'list' 
-                  ? 'text-brand-gold bg-brand-gold/10' 
+                  ? 'text-brand-primary bg-brand-primary/10' 
                   : 'text-muted-foreground hover:text-foreground hover:bg-accent'
               )}
               aria-label="Switch to List view"
@@ -105,7 +105,7 @@ export function CapacityHeader({
               className={cn(
                 'flex items-center gap-1.5 px-3 py-1.5 rounded text-sm font-medium transition-colors',
                 viewMode === 'gantt' 
-                  ? 'text-brand-gold bg-brand-gold/10' 
+                  ? 'text-brand-primary bg-brand-primary/10' 
                   : 'text-muted-foreground hover:text-foreground hover:bg-accent'
               )}
               aria-label="Switch to Gantt view"
@@ -222,7 +222,7 @@ export function CapacityHeader({
                   size="sm"
                   onClick={onSaveView}
                   disabled={isSaving || saveDisabled}
-                  className="gap-1.5 bg-brand-gold hover:bg-brand-gold-hover text-white border-brand-gold disabled:opacity-50"
+                  className="gap-1.5 bg-brand-primary hover:bg-brand-primary-hover text-white border-brand-primary disabled:opacity-50"
                 >
                   <Save className="h-4 w-4" />
                   Save View

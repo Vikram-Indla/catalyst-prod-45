@@ -113,7 +113,7 @@ export function CatalystEmptyState({
           {ctaLabel && onAction && (
             <Button
               onClick={onAction}
-              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
             >
               <Plus className="w-4 h-4 mr-1" />
               {ctaLabel}

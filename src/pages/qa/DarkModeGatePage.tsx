@@ -461,7 +461,7 @@ export default function DarkModeGatePage() {
             size="lg" 
             onClick={runCurrentPageAudit}
             disabled={auditState.status === 'running'}
-            className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+            className="bg-brand-primary hover:bg-brand-primary-hover text-white"
           >
             {auditState.status === 'running' ? (
               <>
@@ -488,7 +488,7 @@ export default function DarkModeGatePage() {
         {auditState.status === 'running' && (
           <Card className="p-4">
             <div className="flex items-center gap-4">
-              <Loader2 className="w-5 h-5 animate-spin text-brand-gold" />
+              <Loader2 className="w-5 h-5 animate-spin text-brand-primary" />
               <div className="flex-1">
                 <div className="text-sm font-medium text-foreground">
                   Step {auditState.currentStep} of {auditState.totalSteps}
@@ -498,7 +498,7 @@ export default function DarkModeGatePage() {
                 </div>
                 <div className="mt-2 h-2 bg-surface-2 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-brand-gold transition-all duration-300"
+                    className="h-full bg-brand-primary transition-all duration-300"
                     style={{ width: `${(auditState.currentStep / auditState.totalSteps) * 100}%` }}
                   />
                 </div>

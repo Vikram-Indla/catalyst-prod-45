@@ -20,7 +20,7 @@ import {
 
 const TYPE_CONFIG: Record<string, { icon: any; color: string }> = {
   mention: { icon: AtSign, color: 'text-blue-500' },
-  assignment: { icon: UserPlus, color: 'text-brand-gold' },
+  assignment: { icon: UserPlus, color: 'text-brand-primary' },
   comment: { icon: MessageSquare, color: 'text-green-500' },
   alert: { icon: AlertCircle, color: 'text-red-500' },
   info: { icon: Info, color: 'text-muted-foreground' },
@@ -57,7 +57,7 @@ export function NotificationCenter() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Bell className="h-5 w-5 text-brand-gold" />
+          <Bell className="h-5 w-5 text-brand-primary" />
           <h2 className="text-lg font-semibold">Notifications</h2>
           {unreadCount > 0 && (
             <Badge variant="secondary">{unreadCount} unread</Badge>
@@ -103,7 +103,7 @@ export function NotificationCenter() {
                       className={`p-4 rounded-lg border transition-colors ${
                         notification.read 
                           ? 'bg-background' 
-                          : 'bg-brand-gold/5 border-brand-gold/20'
+                          : 'bg-brand-primary/5 border-brand-primary/20'
                       }`}
                     >
                       <div className="flex items-start gap-3">
@@ -120,7 +120,7 @@ export function NotificationCenter() {
                               </p>
                             </div>
                             {!notification.read && (
-                              <div className="h-2 w-2 rounded-full bg-brand-gold flex-shrink-0 mt-1.5" />
+                              <div className="h-2 w-2 rounded-full bg-brand-primary flex-shrink-0 mt-1.5" />
                             )}
                           </div>
                           

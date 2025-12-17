@@ -138,7 +138,7 @@ export default function UIQARoute() {
           {/* SECTION: Buttons */}
           <ComponentSection title="Buttons">
             <div className="flex flex-wrap gap-3">
-              <Button className="bg-brand-gold hover:bg-brand-gold-hover text-white">
+              <Button className="bg-brand-primary hover:bg-brand-primary-hover text-white">
                 Primary
               </Button>
               <Button 
@@ -157,7 +157,7 @@ export default function UIQARoute() {
               >
                 Ghost
               </Button>
-              <Button disabled className="bg-brand-gold text-white">
+              <Button disabled className="bg-brand-primary text-white">
                 Disabled
               </Button>
             </div>
@@ -248,7 +248,7 @@ export default function UIQARoute() {
               title="Panel Title"
               icon={<Settings className="h-4 w-4" />}
               actions={
-                <Button size="sm" className="bg-brand-gold hover:bg-brand-gold-hover text-white">
+                <Button size="sm" className="bg-brand-primary hover:bg-brand-primary-hover text-white">
                   <Plus className="h-3 w-3 mr-1" />
                   Add
                 </Button>

@@ -249,8 +249,8 @@ To Do → In Progress → Done → Accepted
 
 ```css
 /* Brand Colors */
---brand-gold: hsl(35, 46%, 60%);      /* #C69C6D */
---brand-gold-hover: hsl(35, 42%, 55%); /* #B8905F */
+--brand-primary: hsl(35, 46%, 60%);      /* #C69C6D */
+--brand-primary-hover: hsl(35, 42%, 55%); /* #B8905F */
 
 /* Spacing Scale */
 --s1: 4px;

@@ -84,7 +84,7 @@ export default function RiskSeverityLevels() {
               Manage severity level options for Risk Occurrence and Impact fields
             </p>
           </div>
-          <Button className="bg-brand-gold hover:bg-brand-gold-hover" onClick={openAddDialog}>
+          <Button className="bg-brand-primary hover:bg-brand-primary-hover" onClick={openAddDialog}>
             <Plus className="h-4 w-4 mr-2" />
             Add Severity Level
           </Button>
@@ -232,7 +232,7 @@ export default function RiskSeverityLevels() {
                 Cancel
               </Button>
               <Button
-                className="bg-brand-gold hover:bg-brand-gold-hover"
+                className="bg-brand-primary hover:bg-brand-primary-hover"
                 onClick={handleSave}
                 disabled={!formData.label.trim()}
               >

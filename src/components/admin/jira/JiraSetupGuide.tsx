@@ -79,7 +79,7 @@ export function JiraSetupGuide({ hasConnections }: JiraSetupGuideProps) {
 
   return (
     <div className="space-y-6">
-      <Card className="border-brand-gold">
+      <Card className="border-brand-primary">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <span className="text-2xl">🚀</span>
@@ -115,7 +115,7 @@ export function JiraSetupGuide({ hasConnections }: JiraSetupGuideProps) {
                 <ul className="space-y-1">
                   {step.details.map((detail, idx) => (
                     <li key={idx} className="text-xs text-muted-foreground flex items-center gap-2">
-                      <span className="w-1 h-1 rounded-full bg-brand-gold" />
+                      <span className="w-1 h-1 rounded-full bg-brand-primary" />
                       {detail}
                     </li>
                   ))}
@@ -207,7 +207,7 @@ export function JiraSetupGuide({ hasConnections }: JiraSetupGuideProps) {
               href="https://id.atlassian.com/manage-profile/security/api-tokens"
               target="_blank"
               rel="noopener noreferrer"
-              className="underline hover:text-brand-gold"
+              className="underline hover:text-brand-primary"
             >
               Atlassian Account Settings
             </a>

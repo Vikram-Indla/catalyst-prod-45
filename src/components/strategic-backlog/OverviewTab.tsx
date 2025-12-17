@@ -71,8 +71,8 @@ export function OverviewTab({ missions, visions, values, themes, links, isArchiv
       count: linkedThemeCount, 
       total: linkedThemeCount,
       icon: Palette,
-      color: 'text-brand-gold',
-      bgColor: 'bg-brand-gold/10',
+      color: 'text-brand-primary',
+      bgColor: 'bg-brand-primary/10',
       required: true,
     },
   ];

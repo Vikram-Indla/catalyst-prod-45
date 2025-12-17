@@ -53,7 +53,7 @@ export function EpicStatusModal({
               className={cn(
                 "w-full text-left p-3 rounded-lg border transition-colors",
                 currentStatus === option.value
-                  ? "border-brand-gold bg-brand-gold/10"
+                  ? "border-brand-primary bg-brand-primary/10"
                   : "border-border hover:bg-muted"
               )}
             >
@@ -63,7 +63,7 @@ export function EpicStatusModal({
                   <p className="text-xs text-muted-foreground">{option.description}</p>
                 </div>
                 {currentStatus === option.value && (
-                  <span className="text-xs text-brand-gold font-medium">Current</span>
+                  <span className="text-xs text-brand-primary font-medium">Current</span>
                 )}
               </div>
             </button>

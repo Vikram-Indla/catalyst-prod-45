@@ -14,13 +14,13 @@ type RoomType = "program" | "portfolio" | "team" | "strategy" | "feature" | "roa
 
 const roomIcons: Record<RoomType, React.ReactNode> = {
   program: <Briefcase className="h-5 w-5 text-workitem-feature" />,
-  portfolio: <Layers className="h-5 w-5 text-brand-gold" />,
+  portfolio: <Layers className="h-5 w-5 text-brand-primary" />,
   team: <Users className="h-5 w-5 text-workitem-story" />,
-  strategy: <FileText className="h-5 w-5 text-brand-gold" />,
+  strategy: <FileText className="h-5 w-5 text-brand-primary" />,
   feature: <GitBranch className="h-5 w-5 text-workitem-theme" />,
   roadmap: <Map className="h-5 w-5 text-info" />,
   objective: <Target className="h-5 w-5 text-muted-foreground" />,
-  product: <Briefcase className="h-5 w-5 text-brand-gold" />,
+  product: <Briefcase className="h-5 w-5 text-brand-primary" />,
 };
 
 export function StarredDropdown({ onClose }: StarredDropdownProps) {
@@ -76,7 +76,7 @@ export function StarredDropdown({ onClose }: StarredDropdownProps) {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <Star className="h-3.5 w-3.5 text-brand-gold fill-brand-gold flex-shrink-0" />
+                    <Star className="h-3.5 w-3.5 text-brand-primary fill-brand-primary flex-shrink-0" />
                     <h4 className="font-medium text-sm truncate">{item.room_name}</h4>
                   </div>
                   <p className="text-xs text-muted-foreground mt-0.5">{item.room_subtitle}</p>

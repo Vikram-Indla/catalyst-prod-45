@@ -29,7 +29,7 @@ const TYPE_CONFIG: Record<string, { icon: typeof FileText; label: string; color:
   story: { icon: BookOpen, label: 'Story', color: 'bg-green-100 text-green-700' },
   theme: { icon: Target, label: 'Theme', color: 'bg-amber-100 text-amber-700' },
   risk: { icon: AlertTriangle, label: 'Risk', color: 'bg-orange-100 text-orange-700' },
-  business_request: { icon: ClipboardList, label: 'Demand', color: 'bg-brand-gold/20 text-brand-gold' },
+  business_request: { icon: ClipboardList, label: 'Demand', color: 'bg-brand-primary/20 text-brand-primary' },
 };
 
 export function GlobalSearch() {
@@ -229,7 +229,7 @@ export function GlobalSearch() {
           <CommandEmpty>
             {isLoading ? (
               <div className="flex items-center justify-center py-6">
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-brand-gold border-t-transparent" />
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-brand-primary border-t-transparent" />
                 <span className="ml-2 text-sm text-muted-foreground">Searching...</span>
               </div>
             ) : search.length < 2 ? (

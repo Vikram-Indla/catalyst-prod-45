@@ -263,7 +263,7 @@ export function RiskDrawer({ risk, isOpen, onClose, onUpdate }: RiskDrawerProps)
                       </SheetTitle>
                       <button
                         onClick={handleStartEditName}
-                        className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-brand-gold transition-all p-0.5"
+                        className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-brand-primary transition-all p-0.5"
                         title="Rename"
                       >
                         <Pencil className="h-3.5 w-3.5" />
@@ -279,7 +279,7 @@ export function RiskDrawer({ risk, isOpen, onClose, onUpdate }: RiskDrawerProps)
                   <DropdownMenuTrigger asChild>
                     <Button
                       size="sm"
-                      className="h-8 px-3 text-sm font-medium bg-brand-gold hover:bg-brand-gold-hover text-white"
+                      className="h-8 px-3 text-sm font-medium bg-brand-primary hover:bg-brand-primary-hover text-white"
                     >
                       Save
                       <ChevronDown className="h-3.5 w-3.5 ml-1" />
@@ -411,7 +411,7 @@ export function RiskDrawer({ risk, isOpen, onClose, onUpdate }: RiskDrawerProps)
               Close
             </Button>
             <Button 
-              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
               onClick={() => setIsEditing(!isEditing)}
             >
               {isEditing ? 'View Mode' : 'Edit Risk'}
@@ -441,7 +441,7 @@ export function RiskDrawer({ risk, isOpen, onClose, onUpdate }: RiskDrawerProps)
             </AlertDialogAction>
             <AlertDialogAction 
               onClick={handleSaveAndClose}
-              className="bg-brand-gold text-white hover:bg-brand-gold-hover"
+              className="bg-brand-primary text-white hover:bg-brand-primary-hover"
             >
               Save & Close
             </AlertDialogAction>

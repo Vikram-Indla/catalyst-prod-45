@@ -104,7 +104,7 @@ export function DocumentLabels({ documentId }: DocumentLabelsProps) {
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2">
-        <Tag className="h-4 w-4 text-brand-gold" />
+        <Tag className="h-4 w-4 text-brand-primary" />
         <span className="text-sm font-medium">Labels</span>
         <Popover open={isOpen} onOpenChange={setIsOpen}>
           <PopoverTrigger asChild>

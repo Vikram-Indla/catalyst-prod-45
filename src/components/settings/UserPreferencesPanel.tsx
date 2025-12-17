@@ -34,7 +34,7 @@ export function UserPreferencesPanel() {
     <Card>
       <CardHeader>
         <div className="flex items-center gap-2">
-          <Settings className="h-5 w-5 text-brand-gold" />
+          <Settings className="h-5 w-5 text-brand-primary" />
           <CardTitle>User Preferences</CardTitle>
         </div>
         <CardDescription>

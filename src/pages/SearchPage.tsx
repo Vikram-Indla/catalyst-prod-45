@@ -383,7 +383,7 @@ export default function SearchPage() {
                       }}
                     >
                       {filter.is_starred ? (
-                        <Star className="h-3 w-3 fill-brand-gold text-brand-gold" />
+                        <Star className="h-3 w-3 fill-brand-primary text-brand-primary" />
                       ) : (
                         <StarOff className="h-3 w-3 text-muted-foreground" />
                       )}
@@ -432,7 +432,7 @@ export default function SearchPage() {
       <div className="flex-1 overflow-auto">
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-6 w-6 animate-spin text-brand-gold" />
+            <Loader2 className="h-6 w-6 animate-spin text-brand-primary" />
             <span className="ml-2 text-muted-foreground">Searching...</span>
           </div>
         ) : results && results.length > 0 ? (
@@ -454,7 +454,7 @@ export default function SearchPage() {
                   className="cursor-pointer hover:bg-muted/50"
                   onClick={() => handleRowClick(item)}
                 >
-                  <TableCell className="font-medium text-brand-gold">{item.key}</TableCell>
+                  <TableCell className="font-medium text-brand-primary">{item.key}</TableCell>
                   <TableCell>
                     <Badge className={cn('text-xs capitalize', getTypeBadgeColor(item.type))}>{item.type}</Badge>
                   </TableCell>

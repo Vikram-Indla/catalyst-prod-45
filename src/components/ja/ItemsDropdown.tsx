@@ -29,7 +29,7 @@ interface ItemConfig {
 // Enterprise Items
 const enterpriseItems: ItemConfig[] = [
   { label: "Themes", icon: Circle, color: "text-workitem-theme", path: "/themes", moduleCode: "PORTFOLIO" },
-  { label: "Objectives", icon: Target, color: "text-brand-gold", path: "/enterprise/okr-hub", moduleCode: "ENTERPRISE" },
+  { label: "Objectives", icon: Target, color: "text-brand-primary", path: "/enterprise/okr-hub", moduleCode: "ENTERPRISE" },
   { label: "Ideation", icon: Lightbulb, color: "text-warning-600", path: "/items/ideation", moduleCode: "PRODUCT" },
 ];
 
@@ -53,7 +53,7 @@ const projectItems: ItemConfig[] = [
 
 // Product Items
 const productItems: ItemConfig[] = [
-  { label: "Business Requests", icon: Square, color: "text-brand-gold", path: "/industry/backlog", moduleCode: "PRODUCT" },
+  { label: "Business Requests", icon: Square, color: "text-brand-primary", path: "/industry/backlog", moduleCode: "PRODUCT" },
 ];
 
 // Get context label

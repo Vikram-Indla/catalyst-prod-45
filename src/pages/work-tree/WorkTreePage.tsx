@@ -202,8 +202,8 @@ export function WorkTreePage() {
       <div className="flex-1 overflow-auto px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s6)] space-y-[var(--s6)]">
         {/* Team View Info Banner */}
         {view === 'team' && teamId && (
-          <Alert className="bg-brand-gold/10 dark:bg-brand-gold/5 border-brand-gold/30">
-            <AlertCircle className="h-4 w-4 text-brand-gold" />
+          <Alert className="bg-brand-primary/10 dark:bg-brand-primary/5 border-brand-primary/30">
+            <AlertCircle className="h-4 w-4 text-brand-primary" />
             <AlertDescription className="text-foreground">
               Team view: Showing your work filtered by selected teams in Configuration bar. This report starts with stories, then builds the hierarchy up.
             </AlertDescription>

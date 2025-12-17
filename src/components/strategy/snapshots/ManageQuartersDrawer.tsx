@@ -191,9 +191,9 @@ export function ManageQuartersDrawer({ open, onClose, snapshot, isAdmin = false 
                 </ScrollArea>
               )}
               {assignedQuarters.length === 0 && !isArchived && (
-                <div className="flex items-center gap-2 mt-3 px-3.5 py-2.5 rounded-lg bg-brand-gold/10">
-                  <AlertTriangle className="w-3.5 h-3.5 text-brand-gold flex-shrink-0" />
-                  <span className="text-[13px] text-brand-gold">At least 1 quarter is recommended for activation.</span>
+                <div className="flex items-center gap-2 mt-3 px-3.5 py-2.5 rounded-lg bg-brand-primary/10">
+                  <AlertTriangle className="w-3.5 h-3.5 text-brand-primary flex-shrink-0" />
+                  <span className="text-[13px] text-brand-primary">At least 1 quarter is recommended for activation.</span>
                 </div>
               )}
             </div>
@@ -233,7 +233,7 @@ export function ManageQuartersDrawer({ open, onClose, snapshot, isAdmin = false 
                                       ? 'opacity-50 cursor-not-allowed' 
                                       : 'cursor-pointer',
                                     selectedToAdd.includes(quarter)
-                                      ? 'bg-brand-gold/10'
+                                      ? 'bg-brand-primary/10'
                                       : !isDisabled && 'hover:bg-muted/50'
                                   )}
                                 >
@@ -289,7 +289,7 @@ export function ManageQuartersDrawer({ open, onClose, snapshot, isAdmin = false 
               <Button 
                 onClick={handleApply} 
                 disabled={saving || !hasChanges}
-                className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+                className="bg-brand-primary hover:bg-brand-primary-hover text-white"
               >
                 {saving ? 'Applying...' : 'Apply'}
               </Button>

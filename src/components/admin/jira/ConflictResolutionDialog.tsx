@@ -96,7 +96,7 @@ export function ConflictResolutionDialog({
 
         {isLoading ? (
           <div className="flex justify-center py-8">
-            <Loader2 className="w-6 h-6 animate-spin text-brand-gold" />
+            <Loader2 className="w-6 h-6 animate-spin text-brand-primary" />
           </div>
         ) : conflicts && conflicts.length > 0 ? (
           <div className="space-y-4">
@@ -131,7 +131,7 @@ export function ConflictResolutionDialog({
                 return (
                   <div
                     key={conflict.id}
-                    className="border rounded-lg p-4 hover:border-brand-gold transition-colors"
+                    className="border rounded-lg p-4 hover:border-brand-primary transition-colors"
                   >
                     <div className="flex justify-between items-start mb-3">
                       <div>
@@ -190,7 +190,7 @@ export function ConflictResolutionDialog({
 
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div className="space-y-1">
-                        <div className="font-medium text-brand-gold">Catalyst Version</div>
+                        <div className="font-medium text-brand-primary">Catalyst Version</div>
                         <pre className="bg-muted p-2 rounded text-xs overflow-x-auto">
                           {JSON.stringify(errorDetails?.catalyst || {}, null, 2)}
                         </pre>

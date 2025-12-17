@@ -265,8 +265,8 @@ function ROIAnalysisModal({
         <div className="flex h-full">
           {/* Left Panel - Epic List (Brand Colors: Gold & Black) */}
           <div className="w-[380px] bg-[#1a1a1a] text-white flex flex-col">
-            <div className="p-4 border-b border-brand-gold/20">
-              <div className="bg-brand-gold text-[#1a1a1a] text-sm px-3 py-2 rounded mb-4 font-medium">
+            <div className="p-4 border-b border-brand-primary/20">
+              <div className="bg-brand-primary text-[#1a1a1a] text-sm px-3 py-2 rounded mb-4 font-medium">
                 Results are being displayed according to your context menu
               </div>
               <h3 className="text-lg font-semibold text-white">Epic Ranked By ROI Score</h3>
@@ -282,11 +282,11 @@ function ROIAnalysisModal({
                     key={e.id}
                     onClick={() => setSelectedEpicId(e.id)}
                     className={`flex items-center justify-between px-4 py-3 cursor-pointer transition-colors border-b border-white/5
-                      ${e.id === selectedEpicId ? 'bg-brand-gold text-[#1a1a1a]' : 'hover:bg-white/10'}`}
+                      ${e.id === selectedEpicId ? 'bg-brand-primary text-[#1a1a1a]' : 'hover:bg-white/10'}`}
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <div className={`w-5 h-5 rounded flex items-center justify-center text-xs font-medium
-                        ${e.id === selectedEpicId ? 'bg-[#1a1a1a] text-brand-gold' : 'bg-brand-gold text-[#1a1a1a]'}`}>
+                        ${e.id === selectedEpicId ? 'bg-[#1a1a1a] text-brand-primary' : 'bg-brand-primary text-[#1a1a1a]'}`}>
                         ✓
                       </div>
                       <span className="text-sm truncate">{e.epic_key || e.id.slice(0, 8)} : {e.name}</span>
@@ -306,7 +306,7 @@ function ROIAnalysisModal({
                 <h3 className="text-xl text-foreground">{selectedEpic.name}</h3>
                 <div className="flex items-center justify-center gap-6 mt-4">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-brand-gold" />
+                    <div className="w-3 h-3 rounded-full bg-brand-primary" />
                     <span className="text-sm text-muted-foreground">Your Epic</span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -321,7 +321,7 @@ function ROIAnalysisModal({
                 {/* Value Score Card */}
                 <div className="bg-card border border-border rounded-lg p-6 text-center min-w-[200px] shadow-sm">
                   <p className="text-sm text-muted-foreground mb-2">Value Score:</p>
-                  <p className="text-5xl font-bold text-brand-gold mb-3">{dynamicValueScore}</p>
+                  <p className="text-5xl font-bold text-brand-primary mb-3">{dynamicValueScore}</p>
                   <p className="text-sm text-muted-foreground mb-3">(Average: {avgScore})</p>
                   {percentDiff !== 0 && (
                     <p className="text-xs text-foreground leading-relaxed">
@@ -560,7 +560,7 @@ export function EpicValueTab({ epic }: EpicValueTabProps) {
           <Card className="border border-border/60">
             <CardContent className="p-6 text-center">
               <p className="text-sm text-muted-foreground mb-2">Value Score:</p>
-              <p className="text-5xl font-bold text-brand-gold mb-2">{valueScore}</p>
+              <p className="text-5xl font-bold text-brand-primary mb-2">{valueScore}</p>
               <p className="text-sm text-muted-foreground mb-3">(Average: {avgScore})</p>
               {percentDiff !== 0 && (
                 <p className="text-sm text-foreground mb-6">

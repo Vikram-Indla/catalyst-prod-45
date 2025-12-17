@@ -416,7 +416,7 @@ export default function AuditActivityPage() {
                       tabIndex={0}
                       className={cn(
                         'border-b cursor-pointer hover:bg-muted/50 transition-colors',
-                        'focus:outline-none focus:bg-brand-gold/5'
+                        'focus:outline-none focus:bg-brand-primary/5'
                       )}
                     >
                       <td className="px-4 py-2 text-muted-foreground whitespace-nowrap">

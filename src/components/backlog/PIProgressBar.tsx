@@ -8,7 +8,7 @@ export function PIProgressBar({ progress }: PIProgressBarProps) {
       <span className="text-sm text-muted-foreground">PI Progress:</span>
       <div className="w-20 h-2 bg-muted rounded overflow-hidden">
         <div 
-          className="h-full bg-gradient-to-r from-destructive to-brand-gold rounded"
+          className="h-full bg-gradient-to-r from-destructive to-brand-primary rounded"
           style={{ width: `${Math.min(progress, 100)}%` }}
         />
       </div>

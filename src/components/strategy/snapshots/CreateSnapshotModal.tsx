@@ -121,7 +121,7 @@ export function CreateSnapshotModal({ open, onClose }: CreateSnapshotModalProps)
       <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-brand-gold" />
+            <Calendar className="h-5 w-5 text-brand-primary" />
             Create Strategic Snapshot
           </DialogTitle>
         </DialogHeader>
@@ -134,9 +134,9 @@ export function CreateSnapshotModal({ open, onClose }: CreateSnapshotModalProps)
                 className={cn(
                   'w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors',
                   step === s
-                    ? 'bg-brand-gold text-white'
+                    ? 'bg-brand-primary text-white'
                     : step > s
-                    ? 'bg-brand-gold/20 text-brand-gold'
+                    ? 'bg-brand-primary/20 text-brand-primary'
                     : 'bg-muted text-muted-foreground'
                 )}
               >
@@ -237,7 +237,7 @@ export function CreateSnapshotModal({ open, onClose }: CreateSnapshotModalProps)
                       variant={selectedThemes.includes(theme.id) ? 'default' : 'outline'}
                       className={cn(
                         'cursor-pointer transition-colors',
-                        selectedThemes.includes(theme.id) && 'bg-brand-gold hover:bg-brand-gold/90'
+                        selectedThemes.includes(theme.id) && 'bg-brand-primary hover:bg-brand-primary/90'
                       )}
                       onClick={() => toggleTheme(theme.id)}
                     >
@@ -262,7 +262,7 @@ export function CreateSnapshotModal({ open, onClose }: CreateSnapshotModalProps)
                     variant={selectedQuarters.includes(quarter) ? 'default' : 'outline'}
                     className={cn(
                       'cursor-pointer transition-colors',
-                      selectedQuarters.includes(quarter) && 'bg-brand-gold hover:bg-brand-gold/90'
+                      selectedQuarters.includes(quarter) && 'bg-brand-primary hover:bg-brand-primary/90'
                     )}
                     onClick={() => toggleQuarter(quarter)}
                   >
@@ -298,7 +298,7 @@ export function CreateSnapshotModal({ open, onClose }: CreateSnapshotModalProps)
                       variant={selectedProducts.includes(product.id) ? 'default' : 'outline'}
                       className={cn(
                         'cursor-pointer transition-colors',
-                        selectedProducts.includes(product.id) && 'bg-brand-gold hover:bg-brand-gold/90'
+                        selectedProducts.includes(product.id) && 'bg-brand-primary hover:bg-brand-primary/90'
                       )}
                       onClick={() => toggleProduct(product.id)}
                     >
@@ -388,7 +388,7 @@ export function CreateSnapshotModal({ open, onClose }: CreateSnapshotModalProps)
                 <Button
                   onClick={() => handleCreate(true)}
                   disabled={createSnapshot.isPending}
-                  className="bg-brand-gold hover:bg-brand-gold/90"
+                  className="bg-brand-primary hover:bg-brand-primary/90"
                 >
                   Create & Activate
                 </Button>

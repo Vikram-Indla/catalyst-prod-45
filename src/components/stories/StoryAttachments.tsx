@@ -166,7 +166,7 @@ export function StoryAttachments({ storyId }: StoryAttachmentsProps) {
   return (
     <div className="space-y-4">
       {/* Upload Section */}
-      <div className="border-2 border-dashed rounded-lg p-6 text-center hover:border-brand-gold/50 transition-colors">
+      <div className="border-2 border-dashed rounded-lg p-6 text-center hover:border-brand-primary/50 transition-colors">
         <input
           type="file"
           id="file-upload"
@@ -196,8 +196,8 @@ export function StoryAttachments({ storyId }: StoryAttachmentsProps) {
               className="flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-accent/5"
             >
               <div className="flex-shrink-0">
-                <div className="h-10 w-10 rounded bg-brand-gold/10 flex items-center justify-center">
-                  <Paperclip className="h-5 w-5 text-brand-gold" />
+                <div className="h-10 w-10 rounded bg-brand-primary/10 flex items-center justify-center">
+                  <Paperclip className="h-5 w-5 text-brand-primary" />
                 </div>
               </div>
 

@@ -684,7 +684,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
               <Button
                 onClick={handleSaveScore}
                 disabled={!isScoringComplete || isSaving || isForceRanked}
-                className="w-full bg-brand-gold hover:bg-brand-gold-hover text-white"
+                className="w-full bg-brand-primary hover:bg-brand-primary-hover text-white"
               >
                 <Save className="h-4 w-4 mr-2" />
                 {isSaving ? 'Saving...' : 'Save Score'}
@@ -721,7 +721,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
                     {tierInfo.label} Priority
                   </div>
                   <div className="mt-3 text-sm text-muted-foreground">
-                    Rank <span className="font-semibold text-brand-gold">#{rankPosition || '—'}</span> of {totalScoredItems}
+                    Rank <span className="font-semibold text-brand-primary">#{rankPosition || '—'}</span> of {totalScoredItems}
                   </div>
                 </>
               ) : (
@@ -787,7 +787,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
                 <div className="pt-3 border-t border-border/40">
                   <CollapsibleTrigger className="flex items-center justify-between w-full group">
                     <div className="flex items-center gap-1.5">
-                      {isForceRanked && <Lock className="h-3 w-3 text-brand-gold" />}
+                      {isForceRanked && <Lock className="h-3 w-3 text-brand-primary" />}
                       <span className="text-[11px] font-semibold uppercase tracking-wider text-secondary-bronze">
                         Override Rank
                       </span>
@@ -830,7 +830,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
                               size="sm"
                               onClick={handleSaveJustificationAndRank}
                               disabled={isSavingRank}
-                              className="h-7 px-3 text-xs bg-brand-gold hover:bg-brand-gold-hover text-white"
+                              className="h-7 px-3 text-xs bg-brand-primary hover:bg-brand-primary-hover text-white"
                             >
                               <Save className="h-3 w-3 mr-1" />
                               {isSavingRank ? 'Saving...' : 'Save Rank'}
@@ -903,7 +903,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
                         <td className="py-2 font-semibold text-foreground">Total</td>
                         <td className="py-2 text-center text-muted-foreground">100%</td>
                         <td className="py-2 text-center">—</td>
-                        <td className="py-2 text-right font-bold text-brand-gold">
+                        <td className="py-2 text-right font-bold text-brand-primary">
                           {draftPriorityScore?.toFixed(2) ?? '—'}
                         </td>
                       </tr>

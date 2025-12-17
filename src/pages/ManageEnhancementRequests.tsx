@@ -221,7 +221,7 @@ export default function ManageEnhancementRequests() {
               {COLUMNS.map((column) => (
                 <div key={column.id} className="flex-1 min-w-[220px] flex flex-col border-r border-border last:border-r-0">
                   {/* Column Header - Brand gold color */}
-                  <div className="bg-brand-gold text-white px-4 py-2 flex items-center justify-between">
+                  <div className="bg-brand-primary text-white px-4 py-2 flex items-center justify-between">
                     <span className="text-sm font-medium">{column.title}</span>
                     <span className="bg-white/20 text-white text-xs px-2 py-0.5 rounded-full min-w-[20px] text-center">
                       {columnIdeas[column.id].length}
@@ -263,7 +263,7 @@ export default function ManageEnhancementRequests() {
                                     {/* ID Link - clickable */}
                                     <button
                                       onClick={() => handleIdeaClick(idea)}
-                                      className="text-sm text-brand-gold hover:underline font-medium truncate flex-1 text-left"
+                                      className="text-sm text-brand-primary hover:underline font-medium truncate flex-1 text-left"
                                     >
                                       {getDisplayId(idea)}
                                     </button>

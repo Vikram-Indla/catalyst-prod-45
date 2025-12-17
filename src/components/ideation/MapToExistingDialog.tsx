@@ -149,7 +149,7 @@ export function MapToExistingDialog({
                     onClick={() => setSelectedId(item.id)}
                     className={cn(
                       "w-full text-left px-3 py-2 rounded-md hover:bg-muted transition-colors flex items-center justify-between",
-                      selectedId === item.id && "bg-brand-gold/10 border border-brand-gold"
+                      selectedId === item.id && "bg-brand-primary/10 border border-brand-primary"
                     )}
                   >
                     <div>
@@ -159,7 +159,7 @@ export function MapToExistingDialog({
                       <span className="text-sm">{item.name}</span>
                     </div>
                     {selectedId === item.id && (
-                      <CheckCircle className="h-4 w-4 text-brand-gold" />
+                      <CheckCircle className="h-4 w-4 text-brand-primary" />
                     )}
                   </button>
                 ))}
@@ -175,7 +175,7 @@ export function MapToExistingDialog({
           <Button 
             onClick={handleMap} 
             disabled={isMapping || !selectedId}
-            className="bg-brand-gold text-white hover:bg-brand-gold-hover"
+            className="bg-brand-primary text-white hover:bg-brand-primary-hover"
           >
             {isMapping ? 'Mapping...' : `Map to ${workItemType}`}
           </Button>

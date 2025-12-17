@@ -46,7 +46,7 @@ export function LinksViewTab({ data, onChange, onDirtyChange }: LinksViewTabProp
               rel="noopener noreferrer"
               className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors"
             >
-              <ExternalLink className="h-4 w-4 text-brand-gold" />
+              <ExternalLink className="h-4 w-4 text-brand-primary" />
               <span className="text-sm">Functional Specification</span>
             </a>
           )}
@@ -58,7 +58,7 @@ export function LinksViewTab({ data, onChange, onDirtyChange }: LinksViewTabProp
               rel="noopener noreferrer"
               className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors"
             >
-              <ExternalLink className="h-4 w-4 text-brand-gold" />
+              <ExternalLink className="h-4 w-4 text-brand-primary" />
               <span className="text-sm">Jira Epic</span>
             </a>
           )}
@@ -89,7 +89,7 @@ export function LinksViewTab({ data, onChange, onDirtyChange }: LinksViewTabProp
             />
           </div>
           <div className="flex items-end">
-            <Button onClick={handleAddLink} size="icon" className="bg-brand-gold hover:bg-brand-gold-hover">
+            <Button onClick={handleAddLink} size="icon" className="bg-brand-primary hover:bg-brand-primary-hover">
               <Plus className="h-4 w-4" />
             </Button>
           </div>
@@ -111,7 +111,7 @@ export function LinksViewTab({ data, onChange, onDirtyChange }: LinksViewTabProp
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 hover:text-brand-gold transition-colors"
+                  className="flex items-center gap-2 hover:text-brand-primary transition-colors"
                 >
                   <Link className="h-4 w-4" />
                   <span className="text-sm">{link.title}</span>

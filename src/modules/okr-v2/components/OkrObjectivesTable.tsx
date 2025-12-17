@@ -123,7 +123,7 @@ function OkrTableRowComponent({ row, level, visibleColumnKeys, onRowClick, onTog
           <td key={colKey} className="py-3 px-4" style={{ width: COLUMN_CONFIG[colKey].width }}>
             <span className={cn(
               "text-[10px] font-medium px-1.5 py-0.5 rounded",
-              row.itemType === 'objective' && "bg-brand-gold/10 text-brand-gold",
+              row.itemType === 'objective' && "bg-brand-primary/10 text-brand-primary",
               row.itemType === 'keyResult' && "bg-secondary-green/10 text-secondary-green",
               row.itemType === 'workItem' && "bg-secondary-bronze/10 text-secondary-bronze"
             )}>

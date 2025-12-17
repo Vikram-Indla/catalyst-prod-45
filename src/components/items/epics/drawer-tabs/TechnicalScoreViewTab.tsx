@@ -81,7 +81,7 @@ export function TechnicalScoreViewTab({ data, onChange, epicId, onDirtyChange }:
         {/* Left Panel - Inputs */}
         <Card className="border border-border">
           <CardContent className="p-5 space-y-5">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-gold">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-primary">
               INPUTS (1–20 SCALE)
             </h3>
             
@@ -186,13 +186,13 @@ export function TechnicalScoreViewTab({ data, onChange, epicId, onDirtyChange }:
         {/* Right Panel - Technical Score Display */}
         <Card className="border border-border">
           <CardContent className="p-5 space-y-5">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-gold text-center">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-primary text-center">
               TECHNICAL SCORE
             </h3>
             
             {/* Score Display */}
             <div className="text-center">
-              <span className="text-5xl font-bold text-brand-gold">
+              <span className="text-5xl font-bold text-brand-primary">
                 {technicalScore.toFixed(1)}
               </span>
             </div>
@@ -217,7 +217,7 @@ export function TechnicalScoreViewTab({ data, onChange, epicId, onDirtyChange }:
             <Collapsible open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
               <CollapsibleTrigger className="flex items-center justify-between w-full py-2 text-sm font-medium text-muted-foreground hover:text-foreground">
                 <div className="flex items-center gap-2">
-                  <Lock className="h-4 w-4 text-brand-gold" />
+                  <Lock className="h-4 w-4 text-brand-primary" />
                   <span>OVERRIDE RANK</span>
                   <span className="text-xs text-muted-foreground">(ADMIN)</span>
                 </div>
@@ -247,7 +247,7 @@ export function TechnicalScoreViewTab({ data, onChange, epicId, onDirtyChange }:
                       ))}
                     </SelectContent>
                   </Select>
-                  <div className="w-10 h-10 rounded-full border-2 border-brand-gold text-brand-gold flex items-center justify-center text-sm font-medium">
+                  <div className="w-10 h-10 rounded-full border-2 border-brand-primary text-brand-primary flex items-center justify-center text-sm font-medium">
                     #{pendingRank || data.global_rank || '—'}
                   </div>
                 </div>

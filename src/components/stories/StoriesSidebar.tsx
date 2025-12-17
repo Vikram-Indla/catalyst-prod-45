@@ -44,7 +44,7 @@ export function StoriesSidebar({ className }: StoriesSidebarProps) {
       {/* Toggle Handle - Always visible */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="absolute -right-3 top-6 z-[100] w-6 h-6 rounded-full bg-card border border-border shadow-md flex items-center justify-center hover:bg-accent hover:border-brand-gold transition-all"
+        className="absolute -right-3 top-6 z-[100] w-6 h-6 rounded-full bg-card border border-border shadow-md flex items-center justify-center hover:bg-accent hover:border-brand-primary transition-all"
         aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
       >
         {expanded ? (
@@ -62,7 +62,7 @@ export function StoriesSidebar({ className }: StoriesSidebarProps) {
               {/* Stories Context Block */}
               <div className="py-2 px-3 mb-3 bg-accent/30 border border-border/50 rounded-lg">
                 <div className="flex items-center gap-3 w-full">
-                  <div className="w-8 h-8 rounded bg-brand-gold flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
+                  <div className="w-8 h-8 rounded bg-brand-primary flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
                     <BookOpen className="h-4 w-4" />
                   </div>
                   <div className="flex-1 text-left min-w-0">
@@ -77,7 +77,7 @@ export function StoriesSidebar({ className }: StoriesSidebarProps) {
           )}
           {!expanded && (
             <div className="flex items-center justify-center py-2">
-              <BookOpen className="h-5 w-5 text-brand-gold" />
+              <BookOpen className="h-5 w-5 text-brand-primary" />
             </div>
           )}
         </div>

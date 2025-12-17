@@ -106,7 +106,7 @@ export function EpicBudgetViewTab({ data, onChange }: EpicBudgetViewTabProps) {
       <Collapsible open={isFundingOpen} onOpenChange={setIsFundingOpen}>
         <div className="border border-border rounded-xl bg-white shadow-sm">
           <CollapsibleTrigger className="flex items-center justify-between w-full p-5">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-gold">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-primary">
               Funding & Budget
             </h3>
             <ChevronDown className={cn("h-4 w-4 transition-transform", isFundingOpen && "rotate-180")} />
@@ -167,7 +167,7 @@ export function EpicBudgetViewTab({ data, onChange }: EpicBudgetViewTabProps) {
                       className={cn(
                         "px-3 py-1.5 text-sm rounded-md border transition-colors",
                         (data.budget_type || []).includes(type)
-                          ? "bg-brand-gold/10 border-brand-gold text-brand-gold"
+                          ? "bg-brand-primary/10 border-brand-primary text-brand-primary"
                           : "border-border hover:bg-muted"
                       )}
                     >

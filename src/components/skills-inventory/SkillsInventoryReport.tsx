@@ -167,7 +167,7 @@ export const SkillsInventoryReport: React.FC = () => {
         <button 
           onClick={handleExportPDF}
           disabled={isExporting}
-          className="flex items-center gap-2 px-4 py-2 border border-brand-gold-border text-muted-foreground rounded-lg font-medium text-sm hover:bg-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex items-center gap-2 px-4 py-2 border border-brand-primary-border text-muted-foreground rounded-lg font-medium text-sm hover:bg-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isExporting ? (
             <>
@@ -192,7 +192,7 @@ export const SkillsInventoryReport: React.FC = () => {
             return (
               <div
                 key={stat.label}
-                className="bg-card rounded-xl p-5 border border-brand-gold-border"
+                className="bg-card rounded-xl p-5 border border-brand-primary-border"
               >
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 rounded-xl bg-brand-primary/15 flex items-center justify-center flex-shrink-0">
@@ -213,7 +213,7 @@ export const SkillsInventoryReport: React.FC = () => {
         {/* Charts Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Proficiency Distribution Donut Chart */}
-          <div className="bg-card rounded-xl border border-brand-gold-border p-6">
+          <div className="bg-card rounded-xl border border-brand-primary-border p-6">
             <h3 className="text-base font-semibold text-foreground mb-6">
               Proficiency Distribution
             </h3>
@@ -260,7 +260,7 @@ export const SkillsInventoryReport: React.FC = () => {
           </div>
 
           {/* Skills by Category Bar Chart */}
-          <div className="bg-card rounded-xl border border-brand-gold-border p-6">
+          <div className="bg-card rounded-xl border border-brand-primary-border p-6">
             <h3 className="text-base font-semibold text-foreground mb-6">
               Skills by Category
             </h3>

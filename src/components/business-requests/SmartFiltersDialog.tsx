@@ -193,7 +193,7 @@ export function SmartFiltersDialog({
           <DialogTitle className="text-foreground flex items-center gap-2">
             Filter Demands
             {activeFilterCount > 0 && (
-              <Badge variant="secondary" className="bg-brand-gold/20 text-brand-gold">
+              <Badge variant="secondary" className="bg-brand-primary/20 text-brand-primary">
                 {activeFilterCount} active
               </Badge>
             )}
@@ -387,7 +387,7 @@ export function SmartFiltersDialog({
                     size="sm"
                     className={cn(
                       "h-7 text-xs",
-                      localFilters.department?.includes(dept.value) && "border-brand-gold bg-brand-gold/10 text-brand-gold"
+                      localFilters.department?.includes(dept.value) && "border-brand-primary bg-brand-primary/10 text-brand-primary"
                     )}
                     onClick={() => toggleMultiSelect('department', dept.value)}
                   >
@@ -447,7 +447,7 @@ export function SmartFiltersDialog({
                     size="sm"
                     className={cn(
                       "h-7 text-xs",
-                      localFilters.deliveryPlatform?.includes(platform.value) && "border-brand-gold bg-brand-gold/10 text-brand-gold"
+                      localFilters.deliveryPlatform?.includes(platform.value) && "border-brand-primary bg-brand-primary/10 text-brand-primary"
                     )}
                     onClick={() => toggleMultiSelect('deliveryPlatform', platform.value)}
                   >
@@ -498,7 +498,7 @@ export function SmartFiltersDialog({
                     size="sm"
                     className={cn(
                       "h-7 text-xs",
-                      localFilters.quarter?.includes(q.value) && "border-brand-gold bg-brand-gold/10 text-brand-gold"
+                      localFilters.quarter?.includes(q.value) && "border-brand-primary bg-brand-primary/10 text-brand-primary"
                     )}
                     onClick={() => toggleMultiSelect('quarter', q.value)}
                   >
@@ -514,7 +514,7 @@ export function SmartFiltersDialog({
           <Button variant="outline" onClick={handleClearFilters} className="flex-1">
             Clear All
           </Button>
-          <Button onClick={handleApplyFilters} className="flex-1 bg-brand-gold text-white hover:bg-brand-gold-hover">
+          <Button onClick={handleApplyFilters} className="flex-1 bg-brand-primary text-white hover:bg-brand-primary-hover">
             Apply Filters
           </Button>
         </DialogFooter>

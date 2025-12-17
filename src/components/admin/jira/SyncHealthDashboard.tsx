@@ -46,7 +46,7 @@ export function SyncHealthDashboard({ connectionId }: SyncHealthDashboardProps) 
   if (isLoading) {
     return (
       <div className="flex justify-center py-8">
-        <Loader2 className="w-6 h-6 animate-spin text-brand-gold" />
+        <Loader2 className="w-6 h-6 animate-spin text-brand-primary" />
       </div>
     );
   }
@@ -57,7 +57,7 @@ export function SyncHealthDashboard({ connectionId }: SyncHealthDashboardProps) 
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Activity className="w-4 h-4 text-brand-gold" />
+              <Activity className="w-4 h-4 text-brand-primary" />
               Total Syncs
             </CardTitle>
           </CardHeader>

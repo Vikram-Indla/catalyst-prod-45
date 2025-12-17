@@ -133,13 +133,13 @@ export function CreateDocumentDialog({
                     key={template.id}
                     className={`cursor-pointer transition-colors ${
                       selectedTemplate === template.id
-                        ? 'border-brand-gold bg-brand-gold/5'
+                        ? 'border-brand-primary bg-brand-primary/5'
                         : 'hover:border-muted-foreground/50'
                     }`}
                     onClick={() => setSelectedTemplate(template.id)}
                   >
                     <CardContent className="flex flex-col items-center gap-1 p-3">
-                      <Icon className={`h-5 w-5 ${selectedTemplate === template.id ? 'text-brand-gold' : 'text-muted-foreground'}`} />
+                      <Icon className={`h-5 w-5 ${selectedTemplate === template.id ? 'text-brand-primary' : 'text-muted-foreground'}`} />
                       <span className="text-xs font-medium">{template.title}</span>
                     </CardContent>
                   </Card>

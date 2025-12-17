@@ -120,7 +120,7 @@ export function DiscussionsViewTab({ requestId }: DiscussionsViewTabProps) {
   // Format message to display mentions nicely
   const formatMessage = (message: string) => {
     return message.replace(/@\[([^\]]+)\]\([^)]+\)/g, (_, name) => {
-      return `<span class="text-brand-gold font-medium">@${name}</span>`;
+      return `<span class="text-brand-primary font-medium">@${name}</span>`;
     });
   };
 

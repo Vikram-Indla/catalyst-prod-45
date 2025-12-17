@@ -354,14 +354,14 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
         <SheetContent side="right" hideClose className={`executive-drawer ${drawerWidthClass} p-0 flex flex-col overflow-hidden bg-white`}>
           <SheetHeader className="executive-drawer-header flex-col space-y-0 shrink-0 p-0 bg-white">
             {/* Header row - identical structure to BusinessRequestDrawer */}
-            <div className="flex items-center justify-between px-4 md:px-5 pt-4 pb-3 border-b border-brand-gold/50 bg-white">
+            <div className="flex items-center justify-between px-4 md:px-5 pt-4 pb-3 border-b border-brand-primary/50 bg-white">
               {/* Left side: Epic Key + Title */}
               <div className="flex items-center gap-2.5 flex-1 min-w-0">
                 <div className="flex items-center gap-1 shrink-0">
-                  <span className="text-sm font-medium text-brand-gold">{epic?.epic_key || '...'}</span>
+                  <span className="text-sm font-medium text-brand-primary">{epic?.epic_key || '...'}</span>
                   <button
                     onClick={handleCopyLink}
-                    className="text-muted-foreground/60 hover:text-brand-gold transition-colors p-0.5"
+                    className="text-muted-foreground/60 hover:text-brand-primary transition-colors p-0.5"
                     title="Copy link"
                   >
                     <LinkIcon className="h-3 w-3" />
@@ -377,7 +377,7 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
                       onChange={(e) => setEditedName(e.target.value)}
                       onBlur={handleSaveName}
                       onKeyDown={handleNameKeyDown}
-                      className="text-base font-medium h-auto py-1 px-2 border-brand-gold/50 focus:border-brand-gold"
+                      className="text-base font-medium h-auto py-1 px-2 border-brand-primary/50 focus:border-brand-primary"
                     />
                   ) : (
                     <>
@@ -386,7 +386,7 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
                       </SheetTitle>
                       <button
                         onClick={handleStartEditName}
-                        className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-brand-gold transition-all p-0.5"
+                        className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-brand-primary transition-all p-0.5"
                         title="Rename"
                       >
                         <Pencil className="h-3.5 w-3.5" />

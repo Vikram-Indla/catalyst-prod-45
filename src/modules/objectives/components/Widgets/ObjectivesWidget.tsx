@@ -57,7 +57,7 @@ export function ObjectivesWidget({
       <Card className="p-[var(--s6)]">
         <div className="flex items-center justify-between mb-[var(--s4)]">
           <div className="flex items-center gap-[var(--s2)]">
-            <Target className="h-5 w-5 text-brand-gold" />
+            <Target className="h-5 w-5 text-brand-primary" />
             <h3 className="font-semibold">{title || defaultTitle}</h3>
           </div>
           <div className="flex items-center gap-[var(--s2)]">

@@ -145,8 +145,8 @@ export default function ResetPassword() {
           {pageState === 'loading' && (
             <>
               <CardHeader className="text-center">
-                <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-brand-gold/10 flex items-center justify-center">
-                  <Loader2 className="h-6 w-6 text-brand-gold animate-spin" />
+                <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-brand-primary/10 flex items-center justify-center">
+                  <Loader2 className="h-6 w-6 text-brand-primary animate-spin" />
                 </div>
                 <CardTitle>Validating Reset Link</CardTitle>
                 <CardDescription>Please wait while we verify your reset link...</CardDescription>
@@ -176,8 +176,8 @@ export default function ResetPassword() {
           {pageState === 'valid' && (
             <>
               <CardHeader className="text-center">
-                <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-brand-gold/10 flex items-center justify-center">
-                  <KeyRound className="h-6 w-6 text-brand-gold" />
+                <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-brand-primary/10 flex items-center justify-center">
+                  <KeyRound className="h-6 w-6 text-brand-primary" />
                 </div>
                 <CardTitle>Set New Password</CardTitle>
                 <CardDescription>

@@ -233,7 +233,7 @@ export function StrategyCockpit({ snapshotId }: StrategyCockpitProps) {
             <Filter className="h-4 w-4" />
             Filters
             {activeFilterCount > 0 && (
-              <Badge variant="secondary" className="ml-1 bg-brand-gold/20 text-brand-gold">
+              <Badge variant="secondary" className="ml-1 bg-brand-primary/20 text-brand-primary">
                 {activeFilterCount}
               </Badge>
             )}

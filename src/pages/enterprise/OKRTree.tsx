@@ -142,7 +142,7 @@ export default function OKRTree() {
       {/* Header - align header pattern */}
       <div className="h-[72px] border-b border-border bg-background flex items-center justify-between px-6 flex-shrink-0">
         <div className="flex items-center gap-3">
-          <GitBranch className="h-5 w-5 text-brand-gold" />
+          <GitBranch className="h-5 w-5 text-brand-primary" />
           <h1 className="text-lg font-semibold text-foreground">OKR Tree</h1>
         </div>
         <div className="flex items-center gap-2">

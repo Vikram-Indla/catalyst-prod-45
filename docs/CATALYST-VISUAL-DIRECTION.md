@@ -151,7 +151,7 @@ USAGE:
 ### Why Such High Transparency in Backgrounds?
 ```css
 --nav-hover-bg: rgba(92, 124, 92, 0.08);  /* Only 8% opacity */
---brand-gold-muted: rgba(198, 156, 109, 0.15);  /* Only 15% opacity */
+--brand-primary-muted: rgba(198, 156, 109, 0.15);  /* Only 15% opacity */
 ```
 **Rationale**: Heavy colored backgrounds feel like consumer apps. Ultra-subtle tints create **layered depth** without overwhelming the content. The eye should focus on data, not decoration.
 
@@ -331,7 +331,7 @@ On hover, cards get a subtle gold tint to their border—signaling interactivity
 
 ```css
 .btn-primary {
-  background: var(--brand-gold);
+  background: var(--brand-primary);
   color: white;
   border: none;
 }
@@ -499,7 +499,7 @@ button:focus-visible {
 
 ```css
 .btn-primary:active {
-  background: var(--brand-gold-hover);  /* Slightly darker */
+  background: var(--brand-primary-hover);  /* Slightly darker */
 }
 ```
 

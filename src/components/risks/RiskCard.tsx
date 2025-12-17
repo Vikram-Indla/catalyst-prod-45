@@ -17,7 +17,7 @@ export function RiskCard({ risk }: RiskCardProps) {
     <div className="bg-background border rounded-lg p-3 hover:shadow-md transition-shadow cursor-pointer group">
       <div className="flex items-start gap-2">
         <Avatar className="w-6 h-6">
-          <AvatarFallback className="text-xs bg-brand-gold text-white">
+          <AvatarFallback className="text-xs bg-brand-primary text-white">
             {initials}
           </AvatarFallback>
         </Avatar>

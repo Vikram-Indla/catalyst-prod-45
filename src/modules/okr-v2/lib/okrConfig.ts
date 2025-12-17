@@ -55,7 +55,7 @@ export const HEALTH_FROM_PROGRESS = {
 export const STATUS_COLORS: Record<string, string> = {
   'on-track': '#5c7c5c', // secondary-green
   'completed': '#5c7c5c', // secondary-green
-  'in-progress': '#c69c6d', // brand-gold
+  'in-progress': '#c69c6d', // brand-primary
   'pending': '#c8ccd0', // secondary-grey
   'at-risk': '#d4a574', // warm warning
   'off-track': '#b85c38', // danger
@@ -77,7 +77,7 @@ export const STATUS_LABELS: Record<string, string> = {
 export const DEFAULT_THEME_COLORS = [
   '#5c7c5c', // secondary-green
   '#8b7355', // secondary-bronze
-  '#c69c6d', // brand-gold
+  '#c69c6d', // brand-primary
   '#d4b896', // secondary-champagne
   '#4a6741', // dark green
 ] as const;

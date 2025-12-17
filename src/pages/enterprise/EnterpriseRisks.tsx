@@ -30,7 +30,7 @@ import { PageChrome } from '@/components/layout/PageChrome';
 const palette = {
   olive: 'hsl(var(--palette-expert))',
   bronze: 'hsl(var(--palette-advanced))',
-  gold: 'hsl(var(--brand-gold))',
+  gold: 'hsl(var(--brand-primary))',
   champagne: 'hsl(var(--palette-beginner))',
   grey: 'hsl(var(--palette-none))',
 };
@@ -132,7 +132,7 @@ function RiskDrillDownDrawer({
         <SheetHeader className="pb-4 border-b border-border">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-xs font-medium uppercase tracking-wide mb-1 text-brand-gold">{label}</p>
+              <p className="text-xs font-medium uppercase tracking-wide mb-1 text-brand-primary">{label}</p>
               <SheetTitle className="text-xl font-bold">{title}</SheetTitle>
               <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>
             </div>
@@ -140,17 +140,17 @@ function RiskDrillDownDrawer({
           
           {/* Quick stats tiles */}
           <div className="flex gap-3 mt-4">
-            <div className="px-3 py-2 rounded-lg bg-brand-gold/10">
+            <div className="px-3 py-2 rounded-lg bg-brand-primary/10">
               <p className="text-xs text-muted-foreground">Critical</p>
-              <p className="text-lg font-bold text-brand-gold">{criticalCount}</p>
+              <p className="text-lg font-bold text-brand-primary">{criticalCount}</p>
             </div>
-            <div className="px-3 py-2 rounded-lg bg-brand-gold/10">
+            <div className="px-3 py-2 rounded-lg bg-brand-primary/10">
               <p className="text-xs text-muted-foreground">High Impact</p>
-              <p className="text-lg font-bold text-brand-gold">{highImpactCount}</p>
+              <p className="text-lg font-bold text-brand-primary">{highImpactCount}</p>
             </div>
-            <div className="px-3 py-2 rounded-lg bg-brand-gold/10">
+            <div className="px-3 py-2 rounded-lg bg-brand-primary/10">
               <p className="text-xs text-muted-foreground">Open</p>
-              <p className="text-lg font-bold text-brand-gold">{openCount}</p>
+              <p className="text-lg font-bold text-brand-primary">{openCount}</p>
             </div>
           </div>
         </SheetHeader>
@@ -164,7 +164,7 @@ function RiskDrillDownDrawer({
               onClick={() => onRiskClick(risk)}
             >
               <div className="flex justify-between items-start mb-2">
-                <span className="text-xs font-mono px-2 py-0.5 rounded bg-brand-gold/20 text-brand-gold">
+                <span className="text-xs font-mono px-2 py-0.5 rounded bg-brand-primary/20 text-brand-primary">
                   R-{String(risk.risk_number).padStart(3, '0')}
                 </span>
                 <div className="flex gap-1">
@@ -483,8 +483,8 @@ export default function EnterpriseRisks() {
       <div className="flex-1 overflow-auto p-6">
         {/* KPI Cards Row */}
         <div className="grid grid-cols-4 gap-4 mb-6">
-          <div className="rounded-2xl p-5 border bg-gradient-to-br from-brand-gold/5 to-brand-gold/15 border-brand-gold/30">
-            <p className="text-xs font-medium uppercase tracking-wide mb-2 text-brand-gold">Total Open Risks</p>
+          <div className="rounded-2xl p-5 border bg-gradient-to-br from-brand-primary/5 to-brand-primary/15 border-brand-primary/30">
+            <p className="text-xs font-medium uppercase tracking-wide mb-2 text-brand-primary">Total Open Risks</p>
             <p className="text-3xl font-bold text-foreground">{openRisks.length}</p>
             <p className="text-xs mt-1 text-muted-foreground">of {allRisks.length} total risks</p>
           </div>
@@ -519,7 +519,7 @@ export default function EnterpriseRisks() {
                   onClick={() => setActiveTab(tab)}
                   className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
                     activeTab === tab 
-                      ? 'bg-card shadow-sm text-brand-gold' 
+                      ? 'bg-card shadow-sm text-brand-primary' 
                       : 'text-muted-foreground'
                   }`}
                 >
@@ -678,7 +678,7 @@ export default function EnterpriseRisks() {
                             <p className="text-sm font-medium text-foreground">{item.owner}</p>
                             <p className="text-xs text-muted-foreground">{item.unit}</p>
                           </div>
-                          <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-brand-gold/20 text-brand-gold">
+                          <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-brand-primary/20 text-brand-primary">
                             {item.openRisks}
                           </span>
                         </button>
@@ -790,7 +790,7 @@ export default function EnterpriseRisks() {
                     onClick={() => setSelectedRisk(risk)}
                   >
                     <td className="px-4 py-3">
-                      <button className="text-muted-foreground hover:text-brand-gold">
+                      <button className="text-muted-foreground hover:text-brand-primary">
                         <Star className="w-4 h-4" />
                       </button>
                     </td>
@@ -808,7 +808,7 @@ export default function EnterpriseRisks() {
                     <td className="px-4 py-3">
                       <span className={`text-xs px-3 py-1 rounded-full font-medium ${
                         risk.status === 'Open' 
-                          ? 'bg-brand-gold/20 text-brand-gold' 
+                          ? 'bg-brand-primary/20 text-brand-primary' 
                           : 'bg-palette-expert/20 text-palette-expert'
                       }`}>
                         {risk.status}
@@ -829,7 +829,7 @@ export default function EnterpriseRisks() {
           {hasMore && (
             <div className="p-4 border-t border-border text-center">
               <button 
-                className="text-sm font-medium px-4 py-2 rounded-lg hover:bg-muted text-brand-gold"
+                className="text-sm font-medium px-4 py-2 rounded-lg hover:bg-muted text-brand-primary"
                 onClick={() => setVisibleCount(prev => prev + ITEMS_PER_PAGE)}
               >
                 Load more ({filteredRisks.length - visibleCount} remaining)

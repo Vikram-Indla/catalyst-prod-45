@@ -407,7 +407,7 @@ export default function KanbanSettings() {
                                       {...provided.droppableProps}
                                       className={cn(
                                         "min-h-[60px] rounded border border-dashed p-2 space-y-1",
-                                        snapshot.isDraggingOver && "bg-brand-gold/10 border-brand-gold"
+                                        snapshot.isDraggingOver && "bg-brand-primary/10 border-brand-primary"
                                       )}
                                     >
                                       {column.statuses.map((status, idx) => (
@@ -607,7 +607,7 @@ export default function KanbanSettings() {
                     className={cn(
                       "flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-colors",
                       settings.cardLayout.visibleFields.includes(field.value)
-                        ? "border-brand-gold bg-brand-gold/10"
+                        ? "border-brand-primary bg-brand-primary/10"
                         : "hover:bg-muted"
                     )}
                     onClick={() => toggleCardField(field.value)}

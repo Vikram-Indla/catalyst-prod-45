@@ -119,7 +119,7 @@ The Stories module is a comprehensive Jira Align-compliant implementation for ma
 - ✅ Global Edit button → enables inline editing across all fields
 - ✅ Save/Cancel buttons when in edit mode
 - ✅ More actions menu (Duplicate, Delete)
-- ✅ Brand-gold accent colors on all interactive elements
+- ✅ brand-primary accent colors on all interactive elements
 
 ### 5. Bulk Operations
 
@@ -216,8 +216,8 @@ src/components/stories/
 - **Context**: Ranking context detection via useWorkItemRanking hook
 
 ### Design System Compliance
-- ✅ Brand-gold accent colors (#C69C6D)
-- ✅ Semantic tokens from design system (--brand-gold, --s1-s9)
+- ✅ brand-primary accent colors (#C69C6D)
+- ✅ Semantic tokens from design system (--brand-primary, --s1-s9)
 - ✅ Responsive layouts (mobile-first)
 - ✅ Shadcn UI components throughout
 - ✅ Consistent spacing and typography

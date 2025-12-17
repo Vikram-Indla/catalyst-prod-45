@@ -74,7 +74,7 @@ export function ModuleGuard({ moduleCode, children, allowLinking = false }: Modu
           {isAdmin && (
             <Button 
               onClick={() => navigate('/admin/modules-packages')}
-              className="w-full bg-brand-gold hover:bg-brand-gold-hover"
+              className="w-full bg-brand-primary hover:bg-brand-primary-hover"
             >
               <Settings className="h-4 w-4 mr-2" />
               Go to Modules & Packages

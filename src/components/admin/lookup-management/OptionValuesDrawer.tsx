@@ -211,7 +211,7 @@ export function OptionValuesDrawer({ optionSet, open, onOpenChange }: OptionValu
       <SheetContent width="wide" className="flex flex-col">
         <SheetHeader>
           <div className="flex items-center gap-2">
-            <SheetTitle className="text-brand-gold">{optionSet.name}</SheetTitle>
+            <SheetTitle className="text-brand-primary">{optionSet.name}</SheetTitle>
             {optionSet.is_system && (
               <Badge variant="outline" className="text-xs">System</Badge>
             )}
@@ -384,7 +384,7 @@ export function OptionValuesDrawer({ optionSet, open, onOpenChange }: OptionValu
 
                 {/* Add New Row */}
                 {isAddingNew && (
-                  <div className="grid grid-cols-[40px_1fr_1fr_80px_80px_80px_80px] gap-2 px-3 py-2 items-center border-t bg-brand-gold/5">
+                  <div className="grid grid-cols-[40px_1fr_1fr_80px_80px_80px_80px] gap-2 px-3 py-2 items-center border-t bg-brand-primary/5">
                     <div></div>
                     <Input
                       placeholder="Label"

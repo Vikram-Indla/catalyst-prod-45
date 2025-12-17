@@ -135,7 +135,7 @@ export function ManageThemesPanel({ snapshot, onBack }: ManageThemesPanelProps) 
   const getStatusBadgeStyles = (status: string | null | undefined) => {
     const s = (status || '').toLowerCase();
     if (s === 'active') return "bg-[rgba(92,124,92,0.15)] text-[#5C7C5C] border-transparent";
-    if (s === 'proposed') return "bg-brand-gold/15 text-brand-gold border-transparent";
+    if (s === 'proposed') return "bg-brand-primary/15 text-brand-primary border-transparent";
     if (s === 'archived') return "bg-muted text-muted-foreground border-transparent";
     return "bg-muted text-muted-foreground border-transparent";
   };
@@ -162,7 +162,7 @@ export function ManageThemesPanel({ snapshot, onBack }: ManageThemesPanelProps) 
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center gap-3 pb-4 border-b border-brand-gold">
+      <div className="flex items-center gap-3 pb-4 border-b border-brand-primary">
         <Button
           variant="ghost"
           size="icon"
@@ -216,7 +216,7 @@ export function ManageThemesPanel({ snapshot, onBack }: ManageThemesPanelProps) 
                     className={cn(
                       'flex items-start gap-2.5 py-2.5 px-3 rounded-lg cursor-pointer transition-colors',
                       selectedToAdd.includes(theme.id)
-                        ? 'bg-brand-gold/10 border border-brand-gold/30'
+                        ? 'bg-brand-primary/10 border border-brand-primary/30'
                         : 'hover:bg-muted/50 border border-transparent',
                       isArchived && 'opacity-50 cursor-not-allowed'
                     )}
@@ -243,7 +243,7 @@ export function ManageThemesPanel({ snapshot, onBack }: ManageThemesPanelProps) 
           {!isArchived && (
             <Button
               size="sm"
-              className="mt-3 bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="mt-3 bg-brand-primary hover:bg-brand-primary-hover text-white"
               onClick={handleAddSelected}
               disabled={selectedToAdd.length === 0 || saving}
             >

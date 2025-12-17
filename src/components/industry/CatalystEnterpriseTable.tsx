@@ -636,7 +636,7 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
           <GripVertical 
             className={cn(
               "h-4 w-4 cursor-grab active:cursor-grabbing",
-              isDragging ? "text-brand-gold" : "text-muted-foreground"
+              isDragging ? "text-brand-primary" : "text-muted-foreground"
             )} 
           />
         </td>

@@ -116,7 +116,7 @@ export function WorkTreeDashboard({
                       cy="50"
                       r="40"
                       fill="none"
-                      stroke="hsl(var(--brand-gold))"
+                      stroke="hsl(var(--brand-primary))"
                       strokeWidth="8"
                       strokeDasharray={`${storyPointsAcceptedPct * 2.51} 251`}
                       strokeLinecap="round"
@@ -166,7 +166,7 @@ export function WorkTreeDashboard({
                     cy="50"
                     r="40"
                     fill="none"
-                    stroke="hsl(var(--brand-gold))"
+                    stroke="hsl(var(--brand-primary))"
                     strokeWidth="10"
                     strokeDasharray={`${metric.progress * 2.51} 251`}
                     strokeLinecap="round"

@@ -34,7 +34,7 @@ export function OverviewTab({ data, isEditMode, onChange, hideProcessStepHealth 
       {/* Classification Section */}
       <Card className="border border-border/60 rounded-lg">
         <CardContent className="p-5 space-y-4">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">Classification</h3>
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-primary">Classification</h3>
           
           {/* Process Step and Health - only show in view mode */}
           {!hideProcessStepHealth && (
@@ -175,7 +175,7 @@ export function OverviewTab({ data, isEditMode, onChange, hideProcessStepHealth 
       {/* Description Section */}
       <Card className="border border-border/60 rounded-lg">
         <CardContent className="p-5 space-y-4">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">Description</h3>
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-primary">Description</h3>
           
           <div>
             <Textarea
@@ -191,7 +191,7 @@ export function OverviewTab({ data, isEditMode, onChange, hideProcessStepHealth 
       {/* Business Justification Section */}
       <Card className="border border-border/60 rounded-lg">
         <CardContent className="p-5 space-y-4">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">Business Justification</h3>
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-primary">Business Justification</h3>
           
           <div>
             <Textarea
@@ -207,7 +207,7 @@ export function OverviewTab({ data, isEditMode, onChange, hideProcessStepHealth 
       {/* Timeline Section */}
       <Card className="border border-border/60 rounded-lg">
         <CardContent className="p-5 space-y-4">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">Timeline</h3>
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-primary">Timeline</h3>
           
           <div className="grid grid-cols-2 gap-4">
             <div>

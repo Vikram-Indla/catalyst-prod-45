@@ -85,7 +85,7 @@ export function AddResourceModal({
                     className={cn(
                       'w-full flex items-center justify-between p-2 rounded-md transition-colors text-left',
                       isInView && 'opacity-50 cursor-not-allowed',
-                      !isInView && isSelected && 'bg-brand-gold/10',
+                      !isInView && isSelected && 'bg-brand-primary/10',
                       !isInView && !isSelected && 'hover:bg-muted/50'
                     )}
                     onClick={() => !isInView && toggleResource(resource.id)}
@@ -98,7 +98,7 @@ export function AddResourceModal({
                           background: resource.role_code === 'PO' 
                             ? 'hsl(var(--secondary-green))' 
                             : resource.role_code === 'BA' 
-                              ? 'hsl(var(--brand-gold))' 
+                              ? 'hsl(var(--brand-primary))' 
                               : 'hsl(var(--secondary-bronze))'
                         }}
                       >
@@ -113,7 +113,7 @@ export function AddResourceModal({
                       <span className="text-xs text-muted-foreground">Already in view</span>
                     )}
                     {!isInView && isSelected && (
-                      <Check className="h-4 w-4 text-brand-gold" />
+                      <Check className="h-4 w-4 text-brand-primary" />
                     )}
                   </button>
                 );
@@ -139,7 +139,7 @@ export function AddResourceModal({
           <Button 
             onClick={handleAdd}
             disabled={selectedIds.size === 0}
-            className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+            className="bg-brand-primary hover:bg-brand-primary-hover text-white"
           >
             Add to View
           </Button>

@@ -71,7 +71,7 @@ function CustomTooltip({ active, payload }: any) {
   return (
     <div className="bg-card border border-border rounded-lg shadow-lg p-4 max-w-xs z-50">
       <div className="font-semibold text-foreground mb-2">
-        <span className="text-brand-gold">{epic.key}</span> - {epic.name}
+        <span className="text-brand-primary">{epic.key}</span> - {epic.name}
       </div>
       <div className="grid grid-cols-2 gap-2 text-sm">
         <div className="text-muted-foreground">Job Size:</div>
@@ -90,7 +90,7 @@ function CustomTooltip({ active, payload }: any) {
         <div className="font-medium">{epic.costOfDelay ?? 'N/A'}</div>
         
         <div className="text-muted-foreground">Technical Score:</div>
-        <div className="font-medium text-brand-gold">
+        <div className="font-medium text-brand-primary">
           {epic.technicalScore !== null ? epic.technicalScore.toFixed(2) : 'N/A'}
         </div>
         

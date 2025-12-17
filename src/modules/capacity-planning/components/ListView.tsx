@@ -51,7 +51,7 @@ const PRIORITY_STYLES: Record<string, { text: string; bg: string; border: string
 const getRankColor = (rank: number | null): string => {
   if (!rank) return 'bg-muted-foreground/30';
   if (rank <= 3) return 'bg-secondary-green';
-  if (rank <= 6) return 'bg-brand-gold';
+  if (rank <= 6) return 'bg-brand-primary';
   return 'bg-muted-foreground/50';
 };
 
@@ -182,7 +182,7 @@ export function ListView({
       {children}
       <ArrowUpDown className={cn(
         'h-3 w-3',
-        sortColumn === column ? 'text-brand-gold' : 'text-muted-foreground/50'
+        sortColumn === column ? 'text-brand-primary' : 'text-muted-foreground/50'
       )} />
     </button>
   );
@@ -301,7 +301,7 @@ export function ListView({
                     key={booking.id}
                     className={cn(
                       'border-b hover:bg-muted/30 cursor-pointer transition-colors',
-                      selectedItems.has(booking.id) && 'bg-brand-gold/5'
+                      selectedItems.has(booking.id) && 'bg-brand-primary/5'
                     )}
                     style={{ borderColor: 'hsl(var(--border) / 0.4)' }}
                     onClick={() => onBookingClick(booking)}
@@ -409,7 +409,7 @@ export function ListView({
                                 background: resource.role_code === 'PO' 
                                   ? 'hsl(var(--secondary-green))' 
                                   : resource.role_code === 'BA' 
-                                    ? 'hsl(var(--brand-gold))' 
+                                    ? 'hsl(var(--brand-primary))' 
                                     : 'hsl(var(--secondary-bronze))'
                               }}
                               title={!isResourceColumnExpanded ? `${resource.name} (${resource.role_code || 'N/A'})` : undefined}

@@ -145,7 +145,7 @@ export default function ReleaseCalendar() {
   const getReleaseBarColor = (release: Release) => {
     if (release.status === 'overdue') return 'bg-red-500';
     if (release.status === 'released') return 'bg-green-500';
-    if (release.progress >= 50) return 'bg-brand-gold';
+    if (release.progress >= 50) return 'bg-brand-primary';
     return 'bg-blue-500';
   };
 
@@ -207,7 +207,7 @@ export default function ReleaseCalendar() {
             className={cn(
               "px-3 py-1 text-xs font-medium border-r border-border transition-colors",
               view === 'month'
-                ? "bg-brand-gold/10 text-brand-gold"
+                ? "bg-brand-primary/10 text-brand-primary"
                 : "bg-card text-muted-foreground hover:bg-muted/50"
             )}
           >
@@ -218,7 +218,7 @@ export default function ReleaseCalendar() {
             className={cn(
               "px-3 py-1 text-xs font-medium transition-colors",
               view === 'quarter'
-                ? "bg-brand-gold/10 text-brand-gold"
+                ? "bg-brand-primary/10 text-brand-primary"
                 : "bg-card text-muted-foreground hover:bg-muted/50"
             )}
           >
@@ -253,14 +253,14 @@ export default function ReleaseCalendar() {
                     "min-h-[72px] p-1.5 border-r border-b border-border",
                     "[&:nth-child(7n)]:border-r-0",
                     !day.isCurrentMonth && "bg-muted/20",
-                    isToday(day.date) && "bg-brand-gold/5"
+                    isToday(day.date) && "bg-brand-primary/5"
                   )}
                 >
                   <div
                     className={cn(
                       "text-xs font-medium mb-1",
                       !day.isCurrentMonth && "text-muted-foreground/60",
-                      isToday(day.date) && "w-5 h-5 rounded-full bg-brand-gold text-white flex items-center justify-center text-[10px]"
+                      isToday(day.date) && "w-5 h-5 rounded-full bg-brand-primary text-white flex items-center justify-center text-[10px]"
                     )}
                   >
                     {day.date.getDate()}
@@ -323,7 +323,7 @@ export default function ReleaseCalendar() {
                           className={cn(
                             "aspect-square flex flex-col items-center justify-center relative cursor-pointer hover:bg-muted/30 rounded",
                             !day.isCurrentMonth && "opacity-30",
-                            isToday(day.date) && "bg-brand-gold/10"
+                            isToday(day.date) && "bg-brand-primary/10"
                           )}
                           onClick={() => {
                             if (day.releases.length > 0) {
@@ -333,7 +333,7 @@ export default function ReleaseCalendar() {
                         >
                           <span className={cn(
                             "text-[10px]",
-                            isToday(day.date) && "font-bold text-brand-gold"
+                            isToday(day.date) && "font-bold text-brand-primary"
                           )}>
                             {day.date.getDate()}
                           </span>

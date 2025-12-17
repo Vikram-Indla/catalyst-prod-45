@@ -52,11 +52,11 @@ export default function UsageTrends() {
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Active Users</CardTitle>
-                <Users className="h-4 w-4 text-brand-gold" />
+                <Users className="h-4 w-4 text-brand-primary" />
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-brand-gold">{usageStats.activeUsers}</div>
+              <div className="text-2xl font-bold text-brand-primary">{usageStats.activeUsers}</div>
               <p className="text-xs text-muted-foreground mt-1">+12% from last month</p>
             </CardContent>
           </Card>
@@ -64,7 +64,7 @@ export default function UsageTrends() {
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Work Items</CardTitle>
-                <FileText className="h-4 w-4 text-brand-gold" />
+                <FileText className="h-4 w-4 text-brand-primary" />
               </div>
             </CardHeader>
             <CardContent>
@@ -76,7 +76,7 @@ export default function UsageTrends() {
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Avg Session</CardTitle>
-                <Activity className="h-4 w-4 text-brand-gold" />
+                <Activity className="h-4 w-4 text-brand-primary" />
               </div>
             </CardHeader>
             <CardContent>
@@ -88,7 +88,7 @@ export default function UsageTrends() {
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Page Views</CardTitle>
-                <TrendingUp className="h-4 w-4 text-brand-gold" />
+                <TrendingUp className="h-4 w-4 text-brand-primary" />
               </div>
             </CardHeader>
             <CardContent>

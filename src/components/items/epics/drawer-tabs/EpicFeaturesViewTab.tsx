@@ -297,7 +297,7 @@ export function EpicFeaturesViewTab({ epicId }: EpicFeaturesViewTabProps) {
             <Button 
               onClick={() => createImplementationLinkMutation.mutate(selectedWorkItem)} 
               disabled={createImplementationLinkMutation.isPending || !selectedWorkItem}
-              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
             >
               {createImplementationLinkMutation.isPending ? 'Linking...' : 'Link Work Item'}
             </Button>
@@ -327,7 +327,7 @@ export function EpicFeaturesViewTab({ epicId }: EpicFeaturesViewTabProps) {
                       <GitBranch className="h-4 w-4 text-muted-foreground mt-0.5" />
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-brand-gold">
+                          <span className="text-sm font-medium text-brand-primary">
                             {`F-${feature.id.slice(0, 4)}`}
                           </span>
                           <span className="text-sm">{feature.name}</span>

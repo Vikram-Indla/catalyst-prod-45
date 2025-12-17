@@ -243,7 +243,7 @@ export function RiskDialog({ open, onOpenChange, risk, defaultProgramId }: RiskD
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button type="submit" disabled={mutation.isPending} className="bg-brand-gold hover:bg-brand-gold-hover text-white">
+            <Button type="submit" disabled={mutation.isPending} className="bg-brand-primary hover:bg-brand-primary-hover text-white">
               {mutation.isPending ? 'Saving...' : 'Save'}
             </Button>
           </DialogFooter>

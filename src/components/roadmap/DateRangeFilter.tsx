@@ -322,7 +322,7 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
                   </div>
                 </div>
                 {appliedFilter && (
-                  <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-brand-gold/15 text-brand-gold ml-2">
+                  <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-brand-primary/15 text-brand-primary ml-2">
                     <Check className="w-2.5 h-2.5" />
                     Applied
                   </div>
@@ -385,13 +385,13 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
                           className={cn(
                             "relative py-2 rounded-lg text-xs font-medium transition-all duration-200",
                             isSelected 
-                              ? "text-white bg-brand-gold" 
+                              ? "text-white bg-brand-primary" 
                               : "text-foreground hover:bg-muted"
                           )}
                         >
                           {year}
                           {isCurrent && !isSelected && (
-                            <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-brand-gold" />
+                            <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-brand-primary" />
                           )}
                           {isSelected && (
                             <div className="absolute top-0.5 right-0.5">
@@ -447,7 +447,7 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
                             {q.months}
                           </div>
                           {isCurrent && !isSelected && (
-                            <div className="absolute top-1.5 right-1.5 px-1 py-0.5 rounded text-[8px] font-medium bg-brand-gold/20 text-brand-gold">
+                            <div className="absolute top-1.5 right-1.5 px-1 py-0.5 rounded text-[8px] font-medium bg-brand-primary/20 text-brand-primary">
                               Now
                             </div>
                           )}
@@ -494,13 +494,13 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
                           className={cn(
                             "relative py-2 rounded-lg text-xs font-medium transition-all duration-200",
                             isSelected 
-                              ? "text-white bg-brand-gold" 
+                              ? "text-white bg-brand-primary" 
                               : "text-foreground hover:bg-muted"
                           )}
                         >
                           {month}
                           {isCurrent && !isSelected && (
-                            <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-brand-gold" />
+                            <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-brand-primary" />
                           )}
                           {isSelected && (
                             <div className="absolute top-0.5 right-0.5">
@@ -556,7 +556,7 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
                 className={cn(
                   "px-4 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200",
                   canApply()
-                    ? "text-white bg-brand-gold hover:bg-brand-gold-hover"
+                    ? "text-white bg-brand-primary hover:bg-brand-primary-hover"
                     : "text-muted-foreground bg-muted cursor-not-allowed"
                 )}
               >

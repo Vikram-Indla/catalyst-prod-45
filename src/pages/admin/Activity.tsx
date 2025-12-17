@@ -184,7 +184,7 @@ export default function Activity() {
               {announcements && announcements.length > 0 ? (
                 <ul className="space-y-2">
                   {announcements.map((announcement) => (
-                    <li key={announcement.id} className="text-sm border-l-2 border-brand-gold pl-3 py-1">
+                    <li key={announcement.id} className="text-sm border-l-2 border-brand-primary pl-3 py-1">
                       {announcement.title}
                     </li>
                   ))}

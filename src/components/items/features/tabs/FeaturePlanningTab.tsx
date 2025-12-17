@@ -113,7 +113,7 @@ export function FeaturePlanningTab({ feature }: FeaturePlanningTabProps) {
         <CardContent className="p-4 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Link2 className="h-4 w-4 text-brand-gold" />
+              <Link2 className="h-4 w-4 text-brand-primary" />
               <Label className="text-sm font-semibold">Program Inheritance</Label>
             </div>
             <Switch

@@ -123,7 +123,7 @@ export function LinkExistingThemesDialog({
                     />
                     <div
                       className="w-3 h-3 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: theme.color_tag || 'hsl(var(--brand-gold))' }}
+                      style={{ backgroundColor: theme.color_tag || 'hsl(var(--brand-primary))' }}
                     />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{theme.name}</p>
@@ -154,7 +154,7 @@ export function LinkExistingThemesDialog({
           <Button 
             onClick={handleLink} 
             disabled={selectedIds.length === 0 || upsertLinks.isPending}
-            className="bg-brand-gold hover:bg-brand-gold/90"
+            className="bg-brand-primary hover:bg-brand-primary/90"
           >
             {upsertLinks.isPending ? 'Linking...' : `Link selected (${selectedIds.length})`}
           </Button>

@@ -139,7 +139,7 @@ export function CreateBoardDialog({ open, onOpenChange }: CreateBoardDialogProps
             <Button
               type="submit"
               disabled={!formData.title || createBoard.isPending}
-              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
             >
               {createBoard.isPending ? 'Creating...' : 'Create Board'}
             </Button>

@@ -307,7 +307,7 @@ export default function KeyManagement() {
       case 'valid':
         return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Already valid</Badge>;
       case 'suggested':
-        return <Badge variant="outline" className="bg-brand-gold/10 text-brand-gold border-brand-gold/30"><Sparkles className="h-3 w-3 mr-1" />Suggested</Badge>;
+        return <Badge variant="outline" className="bg-brand-primary/10 text-brand-primary border-brand-primary/30"><Sparkles className="h-3 w-3 mr-1" />Suggested</Badge>;
       case 'edited':
         return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">Edited</Badge>;
       default:

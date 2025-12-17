@@ -161,7 +161,7 @@ export function RiskLinkedItemsTab({ risk }: RiskLinkedItemsTabProps) {
               <span className="text-xs font-medium text-muted-foreground uppercase">
                 {getTypeLabel(item.type)}
               </span>
-              <span className="text-xs text-brand-gold font-medium">{item.key}</span>
+              <span className="text-xs text-brand-primary font-medium">{item.key}</span>
             </div>
             <h4 className="text-sm font-medium text-foreground truncate mt-0.5">
               {item.title}

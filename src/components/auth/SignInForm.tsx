@@ -47,7 +47,7 @@ export function SignInForm({ onSubmit, loading }: SignInFormProps) {
         />
         <button
           type="button"
-          className="font-body text-[13px] font-medium text-brand-gold hover:text-brand-gold-hover hover:underline transition-colors"
+          className="font-body text-[13px] font-medium text-brand-primary hover:text-brand-primary-hover hover:underline transition-colors"
         >
           Forgot password?
         </button>

@@ -102,7 +102,7 @@ export function AddSkillModal({ open, onClose, teamMembers, onSave }: AddSkillMo
                 {teamMembers.map((member) => (
                   <SelectItem key={member.id} value={member.id.toString()}>
                     <div className="flex items-center gap-2">
-                      <div className="w-5 h-5 rounded bg-brand-gold flex items-center justify-center text-[9px] text-white font-medium">
+                      <div className="w-5 h-5 rounded bg-brand-primary flex items-center justify-center text-[9px] text-white font-medium">
                         {getInitials(member.name)}
                       </div>
                       <span>{member.name}</span>
@@ -136,8 +136,8 @@ export function AddSkillModal({ open, onClose, teamMembers, onSave }: AddSkillMo
                   onClick={() => setFormData({ ...formData, proficiency: level })}
                   className={`p-2 rounded-md border transition-all ${
                     formData.proficiency === level
-                      ? 'border-brand-gold bg-brand-gold/10'
-                      : 'border-border hover:border-brand-gold/50 bg-white'
+                      ? 'border-brand-primary bg-brand-primary/10'
+                      : 'border-border hover:border-brand-primary/50 bg-white'
                   }`}
                 >
                   <div
@@ -174,7 +174,7 @@ export function AddSkillModal({ open, onClose, teamMembers, onSave }: AddSkillMo
             <Button
               onClick={handleSave}
               disabled={isSaving || !formData.teamMemberId || !formData.skillName}
-              className="flex-1 bg-brand-gold text-white hover:bg-brand-gold-hover"
+              className="flex-1 bg-brand-primary text-white hover:bg-brand-primary-hover"
             >
               {isSaving ? 'Adding...' : 'Add Skill'}
             </Button>

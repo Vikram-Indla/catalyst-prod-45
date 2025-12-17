@@ -79,7 +79,7 @@ export function groupObjectives(
   themes: Theme[]
 ): ObjectiveGroup[] {
   if (groupBy === 'none') {
-    return [{ key: 'all', name: 'All Objectives', items: objectives, color: 'var(--brand-gold)' }];
+    return [{ key: 'all', name: 'All Objectives', items: objectives, color: 'var(--brand-primary)' }];
   }
   
   if (groupBy === 'theme') {
@@ -99,7 +99,7 @@ export function groupObjectives(
     objectives.forEach(obj => {
       const q = getQuarter(obj.startDate);
       if (!groups[q]) {
-        groups[q] = { key: q, name: q, items: [], color: 'var(--brand-gold)' };
+        groups[q] = { key: q, name: q, items: [], color: 'var(--brand-primary)' };
       }
       groups[q].items.push(obj);
     });

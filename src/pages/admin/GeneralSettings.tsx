@@ -24,8 +24,8 @@ export default function GeneralSettings() {
         <div className="h-[72px] border-b bg-card flex-shrink-0">
           <div className="h-full px-6 flex items-center justify-between">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-gold/10 flex-shrink-0">
-                <Settings className="h-5 w-5 text-brand-gold" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-primary/10 flex-shrink-0">
+                <Settings className="h-5 w-5 text-brand-primary" />
               </div>
               <div className="min-w-0">
                 <h1 className="text-xl sm:text-2xl font-semibold text-foreground truncate">General Settings</h1>
@@ -34,7 +34,7 @@ export default function GeneralSettings() {
                 </p>
               </div>
             </div>
-            <Button onClick={handleSave} className="bg-brand-gold hover:bg-brand-gold-hover flex-shrink-0">
+            <Button onClick={handleSave} className="bg-brand-primary hover:bg-brand-primary-hover flex-shrink-0">
               Save Settings
             </Button>
           </div>

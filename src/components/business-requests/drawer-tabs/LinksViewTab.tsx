@@ -708,7 +708,7 @@ export function LinksViewTab({ requestId, onNavigateToEpic }: LinksViewTabProps)
                   value={implSearch}
                   onChange={(e) => setImplSearch(e.target.value)}
                   placeholder="Search by key (E-1234) or title..."
-                  className="pl-9 h-10 bg-muted/30 border-border/60 focus:border-brand-gold focus:ring-brand-gold/15"
+                  className="pl-9 h-10 bg-muted/30 border-border/60 focus:border-brand-primary focus:ring-brand-primary/15"
                 />
               </div>
               {workItemsError && (
@@ -736,7 +736,7 @@ export function LinksViewTab({ requestId, onNavigateToEpic }: LinksViewTabProps)
                           className={cn(
                             "w-full flex items-center gap-3 p-3 rounded-lg text-left transition-all",
                             selectedWorkItem?.id === item.id 
-                              ? "bg-brand-gold/10 border border-brand-gold" 
+                              ? "bg-brand-primary/10 border border-brand-primary" 
                               : "hover:bg-muted/50"
                           )}
                         >
@@ -777,7 +777,7 @@ export function LinksViewTab({ requestId, onNavigateToEpic }: LinksViewTabProps)
             )}
 
             {selectedWorkItem && (
-              <div className="p-3 bg-brand-gold/5 border border-brand-gold/20 rounded-lg">
+              <div className="p-3 bg-brand-primary/5 border border-brand-primary/20 rounded-lg">
                 <div className="text-[12px] text-muted-foreground mb-1">Selected:</div>
                 <div className="text-[13px] font-medium text-foreground">
                   {selectedWorkItem.key} – {selectedWorkItem.title}
@@ -788,7 +788,7 @@ export function LinksViewTab({ requestId, onNavigateToEpic }: LinksViewTabProps)
             <Button 
               onClick={() => createImplementationLinkMutation.mutate(selectedWorkItem)} 
               disabled={createImplementationLinkMutation.isPending || !selectedWorkItem}
-              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
             >
               {createImplementationLinkMutation.isPending ? 'Linking...' : 'Link Work Item'}
             </Button>
@@ -808,7 +808,7 @@ export function LinksViewTab({ requestId, onNavigateToEpic }: LinksViewTabProps)
                 value={externalForm.title}
                 onChange={(e) => setExternalForm({ ...externalForm, title: e.target.value })}
                 placeholder="e.g., Figma Design Mockups"
-                className="mt-1.5 h-10 bg-muted/30 border-border/60 focus:border-brand-gold"
+                className="mt-1.5 h-10 bg-muted/30 border-border/60 focus:border-brand-primary"
               />
             </div>
 
@@ -818,14 +818,14 @@ export function LinksViewTab({ requestId, onNavigateToEpic }: LinksViewTabProps)
                 value={externalForm.url}
                 onChange={(e) => setExternalForm({ ...externalForm, url: e.target.value })}
                 placeholder="https://..."
-                className="mt-1.5 h-10 bg-muted/30 border-border/60 focus:border-brand-gold"
+                className="mt-1.5 h-10 bg-muted/30 border-border/60 focus:border-brand-primary"
               />
             </div>
 
             <Button 
               onClick={() => createExternalLinkMutation.mutate(externalForm)} 
               disabled={createExternalLinkMutation.isPending || !externalForm.title || !externalForm.url}
-              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
             >
               {createExternalLinkMutation.isPending ? 'Adding...' : 'Add Link'}
             </Button>
@@ -845,14 +845,14 @@ export function LinksViewTab({ requestId, onNavigateToEpic }: LinksViewTabProps)
                 value={documentForm.title}
                 onChange={(e) => setDocumentForm({ ...documentForm, title: e.target.value })}
                 placeholder="e.g., Technical Specification"
-                className="mt-1.5 h-10 bg-muted/30 border-border/60 focus:border-brand-gold"
+                className="mt-1.5 h-10 bg-muted/30 border-border/60 focus:border-brand-primary"
               />
             </div>
 
             <div
               className={cn(
                 "border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-all",
-                isDragOver ? "border-brand-gold bg-brand-gold/5" : "border-border/60 bg-muted/30 hover:border-brand-gold/50"
+                isDragOver ? "border-brand-primary bg-brand-primary/5" : "border-border/60 bg-muted/30 hover:border-brand-primary/50"
               )}
               onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
               onDragLeave={(e) => { e.preventDefault(); setIsDragOver(false); }}
@@ -863,9 +863,9 @@ export function LinksViewTab({ requestId, onNavigateToEpic }: LinksViewTabProps)
               }}
               onClick={() => fileInputRef.current?.click()}
             >
-              <Upload className="h-10 w-10 mx-auto mb-3 text-brand-gold" />
+              <Upload className="h-10 w-10 mx-auto mb-3 text-brand-primary" />
               <p className="text-[13px] text-muted-foreground">
-                Drag & drop files here, or <span className="text-brand-gold font-medium">browse</span>
+                Drag & drop files here, or <span className="text-brand-primary font-medium">browse</span>
               </p>
               <p className="text-[11px] text-muted-foreground mt-1">Max 20MB per file • Up to 5 files</p>
               <input
@@ -881,7 +881,7 @@ export function LinksViewTab({ requestId, onNavigateToEpic }: LinksViewTabProps)
               <div className="space-y-2">
                 {documentForm.files.map((file, index) => (
                   <div key={`${file.name}-${index}`} className="flex items-center gap-3 p-3 bg-muted/30 rounded-md">
-                    <FileText className="h-5 w-5 text-brand-gold" />
+                    <FileText className="h-5 w-5 text-brand-primary" />
                     <div className="flex-1 min-w-0">
                       <div className="text-[13px] font-medium truncate">{file.name}</div>
                       <div className="text-[11px] text-muted-foreground">{formatFileSize(file.size)}</div>
@@ -900,7 +900,7 @@ export function LinksViewTab({ requestId, onNavigateToEpic }: LinksViewTabProps)
             <Button 
               onClick={() => uploadDocumentMutation.mutate({ title: documentForm.title, files: documentForm.files })} 
               disabled={uploadDocumentMutation.isPending || documentForm.files.length === 0}
-              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
             >
               {uploadDocumentMutation.isPending ? 'Uploading...' : 'Upload Documents'}
             </Button>
@@ -1061,7 +1061,7 @@ export function LinksViewTab({ requestId, onNavigateToEpic }: LinksViewTabProps)
                         {link.kind === 'implementation' && link.linked_item_type === 'epic' && onNavigateToEpic ? (
                           <button
                             onClick={() => onNavigateToEpic(link.linked_item_id, null)}
-                            className="text-[14px] font-medium text-brand-gold hover:underline underline-offset-2 truncate flex-1 min-w-0 text-left"
+                            className="text-[14px] font-medium text-brand-primary hover:underline underline-offset-2 truncate flex-1 min-w-0 text-left"
                           >
                             {link.title}
                           </button>
@@ -1070,7 +1070,7 @@ export function LinksViewTab({ requestId, onNavigateToEpic }: LinksViewTabProps)
                             href={link.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-[14px] font-medium text-brand-gold hover:underline underline-offset-2 truncate flex-1 min-w-0"
+                            className="text-[14px] font-medium text-brand-primary hover:underline underline-offset-2 truncate flex-1 min-w-0"
                           >
                             {link.title}
                           </a>

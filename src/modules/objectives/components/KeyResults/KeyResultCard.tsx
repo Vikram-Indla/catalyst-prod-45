@@ -56,7 +56,7 @@ export function KeyResultCard({ keyResult, objectiveId, readOnly = false, classN
         <div className="flex items-start justify-between gap-[var(--s3)] mb-[var(--s3)]">
           <div className="flex-1">
             <div className="flex items-center gap-[var(--s2)] mb-[var(--s2)]">
-              <TrendingUp className="h-4 w-4 text-brand-gold" />
+              <TrendingUp className="h-4 w-4 text-brand-primary" />
               <h4 className="font-medium text-sm">{title}</h4>
             </div>
             {description && (

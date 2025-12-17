@@ -369,7 +369,7 @@ export function CreateEpicDialog({
               {/* Epic Number Preview */}
               <div className="flex items-center gap-2 p-3 rounded-md bg-muted/50 border border-border">
                 <span className="text-sm text-muted-foreground">Epic Number:</span>
-                <span className="font-mono font-medium text-brand-gold">
+                <span className="font-mono font-medium text-brand-primary">
                   {isProgramMissing ? '???-###' : `${getProgramKeyPreview()}-###`}
                 </span>
                 <span className="text-xs text-muted-foreground">(auto-generated)</span>
@@ -494,7 +494,7 @@ export function CreateEpicDialog({
                     >
                       {selectedBR ? (
                         <span className="flex items-center gap-2 truncate">
-                          <span className="font-mono text-brand-gold">{selectedBR.request_key}</span>
+                          <span className="font-mono text-brand-primary">{selectedBR.request_key}</span>
                           <span className="truncate">{selectedBR.title}</span>
                         </span>
                       ) : (
@@ -539,7 +539,7 @@ export function CreateEpicDialog({
                                 )}
                               />
                               <div className="flex items-center gap-2 flex-1 min-w-0">
-                                <span className="font-mono text-brand-gold shrink-0">
+                                <span className="font-mono text-brand-primary shrink-0">
                                   {br.request_key}
                                 </span>
                                 <span className="truncate">{br.title}</span>
@@ -649,7 +649,7 @@ export function CreateEpicDialog({
           <Button 
             onClick={handleSubmit} 
             disabled={!isValid || createEpicMutation.isPending}
-            className="bg-brand-gold hover:bg-brand-gold-hover text-background disabled:opacity-50"
+            className="bg-brand-primary hover:bg-brand-primary-hover text-background disabled:opacity-50"
             title={
               isProgramMissing 
                 ? 'Program context required' 

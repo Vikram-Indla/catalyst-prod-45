@@ -179,7 +179,7 @@ export function UserPicker({
         <span className="flex items-center gap-2">
           <Avatar className="h-5 w-5">
             <AvatarImage src={user.avatar_url || undefined} />
-            <AvatarFallback className="text-[10px] bg-brand-gold/20 text-brand-gold">
+            <AvatarFallback className="text-[10px] bg-brand-primary/20 text-brand-primary">
               {getInitials(user.full_name, user.email)}
             </AvatarFallback>
           </Avatar>
@@ -266,7 +266,7 @@ export function UserPicker({
                         />
                         <Avatar className="h-6 w-6 mr-2">
                           <AvatarImage src={user.avatar_url || undefined} />
-                          <AvatarFallback className="text-[10px] bg-brand-gold/20 text-brand-gold">
+                          <AvatarFallback className="text-[10px] bg-brand-primary/20 text-brand-primary">
                             {getInitials(user.full_name, user.email)}
                           </AvatarFallback>
                         </Avatar>
@@ -310,11 +310,11 @@ export function UserPicker({
             <Badge
               key={user.id}
               variant="secondary"
-              className="h-6 gap-1 pr-1 bg-brand-gold/10 text-brand-gold border-brand-gold/20"
+              className="h-6 gap-1 pr-1 bg-brand-primary/10 text-brand-primary border-brand-primary/20"
             >
               <Avatar className="h-4 w-4">
                 <AvatarImage src={user.avatar_url || undefined} />
-                <AvatarFallback className="text-[8px] bg-brand-gold/20 text-brand-gold">
+                <AvatarFallback className="text-[8px] bg-brand-primary/20 text-brand-primary">
                   {getInitials(user.full_name, user.email)}
                 </AvatarFallback>
               </Avatar>
@@ -324,7 +324,7 @@ export function UserPicker({
               <button
                 type="button"
                 onClick={() => handleRemove(user.id)}
-                className="ml-1 rounded-full hover:bg-brand-gold/20 p-0.5"
+                className="ml-1 rounded-full hover:bg-brand-primary/20 p-0.5"
               >
                 <X className="h-3 w-3" />
               </button>

@@ -36,7 +36,7 @@ export function SnapshotDetailsDrawer({ open, onClose, snapshot }: SnapshotDetai
   };
 
   const getStatusBadgeStyles = () => {
-    if (isActive) return 'bg-brand-gold/10 text-brand-gold border-brand-gold/30';
+    if (isActive) return 'bg-brand-primary/10 text-brand-primary border-brand-primary/30';
     if (isArchived) return 'bg-muted text-muted-foreground border-muted';
     return 'bg-amber-50 text-amber-700 border-amber-200';
   };
@@ -76,7 +76,7 @@ export function SnapshotDetailsDrawer({ open, onClose, snapshot }: SnapshotDetai
             <Button
               variant="outline"
               size="icon"
-              className="h-8 w-8 rounded-md border-brand-gold/30 flex-shrink-0"
+              className="h-8 w-8 rounded-md border-brand-primary/30 flex-shrink-0"
               onClick={onClose}
             >
               <X className="h-4 w-4" />
@@ -138,7 +138,7 @@ export function SnapshotDetailsDrawer({ open, onClose, snapshot }: SnapshotDetai
               <div className="grid grid-cols-2 gap-4">
                 <div className="p-3 bg-muted/50 rounded-md">
                   <div className="flex items-center gap-2 mb-1">
-                    <Layers className="h-4 w-4 text-brand-gold" />
+                    <Layers className="h-4 w-4 text-brand-primary" />
                     <span className="text-sm font-medium">{quarterCount} Quarters</span>
                   </div>
                   {quarterCount > 0 && configuration?.quarters && (
@@ -154,7 +154,7 @@ export function SnapshotDetailsDrawer({ open, onClose, snapshot }: SnapshotDetai
                   onClick={handleNavigateToBacklogThemes}
                 >
                   <div className="flex items-center gap-2 mb-1">
-                    <Users className="h-4 w-4 text-brand-gold" />
+                    <Users className="h-4 w-4 text-brand-primary" />
                     <span className="text-sm font-medium">{themeCount} Themes</span>
                     <ExternalLink className="h-3 w-3 text-muted-foreground" />
                   </div>

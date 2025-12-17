@@ -42,7 +42,7 @@ function StatusPill({ status }: { status: string }) {
       case 'On Track':
         return 'bg-secondary-green/10 text-secondary-green border-secondary-green/30';
       case 'In Progress':
-        return 'bg-brand-gold/10 text-brand-gold border-brand-gold/30';
+        return 'bg-brand-primary/10 text-brand-primary border-brand-primary/30';
       case 'At Risk':
       case 'Off Track':
         return 'bg-destructive/10 text-destructive border-destructive/30';
@@ -66,7 +66,7 @@ function TrendPill({ trend }: { trend: TrendDirection }) {
       case 'ahead':
         return { label: 'Ahead of plan', icon: TrendingUp, className: 'bg-secondary-green/10 text-secondary-green border-secondary-green/30' };
       case 'on-plan':
-        return { label: 'On plan', icon: null, className: 'bg-brand-gold/10 text-brand-gold border-brand-gold/30' };
+        return { label: 'On plan', icon: null, className: 'bg-brand-primary/10 text-brand-primary border-brand-primary/30' };
       case 'behind':
         return { label: 'Behind plan', icon: TrendingDown, className: 'bg-destructive/10 text-destructive border-destructive/30' };
       default:
@@ -105,7 +105,7 @@ function ThemeChip({ name, color }: { name: string; color: string }) {
 function SectionHeader({ icon: Icon, title }: { icon: React.ComponentType<{ className?: string }>; title: string }) {
   return (
     <div className="flex items-center gap-2.5 pb-3 border-b border-border mb-4">
-      <Icon className="h-[18px] w-[18px] text-brand-gold" />
+      <Icon className="h-[18px] w-[18px] text-brand-primary" />
       <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
         {title}
       </span>
@@ -165,7 +165,7 @@ function AlertBanner({ message }: { message: string }) {
 }
 
 function InsightBullet({ text, severity }: { text: string; severity: InsightSeverity }) {
-  const dotColor = severity === 'high' ? 'bg-destructive' : severity === 'medium' ? 'bg-amber-500' : 'bg-brand-gold';
+  const dotColor = severity === 'high' ? 'bg-destructive' : severity === 'medium' ? 'bg-amber-500' : 'bg-brand-primary';
   
   return (
     <div className="flex items-start gap-3 py-1">
@@ -285,7 +285,7 @@ function PerformanceTimingCard({ baseline, krStatus }: { baseline: BaselineInfo;
           <span className="text-muted-foreground">{krStatus.total} KRs:</span>
           {krStatus.completed > 0 && <span className="text-secondary-green">{krStatus.completed} done</span>}
           {krStatus.onTrack > 0 && <span className="text-secondary-green">{krStatus.onTrack} on track</span>}
-          {krStatus.inProgress > 0 && <span className="text-brand-gold">{krStatus.inProgress} in progress</span>}
+          {krStatus.inProgress > 0 && <span className="text-brand-primary">{krStatus.inProgress} in progress</span>}
           {krStatus.atRisk > 0 && <span className="text-destructive">{krStatus.atRisk} at risk</span>}
           {krStatus.blocked > 0 && <span className="text-destructive">{krStatus.blocked} blocked</span>}
           {krStatus.pending > 0 && <span className="text-muted-foreground">{krStatus.pending} pending</span>}
@@ -437,7 +437,7 @@ function DrawerContent({ analytics, onTitleClick }: { analytics: ObjectiveAnalyt
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="p-6 border-b border-brand-gold/50 bg-card">
+      <div className="p-6 border-b border-brand-primary/50 bg-card">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2.5">
             <TypeBadge type={analytics.type} />
@@ -447,7 +447,7 @@ function DrawerContent({ analytics, onTitleClick }: { analytics: ObjectiveAnalyt
 
         <h2 
           onClick={onTitleClick}
-          className="text-lg font-semibold text-foreground leading-snug mb-4 cursor-pointer hover:text-brand-gold transition-colors"
+          className="text-lg font-semibold text-foreground leading-snug mb-4 cursor-pointer hover:text-brand-primary transition-colors"
         >
           {analytics.name}
         </h2>

@@ -542,10 +542,10 @@ export function RiskLinksTab({ riskId, businessRequestId, relatedItemId, relatio
           <div className="grid grid-cols-2 gap-3">
             {/* Upload Documents */}
             <button
-              className="p-4 border-2 border-dashed border-border rounded-xl text-center cursor-pointer transition-all hover:border-brand-gold/50 hover:bg-brand-gold/5 group"
+              className="p-4 border-2 border-dashed border-border rounded-xl text-center cursor-pointer transition-all hover:border-brand-primary/50 hover:bg-brand-primary/5 group"
               onClick={() => setFormView('document')}
             >
-              <div className="w-10 h-10 mx-auto mb-2 flex items-center justify-center bg-muted/50 rounded-lg group-hover:bg-brand-gold group-hover:text-white transition-all">
+              <div className="w-10 h-10 mx-auto mb-2 flex items-center justify-center bg-muted/50 rounded-lg group-hover:bg-brand-primary group-hover:text-white transition-all">
                 <FilePlus className="h-5 w-5 text-muted-foreground group-hover:text-white" />
               </div>
               <div className="font-medium text-[13px] text-foreground mb-0.5">Upload Documents</div>
@@ -554,10 +554,10 @@ export function RiskLinksTab({ riskId, businessRequestId, relatedItemId, relatio
 
             {/* External Link */}
             <button
-              className="p-4 border-2 border-dashed border-border rounded-xl text-center cursor-pointer transition-all hover:border-brand-gold/50 hover:bg-brand-gold/5 group"
+              className="p-4 border-2 border-dashed border-border rounded-xl text-center cursor-pointer transition-all hover:border-brand-primary/50 hover:bg-brand-primary/5 group"
               onClick={() => setFormView('external')}
             >
-              <div className="w-10 h-10 mx-auto mb-2 flex items-center justify-center bg-muted/50 rounded-lg group-hover:bg-brand-gold group-hover:text-white transition-all">
+              <div className="w-10 h-10 mx-auto mb-2 flex items-center justify-center bg-muted/50 rounded-lg group-hover:bg-brand-primary group-hover:text-white transition-all">
                 <ExternalLink className="h-5 w-5 text-muted-foreground group-hover:text-white" />
               </div>
               <div className="font-medium text-[13px] text-foreground mb-0.5">External Link</div>
@@ -579,7 +579,7 @@ export function RiskLinksTab({ riskId, businessRequestId, relatedItemId, relatio
                 value={externalForm.title}
                 onChange={(e) => setExternalForm({ ...externalForm, title: e.target.value })}
                 placeholder="e.g., Risk Mitigation Plan"
-                className="mt-1.5 h-10 bg-muted/30 border-border/60 focus:border-brand-gold"
+                className="mt-1.5 h-10 bg-muted/30 border-border/60 focus:border-brand-primary"
               />
             </div>
 
@@ -589,14 +589,14 @@ export function RiskLinksTab({ riskId, businessRequestId, relatedItemId, relatio
                 value={externalForm.url}
                 onChange={(e) => setExternalForm({ ...externalForm, url: e.target.value })}
                 placeholder="https://..."
-                className="mt-1.5 h-10 bg-muted/30 border-border/60 focus:border-brand-gold"
+                className="mt-1.5 h-10 bg-muted/30 border-border/60 focus:border-brand-primary"
               />
             </div>
 
             <Button 
               onClick={() => createExternalLinkMutation.mutate(externalForm)} 
               disabled={createExternalLinkMutation.isPending || !externalForm.title || !externalForm.url}
-              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
             >
               {createExternalLinkMutation.isPending ? 'Adding...' : 'Add External Link'}
             </Button>
@@ -616,14 +616,14 @@ export function RiskLinksTab({ riskId, businessRequestId, relatedItemId, relatio
                 value={documentForm.title}
                 onChange={(e) => setDocumentForm({ ...documentForm, title: e.target.value })}
                 placeholder="Leave blank to use filename"
-                className="mt-1.5 h-10 bg-muted/30 border-border/60 focus:border-brand-gold"
+                className="mt-1.5 h-10 bg-muted/30 border-border/60 focus:border-brand-primary"
               />
             </div>
 
             <div
               className={cn(
                 "border-2 border-dashed rounded-xl p-6 text-center transition-all cursor-pointer",
-                isDragOver ? "border-brand-gold bg-brand-gold/5" : "border-border hover:border-brand-gold/50"
+                isDragOver ? "border-brand-primary bg-brand-primary/5" : "border-border hover:border-brand-primary/50"
               )}
               onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
               onDragLeave={() => setIsDragOver(false)}
@@ -685,7 +685,7 @@ export function RiskLinksTab({ riskId, businessRequestId, relatedItemId, relatio
             <Button 
               onClick={() => uploadDocumentMutation.mutate(documentForm)} 
               disabled={uploadDocumentMutation.isPending || documentForm.files.length === 0}
-              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
             >
               {uploadDocumentMutation.isPending ? 'Uploading...' : 'Upload Documents'}
             </Button>
@@ -704,7 +704,7 @@ export function RiskLinksTab({ riskId, businessRequestId, relatedItemId, relatio
                   <Filter className="h-3.5 w-3.5" />
                   Filter
                   {typeFilters.length > 0 && (
-                    <span className="ml-1 px-1.5 py-0.5 bg-brand-gold/10 text-brand-gold rounded text-[10px] font-medium">
+                    <span className="ml-1 px-1.5 py-0.5 bg-brand-primary/10 text-brand-primary rounded text-[10px] font-medium">
                       {typeFilters.length}
                     </span>
                   )}
@@ -795,7 +795,7 @@ export function RiskLinksTab({ riskId, businessRequestId, relatedItemId, relatio
                     href={link.url} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="text-[13px] font-medium text-foreground hover:text-brand-gold transition-colors line-clamp-1"
+                    className="text-[13px] font-medium text-foreground hover:text-brand-primary transition-colors line-clamp-1"
                   >
                     {link.title}
                   </a>

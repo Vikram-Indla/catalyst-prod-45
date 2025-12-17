@@ -2,7 +2,7 @@
  * BulkSelectionToolbar - Enterprise-grade bulk selection toolbar
  * 
  * Uses semantic theme tokens for light/dark mode compatibility.
- * Brand-gold used ONLY as thin accent, not as large background.
+ * brand-primary used ONLY as thin accent, not as large background.
  */
 
 import { useEffect, useCallback } from 'react';

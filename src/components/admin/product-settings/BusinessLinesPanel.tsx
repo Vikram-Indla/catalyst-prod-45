@@ -127,7 +127,7 @@ export function BusinessLinesPanel({ onChanges }: BusinessLinesPanelProps = {}) 
             Manage industry sectors and business categories for Product demands.
           </p>
         </div>
-        <Button onClick={() => handleOpenDialog()} className="bg-brand-gold hover:bg-brand-gold-hover">
+        <Button onClick={() => handleOpenDialog()} className="bg-brand-primary hover:bg-brand-primary-hover">
           <Plus className="h-4 w-4 mr-2" />
           Add Business Line
         </Button>
@@ -163,7 +163,7 @@ export function BusinessLinesPanel({ onChanges }: BusinessLinesPanelProps = {}) 
                             {line.key}
                           </Badge>
                           {line.is_default && (
-                            <Badge className="bg-brand-gold text-white text-xs">
+                            <Badge className="bg-brand-primary text-white text-xs">
                               Default
                             </Badge>
                           )}
@@ -299,7 +299,7 @@ export function BusinessLinesPanel({ onChanges }: BusinessLinesPanelProps = {}) 
             <Button 
               onClick={handleSave}
               disabled={!formData.name || !formData.key}
-              className="bg-brand-gold hover:bg-brand-gold-hover"
+              className="bg-brand-primary hover:bg-brand-primary-hover"
             >
               {editingLine ? 'Update' : 'Create'}
             </Button>

@@ -40,7 +40,7 @@ export function EpicBacklogView({ portfolioId, piId }: EpicBacklogViewProps) {
       case 'not_started':
         return 'bg-muted-foreground';
       case 'in_progress':
-        return 'bg-brand-gold';
+        return 'bg-brand-primary';
       case 'done':
         return 'bg-success';
       default:
@@ -84,7 +84,7 @@ export function EpicBacklogView({ portfolioId, piId }: EpicBacklogViewProps) {
               <span className="text-sm font-medium">PI Progress:</span>
               <div className="w-32 h-2 bg-muted rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-brand-gold transition-all" 
+                  className="h-full bg-brand-primary transition-all" 
                   style={{ width: `${piProgress?.percentage || 0}%` }} 
                 />
               </div>
@@ -142,14 +142,14 @@ export function EpicBacklogView({ portfolioId, piId }: EpicBacklogViewProps) {
             {/* Epic Rows */}
             <div>
               {[
-                { id: 1, epicId: 1168, name: 'AI for Improved Call Center Interactions', wsjf: 10, badges: ['Opportunity', 'Sales O...', 'e2e', 'PI7', 'PI6', 'PI5'], color: 'bg-brand-gold' },
+                { id: 1, epicId: 1168, name: 'AI for Improved Call Center Interactions', wsjf: 10, badges: ['Opportunity', 'Sales O...', 'e2e', 'PI7', 'PI6', 'PI5'], color: 'bg-brand-primary' },
                 { id: 2, epicId: 1110, name: 'Microservices for MDM', wsjf: 5.12, badges: ['PI9', 'PI6', 'PI5'], color: 'bg-destructive' },
                 { id: 3, epicId: 3, name: 'UX Refactor', wsjf: 2.65, badges: ['PI11', 'PI7', 'PI10', 'PI6', 'PI5'], color: 'bg-primary' },
-                { id: 4, epicId: 672, name: 'Virtualized sizing model', wsjf: 4.88, badges: ['PI7', 'PI6', 'PI5'], color: 'bg-brand-gold' },
-                { id: 5, epicId: 1143, name: 'Quality and DevOps Automation Integrations', wsjf: 4.62, badges: ['G12', 'PI7', 'PI6', 'PI5'], color: 'bg-brand-gold' },
+                { id: 4, epicId: 672, name: 'Virtualized sizing model', wsjf: 4.88, badges: ['PI7', 'PI6', 'PI5'], color: 'bg-brand-primary' },
+                { id: 5, epicId: 1143, name: 'Quality and DevOps Automation Integrations', wsjf: 4.62, badges: ['G12', 'PI7', 'PI6', 'PI5'], color: 'bg-brand-primary' },
                 { id: 6, epicId: 1141, name: 'Hadoop CSI AC5', wsjf: 4.5, badges: ['G12', 'PI5'], color: 'bg-destructive' },
                 { id: 7, epicId: 1111, name: 'Interface: E2E transcription flow (with PPFW) and flow tracking / alarming', wsjf: 4.25, badges: ['PI7', 'PI6', 'PI5'], color: 'bg-muted' },
-                { id: 8, epicId: 1128, name: 'Configurable Themes', wsjf: 4.25, badges: ['PI6', 'PI5'], color: 'bg-brand-gold' },
+                { id: 8, epicId: 1128, name: 'Configurable Themes', wsjf: 4.25, badges: ['PI6', 'PI5'], color: 'bg-brand-primary' },
               ].map((epic) => (
                 <div
                   key={epic.id}
@@ -181,7 +181,7 @@ export function EpicBacklogView({ portfolioId, piId }: EpicBacklogViewProps) {
                             badge === 'e2e' && "bg-destructive/20 hover:bg-destructive/30 text-destructive-foreground",
                             badge === 'PI7' && "bg-success hover:bg-success/80 text-success-foreground",
                             badge === 'PI6' && "bg-muted hover:bg-muted/80 text-muted-foreground",
-                            badge === 'PI5' && "bg-brand-gold hover:bg-brand-gold/80 text-white",
+                            badge === 'PI5' && "bg-brand-primary hover:bg-brand-primary/80 text-white",
                             badge === 'PI9' && "bg-destructive/60 hover:bg-destructive/70 text-white",
                             badge === 'PI10' && "bg-accent/60 hover:bg-accent/70 text-white",
                             badge === 'PI11' && "bg-warning/40 hover:bg-warning/50 text-warning-foreground",

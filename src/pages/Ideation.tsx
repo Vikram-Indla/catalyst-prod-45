@@ -222,7 +222,7 @@ export default function Ideation() {
       {/* Page Header */}
       <div className="flex items-center gap-3 mb-4 sm:mb-6">
         <div className="w-8 h-8 sm:w-10 sm:h-10 rounded bg-muted flex items-center justify-center">
-          <Lightbulb className="h-4 w-4 sm:h-5 sm:w-5 text-brand-gold" />
+          <Lightbulb className="h-4 w-4 sm:h-5 sm:w-5 text-brand-primary" />
         </div>
         <div className="min-w-0">
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold truncate">Ideation</h1>

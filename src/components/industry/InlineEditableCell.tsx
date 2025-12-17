@@ -166,12 +166,12 @@ export function InlineEditableCell({
                 }}
               >
                 {effectiveType === 'user' && (
-                  <div className="w-6 h-6 rounded-full bg-brand-gold text-white flex items-center justify-center text-[10px] font-medium">
+                  <div className="w-6 h-6 rounded-full bg-brand-primary text-white flex items-center justify-center text-[10px] font-medium">
                     {opt.label.split(' ').map(n => n[0]).join('').slice(0, 2)}
                   </div>
                 )}
                 <span className="flex-1">{opt.label}</span>
-                {editValue === opt.value && <Check className="h-4 w-4 text-brand-gold" />}
+                {editValue === opt.value && <Check className="h-4 w-4 text-brand-primary" />}
               </div>
             ))}
           </div>

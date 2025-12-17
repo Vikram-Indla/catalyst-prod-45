@@ -95,7 +95,7 @@ const MultiSelectDropdown: React.FC<{
       </label>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className="w-full h-9 px-3 flex items-center justify-between text-sm border border-border rounded-lg bg-background hover:bg-muted/50 focus:outline-none focus:border-brand-gold">
+          <button className="w-full h-9 px-3 flex items-center justify-between text-sm border border-border rounded-lg bg-background hover:bg-muted/50 focus:outline-none focus:border-brand-primary">
             <span className={cn(
               "truncate",
               selectedCount === 0 && "text-muted-foreground"
@@ -160,14 +160,14 @@ const UserSearchDropdown: React.FC<{
       <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
         {label}
         {selectedCount > 0 && (
-          <span className="ml-2 text-brand-gold">({selectedCount})</span>
+          <span className="ml-2 text-brand-primary">({selectedCount})</span>
         )}
       </label>
       <div className="relative">
         <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
         <input
           type="text"
-          className="w-full h-9 pl-9 pr-3 text-sm border border-border rounded-lg bg-background focus:outline-none focus:border-brand-gold"
+          className="w-full h-9 pl-9 pr-3 text-sm border border-border rounded-lg bg-background focus:outline-none focus:border-brand-primary"
           placeholder={placeholder}
           value={search}
           onChange={(e) => {
@@ -189,7 +189,7 @@ const UserSearchDropdown: React.FC<{
                   key={item.id}
                   className={cn(
                     "w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted/50 text-left",
-                    selectedIds.includes(item.id) && "bg-brand-gold/10"
+                    selectedIds.includes(item.id) && "bg-brand-primary/10"
                   )}
                   onClick={() => onToggle(item.id)}
                 >
@@ -198,7 +198,7 @@ const UserSearchDropdown: React.FC<{
                   </span>
                   <span className="flex-1 truncate">{item.name}</span>
                   {selectedIds.includes(item.id) && (
-                    <Check size={14} className="text-brand-gold flex-shrink-0" />
+                    <Check size={14} className="text-brand-primary flex-shrink-0" />
                   )}
                 </button>
               ))
@@ -215,11 +215,11 @@ const UserSearchDropdown: React.FC<{
             return item ? (
               <span 
                 key={id}
-                className="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-brand-gold/10 text-brand-gold rounded-full"
+                className="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-brand-primary/10 text-brand-primary rounded-full"
               >
                 {item.name.split(' ')[0]}
                 <button 
-                  className="hover:text-brand-gold-hover"
+                  className="hover:text-brand-primary-hover"
                   onClick={() => onToggle(id)}
                 >
                   <X size={10} />
@@ -329,7 +329,7 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input
             type="text"
-            className="h-9 w-52 pl-9 pr-8 text-sm border border-border rounded-lg bg-background focus:outline-none focus:border-brand-gold"
+            className="h-9 w-52 pl-9 pr-8 text-sm border border-border rounded-lg bg-background focus:outline-none focus:border-brand-primary"
             placeholder="Search demands..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
@@ -349,14 +349,14 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
           <button 
             className={cn(
               "h-9 px-3 flex items-center gap-2 text-sm border border-border rounded-lg bg-background hover:bg-muted",
-              activeFilterCount > 0 && "border-brand-gold text-brand-gold"
+              activeFilterCount > 0 && "border-brand-primary text-brand-primary"
             )}
             onClick={handleOpenFilters}
           >
             <Filter size={16} />
             Filters
             {activeFilterCount > 0 && (
-              <span className="min-w-[20px] h-5 px-1.5 flex items-center justify-center text-xs font-semibold bg-brand-gold text-white rounded-full">
+              <span className="min-w-[20px] h-5 px-1.5 flex items-center justify-center text-xs font-semibold bg-brand-primary text-white rounded-full">
                 {activeFilterCount}
               </span>
             )}
@@ -463,7 +463,7 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
                     Cancel
                   </button>
                   <button
-                    className="flex-1 px-3 py-2 text-xs font-medium bg-brand-gold text-white rounded-lg hover:bg-brand-gold-hover"
+                    className="flex-1 px-3 py-2 text-xs font-medium bg-brand-primary text-white rounded-lg hover:bg-brand-primary-hover"
                     onClick={handleApplyFilters}
                   >
                     Apply
@@ -480,7 +480,7 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
             <button
               className={cn(
                 "h-9 px-3 flex items-center gap-2 text-sm border border-border rounded-lg bg-background hover:bg-muted",
-                groupBy !== 'none' && "border-brand-gold text-brand-gold"
+                groupBy !== 'none' && "border-brand-primary text-brand-primary"
               )}
             >
               <Layers size={16} />
@@ -497,13 +497,13 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
                 key={option.value}
                 className={cn(
                   "flex items-center justify-between cursor-pointer",
-                  groupBy === option.value && "bg-brand-gold/10"
+                  groupBy === option.value && "bg-brand-primary/10"
                 )}
                 onClick={() => onGroupByChange(option.value)}
               >
                 <span>{option.label}</span>
                 {groupBy === option.value && (
-                  <Check size={14} className="text-brand-gold" />
+                  <Check size={14} className="text-brand-primary" />
                 )}
               </DropdownMenuItem>
             ))}
@@ -518,7 +518,7 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
           <div 
             className={cn(
               "w-10 h-5 rounded-full cursor-pointer transition-colors relative",
-              showMilestones ? "bg-brand-gold" : "bg-muted"
+              showMilestones ? "bg-brand-primary" : "bg-muted"
             )}
             onClick={onToggleMilestones}
           >
@@ -547,7 +547,7 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
               <button
                 className={cn(
                   "h-10 w-10 flex items-center justify-center border border-border rounded-xl transition-colors bg-background",
-                  showLegend ? "border-brand-gold text-brand-gold" : "hover:bg-muted text-muted-foreground"
+                  showLegend ? "border-brand-primary text-brand-primary" : "hover:bg-muted text-muted-foreground"
                 )}
                 onClick={onToggleLegend}
               >

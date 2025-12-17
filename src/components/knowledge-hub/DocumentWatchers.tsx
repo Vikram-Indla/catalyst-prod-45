@@ -114,7 +114,7 @@ export function DocumentWatchers({ documentId }: DocumentWatchersProps) {
         size="sm"
         onClick={handleToggleWatch}
         disabled={isPending || !currentUser}
-        className={isWatching ? "bg-brand-gold hover:bg-brand-gold-hover" : ""}
+        className={isWatching ? "bg-brand-primary hover:bg-brand-primary-hover" : ""}
       >
         {isWatching ? (
           <>
@@ -146,7 +146,7 @@ export function DocumentWatchers({ documentId }: DocumentWatchersProps) {
                 {watchers.map((watcher) => (
                   <div key={watcher.id} className="flex items-center gap-2">
                     <Avatar className="h-6 w-6">
-                      <AvatarFallback className="bg-brand-gold/20 text-brand-gold text-xs">
+                      <AvatarFallback className="bg-brand-primary/20 text-brand-primary text-xs">
                         U
                       </AvatarFallback>
                     </Avatar>

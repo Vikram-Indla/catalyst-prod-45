@@ -256,7 +256,7 @@ export function StrategicBacklogEpicsSection({
                     onClick={() => onSelectItem(epic)}
                     className={cn(
                       "cursor-pointer hover:bg-[rgba(92,124,92,0.08)] transition-colors",
-                      isSelected && "bg-[rgba(92,124,92,0.08)] border-l-2 border-l-brand-gold"
+                      isSelected && "bg-[rgba(92,124,92,0.08)] border-l-2 border-l-brand-primary"
                     )}
                   >
                     {isColumnVisible('name') && (

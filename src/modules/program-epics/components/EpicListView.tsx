@@ -73,7 +73,7 @@ function StateLozenge({ state, onStateChange }: { state: string | null; onStateC
   return (
     <Popover>
       <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
-        <button className="focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-1 rounded">
+        <button className="focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-1 rounded">
           <span className={cn(
             "inline-flex items-center px-3 py-0.5 rounded-full text-[11px] leading-4 font-semibold uppercase cursor-pointer whitespace-nowrap",
             style.bg, style.text
@@ -308,7 +308,7 @@ export function EpicListView({ programId }: EpicListViewProps) {
                 placeholder="Search epics..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 h-8 w-44 text-[14px] bg-slate-50 border-transparent rounded focus:border-brand-gold focus:bg-white placeholder:text-slate-400"
+                className="pl-9 h-8 w-44 text-[14px] bg-slate-50 border-transparent rounded focus:border-brand-primary focus:bg-white placeholder:text-slate-400"
               />
             </div>
           </div>
@@ -336,7 +336,7 @@ export function EpicListView({ programId }: EpicListViewProps) {
                         <Checkbox
                           checked={selectedItems.size === epics.length && epics.length > 0}
                           onCheckedChange={handleSelectAll}
-                          className="rounded border-slate-300 data-[state=checked]:bg-brand-gold data-[state=checked]:border-brand-gold focus:ring-0 focus:ring-offset-0"
+                          className="rounded border-slate-300 data-[state=checked]:bg-brand-primary data-[state=checked]:border-brand-primary focus:ring-0 focus:ring-offset-0"
                         />
                       </div>
                     </th>
@@ -391,7 +391,7 @@ export function EpicListView({ programId }: EpicListViewProps) {
                                       <Checkbox
                                         checked={isSelected}
                                         onCheckedChange={(checked) => handleSelectItem(epic.id, !!checked)}
-                                        className="rounded border-slate-300 data-[state=checked]:bg-brand-gold data-[state=checked]:border-brand-gold focus:ring-0 focus:ring-offset-0"
+                                        className="rounded border-slate-300 data-[state=checked]:bg-brand-primary data-[state=checked]:border-brand-primary focus:ring-0 focus:ring-offset-0"
                                       />
                                     </div>
                                   </TableCell>
@@ -399,8 +399,8 @@ export function EpicListView({ programId }: EpicListViewProps) {
                                   {/* Epic Number */}
                                   <TableCell className="w-24">
                                     <div className="flex items-center gap-1.5">
-                                      <Square className="h-4 w-4 text-brand-gold" />
-                                      <span className="text-brand-gold font-medium font-mono text-[13px]">
+                                      <Square className="h-4 w-4 text-brand-primary" />
+                                      <span className="text-brand-primary font-medium font-mono text-[13px]">
                                         {epic.epic_key || '—'}
                                       </span>
                                     </div>
@@ -462,7 +462,7 @@ export function EpicListView({ programId }: EpicListViewProps) {
                   : `Showing ${sortedItems.length} of ${epics.length} epics`
                 }
               </span>
-              <button className="inline-flex items-center gap-1 text-[14px] text-brand-gold hover:text-brand-gold-hover font-medium">
+              <button className="inline-flex items-center gap-1 text-[14px] text-brand-primary hover:text-brand-primary-hover font-medium">
                 <Plus className="h-4 w-4" />
                 Create Epic
               </button>

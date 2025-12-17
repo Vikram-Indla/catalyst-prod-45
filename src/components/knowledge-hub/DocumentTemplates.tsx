@@ -199,7 +199,7 @@ export function DocumentTemplates({
             return (
               <Card
                 key={template.id}
-                className="cursor-pointer hover:border-brand-gold transition-colors"
+                className="cursor-pointer hover:border-brand-primary transition-colors"
                 onClick={() => {
                   onSelectTemplate(template.content, template.title);
                   onOpenChange(false);
@@ -207,8 +207,8 @@ export function DocumentTemplates({
               >
                 <CardHeader className="pb-2">
                   <div className="flex items-center gap-2">
-                    <div className="p-2 rounded-md bg-brand-gold/10">
-                      <Icon className="h-5 w-5 text-brand-gold" />
+                    <div className="p-2 rounded-md bg-brand-primary/10">
+                      <Icon className="h-5 w-5 text-brand-primary" />
                     </div>
                   </div>
                   <CardTitle className="text-sm">{template.title}</CardTitle>

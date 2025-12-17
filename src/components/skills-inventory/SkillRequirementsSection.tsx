@@ -69,7 +69,7 @@ const PROFICIENCY_LABELS: Record<string, string> = {
 const CATEGORY_COLORS: Record<string, string> = {
   Technical: 'hsl(var(--info))',
   'Cloud & Infrastructure': 'hsl(185 70% 50%)',
-  Leadership: 'hsl(var(--brand-gold))',
+  Leadership: 'hsl(var(--brand-primary))',
   'Soft Skills': 'hsl(330 70% 55%)',
   'Data & Analytics': 'hsl(280 70% 50%)',
   Security: 'hsl(var(--destructive))',
@@ -280,7 +280,7 @@ export function SkillRequirementsSection({
 
   if (isLoading) {
     return (
-      <div className="rounded-xl p-4 bg-secondary border border-brand-gold-border">
+      <div className="rounded-xl p-4 bg-secondary border border-brand-primary-border">
         <div className="animate-pulse space-y-3">
           <div className="h-5 w-32 rounded bg-brand-dark" />
           <div className="h-12 rounded bg-brand-dark" />
@@ -290,16 +290,16 @@ export function SkillRequirementsSection({
   }
 
   return (
-    <div className="rounded-xl p-4 bg-secondary border border-brand-gold-border">
+    <div className="rounded-xl p-4 bg-secondary border border-brand-primary-border">
       {/* Section Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Target className="h-5 w-5 text-brand-gold" />
+          <Target className="h-5 w-5 text-brand-primary" />
           <h3 className="text-sm font-semibold text-foreground">
             Required Skills
           </h3>
           {requirements.length > 0 && (
-            <span className="text-xs px-2 py-0.5 rounded-full bg-brand-gold/15 text-brand-gold">
+            <span className="text-xs px-2 py-0.5 rounded-full bg-brand-primary/15 text-brand-primary">
               {requirements.length}
             </span>
           )}
@@ -308,7 +308,7 @@ export function SkillRequirementsSection({
           <Button
             size="sm"
             onClick={() => setAddDialogOpen(true)}
-            className="h-7 text-xs bg-brand-gold text-brand-dark hover:bg-brand-gold-hover"
+            className="h-7 text-xs bg-brand-primary text-brand-dark hover:bg-brand-primary-hover"
           >
             <Plus className="h-3.5 w-3.5 mr-1" />
             Add Skill
@@ -427,7 +427,7 @@ export function SkillRequirementsSection({
           </div>
 
           {/* Summary */}
-          <div className="flex items-center justify-between mt-4 pt-3 border-t border-brand-gold-border">
+          <div className="flex items-center justify-between mt-4 pt-3 border-t border-brand-primary-border">
             <span className="text-xs text-muted-foreground">
               {requirements.length} skill{requirements.length !== 1 ? 's' : ''} required
               {gapsCount > 0 && (
@@ -436,7 +436,7 @@ export function SkillRequirementsSection({
             </span>
             <Link
               to="/enterprise/skills-inventory?view=gap-analysis"
-              className="flex items-center gap-1 text-xs text-brand-gold hover:underline"
+              className="flex items-center gap-1 text-xs text-brand-primary hover:underline"
             >
               View Gap Analysis
               <ExternalLink className="h-3 w-3" />
@@ -456,7 +456,7 @@ export function SkillRequirementsSection({
           }
         }}
       >
-        <DialogContent className="sm:max-w-md bg-card border border-brand-gold-border">
+        <DialogContent className="sm:max-w-md bg-card border border-brand-primary-border">
           <DialogHeader>
             <DialogTitle className="text-foreground">
               {editingRequirement ? 'Edit Skill Requirement' : 'Add Skill Requirement'}
@@ -471,15 +471,15 @@ export function SkillRequirementsSection({
                   Skill
                 </label>
                 <Select value={selectedSkillId} onValueChange={setSelectedSkillId}>
-                  <SelectTrigger className="w-full bg-brand-dark border border-brand-gold-border text-foreground">
+                  <SelectTrigger className="w-full bg-brand-dark border border-brand-primary-border text-foreground">
                     <SelectValue placeholder="Select a skill" />
                   </SelectTrigger>
-                  <SelectContent className="bg-brand-dark border border-brand-gold-border">
+                  <SelectContent className="bg-brand-dark border border-brand-primary-border">
                     {availableSkills.map((skill) => (
                       <SelectItem 
                         key={skill.id} 
                         value={skill.id}
-                        className="text-foreground focus:bg-brand-gold/10"
+                        className="text-foreground focus:bg-brand-primary/10"
                       >
                         {skill.name} ({skill.category})
                       </SelectItem>
@@ -498,15 +498,15 @@ export function SkillRequirementsSection({
                 value={selectedProficiency} 
                 onValueChange={(value: ProficiencyLevel) => setSelectedProficiency(value)}
               >
-                <SelectTrigger className="w-full bg-brand-dark border border-brand-gold-border text-foreground">
+                <SelectTrigger className="w-full bg-brand-dark border border-brand-primary-border text-foreground">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-brand-dark border border-brand-gold-border">
+                <SelectContent className="bg-brand-dark border border-brand-primary-border">
                   {PROFICIENCY_LEVELS.map((level) => (
                     <SelectItem 
                       key={level} 
                       value={level}
-                      className="text-foreground focus:bg-brand-gold/10"
+                      className="text-foreground focus:bg-brand-primary/10"
                     >
                       <div className="flex items-center gap-2">
                         <div
@@ -532,7 +532,7 @@ export function SkillRequirementsSection({
                 max={50}
                 value={requiredCount}
                 onChange={(e) => setRequiredCount(parseInt(e.target.value) || 1)}
-                className="w-full h-10 px-3 rounded-md bg-brand-dark border border-brand-gold-border text-foreground focus:ring-2 focus:ring-brand-gold/30 focus:border-brand-gold"
+                className="w-full h-10 px-3 rounded-md bg-brand-dark border border-brand-primary-border text-foreground focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary"
               />
             </div>
           </div>
@@ -545,14 +545,14 @@ export function SkillRequirementsSection({
                 setEditingRequirement(null);
                 resetForm();
               }}
-              className="border-brand-gold-border text-muted-foreground hover:bg-secondary"
+              className="border-brand-primary-border text-muted-foreground hover:bg-secondary"
             >
               Cancel
             </Button>
             <Button
               onClick={editingRequirement ? handleUpdateRequirement : handleAddRequirement}
               disabled={!editingRequirement && !selectedSkillId}
-              className="bg-brand-gold text-brand-dark hover:bg-brand-gold-hover"
+              className="bg-brand-primary text-brand-dark hover:bg-brand-primary-hover"
             >
               {editingRequirement ? 'Update' : 'Add'} Requirement
             </Button>

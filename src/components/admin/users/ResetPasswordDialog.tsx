@@ -82,7 +82,7 @@ export function ResetPasswordDialog({ isOpen, onClose, userId, userName }: Reset
           <>
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <KeyRound className="h-5 w-5 text-brand-gold" />
+                <KeyRound className="h-5 w-5 text-brand-primary" />
                 Reset password for {userName || 'user'}?
               </DialogTitle>
               <DialogDescription>

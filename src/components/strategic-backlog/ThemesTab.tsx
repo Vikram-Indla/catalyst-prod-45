@@ -261,7 +261,7 @@ export function ThemesTab({ themes, snapshotId, isArchived, onReorder }: ThemesT
                                   <div className="flex items-center gap-2">
                                     <div
                                       className="w-3 h-3 rounded-full flex-shrink-0"
-                                      style={{ backgroundColor: theme.color_tag || 'hsl(var(--brand-gold))' }}
+                                      style={{ backgroundColor: theme.color_tag || 'hsl(var(--brand-primary))' }}
                                     />
                                     <span className="font-medium text-foreground">{theme.name}</span>
                                   </div>
@@ -312,13 +312,13 @@ export function ThemesTab({ themes, snapshotId, isArchived, onReorder }: ThemesT
                 <div
                   key={theme.id}
                   onClick={() => setSelectedTheme(theme)}
-                  className="p-4 border border-border rounded-lg hover:border-brand-gold/50 hover:shadow-sm cursor-pointer transition-all"
+                  className="p-4 border border-border rounded-lg hover:border-brand-primary/50 hover:shadow-sm cursor-pointer transition-all"
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <div
                         className="w-4 h-4 rounded-full"
-                        style={{ backgroundColor: theme.color_tag || 'hsl(var(--brand-gold))' }}
+                        style={{ backgroundColor: theme.color_tag || 'hsl(var(--brand-primary))' }}
                       />
                       <h4 className="font-medium text-foreground">{theme.name}</h4>
                     </div>

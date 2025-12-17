@@ -174,7 +174,7 @@ export default function DeliveryPlatforms() {
               Manage delivery platform options used in business request forms and filters.
             </CardDescription>
           </div>
-          <Button onClick={handleOpenCreate} className="bg-brand-gold hover:bg-brand-gold-hover text-white">
+          <Button onClick={handleOpenCreate} className="bg-brand-primary hover:bg-brand-primary-hover text-white">
             <Plus className="h-4 w-4 mr-1" />
             Add Platform
           </Button>
@@ -192,7 +192,7 @@ export default function DeliveryPlatforms() {
               <p className="text-sm mb-4">No delivery platforms configured yet.</p>
               <Button 
                 onClick={handleOpenCreate}
-                className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+                className="bg-brand-primary hover:bg-brand-primary-hover text-white"
               >
                 <Plus className="h-4 w-4 mr-1" />
                 Add First Platform
@@ -339,7 +339,7 @@ export default function DeliveryPlatforms() {
             <Button
               onClick={handleSave}
               disabled={createMutation.isPending || updateMutation.isPending}
-              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
             >
               {(createMutation.isPending || updateMutation.isPending) && (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />

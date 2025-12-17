@@ -133,7 +133,7 @@ export function DocumentComments({ documentId }: DocumentCommentsProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
-        <MessageCircle className="h-5 w-5 text-brand-gold" />
+        <MessageCircle className="h-5 w-5 text-brand-primary" />
         <h3 className="font-semibold">Comments</h3>
         {comments && comments.length > 0 && (
           <Badge variant="secondary">{comments.length}</Badge>
@@ -225,7 +225,7 @@ function CommentThread({
     <Card className={`p-4 ${comment.resolved ? 'opacity-60' : ''}`}>
       <div className="flex gap-3">
         <Avatar className="h-8 w-8">
-          <AvatarFallback className="bg-brand-gold/20 text-brand-gold text-xs">
+          <AvatarFallback className="bg-brand-primary/20 text-brand-primary text-xs">
             U
           </AvatarFallback>
         </Avatar>

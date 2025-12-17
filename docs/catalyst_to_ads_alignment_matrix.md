@@ -3,9 +3,9 @@
 | Catalyst CSS Var | Value | Category | ADS semantic bucket | Audit note |
 |---|---|---|---|---|
 | `--brand-dark` | `#1A1A1A` | Brand Colors | Brand accent (interaction/emphasis) |  |
-| `--brand-gold` | `#C69C6D` | Brand Colors | Brand accent (interaction/emphasis) |  |
-| `--brand-gold-hover` | `#B8905F` | Brand Colors | Brand accent (interaction/emphasis) |  |
-| `--brand-gold-pale` | `rgba(198,156,109,0.08)` | Brand Colors | Brand accent (interaction/emphasis) |  |
+| `--brand-primary` | `#C69C6D` | Brand Colors | Brand accent (interaction/emphasis) |  |
+| `--brand-primary-hover` | `#B8905F` | Brand Colors | Brand accent (interaction/emphasis) |  |
+| `--brand-primary-pale` | `rgba(198,156,109,0.08)` | Brand Colors | Brand accent (interaction/emphasis) |  |
 | `--palette-advanced` | `#8b7355` | Chart Palette | Data-viz palette (categorical/ordinal usage) |  |
 | `--palette-beginner` | `#d4b896` | Chart Palette | Data-viz palette (categorical/ordinal usage) |  |
 | `--palette-expert` | `#5c7c5c` | Chart Palette | Data-viz palette (categorical/ordinal usage) |  |

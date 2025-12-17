@@ -161,7 +161,7 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-gold" />
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-primary" />
           </div>
         </CardContent>
       </Card>
@@ -229,7 +229,7 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
                 <tr key={user.id} className="border-b last:border-b-0 hover:bg-muted/20 transition-colors">
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-brand-gold/20 flex items-center justify-center text-xs font-medium text-brand-gold">
+                      <div className="h-8 w-8 rounded-full bg-brand-primary/20 flex items-center justify-center text-xs font-medium text-brand-primary">
                         {getInitials(user.full_name)}
                       </div>
                       <div>

@@ -96,12 +96,12 @@ export const SkillGapAnalysis: React.FC = () => {
       {/* Top Row: 2 Column Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Section 1: Current vs Required Skills */}
-        <div className="bg-white rounded-xl border border-brand-gold/20 p-6 shadow-sm">
+        <div className="bg-white rounded-xl border border-brand-primary/20 p-6 shadow-sm">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-brand-dark">
               Current vs Required Skills
             </h3>
-            <span className="px-3 py-1 rounded-full text-xs font-medium bg-brand-gold text-white">
+            <span className="px-3 py-1 rounded-full text-xs font-medium bg-brand-primary text-white">
               {gapCount} Gaps Identified
             </span>
           </div>
@@ -134,12 +134,12 @@ export const SkillGapAnalysis: React.FC = () => {
         </div>
 
         {/* Section 2: Team Skill Coverage */}
-        <div className="bg-white rounded-xl border border-brand-gold/20 p-6 shadow-sm">
+        <div className="bg-white rounded-xl border border-brand-primary/20 p-6 shadow-sm">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-brand-dark">
               Team Skill Coverage
             </h3>
-            <span className="px-3 py-1 rounded-full text-xs font-medium bg-brand-gold text-white">
+            <span className="px-3 py-1 rounded-full text-xs font-medium bg-brand-primary text-white">
               {overallCoverage}% Overall
             </span>
           </div>
@@ -172,10 +172,10 @@ export const SkillGapAnalysis: React.FC = () => {
       </div>
 
       {/* Section 3: Critical Skills Table */}
-      <div className="bg-white rounded-xl border border-brand-gold/20 p-6 shadow-sm">
+      <div className="bg-white rounded-xl border border-brand-primary/20 p-6 shadow-sm">
         <div className="flex items-center gap-3 mb-6">
           <AlertTriangle className="w-5 h-5 text-destructive" />
-          <h3 className="text-lg font-semibold text-brand-gold">
+          <h3 className="text-lg font-semibold text-brand-primary">
             Critical Skills Requiring Attention
           </h3>
         </div>

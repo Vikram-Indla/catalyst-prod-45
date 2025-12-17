@@ -218,8 +218,8 @@ export function AddTeamMemberModal({ open, onClose, onSave, projects }: AddTeamM
                   onClick={() => handleQuickAddSkill(skill)}
                   className={`px-2 py-0.5 text-xs rounded border transition-colors ${
                     skills.some(s => s.skill === skill)
-                      ? 'bg-brand-gold/20 border-brand-gold text-brand-gold'
-                      : 'bg-white border-neutral-300 text-neutral-600 hover:border-brand-gold hover:text-brand-gold'
+                      ? 'bg-brand-primary/20 border-brand-primary text-brand-primary'
+                      : 'bg-white border-neutral-300 text-neutral-600 hover:border-brand-primary hover:text-brand-primary'
                   }`}
                 >
                   {skill}
@@ -297,7 +297,7 @@ export function AddTeamMemberModal({ open, onClose, onSave, projects }: AddTeamM
             <Button
               onClick={handleSave}
               disabled={isSaving || !formData.name || !formData.role}
-              className="flex-1 bg-brand-gold text-white hover:bg-brand-gold-hover"
+              className="flex-1 bg-brand-primary text-white hover:bg-brand-primary-hover"
             >
               {isSaving ? 'Adding...' : 'Add Team Member'}
             </Button>

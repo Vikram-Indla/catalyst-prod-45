@@ -99,7 +99,7 @@ export function IdeaAttachmentUpload({ onUpload, disabled, compact }: IdeaAttach
           {...getRootProps()}
           className={cn(
             "border border-dashed rounded-md p-3 text-center cursor-pointer transition-colors",
-            isDragActive ? "border-brand-gold bg-brand-gold/5" : "border-border hover:border-brand-gold/50",
+            isDragActive ? "border-brand-primary bg-brand-primary/5" : "border-border hover:border-brand-primary/50",
             disabled && "opacity-50 cursor-not-allowed"
           )}
         >
@@ -143,7 +143,7 @@ export function IdeaAttachmentUpload({ onUpload, disabled, compact }: IdeaAttach
         {...getRootProps()}
         className={cn(
           "border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors",
-          isDragActive ? "border-brand-gold bg-brand-gold/5" : "border-border hover:border-brand-gold/50",
+          isDragActive ? "border-brand-primary bg-brand-primary/5" : "border-border hover:border-brand-primary/50",
           disabled && "opacity-50 cursor-not-allowed"
         )}
       >

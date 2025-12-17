@@ -40,7 +40,7 @@ const coreFindings: AuditFinding[] = [
   { id: 'modal-padding', route: '/admin/users', area: 'Modal', element: 'Content Padding', selector: '[role="dialog"]', current: '20px', target: '20px', delta: '0', severity: 'P2', status: 'fixed', recommendation: 'Slightly reduce modal padding', file: 'dialog.tsx' },
   { id: 'modal-radius', route: '/admin/users', area: 'Modal', element: 'Border Radius', selector: '[role="dialog"]', current: '12px', target: '12px', delta: '0', severity: 'P3', status: 'fixed', recommendation: 'Increase modal radius to 12px', file: 'dialog.tsx' },
   { id: 'drawer-width', route: '/industry', area: 'Drawer', element: 'Default Width', selector: '.sheet-content', current: '480px', target: '480px (medium)', delta: '0', severity: 'P2', status: 'fixed', recommendation: 'Use semantic drawer widths', file: 'sheet.tsx' },
-  { id: 'focus-ring', route: 'global', area: 'Button', element: 'Focus Ring', selector: 'button:focus-visible', current: 'ring-2 ring-ring', target: '2px brand-gold ring', delta: 'Token', severity: 'P1', status: 'fixed', recommendation: 'Consistent brand-gold focus rings', file: 'button.tsx' },
+  { id: 'focus-ring', route: 'global', area: 'Button', element: 'Focus Ring', selector: 'button:focus-visible', current: 'ring-2 ring-ring', target: '2px brand-primary ring', delta: 'Token', severity: 'P1', status: 'fixed', recommendation: 'Consistent brand-primary focus rings', file: 'button.tsx' },
   { id: 'card-shadow', route: '/home', area: 'Elevation', element: 'Card Shadow', selector: '.card', current: 'shadow-sm', target: 'shadow-md', delta: 'Elevation', severity: 'P3', status: 'pass', recommendation: 'Use subtle md elevation for cards', file: 'card.tsx' },
   { id: 'table-density', route: '/industry', area: 'Table', element: 'Table Row Height', selector: 'tr', current: '40px', target: '40px', delta: '0', severity: 'P2', status: 'fixed', recommendation: 'Table row height set to 40px (FIX C)', file: 'table.tsx' },
   { id: 'surface-hierarchy', route: 'global', area: 'Color', element: 'Muted/Sunken Surface', selector: '.bg-muted', current: '#F9FAFB', target: 'Distinct from white', delta: '0', severity: 'P0', status: 'fixed', recommendation: 'Surface hierarchy with sunken/raised tokens (FIX A)', file: 'index.css' },
@@ -76,14 +76,14 @@ const chartFindings = [
 
 // Interaction state findings - UPDATED POST FIX-PACK (FIX D)
 const interactionFindings = [
-  { id: 'btn-hover', element: 'Button Hover', current: 'hover:bg-brand-gold-hover', target: 'Darken 8%', computed: 'hsl(35 41% 55%)', status: 'pass' as const, notes: '#B8905F - correct' },
+  { id: 'btn-hover', element: 'Button Hover', current: 'hover:bg-brand-primary-hover', target: 'Darken 8%', computed: 'hsl(35 41% 55%)', status: 'pass' as const, notes: '#B8905F - correct' },
   { id: 'btn-active', element: 'Button Active', current: 'active:scale-[0.98] active:brightness-95', target: 'Scale + brightness', computed: 'Implemented', status: 'fixed' as const, notes: 'FIX D: Pressed state added' },
-  { id: 'btn-focus', element: 'Button Focus', current: 'ring-2 ring-ring', target: '2px brand-gold ring', computed: 'hsl(35 46% 60%)', status: 'pass' as const, notes: 'Correct token' },
+  { id: 'btn-focus', element: 'Button Focus', current: 'ring-2 ring-ring', target: '2px brand-primary ring', computed: 'hsl(35 46% 60%)', status: 'pass' as const, notes: 'Correct token' },
   { id: 'btn-disabled', element: 'Button Disabled', current: 'opacity-50', target: 'opacity-50 + not-allowed', computed: '0.5', status: 'pass' as const, notes: 'Standard pattern' },
   { id: 'link-hover', element: 'Link Hover', current: 'hover:underline', target: 'Underline + color shift', computed: 'text-decoration: underline', status: 'pass' as const, notes: 'Accessible' },
   { id: 'nav-hover', element: 'Nav Item Hover', current: 'hover:bg-accent', target: '6% bg opacity', computed: 'hsl(214 15% 96%)', status: 'pass' as const, notes: 'Correct' },
-  { id: 'nav-selected', element: 'Nav Selected', current: 'Left bar + bg-brand-gold-pale', target: 'Indicator + 8% bg', computed: 'rgba(198,156,109,0.08)', status: 'pass' as const, notes: 'Correct' },
-  { id: 'input-focus', element: 'Input Focus', current: 'border-brand-gold + shadow', target: '2px border + glow', computed: '2px solid hsl(35 46% 60%)', status: 'pass' as const, notes: 'Correct' },
+  { id: 'nav-selected', element: 'Nav Selected', current: 'Left bar + bg-brand-primary-pale', target: 'Indicator + 8% bg', computed: 'rgba(198,156,109,0.08)', status: 'pass' as const, notes: 'Correct' },
+  { id: 'input-focus', element: 'Input Focus', current: 'border-brand-primary + shadow', target: '2px border + glow', computed: '2px solid hsl(35 46% 60%)', status: 'pass' as const, notes: 'Correct' },
   { id: 'input-hover', element: 'Input Hover', current: 'border-color darken', target: 'Subtle darken', computed: '#8590A2', status: 'pass' as const, notes: 'Defined' },
   { id: 'checkbox-checked', element: 'Checkbox Checked', current: 'bg-primary', target: 'Brand gold bg', computed: 'hsl(35 46% 60%)', status: 'pass' as const, notes: 'Correct' },
 ];
@@ -126,7 +126,7 @@ const tokenCategories = [
       { name: 'Sunken', value: '--neutral-50', computed: '#F9FAFB' },
       { name: 'Raised (Card)', value: '--card', computed: '#FFFFFF' },
       { name: 'Overlay', value: '--popover', computed: '#FFFFFF' },
-      { name: 'Selected', value: '--brand-gold-pale', computed: 'rgba(198,156,109,0.08)' },
+      { name: 'Selected', value: '--brand-primary-pale', computed: 'rgba(198,156,109,0.08)' },
     ],
   },
   {
@@ -137,7 +137,7 @@ const tokenCategories = [
       { name: 'Secondary', value: '--text-secondary', computed: '#4B5563' },
       { name: 'Tertiary', value: '--text-tertiary', computed: '#6B7280' },
       { name: 'Muted', value: '--text-muted', computed: '#9CA3AF' },
-      { name: 'Brand', value: '--brand-gold', computed: '#C69C6D' },
+      { name: 'Brand', value: '--brand-primary', computed: '#C69C6D' },
     ],
   },
   {
@@ -322,8 +322,8 @@ export function DesignAuditPage() {
       <aside className="w-64 border-r bg-card flex flex-col shrink-0">
         {/* Sidebar Header */}
         <div className="h-[72px] border-b flex items-center px-4 gap-3">
-          <div className="h-9 w-9 rounded-lg bg-brand-gold/10 flex items-center justify-center">
-            <Palette className="h-4.5 w-4.5 text-brand-gold" />
+          <div className="h-9 w-9 rounded-lg bg-brand-primary/10 flex items-center justify-center">
+            <Palette className="h-4.5 w-4.5 text-brand-primary" />
           </div>
           <div className="min-w-0">
             <h1 className="text-sm font-semibold text-foreground truncate">Design Audit</h1>
@@ -365,7 +365,7 @@ export function DesignAuditPage() {
                     className={cn(
                       "w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors text-left",
                       isActive && !hasSubItems 
-                        ? "bg-brand-gold/10 text-brand-gold font-medium border-l-2 border-brand-gold -ml-0.5 pl-[14px]" 
+                        ? "bg-brand-primary/10 text-brand-primary font-medium border-l-2 border-brand-primary -ml-0.5 pl-[14px]" 
                         : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                     )}
                   >
@@ -388,7 +388,7 @@ export function DesignAuditPage() {
                             className={cn(
                               "w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs transition-colors text-left",
                               activeSection === sub.id 
-                                ? "bg-brand-gold/10 text-brand-gold font-medium" 
+                                ? "bg-brand-primary/10 text-brand-primary font-medium" 
                                 : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                             )}
                           >
@@ -510,7 +510,7 @@ function OverviewContent({ scores, overallScore }: { scores: Record<string, numb
         <Card>
           <CardHeader className="py-3">
             <CardTitle className="text-base flex items-center gap-2">
-              <FileText className="h-4 w-4 text-brand-gold" />
+              <FileText className="h-4 w-4 text-brand-primary" />
               Audit Summary
             </CardTitle>
           </CardHeader>
@@ -817,7 +817,7 @@ function TokensContent({ tokenCategories, expandedCategory, setExpandedCategory 
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Icon className="h-4 w-4 text-brand-gold" />
+                  <Icon className="h-4 w-4 text-brand-primary" />
                   <CardTitle className="text-base">{category.name}</CardTitle>
                 </div>
                 {isExpanded ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
@@ -919,7 +919,7 @@ function RoutesContent() {
 
       {/* Add Route Dialog */}
       {showAddDialog && (
-        <Card className="border-brand-gold/30">
+        <Card className="border-brand-primary/30">
           <CardHeader className="py-3">
             <CardTitle className="text-base">Add New Route</CardTitle>
           </CardHeader>
@@ -1097,11 +1097,11 @@ function DownloadsContent() {
         {downloadItems.map((item) => {
           const Icon = item.icon;
           return (
-            <Card key={item.filename} className="hover:border-brand-gold/30 transition-colors">
+            <Card key={item.filename} className="hover:border-brand-primary/30 transition-colors">
               <CardHeader className="pb-2">
                 <div className="flex items-start gap-3">
-                  <div className="h-10 w-10 rounded-lg bg-brand-gold/10 flex items-center justify-center shrink-0">
-                    <Icon className="h-5 w-5 text-brand-gold" />
+                  <div className="h-10 w-10 rounded-lg bg-brand-primary/10 flex items-center justify-center shrink-0">
+                    <Icon className="h-5 w-5 text-brand-primary" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <CardTitle className="text-base">{item.title}</CardTitle>
@@ -1131,7 +1131,7 @@ function DownloadsContent() {
         <Card>
           <CardHeader className="py-3">
             <CardTitle className="text-base flex items-center gap-2">
-              <Layout className="h-4 w-4 text-brand-gold" />
+              <Layout className="h-4 w-4 text-brand-primary" />
               Page Layouts ({pageLayouts.length})
             </CardTitle>
             <CardDescription>Key page structures</CardDescription>
@@ -1157,7 +1157,7 @@ function DownloadsContent() {
         <Card>
           <CardHeader className="py-3">
             <CardTitle className="text-base flex items-center gap-2">
-              <Maximize2 className="h-4 w-4 text-brand-gold" />
+              <Maximize2 className="h-4 w-4 text-brand-primary" />
               Modal & Dialog Specs ({modalSpecs.length})
             </CardTitle>
             <CardDescription>Overlay component specifications</CardDescription>

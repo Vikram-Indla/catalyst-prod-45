@@ -286,8 +286,8 @@ export function ResponsiveAuditPage() {
       {/* Page Header */}
       <div className="h-[72px] border-b bg-card flex items-center px-6 shrink-0">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-lg bg-brand-gold/10 flex items-center justify-center">
-            <Smartphone className="h-5 w-5 text-brand-gold" />
+          <div className="h-10 w-10 rounded-lg bg-brand-primary/10 flex items-center justify-center">
+            <Smartphone className="h-5 w-5 text-brand-primary" />
           </div>
           <div>
             <h1 className="text-lg font-semibold text-foreground">Responsive Audit</h1>
@@ -391,7 +391,7 @@ export function ResponsiveAuditPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="text-base flex items-center gap-2">
-                  <Grid3X3 className="h-4 w-4 text-brand-gold" />
+                  <Grid3X3 className="h-4 w-4 text-brand-primary" />
                   Viewport Breakdown
                 </CardTitle>
               </CardHeader>
@@ -429,7 +429,7 @@ export function ResponsiveAuditPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base flex items-center gap-2">
-                    <Layers className="h-4 w-4 text-brand-gold" />
+                    <Layers className="h-4 w-4 text-brand-primary" />
                     Issue Categories
                   </CardTitle>
                 </CardHeader>
@@ -456,7 +456,7 @@ export function ResponsiveAuditPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base flex items-center gap-2">
-                    <Square className="h-4 w-4 text-brand-gold" />
+                    <Square className="h-4 w-4 text-brand-primary" />
                     Component Families
                   </CardTitle>
                 </CardHeader>
@@ -478,7 +478,7 @@ export function ResponsiveAuditPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="text-base flex items-center gap-2">
-                  <AlertCircle className="h-4 w-4 text-brand-gold" />
+                  <AlertCircle className="h-4 w-4 text-brand-primary" />
                   Top Priority Issues
                 </CardTitle>
                 <CardDescription>Most critical issues requiring attention</CardDescription>

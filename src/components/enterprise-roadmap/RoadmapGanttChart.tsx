@@ -148,7 +148,7 @@ export function RoadmapGanttChart({
               key={period.key}
               className={cn(
                 "flex-1 text-center py-3 border-r border-border last:border-r-0",
-                period.isCurrent && "bg-brand-gold/5"
+                period.isCurrent && "bg-brand-primary/5"
               )}
             >
               <p className="text-sm font-semibold text-foreground">
@@ -232,7 +232,7 @@ export function RoadmapGanttChart({
                     "absolute group cursor-pointer rounded-md overflow-hidden",
                     "border-l-4 transition-all duration-200",
                     statusStyles.border,
-                    isSelected && "ring-2 ring-brand-gold ring-offset-1"
+                    isSelected && "ring-2 ring-brand-primary ring-offset-1"
                   )}
                   style={{ 
                     left: metrics.left, 
@@ -309,7 +309,7 @@ export function RoadmapGanttChart({
                         {/* Diamond Shape */}
                         <div className={cn(
                           "w-3 h-3 rotate-45 border-2",
-                          "bg-brand-gold border-brand-gold",
+                          "bg-brand-primary border-brand-primary",
                           "group-hover/milestone:scale-125 transition-transform"
                         )} />
                         
@@ -347,7 +347,7 @@ export function RoadmapGanttChart({
                 {/* Diamond Shape */}
                 <div className={cn(
                   "w-4 h-4 rotate-45 border-2",
-                  "bg-brand-gold border-brand-gold",
+                  "bg-brand-primary border-brand-primary",
                   "group-hover:scale-125 transition-transform"
                 )} />
                 
@@ -399,7 +399,7 @@ function RoadmapTooltip({ item, position }: { item: RoadmapItem; position: { x: 
         "bg-surface-subtle"
       )}>
         <div className="flex items-center gap-2 mb-1">
-          <span className="text-xs font-mono text-brand-gold">{item.id.slice(0, 8)}</span>
+          <span className="text-xs font-mono text-brand-primary">{item.id.slice(0, 8)}</span>
           <span className={cn(
             "inline-flex px-2 py-0.5 rounded text-[10px] font-semibold uppercase",
             statusStyles.bg,

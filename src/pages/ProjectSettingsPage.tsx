@@ -333,7 +333,7 @@ function DetailsTab({ project }: { project: Project }) {
 
             {/* Actions */}
             <div className="flex gap-2 pt-4">
-              <Button type="submit" disabled={updateProject.isPending} className="bg-brand-gold hover:bg-brand-gold-hover">
+              <Button type="submit" disabled={updateProject.isPending} className="bg-brand-primary hover:bg-brand-primary-hover">
                 {updateProject.isPending ? 'Saving...' : 'Save changes'}
               </Button>
               <Button type="button" variant="outline" onClick={() => {
@@ -373,7 +373,7 @@ function DetailsTab({ project }: { project: Project }) {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={cancelProgramChange}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmProgramChange} className="bg-brand-gold hover:bg-brand-gold-hover">
+            <AlertDialogAction onClick={confirmProgramChange} className="bg-brand-primary hover:bg-brand-primary-hover">
               Confirm Change
             </AlertDialogAction>
           </AlertDialogFooter>

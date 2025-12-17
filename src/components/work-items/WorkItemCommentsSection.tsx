@@ -94,7 +94,7 @@ export function WorkItemCommentsSection({ entityType, entityId }: WorkItemCommen
   const highlightMentions = (content: string) => {
     return content.replace(
       /@(\w+)/g,
-      '<span class="text-brand-gold font-medium">@$1</span>'
+      '<span class="text-brand-primary font-medium">@$1</span>'
     );
   };
 
@@ -115,7 +115,7 @@ export function WorkItemCommentsSection({ entityType, entityId }: WorkItemCommen
     <Card className="border border-border/60 rounded-lg">
       <CardContent className="p-5">
         <div className="flex items-center gap-2 mb-4">
-          <MessageSquare className="h-4 w-4 text-brand-gold" />
+          <MessageSquare className="h-4 w-4 text-brand-primary" />
           <Label className="font-semibold">Comments ({comments.length})</Label>
         </div>
 
@@ -145,7 +145,7 @@ export function WorkItemCommentsSection({ entityType, entityId }: WorkItemCommen
                       onClick={() => insertMention(user.full_name || user.email || '')}
                     >
                       <Avatar className="h-6 w-6">
-                        <AvatarFallback className="text-xs bg-brand-gold/20 text-brand-gold">
+                        <AvatarFallback className="text-xs bg-brand-primary/20 text-brand-primary">
                           {getInitials(user.full_name || user.email || 'U')}
                         </AvatarFallback>
                       </Avatar>
@@ -177,7 +177,7 @@ export function WorkItemCommentsSection({ entityType, entityId }: WorkItemCommen
             comments.map((comment) => (
               <div key={comment.id} className="flex gap-3 p-3 rounded-lg bg-accent/30">
                 <Avatar className="h-8 w-8 shrink-0">
-                  <AvatarFallback className="text-xs bg-brand-gold/20 text-brand-gold">
+                  <AvatarFallback className="text-xs bg-brand-primary/20 text-brand-primary">
                     {getInitials(comment.user_name || 'U')}
                   </AvatarFallback>
                 </Avatar>

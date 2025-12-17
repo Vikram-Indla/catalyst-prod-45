@@ -112,7 +112,7 @@ export function IncidentWatchersWidget({ incidentId }: IncidentWatchersWidgetPro
         <Button
           variant={isWatching ? 'default' : 'outline'}
           size="sm"
-          className={`w-full ${isWatching ? 'bg-brand-gold hover:bg-brand-gold-hover text-white' : ''}`}
+          className={`w-full ${isWatching ? 'bg-brand-primary hover:bg-brand-primary-hover text-white' : ''}`}
           onClick={() => toggleWatch.mutate(isWatching)}
           disabled={toggleWatch.isPending}
         >

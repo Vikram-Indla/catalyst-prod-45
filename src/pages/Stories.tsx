@@ -329,8 +329,8 @@ export default function Stories() {
         {requiresProgramSelection ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-center space-y-4 max-w-md">
-              <div className="w-16 h-16 mx-auto bg-brand-gold/10 rounded-full flex items-center justify-center">
-                <Filter className="h-8 w-8 text-brand-gold" />
+              <div className="w-16 h-16 mx-auto bg-brand-primary/10 rounded-full flex items-center justify-center">
+                <Filter className="h-8 w-8 text-brand-primary" />
               </div>
               <h3 className="text-lg font-semibold">Program Selection Required</h3>
               <p className="text-sm text-muted-foreground">

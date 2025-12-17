@@ -21,7 +21,7 @@ export default function Estimation() {
               Configure estimation systems, scales, and calculation methods
             </p>
           </div>
-          <Button className="bg-brand-gold hover:bg-brand-gold-hover">
+          <Button className="bg-brand-primary hover:bg-brand-primary-hover">
             Save Changes
           </Button>
         </div>

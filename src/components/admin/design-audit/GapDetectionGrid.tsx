@@ -137,7 +137,7 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
-      case 'color': return <div className="h-3 w-3 rounded bg-brand-gold" />;
+      case 'color': return <div className="h-3 w-3 rounded bg-brand-primary" />;
       case 'spacing': return <div className="h-3 w-3 border-2 border-current rounded" />;
       case 'typography': return <span className="text-[10px] font-bold">Aa</span>;
       case 'layout': return <div className="h-3 w-3 grid grid-cols-2 gap-0.5"><div className="bg-current rounded-sm" /><div className="bg-current rounded-sm" /><div className="bg-current rounded-sm" /><div className="bg-current rounded-sm" /></div>;
@@ -176,7 +176,7 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
           <div className="text-xs text-muted-foreground">Auto-fixable</div>
         </Card>
         <Card className="p-3">
-          <div className="text-2xl font-bold text-brand-gold">{stats.responsive}</div>
+          <div className="text-2xl font-bold text-brand-primary">{stats.responsive}</div>
           <div className="text-xs text-muted-foreground">Responsive</div>
         </Card>
       </div>
@@ -220,14 +220,14 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
           variant="outline"
           size="sm"
           onClick={() => setShowResponsive(!showResponsive)}
-          className={showResponsive ? 'bg-brand-gold/10 border-brand-gold/30' : ''}
+          className={showResponsive ? 'bg-brand-primary/10 border-brand-primary/30' : ''}
         >
           <Smartphone className="h-4 w-4 mr-1.5" />
           Responsive Gaps
         </Button>
 
         {selectedGaps.size > 0 && (
-          <Button size="sm" onClick={handleFixSelected} className="bg-brand-gold hover:bg-brand-gold-hover">
+          <Button size="sm" onClick={handleFixSelected} className="bg-brand-primary hover:bg-brand-primary-hover">
             <Wrench className="h-4 w-4 mr-1.5" />
             Fix Selected ({selectedGaps.size})
           </Button>
@@ -259,7 +259,7 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
                     key={gap.id}
                     className={cn(
                       "flex items-center gap-3 px-4 py-3 hover:bg-secondary/30 transition-colors",
-                      selectedGaps.has(gap.id) && "bg-brand-gold/5"
+                      selectedGaps.has(gap.id) && "bg-brand-primary/5"
                     )}
                   >
                     <Checkbox
@@ -310,7 +310,7 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="h-7 px-2 gap-1.5 shrink-0 hover:bg-brand-gold/10 hover:border-brand-gold/30 hover:text-brand-gold"
+                          className="h-7 px-2 gap-1.5 shrink-0 hover:bg-brand-primary/10 hover:border-brand-primary/30 hover:text-brand-primary"
                           onClick={() => copyFixInstruction(gap)}
                         >
                           <Send className="h-3.5 w-3.5" />
@@ -332,7 +332,7 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
         <Card>
           <CardHeader className="py-3">
             <CardTitle className="text-base flex items-center gap-2">
-              <Smartphone className="h-4 w-4 text-brand-gold" />
+              <Smartphone className="h-4 w-4 text-brand-primary" />
               Responsive Gaps ({responsivenessGaps.length})
             </CardTitle>
             <CardDescription>Routes with responsiveness issues by viewport</CardDescription>
@@ -381,7 +381,7 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
                             <Button
                               variant="outline"
                               size="sm"
-                              className="h-7 px-2 gap-1.5 hover:bg-brand-gold/10 hover:border-brand-gold/30 hover:text-brand-gold"
+                              className="h-7 px-2 gap-1.5 hover:bg-brand-primary/10 hover:border-brand-primary/30 hover:text-brand-primary"
                               onClick={() => copyFixInstruction(gap)}
                             >
                               <Send className="h-3.5 w-3.5" />

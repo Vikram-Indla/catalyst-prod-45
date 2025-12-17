@@ -169,7 +169,7 @@ export default function EnterpriseRoadmapsPage() {
   if (isLoading) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-gold" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-primary" />
       </div>
     );
   }
@@ -179,7 +179,7 @@ export default function EnterpriseRoadmapsPage() {
     <div className="flex items-center justify-between gap-4 w-full">
       <div className="flex items-center gap-3">
         {/* Search */}
-        <div className="flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-md w-[260px] focus-within:border-brand-gold focus-within:ring-1 focus-within:ring-brand-gold/30">
+        <div className="flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-md w-[260px] focus-within:border-brand-primary focus-within:ring-1 focus-within:ring-brand-primary/30">
           <Search className="w-4 h-4 text-muted-foreground" />
           <input
             type="text"
@@ -199,7 +199,7 @@ export default function EnterpriseRoadmapsPage() {
               className={cn(
                 "px-3 py-2 text-[13px] font-medium transition-colors capitalize",
                 viewMode === mode
-                  ? 'bg-brand-gold text-white'
+                  ? 'bg-brand-primary text-white'
                   : 'text-muted-foreground hover:text-foreground'
               )}
             >
@@ -210,19 +210,19 @@ export default function EnterpriseRoadmapsPage() {
       </div>
 
       <div className="flex items-center gap-3">
-        <button className="flex items-center gap-2 px-3 py-2 text-[13px] font-medium bg-card border border-border rounded-md text-muted-foreground hover:border-brand-gold/50 transition-colors">
+        <button className="flex items-center gap-2 px-3 py-2 text-[13px] font-medium bg-card border border-border rounded-md text-muted-foreground hover:border-brand-primary/50 transition-colors">
           <Filter className="w-4 h-4" />
           Filters
         </button>
-        <button className="flex items-center gap-2 px-3 py-2 text-[13px] font-medium bg-card border border-border rounded-md text-muted-foreground hover:border-brand-gold/50 transition-colors">
+        <button className="flex items-center gap-2 px-3 py-2 text-[13px] font-medium bg-card border border-border rounded-md text-muted-foreground hover:border-brand-primary/50 transition-colors">
           <Flag className="w-4 h-4" />
           Milestones
         </button>
-        <button className="flex items-center gap-2 px-3 py-2 text-[13px] font-medium bg-card border border-border rounded-md text-muted-foreground hover:border-brand-gold/50 transition-colors">
+        <button className="flex items-center gap-2 px-3 py-2 text-[13px] font-medium bg-card border border-border rounded-md text-muted-foreground hover:border-brand-primary/50 transition-colors">
           <Calendar className="w-4 h-4" />
           {selectedYear}
         </button>
-        <button className="flex items-center gap-2 px-3 py-2 text-[13px] font-medium bg-card border border-border rounded-md text-muted-foreground hover:border-brand-gold/50 transition-colors">
+        <button className="flex items-center gap-2 px-3 py-2 text-[13px] font-medium bg-card border border-border rounded-md text-muted-foreground hover:border-brand-primary/50 transition-colors">
           <Download className="w-4 h-4" />
           Export
         </button>
@@ -272,7 +272,7 @@ export default function EnterpriseRoadmapsPage() {
 
             {/* Today Indicator */}
             <div className="ml-auto flex items-center gap-2 text-[13px] text-muted-foreground">
-              <div className="w-2.5 h-2.5 bg-brand-gold rotate-45" />
+              <div className="w-2.5 h-2.5 bg-brand-primary rotate-45" />
               <span>Today: {format(today, 'MMM d, yyyy')}</span>
             </div>
           </div>
@@ -337,7 +337,7 @@ export default function EnterpriseRoadmapsPage() {
                     <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
 
                     {/* Theme Icon */}
-                    <div className="w-8 h-8 rounded-lg bg-brand-gold/15 flex items-center justify-center flex-shrink-0">
+                    <div className="w-8 h-8 rounded-lg bg-brand-primary/15 flex items-center justify-center flex-shrink-0">
                       <Layers className="w-[18px] h-[18px] text-secondary-bronze" />
                     </div>
 
@@ -386,10 +386,10 @@ export default function EnterpriseRoadmapsPage() {
               {/* Today Line */}
               {todayPercent >= 0 && todayPercent <= 100 && (
                 <div
-                  className="absolute top-0 bottom-0 w-0.5 bg-brand-gold z-10"
+                  className="absolute top-0 bottom-0 w-0.5 bg-brand-primary z-10"
                   style={{ left: `${todayPercent}%` }}
                 >
-                  <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] font-semibold text-brand-gold bg-card px-1.5 py-0.5 rounded whitespace-nowrap">
+                  <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] font-semibold text-brand-primary bg-card px-1.5 py-0.5 rounded whitespace-nowrap">
                     Today
                   </span>
                 </div>
@@ -424,13 +424,13 @@ export default function EnterpriseRoadmapsPage() {
                     >
                       <div
                         className={cn(
-                          "h-full bg-brand-gold/15 rounded-md border border-border relative overflow-visible border-l-[3px]",
+                          "h-full bg-brand-primary/15 rounded-md border border-border relative overflow-visible border-l-[3px]",
                           config.borderClass
                         )}
                       >
                         {/* Progress Fill */}
                         <div
-                          className="absolute left-0 top-0 bottom-0 bg-brand-gold opacity-50 rounded-l"
+                          className="absolute left-0 top-0 bottom-0 bg-brand-primary opacity-50 rounded-l"
                           style={{ width: `${item.progress}%` }}
                         />
 
@@ -566,7 +566,7 @@ function ThemePreviewDrawer({
       {/* Drawer Body with Gold Line */}
       <div className="flex-1 flex min-h-0">
         {/* Gold Vertical Line — FULL HEIGHT */}
-        <div className="w-1 bg-brand-gold flex-shrink-0" />
+        <div className="w-1 bg-brand-primary flex-shrink-0" />
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6">
@@ -657,13 +657,13 @@ function ThemePreviewDrawer({
       {/* Drawer Footer with Gold Line Extension */}
       <div className="flex border-t border-border flex-shrink-0">
         {/* Gold line continues */}
-        <div className="w-1 bg-brand-gold flex-shrink-0" />
+        <div className="w-1 bg-brand-primary flex-shrink-0" />
 
         <div className="flex-1 flex gap-3 p-4">
-          <button className="flex-1 px-4 py-3 text-sm font-medium bg-muted border border-border rounded-md text-muted-foreground hover:border-brand-gold/50 hover:text-foreground transition-colors">
+          <button className="flex-1 px-4 py-3 text-sm font-medium bg-muted border border-border rounded-md text-muted-foreground hover:border-brand-primary/50 hover:text-foreground transition-colors">
             View Objectives
           </button>
-          <button className="flex-1 px-4 py-3 text-sm font-semibold bg-brand-gold text-white rounded-md hover:bg-brand-gold-hover transition-colors">
+          <button className="flex-1 px-4 py-3 text-sm font-semibold bg-brand-primary text-white rounded-md hover:bg-brand-primary-hover transition-colors">
             Open Strategy Room
           </button>
         </div>

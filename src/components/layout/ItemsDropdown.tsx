@@ -34,7 +34,7 @@ interface ItemsDropdownProps {
 // Work Items section - core deliverables
 const workItems = [
   { key: 'themes', label: 'Themes', icon: Circle, color: 'text-workitem-theme', path: '/portfolio/:portfolioId/backlog?type=theme', moduleCode: 'PORTFOLIO' },
-  { key: 'business-requests', label: 'Business Request', icon: Building2, color: 'text-brand-gold', path: '/demand/list', moduleCode: 'PRODUCT' },
+  { key: 'business-requests', label: 'Business Request', icon: Building2, color: 'text-brand-primary', path: '/demand/list', moduleCode: 'PRODUCT' },
   { key: 'epics', label: 'Epics', icon: Square, color: 'text-workitem-epic', path: '/portfolio/:portfolioId/backlog?type=epic', moduleCode: 'PORTFOLIO' },
   { key: 'features', label: 'Features', icon: Gem, color: 'text-workitem-feature', path: '/programs/:programId/backlog?type=feature', moduleCode: 'PROGRAM' },
   { key: 'stories', label: 'Stories', icon: FileText, color: 'text-workitem-story', path: '/teams/:teamId/backlog?type=story', moduleCode: 'TEAMS' },
@@ -48,10 +48,10 @@ const planningItems = [
 
 // Other section - supporting items
 const otherItems = [
-  { key: 'objectives', label: 'Objectives', icon: Target, color: 'text-brand-gold', path: '/portfolio/:portfolioId/objectives', moduleCode: 'ENTERPRISE' },
-  { key: 'dependencies', label: 'Dependencies', icon: GitBranch, color: 'text-brand-gold', path: '/programs/:programId/dependencies', moduleCode: 'PROGRAM' },
+  { key: 'objectives', label: 'Objectives', icon: Target, color: 'text-brand-primary', path: '/portfolio/:portfolioId/objectives', moduleCode: 'ENTERPRISE' },
+  { key: 'dependencies', label: 'Dependencies', icon: GitBranch, color: 'text-brand-primary', path: '/programs/:programId/dependencies', moduleCode: 'PROGRAM' },
   { key: 'risks', label: 'Risks', icon: AlertTriangle, color: 'text-destructive', path: '/programs/:programId/risks', moduleCode: 'ENTERPRISE' },
-  { key: 'sprints', label: 'Sprints', icon: Calendar, color: 'text-brand-gold', path: '/teams/:teamId/sprints', moduleCode: 'PROGRAM' },
+  { key: 'sprints', label: 'Sprints', icon: Calendar, color: 'text-brand-primary', path: '/teams/:teamId/sprints', moduleCode: 'PROGRAM' },
   { key: 'program-increments', label: 'Program Increments', icon: Package, color: 'text-workitem-theme', path: '/programs/:programId/increments', moduleCode: 'PROGRAM' },
   { key: 'incidents', label: 'Incidents', icon: Siren, color: 'text-destructive', path: '/release/incidents', moduleCode: null },
 ];

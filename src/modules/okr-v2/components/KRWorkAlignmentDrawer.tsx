@@ -250,7 +250,7 @@ export function KRWorkAlignmentDrawer({ keyResult, open, onClose, objectiveId }:
       <SheetContent className="w-full sm:max-w-[500px] flex flex-col p-0">
         <SheetHeader className="px-6 py-5 border-b border-border bg-card">
           <div className="flex items-center gap-2 mb-1">
-            <Link2 className="h-4 w-4 text-brand-gold" />
+            <Link2 className="h-4 w-4 text-brand-primary" />
             <SheetTitle className="text-base">Align Work Items</SheetTitle>
           </div>
           <SheetDescription className="text-sm">
@@ -304,9 +304,9 @@ export function KRWorkAlignmentDrawer({ keyResult, open, onClose, objectiveId }:
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       {contribution.work_item_type === 'epic' ? (
-                        <Target className="h-3.5 w-3.5 text-brand-gold" />
+                        <Target className="h-3.5 w-3.5 text-brand-primary" />
                       ) : (
-                        <Layers className="h-3.5 w-3.5 text-brand-gold" />
+                        <Layers className="h-3.5 w-3.5 text-brand-primary" />
                       )}
                       <Badge variant="outline" className="text-xs capitalize">
                         {contribution.work_item_type}
@@ -337,7 +337,7 @@ export function KRWorkAlignmentDrawer({ keyResult, open, onClose, objectiveId }:
                           localContributions.indexOf(contribution),
                           Math.max(1, Math.min(100, parseInt(e.target.value) || 1))
                         )}
-                        className="w-[70px] h-9 text-center text-sm pr-6 border-border focus:border-brand-gold"
+                        className="w-[70px] h-9 text-center text-sm pr-6 border-border focus:border-brand-primary"
                       />
                       <span className="absolute right-2.5 text-sm text-muted-foreground pointer-events-none">%</span>
                     </div>

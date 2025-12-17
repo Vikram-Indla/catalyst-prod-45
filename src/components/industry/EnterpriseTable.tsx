@@ -280,7 +280,7 @@ function RowEditMode<T extends { id: string }>({
         <div className="flex items-center gap-2">
           <button
             onClick={handleSave}
-            className="p-1.5 rounded bg-brand-gold text-white hover:bg-brand-gold-hover transition-colors"
+            className="p-1.5 rounded bg-brand-primary text-white hover:bg-brand-primary-hover transition-colors"
             title="Save changes"
           >
             <Save className="h-4 w-4" />
@@ -363,9 +363,9 @@ function EnterpriseColumnHeader<T>({
           title={`Sort by ${column.header}`}
         >
           {sortDirection === 'asc' ? (
-            <ChevronUp className="h-4 w-4 text-brand-gold" />
+            <ChevronUp className="h-4 w-4 text-brand-primary" />
           ) : sortDirection === 'desc' ? (
-            <ChevronDown className="h-4 w-4 text-brand-gold" />
+            <ChevronDown className="h-4 w-4 text-brand-primary" />
           ) : (
             <div className="flex flex-col -space-y-1">
               <ChevronUp className="h-3 w-3 text-muted-foreground/40" />
@@ -382,13 +382,13 @@ function EnterpriseColumnHeader<T>({
             onClick={() => setIsFilterOpen(!isFilterOpen)}
             className={cn(
               "p-1 rounded hover:bg-muted/50 transition-colors",
-              hasActiveFilters && "text-brand-gold"
+              hasActiveFilters && "text-brand-primary"
             )}
             title={`Filter by ${column.header}`}
           >
             <Filter className={cn(
               "h-4 w-4",
-              hasActiveFilters ? "text-brand-gold" : "text-muted-foreground/40"
+              hasActiveFilters ? "text-brand-primary" : "text-muted-foreground/40"
             )} />
           </button>
 
@@ -402,7 +402,7 @@ function EnterpriseColumnHeader<T>({
                   placeholder="Search filters..."
                   value={filterSearch}
                   onChange={(e) => setFilterSearch(e.target.value)}
-                  className="w-full h-8 px-3 text-sm border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-brand-gold/30"
+                  className="w-full h-8 px-3 text-sm border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
                 />
               </div>
 
@@ -428,7 +428,7 @@ function EnterpriseColumnHeader<T>({
                               : [...prev, option.value]
                           );
                         }}
-                        className="rounded border-border text-brand-gold focus:ring-brand-gold/30"
+                        className="rounded border-border text-brand-primary focus:ring-brand-primary/30"
                       />
                       <span className="text-sm flex-1">{option.label}</span>
                       {option.count !== undefined && (
@@ -451,7 +451,7 @@ function EnterpriseColumnHeader<T>({
                 </button>
                 <button
                   onClick={handleApply}
-                  className="px-4 py-1.5 text-sm bg-brand-gold text-white rounded-md hover:bg-brand-gold-hover transition-colors"
+                  className="px-4 py-1.5 text-sm bg-brand-primary text-white rounded-md hover:bg-brand-primary-hover transition-colors"
                 >
                   Apply
                 </button>
@@ -463,7 +463,7 @@ function EnterpriseColumnHeader<T>({
 
       {/* Active Filter Count Badge */}
       {hasActiveFilters && (
-        <span className="px-1.5 py-0.5 text-xs bg-brand-gold/20 text-brand-gold rounded-full font-medium">
+        <span className="px-1.5 py-0.5 text-xs bg-brand-primary/20 text-brand-primary rounded-full font-medium">
           {activeFilters.length}
         </span>
       )}
@@ -773,7 +773,7 @@ export function EnterpriseTable<T extends { id: string }>({
                   type="checkbox"
                   checked={isAllSelected}
                   onChange={(e) => handleSelectAll(e.target.checked)}
-                  className="rounded border-border text-brand-gold focus:ring-brand-gold/30"
+                  className="rounded border-border text-brand-primary focus:ring-brand-primary/30"
                 />
               </th>
             )}
@@ -820,7 +820,7 @@ export function EnterpriseTable<T extends { id: string }>({
                 key={row.id}
                 className={cn(
                   "h-12 border-b transition-colors hover:bg-muted/50",
-                  currentSelectedRows.includes(row.id) && "bg-brand-gold/5",
+                  currentSelectedRows.includes(row.id) && "bg-brand-primary/5",
                   onRowClick && "cursor-pointer"
                 )}
                 onClick={(e) => handleRowClick(row, e)}
@@ -834,7 +834,7 @@ export function EnterpriseTable<T extends { id: string }>({
                       type="checkbox"
                       checked={currentSelectedRows.includes(row.id)}
                       onChange={(e) => handleRowSelection(row.id, e.target.checked)}
-                      className="rounded border-border text-brand-gold focus:ring-brand-gold/30"
+                      className="rounded border-border text-brand-primary focus:ring-brand-primary/30"
                     />
                   </td>
                 )}
@@ -849,7 +849,7 @@ export function EnterpriseTable<T extends { id: string }>({
                       key={column.id}
                       className={cn(
                         "px-4 py-2 align-middle",
-                        column.editable && editMode === 'cell' && "hover:bg-brand-gold/5"
+                        column.editable && editMode === 'cell' && "hover:bg-brand-primary/5"
                       )}
                       onDoubleClick={(e) => {
                         e.stopPropagation();

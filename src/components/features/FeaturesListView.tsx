@@ -118,13 +118,13 @@ export function FeaturesListView({
         return 'bg-success';
       case 'implementing':
       case 'deploying':
-        return 'bg-brand-gold';
+        return 'bg-brand-primary';
       case 'validating':
         return 'bg-warning';
       case 'backlog':
         return 'bg-muted';
       default:
-        return 'bg-brand-gold';
+        return 'bg-brand-primary';
     }
   };
 

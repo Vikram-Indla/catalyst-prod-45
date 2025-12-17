@@ -31,7 +31,7 @@ export function ObjectivesRow({ programId, piId, sprints = [] }: ObjectivesRowPr
       <div className="border-t border-b bg-muted/20">
         <div className="flex items-center gap-[var(--s3)] px-[var(--s4)] py-[var(--s3)]">
           <div className="flex items-center gap-[var(--s2)] min-w-[200px]">
-            <Target className="h-4 w-4 text-brand-gold" />
+            <Target className="h-4 w-4 text-brand-primary" />
             <span className="font-medium text-sm">Objectives</span>
           </div>
 

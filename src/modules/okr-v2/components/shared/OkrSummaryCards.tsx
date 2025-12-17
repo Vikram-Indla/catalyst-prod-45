@@ -26,7 +26,7 @@ function SummaryCard({ label, value, variant = 'default' }: SummaryCardProps) {
   const valueColors = {
     default: 'text-foreground',
     success: 'text-secondary-green',
-    warning: 'text-brand-gold',
+    warning: 'text-brand-primary',
     danger: 'text-destructive',
   };
 

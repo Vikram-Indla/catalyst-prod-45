@@ -28,8 +28,8 @@ export function ImportWizardStepper({ steps, currentStep, className }: ImportWiz
               <div
                 className={cn(
                   'w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors',
-                  isCompleted && 'bg-brand-gold text-white',
-                  isCurrent && 'bg-brand-gold text-white ring-2 ring-brand-gold ring-offset-2',
+                  isCompleted && 'bg-brand-primary text-white',
+                  isCurrent && 'bg-brand-primary text-white ring-2 ring-brand-primary ring-offset-2',
                   !isCompleted && !isCurrent && 'bg-muted text-muted-foreground'
                 )}
               >
@@ -42,7 +42,7 @@ export function ImportWizardStepper({ steps, currentStep, className }: ImportWiz
               <span
                 className={cn(
                   'mt-2 text-xs font-medium text-center whitespace-nowrap',
-                  isCurrent && 'text-brand-gold',
+                  isCurrent && 'text-brand-primary',
                   isCompleted && 'text-foreground',
                   !isCompleted && !isCurrent && 'text-muted-foreground'
                 )}
@@ -56,7 +56,7 @@ export function ImportWizardStepper({ steps, currentStep, className }: ImportWiz
               <div
                 className={cn(
                   'flex-1 h-0.5 mx-4 transition-colors',
-                  isCompleted ? 'bg-brand-gold' : 'bg-muted'
+                  isCompleted ? 'bg-brand-primary' : 'bg-muted'
                 )}
               />
             )}

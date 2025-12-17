@@ -297,7 +297,7 @@ export default function DemandIntakeCatalyst() {
       width: '100px',
       sortable: true,
       render: (value, row) => (
-        <span className="text-foreground hover:text-brand-gold font-medium text-sm">
+        <span className="text-foreground hover:text-brand-primary font-medium text-sm">
           {value || `MIM-${String(row.id).slice(-3)}`}
         </span>
       ),
@@ -422,7 +422,7 @@ export default function DemandIntakeCatalyst() {
                 className={cn(
                   "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium transition-colors",
                   viewMode === 'list' 
-                    ? "bg-brand-gold text-white" 
+                    ? "bg-brand-primary text-white" 
                     : "text-muted-foreground hover:bg-muted"
                 )}
               >
@@ -434,7 +434,7 @@ export default function DemandIntakeCatalyst() {
                 className={cn(
                   "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium transition-colors",
                   viewMode === 'kanban' 
-                    ? "bg-brand-gold text-white" 
+                    ? "bg-brand-primary text-white" 
                     : "text-muted-foreground hover:bg-muted"
                 )}
               >
@@ -449,13 +449,13 @@ export default function DemandIntakeCatalyst() {
               onClick={() => setFiltersDialogOpen(true)}
               className={cn(
                 "h-8 w-8 border-border bg-white",
-                activeFilterCount > 0 && "border-brand-gold text-brand-gold"
+                activeFilterCount > 0 && "border-brand-primary text-brand-primary"
               )}
               title="Filters"
             >
               <Filter className="h-4 w-4" />
               {activeFilterCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-brand-gold text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
+                <span className="absolute -top-1 -right-1 bg-brand-primary text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
                   {activeFilterCount}
                 </span>
               )}
@@ -539,7 +539,7 @@ export default function DemandIntakeCatalyst() {
                       className={cn(
                         "w-8 h-8 text-sm rounded-md transition-colors",
                         currentPage === pageNum 
-                          ? "bg-brand-gold text-white font-medium" 
+                          ? "bg-brand-primary text-white font-medium" 
                           : "text-muted-foreground hover:bg-muted border border-border"
                       )}
                     >

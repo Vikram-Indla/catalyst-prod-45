@@ -61,9 +61,9 @@ export const tokenCategories: TokenCategory[] = [
 export const baselineTokens: DesignToken[] = [
   // Brand Colors
   { name: 'Brand Dark', cssVar: '--brand-dark', value: '#1A1A1A', category: tokenCategories[0] },
-  { name: 'Brand Gold', cssVar: '--brand-gold', value: '#C69C6D', category: tokenCategories[0] },
-  { name: 'Brand Gold Hover', cssVar: '--brand-gold-hover', value: '#B8905F', category: tokenCategories[0] },
-  { name: 'Brand Gold Pale', cssVar: '--brand-gold-pale', value: 'rgba(198,156,109,0.08)', category: tokenCategories[0] },
+  { name: 'Brand Gold', cssVar: '--brand-primary', value: '#C69C6D', category: tokenCategories[0] },
+  { name: 'Brand Gold Hover', cssVar: '--brand-primary-hover', value: '#B8905F', category: tokenCategories[0] },
+  { name: 'Brand Gold Pale', cssVar: '--brand-primary-pale', value: 'rgba(198,156,109,0.08)', category: tokenCategories[0] },
   
   // Text Colors
   { name: 'Text Primary', cssVar: '--text-primary', value: '#111827', category: tokenCategories[1] },
@@ -159,7 +159,7 @@ export const componentSpecs: ComponentSpec[] = [
       { property: 'sm-height', expected: '32px' },
       { property: 'lg-height', expected: '40px' },
       { property: 'icon-size', expected: '32px' },
-      { property: 'focus-ring', expected: '2px brand-gold' },
+      { property: 'focus-ring', expected: '2px brand-primary' },
     ],
   },
   {

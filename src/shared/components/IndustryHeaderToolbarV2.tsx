@@ -82,7 +82,7 @@ const Icons = {
 const AVATAR_COLORS = [
   'hsl(var(--secondary-green))',
   'hsl(var(--secondary-bronze))',
-  'hsl(var(--brand-gold))',
+  'hsl(var(--brand-primary))',
   'hsl(var(--palette-champagne))',
 ];
 

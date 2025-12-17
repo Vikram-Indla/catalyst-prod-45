@@ -78,7 +78,7 @@ export default function IncidentsDashboard() {
               className={cn(
                 "px-4 py-2 text-sm rounded-md border transition-colors",
                 activeFilter === filter
-                  ? "bg-brand-gold border-brand-gold text-white font-semibold"
+                  ? "bg-brand-primary border-brand-primary text-white font-semibold"
                   : "bg-white border-border text-muted-foreground hover:bg-muted/50"
               )}
             >

@@ -254,7 +254,7 @@ export default function RoutesComponentsRegistry() {
         {allTypes.map(type => (
           <Card 
             key={type} 
-            className={`border cursor-pointer transition-all ${selectedTypes.includes(type) ? 'ring-2 ring-brand-gold' : ''}`}
+            className={`border cursor-pointer transition-all ${selectedTypes.includes(type) ? 'ring-2 ring-brand-primary' : ''}`}
             style={{ borderColor: 'var(--border)' }}
             onClick={() => toggleType(type)}
           >
@@ -305,7 +305,7 @@ export default function RoutesComponentsRegistry() {
               <Badge
                 key={category}
                 variant={selectedCategories.includes(category) ? "default" : "outline"}
-                className={`cursor-pointer text-xs ${selectedCategories.includes(category) ? 'bg-brand-gold text-white' : categoryColors[category]}`}
+                className={`cursor-pointer text-xs ${selectedCategories.includes(category) ? 'bg-brand-primary text-white' : categoryColors[category]}`}
                 onClick={() => toggleCategory(category)}
               >
                 {category} ({stats.byCategory[category]})

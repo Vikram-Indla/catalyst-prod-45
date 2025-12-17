@@ -129,7 +129,7 @@ export function RoadmapFiltersDialog({
                   className={cn(
                     "px-3 py-1.5 rounded-full text-sm font-medium border transition-all",
                     localFilters.activePlatformFilter === pf.id
-                      ? "bg-brand-gold text-white border-brand-gold"
+                      ? "bg-brand-primary text-white border-brand-primary"
                       : "bg-white text-foreground border-border hover:bg-muted/50 hover:border-muted-foreground/30"
                   )}
                   onClick={() => handlePlatformFilterClick(pf.id)}
@@ -204,7 +204,7 @@ export function RoadmapFiltersDialog({
         {/* Footer - Matching Production */}
         <div className="flex items-center justify-between px-6 py-4 border-t border-border bg-muted/20">
           <span className="text-sm text-muted-foreground">
-            <span className="text-brand-gold font-semibold">{countActiveFilters()}</span> filters applied
+            <span className="text-brand-primary font-semibold">{countActiveFilters()}</span> filters applied
           </span>
           <div className="flex items-center gap-2">
             <Button 

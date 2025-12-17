@@ -79,7 +79,7 @@ export function DependencyWheelDetailsPanel({
         );
       case 'COMMITTED':
         return (
-          <Badge className="text-xs bg-brand-gold text-white">
+          <Badge className="text-xs bg-brand-primary text-white">
             <CheckCircle2 className="h-3 w-3 mr-1" />
             Committed
           </Badge>

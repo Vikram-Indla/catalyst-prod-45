@@ -161,7 +161,7 @@ export function MentionInput({
                 }}
               >
                 <Avatar className="h-6 w-6">
-                  <AvatarFallback className="bg-brand-gold/20 text-brand-gold text-xs">
+                  <AvatarFallback className="bg-brand-primary/20 text-brand-primary text-xs">
                     {(profile.full_name || profile.email)[0].toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
@@ -201,7 +201,7 @@ export function CommentContent({ content }: { content: string }) {
     parts.push(
       <span 
         key={match.index} 
-        className="text-brand-gold font-medium bg-brand-gold/10 px-1 rounded"
+        className="text-brand-primary font-medium bg-brand-primary/10 px-1 rounded"
       >
         @{match[1]}
       </span>

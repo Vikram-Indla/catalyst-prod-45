@@ -160,7 +160,7 @@ export function CatalystHeader() {
             }}
           >
             <span style={{ color: 'var(--secondary-green)' }}>Cata</span>
-            <span style={{ color: 'var(--brand-gold)' }}>lyst</span>
+            <span style={{ color: 'var(--brand-primary)' }}>lyst</span>
           </span>
         </a>
         

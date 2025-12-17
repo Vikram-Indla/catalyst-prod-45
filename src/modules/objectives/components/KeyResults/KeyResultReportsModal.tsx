@@ -86,7 +86,7 @@ export function KeyResultReportsModal({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-[var(--s4)]">
               <Card className="p-[var(--s4)]">
                 <div className="flex items-center gap-[var(--s3)] mb-[var(--s2)]">
-                  <Target className="h-5 w-5 text-brand-gold" />
+                  <Target className="h-5 w-5 text-brand-primary" />
                   <span className="text-sm font-medium">Total Key Results</span>
                 </div>
                 <p className="text-2xl font-bold">{keyResults.length}</p>
@@ -171,7 +171,7 @@ export function KeyResultReportsModal({
                   {kr.checkins && kr.checkins.length > 0 ? (
                     <div className="space-y-[var(--s2)]">
                       {kr.checkins.map((checkin: any) => (
-                      <div key={checkin.id} className="flex items-start justify-between text-sm border-l-2 border-brand-gold pl-[var(--s3)] py-[var(--s2)]">
+                      <div key={checkin.id} className="flex items-start justify-between text-sm border-l-2 border-brand-primary pl-[var(--s3)] py-[var(--s2)]">
                         <div>
                           <p className="font-medium">{checkin.value}</p>
                           {checkin.note_richtext && (

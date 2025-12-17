@@ -299,7 +299,7 @@ export function CreateEditStoryPanel({ open, onClose, onSuccess, storyId, initia
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit" disabled={loading} className="bg-brand-gold hover:bg-brand-gold-hover">
+            <Button type="submit" disabled={loading} className="bg-brand-primary hover:bg-brand-primary-hover">
               {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
               {storyId ? 'Update' : 'Create'}
             </Button>

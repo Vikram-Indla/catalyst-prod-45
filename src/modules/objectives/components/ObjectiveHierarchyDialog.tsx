@@ -89,7 +89,7 @@ export function ObjectiveHierarchyDialog({
             {currentObjectiveId !== objectiveId && hierarchy.parents && hierarchy.parents.length > 0 && (
               <button
                 onClick={handleBackToParent}
-                className="flex items-center gap-1 text-sm text-brand-gold hover:underline"
+                className="flex items-center gap-1 text-sm text-brand-primary hover:underline"
               >
                 <ChevronRight className="h-4 w-4 rotate-180" />
                 Back to parent
@@ -241,7 +241,7 @@ function ChildObjectiveRow({ objective, getDisplayName, getContextString, onClic
     <div 
       className={cn(
         "pl-4 py-2 border-l-2 border-muted rounded-r cursor-pointer transition-colors",
-        "hover:bg-accent/50 hover:border-brand-gold"
+        "hover:bg-accent/50 hover:border-brand-primary"
       )}
       onClick={onClick}
     >
@@ -255,7 +255,7 @@ function ChildObjectiveRow({ objective, getDisplayName, getContextString, onClic
               {getDisplayName(objective)}
             </span>
             {hasChildren && (
-              <GitBranch className="h-3.5 w-3.5 text-brand-gold flex-shrink-0" />
+              <GitBranch className="h-3.5 w-3.5 text-brand-primary flex-shrink-0" />
             )}
             <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
           </div>

@@ -77,7 +77,7 @@ export function RiskLinksSection({ links, onChange }: RiskLinksSectionProps) {
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-brand-gold hover:underline truncate block"
+                    className="text-xs text-brand-primary hover:underline truncate block"
                   >
                     {link.url}
                   </a>
@@ -146,7 +146,7 @@ export function RiskLinksSection({ links, onChange }: RiskLinksSectionProps) {
             <Button
               onClick={handleAddLink}
               disabled={!newLink.title || !newLink.url}
-              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
             >
               Add Link
             </Button>

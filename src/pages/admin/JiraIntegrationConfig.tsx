@@ -117,7 +117,7 @@ export default function JiraIntegrationConfig() {
     return (
       <Badge 
         variant={variants[status as keyof typeof variants] || "outline"}
-        className={status === 'success' ? 'bg-brand-gold hover:bg-brand-gold-hover text-white' : ''}
+        className={status === 'success' ? 'bg-brand-primary hover:bg-brand-primary-hover text-white' : ''}
       >
         {status.toUpperCase()}
       </Badge>
@@ -138,7 +138,7 @@ export default function JiraIntegrationConfig() {
             <Button
               variant="outline"
               onClick={() => setShowHelp(true)}
-              className="border-brand-gold text-brand-gold hover:bg-brand-gold hover:text-white flex-shrink-0"
+              className="border-brand-primary text-brand-primary hover:bg-brand-primary hover:text-white flex-shrink-0"
             >
               📚 Documentation
             </Button>
@@ -156,7 +156,7 @@ export default function JiraIntegrationConfig() {
                   </CardDescription>
                 </div>
                 <Button 
-                  className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+                  className="bg-brand-primary hover:bg-brand-primary-hover text-white"
                   onClick={() => {
                     setEditingConnection(null);
                     setShowConnectionDialog(true);
@@ -169,19 +169,19 @@ export default function JiraIntegrationConfig() {
               <CardContent>
                 {isLoading ? (
                   <div className="flex justify-center py-8">
-                    <Loader2 className="w-6 h-6 animate-spin text-brand-gold" />
+                    <Loader2 className="w-6 h-6 animate-spin text-brand-primary" />
                   </div>
                 ) : connections && connections.length > 0 ? (
                   <div className="space-y-3">
                     {connections.map((conn) => (
                       <div
                         key={conn.id}
-                        className="flex items-center justify-between p-4 border rounded-lg hover:border-brand-gold transition-colors cursor-pointer"
+                        className="flex items-center justify-between p-4 border rounded-lg hover:border-brand-primary transition-colors cursor-pointer"
                         onClick={() => setSelectedConnection(conn.id)}
                       >
                         <div className="flex-1">
                           <div className="flex items-center gap-3">
-                            <LinkIcon className="w-4 h-4 text-brand-gold" />
+                            <LinkIcon className="w-4 h-4 text-brand-primary" />
                             <div>
                               <h3 className="font-medium">{conn.name}</h3>
                               <p className="text-sm text-muted-foreground">{conn.jira_url}</p>

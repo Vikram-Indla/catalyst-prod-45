@@ -17,23 +17,23 @@ export function HeroPanel() {
   return (
     <div className="flex-1 bg-gradient-to-br from-brand-dark via-[#2D2D2D] to-brand-dark flex flex-col justify-between p-12 relative overflow-hidden">
       <div className="absolute -top-1/2 -right-1/5 w-4/5 h-[200%] bg-[radial-gradient(ellipse,rgba(198,156,109,0.08)_0%,transparent_70%)] pointer-events-none" />
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-gold to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-primary to-transparent" />
 
       <div className="relative z-10">
         <Logo variant="light" size="lg" />
       </div>
 
       <div className="relative z-10 max-w-[520px]">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-brand-gold/15 border border-brand-gold-border rounded mb-6">
-          <span className="w-2 h-2 bg-brand-gold rounded-full animate-pulse" />
-          <span className="font-body text-xs font-semibold text-brand-gold uppercase tracking-wide">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-brand-primary/15 border border-brand-primary-border rounded mb-6">
+          <span className="w-2 h-2 bg-brand-primary rounded-full animate-pulse" />
+          <span className="font-body text-xs font-semibold text-brand-primary uppercase tracking-wide">
             Trusted by Saudi Vision 2030 Programs
           </span>
         </div>
 
         <h1 className="font-heading text-[44px] font-bold text-white leading-[1.15] tracking-tight mb-5">
           Transform Your{" "}
-          <span className="text-brand-gold">Enterprise Delivery</span>
+          <span className="text-brand-primary">Enterprise Delivery</span>
           {" "}at Scale
         </h1>
 
@@ -45,7 +45,7 @@ export function HeroPanel() {
         <div className="grid grid-cols-3 gap-6 pt-8 border-t border-white/10">
           {stats.map((stat) => (
             <div key={stat.label}>
-              <div className="font-heading text-[32px] font-bold text-brand-gold tracking-tight mb-1">
+              <div className="font-heading text-[32px] font-bold text-brand-primary tracking-tight mb-1">
                 {stat.value}
               </div>
               <div className="font-body text-[13px] font-medium text-white/50 uppercase tracking-wide">
@@ -59,7 +59,7 @@ export function HeroPanel() {
       <div className="absolute bottom-36 left-12 right-12 p-5 bg-white/[0.03] border border-white/[0.08] rounded-lg z-10">
         <p className="font-body text-sm text-white/60 leading-relaxed">
           <span className="font-heading font-semibold text-white">
-            <span className="text-brand-gold">C</span>atalyst
+            <span className="text-brand-primary">C</span>atalyst
           </span>{" "}
           brings enterprise demand and delivery management to organizations of all sizes. 
           Seamlessly integrate your strategic planning with day-to-day execution using our powerful platform.

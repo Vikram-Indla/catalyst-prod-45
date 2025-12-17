@@ -66,7 +66,7 @@ export function RisksToolbar({
         <Button
           size="sm"
           onClick={onCreateClick}
-          className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+          className="bg-brand-primary hover:bg-brand-primary-hover text-white"
         >
           <Plus className="h-4 w-4 mr-2" />
           Create Risk

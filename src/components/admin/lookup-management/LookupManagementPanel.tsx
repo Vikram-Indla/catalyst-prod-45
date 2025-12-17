@@ -37,8 +37,8 @@ export function LookupManagementPanel() {
       {/* Header */}
       <div className="flex items-center justify-between pb-4 border-b">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-brand-gold/10">
-            <Database className="h-5 w-5 text-brand-gold" />
+          <div className="p-2 rounded-lg bg-brand-primary/10">
+            <Database className="h-5 w-5 text-brand-primary" />
           </div>
           <div>
             <h2 className="text-lg font-semibold">Lookup Management</h2>

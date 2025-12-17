@@ -112,7 +112,7 @@ export function DocumentFavorite({ documentId, variant = 'button' }: DocumentFav
         <Star 
           className={cn(
             "h-4 w-4 transition-colors",
-            isFavorited ? "fill-brand-gold text-brand-gold" : "text-muted-foreground hover:text-brand-gold"
+            isFavorited ? "fill-brand-primary text-brand-primary" : "text-muted-foreground hover:text-brand-primary"
           )} 
         />
       </button>
@@ -125,12 +125,12 @@ export function DocumentFavorite({ documentId, variant = 'button' }: DocumentFav
       size="sm"
       onClick={handleToggle}
       disabled={isPending || !currentUser}
-      className={cn(isFavorited && "text-brand-gold")}
+      className={cn(isFavorited && "text-brand-primary")}
     >
       <Star 
         className={cn(
           "h-4 w-4 mr-2",
-          isFavorited && "fill-brand-gold"
+          isFavorited && "fill-brand-primary"
         )} 
       />
       {isFavorited ? 'Starred' : 'Star'}

@@ -19,8 +19,8 @@ export function UsersStatsCards({ users }: UsersStatsCardsProps) {
       label: 'Total Users',
       value: totalUsers,
       icon: Users,
-      color: 'text-brand-gold',
-      bgColor: 'bg-brand-gold/10'
+      color: 'text-brand-primary',
+      bgColor: 'bg-brand-primary/10'
     },
     {
       label: 'Active Users',

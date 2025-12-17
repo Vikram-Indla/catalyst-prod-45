@@ -88,7 +88,7 @@ function MultiSelectDropdown({
           className={cn(
             "flex items-center justify-between w-full h-10 px-3 border rounded-md text-sm bg-card transition-colors",
             selected.length > 0 ? "border-border text-foreground" : "border-border text-muted-foreground",
-            "hover:border-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-brand-gold"
+            "hover:border-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-brand-primary"
           )}
         >
           <span className={cn("truncate", selected.length === 0 && "text-muted-foreground")}>
@@ -105,13 +105,13 @@ function MultiSelectDropdown({
             key={option.value}
             className={cn(
               "flex items-center gap-2 px-3 py-2 cursor-pointer rounded-sm transition-colors text-sm",
-              selected.includes(option.value) ? "bg-brand-gold/10 text-foreground" : "hover:bg-muted/50 text-foreground"
+              selected.includes(option.value) ? "bg-brand-primary/10 text-foreground" : "hover:bg-muted/50 text-foreground"
             )}
             onClick={() => toggleOption(option.value)}
           >
             <div className={cn(
               "h-4 w-4 border rounded flex items-center justify-center shrink-0",
-              selected.includes(option.value) ? "bg-brand-gold border-brand-gold" : "border-border"
+              selected.includes(option.value) ? "bg-brand-primary border-brand-primary" : "border-border"
             )}>
               {selected.includes(option.value) && (
                 <svg className="h-3 w-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
@@ -188,7 +188,7 @@ function DateInput({
           className={cn(
             "flex items-center justify-between w-full h-10 px-3 border rounded-md text-sm bg-card transition-colors",
             value ? "border-border text-foreground" : "border-border text-muted-foreground",
-            "hover:border-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-brand-gold"
+            "hover:border-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-brand-primary"
           )}
         >
           <span className={cn(!value && "text-muted-foreground")}>
@@ -298,7 +298,7 @@ export function OKRSmartFiltersDialog({
           <div className="flex items-center gap-2">
             <h2 className="text-base font-semibold text-foreground">Filter Objectives</h2>
             {activeFilterCount > 0 && (
-              <Badge variant="secondary" className="bg-brand-gold/20 text-brand-gold">
+              <Badge variant="secondary" className="bg-brand-primary/20 text-brand-primary">
                 {activeFilterCount} active
               </Badge>
             )}

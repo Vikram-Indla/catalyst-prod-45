@@ -16,7 +16,7 @@ interface OkrThemeDotProps {
 const BRAND_THEME_COLORS = [
   'hsl(var(--secondary-green))',      // #5c7c5c - Olive green
   'hsl(var(--secondary-bronze))',     // #8b7355 - Bronze
-  'hsl(var(--brand-gold))',           // #c69c6d - Gold
+  'hsl(var(--brand-primary))',           // #c69c6d - Gold
   'hsl(var(--secondary-champagne))',  // #d4b896 - Champagne
   'hsl(var(--secondary-grey))',       // #c8ccd0 - Grey
 ];

@@ -98,9 +98,9 @@ export function TableColumnHeader({
           title={`Sort by ${label}`}
         >
           {sortDirection === 'asc' ? (
-            <ArrowUp className="h-3 w-3 text-brand-gold" />
+            <ArrowUp className="h-3 w-3 text-brand-primary" />
           ) : sortDirection === 'desc' ? (
-            <ArrowDown className="h-3 w-3 text-brand-gold" />
+            <ArrowDown className="h-3 w-3 text-brand-primary" />
           ) : (
             <ArrowUpDown className="h-3 w-3 text-muted-foreground/60" />
           )}
@@ -114,11 +114,11 @@ export function TableColumnHeader({
             onClick={() => setIsFilterOpen(!isFilterOpen)}
             className={cn(
               "p-0.5 rounded hover:bg-muted/50 transition-colors",
-              hasActiveFilters && "text-brand-gold"
+              hasActiveFilters && "text-brand-primary"
             )}
             title={`Filter by ${label}`}
           >
-            <Filter className={cn("h-3 w-3", hasActiveFilters ? "text-brand-gold" : "text-muted-foreground/60")} />
+            <Filter className={cn("h-3 w-3", hasActiveFilters ? "text-brand-primary" : "text-muted-foreground/60")} />
           </button>
 
           {/* Filter Dropdown - positioned to stay within viewport */}
@@ -138,7 +138,7 @@ export function TableColumnHeader({
               <div className="flex items-center justify-between px-2 py-1.5 border-b border-border bg-muted/30">
                 <button
                   onClick={handleSelectAll}
-                  className="text-xs text-brand-gold hover:underline"
+                  className="text-xs text-brand-primary hover:underline"
                 >
                   Select All
                 </button>
@@ -185,7 +185,7 @@ export function TableColumnHeader({
                 <Button
                   size="sm"
                   onClick={handleApplyFilters}
-                  className="w-full h-7 text-xs bg-brand-gold hover:bg-brand-gold-hover text-white"
+                  className="w-full h-7 text-xs bg-brand-primary hover:bg-brand-primary-hover text-white"
                 >
                   <Check className="h-3 w-3 mr-1" />
                   Apply Filters
@@ -198,7 +198,7 @@ export function TableColumnHeader({
 
       {/* Active Filter Badge */}
       {hasActiveFilters && (
-        <span className="ml-0.5 px-1 py-0.5 text-[10px] bg-brand-gold/20 text-brand-gold rounded">
+        <span className="ml-0.5 px-1 py-0.5 text-[10px] bg-brand-primary/20 text-brand-primary rounded">
           {activeFilters.length}
         </span>
       )}

@@ -32,9 +32,9 @@ export function SimpleColumnHeader({
           title={`Sort by ${label}`}
         >
           {sortDirection === 'asc' ? (
-            <ArrowUp className="h-3 w-3 text-brand-gold" />
+            <ArrowUp className="h-3 w-3 text-brand-primary" />
           ) : sortDirection === 'desc' ? (
-            <ArrowDown className="h-3 w-3 text-brand-gold" />
+            <ArrowDown className="h-3 w-3 text-brand-primary" />
           ) : (
             <ArrowUpDown className="h-3 w-3 text-muted-foreground/60" />
           )}

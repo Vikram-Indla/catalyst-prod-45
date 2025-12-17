@@ -62,7 +62,7 @@ export function IncidentHeader({
               <X className="w-4 h-4 mr-1" />
               Cancel
             </Button>
-            <Button size="sm" onClick={onSave} className="h-8 bg-brand-gold hover:bg-brand-gold-hover text-white">
+            <Button size="sm" onClick={onSave} className="h-8 bg-brand-primary hover:bg-brand-primary-hover text-white">
               <Save className="w-4 h-4 mr-1" />
               Save
             </Button>
@@ -73,7 +73,7 @@ export function IncidentHeader({
       {/* Incident Title - Fixed height for alignment */}
       <div className="h-[72px] px-6 flex flex-col justify-center">
         <div className="flex items-center gap-3 mb-1">
-          <Badge className="bg-brand-gold/10 text-brand-gold border-0 font-semibold text-xs">
+          <Badge className="bg-brand-primary/10 text-brand-primary border-0 font-semibold text-xs">
             {incident.id}
           </Badge>
           <Badge className={cn(getSeverityColor(incident.severity || 'SEV3'), 'text-white border-0 font-semibold text-xs')}>
@@ -93,7 +93,7 @@ export function IncidentHeader({
           <Input
             value={editedSummary}
             onChange={(e) => onSummaryChange(e.target.value)}
-            className="text-lg font-semibold h-8 py-1 border-brand-gold focus:ring-brand-gold"
+            className="text-lg font-semibold h-8 py-1 border-brand-primary focus:ring-brand-primary"
             placeholder="Incident summary..."
           />
         ) : (

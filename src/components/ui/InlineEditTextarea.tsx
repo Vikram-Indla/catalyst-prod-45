@@ -81,9 +81,9 @@ export function InlineEditTextarea({
           onBlur={handleBlur}
           placeholder={placeholder}
           className={cn(
-            'w-full rounded-md border border-brand-gold bg-background px-3 py-2 text-sm text-foreground',
+            'w-full rounded-md border border-brand-primary bg-background px-3 py-2 text-sm text-foreground',
             'placeholder:text-muted-foreground resize-y',
-            'focus:outline-none focus:ring-2 focus:ring-brand-gold/20',
+            'focus:outline-none focus:ring-2 focus:ring-brand-primary/20',
             'disabled:cursor-not-allowed disabled:opacity-50',
             className
           )}
@@ -92,7 +92,7 @@ export function InlineEditTextarea({
         />
         {isSaving && (
           <div className="absolute top-2 right-2">
-            <Loader2 className="h-4 w-4 animate-spin text-brand-gold" />
+            <Loader2 className="h-4 w-4 animate-spin text-brand-primary" />
           </div>
         )}
         <p className="mt-1 text-xs text-muted-foreground">
@@ -110,7 +110,7 @@ export function InlineEditTextarea({
       onKeyDown={(e) => e.key === 'Enter' && setIsEditing(true)}
       className={cn(
         'group relative cursor-pointer rounded-md px-2 py-1 -mx-2 -my-1',
-        'transition-colors hover:bg-brand-gold/5',
+        'transition-colors hover:bg-brand-primary/5',
         className
       )}
       aria-label="Click to edit"
@@ -118,9 +118,9 @@ export function InlineEditTextarea({
       {value ? (
         <p className="text-sm text-foreground leading-relaxed">{value}</p>
       ) : (
-        <p className="text-sm font-medium text-brand-gold">{emptyText}</p>
+        <p className="text-sm font-medium text-brand-primary">{emptyText}</p>
       )}
-      <Pencil className="absolute top-1 right-1 h-3.5 w-3.5 text-brand-gold opacity-0 group-hover:opacity-100 transition-opacity" />
+      <Pencil className="absolute top-1 right-1 h-3.5 w-3.5 text-brand-primary opacity-0 group-hover:opacity-100 transition-opacity" />
     </div>
   );
 }

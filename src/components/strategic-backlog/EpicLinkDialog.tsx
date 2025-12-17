@@ -191,7 +191,7 @@ export function EpicLinkDialog({ open, onOpenChange, snapshotId, linkedEpicIds }
           <Button
             onClick={() => linkEpicsMutation.mutate()}
             disabled={selectedIds.length === 0 || linkEpicsMutation.isPending}
-            className="bg-brand-gold hover:bg-brand-gold/90"
+            className="bg-brand-primary hover:bg-brand-primary/90"
           >
             <Link2 className="h-4 w-4 mr-1" />
             Link {selectedIds.length} Epic{selectedIds.length !== 1 ? 's' : ''}

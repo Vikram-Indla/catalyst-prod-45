@@ -180,7 +180,7 @@ export function RoleDetails({
         <CardContent className="p-0">
           {usersLoading ? (
             <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-brand-gold" />
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-brand-primary" />
             </div>
           ) : !users || users.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-8">
@@ -224,7 +224,7 @@ export function RoleDetails({
                     <TableCell>
                       <button
                         className={cn(
-                          "text-xs text-brand-gold hover:underline",
+                          "text-xs text-brand-primary hover:underline",
                           !isAdmin && "opacity-50 cursor-not-allowed"
                         )}
                         onClick={() => isAdmin && onEditOverrides(userRole.user_id)}

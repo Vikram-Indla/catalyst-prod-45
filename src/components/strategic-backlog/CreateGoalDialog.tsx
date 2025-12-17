@@ -116,7 +116,7 @@ export function CreateGoalDialog({ open, onOpenChange, snapshotId }: CreateGoalD
           <Button
             onClick={handleSubmit}
             disabled={!title.trim() || createGoal.isPending}
-            className="bg-brand-gold hover:bg-brand-gold/90"
+            className="bg-brand-primary hover:bg-brand-primary/90"
           >
             {createGoal.isPending ? 'Creating...' : 'Create'}
           </Button>

@@ -23,10 +23,10 @@ export function GoalsTab({ snapshotId, isArchived }: GoalsTabProps) {
   return (
     <div className="space-y-6">
       {/* Migration Notice */}
-      <Card className="border-brand-gold/30 bg-brand-gold/5">
+      <Card className="border-brand-primary/30 bg-brand-primary/5">
         <CardHeader className="pb-3">
           <div className="flex items-center gap-2">
-            <Info className="h-5 w-5 text-brand-gold" />
+            <Info className="h-5 w-5 text-brand-primary" />
             <CardTitle className="text-base text-foreground">Strategic Objectives</CardTitle>
           </div>
         </CardHeader>
@@ -40,7 +40,7 @@ export function GoalsTab({ snapshotId, isArchived }: GoalsTabProps) {
           {!isLoading && okrMetrics && okrMetrics.count > 0 && (
             <div className="flex items-center gap-6 p-4 bg-background rounded-lg border">
               <div className="flex items-center gap-2">
-                <Target className="h-4 w-4 text-brand-gold" />
+                <Target className="h-4 w-4 text-brand-primary" />
                 <span className="text-sm font-medium">{okrMetrics.count} Objectives</span>
               </div>
               <div className="flex items-center gap-2">
@@ -62,7 +62,7 @@ export function GoalsTab({ snapshotId, isArchived }: GoalsTabProps) {
 
           <Button 
             onClick={handleOpenOKRHub}
-            className="bg-brand-gold hover:bg-brand-gold/90"
+            className="bg-brand-primary hover:bg-brand-primary/90"
           >
             <ExternalLink className="h-4 w-4 mr-2" />
             Open OKR Hub

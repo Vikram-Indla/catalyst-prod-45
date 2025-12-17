@@ -28,7 +28,7 @@ export default function UnauthorizedPage() {
             </p>
             <Button 
               onClick={() => navigate('/home')}
-              className="bg-brand-gold hover:bg-brand-gold/90 text-background"
+              className="bg-brand-primary hover:bg-brand-primary/90 text-background"
             >
               Go to Home
             </Button>

@@ -260,7 +260,7 @@ export function WSJFScoringModal({
             >
               {tab.label}
               {activeTab === tab.id && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-gold" />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-primary" />
               )}
             </button>
           ))}
@@ -270,7 +270,7 @@ export function WSJFScoringModal({
         <div className="flex-1 overflow-y-auto p-6">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
-              <div className="animate-spin h-8 w-8 border-2 border-brand-gold border-t-transparent rounded-full" />
+              <div className="animate-spin h-8 w-8 border-2 border-brand-primary border-t-transparent rounded-full" />
             </div>
           ) : activeTab !== 'calculations' ? (
             <>
@@ -282,12 +282,12 @@ export function WSJFScoringModal({
                   </div>
                   <span className="text-sm font-medium text-foreground">{workItemKey || workItemId.slice(0, 8)}</span>
                   <span className="text-sm text-foreground">{workItemTitle}</span>
-                  <ExternalLink className="w-3.5 h-3.5 text-muted-foreground cursor-pointer hover:text-brand-gold" />
+                  <ExternalLink className="w-3.5 h-3.5 text-muted-foreground cursor-pointer hover:text-brand-primary" />
                 </div>
                 <select
                   value={currentField ? localValues[currentField as keyof typeof localValues] : ''}
                   onChange={(e) => currentField && handleValueChange(currentField, parseInt(e.target.value) || 0)}
-                  className="px-4 py-2 text-sm bg-background border-2 border-border rounded-md focus:outline-none focus:border-brand-gold min-w-[100px] font-medium"
+                  className="px-4 py-2 text-sm bg-background border-2 border-border rounded-md focus:outline-none focus:border-brand-primary min-w-[100px] font-medium"
                 >
                   {FIBONACCI_VALUES.map((val) => (
                     <option key={val} value={val}>{val}</option>
@@ -326,7 +326,7 @@ export function WSJFScoringModal({
                   </div>
                   <span className="text-sm font-medium text-foreground">{workItemKey || workItemId.slice(0, 8)}</span>
                   <span className="text-sm text-foreground">{workItemTitle}</span>
-                  <ExternalLink className="w-3.5 h-3.5 text-muted-foreground cursor-pointer hover:text-brand-gold" />
+                  <ExternalLink className="w-3.5 h-3.5 text-muted-foreground cursor-pointer hover:text-brand-primary" />
                 </div>
                 <div className="text-sm text-muted-foreground">
                   (BV is {localValues.business_value} + TV is {localValues.time_value} + RR/OE is {localValues.rroe_value}) / Job Size is {localValues.job_size}) = <span className="font-bold text-foreground">{calculatedScore.toFixed(2)} WSJF</span>
@@ -357,9 +357,9 @@ export function WSJFScoringModal({
                     <span className="text-sm">Job Size</span>
                     <span className="font-medium">{localValues.job_size}</span>
                   </div>
-                  <div className="flex justify-between items-center py-3 bg-brand-gold/10 px-3 -mx-3 rounded-lg mt-4">
+                  <div className="flex justify-between items-center py-3 bg-brand-primary/10 px-3 -mx-3 rounded-lg mt-4">
                     <span className="text-base font-bold">WSJF Score</span>
-                    <span className="text-2xl font-bold text-brand-gold">{calculatedScore.toFixed(2)}</span>
+                    <span className="text-2xl font-bold text-brand-primary">{calculatedScore.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
@@ -390,7 +390,7 @@ export function WSJFScoringModal({
                   <button
                     onClick={() => applyRankingMutation.mutate()}
                     disabled={applyRankingMutation.isPending}
-                    className="px-4 py-2 bg-brand-gold text-brand-dark font-medium rounded-md hover:bg-brand-gold-hover disabled:opacity-50 transition-colors"
+                    className="px-4 py-2 bg-brand-primary text-brand-dark font-medium rounded-md hover:bg-brand-primary-hover disabled:opacity-50 transition-colors"
                   >
                     {applyRankingMutation.isPending ? 'Applying...' : 'Apply rank to Global Ranking'}
                   </button>
@@ -412,7 +412,7 @@ export function WSJFScoringModal({
             <button
               onClick={() => saveMutation.mutate()}
               disabled={saveMutation.isPending}
-              className="px-4 py-2 bg-brand-gold text-brand-dark text-sm font-medium rounded-md hover:bg-brand-gold-hover disabled:opacity-50 transition-colors"
+              className="px-4 py-2 bg-brand-primary text-brand-dark text-sm font-medium rounded-md hover:bg-brand-primary-hover disabled:opacity-50 transition-colors"
             >
               {saveMutation.isPending ? 'Saving...' : 'Save'}
             </button>

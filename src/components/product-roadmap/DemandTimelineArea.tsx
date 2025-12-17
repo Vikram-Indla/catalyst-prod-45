@@ -96,7 +96,7 @@ export const DemandTimelineArea = forwardRef<HTMLDivElement, DemandTimelineAreaP
                 key={i} 
                 className={cn(
                   "flex-1 min-w-[80px] px-2 text-[11px] font-medium text-center",
-                  unit.isCurrent ? "text-brand-gold font-semibold" : "text-muted-foreground"
+                  unit.isCurrent ? "text-brand-primary font-semibold" : "text-muted-foreground"
                 )}
               >
                 {unit.label}

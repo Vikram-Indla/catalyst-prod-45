@@ -29,7 +29,7 @@ export const RELATIONSHIP_TYPES: RelationshipType[] = [
 // NOTE: Using gold instead of blue per Catalyst theme requirements
 export const ROAM_BADGE_COLORS: Record<RoamStatus, { bg: string; text: string }> = {
   Resolved: { bg: 'bg-neutral-200', text: 'text-neutral-700' },        // Gray (default)
-  Owned: { bg: 'bg-brand-gold-pale', text: 'text-brand-gold-hover' },  // Gold (Catalyst theme)
+  Owned: { bg: 'bg-brand-primary-pale', text: 'text-brand-primary-hover' },  // Gold (Catalyst theme)
   Accepted: { bg: 'bg-success/10', text: 'text-success-600' },         // Green (success)
   Mitigated: { bg: 'bg-warning/10', text: 'text-warning-600' }         // Yellow (warning)
 };

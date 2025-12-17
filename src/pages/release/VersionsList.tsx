@@ -197,7 +197,7 @@ function ReleaseRow({ release }: { release: Release }) {
         <div className="flex items-center gap-2">
           <Link
             to={`/release/versions/${release.id}`}
-            className="text-sm font-semibold text-foreground hover:text-brand-gold transition-colors truncate"
+            className="text-sm font-semibold text-foreground hover:text-brand-primary transition-colors truncate"
           >
             {release.name}
           </Link>
@@ -238,7 +238,7 @@ function ReleaseRow({ release }: { release: Release }) {
           <Button
             variant="outline"
             size="sm"
-            className="h-7 text-xs border-border text-muted-foreground hover:bg-brand-gold/10"
+            className="h-7 text-xs border-border text-muted-foreground hover:bg-brand-primary/10"
           >
             {release.status === 'released' ? 'View' : 'Edit'}
           </Button>
@@ -246,7 +246,7 @@ function ReleaseRow({ release }: { release: Release }) {
         {release.status !== 'released' && (
           <Button
             size="sm"
-            className="h-7 text-xs bg-brand-gold hover:bg-brand-gold-hover text-white"
+            className="h-7 text-xs bg-brand-primary hover:bg-brand-primary-hover text-white"
           >
             Release
           </Button>

@@ -119,7 +119,7 @@ export default function EpicResponsibilityMatrix() {
             </p>
           </div>
         </div>
-        <Button onClick={handleSave} className="bg-brand-gold hover:bg-brand-gold-hover text-brand-dark">
+        <Button onClick={handleSave} className="bg-brand-primary hover:bg-brand-primary-hover text-brand-dark">
           <Save className="h-4 w-4 mr-2" />
           Save Matrix
         </Button>

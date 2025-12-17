@@ -325,7 +325,7 @@ export default function DevelopmentInventory() {
                     <Input
                       value={item.name}
                       onChange={(e) => handleInlineUpdate(item.id, 'name', e.target.value)}
-                      className="h-8 border-transparent hover:border-border focus:border-brand-gold"
+                      className="h-8 border-transparent hover:border-border focus:border-brand-primary"
                     />
                   </TableCell>
 

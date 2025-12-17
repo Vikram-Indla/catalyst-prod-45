@@ -187,14 +187,14 @@ function SleekGadget({ title, subtitle, icon: Icon, collapsedContent, expandedCo
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className="bg-brand-dark rounded-xl sm:rounded-2xl overflow-hidden shadow-lg border border-brand-gold/20">
+    <div className="bg-brand-dark rounded-xl sm:rounded-2xl overflow-hidden shadow-lg border border-brand-primary/20">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full px-3 sm:px-5 py-3 sm:py-4 flex items-center justify-between hover:bg-white/5 transition-colors"
       >
         <div className="flex items-center gap-2 sm:gap-4">
-          <div className="p-1.5 sm:p-2 rounded-lg bg-brand-gold/20">
-            <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-brand-gold" />
+          <div className="p-1.5 sm:p-2 rounded-lg bg-brand-primary/20">
+            <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-brand-primary" />
           </div>
           <div className="text-start">
             <h3 className="text-xs sm:text-sm font-semibold text-white">{title}</h3>
@@ -336,15 +336,15 @@ export default function DemandSummaryPage() {
         <div className="h-full px-4 sm:px-6 flex items-center">
           <div className="max-w-[1400px] mx-auto flex justify-between items-center flex-wrap gap-3 sm:gap-4 w-full">
             <div className="min-w-0">
-              <p className="text-xs text-brand-gold font-medium truncate">{isArabic ? 'Good Morning' : 'صباح الخير'}</p>
-              <h1 className="text-xl sm:text-2xl font-semibold text-foreground truncate">{t.greeting}, <span className="text-brand-gold">{userName}</span></h1>
+              <p className="text-xs text-brand-primary font-medium truncate">{isArabic ? 'Good Morning' : 'صباح الخير'}</p>
+              <h1 className="text-xl sm:text-2xl font-semibold text-foreground truncate">{t.greeting}, <span className="text-brand-primary">{userName}</span></h1>
             </div>
           <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
             <button 
               onClick={() => setIsArabic(!isArabic)}
-              className="flex items-center gap-1.5 px-3 sm:px-3.5 py-2 bg-muted border-2 border-brand-gold rounded-lg text-xs font-medium text-foreground hover:bg-brand-gold/10 transition-colors"
+              className="flex items-center gap-1.5 px-3 sm:px-3.5 py-2 bg-muted border-2 border-brand-primary rounded-lg text-xs font-medium text-foreground hover:bg-brand-primary/10 transition-colors"
             >
-              <Globe className="w-4 h-4 text-brand-gold" />
+              <Globe className="w-4 h-4 text-brand-primary" />
               <span>{isArabic ? 'EN | عربي' : 'عربي | EN'}</span>
             </button>
             <div className="flex bg-muted rounded-lg p-0.5">
@@ -377,8 +377,8 @@ export default function DemandSummaryPage() {
                 {demandCards.map((card, i) => (
                   <div key={i} className="bg-white/5 rounded-lg p-3 sm:p-4 border border-white/10">
                     <div className="flex justify-between items-start mb-2">
-                      <span className="text-[10px] font-semibold text-brand-gold uppercase tracking-wider">{card.label}</span>
-                      <span className="text-brand-gold text-xs cursor-pointer hover:text-brand-gold-hover">{isArabic ? '←' : '→'}</span>
+                      <span className="text-[10px] font-semibold text-brand-primary uppercase tracking-wider">{card.label}</span>
+                      <span className="text-brand-primary text-xs cursor-pointer hover:text-brand-primary-hover">{isArabic ? '←' : '→'}</span>
                     </div>
                     <div className="text-white mb-1">
                       <span className={cn('font-mono text-lg sm:text-xl font-bold', card.metricStyle === 'up' && 'text-success', card.metricStyle === 'down' && 'text-destructive')}>{card.metric}</span>
@@ -402,7 +402,7 @@ export default function DemandSummaryPage() {
                       s.color === 'bg-gray-400' ? 'border-l-gray-400' : 
                       s.color === 'bg-violet-500' ? 'border-l-violet-500' : 
                       s.color === 'bg-rose-400' ? 'border-l-rose-400' : 
-                      s.color === 'bg-brand-gold' ? 'border-l-brand-gold' : 
+                      s.color === 'bg-brand-primary' ? 'border-l-brand-primary' : 
                       s.color === 'bg-success' ? 'border-l-success' : 'border-l-destructive'
                     )}>
                       <div className="text-lg font-bold text-white">{s.count}</div>
@@ -535,7 +535,7 @@ export default function DemandSummaryPage() {
           collapsedContent={
             <div className="flex items-center gap-2">
               <span className="px-2 py-0.5 bg-success/20 text-success text-[10px] font-medium rounded">{isArabic ? '3 منفذ' : '3 implemented'}</span>
-              <span className="px-2 py-0.5 bg-brand-gold/20 text-brand-gold text-[10px] font-medium rounded">{isArabic ? '2 معتمد' : '2 approved'}</span>
+              <span className="px-2 py-0.5 bg-brand-primary/20 text-brand-primary text-[10px] font-medium rounded">{isArabic ? '2 معتمد' : '2 approved'}</span>
             </div>
           }
           expandedContent={
@@ -555,9 +555,9 @@ export default function DemandSummaryPage() {
                   {deliveryData.map((d, i) => (
                     <tr key={i} className="border-b border-white/5 hover:bg-white/5">
                       <td className="py-2 px-1.5 sm:px-2">
-                        <span className={cn('px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-medium', (d.type === 'implemented' || d.type === 'منفذ') ? 'bg-success/20 text-success' : 'bg-brand-gold/20 text-brand-gold')}>{d.type}</span>
+                        <span className={cn('px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-medium', (d.type === 'implemented' || d.type === 'منفذ') ? 'bg-success/20 text-success' : 'bg-brand-primary/20 text-brand-primary')}>{d.type}</span>
                       </td>
-                      <td className="py-2 px-1.5 sm:px-2 font-mono text-[10px] text-brand-gold">{d.id}</td>
+                      <td className="py-2 px-1.5 sm:px-2 font-mono text-[10px] text-brand-primary">{d.id}</td>
                       <td className="py-2 px-1.5 sm:px-2 text-white text-xs">{d.title}</td>
                       <td className="hidden sm:table-cell py-2 px-2 text-white/60 text-xs">{d.requester}</td>
                       <td className="py-2 px-1.5 sm:px-2 font-mono text-white text-xs">{d.value}</td>
@@ -596,7 +596,7 @@ export default function DemandSummaryPage() {
                 <tbody>
                   {rejectionData.map((r, i) => (
                     <tr key={i} className="border-b border-white/5 hover:bg-white/5">
-                      <td className="py-2 px-1.5 sm:px-2 font-mono text-[10px] text-brand-gold">{r.id}</td>
+                      <td className="py-2 px-1.5 sm:px-2 font-mono text-[10px] text-brand-primary">{r.id}</td>
                       <td className="py-2 px-1.5 sm:px-2 text-white text-xs">{r.title}</td>
                       <td className="hidden sm:table-cell py-2 px-2 text-white/60 text-xs">{r.requester}</td>
                       <td className="py-2 px-1.5 sm:px-2"><span className="px-1.5 sm:px-2 py-0.5 bg-destructive/20 text-destructive rounded text-[9px] sm:text-[10px] font-medium">{r.reason}</span></td>
@@ -623,7 +623,7 @@ export default function DemandSummaryPage() {
                 <div key={r.id} className="border border-white/10 rounded-lg overflow-hidden">
                   <button onClick={() => setExpandedRecovery(expandedRecovery === r.id ? null : r.id)} className="w-full flex flex-wrap items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 hover:bg-white/5 text-start">
                     <span className="px-1.5 py-0.5 bg-destructive/20 text-destructive text-[10px] font-bold rounded">#{r.rank}</span>
-                    <span className="font-mono text-[10px] text-brand-gold">{r.id}</span>
+                    <span className="font-mono text-[10px] text-brand-primary">{r.id}</span>
                     <span className="font-medium text-white flex-1 text-xs">{r.title}</span>
                     <ChevronDown className={cn('w-4 h-4 text-white/50 transition-transform', expandedRecovery === r.id && 'rotate-180')} />
                   </button>
@@ -633,8 +633,8 @@ export default function DemandSummaryPage() {
                         <div className="text-[10px] font-semibold text-white/50 uppercase mb-1">{isArabic ? 'سبب المخاطرة' : 'Risk Reason'}</div>
                         <p className="text-xs text-white/70">{r.riskReason}</p>
                       </div>
-                      <div className="bg-brand-gold/10 rounded-lg p-2.5 sm:p-3 border-s-4 border-brand-gold">
-                        <div className="text-[10px] font-semibold text-brand-gold uppercase mb-1">{isArabic ? 'الإجراء الموصى به' : 'Recommended Action'}</div>
+                      <div className="bg-brand-primary/10 rounded-lg p-2.5 sm:p-3 border-s-4 border-brand-primary">
+                        <div className="text-[10px] font-semibold text-brand-primary uppercase mb-1">{isArabic ? 'الإجراء الموصى به' : 'Recommended Action'}</div>
                         <p className="text-xs text-white">{r.action}</p>
                       </div>
                     </div>
@@ -658,8 +658,8 @@ export default function DemandSummaryPage() {
               {trendingTickets.map((ticket) => (
                 <div key={ticket.id} className="border border-white/10 rounded-lg overflow-hidden">
                   <button onClick={() => setExpandedTrending(expandedTrending === ticket.id ? null : ticket.id)} className="w-full flex flex-wrap items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 hover:bg-white/5 text-start">
-                    <span className="px-1.5 py-0.5 bg-brand-gold/20 text-brand-gold text-[10px] font-bold rounded">#{ticket.rank}</span>
-                    <span className="font-mono text-[10px] text-brand-gold">{ticket.id}</span>
+                    <span className="px-1.5 py-0.5 bg-brand-primary/20 text-brand-primary text-[10px] font-bold rounded">#{ticket.rank}</span>
+                    <span className="font-mono text-[10px] text-brand-primary">{ticket.id}</span>
                     <span className="font-medium text-white flex-1 text-xs">{ticket.title}</span>
                     <ChevronDown className={cn('w-4 h-4 text-white/50 transition-transform', expandedTrending === ticket.id && 'rotate-180')} />
                   </button>
@@ -690,7 +690,7 @@ export default function DemandSummaryPage() {
               {attentionTickets.map((ticket) => (
                 <div key={ticket.id} className="flex flex-wrap items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 bg-destructive/10 rounded-lg border border-destructive/20">
                   <span className="px-1.5 py-0.5 bg-white/10 text-destructive text-[10px] font-bold rounded">#{ticket.rank}</span>
-                  <span className="font-mono text-[10px] text-brand-gold">{ticket.id}</span>
+                  <span className="font-mono text-[10px] text-brand-primary">{ticket.id}</span>
                   <span className="font-medium text-white flex-1 text-xs">{ticket.title}</span>
                   <span className="text-[10px] text-white/60">{ticket.dept}</span>
                   <span className="text-[10px] font-bold text-destructive">{ticket.ageing} {isArabic ? 'يوم' : 'days'}</span>
@@ -713,7 +713,7 @@ export default function DemandSummaryPage() {
               {approvedTickets.map((ticket) => (
                 <div key={ticket.id} className="flex flex-wrap items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 bg-success/10 rounded-lg border border-success/20">
                   <span className="px-1.5 py-0.5 bg-white/10 text-success text-[10px] font-bold rounded">#{ticket.rank}</span>
-                  <span className="font-mono text-[10px] text-brand-gold">{ticket.id}</span>
+                  <span className="font-mono text-[10px] text-brand-primary">{ticket.id}</span>
                   <span className="font-medium text-white flex-1 text-xs">{ticket.title}</span>
                   <span className="text-[10px] text-white/60">{ticket.dept}</span>
                   <span className="text-[10px] font-bold text-success">{ticket.ageing} {isArabic ? 'يوم' : 'days'}</span>
@@ -749,7 +749,7 @@ export default function DemandSummaryPage() {
                   const height = (b.value / maxVal) * 100;
                   return (
                     <div key={i} className="flex-1 flex flex-col items-center">
-                      <div className="w-full bg-brand-gold rounded-t" style={{ height: `${height}%` }} />
+                      <div className="w-full bg-brand-primary rounded-t" style={{ height: `${height}%` }} />
                       <div className="text-[9px] sm:text-[10px] text-white/50 mt-1">{isArabic ? `أ${i + 1}` : b.week}</div>
                       <div className="text-[10px] font-medium text-white">{b.value}</div>
                     </div>
@@ -765,7 +765,7 @@ export default function DemandSummaryPage() {
       <button 
         onClick={() => setChatOpen(true)} 
         className={cn(
-          "fixed bottom-4 sm:bottom-6 bg-brand-gold text-brand-dark px-4 sm:px-5 py-2.5 sm:py-3 rounded-full font-semibold flex items-center gap-2 shadow-lg hover:bg-brand-gold-hover hover:scale-105 transition-all z-50",
+          "fixed bottom-4 sm:bottom-6 bg-brand-primary text-brand-dark px-4 sm:px-5 py-2.5 sm:py-3 rounded-full font-semibold flex items-center gap-2 shadow-lg hover:bg-brand-primary-hover hover:scale-105 transition-all z-50",
           isArabic ? "left-4 sm:left-6" : "right-4 sm:right-6"
         )}
       >
@@ -777,11 +777,11 @@ export default function DemandSummaryPage() {
       {chatOpen && (
         <div className={cn(
           "fixed inset-y-0 w-full sm:w-[400px] bg-brand-dark shadow-2xl z-50 flex flex-col",
-          isArabic ? "left-0 border-e border-brand-gold/20" : "right-0 border-s border-brand-gold/20"
+          isArabic ? "left-0 border-e border-brand-primary/20" : "right-0 border-s border-brand-primary/20"
         )}>
           <div className="flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4 border-b border-white/10">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-brand-gold" />
+              <Sparkles className="w-5 h-5 text-brand-primary" />
               <span className="font-semibold text-white text-sm sm:text-base">{t.aiAssistant}</span>
             </div>
             <button onClick={() => setChatOpen(false)} className="p-1.5 hover:bg-white/10 rounded">
@@ -800,7 +800,7 @@ export default function DemandSummaryPage() {
                 ? ['لماذا تغير مؤشر الأداء هذا الأسبوع؟', 'ما هي التذاكر الأكثر عرضة للخطر؟', 'على ماذا يجب أن أركز اليوم؟', 'اشرح نمو الأعمال المتراكمة']
                 : ['Why did CPI change this week?', 'Which tickets are most at risk?', 'What should I focus on today?', 'Explain the backlog growth']
               ).map((q, i) => (
-                <button key={i} className="w-full text-start px-3 py-2 bg-white/5 rounded-lg text-sm text-white/70 hover:bg-brand-gold/10 hover:text-white transition-colors border border-white/10">
+                <button key={i} className="w-full text-start px-3 py-2 bg-white/5 rounded-lg text-sm text-white/70 hover:bg-brand-primary/10 hover:text-white transition-colors border border-white/10">
                   {q}
                 </button>
               ))}
@@ -813,9 +813,9 @@ export default function DemandSummaryPage() {
                 value={chatMessage}
                 onChange={(e) => setChatMessage(e.target.value)}
                 placeholder={t.askQuestion}
-                className="flex-1 px-3 sm:px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder-white/40 focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold"
+                className="flex-1 px-3 sm:px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder-white/40 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary"
               />
-              <button className="px-3 sm:px-4 py-2 bg-brand-gold text-brand-dark rounded-lg hover:bg-brand-gold-hover transition-colors">
+              <button className="px-3 sm:px-4 py-2 bg-brand-primary text-brand-dark rounded-lg hover:bg-brand-primary-hover transition-colors">
                 <Send className="w-4 h-4" />
               </button>
             </div>

@@ -221,7 +221,7 @@ export function ProjectMappingDialog({ open, onOpenChange, connectionId }: Proje
                     variant={mapping.sync_enabled ? "default" : "outline"}
                     size="sm"
                     onClick={() => updateMapping(index, "sync_enabled", !mapping.sync_enabled)}
-                    className={mapping.sync_enabled ? "bg-brand-gold hover:bg-brand-gold-hover" : ""}
+                    className={mapping.sync_enabled ? "bg-brand-primary hover:bg-brand-primary-hover" : ""}
                   >
                     {mapping.sync_enabled ? "Enabled" : "Disabled"}
                   </Button>
@@ -248,7 +248,7 @@ export function ProjectMappingDialog({ open, onOpenChange, connectionId }: Proje
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={loading} className="bg-brand-gold hover:bg-brand-gold-hover">
+          <Button onClick={handleSave} disabled={loading} className="bg-brand-primary hover:bg-brand-primary-hover">
             {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
             Save Mappings
           </Button>

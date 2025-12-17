@@ -110,7 +110,7 @@ const DrillDownDialog = ({ isOpen, onClose, title, items }: DrillDownDialogProps
   const getTypeIcon = (type: DrillDownItem['type']) => {
     switch (type) {
       case 'objective': return <Target className="h-4 w-4 text-secondary-green" />;
-      case 'keyResult': return <BarChart3 className="h-4 w-4 text-brand-gold" />;
+      case 'keyResult': return <BarChart3 className="h-4 w-4 text-brand-primary" />;
       case 'workItem': return <div className="w-4 h-4 rounded bg-secondary-bronze/20 flex items-center justify-center text-[10px] font-bold text-secondary-bronze">W</div>;
       default: return null;
     }
@@ -120,7 +120,7 @@ const DrillDownDialog = ({ isOpen, onClose, title, items }: DrillDownDialogProps
     switch (status) {
       case 'completed': return 'bg-secondary-green';
       case 'on-track': return 'bg-secondary-green';
-      case 'in-progress': return 'bg-brand-gold';
+      case 'in-progress': return 'bg-brand-primary';
       case 'at-risk': return 'bg-[#b8860b]';
       case 'off-track': return 'bg-[#b85c38]';
       case 'blocked': return 'bg-[#b85c38]';
@@ -303,7 +303,7 @@ const StrategyPerformanceOverview = ({ metrics }: { metrics: PerformanceMetrics 
         <KPICard title="KR Progress Distribution">
           <div className="flex h-6 rounded-md overflow-hidden mb-3">
             <div className="bg-[#d4874d]" style={{ width: `${metrics.krDistribution.low}%` }} />
-            <div className="bg-brand-gold" style={{ width: `${metrics.krDistribution.mid}%` }} />
+            <div className="bg-brand-primary" style={{ width: `${metrics.krDistribution.mid}%` }} />
             <div className="bg-secondary-green" style={{ width: `${metrics.krDistribution.high}%` }} />
           </div>
           <div className="flex justify-between text-[11px]">
@@ -312,7 +312,7 @@ const StrategyPerformanceOverview = ({ metrics }: { metrics: PerformanceMetrics 
               <span className="text-muted-foreground">&lt;30% ({metrics.krDistribution.low}%)</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-sm bg-brand-gold" />
+              <span className="w-2 h-2 rounded-sm bg-brand-primary" />
               <span className="text-muted-foreground">30–70% ({metrics.krDistribution.mid}%)</span>
             </div>
             <div className="flex items-center gap-1.5">
@@ -401,7 +401,7 @@ const ThemeLevelSnapshot = ({ themes }: { themes: ThemeAnalyticsRow[] }) => {
                 <div 
                   className={cn(
                     "h-full rounded-full",
-                    theme.progress >= 70 ? "bg-secondary-green" : theme.progress >= 40 ? "bg-brand-gold" : "bg-[#d4874d]"
+                    theme.progress >= 70 ? "bg-secondary-green" : theme.progress >= 40 ? "bg-brand-primary" : "bg-[#d4874d]"
                   )}
                   style={{ width: `${theme.progress}%` }}
                 />

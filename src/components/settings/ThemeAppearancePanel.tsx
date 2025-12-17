@@ -42,7 +42,7 @@ export function ThemeAppearancePanel({ settings, onSave }: ThemeAppearancePanelP
             ].map((option) => {
               const Icon = option.icon;
               return (
-                <Label key={option.value} htmlFor={`theme-${option.value}`} className={cn('flex flex-col items-center gap-2 p-4 border rounded-lg cursor-pointer transition-colors', localSettings.themeMode === option.value && 'border-brand-gold bg-brand-gold/10')}>
+                <Label key={option.value} htmlFor={`theme-${option.value}`} className={cn('flex flex-col items-center gap-2 p-4 border rounded-lg cursor-pointer transition-colors', localSettings.themeMode === option.value && 'border-brand-primary bg-brand-primary/10')}>
                   <RadioGroupItem value={option.value} id={`theme-${option.value}`} className="sr-only" />
                   <Icon className="h-6 w-6" />
                   <span className="text-sm font-medium">{option.label}</span>
@@ -78,7 +78,7 @@ export function ThemeAppearancePanel({ settings, onSave }: ThemeAppearancePanelP
               { value: 'large', label: 'Large', size: '16px' },
               { value: 'extra_large', label: 'Extra Large', size: '18px' },
             ].map((option) => (
-              <Label key={option.value} htmlFor={`font-${option.value}`} className={cn('flex flex-col items-center gap-1 p-3 border rounded-lg cursor-pointer', localSettings.fontSize === option.value && 'border-brand-gold bg-brand-gold/10')}>
+              <Label key={option.value} htmlFor={`font-${option.value}`} className={cn('flex flex-col items-center gap-1 p-3 border rounded-lg cursor-pointer', localSettings.fontSize === option.value && 'border-brand-primary bg-brand-primary/10')}>
                 <RadioGroupItem value={option.value} id={`font-${option.value}`} className="sr-only" />
                 <span style={{ fontSize: option.size }}>{option.label}</span>
                 <span className="text-xs text-muted-foreground">{option.size}</span>
@@ -94,7 +94,7 @@ export function ThemeAppearancePanel({ settings, onSave }: ThemeAppearancePanelP
         <CardContent>
           <RadioGroup value={localSettings.density} onValueChange={(v) => updateSettings('density', v as ThemePreferences['density'])} className="grid grid-cols-3 gap-3">
             {['compact', 'comfortable', 'spacious'].map((option) => (
-              <Label key={option} htmlFor={`density-${option}`} className={cn('text-center p-3 border rounded-lg cursor-pointer capitalize', localSettings.density === option && 'border-brand-gold bg-brand-gold/10')}>
+              <Label key={option} htmlFor={`density-${option}`} className={cn('text-center p-3 border rounded-lg cursor-pointer capitalize', localSettings.density === option && 'border-brand-primary bg-brand-primary/10')}>
                 <RadioGroupItem value={option} id={`density-${option}`} className="sr-only" />
                 {option}
               </Label>
@@ -120,7 +120,7 @@ export function ThemeAppearancePanel({ settings, onSave }: ThemeAppearancePanelP
 
       <div className="flex justify-end gap-3 pt-4 border-t">
         <Button variant="outline" onClick={handleReset}>Reset to Defaults</Button>
-        <Button onClick={handleSave} className="bg-brand-gold hover:bg-brand-gold-hover text-white">Apply Theme</Button>
+        <Button onClick={handleSave} className="bg-brand-primary hover:bg-brand-primary-hover text-white">Apply Theme</Button>
       </div>
     </div>
   );

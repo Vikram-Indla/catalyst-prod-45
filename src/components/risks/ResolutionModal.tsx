@@ -110,7 +110,7 @@ export function ResolutionModal({
           <Button
             onClick={handleConfirm}
             disabled={requiresReason && !reason.trim()}
-            className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+            className="bg-brand-primary hover:bg-brand-primary-hover text-white"
           >
             Confirm Change
           </Button>

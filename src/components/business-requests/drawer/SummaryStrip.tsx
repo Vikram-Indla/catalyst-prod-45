@@ -38,7 +38,7 @@ export function SummaryStrip({ metrics, className }: SummaryStripProps) {
           key={index}
           className={cn(
             "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors",
-            metric.highlight && "ring-1 ring-brand-gold/30"
+            metric.highlight && "ring-1 ring-brand-primary/30"
           )}
           style={{ 
             background: 'var(--surface-2)', 
@@ -65,7 +65,7 @@ export function SummaryStrip({ metrics, className }: SummaryStripProps) {
               <span 
                 className={cn(
                   "text-sm font-semibold",
-                  metric.highlight && "text-brand-gold"
+                  metric.highlight && "text-brand-primary"
                 )}
                 style={{ color: metric.highlight ? undefined : 'var(--text-1)' }}
               >

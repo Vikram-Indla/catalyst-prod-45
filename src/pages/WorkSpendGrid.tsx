@@ -211,7 +211,7 @@ export default function WorkSpendGrid() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-brand-gold">
+                  <div className="text-2xl font-bold text-brand-primary">
                     ${totalForecastedSpend.toLocaleString()}
                   </div>
                 </CardContent>
@@ -224,7 +224,7 @@ export default function WorkSpendGrid() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-brand-gold">
+                  <div className="text-2xl font-bold text-brand-primary">
                     ${totalEstimatedSpend.toLocaleString()}
                   </div>
                 </CardContent>
@@ -237,7 +237,7 @@ export default function WorkSpendGrid() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-brand-gold">
+                  <div className="text-2xl font-bold text-brand-primary">
                     ${totalAcceptedSpend.toLocaleString()}
                   </div>
                 </CardContent>

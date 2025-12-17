@@ -132,7 +132,7 @@ export function ManageQuartersPanel({ snapshot, onBack, isAdmin = false }: Manag
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center gap-3 pb-4 border-b border-brand-gold">
+      <div className="flex items-center gap-3 pb-4 border-b border-brand-primary">
         <Button
           variant="ghost"
           size="icon"
@@ -182,9 +182,9 @@ export function ManageQuartersPanel({ snapshot, onBack, isAdmin = false }: Manag
             </div>
           )}
           {assignedQuarters.length === 0 && !isArchived && (
-            <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-lg bg-brand-gold/10">
-              <AlertTriangle className="w-3.5 h-3.5 text-brand-gold flex-shrink-0" />
-              <span className="text-[13px] text-brand-gold">At least 1 quarter is recommended for activation.</span>
+            <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-lg bg-brand-primary/10">
+              <AlertTriangle className="w-3.5 h-3.5 text-brand-primary flex-shrink-0" />
+              <span className="text-[13px] text-brand-primary">At least 1 quarter is recommended for activation.</span>
             </div>
           )}
         </div>
@@ -224,7 +224,7 @@ export function ManageQuartersPanel({ snapshot, onBack, isAdmin = false }: Manag
                                   ? 'opacity-50 cursor-not-allowed' 
                                   : 'cursor-pointer',
                                 selectedToAdd.includes(quarter)
-                                  ? 'bg-brand-gold/10 border border-brand-gold/30'
+                                  ? 'bg-brand-primary/10 border border-brand-primary/30'
                                   : !isDisabled && 'hover:bg-muted/50 border border-transparent'
                               )}
                             >

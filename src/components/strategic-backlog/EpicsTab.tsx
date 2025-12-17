@@ -271,7 +271,7 @@ export function EpicsTab({ snapshotId, links, themes, isArchived }: EpicsTabProp
                 Link Existing
               </Button>
               <Button 
-                className="bg-brand-gold hover:bg-brand-gold/90" 
+                className="bg-brand-primary hover:bg-brand-primary/90" 
                 size="sm"
                 onClick={() => setCreateDrawerOpen(true)}
               >
@@ -363,7 +363,7 @@ export function EpicsTab({ snapshotId, links, themes, isArchived }: EpicsTabProp
                         <div className="flex items-center gap-1.5">
                           <div
                             className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                            style={{ backgroundColor: theme.color_tag || 'hsl(var(--brand-gold))' }}
+                            style={{ backgroundColor: theme.color_tag || 'hsl(var(--brand-primary))' }}
                           />
                           <span className="text-xs truncate max-w-[80px]">{theme.name}</span>
                         </div>
@@ -401,7 +401,7 @@ export function EpicsTab({ snapshotId, links, themes, isArchived }: EpicsTabProp
                                 >
                                   <div
                                     className="w-3 h-3 rounded-full mr-2"
-                                    style={{ backgroundColor: t.color_tag || 'hsl(var(--brand-gold))' }}
+                                    style={{ backgroundColor: t.color_tag || 'hsl(var(--brand-primary))' }}
                                   />
                                   Link to {t.name}
                                 </DropdownMenuItem>

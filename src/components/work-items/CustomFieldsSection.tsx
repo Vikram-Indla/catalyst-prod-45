@@ -27,7 +27,7 @@ export function CustomFieldsSection({ entityType, entityId }: CustomFieldsSectio
       <Card className="bg-white border border-neutral-200 rounded-xl shadow-none">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
-            <Settings2 className="h-4 w-4 text-brand-gold" />
+            <Settings2 className="h-4 w-4 text-brand-primary" />
             Custom Fields
           </CardTitle>
         </CardHeader>
@@ -43,7 +43,7 @@ export function CustomFieldsSection({ entityType, entityId }: CustomFieldsSectio
       <Card className="bg-white border border-neutral-200 rounded-xl shadow-none">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
-            <Settings2 className="h-4 w-4 text-brand-gold" />
+            <Settings2 className="h-4 w-4 text-brand-primary" />
             Custom Fields
           </CardTitle>
         </CardHeader>
@@ -60,7 +60,7 @@ export function CustomFieldsSection({ entityType, entityId }: CustomFieldsSectio
     <Card className="bg-white border border-neutral-200 rounded-xl shadow-none">
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
-          <Settings2 className="h-4 w-4 text-brand-gold" />
+          <Settings2 className="h-4 w-4 text-brand-primary" />
           Custom Fields
         </CardTitle>
       </CardHeader>

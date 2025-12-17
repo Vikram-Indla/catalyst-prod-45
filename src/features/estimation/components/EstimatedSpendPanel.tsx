@@ -70,7 +70,7 @@ export function EstimatedSpendPanel({ epicId }: EstimatedSpendPanelProps) {
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-brand-gold" />
+              <DollarSign className="h-5 w-5 text-brand-primary" />
               Estimated Spend
             </CardTitle>
             <Popover>
@@ -117,7 +117,7 @@ export function EstimatedSpendPanel({ epicId }: EstimatedSpendPanelProps) {
               <div className="pt-4 border-t">
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">Total Estimated Spend:</span>
-                  <span className="text-2xl font-bold text-brand-gold">
+                  <span className="text-2xl font-bold text-brand-primary">
                     ${totalSpend.toLocaleString()}
                   </span>
                 </div>
@@ -156,7 +156,7 @@ export function EstimatedSpendPanel({ epicId }: EstimatedSpendPanelProps) {
                         <TableCell className="text-right">
                           {feature.estimate_points || 0} pts
                         </TableCell>
-                        <TableCell className="text-right font-semibold text-brand-gold">
+                        <TableCell className="text-right font-semibold text-brand-primary">
                           ${spend.toLocaleString()}
                         </TableCell>
                       </TableRow>

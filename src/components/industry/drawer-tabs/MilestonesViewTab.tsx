@@ -217,7 +217,7 @@ export function MilestonesViewTab({ data }: MilestonesViewTabProps) {
             </SelectContent>
           </Select>
         </div>
-        <Button onClick={openCreateDialog} variant="ghost" size="sm" className="gap-2 text-brand-gold hover:text-brand-gold">
+        <Button onClick={openCreateDialog} variant="ghost" size="sm" className="gap-2 text-brand-primary hover:text-brand-primary">
           <Plus className="h-4 w-4" />
           Add milestone
         </Button>
@@ -237,7 +237,7 @@ export function MilestonesViewTab({ data }: MilestonesViewTabProps) {
       ) : (
         <div className="space-y-3">
           {milestones.map((milestone) => (
-            <div key={milestone.id} className="p-4 border border-border rounded-lg bg-card hover:border-brand-gold/30 transition-colors">
+            <div key={milestone.id} className="p-4 border border-border rounded-lg bg-card hover:border-brand-primary/30 transition-colors">
               <div className="flex items-start justify-between mb-2">
                 <h4 className="text-base font-medium text-foreground">{milestone.title}</h4>
                 <DropdownMenu>

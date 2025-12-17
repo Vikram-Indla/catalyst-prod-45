@@ -149,7 +149,7 @@ export default function RisksGridPage() {
         <div className="flex flex-col gap-[var(--s2)]">
           <div className="flex items-center justify-between gap-2 min-w-0">
             <div className="flex items-center gap-[var(--s2)] min-w-0 flex-1">
-              <span className="text-brand-gold flex-shrink-0 text-sm sm:text-base">☆</span>
+              <span className="text-brand-primary flex-shrink-0 text-sm sm:text-base">☆</span>
               <h1 className="text-sm sm:text-base lg:text-lg font-heading font-semibold text-text-primary truncate">
                 Risk Grid
               </h1>

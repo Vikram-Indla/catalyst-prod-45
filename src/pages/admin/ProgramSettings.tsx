@@ -17,7 +17,7 @@ export default function ProgramSettings() {
               Configure program-level settings and preferences.
             </p>
           </div>
-          <Button variant="default" className="bg-brand-gold hover:bg-brand-gold-hover">
+          <Button variant="default" className="bg-brand-primary hover:bg-brand-primary-hover">
             Save Settings
           </Button>
         </div>

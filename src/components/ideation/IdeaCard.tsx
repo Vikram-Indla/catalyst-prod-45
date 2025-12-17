@@ -99,7 +99,7 @@ export function IdeaCard({
     <div
       className={cn(
         "bg-card border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer",
-        selected && "ring-2 ring-brand-gold"
+        selected && "ring-2 ring-brand-primary"
       )}
       onClick={onClick}
     >

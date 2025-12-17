@@ -273,7 +273,7 @@ export function CreateIncidentDialog({ open, onOpenChange }: CreateIncidentDialo
             </Button>
             <Button
               type="submit"
-              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
               disabled={createIncident.isPending}
             >
               {createIncident.isPending ? 'Creating...' : 'Create Incident'}

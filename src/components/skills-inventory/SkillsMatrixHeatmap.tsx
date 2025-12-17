@@ -106,7 +106,7 @@ export const SkillsMatrixHeatmap: React.FC = () => {
   ];
 
   return (
-    <div className="bg-white rounded-xl border border-brand-gold/20 p-6 shadow-sm">
+    <div className="bg-white rounded-xl border border-brand-primary/20 p-6 shadow-sm">
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>

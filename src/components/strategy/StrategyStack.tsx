@@ -404,7 +404,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                                   {item.isUnaligned && (
                                     <div 
                                       className="flex items-center gap-1 text-xs font-medium mb-1"
-                                      style={{ color: 'var(--brand-gold)' }}
+                                      style={{ color: 'var(--brand-primary)' }}
                                     >
                                       <AlertTriangle size={12} />
                                       <span>Unaligned Epic</span>

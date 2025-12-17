@@ -108,7 +108,7 @@ export function WorkflowViewerModal({ currentStep, requestId, submittedDate, onS
       <DialogContent className="sm:max-w-2xl bg-card">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <GitBranch className="h-5 w-5 text-brand-gold" />
+            <GitBranch className="h-5 w-5 text-brand-primary" />
             Process Workflow
           </DialogTitle>
         </DialogHeader>
@@ -141,7 +141,7 @@ export function WorkflowViewerModal({ currentStep, requestId, submittedDate, onS
               
               {/* Progress line filled */}
               <div 
-                className="absolute top-6 left-4 h-0.5 bg-brand-gold transition-all duration-300"
+                className="absolute top-6 left-4 h-0.5 bg-brand-primary transition-all duration-300"
                 style={{ 
                   width: currentIndex >= 0 
                     ? `calc(${(currentIndex / (MAIN_STEPS.length - 1)) * 100}% - 32px)` 
@@ -164,8 +164,8 @@ export function WorkflowViewerModal({ currentStep, requestId, submittedDate, onS
                       <div
                         className={cn(
                           "relative z-10 flex items-center justify-center rounded-full border-2 w-8 h-8 transition-all",
-                          isCompleted && "bg-brand-gold border-brand-gold text-white",
-                          isCurrent && "bg-card border-brand-gold shadow-md ring-2 ring-brand-gold/20",
+                          isCompleted && "bg-brand-primary border-brand-primary text-white",
+                          isCurrent && "bg-card border-brand-primary shadow-md ring-2 ring-brand-primary/20",
                           !isCompleted && !isCurrent && "bg-card border-border text-muted-foreground"
                         )}
                       >
@@ -174,7 +174,7 @@ export function WorkflowViewerModal({ currentStep, requestId, submittedDate, onS
                         ) : (
                           <span className={cn(
                             "text-xs font-medium",
-                            isCurrent && "text-brand-gold"
+                            isCurrent && "text-brand-primary"
                           )}>
                             {index + 1}
                           </span>
@@ -184,7 +184,7 @@ export function WorkflowViewerModal({ currentStep, requestId, submittedDate, onS
                       {/* Step label */}
                       <span className={cn(
                         "text-xs text-center max-w-[80px]",
-                        isCurrent ? "text-brand-gold font-medium" : "text-muted-foreground",
+                        isCurrent ? "text-brand-primary font-medium" : "text-muted-foreground",
                         isCompleted && "text-foreground"
                       )}>
                         {step.label}
@@ -230,7 +230,7 @@ export function WorkflowViewerModal({ currentStep, requestId, submittedDate, onS
                     <div key={`${transition.toStep}-${transition.date}`} className="relative">
                       {/* Connector line */}
                       {!isLast && (
-                        <div className="absolute left-[15px] top-8 w-0.5 h-6 bg-brand-gold/30" />
+                        <div className="absolute left-[15px] top-8 w-0.5 h-6 bg-brand-primary/30" />
                       )}
                       
                       {/* Timeline entry */}
@@ -242,8 +242,8 @@ export function WorkflowViewerModal({ currentStep, requestId, submittedDate, onS
                             isOptional 
                               ? "bg-amber-500/20 border-2 border-amber-500" 
                               : isLast 
-                                ? "bg-brand-gold/20 border-2 border-brand-gold"
-                                : "bg-brand-gold"
+                                ? "bg-brand-primary/20 border-2 border-brand-primary"
+                                : "bg-brand-primary"
                           )}
                         >
                           {isOptional ? (
@@ -264,7 +264,7 @@ export function WorkflowViewerModal({ currentStep, requestId, submittedDate, onS
                                 <ArrowRight className="h-3 w-3 text-muted-foreground shrink-0" />
                                 <span className={cn(
                                   "text-sm font-medium",
-                                  isOptional ? "text-amber-600" : isLast ? "text-brand-gold" : "text-foreground"
+                                  isOptional ? "text-amber-600" : isLast ? "text-brand-primary" : "text-foreground"
                                 )}>
                                   {getStepLabel(transition.toStep)}
                                 </span>
@@ -272,14 +272,14 @@ export function WorkflowViewerModal({ currentStep, requestId, submittedDate, onS
                             ) : (
                               <span className={cn(
                                 "text-sm font-medium",
-                                isLast ? "text-brand-gold" : "text-foreground"
+                                isLast ? "text-brand-primary" : "text-foreground"
                               )}>
                                 {getStepLabel(transition.toStep)}
                                 <span className="text-muted-foreground font-normal ml-1">(Submitted)</span>
                               </span>
                             )}
                             {isLast && (
-                              <span className="text-xs bg-brand-gold/10 text-brand-gold px-2 py-0.5 rounded-full">
+                              <span className="text-xs bg-brand-primary/10 text-brand-primary px-2 py-0.5 rounded-full">
                                 Current
                               </span>
                             )}

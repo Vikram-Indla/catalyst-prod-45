@@ -214,7 +214,7 @@ export const ObjectiveRoadmapPage: React.FC = () => {
       <div className="flex flex-col h-full">
         <GlobalPageHeader sectionLabel="ENTERPRISE" pageTitle="Objective Roadmap" />
         <div className="flex-1 flex items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-brand-gold" />
+          <Loader2 className="h-8 w-8 animate-spin text-brand-primary" />
         </div>
       </div>
     );

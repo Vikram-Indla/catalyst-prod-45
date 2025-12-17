@@ -66,7 +66,7 @@ export const SmartFiltersPanel: React.FC<SmartFiltersPanelProps> = ({
     { value: 'on-track', label: 'On Track', color: 'hsl(var(--secondary-green))' },
     { value: 'at-risk', label: 'At Risk', color: 'hsl(var(--secondary-bronze))' },
     { value: 'off-track', label: 'Off Track', color: 'hsl(var(--destructive))' },
-    { value: 'in-progress', label: 'In Progress', color: 'hsl(var(--brand-gold))' },
+    { value: 'in-progress', label: 'In Progress', color: 'hsl(var(--brand-primary))' },
     { value: 'pending', label: 'Pending', color: 'hsl(var(--muted-foreground))' },
   ];
   
@@ -92,7 +92,7 @@ export const SmartFiltersPanel: React.FC<SmartFiltersPanelProps> = ({
           />
           <span className="flex-1 text-sm font-semibold">{title}</span>
           {count > 0 && (
-            <span className="px-2 py-0.5 text-xs font-semibold text-brand-gold bg-brand-gold/15 rounded-full">
+            <span className="px-2 py-0.5 text-xs font-semibold text-brand-primary bg-brand-primary/15 rounded-full">
               {count}
             </span>
           )}
@@ -112,7 +112,7 @@ export const SmartFiltersPanel: React.FC<SmartFiltersPanelProps> = ({
       <div className="flex items-center justify-between px-4 py-3 border-b border-border">
         <span className="text-sm font-semibold">Smart Filters</span>
         <button 
-          className="text-xs font-medium text-brand-gold hover:underline"
+          className="text-xs font-medium text-brand-primary hover:underline"
           onClick={onClearAll}
         >
           Clear all
@@ -129,8 +129,8 @@ export const SmartFiltersPanel: React.FC<SmartFiltersPanelProps> = ({
                 className={cn(
                   "flex items-center gap-1.5 px-3 py-1.5 text-xs border rounded-full cursor-pointer transition-colors",
                   draftFilters.status.includes(opt.value)
-                    ? "bg-brand-gold/15 border-brand-gold text-brand-gold"
-                    : "border-border text-muted-foreground hover:border-brand-gold"
+                    ? "bg-brand-primary/15 border-brand-primary text-brand-primary"
+                    : "border-border text-muted-foreground hover:border-brand-primary"
                 )}
                 onClick={() => onToggleStatus(opt.value)}
               >
@@ -158,7 +158,7 @@ export const SmartFiltersPanel: React.FC<SmartFiltersPanelProps> = ({
                 <span className={cn(
                   "w-4 h-4 flex items-center justify-center border-2 rounded transition-colors",
                   draftFilters.themeIds.includes(theme.id)
-                    ? "bg-brand-gold border-brand-gold"
+                    ? "bg-brand-primary border-brand-primary"
                     : "border-border"
                 )}>
                   {draftFilters.themeIds.includes(theme.id) && (
@@ -184,8 +184,8 @@ export const SmartFiltersPanel: React.FC<SmartFiltersPanelProps> = ({
                 className={cn(
                   "px-3 py-1.5 text-xs border rounded-md text-center transition-colors",
                   draftFilters.progressRanges.includes(preset.key)
-                    ? "bg-brand-gold/15 border-brand-gold text-brand-gold"
-                    : "border-border text-muted-foreground hover:border-brand-gold"
+                    ? "bg-brand-primary/15 border-brand-primary text-brand-primary"
+                    : "border-border text-muted-foreground hover:border-brand-primary"
                 )}
                 onClick={() => onToggleProgressRange(preset.key)}
               >
@@ -202,7 +202,7 @@ export const SmartFiltersPanel: React.FC<SmartFiltersPanelProps> = ({
               <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <input
                 type="text"
-                className="w-full h-8 pl-8 pr-2 text-xs border border-border rounded-md bg-muted/50 focus:outline-none focus:border-brand-gold"
+                className="w-full h-8 pl-8 pr-2 text-xs border border-border rounded-md bg-muted/50 focus:outline-none focus:border-brand-primary"
                 placeholder="Search owners..."
                 value={ownerSearchQuery}
                 onChange={(e) => setOwnerSearchQuery(e.target.value)}
@@ -223,7 +223,7 @@ export const SmartFiltersPanel: React.FC<SmartFiltersPanelProps> = ({
                   <span className={cn(
                     "w-4 h-4 flex items-center justify-center border-2 rounded transition-colors",
                     draftFilters.ownerIds.includes(owner.id)
-                      ? "bg-brand-gold border-brand-gold"
+                      ? "bg-brand-primary border-brand-primary"
                       : "border-border"
                   )}>
                     {draftFilters.ownerIds.includes(owner.id) && (
@@ -257,7 +257,7 @@ export const SmartFiltersPanel: React.FC<SmartFiltersPanelProps> = ({
                 <span className={cn(
                   "w-4 h-4 flex items-center justify-center border-2 rounded transition-colors",
                   draftFilters.krConditions.includes(opt.key)
-                    ? "bg-brand-gold border-brand-gold"
+                    ? "bg-brand-primary border-brand-primary"
                     : "border-border"
                 )}>
                   {draftFilters.krConditions.includes(opt.key) && (
@@ -285,7 +285,7 @@ export const SmartFiltersPanel: React.FC<SmartFiltersPanelProps> = ({
             Cancel
           </button>
           <button 
-            className="px-4 py-1.5 text-sm font-medium bg-brand-gold text-white rounded-md hover:bg-brand-gold-hover"
+            className="px-4 py-1.5 text-sm font-medium bg-brand-primary text-white rounded-md hover:bg-brand-primary-hover"
             onClick={onApply}
           >
             Apply Filters

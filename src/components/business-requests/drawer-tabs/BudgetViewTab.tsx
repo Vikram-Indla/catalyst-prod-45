@@ -170,7 +170,7 @@ function EffortSplitBar({
     <div className="space-y-2">
       <div className="flex h-4 w-full overflow-hidden rounded-full bg-muted">
         <div 
-          className="bg-brand-gold transition-all duration-300"
+          className="bg-brand-primary transition-all duration-300"
           style={{ width: `${Math.min(internalPct, 100)}%` }}
         />
         <div 
@@ -180,7 +180,7 @@ function EffortSplitBar({
       </div>
       <div className="flex justify-between text-xs text-muted-foreground">
         <span className="flex items-center gap-1">
-          <span className="w-2 h-2 rounded-full bg-brand-gold" />
+          <span className="w-2 h-2 rounded-full bg-brand-primary" />
           Internal: {internalPct}%
         </span>
         <span className="flex items-center gap-1">
@@ -243,7 +243,7 @@ export function BudgetViewTab({ data, onChange }: BudgetViewTabProps) {
         {/* Funding Status Card */}
         <div className={cn("rounded-lg border p-4", getFundingStatusClass())}>
           <div className="flex items-center gap-2 mb-2">
-            <Wallet className="h-4 w-4 text-brand-gold" />
+            <Wallet className="h-4 w-4 text-brand-primary" />
             <span className="text-xs font-medium text-muted-foreground">Funding Status</span>
           </div>
           <p className="text-lg font-semibold text-foreground">{fundingStatus}</p>
@@ -255,7 +255,7 @@ export function BudgetViewTab({ data, onChange }: BudgetViewTabProps) {
         {/* Approved Budget Card */}
         <div className="rounded-lg border bg-background p-4">
           <div className="flex items-center gap-2 mb-2">
-            <TrendingUp className="h-4 w-4 text-brand-gold" />
+            <TrendingUp className="h-4 w-4 text-brand-primary" />
             <span className="text-xs font-medium text-muted-foreground">Approved Budget</span>
           </div>
           <p className="text-lg font-semibold text-foreground">{formatCurrency(approvedBudget)}</p>
@@ -267,7 +267,7 @@ export function BudgetViewTab({ data, onChange }: BudgetViewTabProps) {
         {/* Capacity Status Card */}
         <div className={cn("rounded-lg border p-4", getCapacityStatusClass())}>
           <div className="flex items-center gap-2 mb-2">
-            <Users className="h-4 w-4 text-brand-gold" />
+            <Users className="h-4 w-4 text-brand-primary" />
             <span className="text-xs font-medium text-muted-foreground">Capacity Status</span>
           </div>
           <p className="text-lg font-semibold text-foreground">{capacityStatus}</p>
@@ -281,7 +281,7 @@ export function BudgetViewTab({ data, onChange }: BudgetViewTabProps) {
       <Collapsible open={fundingOpen} onOpenChange={setFundingOpen}>
         <div className="border border-border rounded-xl bg-white overflow-hidden shadow-sm">
           <CollapsibleTrigger className="w-full flex items-center justify-between p-4 hover:bg-muted/30 transition-colors">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-brand-gold">
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-brand-primary">
               Funding & Budget
             </h3>
             <ChevronDown className={cn(
@@ -423,7 +423,7 @@ export function BudgetViewTab({ data, onChange }: BudgetViewTabProps) {
       <Collapsible open={contractOpen} onOpenChange={setContractOpen}>
         <div className="border border-border rounded-xl bg-white overflow-hidden shadow-sm">
           <CollapsibleTrigger className="w-full flex items-center justify-between p-4 hover:bg-muted/30 transition-colors">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-brand-gold">
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-brand-primary">
               Contract & Commercials
             </h3>
             <ChevronDown className={cn(
@@ -532,7 +532,7 @@ export function BudgetViewTab({ data, onChange }: BudgetViewTabProps) {
       <Collapsible open={capacityOpen} onOpenChange={setCapacityOpen}>
         <div className="border border-border rounded-xl bg-white overflow-hidden shadow-sm">
           <CollapsibleTrigger className="w-full flex items-center justify-between p-4 hover:bg-muted/30 transition-colors">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-brand-gold">
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-brand-primary">
               Funding & Capacity Notes
             </h3>
             <ChevronDown className={cn(

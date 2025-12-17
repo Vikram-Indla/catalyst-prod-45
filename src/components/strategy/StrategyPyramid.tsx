@@ -41,7 +41,7 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
   const colors = {
     objectives: 'hsl(var(--secondary-green))',
     themes: 'hsl(var(--secondary-bronze))',
-    epics: 'hsl(var(--brand-gold))',
+    epics: 'hsl(var(--brand-primary))',
     features: 'hsl(var(--secondary-champagne))',
   };
 

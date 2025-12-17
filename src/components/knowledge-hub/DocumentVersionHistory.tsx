@@ -64,7 +64,7 @@ export function DocumentVersionHistory({
       <SheetContent className="w-[400px] sm:w-[540px]">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
-            <History className="h-5 w-5 text-brand-gold" />
+            <History className="h-5 w-5 text-brand-primary" />
             Version History
           </SheetTitle>
         </SheetHeader>

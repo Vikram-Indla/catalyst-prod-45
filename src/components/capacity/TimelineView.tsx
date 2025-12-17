@@ -65,7 +65,7 @@ export function TimelineView({
                     key={`${w.year}-${w.week}`}
                     className={cn(
                       "text-center font-semibold text-xs p-3 border border-border bg-muted min-w-[180px]",
-                      isCurrent && "bg-brand-gold/10 text-brand-gold"
+                      isCurrent && "bg-brand-primary/10 text-brand-primary"
                     )}
                   >
                     <div className="flex flex-col items-center">
@@ -84,7 +84,7 @@ export function TimelineView({
               <tr key={resource.id} className="hover:bg-muted/50">
                 <td className="p-3 border border-border sticky left-0 bg-card z-10">
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-brand-gold/10 text-brand-gold flex items-center justify-center text-xs font-semibold flex-shrink-0">
+                    <div className="w-9 h-9 rounded-full bg-brand-primary/10 text-brand-primary flex items-center justify-center text-xs font-semibold flex-shrink-0">
                       {resource.initials}
                     </div>
                     <div className="min-w-0">

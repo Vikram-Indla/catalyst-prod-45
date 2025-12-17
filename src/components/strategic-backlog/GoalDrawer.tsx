@@ -144,7 +144,7 @@ export function GoalDrawer({ open, onOpenChange, goal, isArchived }: GoalDrawerP
                 max={100}
                 step={1}
                 disabled={isArchived}
-                className="[&_[role=slider]]:bg-brand-gold"
+                className="[&_[role=slider]]:bg-brand-primary"
               />
             </div>
 
@@ -183,7 +183,7 @@ export function GoalDrawer({ open, onOpenChange, goal, isArchived }: GoalDrawerP
                 Cancel
               </Button>
               {!isArchived && (
-                <Button onClick={handleSave} className="bg-brand-gold hover:bg-brand-gold/90">
+                <Button onClick={handleSave} className="bg-brand-primary hover:bg-brand-primary/90">
                   Save
                 </Button>
               )}

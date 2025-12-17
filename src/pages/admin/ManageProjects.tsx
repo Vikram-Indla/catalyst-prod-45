@@ -137,7 +137,7 @@ export default function ManageProjects() {
           description="Create and manage projects, assign to programs"
           actions={
             <Button 
-              className="bg-brand-gold hover:bg-brand-gold-hover"
+              className="bg-brand-primary hover:bg-brand-primary-hover"
               onClick={() => setShowCreateDialog(true)}
             >
               <Plus className="h-4 w-4 mr-2" />

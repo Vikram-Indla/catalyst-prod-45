@@ -121,7 +121,7 @@ export function EpicDetailsViewTab({ data, onChange }: EpicDetailsViewTabProps) 
     <div className="flex flex-col h-full space-y-5 bg-muted/30 p-1">
       {/* DETAILS Section */}
       <div className="border border-border rounded-xl bg-white p-5 space-y-5 shadow-sm">
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-gold">Details</h3>
+        <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-primary">Details</h3>
           
         {/* Summary - required */}
         <div>
@@ -179,7 +179,7 @@ export function EpicDetailsViewTab({ data, onChange }: EpicDetailsViewTabProps) 
 
       {/* STRATEGIC ALIGNMENT Section */}
       <div className="border border-border rounded-xl bg-white p-5 space-y-5 shadow-sm">
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-gold">Strategic Alignment</h3>
+        <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-primary">Strategic Alignment</h3>
         
         {/* Strategic Theme - Editable dropdown */}
         <div>
@@ -259,7 +259,7 @@ export function EpicDetailsViewTab({ data, onChange }: EpicDetailsViewTabProps) 
               >
                 {selectedBR ? (
                   <span className="flex items-center gap-2 truncate">
-                    <span className="font-mono text-brand-gold">{selectedBR.request_key}</span>
+                    <span className="font-mono text-brand-primary">{selectedBR.request_key}</span>
                     <span className="truncate">{selectedBR.title}</span>
                   </span>
                 ) : (
@@ -304,7 +304,7 @@ export function EpicDetailsViewTab({ data, onChange }: EpicDetailsViewTabProps) 
                           )}
                         />
                         <div className="flex items-center gap-2 flex-1 min-w-0">
-                          <span className="font-mono text-brand-gold shrink-0">
+                          <span className="font-mono text-brand-primary shrink-0">
                             {br.request_key}
                           </span>
                           <span className="truncate">{br.title}</span>
@@ -333,7 +333,7 @@ export function EpicDetailsViewTab({ data, onChange }: EpicDetailsViewTabProps) 
 
       {/* PLANNING & DELIVERY Section */}
       <div className="border border-border rounded-xl bg-white p-5 space-y-5 shadow-sm flex-1">
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-gold">Planning & Delivery</h3>
+        <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-primary">Planning & Delivery</h3>
           
         {/* Dates - 2-column (Start Date, Target Complete) */}
         <div className="grid grid-cols-2 gap-3">
@@ -363,7 +363,7 @@ export function EpicDetailsViewTab({ data, onChange }: EpicDetailsViewTabProps) 
                 onClick={handleLockToggle}
                 className={cn(
                   "shrink-0 h-9 w-9",
-                  targetDateLocked && "bg-muted border-brand-gold text-brand-gold"
+                  targetDateLocked && "bg-muted border-brand-primary text-brand-primary"
                 )}
                 title={targetDateLocked ? 'Unlock date' : 'Lock date'}
               >

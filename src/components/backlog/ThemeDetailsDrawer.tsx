@@ -460,7 +460,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                   </span>
                   <button
                     onClick={handleCopyLink}
-                    className="text-muted-foreground/60 hover:text-brand-gold transition-colors p-0.5"
+                    className="text-muted-foreground/60 hover:text-brand-primary transition-colors p-0.5"
                     title="Copy link"
                   >
                     <LinkIcon className="h-3 w-3" />
@@ -476,7 +476,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                       onChange={(e) => setEditedName(e.target.value)}
                       onBlur={handleSaveName}
                       onKeyDown={handleNameKeyDown}
-                      className="text-base font-medium h-auto py-1 px-2 border-brand-gold/50 focus:border-brand-gold"
+                      className="text-base font-medium h-auto py-1 px-2 border-brand-primary/50 focus:border-brand-primary"
                     />
                   ) : (
                     <>
@@ -485,7 +485,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                       </SheetTitle>
                       <button
                         onClick={handleStartEditName}
-                        className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-brand-gold transition-all p-0.5"
+                        className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-brand-primary transition-all p-0.5"
                         title="Rename"
                       >
                         <Pencil className="h-3.5 w-3.5" />
@@ -551,7 +551,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
               
               {/* SECTION 1: Strategic Context */}
               <section className="border border-[#E1E4E8] dark:border-[#30363D] rounded-lg bg-white dark:bg-[#0D1117] p-5 space-y-4">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-gold">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-primary">
                   Strategic Context
                 </h3>
                 

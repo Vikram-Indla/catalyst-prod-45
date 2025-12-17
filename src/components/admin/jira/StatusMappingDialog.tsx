@@ -119,7 +119,7 @@ export function StatusMappingDialog({ open, onOpenChange, connectionId }: Status
 
         {(loadingStatuses || loadingMappings) ? (
           <div className="flex justify-center py-8">
-            <Loader2 className="w-6 h-6 animate-spin text-brand-gold" />
+            <Loader2 className="w-6 h-6 animate-spin text-brand-primary" />
           </div>
         ) : (
           <div className="space-y-4">
@@ -129,7 +129,7 @@ export function StatusMappingDialog({ open, onOpenChange, connectionId }: Status
                 size="sm"
                 variant="outline"
                 onClick={addMapping}
-                className="border-brand-gold text-brand-gold hover:bg-brand-gold hover:text-white"
+                className="border-brand-primary text-brand-primary hover:bg-brand-primary hover:text-white"
               >
                 <Plus className="w-4 h-4 mr-1" />
                 Add Mapping
@@ -200,7 +200,7 @@ export function StatusMappingDialog({ open, onOpenChange, connectionId }: Status
                 Cancel
               </Button>
               <Button
-                className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+                className="bg-brand-primary hover:bg-brand-primary-hover text-white"
                 onClick={() => saveMutation.mutate()}
                 disabled={saveMutation.isPending}
               >

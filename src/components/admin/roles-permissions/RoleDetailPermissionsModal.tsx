@@ -55,7 +55,7 @@ export function RoleDetailPermissionsModal({
 
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-brand-gold" />
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-brand-primary" />
           </div>
         ) : (
           <Table>

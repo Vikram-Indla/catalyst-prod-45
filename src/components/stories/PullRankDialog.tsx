@@ -60,8 +60,8 @@ export function PullRankDialog({
             </ul>
           </div>
 
-          <div className="rounded-lg border border-brand-gold/20 bg-brand-gold/5 p-3 text-sm">
-            <p className="font-medium text-brand-gold">Context: {context.label}</p>
+          <div className="rounded-lg border border-brand-primary/20 bg-brand-primary/5 p-3 text-sm">
+            <p className="font-medium text-brand-primary">Context: {context.label}</p>
             {context.contextId && (
               <p className="text-xs text-muted-foreground mt-1">
                 Context ID: {context.contextId.slice(0, 8)}...

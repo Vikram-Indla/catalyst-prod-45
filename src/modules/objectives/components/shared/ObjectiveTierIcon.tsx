@@ -4,7 +4,7 @@ import type { ObjectiveTier } from "../../types/objective.types";
 
 // Only Portfolio and Program tiers are supported
 const TIER_CONFIG: Record<ObjectiveTier, { icon: typeof Building2; color: string; label: string }> = {
-  portfolio: { icon: Building2, color: "text-brand-gold", label: "Portfolio" },
+  portfolio: { icon: Building2, color: "text-brand-primary", label: "Portfolio" },
   program: { icon: Briefcase, color: "text-primary", label: "Program" },
 };
 

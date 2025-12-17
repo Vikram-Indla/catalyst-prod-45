@@ -21,7 +21,7 @@ export function DeleteSkillDialog({
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[60]">
-      <div className="bg-card rounded-lg w-full max-w-md border border-brand-gold-border p-6 shadow-xl">
+      <div className="bg-card rounded-lg w-full max-w-md border border-brand-primary-border p-6 shadow-xl">
         {/* Warning Icon */}
         <div className="w-14 h-14 rounded-full bg-destructive/10 flex items-center justify-center mx-auto mb-5">
           <AlertTriangle className="w-7 h-7 text-destructive" />
@@ -41,7 +41,7 @@ export function DeleteSkillDialog({
           <button
             onClick={onClose}
             disabled={isDeleting}
-            className="flex-1 px-4 py-2.5 border border-brand-gold-border rounded-lg text-muted-foreground hover:bg-secondary transition-colors disabled:opacity-50 font-medium"
+            className="flex-1 px-4 py-2.5 border border-brand-primary-border rounded-lg text-muted-foreground hover:bg-secondary transition-colors disabled:opacity-50 font-medium"
           >
             Cancel
           </button>

@@ -16,9 +16,9 @@ The Catalyst Design System provides a consistent, token-based foundation for all
 | Token | Value | HSL | Usage |
 |-------|-------|-----|-------|
 | `--brand-dark` | `#1A1A1A` | `0 0% 10%` | Dark backgrounds, headers |
-| `--brand-gold` | `#C69C6D` | `35 46% 60%` | Primary accent, CTAs |
-| `--brand-gold-hover` | `#B8905F` | `35 41% 55%` | Hover state for gold |
-| `--brand-gold-pale` | `rgba(198,156,109,0.08)` | - | Selected states, subtle highlights |
+| `--brand-primary` | `#C69C6D` | `35 46% 60%` | Primary accent, CTAs |
+| `--brand-primary-hover` | `#B8905F` | `35 41% 55%` | Hover state for gold |
+| `--brand-primary-pale` | `rgba(198,156,109,0.08)` | - | Selected states, subtle highlights |
 
 ---
 
@@ -141,8 +141,8 @@ The Catalyst Design System provides a consistent, token-based foundation for all
 
 | State | Styles |
 |-------|--------|
-| Default | `bg-brand-gold text-white` |
-| Hover | `bg-brand-gold-hover` (8% darker) |
+| Default | `bg-brand-primary text-white` |
+| Hover | `bg-brand-primary-hover` (8% darker) |
 | Pressed | `active:scale-[0.98] active:brightness-95` |
 | Focus | `ring-2 ring-ring ring-offset-2` |
 | Disabled | `opacity-50 pointer-events-none` |
@@ -218,7 +218,7 @@ The Catalyst Design System provides a consistent, token-based foundation for all
 | Element | Focus Ring |
 |---------|------------|
 | Buttons | `ring-2 ring-ring ring-offset-2` |
-| Inputs | `border-brand-gold shadow-[0_0_0_3px_rgba(198,156,109,0.15)]` |
+| Inputs | `border-brand-primary shadow-[0_0_0_3px_rgba(198,156,109,0.15)]` |
 | Links | `outline-2 outline-ring outline-offset-2` |
 
 ---

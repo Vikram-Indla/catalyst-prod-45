@@ -173,15 +173,15 @@ export function EpicTechnicalScoringTab({ epic }: EpicTechnicalScoringTabProps) 
       </Alert>
 
       {/* Current Score Display */}
-      <Card className="border-brand-gold">
+      <Card className="border-brand-primary">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-lg">
-            <TrendingUp className="h-5 w-5 text-brand-gold" />
+            <TrendingUp className="h-5 w-5 text-brand-primary" />
             Technical Score
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-4xl font-bold text-brand-gold mb-4">
+          <div className="text-4xl font-bold text-brand-primary mb-4">
             {calculatedScore?.toFixed(2) || '0.00'}
           </div>
           <div className="text-sm text-muted-foreground">
@@ -194,7 +194,7 @@ export function EpicTechnicalScoringTab({ epic }: EpicTechnicalScoringTabProps) 
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
-            <Calculator className="h-5 w-5 text-brand-gold" />
+            <Calculator className="h-5 w-5 text-brand-primary" />
             Technical Scoring Inputs
           </CardTitle>
         </CardHeader>
@@ -291,7 +291,7 @@ export function EpicTechnicalScoringTab({ epic }: EpicTechnicalScoringTabProps) 
           <Button 
             onClick={() => saveMutation.mutate()}
             disabled={saveMutation.isPending}
-            className="w-full bg-brand-gold text-white hover:bg-brand-gold-hover"
+            className="w-full bg-brand-primary text-white hover:bg-brand-primary-hover"
           >
             <Save className="h-4 w-4 mr-2" />
             {saveMutation.isPending ? 'Saving...' : 'Save Technical Score'}
@@ -324,9 +324,9 @@ export function EpicTechnicalScoringTab({ epic }: EpicTechnicalScoringTabProps) 
               <span className="text-muted-foreground">Job Size:</span>
               <span className="font-medium">{localValues.job_size}</span>
             </div>
-            <div className="flex justify-between border-t pt-2 bg-brand-gold/10 -mx-4 px-4 py-2 rounded">
+            <div className="flex justify-between border-t pt-2 bg-brand-primary/10 -mx-4 px-4 py-2 rounded">
               <span className="font-bold">Technical Score:</span>
-              <span className="text-xl font-bold text-brand-gold">{calculatedScore?.toFixed(2) || '0.00'}</span>
+              <span className="text-xl font-bold text-brand-primary">{calculatedScore?.toFixed(2) || '0.00'}</span>
             </div>
           </div>
         </CardContent>

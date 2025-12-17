@@ -106,8 +106,8 @@ export function IndustryFiltersDialog({
                   onClick={() => handleQuickFilterClick(qf.id)}
                   className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors ${
                     filters.quickFilter === qf.id
-                      ? 'bg-brand-gold text-white border-brand-gold'
-                      : 'bg-white text-foreground border-border hover:border-brand-gold/50'
+                      ? 'bg-brand-primary text-white border-brand-primary'
+                      : 'bg-white text-foreground border-border hover:border-brand-primary/50'
                   }`}
                 >
                   {qf.label}
@@ -130,7 +130,7 @@ export function IndustryFiltersDialog({
               <div className="px-6 py-4 space-y-4 border-b border-border">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-sm font-medium text-brand-gold">Reporter</Label>
+                    <Label className="text-sm font-medium text-brand-primary">Reporter</Label>
                     <Select
                       value={filters.reporter || 'all'}
                       onValueChange={(value) => onFiltersChange({ ...filters, reporter: value === 'all' ? undefined : value })}
@@ -144,7 +144,7 @@ export function IndustryFiltersDialog({
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-sm font-medium text-brand-gold">Business Owner</Label>
+                    <Label className="text-sm font-medium text-brand-primary">Business Owner</Label>
                     <Select
                       value={filters.businessOwner || 'all'}
                       onValueChange={(value) => onFiltersChange({ ...filters, businessOwner: value === 'all' ? undefined : value })}
@@ -160,7 +160,7 @@ export function IndustryFiltersDialog({
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-sm font-medium text-brand-gold">Assignee</Label>
+                    <Label className="text-sm font-medium text-brand-primary">Assignee</Label>
                     <Select
                       value={filters.assignee || 'all'}
                       onValueChange={(value) => onFiltersChange({ ...filters, assignee: value === 'all' ? undefined : value })}
@@ -174,7 +174,7 @@ export function IndustryFiltersDialog({
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-sm font-medium text-brand-gold">Department</Label>
+                    <Label className="text-sm font-medium text-brand-primary">Department</Label>
                     <Select
                       value={filters.department || 'all'}
                       onValueChange={(value) => onFiltersChange({ ...filters, department: value === 'all' ? undefined : value })}
@@ -211,7 +211,7 @@ export function IndustryFiltersDialog({
               <div className="px-6 py-4 space-y-4 border-b border-border">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-sm font-medium text-brand-gold">Process Step</Label>
+                    <Label className="text-sm font-medium text-brand-primary">Process Step</Label>
                     <Select
                       value={filters.processStep || 'all'}
                       onValueChange={(value) => onFiltersChange({ ...filters, processStep: value === 'all' ? undefined : value })}
@@ -230,7 +230,7 @@ export function IndustryFiltersDialog({
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-sm font-medium text-brand-gold">Ageing</Label>
+                    <Label className="text-sm font-medium text-brand-primary">Ageing</Label>
                     <Select
                       value={filters.ageing || 'all'}
                       onValueChange={(value) => onFiltersChange({ ...filters, ageing: value === 'all' ? undefined : value })}
@@ -273,13 +273,13 @@ export function IndustryFiltersDialog({
         {/* Footer */}
         <div className="px-6 py-4 border-t border-border flex items-center justify-between flex-shrink-0 bg-white">
           <span className="text-sm text-muted-foreground">
-            <span className="text-brand-gold font-medium">{activeFilterCount}</span> filters applied
+            <span className="text-brand-primary font-medium">{activeFilterCount}</span> filters applied
           </span>
           <div className="flex gap-2">
             <Button variant="outline" onClick={handleClearFilters}>
               Clear All
             </Button>
-            <Button onClick={handleApplyFilters} className="bg-brand-gold text-white hover:bg-brand-gold-hover">
+            <Button onClick={handleApplyFilters} className="bg-brand-primary text-white hover:bg-brand-primary-hover">
               Apply
             </Button>
           </div>

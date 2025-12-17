@@ -81,7 +81,7 @@ export default function KanbanBoardSetup() {
             </Button>
             <Button
               size="sm"
-              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
               onClick={handleExitSetup}
             >
               <Save className="w-4 h-4 mr-2" />

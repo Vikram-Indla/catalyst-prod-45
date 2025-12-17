@@ -68,7 +68,7 @@ export default function WorkCodes() {
               Create, update, and search for identification and work codes.
             </p>
           </div>
-          <Button className="bg-brand-gold hover:bg-brand-gold-hover">
+          <Button className="bg-brand-primary hover:bg-brand-primary-hover">
             <Plus className="h-4 w-4 mr-2" />
             Create New
           </Button>

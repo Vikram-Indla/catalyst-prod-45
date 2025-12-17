@@ -77,7 +77,7 @@ export function RiskDetailPanel({ risk, isOpen, onClose, onUpdate }: RiskDetailP
       {/* Header */}
       <div className="flex items-center justify-between px-[var(--s6)] py-[var(--s4)] border-b bg-card">
         <div className="flex items-center gap-3">
-          <span className="text-brand-gold">☆</span>
+          <span className="text-brand-primary">☆</span>
           <div>
             <h2 className="text-lg font-heading font-semibold text-text-primary">
               Risk #{risk.risk_number}
@@ -291,7 +291,7 @@ export function RiskDetailPanel({ risk, isOpen, onClose, onUpdate }: RiskDetailP
               Cancel
             </Button>
             <Button 
-              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
               onClick={handleSave}
             >
               Save Changes
@@ -303,7 +303,7 @@ export function RiskDetailPanel({ risk, isOpen, onClose, onUpdate }: RiskDetailP
               Close
             </Button>
             <Button 
-              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
               onClick={() => setIsEditing(true)}
             >
               Edit Risk

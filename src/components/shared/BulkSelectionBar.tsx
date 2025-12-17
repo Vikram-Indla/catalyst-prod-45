@@ -3,7 +3,7 @@
  * 
  * Design principles:
  * - Uses semantic tokens for light/dark mode compatibility
- * - Brand-gold used ONLY as thin accent border, not background
+ * - brand-primary used ONLY as thin accent border, not background
  * - Anchored to bottom of table container (sticky)
  * - Compact, enterprise density
  */

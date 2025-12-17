@@ -90,7 +90,7 @@ export function StoriesGrid({ stories, isLoading, onStoryClick }: StoriesGridPro
               <div className="flex items-center gap-2">
                 <div className="flex-1 bg-muted rounded-full h-2 overflow-hidden">
                   <div
-                    className="bg-brand-gold h-full transition-all"
+                    className="bg-brand-primary h-full transition-all"
                     style={{ width: `${story.progress_pct || 0}%` }}
                   />
                 </div>

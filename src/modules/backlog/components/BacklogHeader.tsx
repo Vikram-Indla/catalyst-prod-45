@@ -75,7 +75,7 @@ export function BacklogHeader({
             className={cn(
               "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium transition-colors",
               view === 'list' 
-                ? "bg-brand-gold text-white" 
+                ? "bg-brand-primary text-white" 
                 : ""
             )}
             style={view !== 'list' ? { color: 'var(--text-2)' } : undefined}
@@ -94,7 +94,7 @@ export function BacklogHeader({
             className={cn(
               "flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium transition-colors",
               view === 'state' 
-                ? "bg-brand-gold text-white" 
+                ? "bg-brand-primary text-white" 
                 : ""
             )}
             style={view !== 'state' ? { color: 'var(--text-2)' } : undefined}
@@ -143,7 +143,7 @@ export function BacklogHeader({
         <Button
           onClick={onCreateEpic}
           size="icon"
-          className="h-8 w-8 bg-brand-gold hover:bg-brand-gold-hover text-white"
+          className="h-8 w-8 bg-brand-primary hover:bg-brand-primary-hover text-white"
           title="Create Epic"
         >
           <Plus className="h-4 w-4" />

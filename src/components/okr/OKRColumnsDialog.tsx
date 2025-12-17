@@ -74,7 +74,7 @@ export function OKRColumnsDialog({
                   checked={column.enabled}
                   onCheckedChange={() => handleToggle(column.key)}
                   style={{
-                    accentColor: 'hsl(var(--brand-gold))',
+                    accentColor: 'hsl(var(--brand-primary))',
                   }}
                 />
                 <Label
@@ -96,7 +96,7 @@ export function OKRColumnsDialog({
             <Button variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button onClick={handleSave} className="bg-brand-gold hover:bg-brand-gold-hover text-white">
+            <Button onClick={handleSave} className="bg-brand-primary hover:bg-brand-primary-hover text-white">
               Save
             </Button>
           </div>

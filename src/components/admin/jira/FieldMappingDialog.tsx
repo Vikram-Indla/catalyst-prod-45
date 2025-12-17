@@ -198,7 +198,7 @@ export function FieldMappingDialog({ open, onOpenChange, connectionId }: FieldMa
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={loading} className="bg-brand-gold hover:bg-brand-gold-hover">
+          <Button onClick={handleSave} disabled={loading} className="bg-brand-primary hover:bg-brand-primary-hover">
             {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
             Save Mappings
           </Button>

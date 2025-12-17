@@ -43,12 +43,12 @@ export const surface = {
   // Interactive surfaces
   hovered: 'hsl(var(--accent))',
   pressed: 'hsl(var(--accent))',
-  selected: 'hsl(var(--brand-gold-pale))',
+  selected: 'hsl(var(--brand-primary-pale))',
   selectedHovered: 'hsl(35 46% 60% / 0.12)',
   
   // Brand surfaces
   brandSubtle: 'hsl(35 46% 60% / 0.08)',
-  brandBold: 'hsl(var(--brand-gold))',
+  brandBold: 'hsl(var(--brand-primary))',
   
   // Status surfaces
   successSubtle: 'hsl(var(--success) / 0.1)',
@@ -71,12 +71,12 @@ export const text = {
   inverse: 'hsl(var(--text-inverse))',
   
   // Brand text
-  brand: 'hsl(var(--brand-gold))',
-  brandHover: 'hsl(var(--brand-gold-hover))',
+  brand: 'hsl(var(--brand-primary))',
+  brandHover: 'hsl(var(--brand-primary-hover))',
   
   // Link text
-  link: 'hsl(var(--brand-gold))',
-  linkHover: 'hsl(var(--brand-gold-hover))',
+  link: 'hsl(var(--brand-primary))',
+  linkHover: 'hsl(var(--brand-primary-hover))',
   linkPressed: 'hsl(35 46% 50%)',
   
   // Status text
@@ -100,8 +100,8 @@ export const border = {
   focusInset: 'hsl(var(--background))',
   
   // Brand borders
-  brand: 'hsl(var(--brand-gold))',
-  brandSubtle: 'hsl(var(--brand-gold-border))',
+  brand: 'hsl(var(--brand-primary))',
+  brandSubtle: 'hsl(var(--brand-primary-border))',
   
   // Status borders
   success: 'hsl(var(--success))',
@@ -275,10 +275,10 @@ export const interactive = {
   
   // Selected state
   selected: {
-    bg: 'hsl(var(--brand-gold-pale))',
+    bg: 'hsl(var(--brand-primary-pale))',
     text: 'hsl(var(--foreground))',
-    border: 'hsl(var(--brand-gold))',
-    indicator: 'hsl(var(--brand-gold))',
+    border: 'hsl(var(--brand-primary))',
+    indicator: 'hsl(var(--brand-primary))',
   },
   
   // Disabled state

@@ -124,7 +124,7 @@ export async function exportRoadmapToPDF(
       pdf.rect(0, 0, pageWidth, 6, 'F');
       
       // Gold accent line
-      pdf.setFillColor(198, 156, 109); // brand-gold
+      pdf.setFillColor(198, 156, 109); // brand-primary
       pdf.rect(0, 6, pageWidth, 1, 'F');
 
       // Title

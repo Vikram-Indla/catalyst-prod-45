@@ -142,7 +142,7 @@ export const epicRoadmapConfig: RoadmapConfig = {
 
   header: {
     icon: 'EP',
-    iconGradient: 'linear-gradient(135deg, hsl(var(--brand-gold)), hsl(var(--brand-gold) / 0.6))',
+    iconGradient: 'linear-gradient(135deg, hsl(var(--brand-primary)), hsl(var(--brand-primary) / 0.6))',
   },
 
   legend: {

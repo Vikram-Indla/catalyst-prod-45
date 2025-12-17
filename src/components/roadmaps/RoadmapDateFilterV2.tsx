@@ -219,8 +219,8 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
           className={cn(
             "flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all duration-200 text-sm",
             isOpen 
-              ? "bg-brand-gold text-white border-brand-gold shadow-md" 
-              : "bg-background text-foreground border-border hover:border-brand-gold/50",
+              ? "bg-brand-primary text-white border-brand-primary shadow-md" 
+              : "bg-background text-foreground border-border hover:border-brand-primary/50",
             className
           )}
         >
@@ -246,8 +246,8 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
                 className={cn(
                   "flex-1 px-3 py-2 text-sm font-medium rounded-lg border transition-all",
                   draftViewport.scale === opt.value
-                    ? "bg-brand-gold text-white border-brand-gold"
-                    : "bg-background text-foreground border-border hover:border-brand-gold/50"
+                    ? "bg-brand-primary text-white border-brand-primary"
+                    : "bg-background text-foreground border-border hover:border-brand-primary/50"
                 )}
               >
                 {opt.label}
@@ -270,13 +270,13 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
                   className={cn(
                     "relative px-4 py-2.5 text-sm font-medium rounded-lg border transition-all min-w-[72px]",
                     isSelected
-                      ? "bg-brand-gold text-white border-brand-gold"
-                      : "bg-muted/50 text-foreground border-border hover:border-brand-gold/50"
+                      ? "bg-brand-primary text-white border-brand-primary"
+                      : "bg-muted/50 text-foreground border-border hover:border-brand-primary/50"
                   )}
                 >
                   {year}
                   {isCurrent && !isSelected && (
-                    <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-brand-gold" />
+                    <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-brand-primary" />
                   )}
                 </button>
               );
@@ -294,8 +294,8 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
                 className={cn(
                   "text-xs font-medium transition-colors",
                   draftViewport.selectedQuarters.length === 4
-                    ? "text-brand-gold"
-                    : "text-muted-foreground hover:text-brand-gold"
+                    ? "text-brand-primary"
+                    : "text-muted-foreground hover:text-brand-primary"
                 )}
               >
                 All
@@ -312,13 +312,13 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
                     className={cn(
                       "relative px-3 py-2.5 text-sm font-medium rounded-lg border transition-all",
                       isSelected
-                        ? "bg-brand-gold text-white border-brand-gold"
-                        : "bg-muted/50 text-foreground border-border hover:border-brand-gold/50"
+                        ? "bg-brand-primary text-white border-brand-primary"
+                        : "bg-muted/50 text-foreground border-border hover:border-brand-primary/50"
                     )}
                   >
                     Q{q}
                     {isCurrent && !isSelected && (
-                      <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-brand-gold" />
+                      <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-brand-primary" />
                     )}
                   </button>
                 );
@@ -351,8 +351,8 @@ export const RoadmapDateFilterV2: React.FC<RoadmapDateFilterV2Props> = ({
               className={cn(
                 "flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-colors",
                 hasChanges || draftViewport.selectedYears.length === 0
-                  ? "bg-brand-gold text-white hover:bg-brand-gold-hover"
-                  : "bg-brand-gold/50 text-white/70 cursor-not-allowed"
+                  ? "bg-brand-primary text-white hover:bg-brand-primary-hover"
+                  : "bg-brand-primary/50 text-white/70 cursor-not-allowed"
               )}
             >
               Apply
@@ -383,7 +383,7 @@ export const RoadmapDebugOverlay: React.FC<RoadmapDebugOverlayProps> = ({
 }) => {
   return (
     <div className="fixed bottom-4 right-4 z-50 p-4 bg-black/90 text-white text-xs font-mono rounded-lg shadow-xl max-w-sm">
-      <div className="text-brand-gold font-semibold mb-2">🔍 Viewport Debug</div>
+      <div className="text-brand-primary font-semibold mb-2">🔍 Viewport Debug</div>
       
       <div className="mb-2">
         <div className="text-muted-foreground">Applied Viewport:</div>

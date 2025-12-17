@@ -137,7 +137,7 @@ export function DraggableColumnHeaders({
                         className={cn(
                           "relative shrink-0 group",
                           isCentered && 'text-center',
-                          snapshot.isDragging && 'bg-card shadow-lg rounded-md px-2 py-1 z-50 border border-brand-gold/30'
+                          snapshot.isDragging && 'bg-card shadow-lg rounded-md px-2 py-1 z-50 border border-brand-primary/30'
                         )}
                         style={{ 
                           width: `${width}px`,
@@ -166,8 +166,8 @@ export function DraggableColumnHeaders({
                         <div
                           className={cn(
                             "absolute right-0 top-0 h-full w-1.5 cursor-col-resize z-10",
-                            "hover:bg-brand-gold/50 active:bg-brand-gold transition-colors",
-                            resizing === col.id && "bg-brand-gold"
+                            "hover:bg-brand-primary/50 active:bg-brand-primary transition-colors",
+                            resizing === col.id && "bg-brand-primary"
                           )}
                           onMouseDown={(e) => handleResizeMouseDown(e, col.id)}
                         />

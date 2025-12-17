@@ -39,7 +39,7 @@ export function WorkItemPresence({ workItemType, workItemId }: WorkItemPresenceP
                       className={`text-[10px] ${
                         user.status === 'editing' 
                           ? 'bg-amber-100 text-amber-700' 
-                          : 'bg-brand-gold/20 text-brand-gold'
+                          : 'bg-brand-primary/20 text-brand-primary'
                       }`}
                     >
                       {getInitials(user.user_name, user.user_email)}

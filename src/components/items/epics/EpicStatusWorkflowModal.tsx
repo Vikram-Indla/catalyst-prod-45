@@ -67,20 +67,20 @@ export function EpicStatusWorkflowModal({
                   onClick={() => handleSelectStatus(status.value)}
                   className={cn(
                     "justify-start h-auto py-3 px-4",
-                    isActive && "border-brand-gold bg-brand-gold/5"
+                    isActive && "border-brand-primary bg-brand-primary/5"
                   )}
                 >
                   <div className="flex items-start gap-3 w-full">
                     <div className={cn(
                       "w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5",
-                      isActive ? "border-brand-gold bg-brand-gold" : "border-muted-foreground/30"
+                      isActive ? "border-brand-primary bg-brand-primary" : "border-muted-foreground/30"
                     )}>
                       {isActive && <Check className="h-3 w-3 text-white" />}
                     </div>
                     <div className="text-left">
                       <div className={cn(
                         "font-medium",
-                        isActive && "text-brand-gold"
+                        isActive && "text-brand-primary"
                       )}>
                         {status.label}
                       </div>

@@ -150,7 +150,7 @@ export function EpicDiscussionsTab({ epic }: EpicDiscussionsTabProps) {
   const formatMessage = (message: string) => {
     // Replace @[name](id) with styled mention
     return message.replace(/@\[([^\]]+)\]\([^)]+\)/g, (_, name) => {
-      return `<span class="text-brand-gold font-medium">@${name}</span>`;
+      return `<span class="text-brand-primary font-medium">@${name}</span>`;
     });
   };
 
@@ -192,7 +192,7 @@ export function EpicDiscussionsTab({ epic }: EpicDiscussionsTabProps) {
                 <Card key={discussion.id} className="p-4">
                   <div className="flex gap-3">
                     <Avatar className="h-8 w-8">
-                      <AvatarFallback className="text-xs bg-brand-gold/10 text-brand-gold">
+                      <AvatarFallback className="text-xs bg-brand-primary/10 text-brand-primary">
                         {getInitials(profile?.full_name, profile?.email)}
                       </AvatarFallback>
                     </Avatar>
@@ -283,7 +283,7 @@ export function EpicDiscussionsTab({ epic }: EpicDiscussionsTabProps) {
           <Button 
             type="submit" 
             disabled={!newComment.trim() || addCommentMutation.isPending}
-            className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+            className="bg-brand-primary hover:bg-brand-primary-hover text-white"
           >
             <Send className="h-4 w-4 mr-2" />
             {addCommentMutation.isPending ? 'Sending...' : 'Send'}

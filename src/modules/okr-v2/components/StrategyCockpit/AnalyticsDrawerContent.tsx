@@ -113,7 +113,7 @@ function DrawerSection({ title, icon: Icon, children }: { title: string; icon: R
   return (
     <div className="mb-5">
       <div className="flex items-center gap-2 mb-3 pb-2 border-b border-border">
-        <Icon className="h-4 w-4 text-brand-gold" />
+        <Icon className="h-4 w-4 text-brand-primary" />
         <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{title}</h4>
       </div>
       <div>{children}</div>
@@ -129,7 +129,7 @@ export function AnalyticsDrawerContent({ selectedItem, themes }: AnalyticsDrawer
   const [alignmentOpen, setAlignmentOpen] = useState(false);
 
   const theme = themes.find((t) => t.id === (selectedItem as any).themeId);
-  const themeColor = theme?.color || 'hsl(var(--brand-gold))';
+  const themeColor = theme?.color || 'hsl(var(--brand-primary))';
   
   const objective = selectedItem.type === 'objective' 
     ? selectedItem as Objective 
@@ -159,7 +159,7 @@ export function AnalyticsDrawerContent({ selectedItem, themes }: AnalyticsDrawer
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="p-5 bg-card border-b border-brand-gold/50">
+      <div className="p-5 bg-card border-b border-brand-primary/50">
         <div className="flex items-center gap-2.5 mb-3">
           <span className="px-2.5 py-1 rounded text-xs font-semibold uppercase tracking-wider" style={{ backgroundColor: `${themeColor}15`, color: themeColor }}>
             {headerLabel}
@@ -187,7 +187,7 @@ export function AnalyticsDrawerContent({ selectedItem, themes }: AnalyticsDrawer
             <div className="p-4 bg-card rounded-lg border border-border">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-xs text-muted-foreground">Overall Progress</span>
-                <span className={cn("text-xl font-bold", selectedItem.progress >= 70 ? "text-secondary-green" : selectedItem.progress >= 40 ? "text-brand-gold" : "text-destructive")}>
+                <span className={cn("text-xl font-bold", selectedItem.progress >= 70 ? "text-secondary-green" : selectedItem.progress >= 40 ? "text-brand-primary" : "text-destructive")}>
                   {selectedItem.progress}%
                 </span>
               </div>
@@ -288,7 +288,7 @@ export function AnalyticsDrawerContent({ selectedItem, themes }: AnalyticsDrawer
               <ul className="space-y-2">
                 {insights.map((insight, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm text-foreground">
-                    <span className="text-brand-gold mt-0.5">•</span>
+                    <span className="text-brand-primary mt-0.5">•</span>
                     <span>{insight}</span>
                   </li>
                 ))}

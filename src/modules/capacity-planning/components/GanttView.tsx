@@ -508,7 +508,7 @@ export function GanttView({
               className="flex-shrink-0 flex items-center justify-center gap-2 text-muted-foreground group-hover:text-brand-primary transition-all duration-200"
               style={{ width: resourceColWidth }}
             >
-              <div className="w-7 h-7 rounded-full border-2 border-dashed flex items-center justify-center group-hover:border-brand-gold">
+              <div className="w-7 h-7 rounded-full border-2 border-dashed flex items-center justify-center group-hover:border-brand-primary">
                 <Plus className="h-4 w-4" />
               </div>
               {isResourceColumnExpanded && <span className="text-sm font-medium">Add Resource</span>}

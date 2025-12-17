@@ -199,7 +199,7 @@ export function BusinessScoreViewTab({ data, onChange, onDirtyChange, totalDeman
                 <Label className="text-sm font-medium">1. Executive Urgency</Label>
                 <p className="text-xs text-muted-foreground">0 = no urgency, 10 = critical</p>
               </div>
-              <div className="w-10 h-10 rounded-full border-2 border-brand-gold flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full border-2 border-brand-primary flex items-center justify-center">
                 <span className="text-sm font-bold text-foreground">{executiveUrgency}</span>
               </div>
             </div>
@@ -226,7 +226,7 @@ export function BusinessScoreViewTab({ data, onChange, onDirtyChange, totalDeman
                 <Label className="text-sm font-medium">2. Business Value</Label>
                 <p className="text-xs text-muted-foreground">0 = minimal, 10 = very high strategic value</p>
               </div>
-              <div className="w-10 h-10 rounded-full border-2 border-brand-gold flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full border-2 border-brand-primary flex items-center justify-center">
                 <span className="text-sm font-bold text-foreground">{businessValue}</span>
               </div>
             </div>
@@ -253,7 +253,7 @@ export function BusinessScoreViewTab({ data, onChange, onDirtyChange, totalDeman
                 <Label className="text-sm font-medium">3. Complexity</Label>
                 <p className="text-xs text-muted-foreground">0 = simple, 10 = very complex</p>
               </div>
-              <div className="w-10 h-10 rounded-full border-2 border-brand-gold flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full border-2 border-brand-primary flex items-center justify-center">
                 <span className="text-sm font-bold text-foreground">{complexityScore}</span>
               </div>
             </div>
@@ -331,7 +331,7 @@ export function BusinessScoreViewTab({ data, onChange, onDirtyChange, totalDeman
             
             {/* Edit Mode Content - Show when editing */}
             {isEditingOverride && (
-              <div className="p-4 space-y-4 border-t border-border bg-brand-gold/5">
+              <div className="p-4 space-y-4 border-t border-border bg-brand-primary/5">
                 {/* Rank Selector */}
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">Select Rank</Label>
@@ -372,7 +372,7 @@ export function BusinessScoreViewTab({ data, onChange, onDirtyChange, totalDeman
                     size="sm"
                     onClick={handleSaveJustification}
                     disabled={!editRank || !editJustification.trim()}
-                    className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+                    className="bg-brand-primary hover:bg-brand-primary-hover text-white"
                   >
                     <Save className="h-4 w-4 mr-1" />
                     Save Justification

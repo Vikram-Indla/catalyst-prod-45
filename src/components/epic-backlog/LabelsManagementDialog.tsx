@@ -20,7 +20,7 @@ interface LabelsManagementDialogProps {
 
 const LABEL_COLORS = [
   { name: 'Red', value: 'red', bg: 'bg-destructive' },
-  { name: 'Orange', value: 'orange', bg: 'bg-brand-gold' },
+  { name: 'Orange', value: 'orange', bg: 'bg-brand-primary' },
   { name: 'Yellow', value: 'yellow', bg: 'bg-warning' },
   { name: 'Green', value: 'green', bg: 'bg-success' },
   { name: 'Teal', value: 'teal', bg: 'bg-info' },

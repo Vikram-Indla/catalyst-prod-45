@@ -68,7 +68,7 @@ export function RiskMitigationTab({ risk, formData, onChange, isEditing }: RiskM
   return (
     <div className="space-y-5">
       {/* MITIGATION Section Header */}
-      <h4 className="text-xs font-semibold uppercase tracking-wider text-brand-gold">Mitigation</h4>
+      <h4 className="text-xs font-semibold uppercase tracking-wider text-brand-primary">Mitigation</h4>
 
       {/* Mitigation Plan */}
       <div>

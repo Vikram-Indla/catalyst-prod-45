@@ -466,7 +466,7 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
         <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
           <span className="text-sm text-muted-foreground">Overall Progress</span>
           <div className="flex-1">
-            <Progress value={progress} className="h-2 bg-border [&>div]:bg-brand-gold" />
+            <Progress value={progress} className="h-2 bg-border [&>div]:bg-brand-primary" />
           </div>
           <span className="text-sm font-medium text-foreground">{progress}%</span>
         </div>
@@ -476,25 +476,25 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
           <TabsList className="w-full justify-start px-4 py-0 h-10 bg-transparent border-b border-border rounded-none">
             <TabsTrigger 
               value="overview" 
-              className="data-[state=active]:border-b-2 data-[state=active]:border-brand-gold rounded-none"
+              className="data-[state=active]:border-b-2 data-[state=active]:border-brand-primary rounded-none"
             >
               Overview
             </TabsTrigger>
             <TabsTrigger 
               value="quarters"
-              className="data-[state=active]:border-b-2 data-[state=active]:border-brand-gold rounded-none"
+              className="data-[state=active]:border-b-2 data-[state=active]:border-brand-primary rounded-none"
             >
               Quarters
             </TabsTrigger>
             <TabsTrigger 
               value="themes"
-              className="data-[state=active]:border-b-2 data-[state=active]:border-brand-gold rounded-none"
+              className="data-[state=active]:border-b-2 data-[state=active]:border-brand-primary rounded-none"
             >
               Themes
             </TabsTrigger>
             <TabsTrigger 
               value="audit"
-              className="data-[state=active]:border-b-2 data-[state=active]:border-brand-gold rounded-none"
+              className="data-[state=active]:border-b-2 data-[state=active]:border-brand-primary rounded-none"
             >
               Audit History
             </TabsTrigger>
@@ -747,14 +747,14 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
                       className={cn(
                         'flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors',
                         isSelected 
-                          ? 'bg-[rgba(198,156,109,0.08)] border-brand-gold/30' 
-                          : 'bg-background border-border hover:border-brand-gold/20'
+                          ? 'bg-[rgba(198,156,109,0.08)] border-brand-primary/30' 
+                          : 'bg-background border-border hover:border-brand-primary/20'
                       )}
                     >
                       <Checkbox
                         checked={isSelected}
                         onCheckedChange={() => handleThemeToggle(theme.id)}
-                        className="data-[state=checked]:bg-brand-gold data-[state=checked]:border-brand-gold"
+                        className="data-[state=checked]:bg-brand-primary data-[state=checked]:border-brand-primary"
                       />
                       <div className="flex-1">
                         <div className="font-medium text-foreground">{theme.name}</div>

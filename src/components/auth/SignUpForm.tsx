@@ -233,11 +233,11 @@ export function SignUpForm({ onSubmit, loading: externalLoading }: SignUpFormPro
           label={
             <span className="text-xs text-text-secondary leading-relaxed">
               I agree to the{" "}
-              <a href="#" className="font-medium text-brand-gold hover:underline">
+              <a href="#" className="font-medium text-brand-primary hover:underline">
                 Terms of Service
               </a>{" "}
               and{" "}
-              <a href="#" className="font-medium text-brand-gold hover:underline">
+              <a href="#" className="font-medium text-brand-primary hover:underline">
                 Privacy Policy
               </a>
             </span>

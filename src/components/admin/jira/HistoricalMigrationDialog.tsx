@@ -152,7 +152,7 @@ export function HistoricalMigrationDialog({
               Cancel
             </Button>
             <Button
-              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
               onClick={startMigration}
               disabled={isRunning || selectedTypes.length === 0}
             >

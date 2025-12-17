@@ -137,7 +137,7 @@ export default function UseTrend() {
                       <div className="flex items-center gap-2">
                         <div className="w-32 h-2 bg-muted rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-brand-gold"
+                            className="h-full bg-brand-primary"
                             style={{
                               width: `${(count / Math.max(...Object.values(activityByDay))) * 100}%`,
                             }}
@@ -167,7 +167,7 @@ export default function UseTrend() {
                   {topEntities.map(([type, count], index) => (
                     <div key={type} className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-brand-gold/10 text-brand-gold text-xs font-bold">
+                        <span className="flex items-center justify-center w-6 h-6 rounded-full bg-brand-primary/10 text-brand-primary text-xs font-bold">
                           {index + 1}
                         </span>
                         <span className="text-sm font-medium">{type}</span>

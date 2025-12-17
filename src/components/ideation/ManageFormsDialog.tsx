@@ -153,7 +153,7 @@ export function ManageFormsDialog({ open, onOpenChange, onSelectForm }: ManageFo
                         key={form.id}
                         className={`flex items-center justify-between p-2 rounded cursor-pointer text-sm ${
                           selectedFormId === form.id
-                            ? 'bg-brand-gold/10 text-foreground'
+                            ? 'bg-brand-primary/10 text-foreground'
                             : 'hover:bg-muted/50'
                         }`}
                         onClick={() => setSelectedFormId(form.id)}

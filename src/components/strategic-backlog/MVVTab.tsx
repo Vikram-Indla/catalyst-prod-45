@@ -196,7 +196,7 @@ export function MVVTab({ missions, visions, values, links, snapshotId, isArchive
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-7 px-2 text-muted-foreground hover:text-brand-gold"
+                                className="h-7 px-2 text-muted-foreground hover:text-brand-primary"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleLink(section.type, item.id);

@@ -136,7 +136,7 @@ function SnapshotTableRow({
       onClick={() => onSelect(snapshot)}
     >
       <td className="py-3 px-4">
-        <span className="font-medium text-foreground group-hover:text-[hsl(var(--brand-gold))] transition-colors">
+        <span className="font-medium text-foreground group-hover:text-[hsl(var(--brand-primary))] transition-colors">
           {snapshot.name}
         </span>
       </td>
@@ -251,7 +251,7 @@ export default function StrategicSnapshots() {
   const createSnapshotCta = (
     <Button 
       onClick={() => setCreateModalOpen(true)} 
-      className="h-8 bg-[hsl(var(--brand-gold))] hover:bg-[hsl(var(--brand-gold-hover))] text-white"
+      className="h-8 bg-[hsl(var(--brand-primary))] hover:bg-[hsl(var(--brand-primary-hover))] text-white"
     >
       <Plus className="h-4 w-4 mr-2" />
       Create Snapshot
@@ -388,7 +388,7 @@ export default function StrategicSnapshots() {
             {!searchQuery && (
               <Button 
                 onClick={() => setCreateModalOpen(true)} 
-                className="bg-[hsl(var(--brand-gold))] hover:bg-[hsl(var(--brand-gold-hover))] text-white"
+                className="bg-[hsl(var(--brand-primary))] hover:bg-[hsl(var(--brand-primary-hover))] text-white"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Create Snapshot

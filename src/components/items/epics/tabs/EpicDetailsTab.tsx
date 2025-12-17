@@ -833,7 +833,7 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
                 <Badge 
                   key={index} 
                   variant="secondary" 
-                  className="flex items-center gap-1 px-2 py-1 bg-brand-gold/10 text-brand-gold border-brand-gold/20"
+                  className="flex items-center gap-1 px-2 py-1 bg-brand-primary/10 text-brand-primary border-brand-primary/20"
                 >
                   {tag.trim()}
                   <button

@@ -96,26 +96,26 @@ export function ThemeDrawer({ open, onOpenChange, theme, isArchived }: ThemeDraw
             <TabsList className="mx-6 mt-4 justify-start bg-transparent border-b border-border rounded-none p-0 h-auto">
               <TabsTrigger 
                 value="details" 
-                className="rounded-none border-b-2 border-transparent data-[state=active]:border-brand-gold data-[state=active]:bg-transparent px-4 pb-2"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-brand-primary data-[state=active]:bg-transparent px-4 pb-2"
               >
                 Details
               </TabsTrigger>
               <TabsTrigger 
                 value="alignment"
-                className="rounded-none border-b-2 border-transparent data-[state=active]:border-brand-gold data-[state=active]:bg-transparent px-4 pb-2"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-brand-primary data-[state=active]:bg-transparent px-4 pb-2"
               >
                 Alignment
               </TabsTrigger>
               <TabsTrigger 
                 value="discussions"
-                className="rounded-none border-b-2 border-transparent data-[state=active]:border-brand-gold data-[state=active]:bg-transparent px-4 pb-2"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-brand-primary data-[state=active]:bg-transparent px-4 pb-2"
               >
                 <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
                 Discussions
               </TabsTrigger>
               <TabsTrigger 
                 value="audit"
-                className="rounded-none border-b-2 border-transparent data-[state=active]:border-brand-gold data-[state=active]:bg-transparent px-4 pb-2"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-brand-primary data-[state=active]:bg-transparent px-4 pb-2"
               >
                 <History className="h-3.5 w-3.5 mr-1.5" />
                 Audit Trail
@@ -264,7 +264,7 @@ export function ThemeDrawer({ open, onOpenChange, theme, isArchived }: ThemeDraw
                 Cancel
               </Button>
               {!isReadOnly && (
-                <Button onClick={handleSave} className="bg-brand-gold hover:bg-brand-gold/90">
+                <Button onClick={handleSave} className="bg-brand-primary hover:bg-brand-primary/90">
                   Save
                 </Button>
               )}

@@ -149,7 +149,7 @@ export function ImportStepFieldMapping({
                     >
                       <SelectTrigger className={cn(
                         'w-full bg-background',
-                        mappedFieldKey && 'border-brand-gold/50'
+                        mappedFieldKey && 'border-brand-primary/50'
                       )}>
                         <SelectValue placeholder="Don't map this field" />
                       </SelectTrigger>
@@ -184,7 +184,7 @@ export function ImportStepFieldMapping({
                               "h-5 w-5 border-2 transition-all",
                               checkboxDisabled 
                                 ? "opacity-40 cursor-not-allowed border-muted-foreground/30 bg-muted/50" 
-                                : "cursor-pointer border-brand-gold hover:border-brand-gold-hover data-[state=checked]:bg-brand-gold data-[state=checked]:border-brand-gold"
+                                : "cursor-pointer border-brand-primary hover:border-brand-primary-hover data-[state=checked]:bg-brand-primary data-[state=checked]:border-brand-primary"
                             )}
                           />
                         </div>

@@ -118,7 +118,7 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
               <Button 
                 size="sm" 
                 className="h-7 text-[12px]"
-                style={{ backgroundColor: 'hsl(var(--brand-gold))', color: 'white' }}
+                style={{ backgroundColor: 'hsl(var(--brand-primary))', color: 'white' }}
                 onClick={() => {/* TODO: open create objective modal */}}
               >
                 Create Objective

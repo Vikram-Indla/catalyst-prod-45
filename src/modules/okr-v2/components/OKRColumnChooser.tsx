@@ -84,7 +84,7 @@ export function OKRColumnChooser({ columns, onColumnsChange }: OKRColumnChooserP
                 className={cn(
                   'h-4 w-4 rounded border flex items-center justify-center flex-shrink-0',
                   col.visible
-                    ? 'bg-brand-gold border-brand-gold'
+                    ? 'bg-brand-primary border-brand-primary'
                     : 'border-border'
                 )}
               >

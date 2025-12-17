@@ -153,8 +153,8 @@ export default function CapacityPage() {
       {/* Header - align with sidebar */}
       <div className="h-[72px] border-b border-border bg-card flex-shrink-0 px-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-brand-gold/20 flex items-center justify-center">
-            <Users className="h-5 w-5 text-brand-gold" />
+          <div className="w-10 h-10 rounded-lg bg-brand-primary/20 flex items-center justify-center">
+            <Users className="h-5 w-5 text-brand-primary" />
           </div>
           <div>
             <h1 className="text-lg font-semibold text-foreground">Resource Allocation Heat Map</h1>
@@ -185,7 +185,7 @@ export default function CapacityPage() {
                 className={cn(
                   "px-4 py-2 rounded-lg text-sm font-medium transition-all",
                   selectedIndex === i
-                    ? "bg-brand-gold text-white shadow-sm"
+                    ? "bg-brand-primary text-white shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >

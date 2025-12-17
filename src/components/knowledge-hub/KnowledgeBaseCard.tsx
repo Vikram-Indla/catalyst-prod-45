@@ -45,7 +45,7 @@ export function KnowledgeBaseCard({ workItemId, workItemType }: KnowledgeBaseCar
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm font-semibold flex items-center gap-2">
-            <BookOpen className="h-4 w-4 text-brand-gold" />
+            <BookOpen className="h-4 w-4 text-brand-primary" />
             Knowledge Base
           </CardTitle>
           <Button 

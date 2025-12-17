@@ -9,7 +9,7 @@ import { useEnabledModules } from '@/hooks/useModules';
 // Work Items section - core deliverables
 const workItems = [
   { key: 'themes', label: 'Themes', icon: Circle, color: 'bg-workitem-theme', moduleCode: 'PORTFOLIO' },
-  { key: 'business-requests', label: 'Business Request', icon: Building2, color: 'bg-brand-gold', moduleCode: 'PRODUCT' },
+  { key: 'business-requests', label: 'Business Request', icon: Building2, color: 'bg-brand-primary', moduleCode: 'PRODUCT' },
   { key: 'epics', label: 'Epics', icon: Square, color: 'bg-workitem-epic', moduleCode: 'PORTFOLIO' },
   { key: 'features', label: 'Features', icon: Gem, color: 'bg-workitem-feature', moduleCode: 'PROGRAM' },
   { key: 'stories', label: 'Stories', icon: FileText, color: 'bg-workitem-story', moduleCode: 'TEAMS' },
@@ -23,10 +23,10 @@ const planningItems = [
 
 // Other section - supporting items
 const otherItems = [
-  { key: 'objectives', label: 'Objectives', icon: Target, color: 'bg-brand-gold', moduleCode: 'ENTERPRISE' },
-  { key: 'dependencies', label: 'Dependencies', icon: GitBranch, color: 'bg-brand-gold', moduleCode: 'PROGRAM' },
+  { key: 'objectives', label: 'Objectives', icon: Target, color: 'bg-brand-primary', moduleCode: 'ENTERPRISE' },
+  { key: 'dependencies', label: 'Dependencies', icon: GitBranch, color: 'bg-brand-primary', moduleCode: 'PROGRAM' },
   { key: 'risks', label: 'Risks', icon: AlertTriangle, color: 'bg-destructive', moduleCode: 'ENTERPRISE' },
-  { key: 'sprints', label: 'Sprints', icon: Calendar, color: 'bg-brand-gold', moduleCode: 'PROGRAM' },
+  { key: 'sprints', label: 'Sprints', icon: Calendar, color: 'bg-brand-primary', moduleCode: 'PROGRAM' },
   { key: 'program-increments', label: 'Program Increments', icon: Package, color: 'bg-workitem-theme', moduleCode: 'PROGRAM' },
   { key: 'incidents', label: 'Incidents', icon: Siren, color: 'bg-destructive', moduleCode: null },
 ];

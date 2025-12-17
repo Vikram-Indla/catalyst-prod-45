@@ -104,7 +104,7 @@ export function BacklogEnterpriseTable({
           <Badge 
             key={i} 
             variant="outline" 
-            className="text-[10px] px-1.5 py-0 h-5 border-brand-gold/50 text-brand-gold"
+            className="text-[10px] px-1.5 py-0 h-5 border-brand-primary/50 text-brand-primary"
           >
             {q}
           </Badge>

@@ -30,7 +30,7 @@ export function RankUpdateNotification({
   return (
     <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 z-50">
       <div 
-        className="bg-gradient-to-r from-brand-gold/95 to-brand-gold-hover/95 backdrop-blur-sm text-white px-4 py-3 rounded-lg shadow-lg border border-brand-gold-hover/50 animate-in fade-in zoom-in-95 duration-300 whitespace-nowrap"
+        className="bg-gradient-to-r from-brand-primary/95 to-brand-primary-hover/95 backdrop-blur-sm text-white px-4 py-3 rounded-lg shadow-lg border border-brand-primary-hover/50 animate-in fade-in zoom-in-95 duration-300 whitespace-nowrap"
         style={{
           boxShadow: '0 10px 30px -10px rgba(198, 156, 109, 0.5)'
         }}

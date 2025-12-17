@@ -342,7 +342,7 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
                       className="flex items-center justify-between p-2 bg-muted/50 rounded-md border border-border/40"
                     >
                       <div className="flex items-center gap-2 min-w-0">
-                        <FileText className="h-4 w-4 text-brand-gold shrink-0" />
+                        <FileText className="h-4 w-4 text-brand-primary shrink-0" />
                         <span className="text-sm truncate">{file.name}</span>
                         <span className="text-xs text-muted-foreground shrink-0">({formatFileSize(file.size)})</span>
                       </div>
@@ -422,7 +422,7 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
       {/* Delivery Context Section */}
       <Card className="border border-border/60 rounded-lg bg-card">
         <CardContent className="p-5 space-y-4">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">Delivery Context</h3>
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-primary">Delivery Context</h3>
           
           <div className="grid grid-cols-2 gap-4">
             <div>

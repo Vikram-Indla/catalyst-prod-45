@@ -4,8 +4,8 @@ import type { ObjectiveStatus } from "../../types/objective.types";
 
 const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
   pending: { label: "Pending", className: "bg-muted text-muted-foreground" },
-  "in-progress": { label: "In Progress", className: "bg-brand-gold/20 text-brand-gold border-brand-gold/30" },
-  in_progress: { label: "In Progress", className: "bg-brand-gold/20 text-brand-gold border-brand-gold/30" },
+  "in-progress": { label: "In Progress", className: "bg-brand-primary/20 text-brand-primary border-brand-primary/30" },
+  in_progress: { label: "In Progress", className: "bg-brand-primary/20 text-brand-primary border-brand-primary/30" },
   "on-track": { label: "On Track", className: "bg-success/20 text-success border-success/30" },
   on_track: { label: "On Track", className: "bg-success/20 text-success border-success/30" },
   "at-risk": { label: "At Risk", className: "bg-warning/20 text-warning border-warning/30" },

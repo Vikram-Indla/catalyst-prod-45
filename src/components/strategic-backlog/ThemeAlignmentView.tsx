@@ -156,7 +156,7 @@ export function ThemeAlignmentView({ themes, snapshotId, isArchived }: ThemeAlig
                   <div className="flex items-center gap-2 mb-1">
                     <div
                       className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: theme.color_tag || 'hsl(var(--brand-gold))' }}
+                      style={{ backgroundColor: theme.color_tag || 'hsl(var(--brand-primary))' }}
                     />
                     <span className="text-sm font-medium text-foreground truncate">{theme.name}</span>
                   </div>
@@ -179,7 +179,7 @@ export function ThemeAlignmentView({ themes, snapshotId, isArchived }: ThemeAlig
             <Palette className="h-4 w-4 text-muted-foreground" />
             <span className="text-sm font-medium">
               Objectives linked to{' '}
-              <span className="text-brand-gold">{selectedTheme?.name || 'theme'}</span>
+              <span className="text-brand-primary">{selectedTheme?.name || 'theme'}</span>
             </span>
             <Badge variant="outline" className="ml-1">
               {linkedObjectivesData.length}
@@ -204,7 +204,7 @@ export function ThemeAlignmentView({ themes, snapshotId, isArchived }: ThemeAlig
                 size="sm"
                 onClick={() => setLinkDrawerOpen(true)}
                 disabled={!selectedThemeId}
-                className="bg-brand-gold hover:bg-brand-gold/90"
+                className="bg-brand-primary hover:bg-brand-primary/90"
               >
                 <LinkIcon className="h-3.5 w-3.5 mr-1" />
                 Link Objectives
@@ -225,7 +225,7 @@ export function ThemeAlignmentView({ themes, snapshotId, isArchived }: ThemeAlig
                   <div className="flex items-center gap-2">
                     <div
                       className="w-2.5 h-2.5 rounded-full"
-                      style={{ backgroundColor: theme.color_tag || 'hsl(var(--brand-gold))' }}
+                      style={{ backgroundColor: theme.color_tag || 'hsl(var(--brand-primary))' }}
                     />
                     {theme.name}
                   </div>
@@ -253,7 +253,7 @@ export function ThemeAlignmentView({ themes, snapshotId, isArchived }: ThemeAlig
                 <Button
                   size="sm"
                   onClick={() => setLinkDrawerOpen(true)}
-                  className="bg-brand-gold hover:bg-brand-gold/90"
+                  className="bg-brand-primary hover:bg-brand-primary/90"
                 >
                   <LinkIcon className="h-3.5 w-3.5 mr-1" />
                   Link Objectives

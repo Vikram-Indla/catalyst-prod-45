@@ -91,7 +91,7 @@ export default function AdminDashboard() {
                 return (
                   <Card 
                     key={link.path}
-                    className="cursor-pointer hover:border-brand-gold transition-colors"
+                    className="cursor-pointer hover:border-brand-primary transition-colors"
                     onClick={() => navigate(link.path)}
                   >
                     <CardHeader className="pb-3">
@@ -107,7 +107,7 @@ export default function AdminDashboard() {
                       <Button 
                         variant="ghost" 
                         size="sm" 
-                        className="w-full justify-start text-brand-gold hover:bg-brand-gold/10"
+                        className="w-full justify-start text-brand-primary hover:bg-brand-primary/10"
                       >
                         Open →
                       </Button>
@@ -166,7 +166,7 @@ export default function AdminDashboard() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-brand-gold" />
+                  <TrendingUp className="h-5 w-5 text-brand-primary" />
                   Recent Activity
                 </CardTitle>
                 <CardDescription>
@@ -193,7 +193,7 @@ export default function AdminDashboard() {
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className="w-full mt-4 text-brand-gold hover:bg-brand-gold/10"
+                  className="w-full mt-4 text-brand-primary hover:bg-brand-primary/10"
                   onClick={() => navigate('/admin/activity')}
                 >
                   View All Activity →

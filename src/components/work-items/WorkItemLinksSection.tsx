@@ -98,12 +98,12 @@ export function WorkItemLinksSection({ workItemType, workItemId }: WorkItemLinks
       <CardContent className="p-5">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <Link2 className="h-4 w-4 text-brand-gold" />
+            <Link2 className="h-4 w-4 text-brand-primary" />
             <Label className="font-semibold">Linked Items</Label>
           </div>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-7 gap-1 text-brand-gold hover:text-brand-gold-hover">
+              <Button variant="ghost" size="sm" className="h-7 gap-1 text-brand-primary hover:text-brand-primary-hover">
                 <Plus className="h-3.5 w-3.5" />
                 Add Link
               </Button>
@@ -159,7 +159,7 @@ export function WorkItemLinksSection({ workItemType, workItemId }: WorkItemLinks
                           )}
                           onClick={() => setSelectedTargetId(item.id)}
                         >
-                          <span className="font-medium text-brand-gold mr-2">{getItemKey(item)}</span>
+                          <span className="font-medium text-brand-primary mr-2">{getItemKey(item)}</span>
                           {item.name}
                         </div>
                       ))}
@@ -196,7 +196,7 @@ export function WorkItemLinksSection({ workItemType, workItemId }: WorkItemLinks
                   >
                     {LINK_TYPE_LABELS[link.link_type] || link.link_type}
                   </Badge>
-                  <span className="text-xs font-medium text-brand-gold shrink-0">
+                  <span className="text-xs font-medium text-brand-primary shrink-0">
                     {link.linked_item_key}
                   </span>
                   <span className="text-sm truncate">{link.linked_item_name}</span>

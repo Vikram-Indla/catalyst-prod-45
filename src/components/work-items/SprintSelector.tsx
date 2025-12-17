@@ -124,7 +124,7 @@ export function SprintSelector({ storyId, currentSprintId, teamId, onSprintChang
     <Card className="bg-white border border-neutral-200 rounded-xl shadow-none">
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
-          <CalendarDays className="h-4 w-4 text-brand-gold" />
+          <CalendarDays className="h-4 w-4 text-brand-primary" />
           Sprint Assignment
         </CardTitle>
       </CardHeader>

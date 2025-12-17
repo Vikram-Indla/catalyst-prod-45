@@ -38,7 +38,7 @@ export function PasswordInput({
         onChange={e => onChange(e.target.value)}
         placeholder={placeholder}
         required={required}
-        className={`w-full transition-all outline-none pr-12 font-body text-base py-3.5 px-4 rounded-[10px] border-2 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/10 bg-white text-gray-900 placeholder:text-gray-400 ${
+        className={`w-full transition-all outline-none pr-12 font-body text-base py-3.5 px-4 rounded-[10px] border-2 focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/10 bg-white text-gray-900 placeholder:text-gray-400 ${
           hasError ? 'border-red-500' : 'border-gray-200'
         }`}
         onFocus={() => setIsFocused(true)}

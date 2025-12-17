@@ -132,7 +132,7 @@ export default function ModulesPackages() {
             </p>
           </div>
           <Button 
-            className="bg-brand-gold hover:bg-brand-gold-hover flex-shrink-0"
+            className="bg-brand-primary hover:bg-brand-primary-hover flex-shrink-0"
             onClick={handleSave}
             disabled={!hasChanges || updateSettings.isPending}
           >

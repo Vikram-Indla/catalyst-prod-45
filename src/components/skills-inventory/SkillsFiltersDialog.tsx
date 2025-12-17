@@ -138,7 +138,7 @@ function MultiSelectDropdown({
         className={cn(
           "flex items-center justify-between w-full h-10 px-3 border rounded-md text-sm bg-white transition-colors",
           selected.length > 0 ? "border-border text-foreground" : "border-border text-muted-foreground",
-          "hover:border-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-brand-gold"
+          "hover:border-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-brand-primary"
         )}
         onClick={() => setIsOpen(!isOpen)}
       >
@@ -161,7 +161,7 @@ function MultiSelectDropdown({
                 <Checkbox
                   checked={selected.includes(option)}
                   onCheckedChange={() => toggleOption(option)}
-                  className="border-border data-[state=checked]:bg-brand-gold data-[state=checked]:border-brand-gold"
+                  className="border-border data-[state=checked]:bg-brand-primary data-[state=checked]:border-brand-primary"
                 />
                 <span className="text-sm text-foreground truncate">{option}</span>
               </label>
@@ -275,8 +275,8 @@ export function SkillsFiltersDialog({
                       className={cn(
                         "px-3 py-1.5 border rounded-md text-sm cursor-pointer transition-all whitespace-nowrap font-medium",
                         localFilters.activeQuickFilter === sf.id
-                          ? "bg-brand-gold border-brand-gold text-white"
-                          : "bg-white border-border text-foreground hover:border-brand-gold hover:bg-brand-gold/5"
+                          ? "bg-brand-primary border-brand-primary text-white"
+                          : "bg-white border-border text-foreground hover:border-brand-primary hover:bg-brand-primary/5"
                       )}
                       onClick={() => handleQuickFilterClick(sf.id)}
                     >
@@ -369,7 +369,7 @@ export function SkillsFiltersDialog({
                         : current.filter(l => l !== level.label);
                       updateFilter('proficiencyLevels', newLevels.length > 0 ? newLevels : undefined);
                     }}
-                    className="border-border data-[state=checked]:bg-brand-gold data-[state=checked]:border-brand-gold"
+                    className="border-border data-[state=checked]:bg-brand-primary data-[state=checked]:border-brand-primary"
                   />
                   <span className={`h-2.5 w-2.5 rounded-full ${level.colorClass}`} />
                   <span className="text-sm text-foreground">{level.label}</span>
@@ -413,7 +413,7 @@ export function SkillsFiltersDialog({
                     max="100"
                     value={localFilters.coverageMin ?? ''}
                     onChange={(e) => updateFilter('coverageMin', e.target.value ? parseInt(e.target.value) : null)}
-                    className="w-full h-10 px-3 border border-border rounded-md text-sm bg-white focus:outline-none focus:ring-1 focus:ring-brand-gold"
+                    className="w-full h-10 px-3 border border-border rounded-md text-sm bg-white focus:outline-none focus:ring-1 focus:ring-brand-primary"
                     placeholder="0"
                   />
                 </div>
@@ -425,7 +425,7 @@ export function SkillsFiltersDialog({
                     max="100"
                     value={localFilters.coverageMax ?? ''}
                     onChange={(e) => updateFilter('coverageMax', e.target.value ? parseInt(e.target.value) : null)}
-                    className="w-full h-10 px-3 border border-border rounded-md text-sm bg-white focus:outline-none focus:ring-1 focus:ring-brand-gold"
+                    className="w-full h-10 px-3 border border-border rounded-md text-sm bg-white focus:outline-none focus:ring-1 focus:ring-brand-primary"
                     placeholder="100"
                   />
                 </div>
@@ -437,7 +437,7 @@ export function SkillsFiltersDialog({
         {/* Footer */}
         <div className="flex items-center justify-between px-4 sm:px-5 py-3.5 border-t border-border bg-white">
           <span className="text-sm">
-            <span className="text-brand-gold font-medium">{activeFilterCount}</span>
+            <span className="text-brand-primary font-medium">{activeFilterCount}</span>
             <span className="text-muted-foreground ml-1">filters applied</span>
           </span>
           <div className="flex items-center gap-2">
@@ -452,7 +452,7 @@ export function SkillsFiltersDialog({
             <Button
               size="sm"
               onClick={handleApplyFilters}
-              className="h-9 px-5 text-sm font-medium bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="h-9 px-5 text-sm font-medium bg-brand-primary hover:bg-brand-primary-hover text-white"
             >
               Apply
             </Button>

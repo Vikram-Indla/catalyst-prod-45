@@ -98,7 +98,7 @@ export function FixIssuesPanel() {
   const getStatusIcon = (status: FixTask['status']) => {
     switch (status) {
       case 'pending': return <Clock className="h-4 w-4 text-muted-foreground" />;
-      case 'running': return <RefreshCw className="h-4 w-4 text-brand-gold animate-spin" />;
+      case 'running': return <RefreshCw className="h-4 w-4 text-brand-primary animate-spin" />;
       case 'success': return <CheckCircle2 className="h-4 w-4 text-success" />;
       case 'failed': return <XCircle className="h-4 w-4 text-destructive" />;
       case 'skipped': return <ArrowRight className="h-4 w-4 text-muted-foreground" />;
@@ -138,15 +138,15 @@ export function FixIssuesPanel() {
         </Card>
         
         <Card className={cn(
-          tasks.length > 0 && progress === 100 && "border-brand-gold/30 bg-brand-gold/5"
+          tasks.length > 0 && progress === 100 && "border-brand-primary/30 bg-brand-primary/5"
         )}>
           <CardContent className="py-4">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-brand-gold/10 flex items-center justify-center">
-                <CheckCircle2 className="h-5 w-5 text-brand-gold" />
+              <div className="h-10 w-10 rounded-lg bg-brand-primary/10 flex items-center justify-center">
+                <CheckCircle2 className="h-5 w-5 text-brand-primary" />
               </div>
               <div>
-                <div className="text-2xl font-bold text-brand-gold">{successCount}/{tasks.length || autoFixableGaps.length}</div>
+                <div className="text-2xl font-bold text-brand-primary">{successCount}/{tasks.length || autoFixableGaps.length}</div>
                 <div className="text-xs text-muted-foreground">Fixes Applied</div>
               </div>
             </div>
@@ -160,7 +160,7 @@ export function FixIssuesPanel() {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-base flex items-center gap-2">
-                <Wrench className="h-4 w-4 text-brand-gold" />
+                <Wrench className="h-4 w-4 text-brand-primary" />
                 Fix Queue
               </CardTitle>
               <CardDescription>Apply fixes to align with design system baseline</CardDescription>
@@ -175,7 +175,7 @@ export function FixIssuesPanel() {
               <Button 
                 size="sm" 
                 onClick={isRunning ? pauseFixes : runFixes}
-                className={isRunning ? "bg-warning hover:bg-warning/90" : "bg-brand-gold hover:bg-brand-gold-hover"}
+                className={isRunning ? "bg-warning hover:bg-warning/90" : "bg-brand-primary hover:bg-brand-primary-hover"}
               >
                 {isRunning ? (
                   <>
@@ -234,7 +234,7 @@ export function FixIssuesPanel() {
                     key={task.id}
                     className={cn(
                       "flex items-center gap-3 px-4 py-2.5",
-                      task.status === 'running' && "bg-brand-gold/5",
+                      task.status === 'running' && "bg-brand-primary/5",
                       task.status === 'success' && "bg-success/5",
                       task.status === 'failed' && "bg-destructive/5"
                     )}

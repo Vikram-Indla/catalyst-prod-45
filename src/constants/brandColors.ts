@@ -7,7 +7,7 @@
  */
 
 export const CATALYST_BRAND_COLORS = [
-  { value: '#c69c6d', label: 'Gold', token: 'brand-gold' },
+  { value: '#c69c6d', label: 'Gold', token: 'brand-primary' },
   { value: '#5c7c5c', label: 'Olive Green', token: 'secondary-green' },
   { value: '#8b7355', label: 'Bronze', token: 'secondary-bronze' },
   { value: '#d4b896', label: 'Champagne', token: 'secondary-champagne' },

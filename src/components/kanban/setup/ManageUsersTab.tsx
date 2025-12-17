@@ -43,7 +43,7 @@ export function ManageUsersTab({ boardId }: ManageUsersTabProps) {
           </div>
           <Button
             onClick={() => setShowAddUser(!showAddUser)}
-            className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+            className="bg-brand-primary hover:bg-brand-primary-hover text-white"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add User
@@ -78,7 +78,7 @@ export function ManageUsersTab({ boardId }: ManageUsersTabProps) {
             <div className="flex gap-2">
               <Button
                 size="sm"
-                className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+                className="bg-brand-primary hover:bg-brand-primary-hover text-white"
               >
                 Add User
               </Button>
@@ -127,7 +127,7 @@ export function ManageUsersTab({ boardId }: ManageUsersTabProps) {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <Avatar className="w-8 h-8">
-                      <AvatarFallback className="bg-brand-gold text-white text-xs">
+                      <AvatarFallback className="bg-brand-primary text-white text-xs">
                         {user.profiles?.full_name?.substring(0, 2).toUpperCase() || 'UN'}
                       </AvatarFallback>
                     </Avatar>

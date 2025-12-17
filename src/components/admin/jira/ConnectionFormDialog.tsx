@@ -265,7 +265,7 @@ export function ConnectionFormDialog({ open, onOpenChange, connection, onSuccess
               {testing && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
               Test Connection
             </Button>
-            <Button type="submit" disabled={loading} className="bg-brand-gold hover:bg-brand-gold-hover">
+            <Button type="submit" disabled={loading} className="bg-brand-primary hover:bg-brand-primary-hover">
               {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
               {connection ? "Update" : "Create"}
             </Button>

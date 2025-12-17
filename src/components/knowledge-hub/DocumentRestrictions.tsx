@@ -128,7 +128,7 @@ export function DocumentRestrictions({ documentId }: DocumentRestrictionsProps) 
         <Button
           variant="ghost"
           size="sm"
-          className={hasRestrictions ? "text-brand-gold" : ""}
+          className={hasRestrictions ? "text-brand-primary" : ""}
         >
           {hasRestrictions ? (
             <>
@@ -146,7 +146,7 @@ export function DocumentRestrictions({ documentId }: DocumentRestrictionsProps) 
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Shield className="h-5 w-5 text-brand-gold" />
+            <Shield className="h-5 w-5 text-brand-primary" />
             Page Restrictions
           </DialogTitle>
         </DialogHeader>

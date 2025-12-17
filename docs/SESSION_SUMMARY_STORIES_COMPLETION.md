@@ -179,7 +179,7 @@ This session completed the Stories module implementation, addressing critical bu
 - [ ] Bulk status change (placeholder)
 
 ### UI/UX
-- [x] Brand-gold accent colors
+- [x] brand-primary accent colors
 - [x] Responsive layout (mobile-ready)
 - [x] Empty states for all views
 - [x] Loading states
@@ -314,8 +314,8 @@ CREATE INDEX idx_stories_created_at ON stories(created_at DESC);
 - Work item hierarchy respected (Stories → Features → Epics)
 
 ### Design System Compliance ✅
-- Brand-gold accent colors throughout
-- Semantic tokens used (--brand-gold, --s1-s9)
+- brand-primary accent colors throughout
+- Semantic tokens used (--brand-primary, --s1-s9)
 - Shadcn UI components
 - Consistent spacing and typography
 - Responsive design patterns

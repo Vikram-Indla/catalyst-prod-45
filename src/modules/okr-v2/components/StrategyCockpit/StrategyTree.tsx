@@ -176,7 +176,7 @@ function TableRow({
       return { 
         label: 'Objective', 
         Icon: Target,
-        className: 'bg-brand-gold/10 text-brand-gold border-brand-gold/20'
+        className: 'bg-brand-primary/10 text-brand-primary border-brand-primary/20'
       };
     }
     if (item.type === 'keyResult') {
@@ -435,7 +435,7 @@ export function StrategyTree({
       theme.objectives?.forEach((obj) => {
         objectivesWithTheme.push({
           objective: obj,
-          themeColor: theme.color || 'hsl(var(--brand-gold))',
+          themeColor: theme.color || 'hsl(var(--brand-primary))',
           themeName: theme.name,
           themeId: theme.id,
         });

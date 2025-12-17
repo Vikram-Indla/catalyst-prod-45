@@ -119,7 +119,7 @@ export function FillGapModal({
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Briefcase className="h-5 w-5 text-brand-gold" />
+            <Briefcase className="h-5 w-5 text-brand-primary" />
             Fill Vacancy: {vacancy.skill}
           </DialogTitle>
           <div className="flex flex-wrap gap-2 mt-2 text-xs text-muted-foreground">
@@ -156,13 +156,13 @@ export function FillGapModal({
                     className={cn(
                       "p-3 border rounded-lg cursor-pointer transition-all",
                       selectedResourceId === resource.id
-                        ? "border-brand-gold bg-brand-gold/5"
-                        : "border-border hover:border-brand-gold/50"
+                        ? "border-brand-primary bg-brand-primary/5"
+                        : "border-border hover:border-brand-primary/50"
                     )}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-brand-gold/10 text-brand-gold flex items-center justify-center text-xs font-semibold">
+                        <div className="w-8 h-8 rounded-full bg-brand-primary/10 text-brand-primary flex items-center justify-center text-xs font-semibold">
                           {resource.initials}
                         </div>
                         <div>
@@ -196,7 +196,7 @@ export function FillGapModal({
                             className="h-7 w-20 text-xs"
                           />
                           <span className="text-xs text-muted-foreground">%</span>
-                          <Check className="h-4 w-4 text-brand-gold ml-auto" />
+                          <Check className="h-4 w-4 text-brand-primary ml-auto" />
                         </div>
                       </div>
                     )}
@@ -302,7 +302,7 @@ export function FillGapModal({
               size="sm"
               onClick={handleAssignResource}
               disabled={!selectedResourceId}
-              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
             >
               Assign Resource
             </Button>
@@ -311,7 +311,7 @@ export function FillGapModal({
               size="sm"
               onClick={handleAddNewPerson}
               disabled={!firstName || !lastName || !role}
-              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
             >
               Add & Assign
             </Button>

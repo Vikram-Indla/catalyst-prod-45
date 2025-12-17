@@ -164,7 +164,7 @@ export function AssignModal({
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-lg">
-        <DialogHeader className="border-b border-brand-gold/30 pb-4">
+        <DialogHeader className="border-b border-brand-primary/30 pb-4">
           <DialogTitle className="text-xl font-semibold">
             {isEdit ? 'Edit Assignment' : 'Create Assignment'}
           </DialogTitle>
@@ -195,7 +195,7 @@ export function AssignModal({
                             background: r.role_code === 'PO' 
                               ? 'hsl(var(--secondary-green))' 
                               : r.role_code === 'BA' 
-                                ? 'hsl(var(--brand-gold))' 
+                                ? 'hsl(var(--brand-primary))' 
                                 : 'hsl(var(--secondary-bronze))'
                           }}
                         >
@@ -423,7 +423,7 @@ export function AssignModal({
               ((tab === 'task' || isLeave) && !summary) ||
               (tab === 'ticket' && !isLeave && selectedTicketIds.length === 0)
             }
-            className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+            className="bg-brand-primary hover:bg-brand-primary-hover text-white"
           >
             {isEdit ? 'Save' : selectedTicketIds.length > 1 ? `Create ${selectedTicketIds.length} Bookings` : 'Save'}
           </Button>

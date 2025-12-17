@@ -162,13 +162,13 @@ export function BusinessOwnerPicker({
             <Badge
               key={owner}
               variant="secondary"
-              className="h-6 gap-1 pr-1 bg-brand-gold/10 text-brand-gold border-brand-gold/20"
+              className="h-6 gap-1 pr-1 bg-brand-primary/10 text-brand-primary border-brand-primary/20"
             >
               <span className="max-w-[120px] truncate">{owner}</span>
               <button
                 type="button"
                 onClick={() => handleRemove(owner)}
-                className="ml-1 rounded-full hover:bg-brand-gold/20 p-0.5"
+                className="ml-1 rounded-full hover:bg-brand-primary/20 p-0.5"
               >
                 <X className="h-3 w-3" />
               </button>

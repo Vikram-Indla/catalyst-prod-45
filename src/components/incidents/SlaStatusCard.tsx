@@ -87,7 +87,7 @@ export function SlaStatusCard({ slaRecord, createdAt }: SlaStatusCardProps) {
                 className={cn(
                   "h-full transition-all",
                   responseProgress > 80 ? "bg-destructive" : 
-                  responseProgress > 50 ? "bg-yellow-500" : "bg-brand-gold"
+                  responseProgress > 50 ? "bg-yellow-500" : "bg-brand-primary"
                 )}
                 style={{ width: `${responseProgress}%` }}
               />
@@ -129,7 +129,7 @@ export function SlaStatusCard({ slaRecord, createdAt }: SlaStatusCardProps) {
                 className={cn(
                   "h-full transition-all",
                   resolutionProgress > 80 ? "bg-destructive" : 
-                  resolutionProgress > 50 ? "bg-yellow-500" : "bg-brand-gold"
+                  resolutionProgress > 50 ? "bg-yellow-500" : "bg-brand-primary"
                 )}
                 style={{ width: `${resolutionProgress}%` }}
               />

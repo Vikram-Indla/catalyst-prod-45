@@ -79,7 +79,7 @@ export function FeatureWSJFTab({ feature }: FeatureWSJFTabProps) {
       {/* Score WSJF Button - opens canonical modal */}
       <Button 
         onClick={() => setWsjfModalOpen(true)}
-        className="w-full bg-brand-gold text-white hover:bg-brand-gold-hover"
+        className="w-full bg-brand-primary text-white hover:bg-brand-primary-hover"
       >
         <Calculator className="h-4 w-4 mr-2" />
         Score WSJF
@@ -184,15 +184,15 @@ export function FeatureWSJFTab({ feature }: FeatureWSJFTabProps) {
       </div>
 
       {calculatedWSJF && (
-        <Card className="border-brand-gold">
+        <Card className="border-brand-primary">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Calculator className="h-5 w-5 text-brand-gold" />
+              <Calculator className="h-5 w-5 text-brand-primary" />
               Calculated WSJF Score
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-4xl font-bold text-brand-gold">{calculatedWSJF}</div>
+            <div className="text-4xl font-bold text-brand-primary">{calculatedWSJF}</div>
             <p className="text-sm text-muted-foreground mt-2">
               Formula: (Business Value + Time Criticality + RR/OE) ÷ Job Size = 
               ({feature.business_value} + {feature.time_criticality} + {feature.risk_reduction}) ÷ {feature.job_size}

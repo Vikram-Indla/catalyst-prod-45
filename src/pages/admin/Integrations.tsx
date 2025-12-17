@@ -130,14 +130,14 @@ export default function Integrations() {
               Configure
             </Button>
           </div>
-          <div className="p-4 border rounded-lg hover:border-brand-gold transition-colors cursor-pointer">
-            <MessageSquare className="h-8 w-8 mb-2 text-brand-gold" />
+          <div className="p-4 border rounded-lg hover:border-brand-primary transition-colors cursor-pointer">
+            <MessageSquare className="h-8 w-8 mb-2 text-brand-primary" />
             <div className="font-medium">Jira</div>
             <div className="text-sm text-muted-foreground mb-3">Bidirectional sync with Jira</div>
             <Button 
               variant="outline" 
               size="sm"
-              className="border-brand-gold text-brand-gold hover:bg-brand-gold hover:text-white"
+              className="border-brand-primary text-brand-primary hover:bg-brand-primary hover:text-white"
               onClick={() => navigate('/admin/jira-config')}
             >
               Configure <ArrowRight className="w-4 h-4 ml-1" />

@@ -614,7 +614,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
                     </td>
                     <td className="py-2 px-3">
                       <Avatar className="w-6 h-6">
-                        <AvatarFallback className="bg-brand-gold text-primary-foreground text-xs">
+                        <AvatarFallback className="bg-brand-primary text-primary-foreground text-xs">
                           {story.owner}
                         </AvatarFallback>
                       </Avatar>
@@ -825,7 +825,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
                         {story.assignee_id && (
                           <div className="flex items-center gap-2 mt-2">
                             <Avatar className="w-5 h-5">
-                              <AvatarFallback className="bg-brand-gold text-primary-foreground text-[10px]">
+                              <AvatarFallback className="bg-brand-primary text-primary-foreground text-[10px]">
                                 {story.assignee_id.substring(0, 2).toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
@@ -880,7 +880,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
                         {story.assignee_id && (
                           <div className="flex items-center gap-2 mt-2">
                             <Avatar className="w-5 h-5">
-                              <AvatarFallback className="bg-brand-gold text-primary-foreground text-[10px]">
+                              <AvatarFallback className="bg-brand-primary text-primary-foreground text-[10px]">
                                 {story.assignee_id.substring(0, 2).toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
@@ -933,7 +933,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
                         {story.assignee_id && (
                           <div className="flex items-center gap-2 mt-2">
                             <Avatar className="w-5 h-5">
-                              <AvatarFallback className="bg-brand-gold text-primary-foreground text-[10px]">
+                              <AvatarFallback className="bg-brand-primary text-primary-foreground text-[10px]">
                                 {story.assignee_id.substring(0, 2).toUpperCase()}
                               </AvatarFallback>
                             </Avatar>

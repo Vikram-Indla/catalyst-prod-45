@@ -146,7 +146,7 @@ export function RiskDiscussionsTab({ riskId }: RiskDiscussionsTabProps) {
           discussions.map((discussion: any) => (
             <div key={discussion.id} className="flex gap-3 p-3 border rounded-lg bg-card">
               <Avatar className="h-8 w-8 flex-shrink-0">
-                <AvatarFallback className="bg-brand-gold text-white text-xs">
+                <AvatarFallback className="bg-brand-primary text-white text-xs">
                   {getUserInitials(
                     discussion.profiles?.full_name,
                     discussion.profiles?.email || 'U'

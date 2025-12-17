@@ -324,7 +324,7 @@ export function FieldsLayoutPanel({ onChanges }: FieldsLayoutPanelProps) {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-8 gap-1.5 text-brand-gold hover:text-brand-gold hover:bg-brand-gold/10"
+                      className="h-8 gap-1.5 text-brand-primary hover:text-brand-primary hover:bg-brand-primary/10"
                       onClick={() => handleConfigureValues(field)}
                     >
                       <List className="h-4 w-4" />

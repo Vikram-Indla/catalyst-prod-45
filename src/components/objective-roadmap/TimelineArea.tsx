@@ -96,7 +96,7 @@ export const TimelineArea = forwardRef<HTMLDivElement, TimelineAreaProps>(
                 key={i} 
                 className={cn(
                   "flex-1 min-w-[80px] px-2 text-[11px] font-medium text-center",
-                  unit.isCurrent ? "text-brand-gold font-semibold" : "text-muted-foreground"
+                  unit.isCurrent ? "text-brand-primary font-semibold" : "text-muted-foreground"
                 )}
               >
                 {unit.label}
@@ -210,7 +210,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
       >
         {/* Progress Fill - Gold */}
         <div 
-          className="absolute inset-y-0 left-0 rounded-full bg-brand-gold transition-all"
+          className="absolute inset-y-0 left-0 rounded-full bg-brand-primary transition-all"
           style={{ width: `${objective.progress}%` }}
         />
       </div>
@@ -248,11 +248,11 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
         <div className="flex items-center gap-2 mb-2">
           <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
             <div 
-              className="h-full bg-brand-gold rounded-full"
+              className="h-full bg-brand-primary rounded-full"
               style={{ width: `${objective.progress}%` }}
             />
           </div>
-          <span className="text-[10px] font-semibold text-brand-gold">{objective.progress}%</span>
+          <span className="text-[10px] font-semibold text-brand-primary">{objective.progress}%</span>
         </div>
         
         {/* Key Results Section */}

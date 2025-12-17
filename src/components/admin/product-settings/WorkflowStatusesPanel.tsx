@@ -139,7 +139,7 @@ export function WorkflowStatusesPanel({ onChanges }: WorkflowStatusesPanelProps)
             Configure process step statuses and workflow categories.
           </p>
         </div>
-        <Button onClick={() => handleOpenDialog()} className="bg-brand-gold hover:bg-brand-gold-hover">
+        <Button onClick={() => handleOpenDialog()} className="bg-brand-primary hover:bg-brand-primary-hover">
           <Plus className="h-4 w-4 mr-2" />
           Add Status
         </Button>
@@ -193,7 +193,7 @@ export function WorkflowStatusesPanel({ onChanges }: WorkflowStatusesPanelProps)
                             {status.status_key}
                           </Badge>
                           {status.is_default && (
-                            <Badge className="bg-brand-gold text-white text-xs">
+                            <Badge className="bg-brand-primary text-white text-xs">
                               Default
                             </Badge>
                           )}
@@ -291,7 +291,7 @@ export function WorkflowStatusesPanel({ onChanges }: WorkflowStatusesPanelProps)
             <Button 
               onClick={handleSave}
               disabled={!formData.name || !formData.status_key}
-              className="bg-brand-gold hover:bg-brand-gold-hover"
+              className="bg-brand-primary hover:bg-brand-primary-hover"
             >
               {editingStatus ? 'Update' : 'Create'}
             </Button>

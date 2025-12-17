@@ -27,9 +27,9 @@ const QuickFilterChip: React.FC<QuickFilterChipProps> = ({ label, active, onClic
     onClick={onClick}
     className={cn(
       "px-3 py-2 text-sm font-medium rounded-xl border transition-all",
-      "hover:bg-brand-gold/5",
+      "hover:bg-brand-primary/5",
       active
-        ? "border-brand-gold bg-brand-gold/10 text-foreground"
+        ? "border-brand-primary bg-brand-primary/10 text-foreground"
         : "border-border bg-white text-muted-foreground"
     )}
   >
@@ -88,7 +88,7 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
             "transition-colors",
             disabled
               ? "bg-muted text-muted-foreground cursor-not-allowed"
-              : "bg-white hover:border-brand-gold/50 focus:outline-none focus:ring-2 focus:ring-brand-gold/20 focus:border-brand-gold"
+              : "bg-white hover:border-brand-primary/50 focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary"
           )}
         >
           <div className="flex-1 truncate">
@@ -142,7 +142,7 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
                       "w-full px-3 py-2 text-sm text-left rounded-lg",
                       "flex items-center gap-2 transition-colors",
                       selected.includes(opt.value)
-                        ? "bg-brand-gold/10 text-foreground"
+                        ? "bg-brand-primary/10 text-foreground"
                         : "hover:bg-muted"
                     )}
                   >
@@ -150,7 +150,7 @@ const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
                       className={cn(
                         "w-4 h-4 rounded border-2 flex items-center justify-center transition-all",
                         selected.includes(opt.value)
-                          ? "border-brand-gold bg-brand-gold"
+                          ? "border-brand-primary bg-brand-primary"
                           : "border-border"
                       )}
                     >
@@ -299,10 +299,10 @@ export const StrategyRoomFiltersDrawer: React.FC<StrategyRoomFiltersDrawerProps>
             aria-label="Close filters"
             className={cn(
               "w-11 h-11 rounded-xl flex items-center justify-center",
-              "border-2 border-brand-gold/30 bg-white",
-              "hover:bg-brand-gold/5 hover:border-brand-gold/50",
+              "border-2 border-brand-primary/30 bg-white",
+              "hover:bg-brand-primary/5 hover:border-brand-primary/50",
               "transition-colors",
-              "focus:outline-none focus:ring-2 focus:ring-brand-gold/20"
+              "focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
             )}
           >
             <X className="w-5 h-5 text-foreground" />
@@ -355,7 +355,7 @@ export const StrategyRoomFiltersDrawer: React.FC<StrategyRoomFiltersDrawerProps>
           {/* Filter Sections */}
           <div className="space-y-2">
             {/* Scope Section */}
-            <FilterSection title="Scope" icon={<Layers className="w-4 h-4 text-brand-gold" />}>
+            <FilterSection title="Scope" icon={<Layers className="w-4 h-4 text-brand-primary" />}>
               <div className="col-span-2">
                 <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1.5 block">
                   Snapshot
@@ -383,7 +383,7 @@ export const StrategyRoomFiltersDrawer: React.FC<StrategyRoomFiltersDrawerProps>
             </FilterSection>
 
             {/* Strategy Section */}
-            <FilterSection title="Strategy" icon={<Users className="w-4 h-4 text-brand-gold" />}>
+            <FilterSection title="Strategy" icon={<Users className="w-4 h-4 text-brand-primary" />}>
               <MultiSelectDropdown
                 label="Theme"
                 placeholder="Select themes..."
@@ -410,7 +410,7 @@ export const StrategyRoomFiltersDrawer: React.FC<StrategyRoomFiltersDrawerProps>
             </FilterSection>
 
             {/* Status & Workflow Section */}
-            <FilterSection title="Status & Workflow" icon={<Activity className="w-4 h-4 text-brand-gold" />}>
+            <FilterSection title="Status & Workflow" icon={<Activity className="w-4 h-4 text-brand-primary" />}>
               <MultiSelectDropdown
                 label="Health"
                 placeholder="Select health..."
@@ -439,8 +439,8 @@ export const StrategyRoomFiltersDrawer: React.FC<StrategyRoomFiltersDrawerProps>
                       className={cn(
                         "flex-1 h-11 rounded-xl border text-sm font-medium transition-colors",
                         draftFilters.ageing === opt.value
-                          ? "border-brand-gold bg-brand-gold/10 text-foreground"
-                          : "border-border bg-white text-muted-foreground hover:border-brand-gold/30"
+                          ? "border-brand-primary bg-brand-primary/10 text-foreground"
+                          : "border-border bg-white text-muted-foreground hover:border-brand-primary/30"
                       )}
                     >
                       {opt.label}
@@ -451,7 +451,7 @@ export const StrategyRoomFiltersDrawer: React.FC<StrategyRoomFiltersDrawerProps>
             </FilterSection>
 
             {/* Dates Section */}
-            <FilterSection title="Dates" icon={<Calendar className="w-4 h-4 text-brand-gold" />}>
+            <FilterSection title="Dates" icon={<Calendar className="w-4 h-4 text-brand-primary" />}>
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                   Created From
@@ -499,7 +499,7 @@ export const StrategyRoomFiltersDrawer: React.FC<StrategyRoomFiltersDrawerProps>
             </FilterSection>
 
             {/* Advanced Section - collapsed by default */}
-            <FilterSection title="Advanced" icon={<Settings2 className="w-4 h-4 text-brand-gold" />} defaultOpen={false}>
+            <FilterSection title="Advanced" icon={<Settings2 className="w-4 h-4 text-brand-primary" />} defaultOpen={false}>
               <div className="col-span-2 text-sm text-muted-foreground text-center py-4">
                 Advanced filters (Product, Release Vehicle, Team) will be available when data is configured.
               </div>
@@ -524,7 +524,7 @@ export const StrategyRoomFiltersDrawer: React.FC<StrategyRoomFiltersDrawerProps>
               <Button
                 onClick={applyFilters}
                 disabled={!dirty}
-                className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+                className="bg-brand-primary hover:bg-brand-primary-hover text-white"
               >
                 Apply
               </Button>

@@ -104,7 +104,7 @@ export default function Terminology() {
 
               <div className="flex justify-end gap-2">
                 <Button variant="outline">Reset to Default</Button>
-                <Button className="bg-brand-gold hover:bg-brand-gold-hover">
+                <Button className="bg-brand-primary hover:bg-brand-primary-hover">
                   Update Terminology
                 </Button>
               </div>
@@ -148,7 +148,7 @@ export default function Terminology() {
                 </label>
               </div>
 
-              <Button className="bg-brand-gold hover:bg-brand-gold-hover">
+              <Button className="bg-brand-primary hover:bg-brand-primary-hover">
                 Update Pyramid
               </Button>
             </div>
@@ -183,7 +183,7 @@ export default function Terminology() {
                 </div>
               </div>
 
-              <Button className="bg-brand-gold hover:bg-brand-gold-hover">
+              <Button className="bg-brand-primary hover:bg-brand-primary-hover">
                 Update Terminology
               </Button>
             </div>

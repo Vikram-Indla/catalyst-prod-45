@@ -87,7 +87,7 @@ export function IndustryFiltersPanel({
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-muted/30">
         <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-brand-gold" />
+          <Filter className="h-4 w-4 text-brand-primary" />
           <span className="font-medium text-sm text-foreground">Filters</span>
         </div>
         <Button variant="ghost" size="sm" onClick={onClose} className="h-7 w-7 p-0">
@@ -99,7 +99,7 @@ export function IndustryFiltersPanel({
       <div className="flex-1 overflow-auto p-4 space-y-6">
         {/* Delivery Platform */}
         <div className="space-y-2">
-          <Label className="text-xs font-semibold uppercase tracking-wide text-brand-gold">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-brand-primary">
             Delivery Platform
           </Label>
           <Select value={filters.deliveryPlatform} onValueChange={handleDeliveryPlatformChange}>
@@ -122,7 +122,7 @@ export function IndustryFiltersPanel({
 
         {/* Process Step - Multi Select */}
         <div className="space-y-2">
-          <Label className="text-xs font-semibold uppercase tracking-wide text-brand-gold">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-brand-primary">
             Process Step
           </Label>
           <div className="space-y-1.5 max-h-48 overflow-auto border border-border rounded-md p-2 bg-background">
@@ -152,7 +152,7 @@ export function IndustryFiltersPanel({
 
         {/* Quarter - Multi Select */}
         <div className="space-y-2">
-          <Label className="text-xs font-semibold uppercase tracking-wide text-brand-gold">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-brand-primary">
             Quarter
           </Label>
           <div className="space-y-1.5 border border-border rounded-md p-2 bg-background">
@@ -185,7 +185,7 @@ export function IndustryFiltersPanel({
 
         {/* Target Date Range */}
         <div className="space-y-2">
-          <Label className="text-xs font-semibold uppercase tracking-wide text-brand-gold">
+          <Label className="text-xs font-semibold uppercase tracking-wide text-brand-primary">
             Target Date Range
           </Label>
           <div className="space-y-2">

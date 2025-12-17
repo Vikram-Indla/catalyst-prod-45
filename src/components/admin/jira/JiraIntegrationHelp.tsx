@@ -41,7 +41,7 @@ export function JiraIntegrationHelp({ open, onOpenChange }: JiraIntegrationHelpP
                       href="https://id.atlassian.com/manage-profile/security/api-tokens"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-brand-gold hover:underline inline-flex items-center gap-1"
+                      className="text-brand-primary hover:underline inline-flex items-center gap-1"
                     >
                       Atlassian Account Settings <ExternalLink className="w-3 h-3" />
                     </a>

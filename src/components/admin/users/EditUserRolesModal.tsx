@@ -136,7 +136,7 @@ export function EditUserRolesModal({
             Cancel
           </Button>
           <Button 
-            className="bg-brand-gold hover:bg-brand-gold-hover"
+            className="bg-brand-primary hover:bg-brand-primary-hover"
             onClick={handleSave}
             disabled={updateRoles.isPending || !hasChanges}
           >

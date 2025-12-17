@@ -239,7 +239,7 @@ export function StrategicEpicDrawer({
       <SheetContent className="w-[400px] sm:w-[500px] overflow-y-auto bg-background">
         <SheetHeader className="pb-4 border-b border-border">
           <SheetTitle className="flex items-center gap-2">
-            <Zap className="h-5 w-5 text-brand-gold" />
+            <Zap className="h-5 w-5 text-brand-primary" />
             {isCreate ? 'Create Epic' : epic?.name}
           </SheetTitle>
           {!isCreate && epic?.epic_key && (
@@ -360,7 +360,7 @@ export function StrategicEpicDrawer({
                     <div className="flex items-center gap-2">
                       <div
                         className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: t.color_tag || 'hsl(var(--brand-gold))' }}
+                        style={{ backgroundColor: t.color_tag || 'hsl(var(--brand-primary))' }}
                       />
                       {t.name}
                     </div>
@@ -381,7 +381,7 @@ export function StrategicEpicDrawer({
           <div className="pt-4 border-t border-border">
             <Button 
               onClick={handleSave} 
-              className="w-full bg-brand-gold hover:bg-brand-gold/90"
+              className="w-full bg-brand-primary hover:bg-brand-primary/90"
               disabled={createEpicMutation.isPending || updateEpicMutation.isPending}
             >
               <Save className="h-4 w-4 mr-2" />

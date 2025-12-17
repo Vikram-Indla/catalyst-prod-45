@@ -50,12 +50,12 @@ export function DesignSystemBaseline() {
   return (
     <div className="space-y-6">
       {/* Baseline Header */}
-      <Card className="border-brand-gold/30 bg-brand-gold/5">
+      <Card className="border-brand-primary/30 bg-brand-primary/5">
         <CardContent className="py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-brand-gold/10 flex items-center justify-center">
-                <Lock className="h-5 w-5 text-brand-gold" />
+              <div className="h-10 w-10 rounded-lg bg-brand-primary/10 flex items-center justify-center">
+                <Lock className="h-5 w-5 text-brand-primary" />
               </div>
               <div>
                 <h3 className="font-semibold text-foreground">Design System Baseline</h3>
@@ -64,7 +64,7 @@ export function DesignSystemBaseline() {
                 </p>
               </div>
             </div>
-            <Badge className="bg-brand-gold text-white">Locked</Badge>
+            <Badge className="bg-brand-primary text-white">Locked</Badge>
           </div>
         </CardContent>
       </Card>
@@ -74,7 +74,7 @@ export function DesignSystemBaseline() {
         <Card>
           <CardHeader className="py-3">
             <CardTitle className="text-base flex items-center gap-2">
-              <Palette className="h-4 w-4 text-brand-gold" />
+              <Palette className="h-4 w-4 text-brand-primary" />
               Design Tokens ({baselineTokens.length})
             </CardTitle>
             <CardDescription>Semantic tokens defined in index.css</CardDescription>
@@ -96,7 +96,7 @@ export function DesignSystemBaseline() {
                       ) : (
                         <ChevronRight className="h-4 w-4 text-muted-foreground" />
                       )}
-                      <Icon className="h-4 w-4 text-brand-gold" />
+                      <Icon className="h-4 w-4 text-brand-primary" />
                       <span className="font-medium text-sm">{category.name}</span>
                       <Badge variant="outline" className="ml-auto text-xs">
                         {category.tokens.length}
@@ -156,7 +156,7 @@ export function DesignSystemBaseline() {
         <Card>
           <CardHeader className="py-3">
             <CardTitle className="text-base flex items-center gap-2">
-              <Layout className="h-4 w-4 text-brand-gold" />
+              <Layout className="h-4 w-4 text-brand-primary" />
               Component Specs ({componentSpecs.length})
             </CardTitle>
             <CardDescription>Target measurements for UI components</CardDescription>

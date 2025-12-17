@@ -48,7 +48,7 @@ export function ProtectedRoute({ children, requireAdmin = false }: ProtectedRout
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-brand-gold border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-brand-primary border-t-transparent rounded-full animate-spin" />
           <span className="text-muted-foreground text-sm">Loading...</span>
         </div>
       </div>

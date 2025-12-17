@@ -90,7 +90,7 @@ export function RiskDetailsTab({ risk, formData, onChange, isEditing }: RiskDeta
   return (
     <div className="space-y-5">
       {/* RISK DETAILS Section Header */}
-      <h4 className="text-xs font-semibold uppercase tracking-wider text-brand-gold">Risk Details</h4>
+      <h4 className="text-xs font-semibold uppercase tracking-wider text-brand-primary">Risk Details</h4>
       
       {/* Use RiskFormV2 for the form fields - Details section only */}
       <RiskFormDetailsSection

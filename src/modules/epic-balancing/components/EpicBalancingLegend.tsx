@@ -51,7 +51,7 @@ export function EpicBalancingLegend({
                     >
                       <span className="text-xs font-medium text-muted-foreground w-4">{index + 1}.</span>
                       <span className="text-sm font-medium whitespace-nowrap">
-                        <span className="text-brand-gold">{epic.key}</span>
+                        <span className="text-brand-primary">{epic.key}</span>
                         <span className="text-muted-foreground"> - </span>
                         <span className="text-secondary-green">{epic.plannedQuarter}</span>
                       </span>

@@ -66,7 +66,7 @@ export default function ReleaseOverview() {
               <Link
                 key={action.title}
                 to={action.href}
-                className="flex items-center gap-3.5 p-[18px] bg-card border border-border rounded-lg hover:border-brand-gold hover:shadow-sm transition-all"
+                className="flex items-center gap-3.5 p-[18px] bg-card border border-border rounded-lg hover:border-brand-primary hover:shadow-sm transition-all"
               >
                 <div className={cn("w-11 h-11 rounded-lg flex items-center justify-center", action.iconBg)}>
                   <action.icon className={cn("w-5 h-5", action.iconColor)} />

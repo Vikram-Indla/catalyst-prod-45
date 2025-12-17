@@ -134,7 +134,7 @@ export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDr
         {/* Header with Atlassian-style padding */}
         <SheetHeader className="px-6 py-4 border-b border-border">
           <SheetTitle className="flex items-center gap-2 pr-8">
-            <span className="text-brand-gold flex-shrink-0">{epic.key}</span>
+            <span className="text-brand-primary flex-shrink-0">{epic.key}</span>
             <span className="text-foreground truncate" title={epic.name}>{epic.name}</span>
           </SheetTitle>
         </SheetHeader>
@@ -205,8 +205,8 @@ export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDr
           {/* Technical Score */}
           <section className="space-y-2">
             <h3 className="text-sm font-medium text-foreground">Technical Score</h3>
-            <div className="rounded-xl bg-brand-gold/10 px-4 py-3">
-              <div className="text-lg font-semibold text-brand-gold">
+            <div className="rounded-xl bg-brand-primary/10 px-4 py-3">
+              <div className="text-lg font-semibold text-brand-primary">
                 {technicalScore !== null ? technicalScore.toFixed(2) : 'N/A'}
               </div>
             </div>
@@ -227,7 +227,7 @@ export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDr
                   value={formData.themeId}
                   onValueChange={(value) => setFormData(prev => ({ ...prev, themeId: value === 'none' ? '' : value }))}
                 >
-                  <SelectTrigger id="theme" className="w-full focus:ring-brand-gold focus:border-brand-gold">
+                  <SelectTrigger id="theme" className="w-full focus:ring-brand-primary focus:border-brand-primary">
                     <SelectValue placeholder="Select a theme" />
                   </SelectTrigger>
                   <SelectContent className="bg-background border-border z-50">
@@ -250,7 +250,7 @@ export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDr
                   value={formData.businessRequestId}
                   onValueChange={(value) => setFormData(prev => ({ ...prev, businessRequestId: value === 'none' ? '' : value }))}
                 >
-                  <SelectTrigger id="businessRequest" className="w-full focus:ring-brand-gold focus:border-brand-gold">
+                  <SelectTrigger id="businessRequest" className="w-full focus:ring-brand-primary focus:border-brand-primary">
                     <SelectValue placeholder="Select a business request" />
                   </SelectTrigger>
                   <SelectContent className="bg-background border-border z-50">
@@ -271,7 +271,7 @@ export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDr
             <Button variant="outline" onClick={onClose} disabled={saving}>
               Cancel
             </Button>
-            <Button onClick={handleSave} disabled={saving} className="bg-brand-gold hover:bg-brand-gold/90 text-white">
+            <Button onClick={handleSave} disabled={saving} className="bg-brand-primary hover:bg-brand-primary/90 text-white">
               {saving ? 'Saving...' : 'Save'}
             </Button>
           </div>

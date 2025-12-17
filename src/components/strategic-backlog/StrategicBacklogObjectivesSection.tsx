@@ -489,8 +489,8 @@ export function StrategicBacklogObjectivesSection({
                   >
                     {isColumnVisible('type') && (
                       <td className="px-3 py-3">
-                        <div className="w-6 h-6 rounded bg-brand-gold/10 flex items-center justify-center">
-                          <Target className="h-3.5 w-3.5 text-brand-gold" />
+                        <div className="w-6 h-6 rounded bg-brand-primary/10 flex items-center justify-center">
+                          <Target className="h-3.5 w-3.5 text-brand-primary" />
                         </div>
                       </td>
                     )}

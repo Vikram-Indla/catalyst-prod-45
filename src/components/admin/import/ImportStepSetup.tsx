@@ -155,14 +155,14 @@ export function ImportStepSetup({
               {...getRootProps()}
               className={cn(
                 'border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors',
-                isDragActive ? 'border-brand-gold bg-brand-gold/5' : 'border-muted-foreground/25 hover:border-brand-gold/50',
+                isDragActive ? 'border-brand-primary bg-brand-primary/5' : 'border-muted-foreground/25 hover:border-brand-primary/50',
                 isProcessing && 'pointer-events-none opacity-50'
               )}
             >
               <input {...getInputProps()} />
               <Upload className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
               {isDragActive ? (
-                <p className="text-sm text-brand-gold font-medium">Drop the file here</p>
+                <p className="text-sm text-brand-primary font-medium">Drop the file here</p>
               ) : (
                 <>
                   <p className="text-sm font-medium text-foreground mb-1">
@@ -176,7 +176,7 @@ export function ImportStepSetup({
             </div>
           ) : (
             <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg border">
-              <FileText className="h-8 w-8 text-brand-gold flex-shrink-0" />
+              <FileText className="h-8 w-8 text-brand-primary flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-foreground truncate">{file.name}</p>
                 <p className="text-xs text-muted-foreground">

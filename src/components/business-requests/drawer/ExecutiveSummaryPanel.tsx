@@ -99,7 +99,7 @@ function SummaryRow({
     <div className="flex items-center justify-between py-0.5">
       <span className="text-[11px]" style={{ color: 'var(--text-3)' }}>{label}</span>
       <span 
-        className={cn("text-[11px] font-medium", highlight && "text-brand-gold")}
+        className={cn("text-[11px] font-medium", highlight && "text-brand-primary")}
         style={{ color: highlight ? undefined : 'var(--text-1)' }}
       >
         {value}

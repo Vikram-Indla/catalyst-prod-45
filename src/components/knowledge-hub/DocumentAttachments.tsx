@@ -178,7 +178,7 @@ export function DocumentAttachments({ documentId }: DocumentAttachmentsProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
-        <Paperclip className="h-5 w-5 text-brand-gold" />
+        <Paperclip className="h-5 w-5 text-brand-primary" />
         <h3 className="font-semibold">Attachments</h3>
         {attachments && attachments.length > 0 && (
           <Badge variant="secondary">{attachments.length}</Badge>
@@ -189,7 +189,7 @@ export function DocumentAttachments({ documentId }: DocumentAttachmentsProps) {
       <div
         {...getRootProps()}
         className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
-          isDragActive ? 'border-brand-gold bg-brand-gold/5' : 'border-muted hover:border-brand-gold/50'
+          isDragActive ? 'border-brand-primary bg-brand-primary/5' : 'border-muted hover:border-brand-primary/50'
         }`}
       >
         <input {...getInputProps()} />

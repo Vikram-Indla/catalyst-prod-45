@@ -274,7 +274,7 @@ export function ProjectGrid({
                             {project.shortName}
                           </th>
                         ))}
-                        <th className="text-center font-semibold text-xs text-muted-foreground p-3 border-b border-border bg-brand-gold/10 whitespace-nowrap min-w-[80px]">
+                        <th className="text-center font-semibold text-xs text-muted-foreground p-3 border-b border-border bg-brand-primary/10 whitespace-nowrap min-w-[80px]">
                           Total
                         </th>
                       </tr>
@@ -293,7 +293,7 @@ export function ProjectGrid({
                           <tr key={resource.id} className="hover:bg-muted/50">
                             <td className="p-3 border-b border-border/50 sticky left-0 bg-card z-10">
                               <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-brand-gold/10 text-brand-gold flex items-center justify-center text-xs font-semibold flex-shrink-0">
+                                <div className="w-8 h-8 rounded-full bg-brand-primary/10 text-brand-primary flex items-center justify-center text-xs font-semibold flex-shrink-0">
                                   {resource.initials}
                                 </div>
                                 <div className="min-w-0">
@@ -325,7 +325,7 @@ export function ProjectGrid({
                                         onChange={(e) => onGridChange(resource.id, project.id, parseInt(e.target.value) || 0)}
                                         className={cn(
                                           "w-16 h-8 text-center text-sm mx-auto",
-                                          changed && "bg-brand-gold/10 border-brand-gold",
+                                          changed && "bg-brand-primary/10 border-brand-primary",
                                           !isEditMode && "bg-muted/50 text-muted-foreground cursor-not-allowed opacity-60",
                                           isLocked && "bg-muted text-muted-foreground cursor-not-allowed"
                                         )}

@@ -112,7 +112,7 @@ export function LinkObjectivesDrawer({
       <SheetContent className="w-full sm:max-w-lg flex flex-col p-0">
         <SheetHeader className="p-4 pb-3 border-b border-border">
           <SheetTitle className="flex items-center gap-2">
-            <Target className="h-5 w-5 text-brand-gold" />
+            <Target className="h-5 w-5 text-brand-primary" />
             Link objectives to {themeName}
           </SheetTitle>
         </SheetHeader>
@@ -134,7 +134,7 @@ export function LinkObjectivesDrawer({
             {availableObjectives.length > 0 && (
               <button
                 onClick={toggleSelectAll}
-                className="text-brand-gold hover:underline"
+                className="text-brand-primary hover:underline"
               >
                 {selectedIds.length === availableObjectives.length ? 'Deselect all' : 'Select all'}
               </button>
@@ -163,7 +163,7 @@ export function LinkObjectivesDrawer({
                   onClick={() => toggleSelect(obj.id)}
                   className={`p-3 rounded-md border cursor-pointer transition-colors ${
                     selectedIds.includes(obj.id)
-                      ? 'border-brand-gold bg-brand-gold/5'
+                      ? 'border-brand-primary bg-brand-primary/5'
                       : 'border-border hover:bg-muted/50'
                   }`}
                 >
@@ -199,7 +199,7 @@ export function LinkObjectivesDrawer({
           <Button
             onClick={handleLink}
             disabled={selectedIds.length === 0 || linkMutation.isPending}
-            className="bg-brand-gold hover:bg-brand-gold/90"
+            className="bg-brand-primary hover:bg-brand-primary/90"
           >
             Link {selectedIds.length > 0 && `(${selectedIds.length})`}
           </Button>

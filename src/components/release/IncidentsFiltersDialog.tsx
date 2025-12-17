@@ -98,7 +98,7 @@ function MultiSelectDropdown({
           className={cn(
             "flex items-center justify-between w-full h-10 px-3 border rounded-md text-sm bg-white transition-colors",
             selected.length > 0 ? "border-border text-foreground" : "border-border text-muted-foreground",
-            "hover:border-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-brand-gold"
+            "hover:border-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-brand-primary"
           )}
         >
           <span className={cn("truncate", selected.length === 0 && "text-muted-foreground")}>
@@ -355,7 +355,7 @@ export function IncidentsFiltersDialog({
             <Button 
               size="sm" 
               onClick={handleApplyFilters}
-              className="h-9 px-4 bg-brand-gold text-white hover:bg-brand-gold-hover"
+              className="h-9 px-4 bg-brand-primary text-white hover:bg-brand-primary-hover"
             >
               Apply Filters
             </Button>

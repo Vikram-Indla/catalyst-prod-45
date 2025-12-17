@@ -92,7 +92,7 @@ export function IncidentFiltersDialog({ filters, onFiltersChange }: IncidentFilt
           <Filter className="h-4 w-4 mr-2" />
           Filters
           {activeCount > 0 && (
-            <Badge className="ml-2 h-5 px-1.5 bg-brand-gold text-white">
+            <Badge className="ml-2 h-5 px-1.5 bg-brand-primary text-white">
               {activeCount}
             </Badge>
           )}
@@ -122,7 +122,7 @@ export function IncidentFiltersDialog({ filters, onFiltersChange }: IncidentFilt
                   className={cn(
                     'cursor-pointer transition-colors',
                     draftFilters.status?.includes(opt.value)
-                      ? 'bg-brand-gold text-white border-brand-gold'
+                      ? 'bg-brand-primary text-white border-brand-primary'
                       : 'hover:bg-muted'
                   )}
                   onClick={() => toggleArrayValue('status', opt.value)}
@@ -144,7 +144,7 @@ export function IncidentFiltersDialog({ filters, onFiltersChange }: IncidentFilt
                   className={cn(
                     'cursor-pointer transition-colors',
                     draftFilters.severity?.includes(opt.value)
-                      ? 'bg-brand-gold text-white border-brand-gold'
+                      ? 'bg-brand-primary text-white border-brand-primary'
                       : 'hover:bg-muted'
                   )}
                   onClick={() => toggleArrayValue('severity', opt.value)}
@@ -166,7 +166,7 @@ export function IncidentFiltersDialog({ filters, onFiltersChange }: IncidentFilt
                   className={cn(
                     'cursor-pointer transition-colors',
                     draftFilters.support_level?.includes(opt.value)
-                      ? 'bg-brand-gold text-white border-brand-gold'
+                      ? 'bg-brand-primary text-white border-brand-primary'
                       : 'hover:bg-muted'
                   )}
                   onClick={() => toggleArrayValue('support_level', opt.value)}
@@ -188,7 +188,7 @@ export function IncidentFiltersDialog({ filters, onFiltersChange }: IncidentFilt
                   className={cn(
                     'cursor-pointer transition-colors',
                     draftFilters.delivery_stage?.includes(opt.value)
-                      ? 'bg-brand-gold text-white border-brand-gold'
+                      ? 'bg-brand-primary text-white border-brand-primary'
                       : 'hover:bg-muted'
                   )}
                   onClick={() => toggleArrayValue('delivery_stage', opt.value)}
@@ -204,7 +204,7 @@ export function IncidentFiltersDialog({ filters, onFiltersChange }: IncidentFilt
           <Button variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
-          <Button onClick={handleApply} className="bg-brand-gold hover:bg-brand-gold-hover text-white">
+          <Button onClick={handleApply} className="bg-brand-primary hover:bg-brand-primary-hover text-white">
             Apply Filters
           </Button>
         </div>

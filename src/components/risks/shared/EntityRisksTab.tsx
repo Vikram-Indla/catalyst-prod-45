@@ -593,7 +593,7 @@ export function EntityRisksTab({ entityType, entityId }: EntityRisksTabProps) {
             </p>
             <Button
               size="sm"
-              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
               onClick={() => { resetForm(); setShowAddForm(true); setEditingId(null); }}
             >
               <Plus className="h-4 w-4 mr-1" />

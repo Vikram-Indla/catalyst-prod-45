@@ -151,7 +151,7 @@ export function CIOPanel({ data, isCollapsed = false, onToggle }: CIOPanelProps)
             icon={Calendar} 
             label="Target Complete" 
             value={formatDate(data.end_date)}
-            valueClassName={data.end_date ? 'text-brand-gold font-semibold' : undefined}
+            valueClassName={data.end_date ? 'text-brand-primary font-semibold' : undefined}
           />
         </div>
 
@@ -181,7 +181,7 @@ export function CIOPanel({ data, isCollapsed = false, onToggle }: CIOPanelProps)
             icon={TrendingUp} 
             label="Rank" 
             value={data.rank ? `#${data.rank}` : '—'}
-            valueClassName="text-brand-gold font-semibold"
+            valueClassName="text-brand-primary font-semibold"
           />
         </div>
 

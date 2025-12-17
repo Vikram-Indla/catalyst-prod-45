@@ -63,7 +63,7 @@ export function WorkItemActivityFeed({ entityType, entityId, className }: WorkIt
           >
             <div className="flex items-start gap-3">
               <Avatar className="h-7 w-7 flex-shrink-0">
-                <AvatarFallback className="bg-brand-gold/20 text-brand-gold text-xs">
+                <AvatarFallback className="bg-brand-primary/20 text-brand-primary text-xs">
                   {activity.actorId?.substring(0, 2).toUpperCase() || 'SY'}
                 </AvatarFallback>
               </Avatar>
@@ -75,7 +75,7 @@ export function WorkItemActivityFeed({ entityType, entityId, className }: WorkIt
                     className={cn(
                       "text-xs capitalize",
                       activity.action === 'created' && "border-green-500/30 text-green-700 bg-green-50",
-                      activity.action === 'updated' && "border-brand-gold/30 text-brand-gold bg-brand-gold/10",
+                      activity.action === 'updated' && "border-brand-primary/30 text-brand-primary bg-brand-primary/10",
                       activity.action === 'deleted' && "border-red-500/30 text-red-700 bg-red-50"
                     )}
                   >

@@ -79,7 +79,7 @@ export function StoriesPage() {
                   Manage user stories across features and teams
                 </p>
               </div>
-              <Button size="sm" onClick={() => setIsCreateOpen(true)} className="bg-brand-gold hover:bg-brand-gold-hover flex-shrink-0">
+              <Button size="sm" onClick={() => setIsCreateOpen(true)} className="bg-brand-primary hover:bg-brand-primary-hover flex-shrink-0">
                 <Plus className="h-4 w-4 sm:mr-2" />
                 <span className="hidden sm:inline">Create Story</span>
               </Button>

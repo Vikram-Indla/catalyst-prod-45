@@ -148,7 +148,7 @@ export function BusinessRequestsKanbanView({ requests, onRequestSelect, allExpan
                     className="flex-shrink-0 w-12 cursor-pointer group"
                     onClick={() => toggleColumnCollapse(column.id)}
                   >
-                    <Card className="h-full bg-card/50 backdrop-blur-sm border-border/50 hover:border-brand-gold/30 transition-colors">
+                    <Card className="h-full bg-card/50 backdrop-blur-sm border-border/50 hover:border-brand-primary/30 transition-colors">
                       <div className="h-full flex flex-col items-center py-4">
                         <div className="w-3 h-3 rounded-full shadow-sm bg-muted border border-border" />
                         <Badge variant="secondary" className="rounded-full text-xs font-medium px-2 py-0.5 bg-muted/80 mb-3">
@@ -211,8 +211,8 @@ export function BusinessRequestsKanbanView({ requests, onRequestSelect, allExpan
                                   {...provided.draggableProps}
                                   {...provided.dragHandleProps}
                                   className={cn(
-                                    "cursor-pointer hover:shadow-lg hover:border-brand-gold/30 transition-all duration-200 bg-card border-border/60",
-                                    snapshot.isDragging && "shadow-xl rotate-1 border-brand-gold/50"
+                                    "cursor-pointer hover:shadow-lg hover:border-brand-primary/30 transition-all duration-200 bg-card border-border/60",
+                                    snapshot.isDragging && "shadow-xl rotate-1 border-brand-primary/50"
                                   )}
                                   onClick={() => onRequestSelect(request.id)}
                                 >
@@ -225,7 +225,7 @@ export function BusinessRequestsKanbanView({ requests, onRequestSelect, allExpan
                                     </div>
                                     
                                     {request.request_key && (
-                                      <div className="text-xs text-brand-gold font-mono font-medium">
+                                      <div className="text-xs text-brand-primary font-mono font-medium">
                                         {request.request_key.startsWith('MIM-') 
                                           ? request.request_key 
                                           : `MIM-${String(request.request_key).padStart(3, '0')}`}

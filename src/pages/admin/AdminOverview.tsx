@@ -185,11 +185,11 @@ export default function AdminOverview() {
               const Icon = pocket.icon;
               return (
                 <Link key={pocket.id} to={pocket.path}>
-                  <Card className="hover:border-brand-gold/50 transition-colors cursor-pointer h-full">
+                  <Card className="hover:border-brand-primary/50 transition-colors cursor-pointer h-full">
                     <CardHeader className="pb-2">
                       <div className="flex items-start justify-between">
-                        <div className="w-10 h-10 rounded-lg bg-brand-gold/10 flex items-center justify-center">
-                          <Icon className="h-5 w-5 text-brand-gold" />
+                        <div className="w-10 h-10 rounded-lg bg-brand-primary/10 flex items-center justify-center">
+                          <Icon className="h-5 w-5 text-brand-primary" />
                         </div>
                         <div className="text-right">
                           {metrics.isLoading ? (

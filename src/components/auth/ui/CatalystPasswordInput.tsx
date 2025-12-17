@@ -23,7 +23,7 @@ export const CatalystPasswordInput = forwardRef<HTMLInputElement, CatalystPasswo
             ref={ref}
             type={showPassword ? "text" : "password"}
             className={cn(
-              "w-full transition-all outline-none font-body text-base py-3.5 px-4 pr-12 rounded-[10px] border-2 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/10",
+              "w-full transition-all outline-none font-body text-base py-3.5 px-4 pr-12 rounded-[10px] border-2 focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/10",
               error && "border-destructive",
               className
             )}

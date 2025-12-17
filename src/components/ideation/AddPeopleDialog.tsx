@@ -190,7 +190,7 @@ export function AddPeopleDialog({
                     <Checkbox checked={isSelected} />
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={profile.avatar_url || undefined} />
-                      <AvatarFallback className="bg-brand-gold/20 text-brand-gold text-xs">
+                      <AvatarFallback className="bg-brand-primary/20 text-brand-primary text-xs">
                         {getInitials(profile.full_name, profile.email)}
                       </AvatarFallback>
                     </Avatar>
@@ -221,7 +221,7 @@ export function AddPeopleDialog({
           <Button
             onClick={handleSave}
             disabled={addMember.isPending || removeMember.isPending}
-            className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+            className="bg-brand-primary hover:bg-brand-primary-hover text-white"
           >
             Save
           </Button>

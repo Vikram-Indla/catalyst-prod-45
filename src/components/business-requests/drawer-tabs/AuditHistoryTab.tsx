@@ -213,7 +213,7 @@ export function AuditHistoryTab({ requestId }: AuditHistoryTabProps) {
             variant="outline"
             size="sm"
             onClick={() => fetchNextPage()}
-            className="w-full text-[13px] font-medium h-9 border-brand-gold text-brand-gold hover:bg-brand-gold hover:text-white transition-all duration-150"
+            className="w-full text-[13px] font-medium h-9 border-brand-primary text-brand-primary hover:bg-brand-primary hover:text-white transition-all duration-150"
           >
             Load more messages
           </Button>

@@ -168,16 +168,16 @@ export function StoryLinks({ storyId }: StoryLinksProps) {
           variant="outline" 
           size="sm" 
           onClick={() => setIsAdding(true)}
-          className="border-brand-gold/20 text-brand-gold hover:bg-brand-gold/10"
+          className="border-brand-primary/20 text-brand-primary hover:bg-brand-primary/10"
         >
           <Plus className="h-4 w-4 mr-2" />
           Add Link
         </Button>
       ) : (
-        <div className="space-y-3 p-4 border rounded-lg bg-card border-brand-gold/20">
+        <div className="space-y-3 p-4 border rounded-lg bg-card border-brand-primary/20">
           <div className="flex items-center justify-between">
             <h4 className="text-sm font-medium flex items-center gap-2">
-              <LinkIcon className="h-4 w-4 text-brand-gold" />
+              <LinkIcon className="h-4 w-4 text-brand-primary" />
               Add Link
             </h4>
             <Button variant="ghost" size="sm" onClick={() => setIsAdding(false)}>
@@ -189,7 +189,7 @@ export function StoryLinks({ storyId }: StoryLinksProps) {
           <div className="space-y-2">
             <label className="text-xs font-medium">Link Type</label>
             <Select value={linkType} onValueChange={(v) => setLinkType(v as LinkType)}>
-              <SelectTrigger className="focus:ring-brand-gold">
+              <SelectTrigger className="focus:ring-brand-primary">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -206,7 +206,7 @@ export function StoryLinks({ storyId }: StoryLinksProps) {
           <div className="space-y-2">
             <label className="text-xs font-medium">Link to Story</label>
             <Select value={linkedStoryId} onValueChange={setLinkedStoryId}>
-              <SelectTrigger className="focus:ring-brand-gold">
+              <SelectTrigger className="focus:ring-brand-primary">
                 <SelectValue placeholder="Select a story..." />
               </SelectTrigger>
               <SelectContent>
@@ -221,7 +221,7 @@ export function StoryLinks({ storyId }: StoryLinksProps) {
               size="sm" 
               onClick={handleAddInternalLink} 
               disabled={!linkedStoryId || addInternalLinkMutation.isPending}
-              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
             >
               {addInternalLinkMutation.isPending ? 'Adding...' : 'Add Story Link'}
             </Button>
@@ -236,19 +236,19 @@ export function StoryLinks({ storyId }: StoryLinksProps) {
               placeholder="Title"
               value={externalTitle}
               onChange={(e) => setExternalTitle(e.target.value)}
-              className="focus-visible:ring-brand-gold"
+              className="focus-visible:ring-brand-primary"
             />
             <Input
               placeholder="https://..."
               value={externalUrl}
               onChange={(e) => setExternalUrl(e.target.value)}
-              className="focus-visible:ring-brand-gold"
+              className="focus-visible:ring-brand-primary"
             />
             <Button 
               size="sm" 
               onClick={handleAddExternalLink} 
               disabled={!externalUrl || !externalTitle || addExternalLinkMutation.isPending}
-              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
             >
               {addExternalLinkMutation.isPending ? 'Adding...' : 'Add External Link'}
             </Button>
@@ -259,7 +259,7 @@ export function StoryLinks({ storyId }: StoryLinksProps) {
       {/* Links List */}
       <div className="space-y-2">
         <h4 className="text-sm font-medium flex items-center gap-2">
-          <LinkIcon className="h-4 w-4 text-brand-gold" />
+          <LinkIcon className="h-4 w-4 text-brand-primary" />
           Related Items ({links?.length || 0})
         </h4>
         
@@ -291,7 +291,7 @@ export function StoryLinks({ storyId }: StoryLinksProps) {
                         href={link.external_url} 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="text-sm font-medium text-brand-gold hover:underline truncate flex items-center gap-1"
+                        className="text-sm font-medium text-brand-primary hover:underline truncate flex items-center gap-1"
                       >
                         {link.external_title}
                         <ExternalLink className="h-3 w-3 flex-shrink-0" />

@@ -101,13 +101,13 @@ export function SavedFiltersDropdown({
                     <Star
                       className={cn(
                         'h-4 w-4',
-                        filter.is_starred ? 'fill-brand-gold text-brand-gold' : 'text-muted-foreground'
+                        filter.is_starred ? 'fill-brand-primary text-brand-primary' : 'text-muted-foreground'
                       )}
                     />
                   </button>
                   <span className="truncate">{filter.name}</span>
                   {filter.is_default && (
-                    <span className="shrink-0 text-xs text-brand-gold">(default)</span>
+                    <span className="shrink-0 text-xs text-brand-primary">(default)</span>
                   )}
                 </div>
                 <DropdownMenu>

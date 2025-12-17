@@ -20,8 +20,8 @@ const STATUS_STYLES: Record<string, {
   },
   'in-progress': { 
     bg: 'bg-transparent',
-    text: 'text-brand-gold', 
-    border: 'border-brand-gold',
+    text: 'text-brand-primary', 
+    border: 'border-brand-primary',
     variant: 'outline'
   },
   'on-track': { 
