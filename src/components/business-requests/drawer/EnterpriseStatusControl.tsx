@@ -37,6 +37,16 @@ const STATUS_STYLES: Record<string, { bg: string; text: string; border: string }
     text: 'rgb(168, 85, 247)', 
     border: 'rgba(168, 85, 247, 0.3)' 
   },
+  ea_review: { 
+    bg: 'rgba(14, 165, 233, 0.15)', 
+    text: 'rgb(14, 165, 233)', 
+    border: 'rgba(14, 165, 233, 0.3)' 
+  },
+  analyse: { 
+    bg: 'rgba(249, 115, 22, 0.15)', 
+    text: 'rgb(249, 115, 22)', 
+    border: 'rgba(249, 115, 22, 0.3)' 
+  },
   approved: { 
     bg: 'rgba(34, 197, 94, 0.15)', 
     text: 'rgb(34, 197, 94)', 
@@ -52,10 +62,30 @@ const STATUS_STYLES: Record<string, { bg: string; text: string; border: string }
     text: 'rgb(202, 138, 4)', 
     border: 'rgba(234, 179, 8, 0.3)' 
   },
+  ready_to_implement: { 
+    bg: 'rgba(34, 197, 94, 0.15)', 
+    text: 'rgb(34, 197, 94)', 
+    border: 'rgba(34, 197, 94, 0.3)' 
+  },
+  implement: { 
+    bg: 'rgba(198, 156, 109, 0.15)', 
+    text: 'var(--accent-color)', 
+    border: 'rgba(198, 156, 109, 0.3)' 
+  },
   completed: { 
     bg: 'rgba(92, 124, 92, 0.15)', 
     text: 'var(--secondary-green)', 
     border: 'rgba(92, 124, 92, 0.3)' 
+  },
+  closed: { 
+    bg: 'rgba(92, 124, 92, 0.15)', 
+    text: 'var(--secondary-green)', 
+    border: 'rgba(92, 124, 92, 0.3)' 
+  },
+  rejected: { 
+    bg: 'rgba(239, 68, 68, 0.15)', 
+    text: 'rgb(239, 68, 68)', 
+    border: 'rgba(239, 68, 68, 0.3)' 
   },
   cancelled: { 
     bg: 'rgba(239, 68, 68, 0.15)', 
