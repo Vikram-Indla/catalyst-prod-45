@@ -79,16 +79,6 @@ export const DemandColumn = forwardRef<HTMLDivElement, DemandColumnProps>(
                 style={{ height: '64px' }}
                 onClick={() => onDemandClick(demand.id)}
               >
-                {/* Rank */}
-                <div className="flex flex-col items-center gap-1 min-w-[32px]">
-                  <span className="text-xs font-medium text-muted-foreground">
-                    #{demand.rank ?? index + 1}
-                  </span>
-                  {demand.rank && (
-                    <Lock size={10} className="text-muted-foreground/50" />
-                  )}
-                </div>
-                
                 {/* Key Badge */}
                 <div className="flex items-center gap-1.5 min-w-[72px]">
                   <Lock size={12} className="text-muted-foreground/50" />
@@ -97,16 +87,23 @@ export const DemandColumn = forwardRef<HTMLDivElement, DemandColumnProps>(
                   </span>
                 </div>
                 
-                {/* Content */}
+                {/* Content: Title, Owner, Platform */}
                 <div className="flex-1 min-w-0">
                   <div className="font-medium text-sm mb-1 truncate" title={demand.title}>
                     {demand.title}
                   </div>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span>{demand.ownerName}</span>
+                    <span className="truncate">{demand.ownerName}</span>
                     <span>·</span>
-                    <span>{demand.platform}</span>
+                    <span className="truncate">{demand.platform}</span>
                   </div>
+                </div>
+                
+                {/* Rank - right aligned with Rank header */}
+                <div className="flex items-center justify-end min-w-[48px]">
+                  <span className="text-xs font-medium text-muted-foreground">
+                    #{demand.rank ?? index + 1}
+                  </span>
                 </div>
               </div>
             );
