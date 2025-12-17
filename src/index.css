@@ -29,9 +29,9 @@
   --brand-primary-pale: rgba(92, 124, 92, 0.1);
   
   /* Legacy Gold — DECORATIVE ONLY (charts, gauges, accents) */
-  --brand-primary: #C69C6D;
-  --brand-primary-hover: #B8905F;
-  --brand-primary-muted: rgba(198, 156, 109, 0.15);
+  --brand-gold: #C69C6D;
+  --brand-gold-hover: #B8905F;
+  --brand-gold-muted: rgba(198, 156, 109, 0.15);
   
   /* ══════════════════════════════════════════════════════════
      SECONDARY PALETTE — Golden Hour
