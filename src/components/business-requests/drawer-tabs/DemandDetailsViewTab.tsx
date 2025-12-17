@@ -10,8 +10,10 @@ import { toast } from 'sonner';
 import { RichTextEditor } from '../RichTextEditor';
 import { UserPicker } from '@/components/ui/user-picker';
 import { BusinessRequest } from '@/types/business-request';
-import { PlannedQuarterSelect } from '@/components/ui/lookup-select';
+import { PlannedQuarterSelect, DeliveryPlatformSelect } from '@/components/ui/lookup-select';
 import { getTierDisplayInfo, PriorityTier } from '@/hooks/usePrioritizationConfig';
+import { DepartmentSelect } from '@/components/business-requests/DepartmentSelect';
+import { BusinessOwnerSelect } from '@/components/business-requests/BusinessOwnerSelect';
 
 interface DemandDetailsViewTabProps {
   data: Partial<BusinessRequest> & Record<string, any>;
@@ -50,7 +52,55 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
 
   return (
     <div className="flex flex-col h-full space-y-4" style={{ background: 'var(--bg)' }}>
-      {/* Details Section - Owner/Dept/Target in Meta Strip above */}
+      {/* SECTION 1: Request Metadata - TOP CARD */}
+      <div className="border rounded-lg p-4" style={{ borderColor: 'var(--border-color)', background: 'var(--surface-1)' }}>
+        <h3 className="text-[11px] font-medium uppercase tracking-wide mb-3" style={{ color: 'var(--text-3)' }}>
+          Request Metadata
+        </h3>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>Requestor</Label>
+            <div className="mt-1">
+              <UserPicker
+                value={data.requestor || null}
+                onChange={(value) => onChange('requestor', value as string | null)}
+                placeholder="Select requestor..."
+              />
+            </div>
+          </div>
+          <div>
+            <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>Department</Label>
+            <div className="mt-1">
+              <DepartmentSelect
+                value={data.department_id || null}
+                onChange={(id) => onChange('department_id', id)}
+                placeholder="Select department..."
+              />
+            </div>
+          </div>
+          <div>
+            <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>Product / Platform</Label>
+            <div className="mt-1">
+              <DeliveryPlatformSelect
+                value={data.delivery_platform || null}
+                onChange={(value) => onChange('delivery_platform', value)}
+              />
+            </div>
+          </div>
+          <div>
+            <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>Target Completion Date</Label>
+            <div className="mt-1">
+              <CatalystDatePicker
+                value={data.end_date || null}
+                onChange={(date) => onChange('end_date', date ? format(date, 'yyyy-MM-dd') : null)}
+                placeholder="Select date"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* SECTION 2: Details */}
       <div className="border rounded-lg p-4 space-y-4" style={{ borderColor: 'var(--border-color)', background: 'var(--surface-1)' }}>
         <h3 className="text-[11px] font-medium uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>Details</h3>
           
@@ -68,7 +118,7 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
           />
         </div>
 
-        {/* Auto Priority - Compact */}
+        {/* Auto Priority - Read-only with navigation */}
         <div>
           <Label className="text-[11px] font-medium" style={{ color: 'var(--text-3)' }}>Auto Priority</Label>
           <div 
@@ -87,7 +137,7 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
               className="ml-auto text-[11px] hover:underline"
               style={{ color: 'var(--accent-color)' }}
             >
-              View scoring
+              View scoring →
             </button>
           </div>
         </div>
@@ -99,12 +149,12 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
             <RichTextEditor
               value={data.description || ''}
               onChange={(value) => onChange('description', value)}
-              placeholder="Describe the demand..."
+              placeholder="Business Need&#10;&#10;Detailed Description&#10;&#10;Delivery Urgency&#10;&#10;Justification"
             />
           </div>
         </div>
 
-        {/* People - Reporter + Assignee only (Owner/Dept in Meta Strip) */}
+        {/* Reporter + Assignee */}
         <div className="grid grid-cols-2 gap-3">
           <div>
             <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>Reporter</Label>
@@ -112,7 +162,7 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
               <UserPicker
                 value={data.requestor || null}
                 onChange={(value) => onChange('requestor', value as string | null)}
-                placeholder="Select..."
+                placeholder="Select reporter..."
               />
             </div>
           </div>
@@ -122,21 +172,21 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
               <UserPicker
                 value={data.assignee || null}
                 onChange={(value) => onChange('assignee', value as string | null)}
-                placeholder="Select..."
+                placeholder="Select assignee..."
               />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Planning & Delivery Section - No Delivery Track */}
+      {/* SECTION 3: Planning & Delivery */}
       <div className="border rounded-lg p-4 space-y-4 flex-1" style={{ borderColor: 'var(--border-color)', background: 'var(--surface-1)' }}>
         <h3 className="text-[11px] font-medium uppercase tracking-wide" style={{ color: 'var(--text-3)' }}>Planning & Delivery</h3>
           
         {/* Dates */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <Label className="text-[11px] font-medium mb-1 block" style={{ color: 'var(--text-2)' }}>Business Ask</Label>
+            <Label className="text-[11px] font-medium mb-1 block" style={{ color: 'var(--text-2)' }}>Business Ask Date</Label>
             <CatalystDatePicker
               value={data.start_date || null}
               onChange={(date) => onChange('start_date', date ? format(date, 'yyyy-MM-dd') : null)}
@@ -145,7 +195,7 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
           </div>
 
           <div>
-            <Label className="text-[11px] font-medium mb-1 block" style={{ color: 'var(--text-2)' }}>Kickoff</Label>
+            <Label className="text-[11px] font-medium mb-1 block" style={{ color: 'var(--text-2)' }}>Kickoff Date</Label>
             <CatalystDatePicker
               value={data.impl_start_date || null}
               onChange={(date) => onChange('impl_start_date', date ? format(date, 'yyyy-MM-dd') : null)}
@@ -154,7 +204,7 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
           </div>
 
           <div>
-            <Label className="text-[11px] font-medium mb-1 block" style={{ color: 'var(--text-2)' }}>Target Complete</Label>
+            <Label className="text-[11px] font-medium mb-1 block" style={{ color: 'var(--text-2)' }}>Target Complete Date</Label>
             <div className="flex gap-1">
               <div className="flex-1">
                 <CatalystDatePicker
@@ -181,10 +231,10 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
           </div>
         </div>
 
-        {/* Delivery context - Quarter only (Platform in Meta Strip) */}
+        {/* Quarter */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>Quarter</Label>
+            <Label className="text-[11px] font-medium" style={{ color: 'var(--text-2)' }}>Planned Quarter</Label>
             <div className="mt-1">
               <PlannedQuarterSelect
                 value={data.planned_quarter || null}
