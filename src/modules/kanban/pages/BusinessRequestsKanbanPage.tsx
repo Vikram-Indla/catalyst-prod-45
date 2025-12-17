@@ -1,22 +1,36 @@
-// Main KanbanBoard component - BusinessRequestsKanbanPage
+/**
+ * Business Requests Kanban Page
+ * Shares state with List view via useIndustryViewStore
+ */
 
 import React, { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { KanbanTicket, StatusId, GroupByOption, ScoringFilter, COLUMNS_CONFIG, PRIORITIES, GROUP_BY_OPTIONS, SCORING_OPTIONS, KANBAN_COLORS, SwimlaneGroup } from '../types';
+import { KanbanTicket, StatusId, GroupByOption, COLUMNS_CONFIG, KANBAN_COLORS, SwimlaneGroup } from '../types';
 import { useKanbanData, useTeamMembers } from '../hooks/useKanbanData';
 import { KanbanColumn } from '../components/KanbanColumn';
 import { Swimlane } from '../components/Swimlane';
-import { QuickFilterAvatars, FilterDropdown, GroupByDropdown } from '../components/KanbanFilters';
-import { KanbanIcons } from '../components/KanbanIcons';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { IndustryHeaderToolbarV2 } from '@/shared/components/IndustryHeaderToolbarV2';
 import { useDepartments } from '@/hooks/useDepartmentsAndOwners';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import { PageChrome } from '@/components/layout/PageChrome';
+import { useIndustryViewStore } from '@/stores/useIndustryViewStore';
 
 export default function BusinessRequestsKanbanPage() {
   const navigate = useNavigate();
+  
+  // Shared state from store
+  const { 
+    searchQuery, 
+    setSearchQuery, 
+    scoringFilter, 
+    setScoringFilter,
+    selectedAssignees,
+    toggleAssignee,
+    clearAssignees
+  } = useIndustryViewStore();
+  
   const { tickets, isLoading, updateStatus } = useKanbanData();
   const teamMembers = useTeamMembers();
   
@@ -30,9 +44,6 @@ export default function BusinessRequestsKanbanPage() {
     return map;
   }, [departments]);
   
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedAssignees, setSelectedAssignees] = useState<string[]>([]);
-  const [scoringFilter, setScoringFilter] = useState<ScoringFilter>('all');
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
   const [collapsedColumns, setCollapsedColumns] = useState<StatusId[]>([]);
   const [compactMode, setCompactMode] = useState(false);
@@ -47,18 +58,21 @@ export default function BusinessRequestsKanbanPage() {
     }
   }, []);
 
-  // Filter tickets
+  // Filter tickets using shared state
   const filteredTickets = useMemo(() => {
     return tickets.filter(ticket => {
+      // Search filter
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
         if (!ticket.id.toLowerCase().includes(query) && !ticket.summary.toLowerCase().includes(query)) {
           return false;
         }
       }
+      // Assignee filter
       if (selectedAssignees.length > 0 && !selectedAssignees.includes(ticket.assignee || '')) {
         return false;
       }
+      // Scoring filter
       if (scoringFilter === 'scored' && ticket.score === null) return false;
       if (scoringFilter === 'unscored' && ticket.score !== null) return false;
       return true;
@@ -74,13 +88,6 @@ export default function BusinessRequestsKanbanPage() {
     return grouped;
   }, [filteredTickets]);
 
-  // Scoring stats
-  const scoringStats = useMemo(() => ({
-    total: tickets.length,
-    scored: tickets.filter(t => t.score !== null).length,
-    unscored: tickets.filter(t => t.score === null).length,
-  }), [tickets]);
-
   // Group by swimlanes
   const groupedTickets = useMemo(() => {
     if (groupBy === 'none') return null;
@@ -92,17 +99,14 @@ export default function BusinessRequestsKanbanPage() {
       let color: string | undefined;
       
       if (groupBy === 'department') {
-        // Use admin-configured departments from database
         if (ticket.department) {
           key = ticket.department;
-          // Look up department name from admin data
           const deptName = departmentNameById.get(ticket.department);
           label = deptName || 'Unknown Department';
         } else {
           key = 'unassigned';
           label = 'Unassigned';
         }
-        // Use brand color for departments
         color = KANBAN_COLORS.bronze;
       } else if (groupBy === 'assignee') {
         const m = teamMembers.find(tm => tm.id === ticket.assignee || tm.name === ticket.assignee);
@@ -120,13 +124,11 @@ export default function BusinessRequestsKanbanPage() {
       groups[key].tickets.push(ticket);
     });
     
-    // Sort groups: admin-defined order for departments, alphabetical for others, "Unassigned" last
     const sortedEntries = Object.entries(groups).sort((a, b) => {
       if (a[0] === 'unassigned') return 1;
       if (b[0] === 'unassigned') return -1;
       
       if (groupBy === 'department') {
-        // Sort by department sort_order from admin
         const deptA = departments.find(d => d.id === a[0]);
         const deptB = departments.find(d => d.id === b[0]);
         const orderA = deptA?.sort_order ?? 999;
@@ -152,14 +154,6 @@ export default function BusinessRequestsKanbanPage() {
     setExpandedSwimlanes(prev => ({ ...prev, [swimlaneId]: !prev[swimlaneId] }));
   };
 
-  const clearAllFilters = () => {
-    setSearchQuery('');
-    setSelectedAssignees([]);
-    setScoringFilter('all');
-  };
-
-  const hasActiveFilters = searchQuery || selectedAssignees.length > 0 || scoringFilter !== 'all';
-
   // Toolbar content
   const toolbarElement = (
     <IndustryHeaderToolbarV2
@@ -175,13 +169,12 @@ export default function BusinessRequestsKanbanPage() {
         color: m.color
       }))}
       selectedAvatarIds={selectedAssignees}
-      onToggleAvatar={(id) => setSelectedAssignees(prev => prev.includes(id) ? prev.filter(a => a !== id) : [...prev, id])}
-      onSelectAllAvatars={() => setSelectedAssignees([])}
+      onToggleAvatar={toggleAssignee}
+      onSelectAllAvatars={clearAssignees}
       scoringFilter={scoringFilter}
       onScoringFilterChange={setScoringFilter}
       onViewSettings={() => setCompactMode(!compactMode)}
       onExport={() => {
-        // Export CSV
         const headers = ['ID', 'Summary', 'Status', 'Score', 'Assignee'];
         const csvRows = [headers.join(',')];
         filteredTickets.forEach(t => {
@@ -210,7 +203,7 @@ export default function BusinessRequestsKanbanPage() {
 
   return (
     <PageChrome toolbar={toolbarElement}>
-      {/* Board Container - fills remaining viewport with proper flex rules */}
+      {/* Board Container */}
       <div 
         className="flex-1 flex flex-col overflow-hidden px-4 pt-3"
         style={{ 
