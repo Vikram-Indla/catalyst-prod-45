@@ -57,12 +57,12 @@ export function PageChrome({
     >
       {!hideHeader && (
         <div className="shrink-0" style={{ backgroundColor: 'var(--bg)' }}>
-          {/* Row 1: Breadcrumb + Title + Actions */}
+          {/* Row 1: Breadcrumb + Title + Actions - with border to align with sidebar */}
           <div
             className="flex items-center justify-between px-6"
             style={{ 
               height: '52px',
-              borderBottom: !toolbar ? '1px solid var(--divider)' : undefined,
+              borderBottom: '1px solid var(--divider)',
             }}
           >
             {/* Left: Breadcrumb + Title (NO ICONS) */}
@@ -95,13 +95,12 @@ export function PageChrome({
             )}
           </div>
 
-          {/* Row 2: Toolbar - only rendered if toolbar provided */}
+          {/* Row 2: Toolbar - only rendered if toolbar provided, no additional border */}
           {toolbar && (
             <div
               className="flex items-center px-6"
               style={{
                 height: '44px',
-                borderBottom: '1px solid var(--divider)',
               }}
             >
               {toolbar}
