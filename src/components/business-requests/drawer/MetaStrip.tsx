@@ -1,10 +1,10 @@
 /**
  * MetaStrip - Single source of truth for ownership fields
- * Status, Business Owner, Department, Target Date - editable inline
+ * Catalyst Design System styling with inline editable chips
  */
 
 import { format } from 'date-fns';
-import { User, Building2, Calendar, ChevronDown, Layers } from 'lucide-react';
+import { User, Building2, Calendar, Layers } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { DepartmentSelect } from '@/components/business-requests/DepartmentSelect';
 import { BusinessOwnerSelect } from '@/components/business-requests/BusinessOwnerSelect';
@@ -31,6 +31,10 @@ interface MetaStripProps {
   className?: string;
 }
 
+const chipStyles = {
+  base: "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[12px] font-medium cursor-pointer transition-colors",
+};
+
 export function MetaStrip({
   businessOwner,
   businessOwnerId,
@@ -49,35 +53,36 @@ export function MetaStrip({
   const [dateOpen, setDateOpen] = useState(false);
   const [platformOpen, setPlatformOpen] = useState(false);
 
+  const formatDate = (date?: string | null) => {
+    if (!date) return 'No date';
+    return format(new Date(date), 'd MMM yyyy');
+  };
+
   return (
-    <div 
-      className={cn("flex items-center gap-3 flex-wrap", className)}
-    >
-      {/* Business Owner - Editable */}
+    <div className={cn("flex items-center gap-2 flex-wrap", className)}>
+      {/* Business Owner Chip */}
       <Popover open={ownerOpen} onOpenChange={setOwnerOpen}>
         <PopoverTrigger asChild>
           <button
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors hover:bg-[var(--surface-3)]"
-            style={{ 
-              background: 'var(--surface-2)', 
-              border: '1px solid var(--border-color)',
-              color: 'var(--text-1)'
+            className={chipStyles.base}
+            style={{
+              background: 'var(--surface-hover, hsl(var(--muted)))',
+              border: '1px solid var(--border-default, hsl(var(--border)))',
+              color: 'var(--text-secondary, hsl(var(--muted-foreground)))',
             }}
           >
-            <User className="h-3 w-3 shrink-0" style={{ color: 'var(--text-3)' }} />
-            <span className="truncate max-w-[100px]">{businessOwner || 'No owner'}</span>
-            <ChevronDown className="h-3 w-3 shrink-0" style={{ color: 'var(--text-3)' }} />
+            <User className="h-3.5 w-3.5" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }} />
+            {businessOwner || 'Unassigned'}
           </button>
         </PopoverTrigger>
         <PopoverContent 
-          className="w-[200px] p-2 z-[400]" 
+          className="w-[220px] p-2 z-[400]" 
           align="start"
-          style={{ background: 'var(--surface-1)', borderColor: 'var(--border-color)' }}
+          style={{ background: 'var(--surface-bg, hsl(var(--background)))', borderColor: 'var(--border-default, hsl(var(--border)))' }}
         >
           <BusinessOwnerSelect
             value={businessOwnerId || null}
             onChange={(id) => {
-              // We need to get the name - this will be handled by parent
               onBusinessOwnerChange?.(id, '');
               setOwnerOpen(false);
             }}
@@ -87,26 +92,25 @@ export function MetaStrip({
         </PopoverContent>
       </Popover>
 
-      {/* Department - Editable */}
+      {/* Department Chip */}
       <Popover open={deptOpen} onOpenChange={setDeptOpen}>
         <PopoverTrigger asChild>
           <button
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors hover:bg-[var(--surface-3)]"
-            style={{ 
-              background: 'var(--surface-2)', 
-              border: '1px solid var(--border-color)',
-              color: 'var(--text-1)'
+            className={chipStyles.base}
+            style={{
+              background: 'var(--surface-hover, hsl(var(--muted)))',
+              border: '1px solid var(--border-default, hsl(var(--border)))',
+              color: 'var(--text-secondary, hsl(var(--muted-foreground)))',
             }}
           >
-            <Building2 className="h-3 w-3 shrink-0" style={{ color: 'var(--text-3)' }} />
-            <span className="truncate max-w-[100px]">{department || 'No dept'}</span>
-            <ChevronDown className="h-3 w-3 shrink-0" style={{ color: 'var(--text-3)' }} />
+            <Building2 className="h-3.5 w-3.5" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }} />
+            {department || 'No Department'}
           </button>
         </PopoverTrigger>
         <PopoverContent 
-          className="w-[200px] p-2 z-[400]" 
+          className="w-[220px] p-2 z-[400]" 
           align="start"
-          style={{ background: 'var(--surface-1)', borderColor: 'var(--border-color)' }}
+          style={{ background: 'var(--surface-bg, hsl(var(--background)))', borderColor: 'var(--border-default, hsl(var(--border)))' }}
         >
           <DepartmentSelect
             value={departmentId || null}
@@ -119,28 +123,25 @@ export function MetaStrip({
         </PopoverContent>
       </Popover>
 
-      {/* Target Date - Editable */}
+      {/* Target Date Chip */}
       <Popover open={dateOpen} onOpenChange={setDateOpen}>
         <PopoverTrigger asChild>
           <button
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors hover:bg-[var(--surface-3)]"
-            style={{ 
-              background: 'var(--surface-2)', 
-              border: '1px solid var(--border-color)',
-              color: 'var(--text-1)'
+            className={chipStyles.base}
+            style={{
+              background: 'var(--surface-hover, hsl(var(--muted)))',
+              border: '1px solid var(--border-default, hsl(var(--border)))',
+              color: 'var(--text-secondary, hsl(var(--muted-foreground)))',
             }}
           >
-            <Calendar className="h-3 w-3 shrink-0" style={{ color: 'var(--text-3)' }} />
-            <span className="truncate">
-              {targetDate ? format(new Date(targetDate), 'MMM d, yyyy') : 'No target'}
-            </span>
-            <ChevronDown className="h-3 w-3 shrink-0" style={{ color: 'var(--text-3)' }} />
+            <Calendar className="h-3.5 w-3.5" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }} />
+            {formatDate(targetDate)}
           </button>
         </PopoverTrigger>
         <PopoverContent 
           className="w-auto p-2 z-[400]" 
           align="start"
-          style={{ background: 'var(--surface-1)', borderColor: 'var(--border-color)' }}
+          style={{ background: 'var(--surface-bg, hsl(var(--background)))', borderColor: 'var(--border-default, hsl(var(--border)))' }}
         >
           <CatalystDatePicker
             value={targetDate || null}
@@ -153,36 +154,37 @@ export function MetaStrip({
         </PopoverContent>
       </Popover>
 
-      {/* Delivery Platform - Editable */}
-      <Popover open={platformOpen} onOpenChange={setPlatformOpen}>
-        <PopoverTrigger asChild>
-          <button
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors hover:bg-[var(--surface-3)]"
-            style={{ 
-              background: 'var(--surface-2)', 
-              border: '1px solid var(--border-color)',
-              color: 'var(--text-1)'
-            }}
+      {/* Platform Chip - Only show if has value */}
+      {deliveryPlatform && (
+        <Popover open={platformOpen} onOpenChange={setPlatformOpen}>
+          <PopoverTrigger asChild>
+            <button
+              className={chipStyles.base}
+              style={{
+                background: 'var(--surface-hover, hsl(var(--muted)))',
+                border: '1px solid var(--border-default, hsl(var(--border)))',
+                color: 'var(--text-secondary, hsl(var(--muted-foreground)))',
+              }}
+            >
+              <Layers className="h-3.5 w-3.5" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }} />
+              {deliveryPlatform}
+            </button>
+          </PopoverTrigger>
+          <PopoverContent 
+            className="w-[220px] p-2 z-[400]" 
+            align="start"
+            style={{ background: 'var(--surface-bg, hsl(var(--background)))', borderColor: 'var(--border-default, hsl(var(--border)))' }}
           >
-            <Layers className="h-3 w-3 shrink-0" style={{ color: 'var(--text-3)' }} />
-            <span className="truncate max-w-[100px]">{deliveryPlatform || 'No platform'}</span>
-            <ChevronDown className="h-3 w-3 shrink-0" style={{ color: 'var(--text-3)' }} />
-          </button>
-        </PopoverTrigger>
-        <PopoverContent 
-          className="w-[200px] p-2 z-[400]" 
-          align="start"
-          style={{ background: 'var(--surface-1)', borderColor: 'var(--border-color)' }}
-        >
-          <DeliveryPlatformSelect
-            value={deliveryPlatform || null}
-            onChange={(value) => {
-              onDeliveryPlatformChange?.(value);
-              setPlatformOpen(false);
-            }}
-          />
-        </PopoverContent>
-      </Popover>
+            <DeliveryPlatformSelect
+              value={deliveryPlatform || null}
+              onChange={(value) => {
+                onDeliveryPlatformChange?.(value);
+                setPlatformOpen(false);
+              }}
+            />
+          </PopoverContent>
+        </Popover>
+      )}
     </div>
   );
 }
