@@ -62,8 +62,8 @@ export function UnifiedToolbar({
     <div
       className={cn(
         "flex items-center gap-2 h-10 px-2 rounded-lg",
-        // Champagne surface with gold border
-        "bg-[var(--surface-champagne)] border border-[var(--border-gold)]",
+        // Neutral surface with subtle border (reduced champagne)
+        "bg-[var(--surface-1)] border border-[var(--border-color)]",
         className
       )}
     >
@@ -99,14 +99,14 @@ export function UnifiedToolbar({
               <X className="h-3 w-3 text-[var(--icon-muted)]" />
             </button>
           ) : (
-            <kbd className="hidden sm:inline-flex items-center px-1 py-0.5 rounded text-[9px] font-medium bg-[var(--surface-2)] text-[var(--text-3)] border border-[var(--border-gold)]">
+            <kbd className="hidden sm:inline-flex items-center px-1 py-0.5 rounded text-[9px] font-medium bg-[var(--surface-2)] text-[var(--text-3)] border border-[var(--border-color)]">
               {navigator.platform.includes("Mac") ? "⌘" : "⌃"}K
             </kbd>
           )}
         </div>
 
         {/* Divider */}
-        <div className="w-px h-5 bg-[var(--border-gold)]" />
+        <div className="w-px h-5 bg-[var(--border-color)]" />
 
         {/* Filter Button */}
         {filterContent && (

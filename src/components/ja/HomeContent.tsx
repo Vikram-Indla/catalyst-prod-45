@@ -14,7 +14,6 @@ import { SegmentedTabs, SegmentedTab } from '@/components/ui/segmented-tabs';
 import { UnifiedToolbar } from '@/components/ui/unified-toolbar';
 import { CriticalStrip } from './home/CriticalStrip';
 import { HomeRoleModeSelector, HomeRoleMode } from './home/HomeRoleModeSelector';
-import { IncidentFocusWidget } from './home/IncidentFocusWidget';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -64,8 +63,8 @@ function FocusWidget({
     <div 
       className={cn(
         "p-2.5 rounded-lg transition-all cursor-pointer group",
-        // Champagne surface with gold border
-        "bg-[var(--surface-champagne)] border border-[var(--border-gold)]",
+        // Neutral surface with subtle border (reduced champagne)
+        "bg-[var(--surface-1)] border border-[var(--border-color)]",
         "hover:bg-[var(--surface-2)] hover:border-[var(--brand-gold)]"
       )}
       onClick={onClick}
@@ -75,11 +74,10 @@ function FocusWidget({
           <div 
             className={cn(
               "w-7 h-7 rounded-md flex items-center justify-center",
-              // Gold tint for icon container
-              "bg-[var(--brand-gold)]/10"
+              // Subtle gold tint for icon container
+              "bg-[var(--brand-gold)]/5"
             )}
           >
-            {/* Gold icon */}
             <Icon className="w-3.5 h-3.5 text-[var(--brand-gold)]" />
           </div>
           <div>
@@ -101,7 +99,6 @@ function FocusWidget({
             </div>
           )}
           <div className="text-right">
-            {/* Olive green count - primary brand color */}
             <div className="text-lg font-bold tabular-nums leading-tight text-[var(--brand-primary)]">
               {primaryCount}
             </div>
@@ -138,11 +135,11 @@ function ProjectCard({
     <div 
       className={cn(
         "rounded-lg overflow-hidden transition-all cursor-pointer group",
-        // Champagne surface with gold border for pinned
-        "border bg-[var(--surface-champagne)]",
+        // Neutral surface (reduced champagne) with subtle border
+        "border bg-[var(--surface-1)]",
         isPinned 
           ? "border-[var(--brand-gold)] ring-1 ring-[var(--brand-gold)]/20" 
-          : "border-[var(--border-gold)]",
+          : "border-[var(--border-color)]",
         "hover:border-[var(--brand-gold)] hover:shadow-[var(--shadow-card-hover)]"
       )}
       onMouseEnter={() => setIsHovered(true)}
@@ -152,7 +149,7 @@ function ProjectCard({
       {/* Header accent bar */}
       <div className="h-1" style={{ backgroundColor: project.color }} />
       
-      {/* Card content */}
+      {/* Card content - sleeker layout */}
       <div className="p-2.5 relative">
         {/* Quick actions - visible on hover */}
         <div 
@@ -164,7 +161,6 @@ function ProjectCard({
           <button 
             className={cn(
               "w-6 h-6 rounded flex items-center justify-center hover:bg-[var(--surface-2)]",
-              // Gold for pinned indicator
               isPinned ? "text-[var(--brand-gold)]" : "text-[var(--icon-muted)]"
             )}
             onClick={(e) => { e.stopPropagation(); onPin(); }}
@@ -241,66 +237,39 @@ function ProjectCard({
           </div>
         )}
 
-        {/* Project info */}
-        <div className="flex items-start gap-2 mb-2">
+        {/* Project info - sleeker: removed type label */}
+        <div className="flex items-center gap-2 mb-2">
           <div 
             className="w-7 h-7 rounded-md flex items-center justify-center text-white text-[10px] font-bold shrink-0"
             style={{ backgroundColor: project.color }}
           >
             {project.key.slice(0, 2)}
           </div>
-          <div className="min-w-0 pr-10">
+          <div className="min-w-0 pr-10 flex-1">
             <div className="text-sm font-semibold leading-5 truncate text-[var(--text-1)]">
               {project.name}
-            </div>
-            <div className="text-[11px] leading-4 mt-0.5 text-[var(--text-3)]">
-              {project.type}
             </div>
           </div>
         </div>
 
-        {/* Stats row - olive for open, olive for done */}
-        <div className="flex items-center gap-1.5">
-          <span 
-            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-[var(--brand-primary-muted)] text-[var(--text-1)]"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-[var(--brand-primary)]" />
-            {project.openCount} open
-          </span>
-          <span 
-            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-[var(--brand-primary-subtle)] text-[var(--text-1)]"
-          >
-            <CheckCircle className="w-2.5 h-2.5 text-[var(--brand-primary)]" />
-            {project.doneCount} done
-          </span>
-        </div>
-      </div>
-
-      {/* Footer */}
-      <div className="px-2.5 py-1.5 border-t border-[var(--divider)] flex items-center justify-between">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild disabled={project.boardsCount === 0}>
-            <button
-              className={cn(
-                "flex items-center gap-1 text-[11px] bg-transparent border-none cursor-pointer p-0",
-                project.boardsCount > 0 ? "text-[var(--text-2)]" : "text-[var(--text-3)]"
-              )}
-              disabled={project.boardsCount === 0}
-              onClick={(e) => e.stopPropagation()}
+        {/* Stats row + last opened - single compact row */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
+            <span 
+              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-[var(--brand-primary-muted)] text-[var(--text-1)]"
             >
-              Boards ({project.boardsCount})
-              {project.boardsCount > 0 && <ChevronDown className="w-2.5 h-2.5" />}
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent 
-            className="bg-[var(--surface-1)] border-[var(--border-color)] z-[300]"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <DropdownMenuItem className="text-[var(--text-1)]">Team Board</DropdownMenuItem>
-            <DropdownMenuItem className="text-[var(--text-1)]">Sprint Board</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <span className="text-[10px] text-[var(--text-3)]">2h ago</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--brand-primary)]" />
+              {project.openCount} open
+            </span>
+            <span 
+              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-[var(--brand-primary-subtle)] text-[var(--text-1)]"
+            >
+              <CheckCircle className="w-2.5 h-2.5 text-[var(--brand-primary)]" />
+              {project.doneCount} done
+            </span>
+          </div>
+          <span className="text-[10px] text-[var(--text-3)]">2h ago</span>
+        </div>
       </div>
     </div>
   );
@@ -783,7 +752,7 @@ export function HomeContent() {
               <UnifiedToolbar
                 searchValue={searchQuery}
                 onSearchChange={setSearchQuery}
-                searchPlaceholder="Search in this list..."
+                searchPlaceholder="Search your work…"
                 sortOptions={sortOptions}
                 sortValue={sortBy}
                 onSortChange={setSortBy}
@@ -829,34 +798,11 @@ export function HomeContent() {
             )}
           </div>
 
-          {/* Right Column - My Focus (restructured) */}
+          {/* Right Column - My Focus (no duplication with Critical Strip) */}
           <div className="space-y-1.5">
             <div className="text-sm font-medium mb-1.5 text-[var(--text-1)]">
               My focus
             </div>
-            
-            {/* Major Incidents - prioritized in Ops mode */}
-            {(roleMode === 'ops' || roleMode === 'exec') && (
-              <IncidentFocusWidget 
-                title="Major Incidents"
-                count={mockIncidentData.majorIncidents.open}
-                breached={mockIncidentData.majorIncidents.breached}
-                atRisk={mockIncidentData.majorIncidents.atRisk}
-                variant="major"
-                route="/release/incident-room?filter=major"
-              />
-            )}
-            
-            {/* SLA at Risk */}
-            {(roleMode === 'ops' || roleMode === 'exec') && (
-              <IncidentFocusWidget 
-                title="SLA at Risk"
-                count={mockIncidentData.slaAtRisk}
-                atRisk={mockIncidentData.slaAtRisk}
-                variant="sla"
-                route="/release/incident-room?filter=sla-risk"
-              />
-            )}
             
             {/* My workload */}
             <FocusWidget 
@@ -878,16 +824,14 @@ export function HomeContent() {
               onClick={() => setSelectedTab('worked-on')}
             />
             
-            {/* Starred - optional, shown in Delivery mode */}
-            {roleMode === 'delivery' && (
-              <FocusWidget 
-                title="Starred"
-                icon={Star}
-                primaryCount={starredCount}
-                subtitle="Quick access"
-                onClick={() => setSelectedTab('starred')}
-              />
-            )}
+            {/* Starred - optional */}
+            <FocusWidget 
+              title="Starred"
+              icon={Star}
+              primaryCount={starredCount}
+              subtitle="Quick access"
+              onClick={() => setSelectedTab('starred')}
+            />
           </div>
         </div>
       </div>

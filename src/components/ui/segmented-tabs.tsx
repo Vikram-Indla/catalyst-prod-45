@@ -26,8 +26,8 @@ export function SegmentedTabs({ value, onValueChange, children, className }: Seg
       <div
         className={cn(
           "inline-flex items-center p-1 rounded-lg gap-0.5",
-          // Champagne surface with gold border
-          "bg-[var(--surface-champagne)] border border-[var(--border-gold)]",
+          // Neutral surface with subtle border (reduced champagne)
+          "bg-[var(--surface-2)] border border-[var(--border-color)]",
           className
         )}
         role="tablist"
