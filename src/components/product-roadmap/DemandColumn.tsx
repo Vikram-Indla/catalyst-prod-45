@@ -75,7 +75,8 @@ export const DemandColumn = forwardRef<HTMLDivElement, DemandColumnProps>(
             return (
               <div 
                 key={demand.id}
-                className="flex items-start gap-3 px-4 py-3 border-b border-border cursor-pointer hover:bg-muted/30 transition-colors"
+                className="flex items-center gap-3 px-4 border-b border-border cursor-pointer hover:bg-muted/30 transition-colors"
+                style={{ height: '64px' }}
                 onClick={() => onDemandClick(demand.id)}
               >
                 {/* Rank */}
