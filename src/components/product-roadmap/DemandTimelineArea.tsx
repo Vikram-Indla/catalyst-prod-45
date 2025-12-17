@@ -123,6 +123,7 @@ export const DemandTimelineArea = forwardRef<HTMLDivElement, DemandTimelineAreaP
                 key={demand.id}
                 demand={demand}
                 showMilestones={showMilestones}
+                showMilestonesInTooltip={showMilestones}
                 timelineStart={timelineStart}
                 timelineEnd={timelineEnd}
                 onClick={() => onDemandClick(demand.id)}
@@ -141,6 +142,7 @@ DemandTimelineArea.displayName = 'DemandTimelineArea';
 interface DemandTimelineRowProps {
   demand: Demand;
   showMilestones: boolean;
+  showMilestonesInTooltip: boolean; // Separate prop for tooltip visibility
   timelineStart: Date;
   timelineEnd: Date;
   onClick: () => void;
@@ -150,6 +152,7 @@ interface DemandTimelineRowProps {
 const DemandTimelineRow: React.FC<DemandTimelineRowProps> = ({
   demand,
   showMilestones,
+  showMilestonesInTooltip,
   timelineStart,
   timelineEnd,
   onClick,
@@ -270,8 +273,8 @@ const DemandTimelineRow: React.FC<DemandTimelineRowProps> = ({
           </div>
         )}
         
-        {/* Milestones Section (if any) */}
-        {demand.milestones.length > 0 && (
+        {/* Milestones Section (only if toggle is ON and milestones exist) */}
+        {showMilestonesInTooltip && demand.milestones.length > 0 && (
           <div className="border-t border-border/50 pt-2 mt-2">
             <div className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wide mb-1.5">
               Milestones ({demand.milestones.length})
