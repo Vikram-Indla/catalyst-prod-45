@@ -84,9 +84,9 @@ export function StrategyContextCard({ snapshot, onUpdate }: StrategyContextCardP
       value: snapshot?.vision || '',
       field: 'vision' as const,
       placeholder: 'Make Saudi Arabia a global magnet...',
-      iconColor: '#C69C6D',
-      iconBg: 'rgba(198, 156, 109, 0.1)',
-      labelColor: '#C69C6D',
+      iconColor: '#5C7C5C',
+      iconBg: 'rgba(92, 124, 92, 0.1)',
+      labelColor: '#5C7C5C',
     },
     {
       icon: Star,

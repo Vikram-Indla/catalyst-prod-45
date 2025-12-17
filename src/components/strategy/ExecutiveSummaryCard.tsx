@@ -23,7 +23,7 @@ interface KPITileProps {
   subtext: string;
   onClick: () => void;
   isLoading?: boolean;
-  accentColor: 'green' | 'gold' | 'bronze' | 'red';
+  accentColor: 'green' | 'olive' | 'bronze' | 'red';
   icon: React.ReactNode;
   iconBgColor: string;
   showProgress?: boolean;
@@ -44,7 +44,7 @@ function KPITile({
 }: KPITileProps) {
   const accentStyles: Record<string, string> = {
     green: '#5C7C5C',
-    gold: '#C69C6D',
+    olive: '#5C7C5C',
     bronze: '#8B7355',
     red: '#B85C5C',
   };
@@ -97,9 +97,7 @@ function KPITile({
         <span 
           className="text-3xl font-bold leading-none mb-1 tabular-nums"
           style={{ 
-            color: accentColor === 'gold' && typeof value === 'number' && value > 0 
-              ? '#C69C6D' 
-              : 'var(--text-primary)' 
+            color: 'var(--text-primary)'
           }}
         >
           {value}
@@ -203,9 +201,7 @@ export function ExecutiveSummaryCard({ snapshotId }: ExecutiveSummaryCardProps) 
   const progressSubtext = hasObjectives 
     ? `Across ${objectivesCount} objective${objectivesCount !== 1 ? 's' : ''}` 
     : 'Create objectives to start tracking';
-  const progressColor = hasObjectives 
-    ? (overallProgress! >= 70 ? 'green' : 'gold') 
-    : 'green';
+  const progressColor = 'green';
 
   // Card B: At Risk
   const atRiskSubtext = !hasObjectives 
@@ -265,16 +261,16 @@ export function ExecutiveSummaryCard({ snapshotId }: ExecutiveSummaryCardProps) 
             showProgress={hasObjectives}
             progressValue={overallProgress ?? 0}
           />
-          {/* At Risk - Gold */}
+          {/* At Risk - Bronze */}
           <KPITile
             label="At Risk"
             value={atRiskCount}
             subtext={atRiskSubtext}
             onClick={() => navigate('/enterprise/okr-hub')}
             isLoading={okrLoading}
-            accentColor="gold"
-            iconBgColor="rgba(198, 156, 109, 0.1)"
-            icon={<AlertTriangle size={16} style={{ color: '#C69C6D' }} />}
+            accentColor="bronze"
+            iconBgColor="rgba(139, 115, 85, 0.1)"
+            icon={<AlertTriangle size={16} style={{ color: '#8B7355' }} />}
           />
           {/* Alignment Gaps - Bronze */}
           <KPITile
