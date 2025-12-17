@@ -210,29 +210,29 @@ export function BudgetViewTab({ data, onChange }: BudgetViewTabProps) {
   const vendorPct = data.vendor_effort_pct || 0;
   const budgetType = data.budget_type || [];
 
-  // Get status color classes
-  const getFundingStatusClass = () => {
+  // Get status color classes - using semantic tokens for dark mode support
+  const getFundingStatusStyle = () => {
     if (fundingStatus === 'Budget Approved' || fundingStatus === 'Funded from Existing Contract') {
-      return 'bg-green-50 border-green-200';
+      return { background: 'var(--status-success-bg)', borderColor: 'var(--status-success-border, rgba(125, 163, 125, 0.3))' };
     }
     if (fundingStatus === 'Budget Requested' || fundingStatus === 'Partially Budgeted') {
-      return 'bg-amber-50 border-amber-200';
+      return { background: 'var(--status-warning-bg)', borderColor: 'var(--status-warning-border, rgba(212, 168, 85, 0.3))' };
     }
-    return 'bg-background border-border';
+    return { background: 'var(--surface-1, hsl(var(--card)))', borderColor: 'var(--border-default, hsl(var(--border)))' };
   };
 
-  const getCapacityStatusClass = () => {
+  const getCapacityStatusStyle = () => {
     if (capacityStatus === 'Capacity Available') {
-      return 'bg-green-50 border-green-200';
+      return { background: 'var(--status-success-bg)', borderColor: 'var(--status-success-border, rgba(125, 163, 125, 0.3))' };
     }
     if (capacityStatus === 'Capacity Constrained' || capacityStatus === 'Requires Additional Headcount / Vendor') {
-      return 'bg-amber-50 border-amber-200';
+      return { background: 'var(--status-warning-bg)', borderColor: 'var(--status-warning-border, rgba(212, 168, 85, 0.3))' };
     }
-    return 'bg-background border-border';
+    return { background: 'var(--surface-1, hsl(var(--card)))', borderColor: 'var(--border-default, hsl(var(--border)))' };
   };
 
   return (
-    <div className="flex flex-col h-full space-y-4 bg-white">
+    <div className="flex flex-col h-full space-y-4" style={{ background: 'var(--surface-bg, hsl(var(--background)))' }}>
       {/* Intro Text */}
       <p className="text-sm text-muted-foreground">
         Manage budget allocation, contracts, and capacity planning for this demand.
@@ -241,37 +241,37 @@ export function BudgetViewTab({ data, onChange }: BudgetViewTabProps) {
       {/* Summary Cards Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Funding Status Card */}
-        <div className={cn("rounded-lg border p-4", getFundingStatusClass())}>
+        <div className="rounded-lg border p-4" style={getFundingStatusStyle()}>
           <div className="flex items-center gap-2 mb-2">
             <Wallet className="h-4 w-4 text-brand-primary" />
-            <span className="text-xs font-medium text-muted-foreground">Funding Status</span>
+            <span className="text-xs font-medium" style={{ color: 'var(--text-2, hsl(var(--muted-foreground)))' }}>Funding Status</span>
           </div>
-          <p className="text-lg font-semibold text-foreground">{fundingStatus}</p>
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="text-lg font-semibold" style={{ color: 'var(--text-1, hsl(var(--foreground)))' }}>{fundingStatus}</p>
+          <p className="text-xs mt-1" style={{ color: 'var(--text-2, hsl(var(--muted-foreground)))' }}>
             Type: {budgetType.length > 0 ? budgetType.join(' / ') : 'Not set'}
           </p>
         </div>
 
         {/* Approved Budget Card */}
-        <div className="rounded-lg border bg-background p-4">
+        <div className="rounded-lg border p-4" style={{ background: 'var(--surface-1, hsl(var(--card)))', borderColor: 'var(--border-default, hsl(var(--border)))' }}>
           <div className="flex items-center gap-2 mb-2">
             <TrendingUp className="h-4 w-4 text-brand-primary" />
-            <span className="text-xs font-medium text-muted-foreground">Approved Budget</span>
+            <span className="text-xs font-medium" style={{ color: 'var(--text-2, hsl(var(--muted-foreground)))' }}>Approved Budget</span>
           </div>
-          <p className="text-lg font-semibold text-foreground">{formatCurrency(approvedBudget)}</p>
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="text-lg font-semibold" style={{ color: 'var(--text-1, hsl(var(--foreground)))' }}>{formatCurrency(approvedBudget)}</p>
+          <p className="text-xs mt-1" style={{ color: 'var(--text-2, hsl(var(--muted-foreground)))' }}>
             Budget year: {data.budget_year || 'Not selected'}
           </p>
         </div>
 
         {/* Capacity Status Card */}
-        <div className={cn("rounded-lg border p-4", getCapacityStatusClass())}>
+        <div className="rounded-lg border p-4" style={getCapacityStatusStyle()}>
           <div className="flex items-center gap-2 mb-2">
             <Users className="h-4 w-4 text-brand-primary" />
-            <span className="text-xs font-medium text-muted-foreground">Capacity Status</span>
+            <span className="text-xs font-medium" style={{ color: 'var(--text-2, hsl(var(--muted-foreground)))' }}>Capacity Status</span>
           </div>
-          <p className="text-lg font-semibold text-foreground">{capacityStatus}</p>
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="text-lg font-semibold" style={{ color: 'var(--text-1, hsl(var(--foreground)))' }}>{capacityStatus}</p>
+          <p className="text-xs mt-1" style={{ color: 'var(--text-2, hsl(var(--muted-foreground)))' }}>
             {internalPct}% Internal / {vendorPct}% Vendor
           </p>
         </div>
@@ -279,7 +279,7 @@ export function BudgetViewTab({ data, onChange }: BudgetViewTabProps) {
 
       {/* Section 1: Funding & Budget */}
       <Collapsible open={fundingOpen} onOpenChange={setFundingOpen}>
-        <div className="border border-border rounded-xl bg-white overflow-hidden shadow-sm">
+        <div className="border border-border rounded-xl overflow-hidden shadow-sm" style={{ background: 'var(--surface-1, hsl(var(--card)))' }}>
           <CollapsibleTrigger className="w-full flex items-center justify-between p-4 hover:bg-muted/30 transition-colors">
             <h3 className="text-xs font-semibold uppercase tracking-wide text-brand-primary">
               Funding & Budget
@@ -421,7 +421,7 @@ export function BudgetViewTab({ data, onChange }: BudgetViewTabProps) {
 
       {/* Section 2: Contract & Commercials */}
       <Collapsible open={contractOpen} onOpenChange={setContractOpen}>
-        <div className="border border-border rounded-xl bg-white overflow-hidden shadow-sm">
+        <div className="border border-border rounded-xl overflow-hidden shadow-sm" style={{ background: 'var(--surface-1, hsl(var(--card)))' }}>
           <CollapsibleTrigger className="w-full flex items-center justify-between p-4 hover:bg-muted/30 transition-colors">
             <h3 className="text-xs font-semibold uppercase tracking-wide text-brand-primary">
               Contract & Commercials
@@ -530,7 +530,7 @@ export function BudgetViewTab({ data, onChange }: BudgetViewTabProps) {
 
       {/* Section 3: Funding & Capacity Notes */}
       <Collapsible open={capacityOpen} onOpenChange={setCapacityOpen}>
-        <div className="border border-border rounded-xl bg-white overflow-hidden shadow-sm">
+        <div className="border border-border rounded-xl overflow-hidden shadow-sm" style={{ background: 'var(--surface-1, hsl(var(--card)))' }}>
           <CollapsibleTrigger className="w-full flex items-center justify-between p-4 hover:bg-muted/30 transition-colors">
             <h3 className="text-xs font-semibold uppercase tracking-wide text-brand-primary">
               Funding & Capacity Notes

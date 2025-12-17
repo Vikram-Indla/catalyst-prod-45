@@ -302,28 +302,6 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
           </Field>
         </div>
       </FormCard>
-
-      {/* ═══════════════════════════════════════════════════════════
-          ACCEPTANCE CRITERIA CARD
-          ═══════════════════════════════════════════════════════════ */}
-      <FormCard title="Acceptance Criteria" collapsible defaultExpanded={false}>
-        <RichTextEditor
-          value={data.acceptance_criteria || ''}
-          onChange={(value) => onChange('acceptance_criteria', value)}
-          placeholder="Define the acceptance criteria..."
-        />
-      </FormCard>
-
-      {/* ═══════════════════════════════════════════════════════════
-          DEPENDENCIES CARD
-          ═══════════════════════════════════════════════════════════ */}
-      <FormCard title="Dependencies" collapsible defaultExpanded={false}>
-        <RichTextEditor
-          value={data.dependencies || ''}
-          onChange={(value) => onChange('dependencies', value)}
-          placeholder="List any dependencies..."
-        />
-      </FormCard>
     </div>
   );
 }
