@@ -256,7 +256,7 @@ export function EditProjectDialog({ open, onOpenChange, project, onSuccess }: Ed
               <Button 
                 type="submit" 
                 disabled={!name.trim() || !programId || updateProject.isPending}
-                className="bg-brand-gold hover:bg-brand-gold-hover"
+                className="bg-brand-primary hover:bg-brand-primary-hover"
               >
                 {updateProject.isPending ? 'Saving...' : 'Save changes'}
               </Button>
@@ -293,7 +293,7 @@ export function EditProjectDialog({ open, onOpenChange, project, onSuccess }: Ed
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={cancelProgramChange}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmProgramChange} className="bg-brand-gold hover:bg-brand-gold-hover">
+            <AlertDialogAction onClick={confirmProgramChange} className="bg-brand-primary hover:bg-brand-primary-hover">
               Confirm Change
             </AlertDialogAction>
           </AlertDialogFooter>

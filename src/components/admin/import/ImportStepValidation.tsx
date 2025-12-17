@@ -102,7 +102,7 @@ export function ImportStepValidation({
               <p className="text-muted-foreground mb-4">
                 Click "Validate" to check your data for errors before importing.
               </p>
-              <Button onClick={onValidate} className="bg-brand-gold hover:bg-brand-gold-hover text-white">
+              <Button onClick={onValidate} className="bg-brand-primary hover:bg-brand-primary-hover text-white">
                 Validate Data
               </Button>
             </div>
@@ -149,7 +149,7 @@ export function ImportStepValidation({
                     size="sm"
                     onClick={() => setFilter(f)}
                     className={cn(
-                      filter === f && 'bg-brand-gold hover:bg-brand-gold-hover'
+                      filter === f && 'bg-brand-primary hover:bg-brand-primary-hover'
                     )}
                   >
                     {f.charAt(0).toUpperCase() + f.slice(1)}

@@ -41,21 +41,21 @@ export function StrategicBacklogSegmentedControl({
             onClick={() => onSectionChange(segment.id)}
             className={cn(
               "relative flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200",
-              "focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2",
+              "focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
               isActive
-                ? "bg-surface text-foreground shadow-sm border border-brand-gold/30"
+                ? "bg-surface text-foreground shadow-sm border border-brand-primary/30"
                 : "text-muted-foreground hover:text-foreground hover:bg-[rgba(92,124,92,0.08)]"
             )}
           >
             <Icon className={cn(
               "h-4 w-4 transition-colors",
-              isActive ? "text-brand-gold" : "text-muted-foreground"
+              isActive ? "text-brand-primary" : "text-muted-foreground"
             )} />
             <span>{segment.label}</span>
             <span className={cn(
               "ml-1 text-xs px-1.5 py-0.5 rounded-full",
               isActive 
-                ? "bg-brand-gold/15 text-brand-gold" 
+                ? "bg-brand-primary/15 text-brand-primary" 
                 : "bg-muted text-muted-foreground"
             )}>
               {count}

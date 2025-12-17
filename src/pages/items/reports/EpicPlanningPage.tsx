@@ -208,7 +208,7 @@ export default function EpicPlanningPage() {
           </div>
           <Button 
             onClick={() => setAddFeatureDialogOpen(true)}
-            className="bg-brand-gold hover:bg-brand-gold-hover text-brand-dark"
+            className="bg-brand-primary hover:bg-brand-primary-hover text-white"
           >
             <Plus className="h-4 w-4 mr-2" />
             Add
@@ -345,7 +345,7 @@ export default function EpicPlanningPage() {
             <Button 
               onClick={() => createFeatureMutation.mutate()}
               disabled={!newFeatureName.trim() || createFeatureMutation.isPending}
-              className="bg-brand-gold hover:bg-brand-gold-hover text-brand-dark"
+              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
             >
               {createFeatureMutation.isPending ? 'Adding...' : 'Add Feature'}
             </Button>

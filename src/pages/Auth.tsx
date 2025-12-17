@@ -134,8 +134,8 @@ export default function Auth() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-brand-dark">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-3 border-brand-gold border-t-transparent rounded-full animate-spin" />
-          <span className="text-brand-gold text-sm font-medium">Signing you in...</span>
+          <div className="w-10 h-10 border-3 border-brand-primary border-t-transparent rounded-full animate-spin" />
+          <span className="text-brand-primary text-sm font-medium">Signing you in...</span>
         </div>
       </div>
     );
@@ -272,14 +272,14 @@ export default function Auth() {
         {/* Decorative Gradient 1 */}
         <div 
           className="absolute -top-24 -right-24 w-[350px] h-[350px] rounded-full pointer-events-none animate-float"
-          style={{ background: "radial-gradient(circle, hsl(var(--brand-gold) / 0.3) 0%, transparent 70%)" }}
+          style={{ background: "radial-gradient(circle, hsl(var(--brand-primary) / 0.3) 0%, transparent 70%)" }}
         />
 
         {/* Decorative Gradient 2 */}
         <div 
           className="absolute -bottom-20 -left-20 w-[300px] h-[300px] rounded-full pointer-events-none"
           style={{
-            background: "radial-gradient(circle, hsl(var(--brand-gold) / 0.1) 0%, transparent 70%)",
+            background: "radial-gradient(circle, hsl(var(--brand-primary) / 0.1) 0%, transparent 70%)",
             animation: "float 10s ease-in-out infinite reverse"
           }}
         />
@@ -295,7 +295,7 @@ export default function Auth() {
               lineHeight: 1.2
             }}
           >
-            Streamline your <span className="text-brand-gold italic">enterprise</span> demand & delivery
+            Streamline your <span className="text-brand-primary italic">enterprise</span> demand & delivery
           </h1>
 
           {/* Description */}
@@ -310,7 +310,7 @@ export default function Auth() {
           </p>
 
           {/* Capabilities Section */}
-          <div className="pt-8 sm:pt-12 border-t border-brand-gold/25">
+          <div className="pt-8 sm:pt-12 border-t border-brand-primary/25">
             <div className="grid grid-cols-2 gap-x-8 gap-y-4">
               {[
                 { Icon: Briefcase, label: "Portfolio Management" },
@@ -325,11 +325,11 @@ export default function Auth() {
                   className="flex items-center gap-3 group py-2.5 whitespace-nowrap"
                 >
                   <item.Icon 
-                    className="transition-transform duration-300 group-hover:scale-110 text-brand-gold"
+                    className="transition-transform duration-300 group-hover:scale-110 text-brand-primary"
                     size={18}
                     strokeWidth={1.5}
                   />
-                  <span className="font-body text-base font-medium tracking-wide transition-colors duration-300 group-hover:text-brand-gold text-white/85">
+                  <span className="font-body text-base font-medium tracking-wide transition-colors duration-300 group-hover:text-brand-primary text-white/85">
                     {item.label}
                   </span>
                 </div>
@@ -341,9 +341,9 @@ export default function Auth() {
         {/* Footer */}
         <div className="absolute bottom-6 sm:bottom-8 md:bottom-12 left-6 sm:left-8 md:left-12 lg:left-16 z-10">
           <div className="flex flex-col gap-3 mb-4">
-            <div className="rounded-sm w-20 h-[3px] bg-brand-gold" />
-            <div className="rounded-sm w-10 h-[3px] bg-brand-gold/50" />
-            <div className="rounded-sm w-5 h-[3px] bg-brand-gold/30" />
+            <div className="rounded-sm w-20 h-[3px] bg-brand-primary" />
+            <div className="rounded-sm w-10 h-[3px] bg-brand-primary/50" />
+            <div className="rounded-sm w-5 h-[3px] bg-brand-primary/30" />
           </div>
           <p className="font-body text-sm text-white/35">
             © 2025 Catalyst. All rights reserved.
@@ -356,11 +356,11 @@ export default function Auth() {
         {/* Subtle background gradients */}
         <div 
           className="absolute top-0 right-0 w-96 h-96 rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle, hsl(var(--brand-gold) / 0.05) 0%, transparent 70%)" }}
+          style={{ background: "radial-gradient(circle, hsl(var(--brand-primary) / 0.05) 0%, transparent 70%)" }}
         />
         <div 
           className="absolute bottom-0 left-0 w-80 h-80 rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle, hsl(var(--brand-gold) / 0.03) 0%, transparent 70%)" }}
+          style={{ background: "radial-gradient(circle, hsl(var(--brand-primary) / 0.03) 0%, transparent 70%)" }}
         />
 
         {/* Catalyst Logo */}
@@ -384,8 +384,8 @@ export default function Auth() {
           
           {showPendingMessage ? (
             <div className="text-center">
-              <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-brand-gold/10 flex items-center justify-center">
-                <FileText className="w-8 h-8 text-brand-gold" />
+              <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-brand-primary/10 flex items-center justify-center">
+                <FileText className="w-8 h-8 text-brand-primary" />
               </div>
               <h2 className="text-2xl font-display font-medium text-brand-dark mb-3">
                 Registration Submitted
@@ -402,7 +402,7 @@ export default function Auth() {
                   setShowPendingMessage(false);
                   setAuthMode("signin");
                 }}
-                className="px-6 py-3 rounded-lg bg-brand-gold text-white font-medium hover:bg-brand-gold-hover transition-colors"
+                className="px-6 py-3 rounded-lg bg-brand-primary text-white font-medium hover:bg-brand-primary-hover transition-colors"
               >
                 Back to Sign In
               </button>
@@ -422,7 +422,7 @@ export default function Auth() {
                     onClick={() => setUserType("existing")}
                     className={`font-body transition-all duration-200 px-6 py-2.5 rounded-full text-sm font-medium border-none cursor-pointer ${
                       userType === "existing" 
-                        ? "bg-brand-gold text-white" 
+                        ? "bg-brand-primary text-white" 
                         : "bg-transparent text-gray-600 hover:text-gray-800"
                     }`}
                   >
@@ -433,7 +433,7 @@ export default function Auth() {
                     onClick={() => setUserType("external")}
                     className={`font-body transition-all duration-200 px-6 py-2.5 rounded-full text-sm font-medium border-none cursor-pointer ${
                       userType === "external" 
-                        ? "bg-brand-gold text-white" 
+                        ? "bg-brand-primary text-white" 
                         : "bg-transparent text-gray-600 hover:text-gray-800"
                     }`}
                   >
@@ -452,7 +452,7 @@ export default function Auth() {
                         onClick={() => { setAuthMode("signin"); resetForm(); }}
                         className={`font-body transition-all duration-200 px-5 py-2 rounded-md text-sm font-medium border-none cursor-pointer ${
                           authMode === "signin" 
-                            ? "bg-brand-gold text-white" 
+                            ? "bg-brand-primary text-white" 
                             : "bg-transparent text-gray-600 hover:text-gray-800"
                         }`}
                       >
@@ -463,7 +463,7 @@ export default function Auth() {
                         onClick={() => { setAuthMode("signup"); resetForm(); }}
                         className={`font-body transition-all duration-200 px-5 py-2 rounded-md text-sm font-medium border-none cursor-pointer ${
                           authMode === "signup" 
-                            ? "bg-brand-gold text-white" 
+                            ? "bg-brand-primary text-white" 
                             : "bg-transparent text-gray-600 hover:text-gray-800"
                         }`}
                       >
@@ -497,7 +497,7 @@ export default function Auth() {
                           onChange={e => { setFullName(e.target.value); setLoginError(null); }} 
                           placeholder="John Doe" 
                           required 
-                          className="w-full transition-all outline-none font-body text-base py-3.5 px-4 rounded-[10px] border-2 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/10 bg-white border-gray-200 text-gray-900 placeholder:text-gray-400"
+                          className="w-full transition-all outline-none font-body text-base py-3.5 px-4 rounded-[10px] border-2 focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/10 bg-white border-gray-200 text-gray-900 placeholder:text-gray-400"
                         />
                       </div>
                     )}
@@ -513,7 +513,7 @@ export default function Auth() {
                         onChange={e => { setEmail(e.target.value); setLoginError(null); }} 
                         placeholder="name@company.com" 
                         required 
-                        className={`w-full transition-all outline-none font-body text-base py-3.5 px-4 rounded-[10px] border-2 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/10 bg-white text-gray-900 placeholder:text-gray-400 ${
+                        className={`w-full transition-all outline-none font-body text-base py-3.5 px-4 rounded-[10px] border-2 focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/10 bg-white text-gray-900 placeholder:text-gray-400 ${
                           loginError ? 'border-red-500' : 'border-gray-200'
                         }`}
                       />
@@ -560,7 +560,7 @@ export default function Auth() {
                             type="checkbox" 
                             checked={rememberMe} 
                             onChange={e => setRememberMe(e.target.checked)} 
-                            className="w-4 h-4 rounded border-2 cursor-pointer appearance-none transition-all checked:bg-brand-gold checked:border-brand-gold border-gray-300 bg-white"
+                            className="w-4 h-4 rounded border-2 cursor-pointer appearance-none transition-all checked:bg-brand-primary checked:border-brand-primary border-gray-300 bg-white"
                             style={{
                               backgroundImage: rememberMe ? "url(\"data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e\")" : "none",
                               backgroundSize: "100% 100%",
@@ -572,7 +572,7 @@ export default function Auth() {
                         </label>
                         <button 
                           type="button" 
-                          className="font-body text-sm font-medium text-brand-gold hover:text-brand-gold-hover transition-colors"
+                          className="font-body text-sm font-medium text-brand-primary hover:text-brand-primary-hover transition-colors"
                         >
                           Forgot password?
                         </button>
@@ -582,7 +582,7 @@ export default function Auth() {
                     <button 
                       type="submit" 
                       disabled={isLoading} 
-                      className="w-full relative overflow-hidden transition-all duration-300 font-body py-4 font-semibold rounded-[10px] text-base border-none cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed hover:-translate-y-0.5 bg-brand-gold hover:bg-brand-gold-hover text-white"
+                      className="w-full relative overflow-hidden transition-all duration-300 font-body py-4 font-semibold rounded-[10px] text-base border-none cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed hover:-translate-y-0.5 bg-brand-primary hover:bg-brand-primary-hover text-white"
                     >
                       <span className="relative flex items-center justify-center gap-2">
                         {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
@@ -609,9 +609,9 @@ export default function Auth() {
                   </p>
 
                   {/* Request Card */}
-                  <div className="flex flex-col items-center p-8 rounded-xl bg-brand-gold/5 border border-brand-gold/20">
-                    <div className="mb-5 p-4 rounded-full bg-brand-gold/10">
-                      <FileText className="w-10 h-10 text-brand-gold" />
+                  <div className="flex flex-col items-center p-8 rounded-xl bg-brand-primary/5 border border-brand-primary/20">
+                    <div className="mb-5 p-4 rounded-full bg-brand-primary/10">
+                      <FileText className="w-10 h-10 text-brand-primary" />
                     </div>
 
                     <p className="text-center mb-6 font-body text-base leading-relaxed" style={{ color: 'var(--text-2)' }}>
@@ -621,7 +621,7 @@ export default function Auth() {
                     <button 
                       type="button" 
                       onClick={() => navigate('/submit-request')}
-                      className="w-full transition-all duration-300 font-body py-4 px-6 font-semibold rounded-[10px] text-base border-2 cursor-pointer bg-transparent text-brand-gold border-brand-gold hover:bg-brand-gold hover:text-white hover:-translate-y-0.5"
+                      className="w-full transition-all duration-300 font-body py-4 px-6 font-semibold rounded-[10px] text-base border-2 cursor-pointer bg-transparent text-brand-primary border-brand-primary hover:bg-brand-primary hover:text-white hover:-translate-y-0.5"
                     >
                       Log Demand Request
                     </button>

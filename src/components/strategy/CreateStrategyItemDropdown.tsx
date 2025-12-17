@@ -39,7 +39,7 @@ export function CreateStrategyItemDropdown({ snapshotId, isArchived }: CreateStr
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="default" size="sm" className="bg-brand-gold hover:bg-brand-gold/90">
+          <Button variant="default" size="sm" className="bg-brand-primary hover:bg-brand-primary/90">
             <Plus className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
