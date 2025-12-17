@@ -109,7 +109,7 @@ export function AdminSidebar({ expanded, onToggle, className }: AdminSidebarProp
         <div className="h-[72px] px-4 border-b border-border flex items-center shrink-0">
           {expanded ? (
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-brand-gold/20 flex items-center justify-center text-brand-gold font-semibold text-sm">
+              <div className="w-10 h-10 rounded-lg bg-brand-primary/20 flex items-center justify-center text-brand-primary font-semibold text-sm">
                 AD
               </div>
               <div className="flex flex-col">
@@ -118,7 +118,7 @@ export function AdminSidebar({ expanded, onToggle, className }: AdminSidebarProp
               </div>
             </div>
           ) : (
-            <div className="w-10 h-10 rounded-lg bg-brand-gold/20 flex items-center justify-center text-brand-gold font-semibold text-sm mx-auto">
+            <div className="w-10 h-10 rounded-lg bg-brand-primary/20 flex items-center justify-center text-brand-primary font-semibold text-sm mx-auto">
               AD
             </div>
           )}
@@ -149,7 +149,7 @@ export function AdminSidebar({ expanded, onToggle, className }: AdminSidebarProp
                               asChild
                               className={cn(
                                 'w-full h-10 flex items-center justify-center',
-                                isActive && 'bg-brand-gold-pale text-brand-gold'
+                                isActive && 'bg-brand-primary-pale text-brand-primary'
                               )}
                             >
                               <Link to={item.path}>
@@ -172,7 +172,7 @@ export function AdminSidebar({ expanded, onToggle, className }: AdminSidebarProp
                         className={cn(
                           'flex items-center gap-3 px-3 py-1.5 rounded-md text-sm transition-colors',
                           isActive 
-                            ? 'bg-brand-gold-pale text-brand-gold font-medium' 
+                            ? 'bg-brand-primary-pale text-brand-primary font-medium' 
                             : 'text-foreground hover:bg-muted'
                         )}
                       >

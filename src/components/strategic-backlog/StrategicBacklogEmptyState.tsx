@@ -94,9 +94,9 @@ export function StrategicBacklogEmptyState({
     <div className="flex flex-col items-center justify-center py-20 px-6 text-center border border-dashed border-border rounded-lg bg-surface">
       <div className={cn(
         "p-4 rounded-full mb-4",
-        "bg-brand-gold/10"
+        "bg-brand-primary/10"
       )}>
-        <Icon className="h-8 w-8 text-brand-gold/70" />
+        <Icon className="h-8 w-8 text-brand-primary/70" />
       </div>
       
       <h3 className="text-base font-semibold text-foreground mb-2">
@@ -124,7 +124,7 @@ export function StrategicBacklogEmptyState({
             <Button 
               size="sm" 
               onClick={onCreate}
-              className="gap-1.5 bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="gap-1.5 bg-brand-primary hover:bg-brand-primary-hover text-white"
             >
               <Plus className="h-3.5 w-3.5" />
               Create {type}

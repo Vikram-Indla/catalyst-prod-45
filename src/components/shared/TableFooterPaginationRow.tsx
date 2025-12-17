@@ -59,7 +59,7 @@ export function TableFooterPaginationRow({
                 className={cn(
                   "w-8 h-8 text-sm rounded-md transition-colors flex-shrink-0",
                   currentPage === pageNum 
-                    ? "bg-brand-gold text-white font-medium" 
+                    ? "bg-brand-primary text-white font-medium" 
                     : "text-[var(--text-2)] hover:bg-[var(--surface-3)] border border-[var(--border-color)]"
                 )}
               >

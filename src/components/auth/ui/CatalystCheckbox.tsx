@@ -21,8 +21,8 @@ export const CatalystCheckbox = forwardRef<HTMLInputElement, CatalystCheckboxPro
             className={cn(
               "w-4 h-4 rounded-sm border-2",
               "transition-all duration-150",
-              "peer-checked:bg-brand-gold peer-checked:border-brand-gold",
-              "peer-focus:ring-2 peer-focus:ring-brand-gold/20",
+              "peer-checked:bg-brand-primary peer-checked:border-brand-primary",
+              "peer-focus:ring-2 peer-focus:ring-brand-primary/20",
               className
             )}
             style={{ 

@@ -346,9 +346,9 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
         </SheetHeader>
 
         {/* Header Row */}
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-brand-gold">
+        <div className="flex items-center gap-2 px-4 py-3 border-b border-brand-primary">
           {/* ID with copy link */}
-          <span className="text-brand-gold font-mono font-semibold text-sm">
+          <span className="text-brand-primary font-mono font-semibold text-sm">
             {formatSnapshotId(snapshotId)}
           </span>
           <button 
@@ -368,7 +368,7 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
             <DropdownMenuTrigger asChild>
               <Button 
                 size="sm" 
-                className="bg-brand-gold hover:bg-brand-gold-hover text-white gap-1"
+                className="bg-brand-primary hover:bg-brand-primary-hover text-white gap-1"
                 disabled={updateSnapshotMutation.isPending}
               >
                 {updateSnapshotMutation.isPending ? 'Saving...' : 'Save'}
@@ -660,7 +660,7 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
 
               {/* Warning Banner */}
               {selectedQuarters.length === 0 && (
-                <div className="p-3 bg-brand-gold/10 border border-brand-gold/30 rounded-lg text-sm text-brand-gold">
+                <div className="p-3 bg-brand-primary/10 border border-brand-primary/30 rounded-lg text-sm text-brand-primary">
                   No quarters selected. Please assign at least one quarter.
                 </div>
               )}
@@ -677,14 +677,14 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
                       className={cn(
                         'flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors',
                         isSelected 
-                          ? 'bg-[rgba(198,156,109,0.08)] border-brand-gold/30' 
-                          : 'bg-background border-border hover:border-brand-gold/20'
+                          ? 'bg-[rgba(92,124,92,0.08)] border-brand-primary/30' 
+                          : 'bg-background border-border hover:border-brand-primary/20'
                       )}
                     >
                       <Checkbox
                         checked={isSelected}
                         onCheckedChange={() => handleQuarterToggle(quarter.id)}
-                        className="data-[state=checked]:bg-brand-gold data-[state=checked]:border-brand-gold"
+                        className="data-[state=checked]:bg-brand-primary data-[state=checked]:border-brand-primary"
                       />
                       <div className="flex-1">
                         <div className="font-medium text-foreground">{quarter.name}</div>

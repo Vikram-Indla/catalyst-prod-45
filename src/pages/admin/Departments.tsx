@@ -106,7 +106,7 @@ export default function Departments() {
               Manage department list for Business Requests
             </p>
           </div>
-          <Button className="bg-brand-gold hover:bg-brand-gold-hover" onClick={openAddDialog}>
+          <Button className="bg-brand-primary hover:bg-brand-primary-hover" onClick={openAddDialog}>
             <Plus className="h-4 w-4 mr-2" />
             Add Department
           </Button>
@@ -236,7 +236,7 @@ export default function Departments() {
                 Cancel
               </Button>
               <Button
-                className="bg-brand-gold hover:bg-brand-gold-hover"
+                className="bg-brand-primary hover:bg-brand-primary-hover"
                 onClick={editingDepartment ? handleUpdateDepartment : handleAddDepartment}
               >
                 {editingDepartment ? 'Update' : 'Add'}

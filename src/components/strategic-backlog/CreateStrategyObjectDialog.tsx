@@ -74,7 +74,7 @@ export function CreateStrategyObjectDialog({ open, onOpenChange, type, snapshotI
 
   const getIcon = () => {
     switch (type) {
-      case 'mission': return <Target className="h-5 w-5 text-brand-gold" />;
+      case 'mission': return <Target className="h-5 w-5 text-brand-primary" />;
       case 'vision': return <Eye className="h-5 w-5 text-workitem-epic" />;
       case 'value': return <Heart className="h-5 w-5 text-secondary-champagne" />;
     }
@@ -128,7 +128,7 @@ export function CreateStrategyObjectDialog({ open, onOpenChange, type, snapshotI
           <Button
             onClick={handleSubmit}
             disabled={!title.trim() || isLoading}
-            className="bg-brand-gold hover:bg-brand-gold/90"
+            className="bg-brand-primary hover:bg-brand-primary/90"
           >
             {isLoading ? 'Creating...' : 'Create'}
           </Button>
