@@ -85,29 +85,29 @@ const QUARTERS = [
 // All columns configuration - NO frozen columns by default
 // Note: Department options are loaded dynamically inside the component via useDepartments hook
 const ALL_COLUMNS = [
-  { id: 'id', header: 'Request ID', accessor: 'id', minWidth: 110, sortable: true },
-  { id: 'summary', header: 'Summary', accessor: 'summary', minWidth: 320, sortable: true, editable: true },
-  { id: 'processStep', header: 'Status', accessor: 'processStep', minWidth: 160, sortable: true, filterable: true, editable: true, type: 'select', options: STATUS_OPTIONS },
-  { id: 'score', header: 'Score', accessor: 'score', minWidth: 120, sortable: true, type: 'number', align: 'right' },
-  { id: 'autoPriority', header: 'Auto Priority', accessor: 'autoPriority', minWidth: 120, sortable: true, filterable: true, type: 'select', options: [
+  { id: 'id', header: 'Request ID', accessor: 'id', minWidth: 100, sortable: true },
+  { id: 'summary', header: 'Summary', accessor: 'summary', minWidth: 200, sortable: true, editable: true },
+  { id: 'processStep', header: 'Status', accessor: 'processStep', minWidth: 140, sortable: true, filterable: true, editable: true, type: 'select', options: STATUS_OPTIONS },
+  { id: 'score', header: 'Score', accessor: 'score', minWidth: 100, sortable: true, type: 'number', align: 'right' },
+  { id: 'autoPriority', header: 'Auto Priority', accessor: 'autoPriority', minWidth: 100, sortable: true, filterable: true, type: 'select', options: [
     { value: 'high', label: 'High' },
     { value: 'medium', label: 'Medium' },
     { value: 'low', label: 'Low' },
     { value: 'rejected', label: 'Rejected' },
     { value: 'unscored', label: 'Unscored' },
   ] },
-  { id: 'rank', header: 'Rank', accessor: 'rank', minWidth: 100, sortable: true, type: 'number', align: 'center' },
-  { id: 'reporter', header: 'Reporter', accessor: 'reporter', minWidth: 140, sortable: true },
-  { id: 'assignee', header: 'Assignee', accessor: 'assignee', minWidth: 140, sortable: true },
-  { id: 'department', header: 'Department', accessor: 'department', minWidth: 180, sortable: true, filterable: true, editable: true, type: 'select', options: [] }, // Populated dynamically
-  { id: 'businessOwner', header: 'Business Owner', accessor: 'businessOwner', minWidth: 160, sortable: true },
-  { id: 'businessAsk', header: 'Business Ask', accessor: 'businessAsk', minWidth: 120, sortable: true, type: 'date' },
-  { id: 'kickoff', header: 'Kickoff', accessor: 'kickoff', minWidth: 120, sortable: true, type: 'date' },
-  { id: 'targetComplete', header: 'Target Complete', accessor: 'targetComplete', minWidth: 130, sortable: true, type: 'date' },
-  { id: 'deliveryTrack', header: 'Delivery Track', accessor: 'deliveryTrack', minWidth: 140, sortable: true, filterable: true, editable: true, type: 'select', options: DELIVERY_TRACKS },
-  { id: 'platform', header: 'Delivery Platform', accessor: 'platform', minWidth: 150, sortable: true, filterable: true, editable: true, type: 'select', options: PLATFORMS },
-  { id: 'quarter', header: 'Quarter', accessor: 'quarter', minWidth: 110, sortable: true, filterable: true, editable: true, type: 'select', options: QUARTERS },
-  { id: 'createdAt', header: 'Created', accessor: 'createdAt', minWidth: 110, sortable: true },
+  { id: 'rank', header: 'Rank', accessor: 'rank', minWidth: 70, sortable: true, type: 'number', align: 'center' },
+  { id: 'reporter', header: 'Reporter', accessor: 'reporter', minWidth: 110, sortable: true },
+  { id: 'assignee', header: 'Assignee', accessor: 'assignee', minWidth: 110, sortable: true },
+  { id: 'department', header: 'Department', accessor: 'department', minWidth: 140, sortable: true, filterable: true, editable: true, type: 'select', options: [] }, // Populated dynamically
+  { id: 'businessOwner', header: 'Business Owner', accessor: 'businessOwner', minWidth: 130, sortable: true },
+  { id: 'businessAsk', header: 'Business Ask', accessor: 'businessAsk', minWidth: 100, sortable: true, type: 'date' },
+  { id: 'kickoff', header: 'Kickoff', accessor: 'kickoff', minWidth: 100, sortable: true, type: 'date' },
+  { id: 'targetComplete', header: 'Target Complete', accessor: 'targetComplete', minWidth: 120, sortable: true, type: 'date' },
+  { id: 'deliveryTrack', header: 'Delivery Track', accessor: 'deliveryTrack', minWidth: 120, sortable: true, filterable: true, editable: true, type: 'select', options: DELIVERY_TRACKS },
+  { id: 'platform', header: 'Delivery Platform', accessor: 'platform', minWidth: 130, sortable: true, filterable: true, editable: true, type: 'select', options: PLATFORMS },
+  { id: 'quarter', header: 'Quarter', accessor: 'quarter', minWidth: 90, sortable: true, filterable: true, editable: true, type: 'select', options: QUARTERS },
+  { id: 'createdAt', header: 'Created', accessor: 'createdAt', minWidth: 100, sortable: true },
 ];
 
 interface BusinessRequest {
@@ -191,16 +191,16 @@ function StatusBadge({ value, options }: { value: string; options: { value: stri
 // Score Progress Bar - with proper track border, enterprise crisp
 function ScoreBar({ score }: { score: number | null }) {
   if (score === null || score === undefined) {
-    return <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>—</span>;
+    return <span style={{ color: 'var(--empty-value)', fontSize: '13px', fontWeight: 500 }}>—</span>;
   }
   
   return (
-    <div className="flex items-center gap-2.5 min-w-[90px]">
+    <div className="flex items-center gap-2 min-w-[80px]">
       <div 
         className="flex-1 h-2 rounded-sm overflow-hidden"
         style={{ 
-          backgroundColor: 'var(--progress-bg)',
-          border: '1px solid var(--border-default)',
+          backgroundColor: 'var(--progress-track)',
+          border: '1px solid var(--border-visible)',
         }}
       >
         <div 
@@ -209,7 +209,7 @@ function ScoreBar({ score }: { score: number | null }) {
         />
       </div>
       <span 
-        className="min-w-[28px] tabular-nums font-semibold text-right"
+        className="min-w-[24px] tabular-nums font-semibold text-right"
         style={{ fontSize: '13px', color: 'var(--text-1)' }}
       >
         {score}
@@ -220,7 +220,7 @@ function ScoreBar({ score }: { score: number | null }) {
 
 // Date Display - neutral text only, enterprise crisp
 function DateDisplay({ date }: { date: string | null }) {
-  if (!date) return <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>—</span>;
+  if (!date) return <span style={{ color: 'var(--empty-value)', fontSize: '13px', fontWeight: 500 }}>—</span>;
   const d = new Date(date);
   
   return (
@@ -785,14 +785,14 @@ function PaginationFooter({
       }}
     >
       {/* Left: Rows per page */}
-      <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--text-2)' }}>
-        <span>Rows per page:</span>
+      <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--text-secondary)' }}>
+        <span className="font-medium">Rows per page:</span>
         <select
           value={pageSize}
           onChange={(e) => onPageSizeChange(Number(e.target.value))}
-          className="px-2 py-1 rounded text-xs cursor-pointer"
+          className="px-2 py-1 rounded text-xs cursor-pointer font-medium"
           style={{ 
-            border: '1px solid var(--border-color)',
+            border: '1px solid var(--border-visible)',
             backgroundColor: 'var(--input-bg)',
             color: 'var(--text-1)',
           }}
@@ -810,14 +810,14 @@ function PaginationFooter({
           disabled={currentPage === 1}
           className="p-1.5 rounded disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
           style={{ 
-            border: '1px solid var(--border-color)',
+            border: '1px solid var(--border-visible)',
             backgroundColor: 'var(--surface-1)',
             color: 'var(--text-1)',
           }}
         >
           <Icons.ChevronLeft />
         </button>
-        <span className="text-xs px-2" style={{ color: 'var(--text-2)' }}>
+        <span className="text-xs px-2 font-medium" style={{ color: 'var(--text-secondary)' }}>
           Page {currentPage} of {totalPages}
         </span>
         <button
@@ -825,7 +825,7 @@ function PaginationFooter({
           disabled={currentPage === totalPages}
           className="p-1.5 rounded disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
           style={{ 
-            border: '1px solid var(--border-color)',
+            border: '1px solid var(--border-visible)',
             backgroundColor: 'var(--surface-1)',
             color: 'var(--text-1)',
           }}
@@ -835,7 +835,7 @@ function PaginationFooter({
       </div>
 
       {/* Right: Showing X-Y of Z */}
-      <div className="text-xs" style={{ color: 'var(--text-2)' }}>
+      <div className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>
         Showing {startItem}–{endItem} of {totalItems}
       </div>
     </div>
@@ -1116,7 +1116,7 @@ export function ExecutiveTable({
       return value ? (
         <span className="font-semibold tabular-nums" style={{ color: 'var(--text-1)', fontSize: '13px' }}>#{value}</span>
       ) : (
-        <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>—</span>
+        <span style={{ color: 'var(--empty-value)', fontSize: '13px', fontWeight: 500 }}>—</span>
       );
     }
     
@@ -1152,7 +1152,7 @@ export function ExecutiveTable({
     if (column.id === 'reporter' || column.id === 'assignee' || column.id === 'businessOwner') {
       return (
         <span className="truncate" style={{ fontSize: '13px', color: 'var(--text-1)' }}>
-          {value || <span style={{ color: 'var(--text-muted)' }}>—</span>}
+          {value || <span style={{ color: 'var(--empty-value)', fontWeight: 500 }}>—</span>}
         </span>
       );
     }
@@ -1189,13 +1189,22 @@ export function ExecutiveTable({
       );
     }
 
+    // Handle autoPriority "unscored" with better visibility
+    if (column.id === 'autoPriority' && value === 'unscored') {
+      return (
+        <span style={{ fontSize: '13px', color: 'var(--text-secondary)', fontStyle: 'italic' }}>
+          unscored
+        </span>
+      );
+    }
+
     return (
       <span 
         className="block overflow-hidden text-ellipsis whitespace-nowrap" 
         title={value}
         style={{ fontSize: '13px', color: 'var(--text-1)' }}
       >
-        {value ?? <span style={{ color: 'var(--text-muted)' }}>—</span>}
+        {value ?? <span style={{ color: 'var(--empty-value)', fontWeight: 500 }}>—</span>}
       </span>
     );
   };
@@ -1253,7 +1262,7 @@ export function ExecutiveTable({
 
               {/* Center Zone: Search */}
               <div className="flex justify-center">
-                <div className="w-full max-w-[480px] h-10 flex items-center gap-2 px-3 border border-border rounded-lg bg-muted/50">
+                <div className="w-full max-w-[480px] h-10 flex items-center gap-2 px-3 rounded-lg bg-muted/50" style={{ border: '1px solid var(--border-visible)' }}>
                   <Icons.Search />
                   <input
                     type="text"
@@ -1349,11 +1358,7 @@ export function ExecutiveTable({
                       type="checkbox"
                       checked={paginatedData.length > 0 && selectedRows.length === paginatedData.length}
                       onChange={handleSelectAll}
-                      className="w-4 h-4 accent-brand-gold cursor-pointer rounded"
-                      style={{
-                        border: '1px solid var(--checkbox-border)',
-                        backgroundColor: 'var(--input-bg)',
-                      }}
+                      className="executive-table-checkbox w-4 h-4 accent-brand-gold cursor-pointer rounded"
                     />
                   </th>
                   {columns.map((col, colIndex) => {
@@ -1393,13 +1398,13 @@ export function ExecutiveTable({
                               <circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/>
                             </svg>
                           )}
-                          {/* Header label - 13px semibold, high contrast for enterprise legibility */}
+                          {/* Header label - 12px semibold uppercase for enterprise legibility */}
                           <span 
-                            className="select-none font-semibold"
+                            className="select-none font-semibold uppercase tracking-wide"
                             style={{ 
-                              color: 'var(--text-1)',
-                              fontSize: '13px',
-                              letterSpacing: '0.01em',
+                              color: 'var(--text-secondary)',
+                              fontSize: '11px',
+                              letterSpacing: '0.05em',
                             }}
                           >
                             {col.header}
@@ -1504,11 +1509,7 @@ export function ExecutiveTable({
                           type="checkbox"
                           checked={selectedRows.includes(row.id)}
                           onChange={() => handleSelectRow(row.id)}
-                          className="w-4 h-4 accent-brand-gold cursor-pointer rounded"
-                          style={{
-                            border: '1px solid var(--checkbox-border)',
-                            backgroundColor: 'var(--input-bg)',
-                          }}
+                          className="executive-table-checkbox w-4 h-4 accent-brand-gold cursor-pointer rounded"
                         />
                       </td>
                       {columns.map((col, colIndex) => {
