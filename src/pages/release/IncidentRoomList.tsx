@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Plus, Filter, Search, AlertCircle, Clock, Users, ChevronRight } from 'lucide-react';
+import { Plus, Search, AlertCircle, Clock, Users, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -8,8 +8,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
 import { useIncidents } from '@/hooks/useIncidents';
 import { CreateIncidentDialog } from '@/components/incidents/CreateIncidentDialog';
-import type { Incident, IncidentStatus, SeverityLevel } from '@/types/incident';
+import { IncidentFiltersDialog } from '@/components/incidents/IncidentFiltersDialog';
+import type { Incident, IncidentStatus, SeverityLevel, IncidentFilters } from '@/types/incident';
 import { cn } from '@/lib/utils';
+
 const STATUS_CONFIG: Record<IncidentStatus, { label: string; className: string }> = {
   open: { label: 'Open', className: 'bg-blue-100 text-blue-800 border-blue-200' },
   triage: { label: 'Triage', className: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
@@ -96,7 +98,13 @@ export default function IncidentRoomList() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
-  const { data: incidents, isLoading, error } = useIncidents();
+  const [filters, setFilters] = useState<IncidentFilters>({
+    status: [],
+    severity: [],
+    support_level: [],
+    delivery_stage: [],
+  });
+  const { data: incidents, isLoading, error } = useIncidents(filters);
 
   // Handle ?create=true query param
   useEffect(() => {
@@ -105,6 +113,7 @@ export default function IncidentRoomList() {
       setSearchParams({}, { replace: true });
     }
   }, [searchParams, setSearchParams]);
+
   const filteredIncidents = incidents?.filter(incident =>
     incident.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     incident.incident_key.toLowerCase().includes(searchQuery.toLowerCase())
@@ -141,10 +150,7 @@ export default function IncidentRoomList() {
                 className="pl-9 w-64"
               />
             </div>
-            <Button variant="outline" size="sm">
-              <Filter className="h-4 w-4 mr-2" />
-              Filters
-            </Button>
+            <IncidentFiltersDialog filters={filters} onFiltersChange={setFilters} />
           </div>
         }
       />
