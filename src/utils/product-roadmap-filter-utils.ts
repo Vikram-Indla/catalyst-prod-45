@@ -1,4 +1,22 @@
-import { DemandFilterState, Demand } from '@/types/product-roadmap';
+import { DemandFilterState, Demand, MilestoneCondition } from '@/types/product-roadmap';
+
+/**
+ * Check milestone condition for a demand
+ */
+function checkMilestoneCondition(demand: Demand, condition: MilestoneCondition): boolean {
+  const milestones = demand.milestones || [];
+  
+  switch (condition) {
+    case 'no-milestones':
+      return milestones.length === 0;
+    case 'all-complete':
+      return milestones.length > 0 && milestones.every(m => m.status === 'complete');
+    case 'has-overdue':
+      return milestones.some(m => m.status === 'overdue');
+    default:
+      return true;
+  }
+}
 
 /**
  * Filter demands using canonical filter rules:
@@ -18,7 +36,8 @@ export function filterDemandsCanonical(
       if (
         !demand.title.toLowerCase().includes(q) &&
         !demand.key.toLowerCase().includes(q) &&
-        !demand.ownerName.toLowerCase().includes(q)
+        !demand.ownerName.toLowerCase().includes(q) &&
+        !demand.assigneeName.toLowerCase().includes(q)
       ) {
         return false;
       }
@@ -37,6 +56,34 @@ export function filterDemandsCanonical(
     // Platform filter (OR within, AND with others)
     if (filters.platforms.length > 0 && !filters.platforms.includes(demand.platform)) {
       return false;
+    }
+    
+    // Assignee filter (OR within, AND with others)
+    if (filters.assigneeIds.length > 0 && !filters.assigneeIds.includes(demand.assigneeId) && !filters.assigneeIds.includes(demand.assigneeName)) {
+      return false;
+    }
+    
+    // Quarter filter (OR within, AND with others)
+    if (filters.quarters.length > 0 && !filters.quarters.includes(demand.plannedQuarter)) {
+      return false;
+    }
+    
+    // Priority Tier filter (OR within, AND with others)
+    if (filters.priorityTiers.length > 0 && !filters.priorityTiers.includes(demand.priorityTier)) {
+      return false;
+    }
+    
+    // Health filter (OR within, AND with others)
+    if (filters.health.length > 0 && !filters.health.includes(demand.health)) {
+      return false;
+    }
+    
+    // Milestone Condition filter (OR within, AND with others)
+    if (filters.milestoneConditions.length > 0) {
+      const matchesAny = filters.milestoneConditions.some(
+        condition => checkMilestoneCondition(demand, condition as MilestoneCondition)
+      );
+      if (!matchesAny) return false;
     }
     
     return true;

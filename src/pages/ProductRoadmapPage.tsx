@@ -19,7 +19,7 @@ export const ProductRoadmapPage: React.FC = () => {
   const debugMode = searchParams.get('debugViewport') === '1';
   
   // Fetch real data from Supabase
-  const { demands, owners, platforms, isLoading } = useProductRoadmapData();
+  const { demands, owners, assignees, platforms, isLoading } = useProductRoadmapData();
   
   // Canonical filter state
   const {
@@ -35,6 +35,11 @@ export const ProductRoadmapPage: React.FC = () => {
     toggleStatus,
     toggleOwner,
     togglePlatform,
+    toggleAssignee,
+    toggleQuarter,
+    togglePriorityTier,
+    toggleHealth,
+    toggleMilestoneCondition,
     updateDraftViewport,
     isViewportAtDefault,
   } = useProductRoadmapFilters();
@@ -186,11 +191,17 @@ export const ProductRoadmapPage: React.FC = () => {
         onToggleStatus={toggleStatus}
         onToggleOwner={toggleOwner}
         onTogglePlatform={togglePlatform}
+        onToggleAssignee={toggleAssignee}
+        onToggleQuarter={toggleQuarter}
+        onTogglePriorityTier={togglePriorityTier}
+        onToggleHealth={toggleHealth}
+        onToggleMilestoneCondition={toggleMilestoneCondition}
         onOpenFilters={openFilters}
         onApplyFilters={handleApplyFilters}
         onCancelFilters={cancelFilters}
         onClearAll={handleClearAll}
         owners={owners}
+        assignees={assignees}
         platforms={platforms}
         matchingDemands={draftMatchingCount}
       />

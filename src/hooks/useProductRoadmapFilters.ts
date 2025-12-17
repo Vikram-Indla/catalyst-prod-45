@@ -38,9 +38,22 @@ interface UseProductRoadmapFiltersReturn {
   cancelFilters: () => void;
   clearAll: () => void;
   
+  // Status & Workflow
   toggleStatus: (status: string) => void;
+  // Business Owner
   toggleOwner: (ownerId: string) => void;
+  // Platform
   togglePlatform: (platform: string) => void;
+  // Assignee
+  toggleAssignee: (assigneeId: string) => void;
+  // Planned Quarter
+  toggleQuarter: (quarter: string) => void;
+  // Priority Tier
+  togglePriorityTier: (tier: string) => void;
+  // Health
+  toggleHealth: (health: string) => void;
+  // Milestone Condition
+  toggleMilestoneCondition: (condition: string) => void;
   
   updateDraftViewport: (viewport: RoadmapViewport) => void;
   
@@ -102,7 +115,7 @@ export function useProductRoadmapFilters(): UseProductRoadmapFiltersReturn {
     setDraftViewport(defaultViewport);
   }, []);
   
-  // Draft mutations
+  // Draft mutations - Status
   const toggleStatus = useCallback((status: string) => {
     setDraftFilters(prev => ({
       ...prev,
@@ -112,6 +125,7 @@ export function useProductRoadmapFilters(): UseProductRoadmapFiltersReturn {
     }));
   }, []);
   
+  // Draft mutations - Owner
   const toggleOwner = useCallback((ownerId: string) => {
     setDraftFilters(prev => ({
       ...prev,
@@ -121,12 +135,63 @@ export function useProductRoadmapFilters(): UseProductRoadmapFiltersReturn {
     }));
   }, []);
   
+  // Draft mutations - Platform
   const togglePlatform = useCallback((platform: string) => {
     setDraftFilters(prev => ({
       ...prev,
       platforms: prev.platforms.includes(platform)
         ? prev.platforms.filter(p => p !== platform)
         : [...prev.platforms, platform],
+    }));
+  }, []);
+  
+  // Draft mutations - Assignee
+  const toggleAssignee = useCallback((assigneeId: string) => {
+    setDraftFilters(prev => ({
+      ...prev,
+      assigneeIds: prev.assigneeIds.includes(assigneeId)
+        ? prev.assigneeIds.filter(a => a !== assigneeId)
+        : [...prev.assigneeIds, assigneeId],
+    }));
+  }, []);
+  
+  // Draft mutations - Quarter
+  const toggleQuarter = useCallback((quarter: string) => {
+    setDraftFilters(prev => ({
+      ...prev,
+      quarters: prev.quarters.includes(quarter)
+        ? prev.quarters.filter(q => q !== quarter)
+        : [...prev.quarters, quarter],
+    }));
+  }, []);
+  
+  // Draft mutations - Priority Tier
+  const togglePriorityTier = useCallback((tier: string) => {
+    setDraftFilters(prev => ({
+      ...prev,
+      priorityTiers: prev.priorityTiers.includes(tier)
+        ? prev.priorityTiers.filter(t => t !== tier)
+        : [...prev.priorityTiers, tier],
+    }));
+  }, []);
+  
+  // Draft mutations - Health
+  const toggleHealth = useCallback((health: string) => {
+    setDraftFilters(prev => ({
+      ...prev,
+      health: prev.health.includes(health)
+        ? prev.health.filter(h => h !== health)
+        : [...prev.health, health],
+    }));
+  }, []);
+  
+  // Draft mutations - Milestone Condition
+  const toggleMilestoneCondition = useCallback((condition: string) => {
+    setDraftFilters(prev => ({
+      ...prev,
+      milestoneConditions: prev.milestoneConditions.includes(condition)
+        ? prev.milestoneConditions.filter(c => c !== condition)
+        : [...prev.milestoneConditions, condition],
     }));
   }, []);
   
@@ -148,6 +213,11 @@ export function useProductRoadmapFilters(): UseProductRoadmapFiltersReturn {
     toggleStatus,
     toggleOwner,
     togglePlatform,
+    toggleAssignee,
+    toggleQuarter,
+    togglePriorityTier,
+    toggleHealth,
+    toggleMilestoneCondition,
     updateDraftViewport,
     hasPendingChanges,
     isViewportAtDefault,
