@@ -43,7 +43,7 @@ export const ProductRoadmapPage: React.FC = () => {
   const scale = appliedViewport.scale;
   
   const [showMilestones, setShowMilestones] = useState(false);
-  const [showLegend, setShowLegend] = useState(true);
+  const [showLegend, setShowLegend] = useState(false);
   const [visibleCount, setVisibleCount] = useState(20);
   const [columnWidth, setColumnWidth] = useState(380);
   const [searchQuery, setSearchQuery] = useState('');
