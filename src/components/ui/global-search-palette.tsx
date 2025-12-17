@@ -106,7 +106,7 @@ export function GlobalSearchPalette({ open, onOpenChange }: GlobalSearchPaletteP
               placeholder="Search work items…"
               style={{ outline: 'none', boxShadow: 'none' }}
               className={cn(
-                "flex-1 h-7 bg-transparent text-sm text-[var(--text-1)]",
+                "flex-1 h-7 bg-transparent text-sm text-[var(--text-1)] pl-1",
                 "placeholder:text-[var(--text-3)]",
                 "!outline-none !border-none !ring-0 !shadow-none",
                 "focus:!outline-none focus:!border-none focus:!ring-0 focus:!shadow-none"
