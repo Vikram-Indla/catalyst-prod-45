@@ -51,7 +51,7 @@ import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useVisibleDrawerTabs } from '@/hooks/useDrawerTabConfigs';
-import { EnterpriseStatusControl } from './drawer';
+import { EnterpriseStatusControl, MetaStrip, DrawerMetadataChips } from './drawer';
 import { EAReviewTab } from './drawer-tabs/EAReviewTab';
 import { cn } from '@/lib/utils';
 
@@ -446,42 +446,54 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
         <SheetContent 
           side="right" 
           hideClose 
-          className={cn(
-            "enterprise-drawer p-0",
-            drawerWidthClass
-          )}
+          className={cn("p-0 flex flex-col", drawerWidthClass)}
+          style={{ 
+            background: 'var(--surface-bg, hsl(var(--background)))',
+            borderLeft: '1px solid var(--border-default, hsl(var(--border)))'
+          }}
         >
-          <SheetHeader 
-            className="enterprise-drawer-header flex-col space-y-0 shrink-0 p-0"
-          >
-          {/* CIO Briefing Header - Compact Breadcrumb */}
-            <div className="px-4 md:px-5 pt-2.5 pb-1 flex items-center gap-1.5">
+          <SheetHeader className="flex-col space-y-0 shrink-0 p-0">
+            
+            {/* ═══════════════════════════════════════════════════════════
+                BREADCRUMB ROW
+                ═══════════════════════════════════════════════════════════ */}
+            <div 
+              className="px-5 pt-2.5 pb-1.5 flex items-center gap-1.5"
+              style={{ borderBottom: '1px solid var(--border-subtle, hsl(var(--border)/0.5))' }}
+            >
               <span 
-                className="text-[10px] uppercase tracking-wide" 
-                style={{ color: 'var(--text-3)' }}
+                className="text-[10px] font-medium uppercase tracking-[0.5px]"
+                style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
               >
                 Product Backlog
               </span>
-              <span className="text-[10px]" style={{ color: 'var(--text-3)' }}>/</span>
-              <span className="text-[11px] font-medium" style={{ color: 'var(--accent-color)' }}>
+              <span className="text-[10px]" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>/</span>
+              <span 
+                className="text-[11px] font-semibold font-mono"
+                style={{ color: '#8B7355' }}
+              >
                 {request?.request_key || '...'}
               </span>
               <button
                 onClick={handleCopyLink}
-                className="p-0.5 rounded hover:bg-[var(--surface-2)] transition-colors"
-                style={{ color: 'var(--text-3)' }}
+                className="p-1 rounded hover:bg-[var(--surface-hover,hsl(var(--muted)))] transition-colors"
+                style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
                 title="Copy link"
               >
                 <LinkIcon className="h-3 w-3" />
               </button>
             </div>
 
-            {/* Main Header - Title + Status + Actions ONLY */}
-            <div className="flex items-center justify-between px-4 md:px-5 pb-2 gap-4">
-              {/* Left: Title + Status */}
-              <div className="flex-1 min-w-0 flex items-center gap-3">
-                {/* Title - The Hero */}
-                <div className="flex items-center gap-1.5 group flex-1 min-w-0">
+            {/* ═══════════════════════════════════════════════════════════
+                HERO ROW: Title + Meta + Actions
+                ═══════════════════════════════════════════════════════════ */}
+            <div className="flex items-start justify-between px-5 py-3 gap-4">
+              
+              {/* Left Side: Title + Meta Strip */}
+              <div className="flex-1 min-w-0 space-y-2">
+                
+                {/* Title with Edit */}
+                <div className="flex items-center gap-1.5 group">
                   {isEditingName ? (
                     <Input
                       ref={nameInputRef}
@@ -489,21 +501,25 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                       onChange={(e) => setEditedName(e.target.value)}
                       onBlur={handleSaveName}
                       onKeyDown={handleNameKeyDown}
-                      className="text-xl font-semibold h-auto py-0.5 px-2 border-[var(--accent-color)]/40 focus:border-[var(--accent-color)] max-w-[480px]"
-                      style={{ background: 'var(--surface-2)' }}
+                      className="text-[18px] font-semibold h-auto py-1 px-2 max-w-[480px]"
+                      style={{ 
+                        background: 'var(--surface-subtle, hsl(var(--muted)))',
+                        borderColor: '#5C7C5C',
+                        color: 'var(--text-primary, hsl(var(--foreground)))'
+                      }}
                     />
                   ) : (
                     <>
                       <SheetTitle 
-                        className="text-xl font-semibold truncate max-w-[480px] leading-tight" 
-                        style={{ color: 'var(--text-1)' }}
+                        className="text-[18px] font-semibold tracking-[-0.3px] truncate max-w-[480px] leading-tight"
+                        style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}
                       >
                         {request?.title || 'Loading...'}
                       </SheetTitle>
                       <button
                         onClick={handleStartEditName}
-                        className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-[var(--surface-2)] transition-all"
-                        style={{ color: 'var(--text-3)' }}
+                        className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-[var(--surface-hover,hsl(var(--muted)))] transition-all"
+                        style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
                         title="Rename"
                       >
                         <Pencil className="h-3 w-3" />
@@ -512,20 +528,55 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                   )}
                 </div>
 
-                {/* Status - ONLY editable field in header */}
-                <EnterpriseStatusControl
-                  currentStep={formData.process_step || 'new_request'}
-                  onChange={(step) => handleFieldChange('process_step', step)}
-                />
+                {/* Meta Strip */}
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <EnterpriseStatusControl
+                    currentStep={formData.process_step || 'new_request'}
+                    onChange={(step) => handleFieldChange('process_step', step)}
+                  />
+                  
+                  <div className="h-4 w-px" style={{ background: 'var(--border-default, hsl(var(--border)))' }} />
+                  
+                  <MetaStrip
+                    businessOwner={formData.business_owner}
+                    businessOwnerId={formData.business_owner_id}
+                    department={formData.department}
+                    departmentId={formData.department_id}
+                    targetDate={formData.end_date}
+                    deliveryPlatform={formData.delivery_platform}
+                    onBusinessOwnerChange={(id) => handleFieldChange('business_owner_id', id)}
+                    onDepartmentChange={(id) => handleFieldChange('department_id', id)}
+                    onTargetDateChange={(date) => handleFieldChange('end_date', date)}
+                    onDeliveryPlatformChange={(value) => handleFieldChange('delivery_platform', value)}
+                  />
+                  
+                  <div className="h-4 w-px" style={{ background: 'var(--border-default, hsl(var(--border)))' }} />
+                  
+                  <DrawerMetadataChips
+                    platform={formData.delivery_platform}
+                    quarter={formData.planned_quarter}
+                    priorityTier={formData.priority_tier}
+                    priorityScore={formData.business_score}
+                    rank={formData.rank}
+                  />
+                </div>
               </div>
-              
-              {/* Right side: Save button + action icons */}
-              <div className="flex items-center gap-2 shrink-0">
+
+              {/* Right Side: Action Buttons */}
+              <div className="flex items-center gap-1.5 shrink-0">
+                
+                {/* Save Dropdown */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
                       size="sm"
-                      className="h-8 px-3 text-sm font-medium bg-brand-primary hover:bg-brand-primary-hover text-white"
+                      className="h-8 px-3 text-[13px] font-medium text-white"
+                      style={{ 
+                        background: '#5C7C5C',
+                        boxShadow: '0 2px 4px rgba(92, 124, 92, 0.25)'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = '#4A6A4A'}
+                      onMouseLeave={(e) => e.currentTarget.style.background = '#5C7C5C'}
                     >
                       Save
                       <ChevronDown className="h-3.5 w-3.5 ml-1" />
@@ -533,8 +584,8 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                   </DropdownMenuTrigger>
                   <DropdownMenuContent 
                     align="end" 
-                    className="z-[400]"
-                    style={{ background: 'var(--surface-1)', borderColor: 'var(--border-color)' }}
+                    className="z-[400] w-40"
+                    style={{ background: 'var(--surface-bg, hsl(var(--background)))', borderColor: 'var(--border-default, hsl(var(--border)))' }}
                   >
                     <DropdownMenuItem onSelect={handleSave}>
                       Save
@@ -544,18 +595,23 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-                
-                {/* More options dropdown */}
+
+                {/* More Options */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/50">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-8 w-8 hover:bg-[var(--surface-hover,hsl(var(--muted)))]"
+                      style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
+                    >
                       <MoreVertical className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent 
                     align="end" 
-                    className="w-56 z-[400]"
-                    style={{ background: 'var(--surface-1)', borderColor: 'var(--border-color)' }}
+                    className="w-48 z-[400]"
+                    style={{ background: 'var(--surface-bg, hsl(var(--background)))', borderColor: 'var(--border-default, hsl(var(--border)))' }}
                   >
                     <DropdownMenuItem onSelect={() => handleAdditionalOption('duplicate')}>
                       <Copy className="h-4 w-4 mr-2" />
@@ -564,38 +620,41 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                     <DropdownMenuSeparator />
                     <DropdownMenuItem 
                       onSelect={() => handleAdditionalOption('delete')}
-                      className="text-destructive focus:text-destructive"
+                      className="text-red-600"
                     >
                       <Trash2 className="h-4 w-4 mr-2" />
                       Delete Request
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-                
+
+                {/* Expand/Collapse */}
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={toggleExpand}
-                  className="h-8 w-8"
-                  style={{ color: 'var(--text-3)' }}
+                  className="h-8 w-8 hover:bg-[var(--surface-hover,hsl(var(--muted)))]"
+                  style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
                   title={isExpanded ? 'Collapse' : 'Expand'}
                 >
                   {isExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
                 </Button>
-                
+
+                {/* Close */}
                 <Button 
                   variant="ghost" 
                   size="icon" 
                   onClick={handleAttemptClose}
-                  className="h-8 w-8"
-                  style={{ color: 'var(--text-3)' }}
+                  className="h-8 w-8 hover:bg-[var(--surface-hover,hsl(var(--muted)))]"
+                  style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
                 >
                   <X className="h-4 w-4" />
                 </Button>
               </div>
             </div>
-            {/* Single subtle divider - no thick gold bar */}
-            <div style={{ borderBottom: '1px solid var(--border-color)' }} />
+
+            {/* Bottom Border */}
+            <div style={{ borderBottom: '1px solid var(--border-default, hsl(var(--border)))' }} />
             <SheetDescription className="sr-only">Business request details panel</SheetDescription>
           </SheetHeader>
 
@@ -609,28 +668,37 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
             onOpenChange={setWorkflowModalOpen}
           />
 
-          {/* Tabs with horizontal scroll - using semantic tokens */}
+          {/* ═══════════════════════════════════════════════════════════
+              TABS - Catalyst Design System
+              ═══════════════════════════════════════════════════════════ */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
             <TabsList 
-              className="executive-tabs-list w-full justify-start rounded-none h-10 shrink-0 overflow-x-auto flex-nowrap px-4 md:px-5 border-b border-border"
+              className="w-full justify-start rounded-none h-10 shrink-0 overflow-x-auto flex-nowrap px-5 bg-transparent"
+              style={{ borderBottom: '1px solid var(--border-default, hsl(var(--border)))' }}
             >
               {VIEW_TABS.map((tab) => (
                 <TabsTrigger
                   key={tab.value}
                   value={tab.value}
-                  className="executive-tab whitespace-nowrap text-xs"
+                  className="relative px-3.5 py-2.5 text-[13px] font-medium whitespace-nowrap bg-transparent border-none rounded-none data-[state=inactive]:text-muted-foreground data-[state=active]:text-foreground"
                 >
                   {tab.label}
                 </TabsTrigger>
               ))}
             </TabsList>
 
-            {/* DRAWER BODY: Single scroll container - flex-1 min-h-0 overflow-y-auto */}
-            <div className="executive-drawer-content flex-1 min-h-0 overflow-y-auto">
-              <TabsContent value="demand-details" className="m-0 focus-visible:outline-none p-4 md:p-5 pb-6">
+            {/* ═══════════════════════════════════════════════════════════
+                DRAWER BODY
+                ═══════════════════════════════════════════════════════════ */}
+            <div 
+              className="flex-1 min-h-0 overflow-y-auto"
+              style={{ background: 'var(--surface-subtle, hsl(var(--muted)/0.3))' }}
+            >
+              <TabsContent value="demand-details" className="m-0 focus-visible:outline-none p-5 pb-8">
                 <DemandDetailsViewTab data={formData} onChange={handleFieldChange} onNavigateToTab={setActiveTab} />
               </TabsContent>
-              <TabsContent value="business-score" className="m-0 focus-visible:outline-none">
+              
+              <TabsContent value="business-score" className="m-0 focus-visible:outline-none p-5 pb-8">
                 <BusinessScoreViewTab 
                   data={formData} 
                   onChange={handleFieldChange} 
@@ -638,25 +706,32 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                   onDirtyChange={handleDirtyChange}
                 />
               </TabsContent>
-              <TabsContent value="ea-review" className="m-0 focus-visible:outline-none">
+              
+              <TabsContent value="ea-review" className="m-0 focus-visible:outline-none p-5 pb-8">
                 <EAReviewTab data={formData} onChange={handleFieldChange} />
               </TabsContent>
-              <TabsContent value="budget" className="m-0 focus-visible:outline-none p-4 md:p-5 pb-6">
+              
+              <TabsContent value="budget" className="m-0 focus-visible:outline-none p-5 pb-8">
                 <BudgetViewTab data={formData} onChange={handleFieldChange} />
               </TabsContent>
-              <TabsContent value="risks" className="m-0 focus-visible:outline-none p-4 md:p-5 pb-6">
+              
+              <TabsContent value="risks" className="m-0 focus-visible:outline-none p-5 pb-8">
                 {requestId && <RisksViewTab requestId={requestId} />}
               </TabsContent>
-              <TabsContent value="milestones" className="m-0 focus-visible:outline-none p-4 md:p-5 pb-6">
+              
+              <TabsContent value="milestones" className="m-0 focus-visible:outline-none p-5 pb-8">
                 {requestId && <MilestonesViewTab requestId={requestId} />}
               </TabsContent>
-              <TabsContent value="links" className="m-0 focus-visible:outline-none">
+              
+              <TabsContent value="links" className="m-0 focus-visible:outline-none p-5 pb-8">
                 {requestId && <LinksViewTab requestId={requestId} onNavigateToEpic={handleNavigateToEpic} />}
               </TabsContent>
-              <TabsContent value="discussions" className="m-0 focus-visible:outline-none">
+              
+              <TabsContent value="discussions" className="m-0 focus-visible:outline-none p-5 pb-8">
                 {requestId && <ExecutiveDiscussionsTab requestId={requestId} />}
               </TabsContent>
-              <TabsContent value="audit-history" className="m-0 focus-visible:outline-none">
+              
+              <TabsContent value="audit-history" className="m-0 focus-visible:outline-none p-5 pb-8">
                 {requestId && <ExecutiveAuditHistoryTab requestId={requestId} />}
               </TabsContent>
             </div>
@@ -666,22 +741,15 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
 
       {/* Unsaved Changes Dialog */}
       <AlertDialog open={showUnsavedChangesDialog} onOpenChange={setShowUnsavedChangesDialog}>
-        <AlertDialogContent style={{ background: 'var(--surface-1)', borderColor: 'var(--border-color)' }}>
+        <AlertDialogContent style={{ background: 'var(--surface-bg, hsl(var(--background)))', borderColor: 'var(--border-default, hsl(var(--border)))' }}>
           <AlertDialogHeader>
-            <AlertDialogTitle style={{ color: 'var(--text-1)' }}>Unsaved Changes</AlertDialogTitle>
-            <AlertDialogDescription style={{ color: 'var(--text-2)' }}>
+            <AlertDialogTitle style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}>Unsaved Changes</AlertDialogTitle>
+            <AlertDialogDescription style={{ color: 'var(--text-secondary, hsl(var(--muted-foreground)))' }}>
               You have unsaved changes. Are you sure you want to leave? Your changes will be lost.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel 
-              onClick={() => setShowUnsavedChangesDialog(false)}
-              style={{ 
-                background: 'var(--btn-secondary-bg)', 
-                color: 'var(--btn-secondary-text)',
-                borderColor: 'var(--btn-secondary-border)'
-              }}
-            >
+            <AlertDialogCancel onClick={() => setShowUnsavedChangesDialog(false)}>
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction 
@@ -692,10 +760,8 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
             </AlertDialogAction>
             <AlertDialogAction 
               onClick={handleSaveAndClose}
-              style={{ 
-                background: 'var(--btn-primary-bg)', 
-                color: 'var(--btn-primary-text)' 
-              }}
+              className="text-white"
+              style={{ background: '#5C7C5C' }}
             >
               Save & Close
             </AlertDialogAction>
@@ -705,24 +771,16 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <AlertDialogContent style={{ background: 'var(--surface-1)', borderColor: 'var(--border-color)' }}>
+        <AlertDialogContent style={{ background: 'var(--surface-bg, hsl(var(--background)))', borderColor: 'var(--border-default, hsl(var(--border)))' }}>
           <AlertDialogHeader>
-            <AlertDialogTitle style={{ color: 'var(--text-1)' }}>Delete Request</AlertDialogTitle>
-            <AlertDialogDescription style={{ color: 'var(--text-2)' }}>
+            <AlertDialogTitle style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}>Delete Request</AlertDialogTitle>
+            <AlertDialogDescription style={{ color: 'var(--text-secondary, hsl(var(--muted-foreground)))' }}>
               Are you sure you want to delete <span className="font-semibold">{request?.request_key}</span>? 
               This request will be moved to deleted items and can be restored within 30 days.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel
-              style={{ 
-                background: 'var(--btn-secondary-bg)', 
-                color: 'var(--btn-secondary-text)',
-                borderColor: 'var(--btn-secondary-border)'
-              }}
-            >
-              Cancel
-            </AlertDialogCancel>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleConfirmDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"

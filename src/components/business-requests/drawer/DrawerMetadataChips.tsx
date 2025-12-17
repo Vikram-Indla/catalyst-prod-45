@@ -1,19 +1,11 @@
 /**
- * DrawerMetadataChips - Non-ownership tags only (Platform, Quarter, Priority, Rank)
- * Ownership fields (Status, Owner, Dept, Target) are in the Meta Strip above
+ * DrawerMetadataChips - Score, Rank, Quarter chips
+ * Catalyst Design System: Champagne (#D4B896), Bronze (#8B7355), Olive (#5C7C5C)
  */
 
-import { format } from 'date-fns';
-import { Layers, CalendarDays, TrendingUp, Hash } from 'lucide-react';
+import { Star, Hash } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getTierDisplayInfo, PriorityTier } from '@/hooks/usePrioritizationConfig';
-
-interface MetadataChip {
-  icon: React.ElementType;
-  label: string;
-  value: string | null | undefined;
-  colorClass?: string;
-}
 
 interface DrawerMetadataChipsProps {
   platform?: string | null;
@@ -25,68 +17,63 @@ interface DrawerMetadataChipsProps {
 }
 
 export function DrawerMetadataChips({
-  platform,
   quarter,
   priorityTier,
   priorityScore,
   rank,
   className
 }: DrawerMetadataChipsProps) {
-  // Format priority display
-  const getPriorityDisplay = () => {
-    if (!priorityTier || priorityTier === 'unscored') {
-      return null;
+  // Format score display
+  const getScoreDisplay = () => {
+    if (priorityScore) {
+      return `Score: ${priorityScore.toFixed(1)}`;
     }
-    const { label } = getTierDisplayInfo(priorityTier as PriorityTier);
-    const score = priorityScore ? ` (${priorityScore.toFixed(1)})` : '';
-    return `${label}${score}`;
+    return 'Unscored';
   };
 
-  const chips: MetadataChip[] = [
-    {
-      icon: Layers,
-      label: 'Platform',
-      value: platform,
-    },
-    {
-      icon: CalendarDays,
-      label: 'Quarter',
-      value: quarter,
-    },
-    {
-      icon: TrendingUp,
-      label: 'Priority',
-      value: getPriorityDisplay(),
-    },
-    {
-      icon: Hash,
-      label: 'Rank',
-      value: rank ? `#${rank}` : null,
-      colorClass: rank ? 'text-brand-primary' : undefined,
-    },
-  ].filter(chip => chip.value);
-
-  if (chips.length === 0) return null;
-
   return (
-    <div className={cn("flex items-center gap-1.5 flex-wrap", className)}>
-      {chips.map((chip, index) => (
+    <div className={cn("flex items-center gap-2", className)}>
+      {/* Score Chip - Champagne background */}
+      <div
+        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[12px] font-medium"
+        style={{
+          background: '#D4B896',
+          border: '1px solid rgba(139, 115, 85, 0.3)',
+          color: '#6D5A43',
+        }}
+      >
+        <Star className="h-3.5 w-3.5" />
+        {getScoreDisplay()}
+      </div>
+
+      {/* Rank Chip - Olive accent (if ranked) */}
+      {rank && (
         <div
-          key={index}
-          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium transition-colors"
-          style={{ 
-            background: 'var(--surface-2)', 
-            border: '1px solid var(--border-color)',
-            color: 'var(--text-2)'
+          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[12px] font-medium"
+          style={{
+            background: 'rgba(92, 124, 92, 0.1)',
+            border: '1px solid rgba(92, 124, 92, 0.3)',
+            color: '#5C7C5C',
           }}
-          title={`${chip.label}: ${chip.value}`}
         >
-          <chip.icon className="h-3 w-3 shrink-0" style={{ color: 'var(--text-3)' }} />
-          <span className={cn("truncate max-w-[100px]", chip.colorClass)}>
-            {chip.value}
-          </span>
+          <Hash className="h-3.5 w-3.5" />
+          Rank: {rank}
         </div>
-      ))}
+      )}
+
+      {/* Quarter Chip (if set) */}
+      {quarter && (
+        <div
+          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[12px] font-medium"
+          style={{
+            background: 'var(--surface-hover, hsl(var(--muted)))',
+            border: '1px solid var(--border-default, hsl(var(--border)))',
+            color: 'var(--text-secondary, hsl(var(--muted-foreground)))',
+          }}
+        >
+          {quarter}
+        </div>
+      )}
     </div>
   );
 }

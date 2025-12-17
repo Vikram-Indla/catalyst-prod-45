@@ -1,6 +1,6 @@
 /**
- * EnterpriseStatusControl - Interactive status lozenge with dropdown behavior
- * Replaces the plain text status with a proper interactive control
+ * EnterpriseStatusControl - Olive pill status control with dropdown
+ * Catalyst Design System: Primary Olive (#5C7C5C)
  */
 
 import { useState } from 'react';
@@ -20,85 +20,6 @@ interface EnterpriseStatusControlProps {
   disabled?: boolean;
 }
 
-// Status colors using semantic tokens
-const STATUS_STYLES: Record<string, { bg: string; text: string; border: string }> = {
-  new_request: { 
-    bg: 'rgba(156, 163, 175, 0.15)', 
-    text: 'var(--text-2)', 
-    border: 'rgba(156, 163, 175, 0.3)' 
-  },
-  new_demand: { 
-    bg: 'rgba(59, 130, 246, 0.15)', 
-    text: 'rgb(59, 130, 246)', 
-    border: 'rgba(59, 130, 246, 0.3)' 
-  },
-  in_review: { 
-    bg: 'rgba(168, 85, 247, 0.15)', 
-    text: 'rgb(168, 85, 247)', 
-    border: 'rgba(168, 85, 247, 0.3)' 
-  },
-  ea_review: { 
-    bg: 'rgba(14, 165, 233, 0.15)', 
-    text: 'rgb(14, 165, 233)', 
-    border: 'rgba(14, 165, 233, 0.3)' 
-  },
-  analyse: { 
-    bg: 'rgba(249, 115, 22, 0.15)', 
-    text: 'rgb(249, 115, 22)', 
-    border: 'rgba(249, 115, 22, 0.3)' 
-  },
-  approved: { 
-    bg: 'rgba(34, 197, 94, 0.15)', 
-    text: 'rgb(34, 197, 94)', 
-    border: 'rgba(34, 197, 94, 0.3)' 
-  },
-  in_progress: { 
-    bg: 'rgba(198, 156, 109, 0.15)', 
-    text: 'var(--accent-color)', 
-    border: 'rgba(198, 156, 109, 0.3)' 
-  },
-  on_hold: { 
-    bg: 'rgba(234, 179, 8, 0.15)', 
-    text: 'rgb(202, 138, 4)', 
-    border: 'rgba(234, 179, 8, 0.3)' 
-  },
-  ready_to_implement: { 
-    bg: 'rgba(34, 197, 94, 0.15)', 
-    text: 'rgb(34, 197, 94)', 
-    border: 'rgba(34, 197, 94, 0.3)' 
-  },
-  implement: { 
-    bg: 'rgba(198, 156, 109, 0.15)', 
-    text: 'var(--accent-color)', 
-    border: 'rgba(198, 156, 109, 0.3)' 
-  },
-  completed: { 
-    bg: 'rgba(92, 124, 92, 0.15)', 
-    text: 'var(--secondary-green)', 
-    border: 'rgba(92, 124, 92, 0.3)' 
-  },
-  closed: { 
-    bg: 'rgba(92, 124, 92, 0.15)', 
-    text: 'var(--secondary-green)', 
-    border: 'rgba(92, 124, 92, 0.3)' 
-  },
-  rejected: { 
-    bg: 'rgba(239, 68, 68, 0.15)', 
-    text: 'rgb(239, 68, 68)', 
-    border: 'rgba(239, 68, 68, 0.3)' 
-  },
-  cancelled: { 
-    bg: 'rgba(239, 68, 68, 0.15)', 
-    text: 'rgb(239, 68, 68)', 
-    border: 'rgba(239, 68, 68, 0.3)' 
-  },
-};
-
-function getStatusStyle(step: string) {
-  const normalizedStep = step.toLowerCase().replace(/\s+/g, '_');
-  return STATUS_STYLES[normalizedStep] || STATUS_STYLES.new_request;
-}
-
 function formatStepLabel(step: string): string {
   return step
     .replace(/_/g, ' ')
@@ -115,7 +36,6 @@ export function EnterpriseStatusControl({
   const [open, setOpen] = useState(false);
   const { data: processSteps = [] } = useActiveDemandProcessSteps();
   
-  const style = getStatusStyle(currentStep);
   const displayLabel = formatStepLabel(currentStep || 'new_request');
 
   return (
@@ -123,29 +43,30 @@ export function EnterpriseStatusControl({
       <DropdownMenuTrigger asChild disabled={disabled}>
         <button
           className={cn(
-            "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium",
-            "transition-all duration-150 cursor-pointer",
-            "hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-1",
+            "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold uppercase tracking-[0.3px]",
+            "cursor-pointer transition-colors",
             disabled && "opacity-50 cursor-not-allowed"
           )}
           style={{
-            background: style.bg,
-            color: style.text,
-            border: `1px solid ${style.border}`,
+            background: '#5C7C5C',
+            color: 'white',
+            boxShadow: '0 2px 4px rgba(92, 124, 92, 0.25)',
           }}
         >
-          <span className="w-1.5 h-1.5 rounded-full" style={{ background: style.text }} />
-          <span>{displayLabel}</span>
-          <ChevronDown className="h-3 w-3 opacity-60" />
+          <span 
+            className="w-1.5 h-1.5 rounded-full animate-pulse"
+            style={{ background: 'white' }}
+          />
+          {displayLabel}
+          <ChevronDown className="h-3 w-3 opacity-80" />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent 
         align="start" 
-        className="w-48"
-        style={{ background: 'var(--surface-1)', border: '1px solid var(--border-color)' }}
+        className="w-44 z-[400]"
+        style={{ background: 'var(--surface-bg, hsl(var(--background)))', borderColor: 'var(--border-default, hsl(var(--border)))' }}
       >
         {processSteps.map((step) => {
-          const stepStyle = getStatusStyle(step.value);
           const isActive = step.value === currentStep;
           
           return (
@@ -155,20 +76,15 @@ export function EnterpriseStatusControl({
                 onChange(step.value);
                 setOpen(false);
               }}
-              className={cn(
-                "flex items-center gap-2 px-3 py-2 cursor-pointer",
-                isActive && "bg-accent"
-              )}
+              className="text-[13px] cursor-pointer"
+              style={{
+                background: isActive ? 'rgba(92, 124, 92, 0.08)' : 'transparent',
+                color: isActive ? '#5C7C5C' : 'var(--text-primary, hsl(var(--foreground)))',
+              }}
             >
-              <span 
-                className="w-2 h-2 rounded-full shrink-0" 
-                style={{ background: stepStyle.text }} 
-              />
-              <span className="flex-1 text-sm" style={{ color: 'var(--text-1)' }}>
-                {step.label}
-              </span>
+              <span className="flex-1">{step.label}</span>
               {isActive && (
-                <Check className="h-4 w-4 shrink-0" style={{ color: 'var(--accent-color)' }} />
+                <Check className="h-4 w-4 shrink-0" style={{ color: '#5C7C5C' }} />
               )}
             </DropdownMenuItem>
           );
