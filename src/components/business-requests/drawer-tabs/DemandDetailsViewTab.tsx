@@ -149,7 +149,7 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
             <RichTextEditor
               value={data.description || ''}
               onChange={(value) => onChange('description', value)}
-              placeholder="Business Need&#10;&#10;Detailed Description&#10;&#10;Delivery Urgency&#10;&#10;Justification"
+              placeholder="Enter description..."
             />
           </div>
         </div>
