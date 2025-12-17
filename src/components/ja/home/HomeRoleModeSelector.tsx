@@ -11,7 +11,7 @@ interface HomeRoleModeSelectorProps {
 const modes: { value: HomeRoleMode; label: string }[] = [
   { value: 'ops', label: 'Operations' },
   { value: 'delivery', label: 'Delivery' },
-  { value: 'exec', label: 'Executive' },
+  { value: 'exec', label: 'Approvals' },
 ];
 
 export function HomeRoleModeSelector({ value, onChange }: HomeRoleModeSelectorProps) {
