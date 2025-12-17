@@ -3,6 +3,7 @@ import { ObjectiveGroup, GroupBy, Theme, Owner } from '@/types/objective-roadmap
 import { formatShortDate } from '@/utils/objective-roadmap-utils';
 import { ChevronDown, Target } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface ObjectivesColumnProps {
   groups: ObjectiveGroup[];
@@ -161,9 +162,16 @@ export const ObjectivesColumn = forwardRef<HTMLDivElement, ObjectivesColumnProps
                         <Target size={12} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="font-medium text-xs truncate leading-tight" title={obj.name}>
-                          {obj.name}
-                        </div>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="font-medium text-xs truncate leading-tight cursor-default">
+                              {obj.name}
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-[300px]">
+                            <p className="text-sm">{obj.name}</p>
+                          </TooltipContent>
+                        </Tooltip>
                         <div className="flex items-center gap-2 text-[10px] text-muted-foreground mt-0.5">
                           <span className="truncate">
                             {formatShortDate(obj.startDate)} → {formatShortDate(obj.endDate)}
