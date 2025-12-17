@@ -1235,22 +1235,6 @@ export function ExecutiveTable({
         </>
       ) : (
         <div style={{ backgroundColor: 'var(--bg)' }} className="flex-shrink-0">
-          {/* Row 1: Title Row - 44px, no border */}
-          <div className="h-11 flex items-center px-6">
-            <div className="flex items-baseline gap-2.5">
-              <h1 className="text-xl font-bold text-secondary-green m-0 leading-tight">
-                Business Requests
-              </h1>
-              <span className="text-sm font-medium text-muted-foreground">
-                {processedData.length}/{data.length}
-                {selectedRows.length > 0 && (
-                  <span className="ml-2 text-brand-gold font-semibold">
-                    • {selectedRows.length} selected
-                  </span>
-                )}
-              </span>
-            </div>
-          </div>
 
           {/* Row 2: Toolbar Row - 52px, with border-bottom */}
           <div className="h-13 flex items-center px-6">
