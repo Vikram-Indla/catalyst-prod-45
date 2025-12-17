@@ -51,9 +51,9 @@ import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useVisibleDrawerTabs } from '@/hooks/useDrawerTabConfigs';
-import { DrawerMetadataChips, EnterpriseStatusControl, ExecutiveSummaryPanel, MetaStrip } from './drawer';
+import { EnterpriseStatusControl } from './drawer';
+import { EAReviewTab } from './drawer-tabs/EAReviewTab';
 import { cn } from '@/lib/utils';
-import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings, getOwnerIdForDepartment } from '@/hooks/useDepartmentsAndOwners';
 
 // Fields to track for audit logging (human-readable names)
 const AUDIT_FIELD_LABELS: Record<string, string> = {
@@ -162,6 +162,7 @@ interface BusinessRequestDrawerProps {
 const FALLBACK_TABS = [
   { value: 'demand-details', label: 'Demand Details' },
   { value: 'business-score', label: 'Business Score' },
+  { value: 'ea-review', label: 'EA Review' },
   { value: 'budget', label: 'Budget' },
   { value: 'risks', label: 'Risks' },
   { value: 'milestones', label: 'Milestones' },
@@ -475,12 +476,12 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
               </button>
             </div>
 
-            {/* Main Header - Title (Hero) + Actions */}
-            <div className="flex items-start justify-between px-4 md:px-5 pb-2 gap-4">
-              {/* Left: Title + Meta */}
-              <div className="flex-1 min-w-0 space-y-1.5">
+            {/* Main Header - Title + Status + Actions ONLY */}
+            <div className="flex items-center justify-between px-4 md:px-5 pb-2 gap-4">
+              {/* Left: Title + Status */}
+              <div className="flex-1 min-w-0 flex items-center gap-3">
                 {/* Title - The Hero */}
-                <div className="flex items-center gap-1.5 group">
+                <div className="flex items-center gap-1.5 group flex-1 min-w-0">
                   {isEditingName ? (
                     <Input
                       ref={nameInputRef}
@@ -511,34 +512,11 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                   )}
                 </div>
 
-                {/* Meta Strip - Single source of truth for ownership fields */}
-                <div className="flex items-center gap-2 flex-wrap">
-                  <EnterpriseStatusControl
-                    currentStep={formData.process_step || 'new_request'}
-                    onChange={(step) => handleFieldChange('process_step', step)}
-                  />
-                  <div className="h-4 w-px" style={{ background: 'var(--border-color)' }} />
-                  <MetaStrip
-                    businessOwner={formData.business_owner}
-                    businessOwnerId={formData.business_owner_id}
-                    department={formData.department}
-                    departmentId={formData.department_id}
-                    targetDate={formData.end_date}
-                    deliveryPlatform={formData.delivery_platform}
-                    onBusinessOwnerChange={(id) => handleFieldChange('business_owner_id', id)}
-                    onDepartmentChange={(id) => handleFieldChange('department_id', id)}
-                    onTargetDateChange={(date) => handleFieldChange('end_date', date)}
-                    onDeliveryPlatformChange={(value) => handleFieldChange('delivery_platform', value)}
-                  />
-                  <div className="h-4 w-px" style={{ background: 'var(--border-color)' }} />
-                  <DrawerMetadataChips
-                    platform={formData.delivery_platform}
-                    quarter={formData.planned_quarter}
-                    priorityTier={formData.priority_tier}
-                    priorityScore={formData.business_score}
-                    rank={formData.rank}
-                  />
-                </div>
+                {/* Status - ONLY editable field in header */}
+                <EnterpriseStatusControl
+                  currentStep={formData.process_step || 'new_request'}
+                  onChange={(step) => handleFieldChange('process_step', step)}
+                />
               </div>
               
               {/* Right side: Save button + action icons */}
@@ -659,6 +637,9 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                   requestId={requestId || undefined}
                   onDirtyChange={handleDirtyChange}
                 />
+              </TabsContent>
+              <TabsContent value="ea-review" className="m-0 focus-visible:outline-none">
+                <EAReviewTab data={formData} onChange={handleFieldChange} />
               </TabsContent>
               <TabsContent value="budget" className="m-0 focus-visible:outline-none p-4 md:p-5 pb-6">
                 <BudgetViewTab data={formData} onChange={handleFieldChange} />
