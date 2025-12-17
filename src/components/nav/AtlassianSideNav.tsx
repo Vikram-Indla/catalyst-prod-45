@@ -63,7 +63,7 @@ function NavItemComponent({ item, collapsed = false, depth = 0 }: NavItemCompone
         'text-sm font-medium transition-colors duration-150',
         'select-none cursor-pointer',
         isActive
-          ? 'bg-brand-gold/10 text-foreground'
+          ? 'bg-brand-primary/10 text-foreground'
           : 'text-muted-foreground hover:text-foreground hover:bg-accent',
         item.disabled && 'opacity-50 cursor-not-allowed pointer-events-none',
         depth > 0 && 'ml-3'
@@ -80,14 +80,14 @@ function NavItemComponent({ item, collapsed = false, depth = 0 }: NavItemCompone
     >
       {/* Left indicator bar for selected state */}
       {isActive && (
-        <div className="absolute left-0 top-1 bottom-1 w-[3px] rounded-r-full bg-brand-gold" />
+        <div className="absolute left-0 top-1 bottom-1 w-[3px] rounded-r-full bg-brand-primary" />
       )}
       
       {/* Icon */}
       {Icon && (
         <Icon className={cn(
           'h-4 w-4 shrink-0',
-          isActive ? 'text-brand-gold' : 'text-muted-foreground group-hover:text-foreground'
+          isActive ? 'text-brand-primary' : 'text-muted-foreground group-hover:text-foreground'
         )} />
       )}
       
@@ -101,7 +101,7 @@ function NavItemComponent({ item, collapsed = false, depth = 0 }: NavItemCompone
             <span className={cn(
               'h-5 min-w-5 px-1.5 rounded-full text-xs font-medium',
               'flex items-center justify-center',
-              'bg-brand-gold/10 text-brand-gold'
+              'bg-brand-primary/10 text-brand-primary'
             )}>
               {item.badge}
             </span>

@@ -71,7 +71,7 @@ export function PageTitle({ title, subtitle, icon, className }: PageTitleProps) 
   return (
     <div data-ui="PageTitle" className={cn('flex items-center gap-3', className)}>
       {icon && (
-        <div className="h-9 w-9 rounded-lg bg-brand-gold/10 flex items-center justify-center text-brand-gold shrink-0">
+        <div className="h-9 w-9 rounded-lg bg-brand-primary/10 flex items-center justify-center text-brand-primary shrink-0">
           {icon}
         </div>
       )}

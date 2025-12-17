@@ -410,7 +410,7 @@ export function CreateEntityDialog({
           <Button
             onClick={handleCreate}
             disabled={isCreating || !isFormValid}
-            className="bg-brand-gold hover:bg-brand-gold-hover"
+            className="bg-brand-primary hover:bg-brand-primary-hover"
           >
             {isCreating ? 'Creating...' : 'Create'}
           </Button>

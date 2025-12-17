@@ -151,7 +151,7 @@ export function TechnicalScoringDialog({
       <DialogContent className="max-w-5xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
-            <Calculator className="h-5 w-5 text-brand-gold" />
+            <Calculator className="h-5 w-5 text-brand-primary" />
             Technical Scoring
           </DialogTitle>
         </DialogHeader>
@@ -256,7 +256,7 @@ export function TechnicalScoringDialog({
                       </Select>
                     </TableCell>
                     <TableCell className="text-center">
-                      <span className="font-bold text-brand-gold text-lg">
+                      <span className="font-bold text-brand-primary text-lg">
                         {scores.get(epic.id)?.calculated_score?.toFixed(2) || epic.calculated_score?.toFixed(2) || '–'}
                       </span>
                     </TableCell>
@@ -274,7 +274,7 @@ export function TechnicalScoringDialog({
           <Button 
             onClick={() => saveMutation.mutate()} 
             disabled={saveMutation.isPending}
-            className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+            className="bg-brand-primary hover:bg-brand-primary-hover text-white"
           >
             {saveMutation.isPending ? 'Saving...' : 'Save Scores'}
           </Button>

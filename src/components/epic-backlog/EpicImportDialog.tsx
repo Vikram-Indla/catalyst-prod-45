@@ -130,7 +130,7 @@ export function EpicImportDialog({
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Upload className="h-5 w-5 text-brand-gold" />
+            <Upload className="h-5 w-5 text-brand-primary" />
             Import Epics
           </DialogTitle>
           <DialogDescription>
@@ -142,13 +142,13 @@ export function EpicImportDialog({
           <div
             {...getRootProps()}
             className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
-              isDragActive ? 'border-brand-gold bg-brand-gold/5' : 'border-muted-foreground/30 hover:border-brand-gold/50'
+              isDragActive ? 'border-brand-primary bg-brand-primary/5' : 'border-muted-foreground/30 hover:border-brand-primary/50'
             }`}
           >
             <input {...getInputProps()} />
             <Upload className="h-10 w-10 mx-auto mb-4 text-muted-foreground" />
             {isDragActive ? (
-              <p className="text-brand-gold">Drop the CSV file here...</p>
+              <p className="text-brand-primary">Drop the CSV file here...</p>
             ) : (
               <>
                 <p className="text-sm text-muted-foreground mb-2">
@@ -219,7 +219,7 @@ export function EpicImportDialog({
           <Button
             onClick={() => importMutation.mutate()}
             disabled={parsedData.length === 0 || importMutation.isPending}
-            className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+            className="bg-brand-primary hover:bg-brand-primary-hover text-white"
           >
             {importMutation.isPending ? 'Importing...' : `Import ${parsedData.length} Epic(s)`}
           </Button>

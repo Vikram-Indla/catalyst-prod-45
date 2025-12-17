@@ -286,7 +286,7 @@ export function CanonicalDrawerShell({
                     <DropdownMenuTrigger asChild>
                       <Button
                         size="sm"
-                        className="h-8 px-3 text-sm font-medium bg-brand-gold hover:bg-brand-gold-hover text-white"
+                        className="h-8 px-3 text-sm font-medium bg-brand-primary hover:bg-brand-primary-hover text-white"
                         disabled={isSaving}
                       >
                         {isSaving ? 'Saving...' : 'Save'}
@@ -424,7 +424,7 @@ export function CanonicalDrawerShell({
             {(onSave || onSaveAndClose) && (
               <AlertDialogAction
                 onClick={handleSaveAndCloseFromDialog}
-                className="bg-brand-gold text-white hover:bg-brand-gold-hover"
+                className="bg-brand-primary text-white hover:bg-brand-primary-hover"
               >
                 Save & Close
               </AlertDialogAction>

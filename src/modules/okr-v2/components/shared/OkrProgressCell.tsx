@@ -13,9 +13,9 @@ interface OkrProgressCellProps {
   compact?: boolean;
 }
 
-// Progress bar is always gold - trend icon shows status
+// Progress bar is always primary - trend icon shows status
 function getProgressBarColor(): string {
-  return 'bg-brand-gold';
+  return 'bg-brand-primary';
 }
 
 // Trend icon component
