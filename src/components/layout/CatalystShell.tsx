@@ -137,12 +137,17 @@ function CatalystShellContent() {
       {/* Main Content with Context Panel - Conditional Sidebar Based on workspaceType */}
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
-        <div className="relative flex-shrink-0 mr-3">
+        <div className="relative flex-shrink-0">
           {renderSidebar()}
         </div>
 
-        {/* Route content scroll container (single scroll parent) */}
-        <main className="flex-1 min-w-0 flex flex-col overflow-hidden">
+        {/* Route content scroll container (single scroll parent) - workspace frame */}
+        <main 
+          className="flex-1 min-w-0 flex flex-col overflow-hidden"
+          style={{ 
+            background: 'var(--bg-workspace, var(--bg))',
+          }}
+        >
           <AnnouncementBanner />
           <div className="flex-1 min-h-0 overflow-auto">
             <Outlet />
