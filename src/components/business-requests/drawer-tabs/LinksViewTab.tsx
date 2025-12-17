@@ -679,18 +679,6 @@ export function LinksViewTab({ requestId, onNavigateToEpic }: LinksViewTabProps)
               <div className="text-[11px] text-muted-foreground leading-tight">Attach files up to 20MB each</div>
             </button>
 
-            {/* Knowledge Hub */}
-            <button
-              className="p-4 border-2 border-dashed border-border rounded-xl text-center cursor-pointer transition-all hover:border-brand-gold/50 hover:bg-brand-gold/5 group"
-              onClick={() => setFormView('knowledge-hub')}
-            >
-              <div className="w-10 h-10 mx-auto mb-2 flex items-center justify-center bg-muted/50 rounded-lg group-hover:bg-brand-gold group-hover:text-white transition-all">
-                <BookOpen className="h-5 w-5 text-muted-foreground group-hover:text-white" />
-              </div>
-              <div className="font-medium text-[13px] text-foreground mb-0.5">Knowledge Hub</div>
-              <div className="text-[11px] text-muted-foreground leading-tight">Link to a KB page</div>
-            </button>
-
             {/* External Link - LAST */}
             <button
               className="p-4 border-2 border-dashed border-border rounded-xl text-center cursor-pointer transition-all hover:border-brand-gold/50 hover:bg-brand-gold/5 group"
@@ -919,69 +907,6 @@ export function LinksViewTab({ requestId, onNavigateToEpic }: LinksViewTabProps)
           </div>
         )}
 
-        {/* Knowledge Hub Form */}
-        {formView === 'knowledge-hub' && (
-          <div className="space-y-4 animate-fade-in">
-            <button onClick={handleBack} className="flex items-center gap-1.5 text-[13px] text-muted-foreground hover:text-foreground transition-colors">
-              <ArrowLeft className="h-4 w-4" /> Back
-            </button>
-
-            <div>
-              <Label className="text-[13px] font-medium text-foreground">Search Knowledge Hub</Label>
-              <div className="relative mt-1.5">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  value={kbSearch}
-                  onChange={(e) => setKbSearch(e.target.value)}
-                  placeholder="Search pages..."
-                  className="pl-9 h-10 bg-muted/30 border-border/60 focus:border-brand-gold"
-                />
-              </div>
-            </div>
-
-            <ScrollArea className="h-[200px] border rounded-lg">
-              <div className="p-2 space-y-1">
-                {kbDocuments.length > 0 ? (
-                  kbDocuments.map((doc: any) => (
-                    <button
-                      key={doc.id}
-                      onClick={() => setSelectedKbDoc({ id: doc.id, title: doc.title })}
-                      className={cn(
-                        "w-full flex items-center gap-3 p-3 rounded-lg text-left transition-all",
-                        selectedKbDoc?.id === doc.id ? "bg-brand-gold/10 border border-brand-gold" : "hover:bg-muted/50"
-                      )}
-                    >
-                      <BookOpen className="h-4 w-4 text-brand-gold flex-shrink-0" />
-                      <div className="min-w-0 flex-1">
-                        <div className="text-[13px] font-medium truncate">{doc.title}</div>
-                        <div className="text-[11px] text-muted-foreground">Updated {new Date(doc.updated_at).toLocaleDateString()}</div>
-                      </div>
-                    </button>
-                  ))
-                ) : (
-                  <div className="text-center py-8 text-[13px] text-muted-foreground">
-                    {kbSearch ? 'No pages found' : 'No Knowledge Hub pages available'}
-                  </div>
-                )}
-              </div>
-            </ScrollArea>
-
-            {selectedKbDoc && (
-              <div className="p-3 bg-brand-gold/5 border border-brand-gold/20 rounded-lg">
-                <div className="text-[12px] text-muted-foreground mb-1">Selected:</div>
-                <div className="text-[13px] font-medium text-foreground">{selectedKbDoc.title}</div>
-              </div>
-            )}
-
-            <Button 
-              onClick={() => createKbLinkMutation.mutate(selectedKbDoc!)} 
-              disabled={createKbLinkMutation.isPending || !selectedKbDoc}
-              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
-            >
-              {createKbLinkMutation.isPending ? 'Linking...' : 'Link Page'}
-            </Button>
-          </div>
-        )}
       </Card>
 
       {/* Filter & Controls Bar */}
@@ -1004,7 +929,7 @@ export function LinksViewTab({ requestId, onNavigateToEpic }: LinksViewTabProps)
             </PopoverTrigger>
             <PopoverContent className="w-48 p-2 bg-background" align="start">
               <div className="space-y-1">
-                {(['implementation', 'document', 'knowledge-hub', 'external'] as LinkKind[]).map((type) => (
+                {(['implementation', 'document', 'external'] as LinkKind[]).map((type) => (
                   <label
                     key={type}
                     className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-muted cursor-pointer"
@@ -1014,7 +939,7 @@ export function LinksViewTab({ requestId, onNavigateToEpic }: LinksViewTabProps)
                       onCheckedChange={() => toggleTypeFilter(type)}
                     />
                     <span className="text-[12px] font-medium">
-                      {type === 'knowledge-hub' ? 'Knowledge Hub' : type.charAt(0).toUpperCase() + type.slice(1)}
+                      {type.charAt(0).toUpperCase() + type.slice(1)}
                     </span>
                     <span className="text-[11px] text-muted-foreground ml-auto">({typeCounts[type]})</span>
                   </label>
