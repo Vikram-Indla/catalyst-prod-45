@@ -67,26 +67,25 @@ function FocusWidget({
       )}
       onClick={onClick}
     >
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2 min-w-0">
-          <Icon className="w-4 h-4 shrink-0 text-[var(--icon-muted)]" />
-          <div className="min-w-0">
-            <div className="text-sm font-medium text-[var(--text-1)] truncate">{title}</div>
-            {subtitle && (
-              <div className="text-[10px] text-[var(--text-3)]">{subtitle}</div>
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-start gap-2 min-w-0 flex-1">
+          <Icon className="w-4 h-4 shrink-0 text-[var(--icon-muted)] mt-0.5" />
+          <div className="min-w-0 flex-1">
+            <div className="text-sm font-medium text-[var(--text-1)]">{title}</div>
+            {/* Secondary info below title */}
+            {(subtitle || (secondaryLabel && secondaryCount !== undefined)) && (
+              <div className="text-[10px] text-[var(--text-3)] mt-0.5">
+                {secondaryLabel && secondaryCount !== undefined 
+                  ? `${secondaryCount} ${secondaryLabel.toLowerCase()}`
+                  : subtitle
+                }
+              </div>
             )}
           </div>
         </div>
-        <div className="flex items-center gap-2 shrink-0">
-          {secondaryLabel && secondaryCount !== undefined && (
-            <span className="text-xs tabular-nums text-[var(--text-3)]">
-              {secondaryCount} {secondaryLabel.toLowerCase()}
-            </span>
-          )}
-          <span className="text-sm font-semibold tabular-nums text-[var(--brand-primary)]">
-            {primaryCount}
-          </span>
-        </div>
+        <span className="text-sm font-semibold tabular-nums text-[var(--brand-primary)] shrink-0">
+          {primaryCount}
+        </span>
       </div>
     </button>
   );
