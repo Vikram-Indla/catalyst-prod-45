@@ -62,7 +62,7 @@ interface MilestoneRow {
   id: string;
   title: string;
   start_date: string | null;
-  due_date: string | null;
+  end_date: string | null;
   state: string | null;
   business_request_id: string;
 }
@@ -88,9 +88,9 @@ export function useRoadmapBusinessRequests() {
       if (requestIds.length > 0) {
         const { data: milestoneData, error: msError } = await supabase
           .from('milestones')
-          .select('id, title, start_date, due_date, state, business_request_id')
+          .select('id, title, start_date, end_date, state, business_request_id')
           .in('business_request_id', requestIds)
-          .order('due_date', { ascending: true });
+          .order('end_date', { ascending: true });
 
         if (msError) throw msError;
         milestones = milestoneData || [];
@@ -120,11 +120,11 @@ export function useRoadmapBusinessRequests() {
           // If no dates on request, try to derive from milestones
           if (!startDate && requestMilestones.length > 0) {
             const firstMs = requestMilestones[0];
-            startDate = firstMs.start_date || firstMs.due_date;
+            startDate = firstMs.start_date || firstMs.end_date;
           }
           if (!endDate && requestMilestones.length > 0) {
             const lastMs = requestMilestones[requestMilestones.length - 1];
-            endDate = lastMs.due_date || lastMs.start_date;
+            endDate = lastMs.end_date || lastMs.start_date;
           }
           
           // --- DATE NORMALIZATION ---
@@ -174,8 +174,8 @@ export function useRoadmapBusinessRequests() {
 
           // Transform milestones
           const transformedMilestones = requestMilestones.map((ms, msIndex) => {
-            // Use due_date for positioning, fallback to start_date
-            const milestoneDate = ms.due_date || ms.start_date || endDate;
+            // Use end_date for positioning, fallback to start_date
+            const milestoneDate = ms.end_date || ms.start_date || endDate;
             
             return {
               step: (msIndex + 1) as 1 | 2 | 3 | 4 | 5,

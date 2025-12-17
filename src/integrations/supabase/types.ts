@@ -6401,7 +6401,7 @@ export type Database = {
           completed_date: string | null
           created_at: string | null
           description: string | null
-          due_date: string
+          end_date: string
           epic_id: string | null
           id: string
           milestone_type: string | null
@@ -6418,7 +6418,7 @@ export type Database = {
           completed_date?: string | null
           created_at?: string | null
           description?: string | null
-          due_date: string
+          end_date: string
           epic_id?: string | null
           id?: string
           milestone_type?: string | null
@@ -6435,7 +6435,7 @@ export type Database = {
           completed_date?: string | null
           created_at?: string | null
           description?: string | null
-          due_date?: string
+          end_date?: string
           epic_id?: string | null
           id?: string
           milestone_type?: string | null

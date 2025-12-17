@@ -20,7 +20,7 @@ export function MilestonesTab({ epicId }: MilestonesTabProps) {
         .from("milestones")
         .select("*")
         .eq("epic_id", epicId)
-        .order("due_date", { ascending: true });
+        .order("end_date", { ascending: true });
 
       if (error) throw error;
       return data;
@@ -75,7 +75,7 @@ export function MilestonesTab({ epicId }: MilestonesTabProps) {
                 <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
                   <div className="flex items-center gap-1">
                     <Calendar className="h-3 w-3" />
-                    <span>Due: {format(new Date(milestone.due_date), "MMM d, yyyy")}</span>
+                    <span>End: {format(new Date(milestone.end_date), "MMM d, yyyy")}</span>
                   </div>
                   {milestone.completed_date && (
                     <span className="text-success">

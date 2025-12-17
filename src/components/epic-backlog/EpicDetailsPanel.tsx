@@ -93,7 +93,7 @@ export function EpicDetailsPanel({ epicId, onClose, onRefetch }: EpicDetailsPane
     valueScore: 0,
     valueScoreAverage: 0,
     valueScoreComparison: 0,
-    milestones: [] as { id: string; name: string; startDate: string | null; dueDate: string | null; description: string; state: 'Pending' | 'In Progress' | 'Complete' | 'Blocked'; category: string | null }[],
+    milestones: [] as { id: string; name: string; startDate: string | null; endDate: string | null; description: string; state: 'Pending' | 'In Progress' | 'Complete' | 'Blocked'; category: string | null }[],
     budget: 0,
     acceptedSpend: 0,
     forecastedSpend: 0,
