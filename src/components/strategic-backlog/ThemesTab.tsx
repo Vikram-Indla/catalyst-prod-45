@@ -121,7 +121,7 @@ export function ThemesTab({ themes, snapshotId, isArchived, onReorder }: ThemesT
               <LinkIcon className="h-3.5 w-3.5 mr-1" />
               Link existing
             </Button>
-            <Button size="sm" onClick={() => setCreateOpen(true)} className="bg-brand-gold hover:bg-brand-gold/90">
+            <Button size="sm" onClick={() => setCreateOpen(true)} className="bg-brand-primary hover:bg-brand-primary-hover">
               <Plus className="h-3.5 w-3.5 mr-1" />
               Create Theme
             </Button>
@@ -179,7 +179,7 @@ export function ThemesTab({ themes, snapshotId, isArchived, onReorder }: ThemesT
                     <LinkIcon className="h-3.5 w-3.5 mr-1" />
                     Link existing
                   </Button>
-                  <Button size="sm" onClick={() => setCreateOpen(true)} className="bg-brand-gold hover:bg-brand-gold/90">
+                  <Button size="sm" onClick={() => setCreateOpen(true)} className="bg-brand-primary hover:bg-brand-primary-hover">
                     <Plus className="h-3.5 w-3.5" />
                   </Button>
                 </>
@@ -202,7 +202,7 @@ export function ThemesTab({ themes, snapshotId, isArchived, onReorder }: ThemesT
                     <LinkIcon className="h-3.5 w-3.5 mr-1" />
                     Link existing
                   </Button>
-                  <Button onClick={() => setCreateOpen(true)} size="sm" className="bg-brand-gold hover:bg-brand-gold/90">
+                  <Button onClick={() => setCreateOpen(true)} size="sm" className="bg-brand-primary hover:bg-brand-primary-hover">
                     <Plus className="h-3.5 w-3.5 mr-1" />
                     Create theme
                   </Button>
@@ -354,7 +354,7 @@ export function ThemesTab({ themes, snapshotId, isArchived, onReorder }: ThemesT
                     <LinkIcon className="h-3.5 w-3.5 mr-1" />
                     Link existing
                   </Button>
-                  <Button onClick={() => { setSubTab('list'); setCreateOpen(true); }} size="sm" className="bg-brand-gold hover:bg-brand-gold/90">
+                  <Button onClick={() => { setSubTab('list'); setCreateOpen(true); }} size="sm" className="bg-brand-primary hover:bg-brand-primary-hover">
                     <Plus className="h-3.5 w-3.5 mr-1" />
                     Create theme
                   </Button>

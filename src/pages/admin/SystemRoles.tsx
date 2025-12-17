@@ -112,7 +112,7 @@ export default function SystemRoles() {
               Configure system-wide roles and permissions hierarchy
             </p>
           </div>
-          <Button className="bg-brand-gold hover:bg-brand-gold-hover flex-shrink-0">
+          <Button className="bg-brand-primary hover:bg-brand-primary-hover flex-shrink-0">
             <Plus className="h-4 w-4 mr-2" />
             Add Role
           </Button>

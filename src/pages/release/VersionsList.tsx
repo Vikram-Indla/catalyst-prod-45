@@ -72,7 +72,7 @@ export default function VersionsList() {
                 Calendar
               </Button>
             </Link>
-            <Button className="bg-brand-gold hover:bg-brand-gold-hover text-white">
+            <Button className="bg-brand-primary hover:bg-brand-primary-hover text-white">
               + Create Version
             </Button>
           </div>
@@ -87,7 +87,7 @@ export default function VersionsList() {
             placeholder="Search versions..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 h-9 text-sm border-border focus-visible:ring-brand-gold"
+            className="pl-10 h-9 text-sm border-border focus-visible:ring-brand-primary"
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>

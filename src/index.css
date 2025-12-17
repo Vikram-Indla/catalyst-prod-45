@@ -440,7 +440,7 @@
   --card-foreground: 210 20% 94%;
   --popover: 220 13% 8%;
   --popover-foreground: 210 20% 94%;
-  --primary: 35 46% 60%;
+  --primary: 120 15% 55%;
   --primary-foreground: 220 13% 5%;
   --secondary: 220 13% 12%;
   --secondary-foreground: 210 20% 94%;
@@ -452,7 +452,55 @@
   --destructive-foreground: 0 0% 100%;
   --border: 220 13% 18%;
   --input: 220 13% 12%;
-  --ring: 35 46% 60%;
+  --ring: 120 15% 55%;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   EXECUTIVE STYLES (V2)
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* Executive Tab Styles */
+.executive-tab {
+  position: relative;
+}
+
+.executive-tab[data-state="active"]::after {
+  content: '';
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 0;
+  height: 2px;
+  background: var(--brand-primary);
+  border-radius: 2px 2px 0 0;
+}
+
+/* Status Pulse Animation */
+@keyframes status-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.animate-status-pulse {
+  animation: status-pulse 2s ease-in-out infinite;
+}
+
+/* Custom Scrollbar */
+.executive-drawer-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.executive-drawer-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.executive-drawer-content::-webkit-scrollbar-thumb {
+  background: var(--border-default);
+  border-radius: 3px;
+}
+
+.executive-drawer-content::-webkit-scrollbar-thumb:hover {
+  background: var(--border-subtle);
 }
 
 /* ════════════════════════════════════════════════════════════════════════════

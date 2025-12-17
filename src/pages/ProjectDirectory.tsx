@@ -120,7 +120,7 @@ export default function ProjectDirectory() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-medium text-foreground">Projects</h1>
         <div className="flex gap-2">
-          <Button onClick={() => setShowCreateDialog(true)} className="bg-brand-gold hover:bg-brand-gold-hover">
+          <Button onClick={() => setShowCreateDialog(true)} className="bg-brand-primary hover:bg-brand-primary-hover">
             <Plus className="w-4 h-4 mr-1" /> Create project
           </Button>
         </div>

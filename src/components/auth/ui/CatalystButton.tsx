@@ -20,7 +20,7 @@ export const CatalystButton = forwardRef<HTMLButtonElement, CatalystButtonProps>
           className
         )}
         style={{
-          backgroundColor: isPrimary ? 'hsl(var(--brand-gold))' : 'var(--btn-secondary-bg)',
+          backgroundColor: isPrimary ? 'var(--brand-primary)' : 'var(--btn-secondary-bg)',
           color: isPrimary ? '#fff' : 'var(--btn-secondary-text)',
           borderColor: isPrimary ? undefined : 'var(--btn-secondary-border)',
           borderWidth: isPrimary ? undefined : '1px',

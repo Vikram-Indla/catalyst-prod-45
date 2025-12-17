@@ -143,7 +143,7 @@ export default function Themes() {
           onImport={() => setImportDialogOpen(true)}
         />
         <PermissionGuard requiredRole="team_lead" showMessage={false}>
-          <Button onClick={handleCreate} size="sm" className="gap-1.5 bg-brand-gold hover:bg-brand-gold-hover text-white">
+          <Button onClick={handleCreate} size="sm" className="gap-1.5 bg-brand-primary hover:bg-brand-primary-hover text-white">
             <Plus className="h-4 w-4" />
             New Theme
           </Button>

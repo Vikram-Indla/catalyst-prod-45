@@ -467,7 +467,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                   <DropdownMenuTrigger asChild>
                     <Button
                       size="sm"
-                      className="h-8 px-3 text-sm font-medium bg-brand-gold hover:bg-brand-gold-hover text-white"
+                      className="h-8 px-3 text-sm font-medium bg-brand-primary hover:bg-brand-primary-hover text-white"
                     >
                       Save
                       <ChevronDown className="h-3.5 w-3.5 ml-1" />
