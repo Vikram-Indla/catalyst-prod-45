@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { 
-  ArrowLeft, Eye, Share2, MoreVertical, Users, Plus, 
+  ArrowLeft, Eye, EyeOff, Share2, MoreVertical, Users, Plus, 
   AlertTriangle, FileText, Paperclip, Clock, Check, X,
   Upload, Link as LinkIcon, MessageSquare, History, Download, Trash2
 } from 'lucide-react';
@@ -16,6 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Label } from '@/components/ui/label';
 import { useIncident, useUpdateIncident, useAddComment, useReleaseVersions } from '@/hooks/useIncidents';
 import { useUploadIncidentAttachment, useDeleteIncidentAttachment, useDownloadIncidentAttachment } from '@/hooks/useIncidentAttachments';
+import { useIsWatching, useWatcherCount, useToggleWatch } from '@/hooks/useIncidentWatchers';
 import { SlaStatusCard } from '@/components/incidents/SlaStatusCard';
 import { supabase } from '@/integrations/supabase/client';
 import type { IncidentStatus, SeverityLevel, CommentType, ImpactLevel, UrgencyLevel, DeliveryStage } from '@/types/incident';
@@ -50,6 +51,11 @@ export default function IncidentRoomDetail() {
   const uploadAttachment = useUploadIncidentAttachment();
   const deleteAttachment = useDeleteIncidentAttachment();
   const downloadAttachment = useDownloadIncidentAttachment();
+  
+  // Watch functionality
+  const { data: isWatching = false } = useIsWatching(id || '');
+  const { data: watcherCount = 0 } = useWatcherCount(id || '');
+  const toggleWatch = useToggleWatch(id || '');
 
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -229,9 +235,16 @@ export default function IncidentRoomDetail() {
           </div>
 
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm">
-              <Eye className="h-4 w-4 mr-1" />
-              Watch
+            <Button 
+              variant={isWatching ? 'default' : 'ghost'} 
+              size="sm"
+              onClick={() => toggleWatch.mutate(isWatching)}
+              disabled={toggleWatch.isPending}
+              className={isWatching ? 'bg-brand-gold hover:bg-brand-gold-hover text-white' : ''}
+            >
+              {isWatching ? <EyeOff className="h-4 w-4 mr-1" /> : <Eye className="h-4 w-4 mr-1" />}
+              {isWatching ? 'Unwatch' : 'Watch'}
+              {watcherCount > 0 && <span className="ml-1">({watcherCount})</span>}
             </Button>
             <Button variant="ghost" size="sm">
               <Share2 className="h-4 w-4 mr-1" />

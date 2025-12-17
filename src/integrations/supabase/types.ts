@@ -4504,6 +4504,35 @@ export type Database = {
           },
         ]
       }
+      incident_watchers: {
+        Row: {
+          created_at: string
+          id: string
+          incident_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          incident_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          incident_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incident_watchers_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incidents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       incidents: {
         Row: {
           assignee_id: string | null
