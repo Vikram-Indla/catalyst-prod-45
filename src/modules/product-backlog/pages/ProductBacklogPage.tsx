@@ -18,7 +18,6 @@ import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { PageChrome } from '@/components/layout/PageChrome';
 import { useIndustryViewStore } from '@/stores/useIndustryViewStore';
-import { useTeamMembers } from '@/modules/kanban/hooks/useKanbanData';
 
 export default function ProductBacklogPage() {
   const queryClient = useQueryClient();
@@ -28,14 +27,8 @@ export default function ProductBacklogPage() {
     searchQuery, 
     setSearchQuery, 
     scoringFilter, 
-    setScoringFilter,
-    selectedAssignees,
-    toggleAssignee,
-    clearAssignees
+    setScoringFilter
   } = useIndustryViewStore();
-  
-  // Team members for avatar filter
-  const teamMembers = useTeamMembers();
   
   // Use the shared query with search
   const { data: businessRequests = [], isLoading } = useBusinessRequests(searchQuery);
@@ -80,15 +73,8 @@ export default function ProductBacklogPage() {
       data = data.filter(row => row.score === null);
     }
     
-    // Apply assignee filter
-    if (selectedAssignees.length > 0) {
-      data = data.filter(row => 
-        row.assigneeId && selectedAssignees.includes(row.assigneeId)
-      );
-    }
-    
     return data;
-  }, [businessRequests, scoringFilter, selectedAssignees]);
+  }, [businessRequests, scoringFilter]);
 
   const getDbIdFromDisplayId = (displayId: string) => {
     const originalRequest = businessRequests.find((br: any) => 
@@ -220,15 +206,6 @@ export default function ProductBacklogPage() {
       activeView="list"
       searchValue={searchQuery}
       onSearchChange={setSearchQuery}
-      avatars={teamMembers.slice(0, 6).map(m => ({
-        id: m.id,
-        name: m.name,
-        initials: m.initials,
-        color: m.color
-      }))}
-      selectedAvatarIds={selectedAssignees}
-      onToggleAvatar={toggleAssignee}
-      onSelectAllAvatars={clearAssignees}
       scoringFilter={scoringFilter}
       onScoringFilterChange={setScoringFilter}
       onColumnsConfig={() => setColumnsDialogOpen(true)}
