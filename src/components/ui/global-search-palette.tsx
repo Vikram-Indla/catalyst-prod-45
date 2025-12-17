@@ -104,10 +104,12 @@ export function GlobalSearchPalette({ open, onOpenChange }: GlobalSearchPaletteP
               value={search}
               onValueChange={setSearch}
               placeholder="Search work items…"
+              style={{ outline: 'none', boxShadow: 'none' }}
               className={cn(
                 "flex-1 h-7 bg-transparent text-sm text-[var(--text-1)]",
                 "placeholder:text-[var(--text-3)]",
-                "outline-none border-none"
+                "!outline-none !border-none !ring-0 !shadow-none",
+                "focus:!outline-none focus:!border-none focus:!ring-0 focus:!shadow-none"
               )}
             />
             <kbd className="hidden sm:inline-flex h-5 items-center gap-1 rounded border border-[var(--border-color)] bg-[var(--surface-2)] px-1.5 text-[10px] font-medium text-[var(--text-3)]">
