@@ -159,7 +159,7 @@ interface ExecutiveTableProps {
 // Status Badge - neutral pill with small left accent dot, enterprise crisp
 function StatusBadge({ value, options }: { value: string; options: { value: string; label: string; accent?: string }[] }) {
   const option = options.find(o => o.value === value);
-  if (!option) return <span style={{ color: 'var(--text-3)', fontSize: '13px' }}>—</span>;
+  if (!option) return <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>—</span>;
   
   // Accent dot color based on status category
   const accentClasses: Record<string, string> = {
@@ -191,7 +191,7 @@ function StatusBadge({ value, options }: { value: string; options: { value: stri
 // Score Progress Bar - with proper track border, enterprise crisp
 function ScoreBar({ score }: { score: number | null }) {
   if (score === null || score === undefined) {
-    return <span style={{ color: 'var(--text-3)', fontSize: '13px' }}>—</span>;
+    return <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>—</span>;
   }
   
   return (
@@ -199,8 +199,8 @@ function ScoreBar({ score }: { score: number | null }) {
       <div 
         className="flex-1 h-2 rounded-sm overflow-hidden"
         style={{ 
-          backgroundColor: 'var(--surface-3)',
-          border: '1px solid var(--border-color)',
+          backgroundColor: 'var(--progress-bg)',
+          border: '1px solid var(--border-default)',
         }}
       >
         <div 
@@ -220,7 +220,7 @@ function ScoreBar({ score }: { score: number | null }) {
 
 // Date Display - neutral text only, enterprise crisp
 function DateDisplay({ date }: { date: string | null }) {
-  if (!date) return <span style={{ color: 'var(--text-3)', fontSize: '13px' }}>—</span>;
+  if (!date) return <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>—</span>;
   const d = new Date(date);
   
   return (
@@ -1116,7 +1116,7 @@ export function ExecutiveTable({
       return value ? (
         <span className="font-semibold tabular-nums" style={{ color: 'var(--text-1)', fontSize: '13px' }}>#{value}</span>
       ) : (
-        <span style={{ color: 'var(--text-3)', fontSize: '12px' }}>—</span>
+        <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>—</span>
       );
     }
     
@@ -1152,7 +1152,7 @@ export function ExecutiveTable({
     if (column.id === 'reporter' || column.id === 'assignee' || column.id === 'businessOwner') {
       return (
         <span className="truncate" style={{ fontSize: '13px', color: 'var(--text-1)' }}>
-          {value || <span style={{ color: 'var(--text-3)' }}>—</span>}
+          {value || <span style={{ color: 'var(--text-muted)' }}>—</span>}
         </span>
       );
     }
@@ -1195,7 +1195,7 @@ export function ExecutiveTable({
         title={value}
         style={{ fontSize: '13px', color: 'var(--text-1)' }}
       >
-        {value ?? <span style={{ color: 'var(--text-3)' }}>—</span>}
+        {value ?? <span style={{ color: 'var(--text-muted)' }}>—</span>}
       </span>
     );
   };
@@ -1349,7 +1349,11 @@ export function ExecutiveTable({
                       type="checkbox"
                       checked={paginatedData.length > 0 && selectedRows.length === paginatedData.length}
                       onChange={handleSelectAll}
-                      className="w-4 h-4 accent-brand-gold cursor-pointer"
+                      className="w-4 h-4 accent-brand-gold cursor-pointer rounded"
+                      style={{
+                        border: '1px solid var(--checkbox-border)',
+                        backgroundColor: 'var(--input-bg)',
+                      }}
                     />
                   </th>
                   {columns.map((col, colIndex) => {
@@ -1454,10 +1458,10 @@ export function ExecutiveTable({
                     <td 
                       colSpan={columns.length + 2} 
                       className="text-center py-8"
-                      style={{ color: 'var(--text-3)' }}
+                      style={{ color: 'var(--text-muted)' }}
                     >
                       <div className="flex flex-col items-center gap-2">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ opacity: 0.4 }}>
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ opacity: 0.5 }}>
                           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                           <polyline points="14 2 14 8 20 8"/>
                           <line x1="16" y1="13" x2="8" y2="13"/>
@@ -1500,7 +1504,11 @@ export function ExecutiveTable({
                           type="checkbox"
                           checked={selectedRows.includes(row.id)}
                           onChange={() => handleSelectRow(row.id)}
-                          className="w-4 h-4 accent-brand-gold cursor-pointer"
+                          className="w-4 h-4 accent-brand-gold cursor-pointer rounded"
+                          style={{
+                            border: '1px solid var(--checkbox-border)',
+                            backgroundColor: 'var(--input-bg)',
+                          }}
                         />
                       </td>
                       {columns.map((col, colIndex) => {
@@ -1551,14 +1559,14 @@ export function ExecutiveTable({
                       colSpan={columns.length + 2} 
                       className="text-center py-12"
                       style={{ 
-                        color: 'var(--text-3)',
+                        color: 'var(--text-muted)',
                         borderBottom: 'none',
                         backgroundColor: 'var(--surface-1)',
                       }}
                     >
                       <div className="flex flex-col items-center gap-1">
-                        <span className="text-sm font-medium" style={{ opacity: 0.5 }}>End of results</span>
-                        <span className="text-xs" style={{ opacity: 0.35 }}>{paginatedData.length} item{paginatedData.length !== 1 ? 's' : ''} shown</span>
+                        <span className="text-sm font-medium" style={{ opacity: 0.7 }}>End of results</span>
+                        <span className="text-xs" style={{ opacity: 0.5 }}>{paginatedData.length} item{paginatedData.length !== 1 ? 's' : ''} shown</span>
                       </div>
                     </td>
                   </tr>
