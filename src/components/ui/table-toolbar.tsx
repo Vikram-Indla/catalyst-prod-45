@@ -1,7 +1,6 @@
 import * as React from "react";
-import { Search, Filter, ArrowUpDown, Columns3, LayoutGrid, LayoutList, X } from "lucide-react";
+import { Filter, ArrowUpDown, Columns3, LayoutGrid, LayoutList } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { IconButton } from "./icon-button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,9 +17,6 @@ import {
 } from "@/components/ui/popover";
 
 interface TableToolbarProps {
-  searchValue: string;
-  onSearchChange: (value: string) => void;
-  searchPlaceholder?: string;
   sortOptions?: { label: string; value: string }[];
   sortValue?: string;
   onSortChange?: (value: string) => void;
@@ -34,9 +30,6 @@ interface TableToolbarProps {
 }
 
 export function TableToolbar({
-  searchValue,
-  onSearchChange,
-  searchPlaceholder = "Search...",
   sortOptions,
   sortValue,
   onSortChange,
@@ -48,50 +41,14 @@ export function TableToolbar({
   activeFilters = 0,
   className,
 }: TableToolbarProps) {
-  const [searchFocused, setSearchFocused] = React.useState(false);
-
   return (
     <div
       className={cn(
-        "flex items-center gap-2 py-2 px-3 rounded-lg",
+        "flex items-center gap-1.5 py-1.5 px-2 rounded-md",
         "bg-[var(--surface-2)] border border-[var(--border-color)]",
         className
       )}
     >
-      {/* Search */}
-      <div
-        className={cn(
-          "flex items-center gap-2 flex-1 max-w-xs px-2 py-1.5 rounded-md transition-all",
-          "border border-transparent",
-          searchFocused && "border-[var(--border-accent)] bg-[var(--surface-1)]"
-        )}
-      >
-        <Search className="h-4 w-4 text-[var(--icon-muted)] shrink-0" />
-        <input
-          type="text"
-          value={searchValue}
-          onChange={(e) => onSearchChange(e.target.value)}
-          placeholder={searchPlaceholder}
-          onFocus={() => setSearchFocused(true)}
-          onBlur={() => setSearchFocused(false)}
-          className={cn(
-            "flex-1 bg-transparent text-sm text-[var(--text-1)]",
-            "placeholder:text-[var(--text-3)]",
-            "outline-none border-none"
-          )}
-        />
-        {searchValue && (
-          <button
-            onClick={() => onSearchChange("")}
-            className="p-0.5 rounded hover:bg-[var(--surface-3)]"
-          >
-            <X className="h-3 w-3 text-[var(--icon-muted)]" />
-          </button>
-        )}
-      </div>
-
-      <div className="w-px h-5 bg-[var(--divider)]" />
-
       {/* Filter */}
       {filterContent && (
         <Popover>
@@ -99,7 +56,8 @@ export function TableToolbar({
             <button
               className={cn(
                 "h-7 px-2.5 inline-flex items-center gap-1.5 rounded-md text-sm font-medium transition-colors",
-                "text-[var(--text-2)] hover:bg-[var(--nav-hover-bg)]",
+                "text-[var(--text-2)] hover:bg-[var(--surface-3)]",
+                "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-color)] focus-visible:ring-offset-1",
                 activeFilters > 0 && "text-[var(--accent-color)]"
               )}
             >
@@ -128,7 +86,8 @@ export function TableToolbar({
             <button
               className={cn(
                 "h-7 px-2.5 inline-flex items-center gap-1.5 rounded-md text-sm font-medium transition-colors",
-                "text-[var(--text-2)] hover:bg-[var(--nav-hover-bg)]"
+                "text-[var(--text-2)] hover:bg-[var(--surface-3)]",
+                "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-color)] focus-visible:ring-offset-1"
               )}
             >
               <ArrowUpDown className="h-3.5 w-3.5" />
@@ -145,7 +104,7 @@ export function TableToolbar({
                 onClick={() => onSortChange(option.value)}
                 className={cn(
                   "cursor-pointer text-[var(--text-1)]",
-                  sortValue === option.value && "bg-[var(--nav-hover-bg)]"
+                  sortValue === option.value && "bg-[var(--surface-3)]"
                 )}
               >
                 {option.label}
@@ -162,7 +121,8 @@ export function TableToolbar({
             <button
               className={cn(
                 "h-7 px-2.5 inline-flex items-center gap-1.5 rounded-md text-sm font-medium transition-colors",
-                "text-[var(--text-2)] hover:bg-[var(--nav-hover-bg)]"
+                "text-[var(--text-2)] hover:bg-[var(--surface-3)]",
+                "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-color)] focus-visible:ring-offset-1"
               )}
             >
               <Columns3 className="h-3.5 w-3.5" />
@@ -193,14 +153,15 @@ export function TableToolbar({
 
       {/* Density */}
       {onDensityChange && (
-        <div className="flex items-center rounded-md border border-[var(--border-color)] overflow-hidden">
+        <div className="flex items-center rounded-md border border-[var(--border-color)] overflow-hidden ml-auto">
           <button
             onClick={() => onDensityChange("compact")}
             className={cn(
               "h-7 px-2 inline-flex items-center justify-center transition-colors",
+              "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-color)] focus-visible:ring-inset",
               density === "compact"
-                ? "bg-[var(--nav-active-bg)] text-[var(--text-1)]"
-                : "text-[var(--text-3)] hover:text-[var(--text-2)]"
+                ? "bg-[var(--surface-3)] text-[var(--text-1)]"
+                : "text-[var(--text-3)] hover:text-[var(--text-2)] hover:bg-[var(--surface-2)]"
             )}
             title="Compact"
           >
@@ -211,9 +172,10 @@ export function TableToolbar({
             onClick={() => onDensityChange("comfortable")}
             className={cn(
               "h-7 px-2 inline-flex items-center justify-center transition-colors",
+              "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-color)] focus-visible:ring-inset",
               density === "comfortable"
-                ? "bg-[var(--nav-active-bg)] text-[var(--text-1)]"
-                : "text-[var(--text-3)] hover:text-[var(--text-2)]"
+                ? "bg-[var(--surface-3)] text-[var(--text-1)]"
+                : "text-[var(--text-3)] hover:text-[var(--text-2)] hover:bg-[var(--surface-2)]"
             )}
             title="Comfortable"
           >
