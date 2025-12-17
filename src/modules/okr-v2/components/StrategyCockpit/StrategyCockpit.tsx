@@ -257,7 +257,7 @@ export function StrategyCockpit({ snapshotId }: StrategyCockpitProps) {
               Export
             </Button>
 
-            <Button size="sm" onClick={() => setShowCreateDialog(true)} className="gap-2 bg-brand-gold hover:bg-brand-gold-hover text-white">
+            <Button size="sm" onClick={() => setShowCreateDialog(true)} className="gap-2 bg-brand-primary hover:bg-brand-primary-hover text-white">
               <Plus className="h-4 w-4" />
               New Objective
             </Button>
