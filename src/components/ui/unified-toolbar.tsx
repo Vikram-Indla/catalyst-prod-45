@@ -43,7 +43,6 @@ export function UnifiedToolbar({
   activeFilters = 0,
   className,
 }: UnifiedToolbarProps) {
-  const [searchFocused, setSearchFocused] = React.useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   // Handle ⌘K shortcut
@@ -69,13 +68,8 @@ export function UnifiedToolbar({
     >
       {/* LEFT CLUSTER: Search + Filter + Sort */}
       <div className="flex items-center gap-1.5 flex-1 min-w-0">
-        {/* Search Input */}
-        <div
-          className={cn(
-            "flex items-center gap-2 flex-1 min-w-0 max-w-xs h-7 px-2 rounded-md transition-all",
-            searchFocused && "ring-2 ring-[var(--focus-ring)] ring-offset-1 ring-offset-[var(--surface-1)]"
-          )}
-        >
+        {/* Search Input - no inner border, clean background */}
+        <div className="flex items-center gap-2 flex-1 min-w-0 max-w-xs h-7 px-2">
           <Search className="h-3.5 w-3.5 text-[var(--brand-gold)] shrink-0" />
           <input
             ref={inputRef}
@@ -83,12 +77,12 @@ export function UnifiedToolbar({
             value={searchValue}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder={searchPlaceholder}
-            onFocus={() => setSearchFocused(true)}
-            onBlur={() => setSearchFocused(false)}
+            style={{ outline: 'none', boxShadow: 'none', border: 'none' }}
             className={cn(
-              "flex-1 min-w-0 bg-transparent text-sm text-[var(--text-1)]",
+              "flex-1 min-w-0 bg-transparent text-sm text-[var(--text-1)] pl-1",
               "placeholder:text-[var(--text-3)]",
-              "outline-none border-none"
+              "!outline-none !border-none !ring-0 !shadow-none",
+              "focus:!outline-none focus:!border-none focus:!ring-0 focus:!shadow-none"
             )}
           />
           {searchValue ? (
