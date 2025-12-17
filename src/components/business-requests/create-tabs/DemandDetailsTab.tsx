@@ -165,7 +165,7 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
       {/* Basic Information Section */}
       <Card className="border border-border/60 rounded-lg bg-card">
         <CardContent className="p-5 space-y-4">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">Basic Information</h3>
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-primary">Basic Information</h3>
           
           <div>
             <Label className="text-sm font-medium">
@@ -197,7 +197,7 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
       {/* Timeline Section - Moved after Description */}
       <Card className="border border-border/60 rounded-lg bg-card">
         <CardContent className="p-5 space-y-4">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">Timeline</h3>
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-primary">Timeline</h3>
           
           <div className="grid grid-cols-3 gap-4">
             <div>
@@ -290,7 +290,7 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
                   onClick={handleLockToggle}
                   className={cn(
                     "shrink-0",
-                    targetDateLocked && "bg-muted border-brand-gold text-brand-gold"
+                    targetDateLocked && "bg-muted border-brand-primary text-brand-primary"
                   )}
                   title={targetDateLocked ? `Locked by ${lockedByUser}` : 'Click to lock date'}
                 >
@@ -308,7 +308,7 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
       {/* Attachments & Assignment Section */}
       <Card className="border border-border/60 rounded-lg bg-card">
         <CardContent className="p-5 space-y-4">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">Attachments & Assignment</h3>
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-primary">Attachments & Assignment</h3>
 
           <div>
             <div className="flex items-baseline gap-2">

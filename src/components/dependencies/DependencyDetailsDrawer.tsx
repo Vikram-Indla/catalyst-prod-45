@@ -830,7 +830,7 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                   <Button type="button" variant="outline" onClick={onClose}>
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={mutation.isPending} className="bg-brand-gold hover:bg-brand-gold-hover text-white">
+                  <Button type="submit" disabled={mutation.isPending} className="bg-brand-primary hover:bg-brand-primary-hover text-white">
                     {mutation.isPending ? 'Saving...' : isEdit ? 'Update' : 'Create'}
                   </Button>
                 </div>

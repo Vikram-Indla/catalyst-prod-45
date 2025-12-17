@@ -224,7 +224,7 @@ export function ProjectGrid({
                 size="sm" 
                 onClick={handleSave}
                 disabled={!hasChanges}
-                className="h-8 bg-brand-gold hover:bg-brand-gold/90 text-white"
+                className="h-8 bg-brand-primary hover:bg-brand-primary/90 text-white"
               >
                 <Save className="h-3.5 w-3.5 mr-1.5" />
                 Save
@@ -387,7 +387,7 @@ export function ProjectGrid({
                   onClick={() => setCurrentPage(page)}
                   className={cn(
                     "h-8 w-8 p-0",
-                    page === currentPage && "bg-brand-gold hover:bg-brand-gold/90"
+                    page === currentPage && "bg-brand-primary hover:bg-brand-primary/90"
                   )}
                 >
                   {page}

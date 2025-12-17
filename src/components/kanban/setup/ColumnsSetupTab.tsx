@@ -101,7 +101,7 @@ export function ColumnsSetupTab({ boardId, columns }: ColumnsSetupTabProps) {
           <Button
             onClick={handleAddColumn}
             disabled={!newColumnName || createColumn.isPending}
-            className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+            className="bg-brand-primary hover:bg-brand-primary-hover text-white"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Column

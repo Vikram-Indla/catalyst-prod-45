@@ -165,15 +165,15 @@ export function BusinessScoreViewTab({ data, onChange, onDirtyChange, totalDeman
             <div className="flex items-center gap-4 text-sm">
               <button
                 onClick={() => handleNavigateToFiltered('scored')}
-                className="hover:text-brand-gold hover:underline transition-colors"
+                className="hover:text-brand-primary hover:underline transition-colors"
               >
-                <span className="font-semibold text-brand-gold">{scoringStats.scored}</span>
+                <span className="font-semibold text-brand-primary">{scoringStats.scored}</span>
                 <span className="text-muted-foreground"> of {scoringStats.total} demands scored</span>
               </button>
               <span className="text-muted-foreground">•</span>
               <button
                 onClick={() => handleNavigateToFiltered('notScored')}
-                className="hover:text-brand-gold hover:underline transition-colors"
+                className="hover:text-brand-primary hover:underline transition-colors"
               >
                 <span className="font-semibold text-destructive">{scoringStats.notScored}</span>
                 <span className="text-muted-foreground"> demands not scored</span>
@@ -288,7 +288,7 @@ export function BusinessScoreViewTab({ data, onChange, onDirtyChange, totalDeman
             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-2">
               Business Score
             </p>
-            <div className="text-5xl font-bold text-brand-gold mb-3">{calculatedScore}</div>
+            <div className="text-5xl font-bold text-brand-primary mb-3">{calculatedScore}</div>
             
             {/* Rank display */}
             <div className="p-3 bg-background rounded border border-border mb-3">
@@ -322,7 +322,7 @@ export function BusinessScoreViewTab({ data, onChange, onDirtyChange, totalDeman
                   size="sm"
                   variant="ghost"
                   onClick={handleStartEdit}
-                  className="text-brand-gold hover:text-brand-gold-hover"
+                  className="text-brand-primary hover:text-brand-primary-hover"
                 >
                   Override Rank
                 </Button>

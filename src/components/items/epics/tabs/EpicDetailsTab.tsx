@@ -922,7 +922,7 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
                   <div className="flex gap-2">
                     <Button 
                       size="sm" 
-                      className="text-xs bg-brand-gold hover:bg-brand-gold-hover text-white"
+                      className="text-xs bg-brand-primary hover:bg-brand-primary-hover text-white"
                       onClick={() => {
                         if (newCriteriaText.trim()) {
                           addCriteriaMutation.mutate(newCriteriaText.trim());
@@ -1072,7 +1072,7 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
                     <div className="flex gap-2">
                       <Button 
                         size="sm" 
-                        className="text-xs bg-brand-gold hover:bg-brand-gold-hover text-white"
+                        className="text-xs bg-brand-primary hover:bg-brand-primary-hover text-white"
                         onClick={() => {
                           toast.info('Dependency creation via Dependencies module');
                           setShowAddDependency(false);

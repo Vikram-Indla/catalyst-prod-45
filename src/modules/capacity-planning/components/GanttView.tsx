@@ -315,7 +315,7 @@ export function GanttView({
                               background: resource.role_code === 'PO' 
                                 ? 'hsl(var(--secondary-green))' 
                                 : resource.role_code === 'BA' 
-                                  ? 'hsl(var(--brand-gold))' 
+                                  ? 'hsl(var(--brand-primary))' 
                                   : 'hsl(var(--secondary-bronze))'
                             }}
                             title={!isResourceColumnExpanded ? `${resource.name} (${resource.role_code || 'N/A'})` : undefined}
@@ -383,7 +383,7 @@ export function GanttView({
                           {hasHiddenLanes && (
                             <button
                               onClick={() => toggleResourceExpanded(resource.id)}
-                              className="text-[10px] text-brand-gold hover:text-brand-gold-hover mt-1 flex items-center gap-0.5"
+                              className="text-[10px] text-brand-primary hover:text-brand-primary-hover mt-1 flex items-center gap-0.5"
                             >
                               <ChevronDown className="h-3 w-3" />
                               +{totalLanes - MAX_VISIBLE_LANES} more
@@ -392,7 +392,7 @@ export function GanttView({
                           {isExpanded && totalLanes > MAX_VISIBLE_LANES && (
                             <button
                               onClick={() => toggleResourceExpanded(resource.id)}
-                              className="text-[10px] text-brand-gold hover:text-brand-gold-hover mt-1 flex items-center gap-0.5"
+                              className="text-[10px] text-brand-primary hover:text-brand-primary-hover mt-1 flex items-center gap-0.5"
                             >
                               <ChevronUp className="h-3 w-3" />
                               Collapse
@@ -409,7 +409,7 @@ export function GanttView({
                       <div
                         key={idx}
                         className={cn(
-                          'border-r cursor-pointer hover:bg-brand-gold/5',
+                          'border-r cursor-pointer hover:bg-brand-primary/5',
                           isGCCWeekend(date) && 'bg-muted/50'
                         )}
                         style={{ 
@@ -500,12 +500,12 @@ export function GanttView({
 
           {/* Add Resource Row */}
           <div 
-            className="flex border-b border-dashed hover:bg-brand-gold/5 cursor-pointer group"
+            className="flex border-b border-dashed hover:bg-brand-primary/5 cursor-pointer group"
             style={{ height: ROW_HEIGHT_BASE, borderColor: 'hsl(var(--border) / 0.4)' }}
             onClick={onAddResource}
           >
             <div 
-              className="flex-shrink-0 flex items-center justify-center gap-2 text-muted-foreground group-hover:text-brand-gold transition-all duration-200"
+              className="flex-shrink-0 flex items-center justify-center gap-2 text-muted-foreground group-hover:text-brand-primary transition-all duration-200"
               style={{ width: resourceColWidth }}
             >
               <div className="w-7 h-7 rounded-full border-2 border-dashed flex items-center justify-center group-hover:border-brand-gold">

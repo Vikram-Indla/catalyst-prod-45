@@ -216,7 +216,7 @@ export function RoadmapFiltersDialog({
             </Button>
             <Button 
               onClick={handleApply} 
-              className="h-9 px-5 text-sm font-medium bg-brand-gold hover:bg-brand-gold-hover text-white"
+              className="h-9 px-5 text-sm font-medium bg-brand-primary hover:bg-brand-primary-hover text-white"
             >
               Apply
             </Button>

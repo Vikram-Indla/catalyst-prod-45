@@ -57,7 +57,7 @@ export function EpicBalancingPage() {
       {/* Header */}
       <div className="h-[72px] border-b border-border bg-card flex-shrink-0 flex items-center justify-between px-6">
         <div className="flex items-center gap-3">
-          <Scale className="h-5 w-5 text-brand-gold" />
+          <Scale className="h-5 w-5 text-brand-primary" />
           <div>
             <h1 className="text-lg font-semibold text-foreground">Epic Balancing</h1>
             <p className="text-xs text-muted-foreground">Visual balancing of epics using Technical Score (WSJF)</p>

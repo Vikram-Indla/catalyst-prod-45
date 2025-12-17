@@ -446,7 +446,7 @@ Fix: ${issue.fix}
               <Button 
                 onClick={handleRunBothModes}
                 disabled={isRunning}
-                className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+                className="bg-brand-primary hover:bg-brand-primary-hover text-white"
               >
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Audit Both Modes

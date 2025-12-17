@@ -111,7 +111,7 @@ export function SpendDrilldownModal({ epicId, spendType, open, onOpenChange }: S
               </Card>
               <Card className="p-4">
                 <div className="text-xs text-muted-foreground">Total Estimated Spend</div>
-                <div className="text-2xl font-bold text-brand-gold">${totalEstimatedSpend.toLocaleString()}</div>
+                <div className="text-2xl font-bold text-brand-primary">${totalEstimatedSpend.toLocaleString()}</div>
               </Card>
             </div>
           )}
@@ -188,7 +188,7 @@ export function SpendDrilldownModal({ epicId, spendType, open, onOpenChange }: S
                         <TableCell className="text-right text-sm font-semibold">
                           {feature.estimate_points || 0}
                         </TableCell>
-                        <TableCell className="text-right text-sm font-bold text-brand-gold">
+                        <TableCell className="text-right text-sm font-bold text-brand-primary">
                           ${calculateFeatureSpend(feature).toLocaleString()}
                         </TableCell>
                       </TableRow>

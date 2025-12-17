@@ -127,7 +127,7 @@ export function BusinessScoreTab({ data, onChange }: BusinessScoreTabProps) {
           {/* Input Scores */}
           <Card className="border border-border/60 rounded-lg bg-card">
             <CardContent className="p-5 space-y-5">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-primary">
                 Inputs (0–10 Scale)
               </h3>
 
@@ -229,12 +229,12 @@ export function BusinessScoreTab({ data, onChange }: BusinessScoreTabProps) {
           {/* Business Score Card */}
           <Card className="border border-border/60 rounded-lg bg-card">
             <CardContent className="p-5 space-y-4">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold text-center">
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-primary text-center">
                 Business Score (Auto-Calculated)
               </h3>
 
               <div className="text-center py-4">
-                <div className="text-6xl font-bold text-brand-gold">
+                <div className="text-6xl font-bold text-brand-primary">
                   {businessScore}
                 </div>
                 <p className="text-sm text-muted-foreground mt-2">(Average: 60)</p>
