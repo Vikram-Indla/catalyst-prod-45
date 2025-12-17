@@ -7,7 +7,6 @@ import {
 import { projects, activityItems, Project, ActivityItem, groupItemsByTimePeriod } from '@/data/homePageData';
 import { WorkItemTypeIcon } from './icons/WorkItemTypeIcon';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 import { SegmentedTabs, SegmentedTab } from '@/components/ui/segmented-tabs';
@@ -63,7 +62,6 @@ function FocusWidget({
     <div 
       className={cn(
         "p-2.5 rounded-lg transition-all cursor-pointer group",
-        // Neutral surface with subtle border (reduced champagne)
         "bg-[var(--surface-1)] border border-[var(--border-color)]",
         "hover:bg-[var(--surface-2)] hover:border-[var(--brand-gold)]"
       )}
@@ -74,7 +72,6 @@ function FocusWidget({
           <div 
             className={cn(
               "w-7 h-7 rounded-md flex items-center justify-center",
-              // Subtle gold tint for icon container
               "bg-[var(--brand-gold)]/5"
             )}
           >
@@ -135,7 +132,6 @@ function ProjectCard({
     <div 
       className={cn(
         "rounded-lg overflow-hidden transition-all cursor-pointer group",
-        // Neutral surface (reduced champagne) with subtle border
         "border bg-[var(--surface-1)]",
         isPinned 
           ? "border-[var(--brand-gold)] ring-1 ring-[var(--brand-gold)]/20" 
@@ -276,19 +272,15 @@ function ProjectCard({
 }
 
 // ============================================
-// DATA GRID ROW COMPONENT
+// DATA GRID ROW COMPONENT (NO CHECKBOXES)
 // ============================================
-const GRID_COLS = '40px 100px 1fr 160px 100px 80px 80px';
+const GRID_COLS = '100px 1fr 160px 100px 80px 80px';
 
 function DataGridRow({ 
   item, 
-  isSelected, 
-  onSelect,
   density = 'comfortable'
 }: { 
   item: ActivityItem; 
-  isSelected: boolean;
-  onSelect: (selected: boolean) => void;
   density?: 'compact' | 'comfortable';
 }) {
   const navigate = useNavigate();
@@ -302,8 +294,7 @@ function DataGridRow({
       className={cn(
         "grid items-center px-3 transition-colors cursor-pointer",
         rowHeight,
-        isHovered && "bg-[var(--row-hover)]",
-        isSelected && "bg-[var(--row-selected)]"
+        isHovered && "bg-[var(--row-hover)]"
       )}
       style={{ 
         gridTemplateColumns: GRID_COLS,
@@ -313,15 +304,6 @@ function DataGridRow({
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => navigate(`/work-item/${item.id}`)}
     >
-      {/* Checkbox */}
-      <div className="flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
-        <Checkbox 
-          checked={isSelected}
-          onCheckedChange={onSelect}
-          className="border-[var(--border-color)] data-[state=checked]:bg-[var(--accent-color)] data-[state=checked]:border-[var(--accent-color)]"
-        />
-      </div>
-
       {/* Key */}
       <div className="flex items-center gap-2">
         <WorkItemTypeIcon type={item.type} size={14} />
@@ -399,7 +381,7 @@ function DataGridRow({
 }
 
 // ============================================
-// DATA GRID COMPONENT
+// DATA GRID COMPONENT (NO CHECKBOXES)
 // ============================================
 function DataGrid({ 
   items, 
@@ -414,8 +396,6 @@ function DataGrid({
   searchQuery: string;
   density?: 'compact' | 'comfortable';
 }) {
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  
   // Filter items by search
   const filteredItems = useMemo(() => {
     if (!searchQuery) return items;
@@ -431,56 +411,9 @@ function DataGrid({
   let displayedCount = 0;
   const hasMore = visibleCount < filteredItems.length;
 
-  const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      setSelectedIds(new Set(filteredItems.slice(0, visibleCount).map(item => item.id)));
-    } else {
-      setSelectedIds(new Set());
-    }
-  };
-
-  const handleSelectItem = (id: string, selected: boolean) => {
-    const newSelected = new Set(selectedIds);
-    if (selected) {
-      newSelected.add(id);
-    } else {
-      newSelected.delete(id);
-    }
-    setSelectedIds(newSelected);
-  };
-
-  const allSelected = filteredItems.length > 0 && selectedIds.size === Math.min(visibleCount, filteredItems.length);
-  const someSelected = selectedIds.size > 0 && !allSelected;
-
   return (
     <div className="mt-2">
-      {/* Bulk Actions Bar */}
-      {selectedIds.size > 0 && (
-        <div className="flex items-center gap-3 px-3 py-1.5 mb-2 rounded-lg bg-[var(--accent-muted)] border border-[var(--border-accent)]">
-          <span className="text-sm font-medium text-[var(--text-1)]">
-            {selectedIds.size} selected
-          </span>
-          <div className="flex items-center gap-1">
-            <button className="px-2 py-0.5 rounded text-xs font-medium text-[var(--text-2)] hover:bg-[var(--surface-3)]">
-              Star
-            </button>
-            <button className="px-2 py-0.5 rounded text-xs font-medium text-[var(--text-2)] hover:bg-[var(--surface-3)]">
-              Assign
-            </button>
-            <button className="px-2 py-0.5 rounded text-xs font-medium text-[var(--text-2)] hover:bg-[var(--surface-3)]">
-              Move
-            </button>
-          </div>
-          <button 
-            className="ml-auto text-xs text-[var(--text-3)] hover:text-[var(--text-2)]"
-            onClick={() => setSelectedIds(new Set())}
-          >
-            Clear selection
-          </button>
-        </div>
-      )}
-
-      {/* Sticky Header */}
+      {/* Sticky Header (NO checkbox column) */}
       <div 
         className="grid items-center py-1.5 px-3 text-[10px] font-semibold uppercase tracking-wide sticky top-0 z-10 rounded-t-lg"
         style={{ 
@@ -490,16 +423,6 @@ function DataGrid({
           borderBottom: '1px solid var(--divider)',
         }}
       >
-        <div className="flex items-center justify-center">
-          <Checkbox 
-            checked={allSelected}
-            onCheckedChange={handleSelectAll}
-            className={cn(
-              "border-[var(--border-color)]",
-              someSelected && "data-[state=indeterminate]:bg-[var(--accent-color)]"
-            )}
-          />
-        </div>
         <div>Key</div>
         <div>Summary</div>
         <div>Project</div>
@@ -539,8 +462,6 @@ function DataGrid({
                   <DataGridRow 
                     key={`${group.label}-${index}`} 
                     item={item}
-                    isSelected={selectedIds.has(item.id)}
-                    onSelect={(selected) => handleSelectItem(item.id, selected)}
                     density={density}
                   />
                 ))}
@@ -566,6 +487,11 @@ function DataGrid({
 }
 
 // ============================================
+// ACTIVE FILTER TYPE
+// ============================================
+type ActiveFilter = 'all' | 'major-incidents' | 'sla-at-risk' | 'awaiting-me' | 'blocked';
+
+// ============================================
 // MAIN HOME CONTENT
 // ============================================
 export function HomeContent() {
@@ -577,6 +503,7 @@ export function HomeContent() {
   const [density, setDensity] = useState<'compact' | 'comfortable'>('comfortable');
   const [pinnedProjects, setPinnedProjects] = useState<string[]>([]);
   const [isProjectsCollapsed, setIsProjectsCollapsed] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<ActiveFilter>('all');
   
   // Role mode with localStorage persistence
   const [roleMode, setRoleMode] = useState<HomeRoleMode>(() => {
@@ -621,9 +548,8 @@ export function HomeContent() {
 
   // Calculate counts
   const workedOnCount = activityItems.length;
-  const viewedCount = 0;
+  const assignedCount = activityItems.filter(item => item.assignee).length;
   const starredCount = 0;
-  const boardsCount = projects.reduce((acc, p) => acc + p.boardsCount, 0);
   
   // Focus widget data
   const recentlyUpdatedCount = activityItems.filter(item => {
@@ -635,15 +561,32 @@ export function HomeContent() {
     setVisibleCount(prev => prev + ITEMS_PER_PAGE);
   };
 
-  // Get items for current tab
+  // Handle chip click - set filter and switch to appropriate tab
+  const handleChipFilter = (filter: ActiveFilter) => {
+    setActiveFilter(filter);
+    setSelectedTab('worked-on');
+    // In a real implementation, this would filter the work list
+    // For now, it sets the filter state which can be used to filter data
+  };
+
+  // Get items for current tab (with filter applied)
   const getTabItems = () => {
+    let items = activityItems;
+    
+    // Apply chip filter (mock implementation - would filter real data)
+    if (activeFilter !== 'all') {
+      // In real implementation, filter by incident type, SLA status, etc.
+      // For now, just return all items as placeholder
+      items = activityItems;
+    }
+    
     switch (selectedTab) {
-      case 'viewed':
+      case 'assigned':
+        return items.filter(item => item.assignee);
       case 'starred':
-      case 'boards':
         return [];
       default:
-        return activityItems;
+        return items;
     }
   };
 
@@ -654,16 +597,21 @@ export function HomeContent() {
     { label: 'Due date', value: 'due-date' },
   ];
 
-  // Exec mode: collapse table by default
-  const showTable = roleMode !== 'exec' || selectedTab !== 'worked-on';
+  // Clear filter when tab changes
+  const handleTabChange = (tab: string) => {
+    setSelectedTab(tab);
+    if (activeFilter !== 'all') {
+      setActiveFilter('all');
+    }
+  };
 
   return (
     <div 
       className="min-h-screen font-sans"
       style={{ backgroundColor: 'var(--bg)' }}
     >
-      {/* Constrained container - tighter padding for enterprise density */}
-      <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-3">
+      {/* Responsive container - wider on laptop/desktop */}
+      <div className="w-full max-w-[1680px] 2xl:max-w-[1920px] mx-auto px-6 xl:px-8 py-3">
         {/* Page header row */}
         <div className="flex items-center justify-between gap-4">
           <h1 className="text-xl font-semibold leading-7 tracking-tight m-0 text-[var(--text-1)]">
@@ -672,13 +620,15 @@ export function HomeContent() {
           <HomeRoleModeSelector value={roleMode} onChange={setRoleMode} />
         </div>
 
-        {/* Critical Strip - always visible */}
+        {/* Critical Strip - actionable chips */}
         <div className="mt-3">
           <CriticalStrip
             majorIncidents={mockIncidentData.majorIncidents}
             slaAtRisk={mockIncidentData.slaAtRisk}
             awaitingMe={mockIncidentData.awaitingMe}
             blocked={mockIncidentData.blocked}
+            activeFilter={activeFilter}
+            onFilterChange={handleChipFilter}
           />
         </div>
 
@@ -715,7 +665,7 @@ export function HomeContent() {
             </button>
           </div>
 
-          {/* Project cards grid */}
+          {/* Project cards grid - 4 columns at xl */}
           {!isProjectsCollapsed && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
               {sortedProjects.map((project) => (
@@ -731,23 +681,35 @@ export function HomeContent() {
         </div>
 
         {/* Two Column Layout */}
-        <div className="grid grid-cols-1 xl:grid-cols-[1fr_240px] gap-3">
+        <div className="grid grid-cols-1 xl:grid-cols-[1fr_240px] gap-4">
           {/* Left Column - Your Work */}
           <div>
-            {/* Section title */}
-            <div className="text-sm font-medium mb-2 text-[var(--text-1)]">
-              Your work
+            {/* Section title with active filter indicator */}
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-sm font-medium text-[var(--text-1)]">
+                Your work
+              </span>
+              {activeFilter !== 'all' && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-[var(--brand-primary)]/10 text-[var(--brand-primary)]">
+                  {activeFilter.replace('-', ' ')}
+                  <button 
+                    onClick={() => setActiveFilter('all')}
+                    className="ml-0.5 hover:text-[var(--text-1)]"
+                  >
+                    ×
+                  </button>
+                </span>
+              )}
             </div>
 
-            {/* Segmented Tabs - activity scopes only */}
-            <SegmentedTabs value={selectedTab} onValueChange={setSelectedTab}>
+            {/* Segmented Tabs - reduced: Worked on, Assigned, Starred */}
+            <SegmentedTabs value={selectedTab} onValueChange={handleTabChange}>
               <SegmentedTab value="worked-on" count={workedOnCount}>Worked on</SegmentedTab>
-              <SegmentedTab value="viewed" count={viewedCount}>Viewed</SegmentedTab>
+              <SegmentedTab value="assigned" count={assignedCount}>Assigned</SegmentedTab>
               <SegmentedTab value="starred" count={starredCount}>Starred</SegmentedTab>
-              <SegmentedTab value="boards" count={boardsCount}>Boards</SegmentedTab>
             </SegmentedTabs>
 
-            {/* Unified Toolbar */}
+            {/* Unified Toolbar - visually secondary */}
             <div className="mt-2">
               <UnifiedToolbar
                 searchValue={searchQuery}
@@ -779,13 +741,9 @@ export function HomeContent() {
                   View work items →
                 </button>
               </div>
-            ) : selectedTab === 'boards' ? (
+            ) : selectedTab === 'starred' ? (
               <div className="py-8 text-center text-sm text-[var(--text-3)]">
-                No boards available
-              </div>
-            ) : selectedTab === 'viewed' || selectedTab === 'starred' ? (
-              <div className="py-8 text-center text-sm text-[var(--text-3)]">
-                {selectedTab === 'viewed' ? 'No recently viewed items' : 'No starred items'}
+                No starred items
               </div>
             ) : (
               <DataGrid 
@@ -798,8 +756,8 @@ export function HomeContent() {
             )}
           </div>
 
-          {/* Right Column - My Focus (no duplication with Critical Strip) */}
-          <div className="space-y-1.5">
+          {/* Right Column - My Focus (sticky triage panel) */}
+          <div className="xl:sticky xl:top-20 xl:self-start space-y-1.5">
             <div className="text-sm font-medium mb-1.5 text-[var(--text-1)]">
               My focus
             </div>
@@ -812,7 +770,7 @@ export function HomeContent() {
               secondaryLabel="Incidents"
               secondaryCount={mockIncidentData.myWorkload.incidents}
               accent={roleMode === 'ops'}
-              onClick={() => setSelectedTab('worked-on')}
+              onClick={() => handleTabChange('worked-on')}
             />
             
             {/* Recently updated */}
@@ -821,7 +779,7 @@ export function HomeContent() {
               icon={Sparkles}
               primaryCount={recentlyUpdatedCount}
               subtitle="Last 7 days"
-              onClick={() => setSelectedTab('worked-on')}
+              onClick={() => handleTabChange('worked-on')}
             />
             
             {/* Starred - optional */}
@@ -830,7 +788,7 @@ export function HomeContent() {
               icon={Star}
               primaryCount={starredCount}
               subtitle="Quick access"
-              onClick={() => setSelectedTab('starred')}
+              onClick={() => handleTabChange('starred')}
             />
           </div>
         </div>
