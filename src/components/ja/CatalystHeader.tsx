@@ -10,7 +10,7 @@ import { useEnabledModules } from "@/hooks/useModules";
 import { useSingleItemNavigation } from "@/hooks/useSingleItemNavigation";
 import { Button } from "@/components/ui/button";
 import { CreateDropdown } from "./CreateDropdown";
-import { SearchOverlay } from "./SearchOverlay";
+import { CommandPalette } from "@/components/ui/command-palette";
 import { NotificationsPanel } from "./NotificationsPanel";
 import { ProgramSelectorDropdown } from "./ProgramSelectorDropdown";
 import { ProjectSelectorDropdown } from "./ProjectSelectorDropdown";
@@ -501,41 +501,38 @@ export function CatalystHeader() {
               </TooltipContent>
             </Tooltip>
 
-            {/* Search - 32x32 icon button */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  style={{
-                    width: '32px',
-                    height: '32px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: 'none',
-                    borderRadius: '6px',
-                    background: 'transparent',
-                    color: 'var(--icon-default)',
-                    cursor: 'pointer',
-                    transition: 'all 0.15s ease',
-                  }}
-                  onMouseEnter={(e) => { 
-                    e.currentTarget.style.background = 'var(--nav-hover-bg)'; 
-                    e.currentTarget.style.color = 'var(--icon-hover)';
-                  }}
-                  onMouseLeave={(e) => { 
-                    e.currentTarget.style.background = 'transparent'; 
-                    e.currentTarget.style.color = 'var(--icon-default)';
-                  }}
-                  onClick={() => setIsSearchOpen(true)}
-                  title="Search"
-                >
-                  <Search style={{ width: '20px', height: '20px' }} />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Search (Ctrl+K)</p>
-              </TooltipContent>
-            </Tooltip>
+            {/* Search Button - visible control with keyboard shortcut hint */}
+            <button
+              onClick={() => setIsSearchOpen(true)}
+              className="hidden sm:flex items-center gap-2 h-8 px-3 rounded-md border transition-colors"
+              style={{
+                background: 'var(--surface-2)',
+                borderColor: 'var(--border-color)',
+                color: 'var(--text-3)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'var(--surface-3)';
+                e.currentTarget.style.borderColor = 'var(--border-accent)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'var(--surface-2)';
+                e.currentTarget.style.borderColor = 'var(--border-color)';
+              }}
+            >
+              <Search className="h-4 w-4" />
+              <span className="text-sm">Search...</span>
+              <kbd className="hidden md:inline-flex h-5 items-center gap-0.5 rounded border px-1.5 text-[10px] font-medium" style={{ borderColor: 'var(--border-color)', background: 'var(--surface-3)', color: 'var(--text-3)' }}>
+                ⌘K
+              </kbd>
+            </button>
+            {/* Mobile search icon */}
+            <button
+              onClick={() => setIsSearchOpen(true)}
+              className="sm:hidden flex items-center justify-center w-8 h-8 rounded-md transition-colors hover:bg-[var(--nav-hover-bg)]"
+              style={{ color: 'var(--icon-default)' }}
+            >
+              <Search className="h-5 w-5" />
+            </button>
 
             {/* Theme Toggle - between Search and Avatar */}
             <ThemeToggle />
@@ -575,8 +572,8 @@ export function CatalystHeader() {
         </div>
       </header>
 
-      {/* Search Overlay */}
-      <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      {/* Command Palette */}
+      <CommandPalette open={isSearchOpen} onOpenChange={setIsSearchOpen} />
 
       {/* Create Entity Dialog - lifted from dropdowns to prevent stacking */}
       {createDialogType && (
