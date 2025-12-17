@@ -126,8 +126,8 @@ export function searchGlobalItems(query: string): GlobalSearchItem[] {
     if (key === normalizedQuery) {
       exactKeyMatches.push(item);
     }
-    // Prefix key match (e.g., "BAU-44" matches "BAU-4408")
-    else if (key.startsWith(normalizedQuery) || normalizedQuery.includes(key.split('-')[0])) {
+    // Partial key match (e.g., "4408" matches "BAU-4408", "BAU-44" matches "BAU-4408")
+    else if (key.startsWith(normalizedQuery) || key.includes(normalizedQuery)) {
       prefixKeyMatches.push(item);
     }
     // Summary match
