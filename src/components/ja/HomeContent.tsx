@@ -39,7 +39,7 @@ const mockIncidentData = {
 };
 
 // ============================================
-// FOCUS WIDGET COMPONENT
+// FOCUS WIDGET COMPONENT (Brand-aligned)
 // ============================================
 function FocusWidget({ 
   title, 
@@ -64,8 +64,9 @@ function FocusWidget({
     <div 
       className={cn(
         "p-2.5 rounded-lg transition-all cursor-pointer group",
-        "bg-[var(--surface-2)] border border-[var(--border-color)]",
-        "hover:bg-[var(--surface-3)] hover:border-[var(--border-accent)]"
+        // Champagne surface with gold border
+        "bg-[var(--surface-champagne)] border border-[var(--border-gold)]",
+        "hover:bg-[var(--surface-2)] hover:border-[var(--brand-gold)]"
       )}
       onClick={onClick}
     >
@@ -74,10 +75,12 @@ function FocusWidget({
           <div 
             className={cn(
               "w-7 h-7 rounded-md flex items-center justify-center",
-              accent ? "bg-[var(--accent-muted)]" : "bg-[var(--surface-3)]"
+              // Gold tint for icon container
+              "bg-[var(--brand-gold)]/10"
             )}
           >
-            <Icon className="w-3.5 h-3.5" style={{ color: accent ? 'var(--accent-color)' : 'var(--icon-default)' }} />
+            {/* Gold icon */}
+            <Icon className="w-3.5 h-3.5 text-[var(--brand-gold)]" />
           </div>
           <div>
             <div className="text-sm font-medium text-[var(--text-1)]">{title}</div>
@@ -98,12 +101,8 @@ function FocusWidget({
             </div>
           )}
           <div className="text-right">
-            <div 
-              className={cn(
-                "text-lg font-bold tabular-nums leading-tight",
-                accent ? "text-[var(--accent-color)]" : "text-[var(--text-1)]"
-              )}
-            >
+            {/* Olive green count - primary brand color */}
+            <div className="text-lg font-bold tabular-nums leading-tight text-[var(--brand-primary)]">
               {primaryCount}
             </div>
             <div className="text-[9px] uppercase tracking-wider font-medium mt-0.5 text-[var(--text-3)]">
@@ -139,11 +138,12 @@ function ProjectCard({
     <div 
       className={cn(
         "rounded-lg overflow-hidden transition-all cursor-pointer group",
-        "border bg-[var(--surface-2)]",
+        // Champagne surface with gold border for pinned
+        "border bg-[var(--surface-champagne)]",
         isPinned 
-          ? "border-[var(--border-accent)] ring-1 ring-[var(--accent-muted)]" 
-          : "border-[var(--border-color)]",
-        "hover:border-[var(--border-accent)] hover:shadow-[var(--shadow-card-hover)]"
+          ? "border-[var(--brand-gold)] ring-1 ring-[var(--brand-gold)]/20" 
+          : "border-[var(--border-gold)]",
+        "hover:border-[var(--brand-gold)] hover:shadow-[var(--shadow-card-hover)]"
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -163,8 +163,9 @@ function ProjectCard({
         >
           <button 
             className={cn(
-              "w-6 h-6 rounded flex items-center justify-center hover:bg-[var(--surface-3)]",
-              isPinned ? "text-[var(--accent-color)]" : "text-[var(--icon-muted)]"
+              "w-6 h-6 rounded flex items-center justify-center hover:bg-[var(--surface-2)]",
+              // Gold for pinned indicator
+              isPinned ? "text-[var(--brand-gold)]" : "text-[var(--icon-muted)]"
             )}
             onClick={(e) => { e.stopPropagation(); onPin(); }}
             title={isPinned ? "Unpin" : "Pin"}
@@ -233,10 +234,10 @@ function ProjectCard({
           </DropdownMenu>
         </div>
 
-        {/* Pinned indicator */}
+        {/* Pinned indicator - gold */}
         {isPinned && !isHovered && (
           <div className="absolute top-1.5 right-1.5">
-            <Pin className="w-3 h-3 text-[var(--accent-color)] fill-current" />
+            <Pin className="w-3 h-3 text-[var(--brand-gold)] fill-current" />
           </div>
         )}
 
@@ -258,18 +259,18 @@ function ProjectCard({
           </div>
         </div>
 
-        {/* Stats row */}
+        {/* Stats row - olive for open, olive for done */}
         <div className="flex items-center gap-1.5">
           <span 
-            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-[var(--accent-muted)] text-[var(--text-1)]"
+            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-[var(--brand-primary-muted)] text-[var(--text-1)]"
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-color)]" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--brand-primary)]" />
             {project.openCount} open
           </span>
           <span 
-            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-[var(--nav-active-bg)] text-[var(--text-1)]"
+            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium bg-[var(--brand-primary-subtle)] text-[var(--text-1)]"
           >
-            <CheckCircle className="w-2.5 h-2.5 text-[var(--brand-active)]" />
+            <CheckCircle className="w-2.5 h-2.5 text-[var(--brand-primary)]" />
             {project.doneCount} done
           </span>
         </div>

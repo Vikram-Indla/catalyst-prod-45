@@ -26,7 +26,8 @@ export function SegmentedTabs({ value, onValueChange, children, className }: Seg
       <div
         className={cn(
           "inline-flex items-center p-1 rounded-lg gap-0.5",
-          "bg-[var(--surface-2)] border border-[var(--border-color)]",
+          // Champagne surface with gold border
+          "bg-[var(--surface-champagne)] border border-[var(--border-gold)]",
           className
         )}
         role="tablist"
@@ -52,8 +53,9 @@ export function SegmentedTab({ value, children, count, className }: SegmentedTab
         "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]",
         isActive
-          ? "bg-[var(--surface-1)] text-[var(--text-1)] shadow-sm"
-          : "text-[var(--text-2)] hover:text-[var(--text-1)] hover:bg-[var(--surface-3)]",
+          // Active: olive green text
+          ? "bg-[var(--surface-1)] text-[var(--brand-primary)] shadow-sm"
+          : "text-[var(--text-2)] hover:text-[var(--text-1)] hover:bg-[var(--surface-2)]",
         className
       )}
     >
@@ -63,7 +65,8 @@ export function SegmentedTab({ value, children, count, className }: SegmentedTab
           className={cn(
             "min-w-[18px] h-[18px] px-1 rounded text-[11px] font-medium tabular-nums inline-flex items-center justify-center",
             isActive
-              ? "bg-[var(--accent-color)] text-[var(--text-inverse)]"
+              // Active count badge: olive green
+              ? "bg-[var(--brand-primary)] text-[var(--text-inverse)]"
               : "bg-[var(--surface-3)] text-[var(--text-2)]"
           )}
         >

@@ -62,7 +62,8 @@ export function UnifiedToolbar({
     <div
       className={cn(
         "flex items-center gap-2 h-10 px-2 rounded-lg",
-        "bg-[var(--surface-2)] border border-[var(--border-color)]",
+        // Champagne surface with gold border
+        "bg-[var(--surface-champagne)] border border-[var(--border-gold)]",
         className
       )}
     >
@@ -75,7 +76,7 @@ export function UnifiedToolbar({
             searchFocused && "ring-2 ring-[var(--focus-ring)] ring-offset-1 ring-offset-[var(--surface-1)]"
           )}
         >
-          <Search className="h-3.5 w-3.5 text-[var(--icon-muted)] shrink-0" />
+          <Search className="h-3.5 w-3.5 text-[var(--brand-gold)] shrink-0" />
           <input
             ref={inputRef}
             type="text"
@@ -93,19 +94,19 @@ export function UnifiedToolbar({
           {searchValue ? (
             <button
               onClick={() => onSearchChange("")}
-              className={cn("p-0.5 rounded hover:bg-[var(--surface-3)]", focusRingClass)}
+              className={cn("p-0.5 rounded hover:bg-[var(--surface-2)]", focusRingClass)}
             >
               <X className="h-3 w-3 text-[var(--icon-muted)]" />
             </button>
           ) : (
-            <kbd className="hidden sm:inline-flex items-center px-1 py-0.5 rounded text-[9px] font-medium bg-[var(--surface-3)] text-[var(--text-3)] border border-[var(--border-color)]">
+            <kbd className="hidden sm:inline-flex items-center px-1 py-0.5 rounded text-[9px] font-medium bg-[var(--surface-2)] text-[var(--text-3)] border border-[var(--border-gold)]">
               {navigator.platform.includes("Mac") ? "⌘" : "⌃"}K
             </kbd>
           )}
         </div>
 
         {/* Divider */}
-        <div className="w-px h-5 bg-[var(--divider)]" />
+        <div className="w-px h-5 bg-[var(--border-gold)]" />
 
         {/* Filter Button */}
         {filterContent && (
@@ -114,15 +115,17 @@ export function UnifiedToolbar({
               <button
                 className={cn(
                   "h-7 px-2 inline-flex items-center gap-1 rounded-md text-xs font-medium transition-colors",
-                  "text-[var(--text-2)] hover:bg-[var(--surface-3)]",
+                  "text-[var(--text-2)] hover:bg-[var(--surface-2)]",
                   focusRingClass,
-                  activeFilters > 0 && "text-[var(--accent-color)]"
+                  // Olive when active
+                  activeFilters > 0 && "text-[var(--brand-primary)]"
                 )}
               >
                 <Filter className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">Filter</span>
                 {activeFilters > 0 && (
-                  <span className="ml-0.5 px-1 py-0.5 rounded-full text-[9px] font-semibold bg-[var(--accent-color)] text-[var(--text-inverse)]">
+                  // Olive badge
+                  <span className="ml-0.5 px-1 py-0.5 rounded-full text-[9px] font-semibold bg-[var(--brand-primary)] text-[var(--text-inverse)]">
                     {activeFilters}
                   </span>
                 )}
@@ -130,7 +133,7 @@ export function UnifiedToolbar({
             </PopoverTrigger>
             <PopoverContent
               align="start"
-              className="w-72 p-3 bg-[var(--surface-1)] border-[var(--border-color)]"
+              className="w-72 p-3 bg-[var(--surface-1)] border-[var(--border-gold)]"
             >
               {filterContent}
             </PopoverContent>
@@ -144,7 +147,7 @@ export function UnifiedToolbar({
               <button
                 className={cn(
                   "h-7 px-2 inline-flex items-center gap-1 rounded-md text-xs font-medium transition-colors",
-                  "text-[var(--text-2)] hover:bg-[var(--surface-3)]",
+                  "text-[var(--text-2)] hover:bg-[var(--surface-2)]",
                   focusRingClass
                 )}
               >
@@ -154,7 +157,7 @@ export function UnifiedToolbar({
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="start"
-              className="bg-[var(--surface-1)] border-[var(--border-color)]"
+              className="bg-[var(--surface-1)] border-[var(--border-gold)]"
             >
               {sortOptions.map((option) => (
                 <DropdownMenuItem
@@ -162,7 +165,7 @@ export function UnifiedToolbar({
                   onClick={() => onSortChange(option.value)}
                   className={cn(
                     "cursor-pointer text-[var(--text-1)]",
-                    sortValue === option.value && "bg-[var(--surface-3)]"
+                    sortValue === option.value && "bg-[var(--brand-primary-subtle)] text-[var(--brand-primary)]"
                   )}
                 >
                   {option.label}
@@ -180,7 +183,7 @@ export function UnifiedToolbar({
             <button
               className={cn(
                 "h-7 px-2 inline-flex items-center gap-1 rounded-md text-xs font-medium transition-colors",
-                "text-[var(--text-2)] hover:bg-[var(--surface-3)] border border-[var(--border-color)]",
+                "text-[var(--text-2)] hover:bg-[var(--surface-2)] border border-[var(--border-gold)]",
                 focusRingClass
               )}
             >
@@ -195,13 +198,13 @@ export function UnifiedToolbar({
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="bg-[var(--surface-1)] border-[var(--border-color)] min-w-[140px]"
+            className="bg-[var(--surface-1)] border-[var(--border-gold)] min-w-[140px]"
           >
             <DropdownMenuItem
               onClick={() => onDensityChange("compact")}
               className={cn(
                 "cursor-pointer text-[var(--text-1)] flex items-center gap-2",
-                density === "compact" && "bg-[var(--surface-3)]"
+                density === "compact" && "bg-[var(--brand-primary-subtle)] text-[var(--brand-primary)]"
               )}
             >
               <LayoutList className="h-3.5 w-3.5" />
@@ -211,7 +214,7 @@ export function UnifiedToolbar({
               onClick={() => onDensityChange("comfortable")}
               className={cn(
                 "cursor-pointer text-[var(--text-1)] flex items-center gap-2",
-                density === "comfortable" && "bg-[var(--surface-3)]"
+                density === "comfortable" && "bg-[var(--brand-primary-subtle)] text-[var(--brand-primary)]"
               )}
             >
               <LayoutGrid className="h-3.5 w-3.5" />
