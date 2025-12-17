@@ -11,8 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 import { SegmentedTabs, SegmentedTab } from '@/components/ui/segmented-tabs';
-import { TableToolbar } from '@/components/ui/table-toolbar';
-import { PrimarySearchRow } from '@/components/ui/primary-search-row';
+import { UnifiedToolbar } from '@/components/ui/unified-toolbar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -658,18 +657,12 @@ export function HomeContent() {
               <SegmentedTab value="boards" count={boardsCount}>Boards</SegmentedTab>
             </SegmentedTabs>
 
-            {/* Primary Search Row - Dedicated, clean search control */}
+            {/* Unified Toolbar - Search + Filter + Sort + View in ONE row */}
             <div className="mt-3">
-              <PrimarySearchRow
-                value={searchQuery}
-                onChange={setSearchQuery}
-                placeholder="Search items..."
-              />
-            </div>
-
-            {/* Secondary Toolbar - Filter, Sort, View controls only */}
-            <div className="mt-2">
-              <TableToolbar
+              <UnifiedToolbar
+                searchValue={searchQuery}
+                onSearchChange={setSearchQuery}
+                searchPlaceholder="Search items..."
                 sortOptions={sortOptions}
                 sortValue={sortBy}
                 onSortChange={setSortBy}

@@ -29,6 +29,9 @@ const quickActions = [
   { name: "Create Risk", path: "/enterprise/risks?create=true", icon: AlertTriangle },
 ];
 
+// Unified focus ring class
+const focusRingClass = "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-1 focus-visible:ring-offset-[var(--surface-1)]";
+
 export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const navigate = useNavigate();
   const [search, setSearch] = React.useState("");
@@ -90,7 +93,8 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
               className={cn(
                 "flex-1 h-12 bg-transparent text-sm text-[var(--text-1)]",
                 "placeholder:text-[var(--text-3)]",
-                "outline-none border-none"
+                "outline-none border-none",
+                focusRingClass
               )}
             />
             <kbd className="hidden sm:inline-flex h-5 items-center gap-1 rounded border border-[var(--border-color)] bg-[var(--surface-2)] px-1.5 text-[10px] font-medium text-[var(--text-3)]">
@@ -117,7 +121,8 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                   className={cn(
                     "flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer",
                     "text-[var(--text-1)]",
-                    "aria-selected:bg-[var(--nav-hover-bg)]"
+                    "aria-selected:bg-[var(--nav-hover-bg)]",
+                    focusRingClass
                   )}
                 >
                   <item.icon className="h-4 w-4 text-[var(--icon-default)]" />
@@ -139,7 +144,8 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                   className={cn(
                     "flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer",
                     "text-[var(--text-1)]",
-                    "aria-selected:bg-[var(--nav-hover-bg)]"
+                    "aria-selected:bg-[var(--nav-hover-bg)]",
+                    focusRingClass
                   )}
                 >
                   <item.icon className="h-4 w-4 text-[var(--icon-default)]" />
@@ -162,7 +168,8 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                     className={cn(
                       "flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer",
                       "text-[var(--text-1)]",
-                      "aria-selected:bg-[var(--nav-hover-bg)]"
+                      "aria-selected:bg-[var(--nav-hover-bg)]",
+                      focusRingClass
                     )}
                   >
                     <div
@@ -192,7 +199,8 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                     className={cn(
                       "flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer",
                       "text-[var(--text-1)]",
-                      "aria-selected:bg-[var(--nav-hover-bg)]"
+                      "aria-selected:bg-[var(--nav-hover-bg)]",
+                      focusRingClass
                     )}
                   >
                     <WorkItemTypeIcon type={item.type} size={16} />
