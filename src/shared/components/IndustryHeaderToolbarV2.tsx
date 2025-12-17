@@ -175,6 +175,85 @@ export function IndustryHeaderToolbarV2({
   const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
   const shortcutKey = isMac ? '⌘K' : 'Ctrl+K';
 
-  // Component now returns null - toolbar elements removed
-  return null;
+  return (
+    <div className="w-full flex items-center justify-between gap-4">
+      {/* Left Zone: View Toggle */}
+      <div className="flex items-center gap-2">
+        <button
+          onClick={handleSwitchToList}
+          className={`w-9 h-9 flex items-center justify-center rounded-lg border transition-colors ${
+            activeView === 'list'
+              ? 'bg-brand-gold/10 border-brand-gold text-brand-gold'
+              : 'bg-transparent border-border text-muted-foreground hover:bg-muted'
+          }`}
+          title="List View"
+        >
+          <div className="w-4 h-4">
+            <Icons.List />
+          </div>
+        </button>
+        <button
+          onClick={handleSwitchToBoard}
+          className={`w-9 h-9 flex items-center justify-center rounded-lg border transition-colors ${
+            activeView === 'board'
+              ? 'bg-brand-gold/10 border-brand-gold text-brand-gold'
+              : 'bg-transparent border-border text-muted-foreground hover:bg-muted'
+          }`}
+          title="Board View"
+        >
+          <div className="w-4 h-4">
+            <Icons.Board />
+          </div>
+        </button>
+      </div>
+
+      {/* Center Zone: Search */}
+      <div className="flex-1 max-w-md">
+        <div 
+          className="h-9 flex items-center gap-2 px-3 rounded-lg border border-border bg-background"
+        >
+          <div className="w-4 h-4 text-muted-foreground">
+            <Icons.Search />
+          </div>
+          <input
+            ref={searchInputRef}
+            type="text"
+            value={searchValue}
+            onChange={(e) => onSearchChange(e.target.value)}
+            placeholder="Search..."
+            className="flex-1 border-none outline-none text-sm bg-transparent text-foreground placeholder:text-muted-foreground"
+          />
+          <span className="text-[10px] text-muted-foreground font-medium px-1.5 py-0.5 rounded bg-muted">
+            {shortcutKey}
+          </span>
+        </div>
+      </div>
+
+      {/* Right Zone: Actions */}
+      <div className="flex items-center gap-2">
+        {onColumnsConfig && (
+          <button
+            onClick={onColumnsConfig}
+            className="w-9 h-9 flex items-center justify-center rounded-lg border border-border bg-background text-muted-foreground hover:bg-muted transition-colors"
+            title="Columns"
+          >
+            <div className="w-4 h-4">
+              <Icons.Columns />
+            </div>
+          </button>
+        )}
+        {onExport && (
+          <button
+            onClick={onExport}
+            className="w-9 h-9 flex items-center justify-center rounded-lg border border-border bg-background text-muted-foreground hover:bg-muted transition-colors"
+            title="Export"
+          >
+            <div className="w-4 h-4">
+              <Icons.Export />
+            </div>
+          </button>
+        )}
+      </div>
+    </div>
+  );
 }
