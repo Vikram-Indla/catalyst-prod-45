@@ -11,7 +11,7 @@ import { Risk, RiskFormData, RiskGridFilters } from '@/types/risks';
 import { RoamBadge } from '@/components/risks/RoamBadge';
 import { RiskDrawer } from '@/components/risks/RiskDrawer';
 import { RiskFiltersDialog } from '@/components/risks/RiskFiltersDialog';
-import { CreateEditRiskPanel } from '@/components/risks/CreateEditRiskPanel';
+import { CreateEditRiskDialog } from '@/components/risks/CreateEditRiskDialog';
 import { DeleteRiskDialog } from '@/components/risks/DeleteRiskDialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -849,12 +849,14 @@ export default function EnterpriseRisks() {
         />
       )}
 
-      <CreateEditRiskPanel
+      <CreateEditRiskDialog
         risk={editingRisk}
-        isOpen={isCreateEditOpen}
-        onClose={() => {
-          setIsCreateEditOpen(false);
-          setEditingRisk(null);
+        open={isCreateEditOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            setIsCreateEditOpen(false);
+            setEditingRisk(null);
+          }
         }}
         onSave={handleCreateEditSave}
         isSubmitting={isCreating || isUpdating}
