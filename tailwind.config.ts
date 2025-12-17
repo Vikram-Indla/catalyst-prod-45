@@ -89,27 +89,31 @@ export default {
         },
         
         /* ══════════════════════════════════════════════════════════
-           STATUS COLORS (V2)
+           STATUS COLORS (V2) — Enhanced for dark mode
            ══════════════════════════════════════════════════════════ */
         success: {
           DEFAULT: "var(--status-success)",
           bg: "var(--status-success-bg)",
+          border: "var(--status-success-border)",
         },
         warning: {
           DEFAULT: "var(--status-warning)",
           bg: "var(--status-warning-bg)",
+          border: "var(--status-warning-border)",
         },
         danger: {
           DEFAULT: "var(--status-danger)",
           bg: "var(--status-danger-bg)",
+          border: "var(--status-danger-border)",
         },
         info: {
           DEFAULT: "var(--status-info)",
           bg: "var(--status-info-bg)",
+          border: "var(--status-info-border)",
         },
         
         /* ══════════════════════════════════════════════════════════
-           SURFACE COLORS (V2)
+           SURFACE COLORS (V2) — 4-tier layered system
            ══════════════════════════════════════════════════════════ */
         surface: {
           bg: "var(--surface-bg)",
@@ -117,6 +121,20 @@ export default {
           subtle: "var(--surface-subtle)",
           hover: "var(--surface-hover)",
           tinted: "var(--surface-tinted)",
+          "1": "var(--bg-surface-1, var(--surface-1))",
+          "2": "var(--bg-surface-2, var(--surface-2))",
+          "3": "var(--bg-surface-3, var(--surface-3))",
+        },
+        
+        /* Dark mode specific backgrounds */
+        dark: {
+          base: "#0D1117",
+          "surface-1": "#151B23",
+          "surface-2": "#1C232D",
+          "surface-3": "#242C38",
+          interactive: "#1E2632",
+          "interactive-hover": "#262F3D",
+          "interactive-active": "#2D3848",
         },
         
         /* ══════════════════════════════════════════════════════════
@@ -132,12 +150,14 @@ export default {
         },
         
         /* ══════════════════════════════════════════════════════════
-           BORDER COLORS (V2)
+           BORDER COLORS (V2) — Three-tier system
            ══════════════════════════════════════════════════════════ */
         "border-default": "var(--border-default)",
         "border-subtle": "var(--border-subtle)",
         "border-muted": "var(--border-muted)",
         "border-accent": "var(--border-accent)",
+        "border-strong": "var(--border-strong)",
+        "border-focus": "var(--border-focus)",
         
         /* ══════════════════════════════════════════════════════════
            PROGRESS COLORS (V2)
@@ -166,7 +186,7 @@ export default {
       },
       
       /* ══════════════════════════════════════════════════════════
-         BOX SHADOWS (V2)
+         BOX SHADOWS (V2) — Dark-optimized
          ══════════════════════════════════════════════════════════ */
       boxShadow: {
         sm: "var(--shadow-sm)",
@@ -176,6 +196,8 @@ export default {
         card: "var(--shadow-card)",
         "card-hover": "var(--shadow-card-hover)",
         dropdown: "var(--shadow-dropdown)",
+        glow: "var(--shadow-glow)",
+        "focus-ring": "var(--focus-ring)",
       },
       
       /* ══════════════════════════════════════════════════════════
