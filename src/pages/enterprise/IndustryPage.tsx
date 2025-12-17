@@ -560,9 +560,12 @@ export default function IndustryPage() {
       });
     }
     
-    // Quarter filter (multi-select)
+    // Quarter filter (multi-select) - check if any of the demand's quarters match
     if (filters.quarter && filters.quarter.length > 0) {
-      filtered = filtered.filter((r: any) => filters.quarter!.includes(r.planned_quarter));
+      filtered = filtered.filter((r: any) => {
+        const demandQuarters = r.planned_quarter || [];
+        return demandQuarters.some((q: string) => filters.quarter!.includes(q));
+      });
     }
 
     // Apply sorting based on selected column
@@ -1056,7 +1059,7 @@ export default function IndustryPage() {
                                   type="select"
                                   displayValue={
                                     <div className="flex items-center gap-1">
-                                      <span className="text-sm text-text-secondary truncate">{request.planned_quarter || '-'}</span>
+                                      <span className="text-sm text-text-secondary truncate">{(request.planned_quarter || []).join(', ') || '-'}</span>
                                       {quarterDays !== null && quarterDays <= 30 && quarterDays > 0 && (
                                         <Tooltip>
                                           <TooltipTrigger asChild>

@@ -37,26 +37,37 @@ function mapHealth(health: string | null): HealthStatus {
   return 'unknown';
 }
 
-// Extract quarter from planned_quarter or end_date
-function extractQuarter(plannedQuarter: string | null, endDate: Date | null): PlannedQuarter {
-  if (plannedQuarter) {
-    const q = plannedQuarter.toUpperCase();
-    if (q.includes('Q1') || q.includes('1')) return 'Q1';
-    if (q.includes('Q2') || q.includes('2')) return 'Q2';
-    if (q.includes('Q3') || q.includes('3')) return 'Q3';
-    if (q.includes('Q4') || q.includes('4')) return 'Q4';
+// Extract quarters from planned_quarter array or end_date
+function extractQuarters(plannedQuarters: string[] | null, endDate: Date | null): PlannedQuarter[] {
+  const quarters: PlannedQuarter[] = [];
+  
+  if (plannedQuarters && plannedQuarters.length > 0) {
+    for (const pq of plannedQuarters) {
+      const q = pq.toUpperCase();
+      if (q.includes('Q1')) quarters.push('Q1');
+      else if (q.includes('Q2')) quarters.push('Q2');
+      else if (q.includes('Q3')) quarters.push('Q3');
+      else if (q.includes('Q4')) quarters.push('Q4');
+    }
+    if (quarters.length > 0) return [...new Set(quarters)]; // dedupe
   }
   
   // Derive from end_date if no planned_quarter
   if (endDate) {
     const month = endDate.getMonth();
-    if (month <= 2) return 'Q1';
-    if (month <= 5) return 'Q2';
-    if (month <= 8) return 'Q3';
-    return 'Q4';
+    if (month <= 2) return ['Q1'];
+    if (month <= 5) return ['Q2'];
+    if (month <= 8) return ['Q3'];
+    return ['Q4'];
   }
   
-  return 'unplanned';
+  return ['unplanned'];
+}
+
+// Legacy function for backward compat - returns first quarter
+function extractQuarter(plannedQuarters: string[] | null, endDate: Date | null): PlannedQuarter {
+  const quarters = extractQuarters(plannedQuarters, endDate);
+  return quarters[0] || 'unplanned';
 }
 
 export function useProductRoadmapData() {
@@ -224,6 +235,7 @@ export function useProductRoadmapData() {
       progress,
       milestones,
       plannedQuarter: extractQuarter(d.planned_quarter, endDate),
+      plannedQuarters: extractQuarters(d.planned_quarter, endDate),
       priorityTier: mapPriorityTier(d.priority_tier),
       health: mapHealth(d.health),
     };

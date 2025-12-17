@@ -29,25 +29,35 @@ function groupDemands(demands: Demand[], groupBy: DemandGroupBy): DemandGroup[] 
   const groups = new Map<string, Demand[]>();
   
   demands.forEach(demand => {
-    let key: string;
-    switch (groupBy) {
-      case 'platform':
-        key = demand.platform || 'Unassigned';
-        break;
-      case 'owner':
-        key = demand.ownerName || 'Unassigned';
-        break;
-      case 'quarter':
-        key = demand.plannedQuarter === 'unplanned' ? 'Unplanned' : demand.plannedQuarter || 'Unplanned';
-        break;
-      default:
-        key = 'Unassigned';
+    // For quarter grouping, a demand can appear in multiple groups
+    if (groupBy === 'quarter') {
+      const quarters = demand.plannedQuarters || ['unplanned'];
+      quarters.forEach(q => {
+        const key = q === 'unplanned' ? 'Unplanned' : q;
+        if (!groups.has(key)) {
+          groups.set(key, []);
+        }
+        groups.get(key)!.push(demand);
+      });
+    } else {
+      // For other groupings, single group per demand
+      let key: string;
+      switch (groupBy) {
+        case 'platform':
+          key = demand.platform || 'Unassigned';
+          break;
+        case 'owner':
+          key = demand.ownerName || 'Unassigned';
+          break;
+        default:
+          key = 'Unassigned';
+      }
+      
+      if (!groups.has(key)) {
+        groups.set(key, []);
+      }
+      groups.get(key)!.push(demand);
     }
-    
-    if (!groups.has(key)) {
-      groups.set(key, []);
-    }
-    groups.get(key)!.push(demand);
   });
   
   // Sort groups, putting "Unassigned"/"Unplanned" last
@@ -55,6 +65,11 @@ function groupDemands(demands: Demand[], groupBy: DemandGroupBy): DemandGroup[] 
     const unassigned = ['Unassigned', 'Unplanned'];
     if (unassigned.includes(a[0]) && !unassigned.includes(b[0])) return 1;
     if (!unassigned.includes(a[0]) && unassigned.includes(b[0])) return -1;
+    // Sort quarters in order Q1, Q2, Q3, Q4
+    if (groupBy === 'quarter') {
+      const quarterOrder = ['Q1', 'Q2', 'Q3', 'Q4', 'Unplanned'];
+      return quarterOrder.indexOf(a[0]) - quarterOrder.indexOf(b[0]);
+    }
     return a[0].localeCompare(b[0]);
   });
   

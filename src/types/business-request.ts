@@ -178,7 +178,7 @@ export interface BusinessRequest {
   business_score: number | null;
   
   // Planning
-  planned_quarter: string | null;
+  planned_quarter: string[] | null;
   
   // Budget - Funding & Budget
   funding_status: string | null;

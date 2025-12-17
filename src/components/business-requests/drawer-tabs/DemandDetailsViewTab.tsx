@@ -296,7 +296,7 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
         <div className="grid grid-cols-2 gap-4">
           <Field label="Planned Quarter">
             <PlannedQuarterSelect
-              value={data.planned_quarter || null}
+              value={data.planned_quarter || []}
               onChange={(value) => onChange('planned_quarter', value)}
             />
           </Field>

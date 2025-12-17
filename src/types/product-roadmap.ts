@@ -41,8 +41,9 @@ export interface Demand {
   rank: number | null;
   progress: number;
   milestones: DemandMilestone[];
-  // New filter fields
+  // Quarter fields - plannedQuarters is the multi-select array, plannedQuarter is primary for display
   plannedQuarter: PlannedQuarter;
+  plannedQuarters: PlannedQuarter[];
   priorityTier: PriorityTier;
   health: HealthStatus;
 }

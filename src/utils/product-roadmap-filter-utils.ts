@@ -63,9 +63,11 @@ export function filterDemandsCanonical(
       return false;
     }
     
-    // Quarter filter (OR within, AND with others)
-    if (filters.quarters.length > 0 && !filters.quarters.includes(demand.plannedQuarter)) {
-      return false;
+    // Quarter filter (OR within, AND with others) - check if any planned quarter matches
+    if (filters.quarters.length > 0) {
+      const demandQuarters = demand.plannedQuarters || [demand.plannedQuarter];
+      const hasMatchingQuarter = demandQuarters.some(q => filters.quarters.includes(q));
+      if (!hasMatchingQuarter) return false;
     }
     
     // Priority Tier filter (OR within, AND with others)
