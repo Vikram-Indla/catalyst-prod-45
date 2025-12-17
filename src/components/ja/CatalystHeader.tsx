@@ -133,7 +133,7 @@ export function CatalystHeader() {
 
   return (
     <>
-      {/* TopNav: 56px fixed height, theme-aware bg, 1px bottom border */}
+      {/* TopNav: 56px fixed height, theme-aware bg, elevation + bottom border for enterprise frame */}
       <header 
         className="sticky top-0 z-[100] flex items-center"
         style={{ 
@@ -142,6 +142,7 @@ export function CatalystHeader() {
           padding: '0 16px',
           fontFamily: "var(--font-sans, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif)",
           backgroundColor: 'var(--nav-bg)',
+          boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05)',
         }}
       >
         {/* ===== LOGO ZONE - Split color treatment ===== */}

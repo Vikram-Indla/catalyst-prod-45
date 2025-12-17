@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Plus, Search, Download, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Lock, Filter, Maximize2, Minimize2 } from 'lucide-react';
+import { Plus, Search, Download, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Lock, Filter, Maximize2, Minimize2, X } from 'lucide-react';
 import { FilterDemandsDialog, SmartFilters } from '@/components/business-requests/FilterDemandsDialog';
 import { useBusinessRequests } from '@/hooks/useBusinessRequests';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
@@ -741,122 +741,296 @@ export default function IndustryPage() {
     setNotification(prev => ({ ...prev, show: false }));
   }, []);
 
+  // Build active filter chips for toolbar
+  const activeFilterChips = Object.entries(filters)
+    .filter(([key, value]) => {
+      if (key === 'activeSmartFilter' || key === 'requestIdMode') return false;
+      if (Array.isArray(value)) return value.length > 0;
+      if (value instanceof Date) return true;
+      return value !== undefined && value !== '' && value !== null;
+    })
+    .map(([key, value]) => ({
+      key,
+      label: key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()),
+      value: Array.isArray(value) ? `${value.length} selected` : String(value),
+    }));
+
+  const handleClearFilter = (key: string) => {
+    setFilters(prev => {
+      const newFilters = { ...prev };
+      delete newFilters[key as keyof SmartFilters];
+      return newFilters;
+    });
+  };
+
+  const handleClearAllFilters = () => {
+    setFilters({});
+  };
+
   return (
     <TooltipProvider>
-      <div className="h-full flex flex-col bg-background">
-        {/* Header - fixed height 72px to align with sidebar */}
-        <div className="h-[72px] border-b border-border bg-card flex-shrink-0">
-          <div className="h-full px-4 sm:px-6 flex items-center">
-            <div className="min-w-0">
-              <h1 className="text-xl sm:text-2xl font-semibold text-foreground truncate">Demand Intake</h1>
-              <p className="text-sm text-muted-foreground truncate">Industry-specific demand requests</p>
+      <div className="h-full flex flex-col" style={{ background: 'var(--bg)' }}>
+        {/* Page Header Band - sticky context */}
+        <div 
+          className="flex-shrink-0 sticky top-0 z-20"
+          style={{ 
+            background: 'var(--surface-1)',
+            borderBottom: '1px solid var(--divider)',
+          }}
+        >
+          {/* Breadcrumb + Title */}
+          <div className="px-4 sm:px-6 py-3">
+            <div className="flex items-center gap-2 mb-1">
+              <span 
+                className="text-xs font-medium uppercase tracking-wider"
+                style={{ color: 'var(--text-3)' }}
+              >
+                Product
+              </span>
+              <span style={{ color: 'var(--text-3)' }}>/</span>
+              <span 
+                className="text-xs font-medium uppercase tracking-wider"
+                style={{ color: 'var(--text-1)' }}
+              >
+                {viewMode === 'kanban' ? 'Product Kanban' : 'Product Backlog'}
+              </span>
             </div>
-          </div>
-        </div>
-
-        {/* Search & Filters Bar - Mobile Responsive */}
-        <div className="flex flex-col gap-3 px-4 sm:px-6 py-3 bg-card">
-          {/* Row 1: Search - full width on mobile */}
-          <div className="relative w-full sm:max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Search industry requests..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="pl-9 bg-white border-border w-full" />
+            <h1 
+              className="text-lg font-semibold"
+              style={{ color: 'var(--text-1)' }}
+            >
+              {viewMode === 'kanban' ? 'Product Kanban' : 'Product Backlog'}
+            </h1>
           </div>
 
-          {/* Row 2: Actions - wrap on mobile */}
-          <div className="flex flex-wrap items-center gap-2 sm:gap-4">
-            {/* View Toggle */}
-            <ViewToggle currentView={viewMode} onViewChange={setViewMode} />
+          {/* Enterprise Toolbar - Kanban mode */}
+          {viewMode === 'kanban' ? (
+            <div 
+              className="flex flex-col gap-2 px-4 sm:px-6 py-3"
+              style={{ 
+                borderTop: '1px solid var(--divider)',
+                background: 'var(--surface-1)',
+              }}
+            >
+              {/* Main toolbar row */}
+              <div className="flex items-center gap-3">
+                {/* Left zone: View toggle + Filter/Sort */}
+                <div className="flex items-center gap-2">
+                  {/* View toggle */}
+                  <ViewToggle currentView={viewMode} onViewChange={setViewMode} />
 
-            {/* Pagination - only in list mode, hide on very small screens */}
-            {viewMode === 'list' && (
-              <div className="hidden xs:flex items-center gap-1 border border-border rounded-md bg-white px-1">
-                <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1} className="h-8 w-8 p-0 min-w-[44px] min-h-[44px]">
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <span className="text-sm text-[#172B4D] px-2 whitespace-nowrap">
-                  {sortedRequests.length > 0 ? `${startIndex + 1}-${Math.min(endIndex, sortedRequests.length)} of ${sortedRequests.length}` : '0 items'}
-                </span>
-                <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages || totalPages === 0} className="h-8 w-8 p-0 min-w-[44px] min-h-[44px]">
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
+                  {/* Divider */}
+                  <div className="h-6 w-px" style={{ background: 'var(--divider)' }} />
+
+                  {/* Filter button */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setFiltersDialogOpen(true)}
+                    className={cn(
+                      "gap-1.5 h-9",
+                      activeFilterCount > 0 && "border-brand-primary"
+                    )}
+                    style={{ 
+                      borderColor: activeFilterCount > 0 ? 'var(--brand-primary)' : undefined,
+                      color: activeFilterCount > 0 ? 'var(--brand-primary)' : undefined,
+                    }}
+                  >
+                    <Filter className="h-4 w-4" />
+                    <span className="hidden sm:inline">Filter</span>
+                    {activeFilterCount > 0 && (
+                      <span 
+                        className="ml-1 h-5 px-1.5 text-xs rounded-full flex items-center justify-center"
+                        style={{ background: 'var(--brand-primary)', color: 'white' }}
+                      >
+                        {activeFilterCount}
+                      </span>
+                    )}
+                  </Button>
+
+                  {/* Expand/Collapse All */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setKanbanExpanded(prev => prev === true ? false : true)}
+                    className="gap-1.5 h-9"
+                  >
+                    {kanbanExpanded ? (
+                      <>
+                        <Minimize2 className="h-4 w-4" />
+                        <span className="hidden sm:inline">Collapse</span>
+                      </>
+                    ) : (
+                      <>
+                        <Maximize2 className="h-4 w-4" />
+                        <span className="hidden sm:inline">Expand</span>
+                      </>
+                    )}
+                  </Button>
+                </div>
+
+                {/* Center zone: Search */}
+                <div className="flex-1 max-w-md mx-auto">
+                  <div className="relative">
+                    <Search 
+                      className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" 
+                      style={{ color: 'var(--icon-muted)' }}
+                    />
+                    <Input
+                      placeholder="Search requests..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-9 h-9"
+                      style={{ 
+                        background: 'var(--surface-2)',
+                        borderColor: 'var(--divider)',
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Right zone: Export + Create */}
+                <div className="flex items-center gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleExport}
+                    className="gap-1.5 h-9"
+                  >
+                    <Download className="h-4 w-4" />
+                    <span className="hidden sm:inline">Export</span>
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    onClick={() => setCreateModalOpen(true)}
+                    className="gap-1.5 h-9"
+                    style={{ 
+                      background: 'var(--brand-primary)',
+                      color: 'white',
+                    }}
+                  >
+                    <Plus className="h-4 w-4" />
+                    <span className="hidden sm:inline">Create</span>
+                  </Button>
+                </div>
               </div>
-            )}
 
-            {/* Expand/Collapse All - only visible in kanban mode */}
-            {viewMode === 'kanban' && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setKanbanExpanded(prev => prev === true ? false : true)}
-                className="border-border gap-2 min-h-[44px]"
-              >
-                {kanbanExpanded ? (
-                  <>
-                    <Minimize2 className="h-4 w-4" />
-                    <span className="hidden sm:inline">Collapse All</span>
-                  </>
-                ) : (
-                  <>
-                    <Maximize2 className="h-4 w-4" />
-                    <span className="hidden sm:inline">Expand All</span>
-                  </>
-                )}
-              </Button>
-            )}
-
-            {/* Spacer to push filters to right on larger screens */}
-            <div className="flex-1 hidden sm:block" />
-
-            {/* Filter actions */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <SavedFiltersDropdown
-                entityType="demand"
-                currentFilters={filters}
-                onApplyFilter={(savedFilters) => setFilters(savedFilters as SmartFilters)}
-                hasActiveFilters={activeFilterCount > 0}
-              />
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setFiltersDialogOpen(true)}
-                className={cn(
-                  "min-h-[44px]",
-                  activeFilterCount > 0 ? "border-brand-primary text-brand-primary" : "border-border"
-                )}
-              >
-                <Filter className="h-4 w-4 sm:mr-2" />
-                <span className="hidden sm:inline">Filters</span>
-                {activeFilterCount > 0 && (
-                  <span className="ml-1.5 px-1.5 py-0.5 text-xs rounded-full bg-brand-primary text-white">
-                    {activeFilterCount}
+              {/* Active filter chips row */}
+              {activeFilterChips.length > 0 && (
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-xs font-medium" style={{ color: 'var(--text-3)' }}>
+                    Active filters:
                   </span>
-                )}
-              </Button>
-              <Button variant="outline" size="sm" onClick={handleExport} className="border-border min-h-[44px]">
-                <Download className="h-4 w-4 sm:mr-2" />
-                <span className="hidden sm:inline">Export</span>
-              </Button>
+                  {activeFilterChips.map((filter) => (
+                    <span
+                      key={filter.key}
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs"
+                      style={{ background: 'var(--surface-2)' }}
+                    >
+                      <span>{filter.label}: {filter.value}</span>
+                      <button
+                        onClick={() => handleClearFilter(filter.key)}
+                        className="ml-1 rounded-full p-0.5 hover:bg-muted"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  ))}
+                  <button
+                    onClick={handleClearAllFilters}
+                    className="text-xs font-medium hover:underline"
+                    style={{ color: 'var(--brand-primary)' }}
+                  >
+                    Clear all
+                  </button>
+                </div>
+              )}
             </div>
-          </div>
+          ) : (
+            /* List mode toolbar */
+            <div className="flex flex-col gap-3 px-4 sm:px-6 py-3" style={{ borderTop: '1px solid var(--divider)' }}>
+              {/* Row 1: Search */}
+              <div className="relative w-full sm:max-w-md">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" style={{ color: 'var(--icon-muted)' }} />
+                <Input 
+                  placeholder="Search requests..." 
+                  value={searchQuery} 
+                  onChange={e => setSearchQuery(e.target.value)} 
+                  className="pl-9 w-full" 
+                  style={{ background: 'var(--surface-2)', borderColor: 'var(--divider)' }}
+                />
+              </div>
 
-          {/* Bulk Selection Toolbar */}
-          {selectedRows.length > 0 && (
-            <div className="px-4 sm:px-6 pb-3">
-              <BulkSelectionToolbar
-                selectedCount={selectedRows.length}
-                config={demandBulkConfig}
-                onAction={handleBulkAction}
-                onClearSelection={handleClearSelection}
-              />
+              {/* Row 2: Actions */}
+              <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+                <ViewToggle currentView={viewMode} onViewChange={setViewMode} />
+
+                {/* Pagination */}
+                <div className="hidden xs:flex items-center gap-1 border rounded-md px-1" style={{ borderColor: 'var(--divider)', background: 'var(--surface-1)' }}>
+                  <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1} className="h-8 w-8 p-0 min-w-[44px] min-h-[44px]">
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <span className="text-sm px-2 whitespace-nowrap" style={{ color: 'var(--text-1)' }}>
+                    {sortedRequests.length > 0 ? `${startIndex + 1}-${Math.min(endIndex, sortedRequests.length)} of ${sortedRequests.length}` : '0 items'}
+                  </span>
+                  <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages || totalPages === 0} className="h-8 w-8 p-0 min-w-[44px] min-h-[44px]">
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                <div className="flex-1 hidden sm:block" />
+
+                {/* Filter actions */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <SavedFiltersDropdown
+                    entityType="demand"
+                    currentFilters={filters}
+                    onApplyFilter={(savedFilters) => setFilters(savedFilters as SmartFilters)}
+                    hasActiveFilters={activeFilterCount > 0}
+                  />
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setFiltersDialogOpen(true)}
+                    className={cn(
+                      "min-h-[44px]",
+                      activeFilterCount > 0 ? "border-brand-primary text-brand-primary" : ""
+                    )}
+                    style={{ borderColor: activeFilterCount > 0 ? 'var(--brand-primary)' : 'var(--divider)' }}
+                  >
+                    <Filter className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Filters</span>
+                    {activeFilterCount > 0 && (
+                      <span className="ml-1.5 px-1.5 py-0.5 text-xs rounded-full" style={{ background: 'var(--brand-primary)', color: 'white' }}>
+                        {activeFilterCount}
+                      </span>
+                    )}
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={handleExport} className="min-h-[44px]" style={{ borderColor: 'var(--divider)' }}>
+                    <Download className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Export</span>
+                  </Button>
+                </div>
+              </div>
+
+              {/* Bulk Selection Toolbar */}
+              {selectedRows.length > 0 && (
+                <BulkSelectionToolbar
+                  selectedCount={selectedRows.length}
+                  config={demandBulkConfig}
+                  onAction={handleBulkAction}
+                  onClearSelection={handleClearSelection}
+                />
+              )}
             </div>
           )}
         </div>
 
-        {/* Main Content - Single scroll container to fix drag-drop */}
-        <div className="flex-1 flex flex-col min-h-0">
-          <div className="flex-1 p-4 sm:p-6 min-h-0 flex flex-col">
+        {/* Main Content - fills remaining viewport */}
+        <div className="flex-1 min-h-0 overflow-hidden">
+          <div className="h-full p-4 sm:p-6">
             {isLoading ? (
-              <div className="text-center py-8 text-muted-foreground">Loading...</div>
+              <div className="text-center py-8" style={{ color: 'var(--text-3)' }}>Loading...</div>
             ) : viewMode === 'kanban' ? (
               <BusinessRequestsKanbanView 
                 requests={sortedRequests} 
@@ -865,7 +1039,7 @@ export default function IndustryPage() {
                 onExpandedChange={setKanbanExpanded}
               />
             ) : sortedRequests.length > 0 ? (
-            <Card className="flex-1 flex flex-col min-h-0 overflow-hidden border border-border rounded shadow-none">
+            <Card className="h-full flex flex-col overflow-hidden border rounded shadow-none" style={{ borderColor: 'var(--divider)' }}>
                 {/* Mobile scroll hint */}
                 <div className="sm:hidden px-3 py-2 bg-muted/50 text-xs text-muted-foreground flex items-center gap-2 border-b border-border">
                   <ChevronLeft className="h-3 w-3" />
