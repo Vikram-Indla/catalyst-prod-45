@@ -21,34 +21,25 @@ export function ThemeToggle() {
             aria-checked={isDark}
             aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
             disabled={isAdminRoute}
+            className="relative inline-flex items-center justify-center shrink-0 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
             style={{
-              position: 'relative',
               width: '44px',
               height: '24px',
               borderRadius: '12px',
               padding: '2px',
-              border: 'none',
+              border: '1px solid var(--border-color)',
               cursor: isAdminRoute ? 'not-allowed' : 'pointer',
               opacity: isAdminRoute ? 0.4 : 1,
-              background: isDark ? 'var(--accent-color)' : 'var(--border-strong)',
-              transition: 'background 0.2s ease',
+              background: isDark ? 'var(--accent-color)' : 'var(--surface-3)',
+              transition: 'background 0.2s ease, border-color 0.2s ease',
               outline: 'none',
-            }}
-            onFocus={(e) => {
-              // Only show focus ring on keyboard focus
-              if (e.target.matches(':focus-visible')) {
-                e.currentTarget.style.boxShadow = '0 0 0 3px var(--focus-ring-color)';
-              }
-            }}
-            onBlur={(e) => {
-              e.currentTarget.style.boxShadow = 'none';
             }}
           >
             <span
               style={{
                 position: 'absolute',
-                top: '2px',
-                left: isDark ? '22px' : '2px',
+                top: '1px',
+                left: isDark ? '21px' : '1px',
                 width: '20px',
                 height: '20px',
                 borderRadius: '50%',
@@ -63,7 +54,7 @@ export function ThemeToggle() {
               {isDark ? (
                 <Moon style={{ width: '12px', height: '12px', color: 'var(--accent-color)' }} />
               ) : (
-                <Sun style={{ width: '12px', height: '12px', color: 'var(--accent-color)' }} />
+                <Sun style={{ width: '12px', height: '12px', color: 'var(--brand-gold)' }} />
               )}
             </span>
           </button>

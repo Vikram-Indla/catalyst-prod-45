@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   ChevronDown, Star, MoreHorizontal, ExternalLink, CheckCircle, 
-  Clock, Sparkles, Pin, Settings, Kanban, List, Loader2
+  Clock, Sparkles, Pin, Settings, Kanban, List
 } from 'lucide-react';
 import { projects, activityItems, Project, ActivityItem, groupItemsByTimePeriod } from '@/data/homePageData';
 import { WorkItemTypeIcon } from './icons/WorkItemTypeIcon';
@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 import { SegmentedTabs, SegmentedTab } from '@/components/ui/segmented-tabs';
 import { TableToolbar } from '@/components/ui/table-toolbar';
+import { PrimarySearchRow } from '@/components/ui/primary-search-row';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -612,18 +613,18 @@ export function HomeContent() {
       className="min-h-screen font-sans"
       style={{ backgroundColor: 'var(--bg)' }}
     >
-      {/* Constrained container */}
-      <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-5">
+      {/* Constrained container - tighter padding for enterprise density */}
+      <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-4">
         {/* Page title */}
         <h1 className="text-xl font-semibold leading-7 tracking-tight m-0 text-[var(--text-1)]">
           For you
         </h1>
 
-        {/* Divider */}
-        <div className="h-px mt-4 mb-5 bg-[var(--divider)]" />
+        {/* Divider - tighter spacing */}
+        <div className="h-px mt-3 mb-4 bg-[var(--divider)]" />
 
         {/* Recent Projects Section */}
-        <div className="mb-6">
+        <div className="mb-5">
           <div className="flex justify-between items-center mb-3">
             <div className="text-sm font-medium text-[var(--text-1)]">
               Recent projects
@@ -644,27 +645,31 @@ export function HomeContent() {
           </div>
         </div>
 
-        {/* Two Column Layout */}
-        <div className="grid grid-cols-1 xl:grid-cols-[1fr_280px] gap-5">
+        {/* Two Column Layout - tighter gap */}
+        <div className="grid grid-cols-1 xl:grid-cols-[1fr_260px] gap-4">
           {/* Left Column - Activity Feed */}
           <div>
             {/* Segmented Tabs */}
-            <div className="flex items-center justify-between gap-4 flex-wrap">
-              <SegmentedTabs value={selectedTab} onValueChange={setSelectedTab}>
-                <SegmentedTab value="worked-on" count={workedOnCount}>Worked on</SegmentedTab>
-                <SegmentedTab value="viewed" count={viewedCount}>Viewed</SegmentedTab>
-                <SegmentedTab value="assigned" count={assignedCount}>Assigned to me</SegmentedTab>
-                <SegmentedTab value="starred" count={starredCount}>Starred</SegmentedTab>
-                <SegmentedTab value="boards" count={boardsCount}>Boards</SegmentedTab>
-              </SegmentedTabs>
+            <SegmentedTabs value={selectedTab} onValueChange={setSelectedTab}>
+              <SegmentedTab value="worked-on" count={workedOnCount}>Worked on</SegmentedTab>
+              <SegmentedTab value="viewed" count={viewedCount}>Viewed</SegmentedTab>
+              <SegmentedTab value="assigned" count={assignedCount}>Assigned to me</SegmentedTab>
+              <SegmentedTab value="starred" count={starredCount}>Starred</SegmentedTab>
+              <SegmentedTab value="boards" count={boardsCount}>Boards</SegmentedTab>
+            </SegmentedTabs>
+
+            {/* Primary Search Row - Dedicated, clean search control */}
+            <div className="mt-3">
+              <PrimarySearchRow
+                value={searchQuery}
+                onChange={setSearchQuery}
+                placeholder="Search items..."
+              />
             </div>
 
-            {/* Table Toolbar */}
-            <div className="mt-3">
+            {/* Secondary Toolbar - Filter, Sort, View controls only */}
+            <div className="mt-2">
               <TableToolbar
-                searchValue={searchQuery}
-                onSearchChange={setSearchQuery}
-                searchPlaceholder="Search items..."
                 sortOptions={sortOptions}
                 sortValue={sortBy}
                 onSortChange={setSortBy}
@@ -702,8 +707,8 @@ export function HomeContent() {
           </div>
 
           {/* Right Column - Focus Widgets */}
-          <div className="space-y-2.5">
-            <div className="text-sm font-medium mb-2.5 text-[var(--text-1)]">
+          <div className="space-y-2">
+            <div className="text-sm font-medium mb-2 text-[var(--text-1)]">
               My focus
             </div>
             
