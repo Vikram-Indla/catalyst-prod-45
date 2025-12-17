@@ -224,6 +224,7 @@ export const ProductRoadmapPage: React.FC = () => {
         needAttentionCount={needAttentionCount}
         onLoadMore={handleLoadMore}
         hasMore={visibleCount < filteredDemands.length}
+        entityLabel="demands"
       />
 
       {/* Business Request Drawer */}
