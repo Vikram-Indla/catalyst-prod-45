@@ -1288,7 +1288,7 @@ export function ExecutiveTable({
                 {/* Primary Add Button - 32x32 */}
                 <button
                   onClick={onCreateNew}
-                  className="w-8 h-8 border-none rounded-md bg-brand-gold text-white flex items-center justify-center cursor-pointer hover:bg-brand-gold-hover"
+                  className="w-8 h-8 border-none rounded-md bg-brand-primary text-white flex items-center justify-center cursor-pointer hover:bg-brand-primary-hover"
                   title="New Request"
                 >
                   <Icons.Plus />
