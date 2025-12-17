@@ -702,7 +702,7 @@ export function HomeContent() {
               <UnifiedToolbar
                 searchValue={searchQuery}
                 onSearchChange={setSearchQuery}
-                searchPlaceholder="Search your work…"
+                searchPlaceholder="Search in your work list…"
                 sortOptions={sortOptions}
                 sortValue={sortBy}
                 onSortChange={setSortBy}
@@ -744,40 +744,48 @@ export function HomeContent() {
             )}
           </div>
 
-          {/* Right Column - My Focus (sticky triage panel) - calmer, restrained */}
+          {/* Right Column - My Focus (sticky triage panel) - contained card */}
           <div className="xl:sticky xl:top-20 xl:self-start">
-            <div className="text-xs font-medium uppercase tracking-wide mb-2 text-[var(--text-3)]">
-              My focus
-            </div>
-            
-            <div className="space-y-0.5">
-              {/* My workload */}
-              <FocusWidget 
-                title="My workload"
-                icon={Briefcase}
-                primaryCount={mockIncidentData.myWorkload.incidents + mockIncidentData.myWorkload.workItems}
-                secondaryLabel="incidents"
-                secondaryCount={mockIncidentData.myWorkload.incidents}
-                onClick={() => handleTabChange('worked-on')}
-              />
+            <div 
+              className={cn(
+                "rounded-lg border shadow-sm",
+                "bg-[var(--surface-1)] border-[var(--border-color)]",
+                "p-3"
+              )}
+            >
+              <div className="text-[11px] font-semibold uppercase tracking-wider mb-2 text-[var(--text-3)]">
+                My focus
+              </div>
               
-              {/* Recently updated */}
-              <FocusWidget 
-                title="Recently updated"
-                icon={Clock}
-                primaryCount={recentlyUpdatedCount}
-                subtitle="Last 7 days"
-                onClick={() => handleTabChange('worked-on')}
-              />
-              
-              {/* Starred */}
-              <FocusWidget 
-                title="Starred"
-                icon={Star}
-                primaryCount={starredCount}
-                subtitle="Quick access"
-                onClick={() => handleTabChange('starred')}
-              />
+              <div className="space-y-0.5">
+                {/* My workload */}
+                <FocusWidget 
+                  title="My workload"
+                  icon={Briefcase}
+                  primaryCount={mockIncidentData.myWorkload.incidents + mockIncidentData.myWorkload.workItems}
+                  secondaryLabel="incidents"
+                  secondaryCount={mockIncidentData.myWorkload.incidents}
+                  onClick={() => handleTabChange('worked-on')}
+                />
+                
+                {/* Recently updated */}
+                <FocusWidget 
+                  title="Recently updated"
+                  icon={Clock}
+                  primaryCount={recentlyUpdatedCount}
+                  subtitle="Last 7 days"
+                  onClick={() => handleTabChange('worked-on')}
+                />
+                
+                {/* Starred */}
+                <FocusWidget 
+                  title="Starred"
+                  icon={Star}
+                  primaryCount={starredCount}
+                  subtitle="Quick access"
+                  onClick={() => handleTabChange('starred')}
+                />
+              </div>
             </div>
           </div>
         </div>
