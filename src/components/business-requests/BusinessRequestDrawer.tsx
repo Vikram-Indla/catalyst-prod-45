@@ -51,7 +51,7 @@ import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useVisibleDrawerTabs } from '@/hooks/useDrawerTabConfigs';
-import { EnterpriseStatusControl, MetaStrip, DrawerMetadataChips } from './drawer';
+import { EnterpriseStatusControl } from './drawer';
 import { EAReviewTab } from './drawer-tabs/EAReviewTab';
 import { cn } from '@/lib/utils';
 
@@ -528,37 +528,11 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                   )}
                 </div>
 
-                {/* Meta Strip */}
+                {/* Status Control */}
                 <div className="flex items-center gap-2.5 flex-wrap">
                   <EnterpriseStatusControl
                     currentStep={formData.process_step || 'new_request'}
                     onChange={(step) => handleFieldChange('process_step', step)}
-                  />
-                  
-                  <div className="h-4 w-px" style={{ background: 'var(--border-default, hsl(var(--border)))' }} />
-                  
-                  <MetaStrip
-                    businessOwner={formData.business_owner}
-                    businessOwnerId={formData.business_owner_id}
-                    department={formData.department}
-                    departmentId={formData.department_id}
-                    targetDate={formData.end_date}
-                    deliveryPlatform={formData.delivery_platform}
-                    priorityScore={formData.business_score}
-                    onBusinessOwnerChange={(id) => handleFieldChange('business_owner_id', id)}
-                    onDepartmentChange={(id) => handleFieldChange('department_id', id)}
-                    onTargetDateChange={(date) => handleFieldChange('end_date', date)}
-                    onDeliveryPlatformChange={(value) => handleFieldChange('delivery_platform', value)}
-                  />
-                  
-                  <div className="h-4 w-px" style={{ background: 'var(--border-default, hsl(var(--border)))' }} />
-                  
-                  <DrawerMetadataChips
-                    platform={formData.delivery_platform}
-                    quarter={formData.planned_quarter}
-                    priorityTier={formData.priority_tier}
-                    priorityScore={formData.business_score}
-                    rank={formData.rank}
                   />
                 </div>
               </div>
