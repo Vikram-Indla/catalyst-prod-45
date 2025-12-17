@@ -7,6 +7,7 @@ interface LoadMoreStripProps {
   needAttentionCount: number;
   onLoadMore: () => void;
   hasMore: boolean;
+  entityLabel?: string; // "objectives" | "demands" etc.
 }
 
 export const LoadMoreStrip: React.FC<LoadMoreStripProps> = ({
@@ -15,18 +16,21 @@ export const LoadMoreStrip: React.FC<LoadMoreStripProps> = ({
   needAttentionCount,
   onLoadMore,
   hasMore,
+  entityLabel = 'objectives',
 }) => {
+  const singular = entityLabel.endsWith('s') ? entityLabel.slice(0, -1) : entityLabel;
+  
   return (
     <div className="flex items-center justify-center gap-6 px-6 py-3 border-t border-border bg-muted/50">
       <div className="flex items-center gap-4">
         <span className="text-sm text-muted-foreground">
           Showing <strong className="text-foreground">{visibleCount}</strong> of{' '}
-          <strong className="text-foreground">{totalCount}</strong> objectives
+          <strong className="text-foreground">{totalCount}</strong> {entityLabel}
         </span>
         {needAttentionCount > 0 && (
           <span className="flex items-center gap-1.5 text-sm text-amber-600">
             <AlertTriangle size={14} />
-            {needAttentionCount} objective{needAttentionCount !== 1 ? 's' : ''} below need attention
+            {needAttentionCount} {singular}{needAttentionCount !== 1 ? 's' : ''} below need attention
           </span>
         )}
       </div>

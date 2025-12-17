@@ -2,7 +2,7 @@ import React, { forwardRef, useMemo, useRef, useEffect, useImperativeHandle } fr
 import { Demand, Scale, DemandMilestone, DEMAND_STATUS_CONFIG } from '@/types/product-roadmap';
 import { generateTimeUnits, calcPosition } from '@/utils/objective-roadmap-utils';
 import { cn } from '@/lib/utils';
-import { TODAY_LINE_COLOR, PROGRESS_BAR_COLOR, getKRStatusStyle } from '@/constants/krStatusStyles';
+import { TODAY_LINE_COLOR, getKRStatusStyle } from '@/constants/krStatusStyles';
 
 interface DemandTimelineAreaProps {
   demands: Demand[];
@@ -12,6 +12,9 @@ interface DemandTimelineAreaProps {
   timelineEnd: Date;
   onDemandClick: (demandId: string) => void;
 }
+
+// Row height for sync with DemandColumn (keeping current height for now per guardrail B)
+const DEMAND_ROW_HEIGHT = 76;
 
 export const DemandTimelineArea = forwardRef<HTMLDivElement, DemandTimelineAreaProps>(
   ({ demands, scale, showMilestones, timelineStart, timelineEnd, onDemandClick }, ref) => {
@@ -27,6 +30,11 @@ export const DemandTimelineArea = forwardRef<HTMLDivElement, DemandTimelineAreaP
       calcPosition(new Date(), timelineStart, timelineEnd),
       [timelineStart, timelineEnd]
     );
+
+    // Calculate total content height (for grid lines to stop at last row)
+    const totalContentHeight = useMemo(() => {
+      return demands.length * DEMAND_ROW_HEIGHT;
+    }, [demands.length]);
 
     // Sync horizontal scroll between header and content
     useEffect(() => {
@@ -47,20 +55,31 @@ export const DemandTimelineArea = forwardRef<HTMLDivElement, DemandTimelineAreaP
     
     return (
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Timeline Header */}
+        {/* Timeline Header - responsive width with TODAY badge */}
         <div 
           ref={headerRef}
-          className="h-10 flex items-center border-b border-border bg-muted/50 overflow-x-hidden"
+          className="h-10 flex items-center border-b border-border bg-muted/50 overflow-x-hidden relative"
         >
-          <div 
-            className="flex min-w-max"
-            style={{ width: `${timeUnits.length * 120}px` }}
-          >
+          {/* TODAY badge in header (always visible, not clipped by scroll) */}
+          {todayPosition >= 0 && todayPosition <= 100 && (
+            <div 
+              className="absolute top-1/2 -translate-y-1/2 z-20"
+              style={{ left: `${todayPosition}%` }}
+            >
+              <span 
+                className="px-1.5 py-0.5 text-[9px] font-semibold text-white rounded whitespace-nowrap"
+                style={{ backgroundColor: TODAY_LINE_COLOR }}
+              >
+                TODAY
+              </span>
+            </div>
+          )}
+          <div className="flex w-full">
             {timeUnits.map((unit, i) => (
               <div 
                 key={i} 
                 className={cn(
-                  "flex-shrink-0 w-[120px] px-3 text-xs font-medium text-center",
+                  "flex-1 min-w-[80px] px-2 text-[11px] font-medium text-center",
                   unit.isCurrent ? "text-brand-gold font-semibold" : "text-muted-foreground"
                 )}
               >
@@ -70,35 +89,32 @@ export const DemandTimelineArea = forwardRef<HTMLDivElement, DemandTimelineAreaP
           </div>
         </div>
         
-        {/* Timeline Grid */}
+        {/* Timeline Grid - responsive width, scrolls vertically only */}
         <div ref={contentRef} className="flex-1 overflow-auto">
-          <div 
-            className="relative min-w-max"
-            style={{ width: `${timeUnits.length * 120}px` }}
-          >
-            {/* Grid Lines */}
-            <div className="absolute inset-0 flex pointer-events-none">
+          <div className="relative w-full" style={{ minHeight: `${totalContentHeight}px` }}>
+            {/* Grid Lines - stop at last row (clipped to content height) */}
+            <div 
+              className="absolute top-0 left-0 right-0 flex pointer-events-none"
+              style={{ height: `${totalContentHeight}px` }}
+            >
               {timeUnits.map((_, i) => (
                 <div 
                   key={i} 
-                  className="flex-shrink-0 w-[120px] border-r border-border/50"
+                  className="flex-1 min-w-[80px] border-r border-border/30"
                 />
               ))}
             </div>
             
-            {/* Today Line */}
+            {/* Today Line - Bronze (grid height only, clipped) */}
             {todayPosition >= 0 && todayPosition <= 100 && (
               <div 
-                className="absolute top-0 bottom-0 w-px z-10"
-                style={{ left: `${todayPosition}%`, backgroundColor: TODAY_LINE_COLOR }}
-              >
-                <span 
-                  className="absolute -top-0 left-1/2 -translate-x-1/2 px-1.5 py-0.5 text-[10px] font-semibold text-white rounded"
-                  style={{ backgroundColor: TODAY_LINE_COLOR }}
-                >
-                  TODAY
-                </span>
-              </div>
+                className="absolute top-0 w-px z-10"
+                style={{ 
+                  left: `${todayPosition}%`, 
+                  height: `${totalContentHeight}px`,
+                  backgroundColor: TODAY_LINE_COLOR 
+                }}
+              />
             )}
             
             {/* Demand Rows */}
@@ -110,6 +126,7 @@ export const DemandTimelineArea = forwardRef<HTMLDivElement, DemandTimelineAreaP
                 timelineStart={timelineStart}
                 timelineEnd={timelineEnd}
                 onClick={() => onDemandClick(demand.id)}
+                rowHeight={DEMAND_ROW_HEIGHT}
               />
             ))}
           </div>
@@ -127,6 +144,7 @@ interface DemandTimelineRowProps {
   timelineStart: Date;
   timelineEnd: Date;
   onClick: () => void;
+  rowHeight: number;
 }
 
 const DemandTimelineRow: React.FC<DemandTimelineRowProps> = ({
@@ -135,6 +153,7 @@ const DemandTimelineRow: React.FC<DemandTimelineRowProps> = ({
   timelineStart,
   timelineEnd,
   onClick,
+  rowHeight,
 }) => {
   const barLeft = calcPosition(demand.startDate, timelineStart, timelineEnd);
   const barRight = calcPosition(demand.endDate, timelineStart, timelineEnd);
@@ -145,67 +164,145 @@ const DemandTimelineRow: React.FC<DemandTimelineRowProps> = ({
   const statusColor = statusConfig?.color || '#6b7280';
   
   return (
-    <div className="relative h-[76px] border-b border-border hover:bg-muted/20 group/bar">
-      {/* Timeline Bar */}
+    <div 
+      className="relative border-b border-border hover:bg-muted/20 group/row cursor-pointer"
+      style={{ height: `${rowHeight}px` }}
+      onClick={onClick}
+    >
+      {/* Timeline Bar - keeping current style for now (Step 3 will address bar thickness) */}
       <div 
-        className="absolute top-1/2 -translate-y-1/2 h-6 rounded-full cursor-pointer overflow-hidden"
+        className="absolute top-1/2 -translate-y-1/2 h-6 rounded-full overflow-hidden"
         style={{ 
           left: `${barLeft}%`, 
           width: `${barWidth}%`,
-          background: '#C8CCD0',
+          background: '#E5E7EB',
           minWidth: '40px'
         }}
-        onClick={onClick}
       >
         {/* Progress Fill */}
         <div 
           className="absolute inset-y-0 left-0 rounded-full transition-all"
           style={{ 
             width: `${demand.progress}%`,
-            backgroundColor: PROGRESS_BAR_COLOR
+            backgroundColor: statusColor
           }}
         />
         
-        {/* Bar Content - Milestones or status label */}
+        {/* Status label inside bar */}
         <div className="relative h-full flex items-center justify-center px-2">
-          {showMilestones && demand.milestones.length > 0 ? (
-            demand.milestones.map((milestone, index) => (
-              <MilestoneMarker
-                key={milestone.id}
-                milestone={milestone}
-                index={index}
-                totalMilestones={demand.milestones.length}
-                demandStart={demand.startDate}
-                demandEnd={demand.endDate}
-              />
-            ))
-          ) : (
-            <span 
-              className="text-xs font-medium whitespace-nowrap px-2 py-0.5 rounded"
-              style={{ 
-                backgroundColor: `${statusColor}20`,
-                color: statusColor
-              }}
-            >
-              {statusConfig?.label || demand.status}
-            </span>
-          )}
+          <span 
+            className="text-xs font-medium whitespace-nowrap px-2 py-0.5 rounded"
+            style={{ 
+              backgroundColor: `${statusColor}20`,
+              color: statusColor
+            }}
+          >
+            {statusConfig?.label || demand.status}
+          </span>
         </div>
       </div>
       
-      {/* Tooltip */}
+      {/* Milestone Markers - visual only, NO tooltips */}
+      {showMilestones && demand.milestones.length > 0 && demand.milestones.map((milestone, index) => (
+        <MilestoneMarker
+          key={milestone.id}
+          milestone={milestone}
+          index={index}
+          totalMilestones={demand.milestones.length}
+          demandStart={demand.startDate}
+          demandEnd={demand.endDate}
+          barLeft={barLeft}
+          barWidth={barWidth}
+        />
+      ))}
+      
+      {/* UNIFIED TOOLTIP - One tooltip per row with all demand information */}
       <div 
-        className="absolute bottom-0 translate-y-full mt-1 px-4 py-3 bg-popover border border-border rounded-lg shadow-xl opacity-0 group-hover/bar:opacity-100 transition-opacity pointer-events-none z-[100]"
-        style={{ left: `${Math.min(barLeft, 70)}%` }}
+        className="absolute top-full left-0 mt-1 px-3 py-2.5 bg-popover border border-border rounded-lg shadow-xl opacity-0 group-hover/row:opacity-100 transition-opacity pointer-events-none z-[100] min-w-[240px] max-w-[340px]"
+        style={{ left: `${Math.max(0, Math.min(barLeft, 70))}%` }}
       >
-        <div className="text-sm font-semibold text-foreground mb-1">{demand.title}</div>
-        <div className="text-xs text-muted-foreground mb-2">
+        {/* Demand Key + Title */}
+        <div className="flex items-start gap-2 mb-1">
+          <span className="text-[10px] font-semibold text-brand-gold bg-brand-gold/10 px-1.5 py-0.5 rounded flex-shrink-0">
+            {demand.key}
+          </span>
+          <div className="text-xs font-semibold text-foreground leading-tight flex-1">
+            {demand.title}
+          </div>
+        </div>
+        
+        {/* Date Range (End Date is canonical) */}
+        <div className="text-[10px] text-muted-foreground mb-2">
           {demand.startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} → {demand.endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
         </div>
-        <div className="flex items-center gap-3 text-xs">
-          <span className="text-brand-gold font-medium">{demand.progress}% complete</span>
-          <span className="text-muted-foreground">{demand.ownerName}</span>
+        
+        {/* Status + Progress */}
+        <div className="flex items-center gap-2 mb-2">
+          <span 
+            className="text-[10px] font-semibold px-2 py-0.5 rounded"
+            style={{ 
+              backgroundColor: `${statusColor}20`,
+              color: statusColor
+            }}
+          >
+            {statusConfig?.label || demand.status}
+          </span>
+          <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
+            <div 
+              className="h-full rounded-full"
+              style={{ width: `${demand.progress}%`, backgroundColor: statusColor }}
+            />
+          </div>
+          <span className="text-[10px] font-semibold" style={{ color: statusColor }}>
+            {demand.progress}%
+          </span>
         </div>
+        
+        {/* Owner */}
+        <div className="text-[10px] text-muted-foreground mb-1">
+          <span className="font-medium text-foreground">Owner:</span> {demand.ownerName}
+        </div>
+        
+        {/* Platform */}
+        {demand.platform && (
+          <div className="text-[10px] text-muted-foreground mb-1">
+            <span className="font-medium text-foreground">Platform:</span> {demand.platform}
+          </div>
+        )}
+        
+        {/* Milestones Section (if any) */}
+        {demand.milestones.length > 0 && (
+          <div className="border-t border-border/50 pt-2 mt-2">
+            <div className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wide mb-1.5">
+              Milestones ({demand.milestones.length})
+            </div>
+            <div className="space-y-1">
+              {demand.milestones.slice(0, 4).map(ms => {
+                const msStatusStyle = getKRStatusStyle(ms.status);
+                return (
+                  <div key={ms.id} className="flex items-center gap-2 text-[10px]">
+                    <div 
+                      className="w-2 h-2 rotate-45 flex-shrink-0"
+                      style={{ 
+                        background: msStatusStyle.filled ? msStatusStyle.color : '#ffffff',
+                        border: `1.5px solid ${msStatusStyle.color}`
+                      }}
+                    />
+                    <span className="flex-1 truncate text-foreground">{ms.title}</span>
+                    <span className="text-muted-foreground flex-shrink-0">
+                      {ms.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    </span>
+                  </div>
+                );
+              })}
+              {demand.milestones.length > 4 && (
+                <div className="text-[9px] text-muted-foreground">
+                  +{demand.milestones.length - 4} more
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -217,51 +314,53 @@ interface MilestoneMarkerProps {
   totalMilestones: number;
   demandStart: Date;
   demandEnd: Date;
+  barLeft: number;
+  barWidth: number;
 }
 
+// Milestone Marker - visual only, NO tooltip (tooltip is unified at row level)
 const MilestoneMarker: React.FC<MilestoneMarkerProps> = ({
   milestone,
   index,
   totalMilestones,
   demandStart,
   demandEnd,
+  barLeft,
+  barWidth,
 }) => {
-  // Calculate position
-  const position = useMemo(() => {
+  // Calculate absolute position on timeline
+  const absolutePosition = useMemo(() => {
     const milestoneTime = milestone.date.getTime();
     const startTime = demandStart.getTime();
     const endTime = demandEnd.getTime();
     
+    let relativePosition: number;
     if (milestoneTime >= startTime && milestoneTime <= endTime) {
       const barDuration = endTime - startTime;
       const msPosition = milestoneTime - startTime;
-      return Math.max(10, Math.min(90, (msPosition / barDuration) * 100));
+      relativePosition = Math.max(5, Math.min(95, (msPosition / barDuration) * 100));
+    } else {
+      // Distribute evenly if date is out of range
+      const spacing = 90 / (totalMilestones + 1);
+      relativePosition = 5 + spacing * (index + 1);
     }
     
-    // Distribute evenly if date is out of range
-    const spacing = 80 / (totalMilestones + 1);
-    return 10 + spacing * (index + 1);
-  }, [milestone.date, demandStart, demandEnd, index, totalMilestones]);
+    return barLeft + (relativePosition / 100) * barWidth;
+  }, [milestone.date, demandStart, demandEnd, index, totalMilestones, barLeft, barWidth]);
   
   const statusStyle = getKRStatusStyle(milestone.status);
   
+  // Visual marker only - NO tooltip, pointer-events disabled
   return (
     <div 
-      className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rotate-45 border-2 z-10 group/ms cursor-pointer"
+      className="absolute top-1/2 w-2.5 h-2.5 rotate-45 border z-10 pointer-events-none"
       style={{ 
-        left: `${position}%`,
+        left: `${absolutePosition}%`,
+        transform: 'translateY(-50%) rotate(45deg)',
         background: statusStyle.filled ? statusStyle.color : '#ffffff',
-        borderColor: statusStyle.color
+        borderColor: statusStyle.color,
+        borderWidth: '1.5px'
       }}
-    >
-      {/* Tooltip */}
-      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 px-4 py-3 bg-popover border border-border rounded-lg shadow-xl opacity-0 group-hover/ms:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-[100] -rotate-45">
-        <div className="text-[10px] font-semibold text-brand-gold uppercase tracking-wide mb-1">Milestone</div>
-        <div className="text-sm font-medium text-foreground mb-1 max-w-[220px] truncate">{milestone.title}</div>
-        <div className="text-xs text-muted-foreground">
-          {milestone.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-        </div>
-      </div>
-    </div>
+    />
   );
 };
