@@ -84,7 +84,7 @@ export default function KnowledgeHubPage() {
           <FolderOpen className="h-4 w-4 mr-2" />
           New Space
         </Button>
-        <Button size="sm" className="gap-1.5 bg-brand-gold hover:bg-brand-gold-hover text-white" onClick={() => setCreateDocOpen(true)}>
+        <Button size="sm" className="gap-1.5 bg-brand-primary hover:bg-brand-primary-hover text-white" onClick={() => setCreateDocOpen(true)}>
           <Plus className="h-4 w-4" />
           New Document
         </Button>
@@ -104,18 +104,18 @@ export default function KnowledgeHubPage() {
           {favorites && favorites.length > 0 && (
             <section>
               <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <Star className="h-5 w-5 text-brand-gold fill-brand-gold" />
+                <Star className="h-5 w-5 text-brand-primary fill-brand-primary" />
                 Starred
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {favorites.slice(0, 6).map((fav: any) => (
                   <Card 
                     key={fav.id}
-                    className="p-4 hover:border-brand-gold/50 transition-colors cursor-pointer"
+                    className="p-4 hover:border-brand-primary/50 transition-colors cursor-pointer"
                     onClick={() => navigate(`/knowledge-hub/documents/${fav.document?.id}`)}
                   >
                     <div className="flex items-start gap-3">
-                      <Star className="h-4 w-4 text-brand-gold fill-brand-gold flex-shrink-0 mt-0.5" />
+                      <Star className="h-4 w-4 text-brand-primary fill-brand-primary flex-shrink-0 mt-0.5" />
                       <div className="min-w-0 flex-1">
                         <h3 className="font-medium truncate">{fav.document?.title}</h3>
                         <p className="text-sm text-muted-foreground">
@@ -132,7 +132,7 @@ export default function KnowledgeHubPage() {
           {/* Spaces Section */}
           <section>
             <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <FolderOpen className="h-5 w-5 text-brand-gold" />
+              <FolderOpen className="h-5 w-5 text-brand-primary" />
               Spaces
             </h2>
             {spacesLoading ? (
@@ -146,7 +146,7 @@ export default function KnowledgeHubPage() {
                 {filteredSpaces.map((space) => (
                   <Card 
                     key={space.id} 
-                    className="hover:border-brand-gold/50 transition-colors cursor-pointer"
+                    className="hover:border-brand-primary/50 transition-colors cursor-pointer"
                     onClick={() => navigate(`/knowledge-hub/spaces/${space.id}`)}
                   >
                     <CardHeader className="pb-2">
@@ -178,7 +178,7 @@ export default function KnowledgeHubPage() {
           {/* Recent Documents Section */}
           <section>
             <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <Clock className="h-5 w-5 text-brand-gold" />
+              <Clock className="h-5 w-5 text-brand-primary" />
               Recent Documents
             </h2>
             {docsLoading ? (
@@ -192,7 +192,7 @@ export default function KnowledgeHubPage() {
                 {filteredDocs.map((doc) => (
                   <Card 
                     key={doc.id}
-                    className="p-4 hover:border-brand-gold/50 transition-colors cursor-pointer"
+                    className="p-4 hover:border-brand-primary/50 transition-colors cursor-pointer"
                     onClick={() => navigate(`/knowledge-hub/documents/${doc.id}`)}
                   >
                     <div className="flex items-center gap-4">

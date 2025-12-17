@@ -21,7 +21,7 @@ export default function DetailsPanels() {
               Configure detail panel layouts and visible fields for work items
             </p>
           </div>
-          <Button className="bg-brand-gold hover:bg-brand-gold-hover">
+          <Button className="bg-brand-primary hover:bg-brand-primary-hover">
             Save Changes
           </Button>
         </div>

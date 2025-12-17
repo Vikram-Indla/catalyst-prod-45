@@ -25,10 +25,12 @@ export default {
           "primary-light": "#7A9A7A",
           "primary-muted": "rgba(92, 124, 92, 0.15)",
           "primary-subtle": "rgba(92, 124, 92, 0.08)",
+          "primary-pale": "rgba(92, 124, 92, 0.1)",
           // Legacy gold - DECORATIVE ONLY
           gold: "#C69C6D",
           "gold-hover": "#B8905F",
           "gold-muted": "rgba(198, 156, 109, 0.15)",
+          "gold-pale": "rgba(198, 156, 109, 0.1)",
         },
         
         /* ══════════════════════════════════════════════════════════

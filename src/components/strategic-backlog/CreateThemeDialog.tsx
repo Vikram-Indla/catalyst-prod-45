@@ -75,7 +75,7 @@ export function CreateThemeDialog({ open, onOpenChange, snapshotId }: CreateThem
         <div className="space-y-4 py-4">
           {/* Name */}
           <div className="space-y-2">
-            <Label>Name <span className="text-brand-gold">*</span></Label>
+            <Label>Name <span className="text-destructive">*</span></Label>
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -161,7 +161,7 @@ export function CreateThemeDialog({ open, onOpenChange, snapshotId }: CreateThem
           <Button
             onClick={handleSubmit}
             disabled={!name.trim() || createTheme.isPending}
-            className="bg-brand-gold hover:bg-brand-gold/90"
+            className="bg-brand-primary hover:bg-brand-primary/90"
           >
             {createTheme.isPending ? 'Creating...' : 'Save'}
           </Button>

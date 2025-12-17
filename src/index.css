@@ -26,6 +26,7 @@
   --brand-primary-light: #7A9A7A;
   --brand-primary-muted: rgba(92, 124, 92, 0.15);
   --brand-primary-subtle: rgba(92, 124, 92, 0.08);
+  --brand-primary-pale: rgba(92, 124, 92, 0.1);
   
   /* Legacy Gold — DECORATIVE ONLY (charts, gauges, accents) */
   --brand-gold: #C69C6D;

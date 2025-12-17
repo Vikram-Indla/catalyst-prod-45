@@ -290,7 +290,7 @@ export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
       <div className="flex-1 overflow-auto px-4 sm:px-6 pt-2 pb-4">
         <div className="border rounded-lg bg-card overflow-hidden">
           {/* Column Headers - Match Epic backlog styling */}
-          <div className="flex items-center gap-3 px-4 py-2.5 bg-brand-gold/10 border-b border-brand-gold/30 text-xs font-semibold text-foreground capitalize tracking-wide">
+          <div className="flex items-center gap-3 px-4 py-2.5 bg-brand-primary/10 border-b border-brand-primary/30 text-xs font-semibold text-foreground capitalize tracking-wide">
             {/* Drag handle column */}
             <div className="w-8" />
             

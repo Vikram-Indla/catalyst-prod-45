@@ -22,7 +22,7 @@ export function ThemeFilterBar({ themes, selectedThemeIds, onThemeToggle }: Them
 
   return (
     <div className="flex items-center gap-2.5 px-6 py-3 bg-card border-b border-border overflow-x-auto">
-      <span className="text-xs font-semibold text-brand-gold uppercase tracking-wider mr-1 flex-shrink-0">
+      <span className="text-xs font-semibold text-brand-primary uppercase tracking-wider mr-1 flex-shrink-0">
         Themes:
       </span>
 
@@ -32,7 +32,7 @@ export function ThemeFilterBar({ themes, selectedThemeIds, onThemeToggle }: Them
         className={cn(
           "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium transition-all whitespace-nowrap",
           isAllSelected
-            ? "border-2 border-brand-gold bg-brand-gold/10 text-brand-gold"
+            ? "border-2 border-brand-primary bg-brand-primary/10 text-brand-primary"
             : "border border-border bg-card text-muted-foreground hover:bg-muted"
         )}
       >
