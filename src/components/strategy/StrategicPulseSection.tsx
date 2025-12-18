@@ -1,7 +1,8 @@
 /**
- * StrategicPulseSection — Signal-led KPI tiles
- * 5 equal tiles: Strategy Health, Progress, At Risk, Gaps, Open Risks
- * Uses keepPreviousData pattern to prevent blanking on snapshot switch
+ * StrategicPulseSection — Executive KPI cockpit
+ * Primary: Strategy Health (large left card)
+ * Secondary: Progress, At Risk, Gaps, Open Risks (compact right cards)
+ * Uses stale-while-revalidate to prevent blanking on snapshot switch
  */
 
 import { useRef } from 'react';
@@ -19,8 +20,7 @@ import {
   Target, 
   Shield,
   Activity,
-  ChevronRight,
-  RefreshCw
+  ChevronRight
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -63,7 +63,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
 
       return { total: riskList.length, high };
     },
-    staleTime: 30000, // Keep data fresh for 30s
+    staleTime: 30000,
   });
 
   const isInitialLoading = okrLoading || countsLoading || risksLoading;
@@ -124,9 +124,9 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
       };
 
   const statusConfig = {
-    'on-track': { label: 'On Track', bgClass: 'bg-status-success' },
-    'at-risk': { label: 'At Risk', bgClass: 'bg-status-warning' },
-    'off-track': { label: 'Off Track', bgClass: 'bg-status-danger' },
+    'on-track': { label: 'On Track', bgClass: 'bg-status-success', textClass: 'text-status-success' },
+    'at-risk': { label: 'At Risk', bgClass: 'bg-status-warning', textClass: 'text-status-warning' },
+    'off-track': { label: 'Off Track', bgClass: 'bg-status-danger', textClass: 'text-status-danger' },
   };
 
   const config = statusConfig[displayData.overallStatus];
@@ -147,26 +147,33 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
           className="px-4 py-2 flex items-center justify-between"
           style={{ borderBottom: '1px solid var(--border-subtle)' }}
         >
-          <div className="h-3.5 w-24 rounded animate-pulse" style={{ backgroundColor: 'var(--muted)' }} />
+          <div className="h-3.5 w-28 rounded animate-pulse" style={{ backgroundColor: 'var(--muted)' }} />
         </div>
         <div className="p-3">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div 
-                key={i} 
-                className="p-3 rounded-md min-h-[88px]"
-                style={{ 
-                  backgroundColor: 'var(--muted)', 
-                  border: '1px solid var(--border)',
-                  borderLeft: '2px solid var(--border)'
-                }}
-              >
-                <div className="h-2.5 w-16 rounded mb-2.5 animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
-                <div className="h-6 w-12 rounded mb-2 animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
-                <div className="h-2 w-20 rounded mb-2 animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
-                <div className="h-1 w-full rounded-full animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
-              </div>
-            ))}
+          <div className="flex flex-col lg:flex-row gap-3">
+            {/* Primary skeleton */}
+            <div 
+              className="lg:w-[240px] min-h-[120px] p-4 rounded-md flex-shrink-0"
+              style={{ backgroundColor: 'var(--muted)', border: '1px solid var(--border)' }}
+            >
+              <div className="h-3 w-24 rounded mb-3 animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
+              <div className="h-7 w-20 rounded mb-2 animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
+              <div className="h-2.5 w-28 rounded animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
+            </div>
+            {/* Secondary skeletons */}
+            <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-2">
+              {[1, 2, 3, 4].map((i) => (
+                <div 
+                  key={i} 
+                  className="p-3 rounded-md min-h-[56px]"
+                  style={{ backgroundColor: 'var(--muted)', border: '1px solid var(--border)' }}
+                >
+                  <div className="h-2.5 w-14 rounded mb-2 animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
+                  <div className="h-5 w-10 rounded mb-1 animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
+                  <div className="h-2 w-16 rounded animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -193,147 +200,138 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
           Strategic Pulse
         </h2>
         {isRefreshing && (
-          <div className="flex items-center gap-1.5">
-            <RefreshCw size={10} className="animate-spin" style={{ color: 'var(--text-muted)' }} />
-            <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>Refreshing…</span>
-          </div>
+          <span className="text-[10px] font-medium" style={{ color: 'var(--text-muted)' }}>
+            Refreshing…
+          </span>
         )}
       </div>
 
       <div className="p-3">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
-          {/* Tile 1: Strategy Health */}
-          <KPITile
-            label="Strategy Health"
-            icon={<Activity size={13} />}
-            accentColor="primary"
+        <div className="flex flex-col lg:flex-row gap-3">
+          {/* PRIMARY CARD: Strategy Health */}
+          <div 
+            className="lg:w-[240px] flex-shrink-0 p-4 rounded-md"
+            style={{
+              backgroundColor: 'var(--surface-2)',
+              border: '1px solid var(--border-default)',
+              borderLeft: `3px solid ${displayData.overallStatus === 'on-track' ? 'var(--status-success)' : displayData.overallStatus === 'at-risk' ? 'var(--status-warning)' : 'var(--status-danger)'}`,
+            }}
           >
-            <div className="flex items-center gap-2 mt-1">
+            <div className="flex items-center gap-2 mb-2">
+              <Activity size={14} style={{ color: 'var(--brand-primary)' }} />
+              <span 
+                className="text-[11px] font-semibold"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                Strategy Health
+              </span>
+            </div>
+            
+            <div className="flex items-center gap-2 mb-1.5">
               <span className={cn(
-                "inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold",
+                "inline-flex items-center px-2.5 py-1 rounded text-[11px] font-bold",
                 config.bgClass, "text-white"
               )}>
                 {config.label}
               </span>
             </div>
-            <p className="text-[10px] mt-1.5 leading-tight" style={{ color: 'var(--text-muted)' }}>
-              {displayData.overallStatus === 'on-track' ? 'Execution on track' : 
-               displayData.overallStatus === 'at-risk' ? 'Needs attention' : 'Intervention needed'}
+            
+            <p 
+              className="text-[11px] leading-snug"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              {displayData.overallStatus === 'on-track' 
+                ? 'Execution progressing as planned' 
+                : displayData.overallStatus === 'at-risk' 
+                  ? 'Some objectives need attention' 
+                  : 'Critical intervention required'}
             </p>
-          </KPITile>
 
-          {/* Tile 2: Progress */}
-          <KPITile
-            label="Progress"
-            icon={<BarChart3 size={13} />}
-            onClick={() => navigate('/enterprise/okr-hub')}
-            accentColor="primary"
-          >
-            <div className="flex items-baseline gap-1.5 mt-0.5">
-              <span 
-                className="text-xl font-bold tabular-nums"
-                style={{ color: 'var(--text-primary)' }}
-              >
-                {displayData.objectivesCount > 0 ? `${displayData.overallProgress}%` : '—'}
+            {/* Trend indicator */}
+            <div className="flex items-center gap-1.5 mt-3 pt-2" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+              <TrendIcon size={12} className={config.textClass} />
+              <span className="text-[10px] font-medium" style={{ color: 'var(--text-muted)' }}>
+                {displayData.overallProgress}% progress · {trendLabel}
               </span>
-              {displayData.objectivesCount > 0 && (
-                <span className={cn(
-                  "inline-flex items-center gap-0.5 text-[10px] font-medium",
-                  displayData.overallProgress >= 50 ? 'text-status-success' : 
-                  displayData.overallProgress >= 30 ? '' : 'text-status-danger'
-                )} style={displayData.overallProgress >= 30 && displayData.overallProgress < 50 ? { color: 'var(--text-muted)' } : {}}>
-                  <TrendIcon size={10} />
-                  {trendLabel}
-                </span>
-              )}
             </div>
-            <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-muted)' }}>
-              {displayData.objectivesCount} objective{displayData.objectivesCount !== 1 ? 's' : ''}
-            </p>
-            {displayData.objectivesCount > 0 && (
-              <div 
-                className="w-full h-1 rounded-full mt-2 overflow-hidden"
-                style={{ backgroundColor: 'var(--border-default)' }}
-              >
-                <div 
-                  className="h-full rounded-full transition-all"
-                  style={{ 
-                    width: `${displayData.overallProgress}%`,
-                    backgroundColor: 'var(--brand-primary)'
-                  }}
-                />
-              </div>
-            )}
-          </KPITile>
+          </div>
 
-          {/* Tile 3: At Risk */}
-          <KPITile
-            label="At Risk"
-            icon={<AlertTriangle size={13} />}
-            onClick={() => navigate('/enterprise/okr-hub')}
-            accentColor={displayData.atRiskCount > 0 ? 'warning' : 'muted'}
-          >
-            <span className={cn(
-              "text-xl font-bold tabular-nums mt-0.5 inline-block",
-              displayData.atRiskCount > 0 ? 'text-status-warning' : ''
-            )} style={displayData.atRiskCount === 0 ? { color: 'var(--text-primary)' } : {}}>
-              {displayData.atRiskCount}
-            </span>
-            <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-muted)' }}>
-              {displayData.atRiskCount === 0 ? 'All healthy' : 'Need attention'}
-            </p>
-          </KPITile>
+          {/* SECONDARY CARDS: Compact metrics */}
+          <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-2">
+            {/* Progress */}
+            <CompactKPITile
+              label="Progress"
+              value={displayData.objectivesCount > 0 ? `${displayData.overallProgress}%` : '—'}
+              subtext={`${displayData.objectivesCount} objective${displayData.objectivesCount !== 1 ? 's' : ''}`}
+              icon={<BarChart3 size={12} />}
+              onClick={() => navigate('/enterprise/okr-hub')}
+              accentColor="primary"
+              showProgress={displayData.objectivesCount > 0}
+              progressValue={displayData.overallProgress}
+            />
 
-          {/* Tile 4: Gaps */}
-          <KPITile
-            label="Alignment Gaps"
-            icon={<Target size={13} />}
-            onClick={() => navigate('/enterprise/backlog')}
-            accentColor={displayData.alignmentGaps > 0 ? 'bronze' : 'muted'}
-          >
-            <span className={cn(
-              "text-xl font-bold tabular-nums mt-0.5 inline-block",
-              displayData.alignmentGaps > 0 ? 'text-secondary-bronze' : ''
-            )} style={displayData.alignmentGaps === 0 ? { color: 'var(--text-primary)' } : {}}>
-              {displayData.alignmentGaps}
-            </span>
-            <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-muted)' }}>
-              {displayData.alignmentGaps === 0 ? 'Fully aligned' : 'Unlinked items'}
-            </p>
-          </KPITile>
+            {/* At Risk */}
+            <CompactKPITile
+              label="At Risk"
+              value={displayData.atRiskCount}
+              subtext={displayData.atRiskCount === 0 ? 'All healthy' : 'Need attention'}
+              icon={<AlertTriangle size={12} />}
+              onClick={() => navigate('/enterprise/okr-hub')}
+              accentColor={displayData.atRiskCount > 0 ? 'warning' : 'muted'}
+              valueColor={displayData.atRiskCount > 0 ? 'var(--status-warning)' : undefined}
+            />
 
-          {/* Tile 5: Open Risks */}
-          <KPITile
-            label="Open Risks"
-            icon={<Shield size={13} />}
-            onClick={() => navigate('/enterprise/risks')}
-            accentColor={displayData.highRisks > 0 ? 'danger' : 'muted'}
-          >
-            <span className={cn(
-              "text-xl font-bold tabular-nums mt-0.5 inline-block",
-              displayData.highRisks > 0 ? 'text-status-danger' : ''
-            )} style={displayData.highRisks === 0 ? { color: 'var(--text-primary)' } : {}}>
-              {displayData.openRisks}
-            </span>
-            <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-muted)' }}>
-              {displayData.highRisks > 0 ? `${displayData.highRisks} high severity` : 'No critical'}
-            </p>
-          </KPITile>
+            {/* Alignment Gaps */}
+            <CompactKPITile
+              label="Alignment Gaps"
+              value={displayData.alignmentGaps}
+              subtext={displayData.alignmentGaps === 0 ? 'Fully aligned' : 'Unlinked items'}
+              icon={<Target size={12} />}
+              onClick={() => navigate('/enterprise/backlog')}
+              accentColor={displayData.alignmentGaps > 0 ? 'bronze' : 'muted'}
+              valueColor={displayData.alignmentGaps > 0 ? 'var(--secondary-bronze)' : undefined}
+            />
+
+            {/* Open Risks */}
+            <CompactKPITile
+              label="Open Risks"
+              value={displayData.openRisks}
+              subtext={displayData.highRisks > 0 ? `${displayData.highRisks} high severity` : 'No critical'}
+              icon={<Shield size={12} />}
+              onClick={() => navigate('/enterprise/risks')}
+              accentColor={displayData.highRisks > 0 ? 'danger' : 'muted'}
+              valueColor={displayData.highRisks > 0 ? 'var(--status-danger)' : undefined}
+            />
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
-interface KPITileProps {
+interface CompactKPITileProps {
   label: string;
+  value: string | number;
+  subtext: string;
   icon: React.ReactNode;
-  children: React.ReactNode;
   onClick?: () => void;
   accentColor?: 'primary' | 'warning' | 'danger' | 'bronze' | 'muted';
+  valueColor?: string;
+  showProgress?: boolean;
+  progressValue?: number;
 }
 
-function KPITile({ label, icon, children, onClick, accentColor = 'muted' }: KPITileProps) {
+function CompactKPITile({ 
+  label, 
+  value, 
+  subtext, 
+  icon, 
+  onClick, 
+  accentColor = 'muted',
+  valueColor,
+  showProgress,
+  progressValue = 0
+}: CompactKPITileProps) {
   const accentBorders: Record<string, string> = {
     primary: 'var(--brand-primary)',
     warning: 'var(--status-warning)',
@@ -350,48 +348,65 @@ function KPITile({ label, icon, children, onClick, accentColor = 'muted' }: KPIT
     muted: 'var(--text-muted)',
   };
 
-  const Wrapper = onClick ? 'button' : 'div';
-
   return (
-    <Wrapper
+    <button
       onClick={onClick}
-      className={cn(
-        "p-3 rounded-md text-left transition-all relative group min-h-[88px]",
-        onClick && "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
-      )}
+      className="p-2.5 rounded-md text-left transition-all relative group min-h-[56px] w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
       style={{
         backgroundColor: 'var(--surface-2)',
         border: '1px solid var(--border-subtle)',
         borderLeft: `2px solid ${accentBorders[accentColor]}`,
       }}
-      onMouseEnter={onClick ? (e) => {
+      onMouseEnter={(e) => {
         (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)';
         (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-default)';
-      } : undefined}
-      onMouseLeave={onClick ? (e) => {
+      }}
+      onMouseLeave={(e) => {
         (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-2)';
         (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-subtle)';
-      } : undefined}
+      }}
     >
       <div className="flex items-center justify-between mb-0.5">
         <span 
-          className="text-[10px] font-semibold uppercase tracking-wide"
-          style={{ color: 'var(--text-muted)' }}
+          className="text-[10px] font-medium"
+          style={{ color: 'var(--text-secondary)' }}
         >
           {label}
         </span>
         <span style={{ color: iconColors[accentColor] }}>{icon}</span>
       </div>
       
-      {children}
+      <span 
+        className="text-lg font-bold tabular-nums block leading-tight"
+        style={{ color: valueColor || 'var(--text-primary)' }}
+      >
+        {value}
+      </span>
+      
+      <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
+        {subtext}
+      </p>
 
-      {onClick && (
-        <ChevronRight 
-          size={12} 
-          className="absolute top-3 right-2.5 opacity-0 group-hover:opacity-40 transition-opacity" 
-          style={{ color: 'var(--text-muted)' }}
-        />
+      {showProgress && (
+        <div 
+          className="w-full h-1 rounded-full mt-1.5 overflow-hidden"
+          style={{ backgroundColor: 'var(--border-default)' }}
+        >
+          <div 
+            className="h-full rounded-full transition-all"
+            style={{ 
+              width: `${progressValue}%`,
+              backgroundColor: 'var(--brand-primary)'
+            }}
+          />
+        </div>
       )}
-    </Wrapper>
+
+      <ChevronRight 
+        size={10} 
+        className="absolute top-2 right-2 opacity-0 group-hover:opacity-40 transition-opacity" 
+        style={{ color: 'var(--text-muted)' }}
+      />
+    </button>
   );
 }
