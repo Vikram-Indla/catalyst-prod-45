@@ -1,15 +1,11 @@
 /**
  * ExposureGapsSection — Executive cockpit-style exposure surface
  * Compact rows, micro-visuals, aligned cards
- * Uses keepPreviousData pattern to prevent blanking on snapshot switch
+ * Consumes unified data from useStrategyRoomSummary to prevent UI pulsing
  */
 
-import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { useOKRv2StrategyMetrics } from '@/hooks/useOKRv2StrategyMetrics';
-import { useStrategyPyramidCounts } from '@/hooks/useExecutionMetrics';
+import { useStrategyRoomSummary } from '@/hooks/useStrategyRoomSummary';
 import { 
   AlertTriangle, 
   Shield, 
@@ -17,7 +13,7 @@ import {
   Clock, 
   ChevronRight,
   CheckCircle2,
-  RefreshCw
+  Loader2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -38,101 +34,30 @@ interface AttentionItem {
 export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
   const navigate = useNavigate();
   
-  // Store last valid data to prevent blanking
-  const lastValidDataRef = useRef<{
-    atRiskObjectives: any[];
-    misalignedEpics: number;
-    misalignedFeatures: number;
-    riskData: { total: number; high: number; medium: number; low: number; overdue: number; topRisks: any[] };
-  } | null>(null);
+  const { data, isLoading, isFetching } = useStrategyRoomSummary(snapshotId);
   
-  const { data: okrMetrics, isLoading: okrLoading, isFetching: okrFetching } = useOKRv2StrategyMetrics(snapshotId);
-  const { data: counts, isLoading: countsLoading, isFetching: countsFetching } = useStrategyPyramidCounts(snapshotId);
+  // Determine loading states
+  const isFirstLoad = isLoading && !data;
+  const isUpdating = isFetching && !isLoading && !!data;
 
-  const { data: riskData, isLoading: risksLoading, isFetching: risksFetching } = useQuery({
-    queryKey: ['exposure-risks', snapshotId],
-    queryFn: async () => {
-      const { data: risks } = await supabase
-        .from('risks')
-        .select('id, title, impact, status, target_resolution_date')
-        .not('status', 'eq', 'Closed')
-        .order('impact', { ascending: false })
-        .limit(10);
-
-      const riskList = risks || [];
-      const today = new Date();
-      
-      const getSeverity = (r: { impact?: string | null }) => {
-        const impact = (r.impact || '').toLowerCase();
-        if (impact === 'critical' || impact === 'high' || impact === '5' || impact === '4') return 'high';
-        if (impact === 'medium' || impact === '3') return 'medium';
-        return 'low';
-      };
-
-      const high = riskList.filter(r => getSeverity(r) === 'high').length;
-      const medium = riskList.filter(r => getSeverity(r) === 'medium').length;
-      const low = riskList.filter(r => getSeverity(r) === 'low').length;
-      
-      const overdue = riskList.filter(r => {
-        if (!r.target_resolution_date) return false;
-        return new Date(r.target_resolution_date) < today;
-      });
-
-      const topRisks = riskList.filter(r => getSeverity(r) === 'high').slice(0, 3);
-
-      return { 
-        total: riskList.length, 
-        high, 
-        medium, 
-        low, 
-        overdue: overdue.length,
-        topRisks 
-      };
-    },
-    staleTime: 60 * 1000, // 60 seconds
-    gcTime: 10 * 60 * 1000, // 10 minutes cache
-  });
-
-  const isInitialLoading = okrLoading || countsLoading || risksLoading;
-  const isRefreshing = (okrFetching || countsFetching || risksFetching) && !isInitialLoading;
-
-  const atRiskObjectives = okrMetrics?.objectives?.filter(obj => {
-    const health = (obj.health || '').toLowerCase();
-    return health === 'at_risk' || health === 'poor';
-  }) || [];
-
-  const misalignedEpics = counts?.misalignedEpics ?? 0;
-  const misalignedFeatures = counts?.misalignedFeatures ?? 0;
-
-  // Update last valid data when we have real data
-  if (!isInitialLoading && riskData) {
-    lastValidDataRef.current = {
-      atRiskObjectives,
-      misalignedEpics,
-      misalignedFeatures,
-      riskData,
-    };
-  }
-
-  // Use last valid data during initial load, or current data
-  const displayData = isInitialLoading && lastValidDataRef.current 
-    ? lastValidDataRef.current 
-    : {
-        atRiskObjectives,
-        misalignedEpics,
-        misalignedFeatures,
-        riskData: riskData ?? { total: 0, high: 0, medium: 0, low: 0, overdue: 0, topRisks: [] },
-      };
-
-  const alignmentGaps = displayData.misalignedEpics + displayData.misalignedFeatures;
-  const highRisks = displayData.riskData.high;
-  const overdueRisks = displayData.riskData.overdue;
-  const totalRisks = displayData.riskData.total;
+  // Use data or safe defaults (never undefined/null in render)
+  const displayData = data ?? {
+    atRiskObjectives: [],
+    misalignedEpics: 0,
+    misalignedFeatures: 0,
+    alignmentGaps: 0,
+    totalRisks: 0,
+    highRisks: 0,
+    mediumRisks: 0,
+    lowRisks: 0,
+    overdueRisks: 0,
+    topRisks: [],
+  };
 
   // Build "Needs Attention" list
   const attentionItems: AttentionItem[] = [];
   
-  displayData.atRiskObjectives.slice(0, 2).forEach(obj => {
+  (displayData.atRiskObjectives || []).slice(0, 2).forEach(obj => {
     attentionItems.push({
       id: obj.id,
       type: 'objective',
@@ -143,7 +68,7 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
     });
   });
 
-  (displayData.riskData.topRisks || []).slice(0, 2).forEach(risk => {
+  (displayData.topRisks || []).slice(0, 2).forEach(risk => {
     attentionItems.push({
       id: risk.id,
       type: 'risk',
@@ -154,19 +79,19 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
     });
   });
 
-  if (alignmentGaps > 0) {
+  if (displayData.alignmentGaps > 0) {
     attentionItems.push({
       id: 'alignment-gaps',
       type: 'gap',
-      title: `${alignmentGaps} Alignment Gap${alignmentGaps !== 1 ? 's' : ''}`,
+      title: `${displayData.alignmentGaps} Alignment Gap${displayData.alignmentGaps !== 1 ? 's' : ''}`,
       reason: `${displayData.misalignedEpics} epics, ${displayData.misalignedFeatures} features`,
-      severity: alignmentGaps > 5 ? 'high' : 'medium',
+      severity: displayData.alignmentGaps > 5 ? 'high' : 'medium',
       link: '/enterprise/backlog',
     });
   }
 
-  // Only show skeleton on true initial load with no cached data
-  if (isInitialLoading && !lastValidDataRef.current) {
+  // Show skeleton only on true first load (no cached data at all)
+  if (isFirstLoad) {
     return (
       <section 
         className="rounded-lg overflow-hidden"
@@ -185,7 +110,7 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
             {[1, 2, 3].map((col) => (
               <div 
-                key={col} 
+                key={`exposure-skeleton-${col}`}
                 className="rounded-md overflow-hidden min-h-[140px]"
                 style={{ 
                   backgroundColor: 'var(--muted)', 
@@ -201,7 +126,7 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
                 </div>
                 <div className="p-3 space-y-2">
                   {[1, 2, 3].map((row) => (
-                    <div key={row} className="flex items-center justify-between">
+                    <div key={`row-${col}-${row}`} className="flex items-center justify-between">
                       <div className="h-2.5 w-16 rounded animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
                       <div className="h-3 w-5 rounded animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
                     </div>
@@ -237,10 +162,10 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
         >
           Exposure & Gaps
         </h2>
-        {isRefreshing && (
+        {isUpdating && (
           <div className="flex items-center gap-1.5">
-            <RefreshCw size={10} className="animate-spin" style={{ color: 'var(--text-muted)' }} />
-            <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>Refreshing…</span>
+            <Loader2 size={10} className="animate-spin" style={{ color: 'var(--text-muted)' }} />
+            <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>Updating…</span>
           </div>
         )}
       </div>
@@ -249,6 +174,7 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
           {/* Risk Exposure Column */}
           <CockpitCard
+            key="exposure-risks"
             title="Risk Exposure"
             icon={<Shield size={12} />}
             iconColor="text-status-danger"
@@ -257,28 +183,28 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
             <div className="space-y-1">
               <DataRow 
                 label="Critical/High" 
-                value={highRisks} 
-                total={totalRisks}
-                variant={highRisks > 0 ? 'danger' : 'muted'} 
+                value={displayData.highRisks} 
+                total={displayData.totalRisks}
+                variant={displayData.highRisks > 0 ? 'danger' : 'muted'} 
                 showBar
               />
               <DataRow 
                 label="Medium" 
-                value={displayData.riskData.medium} 
-                total={totalRisks}
-                variant={displayData.riskData.medium > 0 ? 'warning' : 'muted'} 
+                value={displayData.mediumRisks} 
+                total={displayData.totalRisks}
+                variant={displayData.mediumRisks > 0 ? 'warning' : 'muted'} 
                 showBar
               />
               <DataRow 
                 label="Low" 
-                value={displayData.riskData.low} 
-                total={totalRisks}
+                value={displayData.lowRisks} 
+                total={displayData.totalRisks}
                 variant="muted" 
                 showBar
               />
             </div>
 
-            {overdueRisks > 0 && (
+            {displayData.overdueRisks > 0 && (
               <div className="pt-2 mt-2" style={{ borderTop: '1px solid var(--border-subtle)' }}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1">
@@ -286,7 +212,7 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
                     <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>Overdue</span>
                   </div>
                   <span className="text-[11px] font-semibold tabular-nums text-status-danger">
-                    {overdueRisks}
+                    {displayData.overdueRisks}
                   </span>
                 </div>
               </div>
@@ -295,6 +221,7 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
 
           {/* Alignment Gaps Column */}
           <CockpitCard
+            key="exposure-alignment"
             title="Alignment Gaps"
             icon={<Target size={12} />}
             iconColor="text-secondary-bronze"
@@ -319,9 +246,9 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
                 <span className="text-[10px] font-medium" style={{ color: 'var(--text-muted)' }}>Total gaps</span>
                 <span className={cn(
                   "text-sm font-bold tabular-nums",
-                  alignmentGaps > 0 ? "text-secondary-bronze" : ""
-                )} style={alignmentGaps === 0 ? { color: 'var(--text-muted)' } : {}}>
-                  {alignmentGaps}
+                  displayData.alignmentGaps > 0 ? "text-secondary-bronze" : ""
+                )} style={displayData.alignmentGaps === 0 ? { color: 'var(--text-muted)' } : {}}>
+                  {displayData.alignmentGaps}
                 </span>
               </div>
             </div>
@@ -329,6 +256,7 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
 
           {/* Needs Attention Column */}
           <CockpitCard
+            key="exposure-attention"
             title="Needs Attention"
             icon={<AlertTriangle size={12} />}
             iconColor="text-status-warning"
@@ -495,21 +423,18 @@ function AttentionRow({ item, onClick }: { item: AttentionItem; onClick: () => v
       />
       <div className="flex-1 min-w-0">
         <div 
-          className="text-[10px] font-medium truncate leading-tight"
-          style={{ color: 'var(--text-primary)' }}
+          className="text-[10px] font-medium truncate group-hover:text-[var(--text-primary)]"
+          style={{ color: 'var(--text-secondary)' }}
         >
           {item.title}
         </div>
-        <div 
-          className="text-[9px] leading-tight"
-          style={{ color: 'var(--text-muted)' }}
-        >
+        <div className="text-[9px]" style={{ color: 'var(--text-muted)' }}>
           {item.reason}
         </div>
       </div>
       <ChevronRight 
         size={10} 
-        className="flex-shrink-0 opacity-0 group-hover:opacity-60 transition-opacity" 
+        className="opacity-0 group-hover:opacity-50 transition-opacity flex-shrink-0" 
         style={{ color: 'var(--text-muted)' }}
       />
     </button>
