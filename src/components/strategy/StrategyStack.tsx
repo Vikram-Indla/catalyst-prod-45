@@ -2,12 +2,19 @@
  * StrategyStack — CIO Cockpit "Data Table Card" style
  * Enterprise list table feel with sticky header, compact rows, tighter spacing
  * 
- * TYPOGRAPHY LOCK (JOB-190):
+ * TYPOGRAPHY LOCK (CIO COCKPIT UX — NON-NEGOTIABLE):
+ * ─────────────────────────────────────────────────
  * - Section title: text-sm font-semibold (14px)
  * - Table headers: text-xs font-semibold uppercase (12px min)
  * - Cell text: text-sm (14px) or text-xs (12px) minimum
- * - NO text-[9px], text-[10px], text-[11px] - use text-xs as floor
- * - NO text-muted - use var(--text-secondary) for readable supporting text
+ * - NO text-[9px], text-[10px], text-[11px] except for badges
+ * - Use var(--text-secondary) for supporting text, NOT opacity
+ * 
+ * LOADING BEHAVIOR:
+ * - Skeleton allowed ONCE on initial load only
+ * - After first success: NEVER show skeleton again
+ * - During refresh: show "Refreshing…" in header, keep content visible
+ * - NO greying, NO opacity reduction, NO layout shift
  * 
  * LKG CACHING: Uses sessionStorage-backed caching to prevent UI flickering
  * - On snapshot change: loads cached data immediately

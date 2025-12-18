@@ -3,12 +3,22 @@
  * Clean 3-column executive block with equal weight cards
  * Compact rows, thin bars, improved scannability
  * 
- * TYPOGRAPHY LOCK:
- * - Section title: text-[12px] font-semibold tracking-[0.08em] uppercase text-muted-foreground
- * - Card label: text-[12px] font-medium text-muted-foreground
- * - Data row label: text-[12px] text-muted-foreground
- * - Data row value: text-[14px] font-medium text-foreground
+ * TYPOGRAPHY LOCK (CIO COCKPIT UX — NON-NEGOTIABLE):
+ * ─────────────────────────────────────────────────
+ * - Section title: 12px, semibold, uppercase, tracking 0.08em
+ * - Card label: 14px, medium weight, secondary color
+ * - Data row label: 12px, muted color
+ * - Data row value: 14px, medium weight, primary color
+ * 
+ * LOADING BEHAVIOR:
+ * - Skeleton allowed ONCE on initial load only
+ * - After first success: NEVER show skeleton again
+ * - During refresh: show "Refreshing…" in header, keep content visible
+ * - NO greying, NO opacity reduction, NO layout shift
+ * 
+ * FORBIDDEN:
  * - NO opacity-*, NO text-white/* on content text
+ * - NO undefined/NaN values passed to bars/charts
  */
 
 import { useNavigate } from 'react-router-dom';

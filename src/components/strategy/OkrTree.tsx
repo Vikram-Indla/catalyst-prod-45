@@ -3,12 +3,19 @@
  * Crystal clear hierarchy: Theme > Objective > KR
  * Compact rows, aligned progress bars, subtle hover
  * 
- * TYPOGRAPHY LOCK (JOB-190):
+ * TYPOGRAPHY LOCK (CIO COCKPIT UX — NON-NEGOTIABLE):
+ * ─────────────────────────────────────────────────
  * - Section title: text-sm font-semibold (14px)
  * - Table headers: text-xs font-semibold uppercase (12px min)
  * - Row text: text-sm (14px) or text-xs (12px) minimum
- * - NO text-[7px], text-[8px], text-[9px], text-[10px], text-[11px]
- * - NO text-muted - use var(--text-secondary) for readable supporting text
+ * - NO text-[7px], text-[8px], text-[9px], text-[10px] except for owner initials
+ * - Use var(--text-secondary) for supporting text, NOT opacity
+ * 
+ * LOADING BEHAVIOR:
+ * - Skeleton allowed ONCE on initial load only
+ * - After first success: NEVER show skeleton again
+ * - During refresh: show "Refreshing…" in header, keep content visible
+ * - NO greying, NO opacity reduction, NO layout shift
  * 
  * LKG CACHING: Uses sessionStorage-backed caching to prevent UI flickering
  */
