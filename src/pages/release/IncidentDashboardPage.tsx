@@ -506,10 +506,110 @@ export default function IncidentDashboardPage() {
     navigate(`/release/incidents?business_process=${encodeURIComponent(label)}`);
   };
 
-  const handleExportReport = (reportType: string) => {
-    // PDF export would be implemented here
-    console.log(`Exporting ${reportType} report as PDF`);
-    // In a real implementation, this would generate and download a PDF
+  const handleExportReport = async (reportType: string) => {
+    const { jsPDF } = await import('jspdf');
+    const doc = new jsPDF();
+    
+    const now = new Date();
+    let startDate: Date;
+    let endDate: Date;
+    let title: string;
+    
+    switch (reportType) {
+      case 'daily':
+        startDate = startOfDay(now);
+        endDate = endOfDay(now);
+        title = 'Daily Incident Report';
+        break;
+      case 'weekly':
+        startDate = startOfWeek(now, { weekStartsOn: 0 });
+        endDate = endOfWeek(now, { weekStartsOn: 0 });
+        title = 'Weekly Incident Report';
+        break;
+      case 'monthly':
+        startDate = startOfMonth(now);
+        endDate = endOfMonth(now);
+        title = 'Monthly Incident Report';
+        break;
+      default:
+        startDate = startOfDay(now);
+        endDate = endOfDay(now);
+        title = 'Incident Report';
+    }
+    
+    const periodIncidents = incidents.filter(i => {
+      const created = new Date(i.created_at);
+      return created >= startDate && created <= endDate;
+    });
+    
+    const closedCount = periodIncidents.filter(i => i.status === 'closed' || i.status === 'resolved').length;
+    const majorCount = periodIncidents.filter(i => i.is_major_incident).length;
+    const slaBreachCount = periodIncidents.filter(i => i.sla?.response_breached || i.sla?.resolution_breached).length;
+    const l1Count = periodIncidents.filter(i => i.support_level === 'L1').length;
+    const l2Count = periodIncidents.filter(i => i.support_level === 'L2').length;
+    const l3Count = periodIncidents.filter(i => i.support_level === 'L3').length;
+    const convertedCount = periodIncidents.filter(i => i.status === 'converted').length;
+    
+    // Build PDF
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text(title, 20, 20);
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Period: ${format(startDate, 'MMM d, yyyy')} - ${format(endDate, 'MMM d, yyyy')}`, 20, 30);
+    doc.text(`Generated: ${format(now, 'MMM d, yyyy HH:mm')}`, 20, 36);
+    
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Summary Metrics', 20, 50);
+    
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'normal');
+    const metrics = [
+      ['Total Incidents Logged', periodIncidents.length.toString()],
+      ['Total Closed', closedCount.toString()],
+      ['Major Incidents', majorCount.toString()],
+      ['SLA Breaches', slaBreachCount.toString()],
+      ['L1 Incidents', l1Count.toString()],
+      ['L2 Incidents', l2Count.toString()],
+      ['L3 Incidents', l3Count.toString()],
+      ['Converted to Work Items', convertedCount.toString()],
+    ];
+    
+    let yPos = 60;
+    metrics.forEach(([label, value]) => {
+      doc.text(`${label}:`, 20, yPos);
+      doc.text(value, 100, yPos);
+      yPos += 8;
+    });
+    
+    // Incident list summary
+    if (periodIncidents.length > 0) {
+      yPos += 10;
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Incident Details', 20, yPos);
+      yPos += 10;
+      
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'normal');
+      
+      periodIncidents.slice(0, 20).forEach((inc) => {
+        if (yPos > 270) {
+          doc.addPage();
+          yPos = 20;
+        }
+        doc.text(`${inc.incident_key || 'N/A'} - ${inc.severity} - ${inc.title?.substring(0, 60) || 'Untitled'}`, 20, yPos);
+        yPos += 6;
+      });
+      
+      if (periodIncidents.length > 20) {
+        doc.text(`... and ${periodIncidents.length - 20} more incidents`, 20, yPos);
+      }
+    }
+    
+    doc.save(`${title.toLowerCase().replace(/ /g, '-')}-${format(now, 'yyyy-MM-dd')}.pdf`);
   };
 
   if (isLoading) {

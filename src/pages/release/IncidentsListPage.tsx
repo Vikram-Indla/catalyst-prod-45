@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { Search, ChevronLeft, ChevronRight, Filter, Download, Loader2, Plus, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, Filter, Download, Loader2, Plus, ArrowUpDown, ArrowUp, ArrowDown, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -89,15 +89,29 @@ export default function IncidentsListPage() {
   const [sortField, setSortField] = useState<SortField>('created_at');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   
-  // Parse filters from URL params
-  const initialFilters = useMemo((): IncidentFilters => {
-    const statusParam = searchParams.get('status');
-    const supportLevelParam = searchParams.get('support_level');
+  // Parse filters from URL params (supports drill-down from dashboard)
+  const urlFilters = useMemo(() => {
     return {
-      status: statusParam ? statusParam.split(',') as IncidentStatus[] : undefined,
-      support_level: supportLevelParam ? supportLevelParam.split(',') as SupportLevel[] : undefined,
+      status: searchParams.get('status'),
+      support_level: searchParams.get('support_level'),
+      major: searchParams.get('major') === 'true',
+      created_today: searchParams.get('created_today') === 'true',
+      sla_response_breach: searchParams.get('sla_response_breach') === 'true',
+      sla_resolution_breach: searchParams.get('sla_resolution_breach') === 'true',
+      workgroup: searchParams.get('workgroup'),
+      aging: searchParams.get('aging'),
+      delivery_stage: searchParams.get('delivery_stage'),
+      converted_to: searchParams.get('converted_to'),
     };
   }, [searchParams]);
+
+  const initialFilters = useMemo((): IncidentFilters => {
+    return {
+      status: urlFilters.status ? urlFilters.status.split(',') as IncidentStatus[] : undefined,
+      support_level: urlFilters.support_level ? urlFilters.support_level.split(',') as SupportLevel[] : undefined,
+      delivery_stage: urlFilters.delivery_stage ? [urlFilters.delivery_stage as any] : undefined,
+    };
+  }, [urlFilters]);
 
   const [filters, setFilters] = useState<IncidentFilters>(initialFilters);
   const pageSize = 25;
@@ -119,13 +133,55 @@ export default function IncidentsListPage() {
   // Fetch incidents from Supabase
   const { data: incidents = [], isLoading, error } = useIncidents(effectiveFilters);
 
-  // Client-side search and major incident filter
+  // Client-side search and advanced filters from URL
   const filteredIncidents = useMemo(() => {
     let result = incidents;
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     
-    // Apply major incident filter
-    if (activeQuickFilter === 'major') {
+    // Apply major incident filter (from URL or quick filter)
+    if (activeQuickFilter === 'major' || urlFilters.major) {
       result = result.filter((inc: Incident) => inc.is_major_incident);
+    }
+    
+    // Apply created_today filter
+    if (urlFilters.created_today) {
+      result = result.filter((inc: Incident) => new Date(inc.created_at) >= today);
+    }
+    
+    // Apply SLA breach filters
+    if (urlFilters.sla_response_breach) {
+      result = result.filter((inc: Incident) => inc.sla?.response_breached);
+    }
+    if (urlFilters.sla_resolution_breach) {
+      result = result.filter((inc: Incident) => inc.sla?.resolution_breached);
+    }
+    
+    // Apply workgroup filter
+    if (urlFilters.workgroup) {
+      result = result.filter((inc: Incident) => inc.assignee_workgroup?.name === urlFilters.workgroup);
+    }
+    
+    // Apply aging filter
+    if (urlFilters.aging) {
+      const getAgingDays = (createdAt: string) => 
+        Math.floor((now.getTime() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24));
+      
+      result = result.filter((inc: Incident) => {
+        const days = getAgingDays(inc.created_at);
+        switch (urlFilters.aging) {
+          case '< 24h': return days < 1;
+          case '1-3 days': return days >= 1 && days < 3;
+          case '3-7 days': return days >= 3 && days < 7;
+          case '> 7 days': return days >= 7;
+          default: return true;
+        }
+      });
+    }
+    
+    // Apply converted_to filter
+    if (urlFilters.converted_to) {
+      result = result.filter((inc: Incident) => inc.converted_to_type === urlFilters.converted_to);
     }
     
     // Apply search
@@ -138,7 +194,7 @@ export default function IncidentsListPage() {
     }
     
     return result;
-  }, [incidents, searchQuery, activeQuickFilter]);
+  }, [incidents, searchQuery, activeQuickFilter, urlFilters]);
 
   // Sort incidents
   const sortedIncidents = useMemo(() => {
@@ -216,6 +272,26 @@ export default function IncidentsListPage() {
       setActiveQuickFilter(filter);
     }
     setCurrentPage(1);
+  };
+
+  // Build active URL filter labels for display
+  const activeUrlFilters = useMemo(() => {
+    const labels: { key: string; label: string }[] = [];
+    if (urlFilters.major) labels.push({ key: 'major', label: 'Major Incidents' });
+    if (urlFilters.created_today) labels.push({ key: 'created_today', label: 'Created Today' });
+    if (urlFilters.sla_response_breach) labels.push({ key: 'sla_response_breach', label: 'Response SLA Breached' });
+    if (urlFilters.sla_resolution_breach) labels.push({ key: 'sla_resolution_breach', label: 'Resolution SLA Breached' });
+    if (urlFilters.workgroup) labels.push({ key: 'workgroup', label: `Workgroup: ${urlFilters.workgroup}` });
+    if (urlFilters.aging) labels.push({ key: 'aging', label: `Age: ${urlFilters.aging}` });
+    if (urlFilters.delivery_stage) labels.push({ key: 'delivery_stage', label: `Stage: ${urlFilters.delivery_stage}` });
+    if (urlFilters.converted_to) labels.push({ key: 'converted_to', label: `Converted to: ${urlFilters.converted_to}` });
+    if (urlFilters.status) labels.push({ key: 'status', label: `Status: ${urlFilters.status}` });
+    if (urlFilters.support_level) labels.push({ key: 'support_level', label: `Level: ${urlFilters.support_level}` });
+    return labels;
+  }, [urlFilters]);
+
+  const clearUrlFilters = () => {
+    navigate('/release/incidents');
   };
 
   if (error) {
@@ -330,6 +406,31 @@ export default function IncidentsListPage() {
           </div>
         </div>
       </div>
+
+      {/* Active URL Filters Bar */}
+      {activeUrlFilters.length > 0 && (
+        <div className="h-9 border-b border-border bg-muted/30 flex-shrink-0 px-4 flex items-center gap-2">
+          <span className="text-xs text-muted-foreground">Filters:</span>
+          {activeUrlFilters.map((f) => (
+            <Badge 
+              key={f.key} 
+              variant="secondary" 
+              className="h-6 text-xs bg-brand-primary/10 text-brand-primary border border-brand-primary/20"
+            >
+              {f.label}
+            </Badge>
+          ))}
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="h-6 text-xs text-muted-foreground hover:text-destructive ml-auto"
+            onClick={clearUrlFilters}
+          >
+            <X className="h-3 w-3 mr-1" />
+            Clear all
+          </Button>
+        </div>
+      )}
 
       {/* Content */}
       <div className="flex-1 overflow-auto">
