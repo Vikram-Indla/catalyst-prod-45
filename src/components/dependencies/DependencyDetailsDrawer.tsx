@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -12,18 +12,42 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator
 } from '@/components/ui/dropdown-menu';
-import { MoreVertical, MessageSquare, Bell, History, Copy, Trash2, Edit, RefreshCw } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { 
+  MoreVertical, 
+  Bell, 
+  History, 
+  Copy, 
+  Trash2, 
+  RefreshCw, 
+  X, 
+  Pencil, 
+  Link as LinkIcon,
+  ChevronDown,
+  Maximize2,
+  Minimize2,
+  Users,
+  Calendar
+} from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { toast } from 'sonner';
-import { Calendar, Users, AlertTriangle, Clock, CheckCircle2 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 const formSchema = z.object({
   dependency_level: z.enum(['team', 'program', 'external']),
@@ -65,6 +89,9 @@ interface DependencyDetailsDrawerProps {
 export function DependencyDetailsDrawer({ open, onClose, dependencyId }: DependencyDetailsDrawerProps) {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('details');
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showUnsavedChangesDialog, setShowUnsavedChangesDialog] = useState(false);
   const isEdit = !!dependencyId;
 
   const form = useForm<FormData>({
@@ -81,6 +108,8 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
       notify_on_delivery: true,
     },
   });
+
+  const hasChanges = form.formState.isDirty;
 
   // Fetch existing dependency
   const { data: existingDependency } = useQuery({
@@ -197,6 +226,13 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
     }
   }, [existingDependency, form]);
 
+  // Reset to default tab when drawer opens
+  useEffect(() => {
+    if (open) {
+      setActiveTab('details');
+    }
+  }, [open]);
+
   const mutation = useMutation({
     mutationFn: async (data: FormData) => {
       const payload: any = {
@@ -243,602 +279,893 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
       queryClient.invalidateQueries({ queryKey: ['dependencies-grid'] });
       queryClient.invalidateQueries({ queryKey: ['dependency', dependencyId] });
       toast.success(isEdit ? 'Dependency updated' : 'Dependency created');
-      onClose();
+      handleClose();
     },
     onError: (error) => {
       toast.error(`Failed to ${isEdit ? 'update' : 'create'} dependency: ${error.message}`);
     },
   });
 
-  const onSubmit = (data: FormData) => {
-    mutation.mutate(data);
+  const handleAttemptClose = () => {
+    if (hasChanges) {
+      setShowUnsavedChangesDialog(true);
+    } else {
+      handleClose();
+    }
+  };
+
+  const handleClose = () => {
+    form.reset();
+    setShowUnsavedChangesDialog(false);
+    onClose();
+  };
+
+  const handleDiscardAndClose = () => {
+    form.reset();
+    setShowUnsavedChangesDialog(false);
+    onClose();
+  };
+
+  const handleSave = () => {
+    form.handleSubmit((data) => mutation.mutate(data))();
+  };
+
+  const handleSaveAndClose = () => {
+    form.handleSubmit((data) => {
+      mutation.mutate(data);
+    })();
+  };
+
+  const handleCopyLink = () => {
+    const url = `${window.location.origin}/dependencies?id=${dependencyId}`;
+    navigator.clipboard.writeText(url);
+    toast.success('Link copied to clipboard');
+  };
+
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
   };
 
   const dependencyLevel = form.watch('dependency_level');
 
+  // Drawer width classes matching Business Drawer
+  const drawerWidthClass = isExpanded 
+    ? 'w-screen sm:w-[70vw] sm:max-w-[1120px]' 
+    : 'w-screen sm:w-[65vw] sm:max-w-[980px]';
+
+  if (!open) return null;
+
   return (
-    <Sheet open={open} onOpenChange={onClose}>
-      <SheetContent side="right" className="executive-drawer w-full sm:w-[600px] md:w-[700px] lg:w-[800px] sm:max-w-[90vw] p-0 flex flex-col overflow-hidden bg-white">
-        <SheetHeader className="executive-drawer-header flex-row items-center justify-between space-y-0 shrink-0 bg-white px-3 md:px-4 py-2 border-b border-neutral-200">
-          <div className="flex-1 pr-2 min-w-0">
-            <SheetTitle className="executive-drawer-title truncate text-base font-semibold">
-              {isEdit ? 'Edit Dependency' : 'Create Dependency'}
-            </SheetTitle>
-            <SheetDescription className="text-xs text-muted-foreground truncate">
-              {isEdit && existingDependency ? (
-                `${existingDependency.from_feature?.name || 'Unknown'} → ${existingDependency.to_feature?.name || 'Unknown'}`
-              ) : (
-                'Define a new dependency relationship'
+    <>
+      <Sheet open={open} onOpenChange={(isOpen) => !isOpen && handleAttemptClose()}>
+        <SheetContent 
+          side="right" 
+          hideClose 
+          className={cn("p-0 flex flex-col", drawerWidthClass)}
+          style={{ 
+            background: 'var(--surface-bg, hsl(var(--background)))',
+            borderLeft: '1px solid var(--border-default, hsl(var(--border)))'
+          }}
+        >
+          <SheetHeader className="flex-col space-y-0 shrink-0 p-0">
+            
+            {/* ═══════════════════════════════════════════════════════════
+                BREADCRUMB ROW
+                ═══════════════════════════════════════════════════════════ */}
+            <div 
+              className="px-5 pt-2.5 pb-1.5 flex items-center gap-1.5"
+              style={{ borderBottom: '1px solid var(--border-subtle, hsl(var(--border)/0.5))' }}
+            >
+              <span 
+                className="text-[10px] font-medium uppercase tracking-[0.5px]"
+                style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
+              >
+                Dependencies
+              </span>
+              <span className="text-[10px]" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>/</span>
+              <span 
+                className="text-[11px] font-semibold font-mono"
+                style={{ color: '#8B7355' }}
+              >
+                {isEdit ? `DEP-${dependencyId?.slice(0, 4).toUpperCase()}` : 'New'}
+              </span>
+              {isEdit && (
+                <button
+                  onClick={handleCopyLink}
+                  className="p-1 rounded hover:bg-[var(--surface-hover,hsl(var(--muted)))] transition-colors"
+                  style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
+                  title="Copy link"
+                >
+                  <LinkIcon className="h-3 w-3" />
+                </button>
               )}
-            </SheetDescription>
-          </div>
-          {isEdit && (
-            <div className="flex items-center gap-[var(--s2)] flex-shrink-0">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="text-[#1a1a1a] hover:bg-[rgba(198,156,109,0.08)]">
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-64">
-                  <DropdownMenuItem onClick={() => toast.info('Subscribe to dependency updates')}>
-                    <Bell className="h-4 w-4 mr-2" />
-                    Subscribe
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setActiveTab('audit')}>
-                    <History className="h-4 w-4 mr-2" />
-                    Audit Log
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => toast.info('Refresh dependency status')}>
-                    <RefreshCw className="h-4 w-4 mr-2" />
-                    Refresh Status
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => toast.info('Copy dependency')}>
-                    <Copy className="h-4 w-4 mr-2" />
-                    Copy
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => toast.info('Delete dependency')}>
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
             </div>
-          )}
-        </SheetHeader>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
-          <div className="executive-drawer-tabs overflow-x-auto flex-shrink-0">
-            <TabsList className="w-full justify-start rounded-none flex-nowrap bg-transparent">
-              <TabsTrigger value="details" className="executive-drawer-tab">Details</TabsTrigger>
-              <TabsTrigger value="negotiation" className="executive-drawer-tab">Negotiation</TabsTrigger>
-              <TabsTrigger value="stories" className="executive-drawer-tab">Stories</TabsTrigger>
-              <TabsTrigger value="audit" className="executive-drawer-tab">Audit</TabsTrigger>
+            {/* ═══════════════════════════════════════════════════════════
+                HERO ROW: Title + Actions
+                ═══════════════════════════════════════════════════════════ */}
+            <div className="flex items-start justify-between px-5 py-3 gap-4">
+              
+              {/* Left Side: Title + Subtitle */}
+              <div className="flex-1 min-w-0 space-y-1">
+                <SheetTitle 
+                  className="text-[18px] font-semibold tracking-[-0.3px] leading-tight"
+                  style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}
+                >
+                  {isEdit ? 'Edit Dependency' : 'Create Dependency'}
+                </SheetTitle>
+                <SheetDescription 
+                  className="text-[13px]"
+                  style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
+                >
+                  {isEdit && existingDependency ? (
+                    `${existingDependency.from_feature?.name || 'Unknown'} → ${existingDependency.to_feature?.name || 'Unknown'}`
+                  ) : (
+                    'Define a new dependency relationship'
+                  )}
+                </SheetDescription>
+              </div>
+
+              {/* Right Side: Action Buttons */}
+              <div className="flex items-center gap-1.5 shrink-0">
+                
+                {/* Save Dropdown */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      size="sm"
+                      className="h-8 px-3 text-[13px] font-medium text-white"
+                      style={{ 
+                        background: '#5C7C5C',
+                        boxShadow: '0 2px 4px rgba(92, 124, 92, 0.25)'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = '#4A6A4A'}
+                      onMouseLeave={(e) => e.currentTarget.style.background = '#5C7C5C'}
+                    >
+                      {isEdit ? 'Save' : 'Create'}
+                      <ChevronDown className="h-3.5 w-3.5 ml-1" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent 
+                    align="end" 
+                    className="z-[400] w-40"
+                    style={{ background: 'var(--surface-bg, hsl(var(--background)))', borderColor: 'var(--border-default, hsl(var(--border)))' }}
+                  >
+                    <DropdownMenuItem onSelect={handleSave}>
+                      {isEdit ? 'Save' : 'Create'}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={handleSaveAndClose}>
+                      {isEdit ? 'Save & Close' : 'Create & Close'}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                {/* More Options (Edit mode only) */}
+                {isEdit && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8 hover:bg-[var(--surface-hover,hsl(var(--muted)))]"
+                        style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
+                      >
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent 
+                      align="end" 
+                      className="w-48 z-[400]"
+                      style={{ background: 'var(--surface-bg, hsl(var(--background)))', borderColor: 'var(--border-default, hsl(var(--border)))' }}
+                    >
+                      <DropdownMenuItem onSelect={() => toast.info('Subscribe to dependency updates')}>
+                        <Bell className="h-4 w-4 mr-2" />
+                        Subscribe
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onSelect={() => setActiveTab('audit')}>
+                        <History className="h-4 w-4 mr-2" />
+                        Audit Log
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onSelect={() => toast.info('Refresh dependency status')}>
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                        Refresh Status
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onSelect={() => toast.info('Copy dependency')}>
+                        <Copy className="h-4 w-4 mr-2" />
+                        Copy
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem 
+                        onSelect={() => setShowDeleteConfirm(true)}
+                        className="text-red-600"
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
+
+                {/* Expand/Collapse */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={toggleExpand}
+                  className="h-8 w-8 hover:bg-[var(--surface-hover,hsl(var(--muted)))]"
+                  style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
+                  title={isExpanded ? 'Collapse' : 'Expand'}
+                >
+                  {isExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+                </Button>
+
+                {/* Close */}
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={handleAttemptClose}
+                  className="h-8 w-8 hover:bg-[var(--surface-hover,hsl(var(--muted)))]"
+                  style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Bottom Border */}
+            <div style={{ borderBottom: '1px solid var(--border-default, hsl(var(--border)))' }} />
+          </SheetHeader>
+
+          {/* ═══════════════════════════════════════════════════════════
+              TABS - Matching Business Drawer Pattern
+              ═══════════════════════════════════════════════════════════ */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
+            <TabsList 
+              className="w-full justify-start rounded-none h-10 shrink-0 overflow-x-auto flex-nowrap px-5 bg-transparent"
+              style={{ borderBottom: '1px solid var(--border-default, hsl(var(--border)))' }}
+            >
+              <TabsTrigger
+                value="details"
+                className="relative px-3.5 py-2.5 text-[13px] font-medium whitespace-nowrap bg-transparent border-none rounded-none data-[state=inactive]:text-muted-foreground data-[state=active]:text-foreground"
+              >
+                Details
+              </TabsTrigger>
+              <TabsTrigger
+                value="negotiation"
+                className="relative px-3.5 py-2.5 text-[13px] font-medium whitespace-nowrap bg-transparent border-none rounded-none data-[state=inactive]:text-muted-foreground data-[state=active]:text-foreground"
+              >
+                Negotiation
+              </TabsTrigger>
+              <TabsTrigger
+                value="stories"
+                className="relative px-3.5 py-2.5 text-[13px] font-medium whitespace-nowrap bg-transparent border-none rounded-none data-[state=inactive]:text-muted-foreground data-[state=active]:text-foreground"
+              >
+                Stories
+              </TabsTrigger>
+              <TabsTrigger
+                value="audit"
+                className="relative px-3.5 py-2.5 text-[13px] font-medium whitespace-nowrap bg-transparent border-none rounded-none data-[state=inactive]:text-muted-foreground data-[state=active]:text-foreground"
+              >
+                Audit
+              </TabsTrigger>
             </TabsList>
-          </div>
 
-          <div className="executive-drawer-content flex-1 overflow-y-auto">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="h-full flex flex-col">
+            {/* ═══════════════════════════════════════════════════════════
+                DRAWER BODY
+                ═══════════════════════════════════════════════════════════ */}
+            <div 
+              className="flex-1 min-h-0 overflow-y-auto"
+              style={{ background: 'var(--surface-subtle, hsl(var(--muted)/0.3))' }}
+            >
+              <Form {...form}>
+                <form className="h-full flex flex-col">
+                  
+                  {/* Details Tab */}
+                  <TabsContent value="details" className="m-0 focus-visible:outline-none p-5 pb-8">
+                    <div className="space-y-6">
+                      
+                      {/* Core Information Section */}
+                      <div className="space-y-4">
+                        <h3 className="text-[13px] font-semibold flex items-center gap-2" style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}>
+                          <Users className="h-4 w-4" />
+                          Core Information
+                        </h3>
 
-              <TabsContent value="details" className="space-y-4 p-[var(--s4)] sm:p-[var(--s6)]">
-                {/* Core Fields Section */}
-                <div className="space-y-4">
-                  <h3 className="font-semibold text-sm flex items-center gap-2">
-                    <Users className="h-4 w-4" />
-                    Core Information
-                  </h3>
-
-                  <FormField
-                    control={form.control}
-                    name="dependency_level"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Dependency Level*</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="team">Team Dependency</SelectItem>
-                            <SelectItem value="program">Program Dependency</SelectItem>
-                            <SelectItem value="external">External Dependency</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="pi_id"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Program Increment*</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select PI" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {programIncrements?.map(pi => (
-                              <SelectItem key={pi.id} value={pi.id}>{pi.name}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {dependencyLevel === 'team' && (
-                    <>
-                      <FormField
-                        control={form.control}
-                        name="requesting_team_id"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Requesting Team*</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select team" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {teams?.map(team => (
-                                  <SelectItem key={team.id} value={team.id}>{team.name}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="depends_on_team_id"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Depends On Team*</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select team" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {teams?.map(team => (
-                                  <SelectItem key={team.id} value={team.id}>{team.name}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="from_feature_id"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Work Item (Requesting)*</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select feature" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {features?.map(feature => (
-                                  <SelectItem key={feature.id} value={feature.id}>
-                                    {feature.display_id}: {feature.name}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </>
-                  )}
-
-                  {dependencyLevel === 'program' && (
-                    <>
-                      <FormField
-                        control={form.control}
-                        name="requesting_program_id"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Requesting Program*</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select program" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {programs?.map(program => (
-                                  <SelectItem key={program.id} value={program.id}>{program.name}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="depends_on_program_id"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Depends On Program*</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select program" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {programs?.map(program => (
-                                  <SelectItem key={program.id} value={program.id}>{program.name}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </>
-                  )}
-
-                  {dependencyLevel === 'external' && (
-                    <FormField
-                      control={form.control}
-                      name="external_entity_id"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>External Entity*</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select external entity" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {externalEntities?.map(entity => (
-                                <SelectItem key={entity.id} value={entity.id}>
-                                  {entity.name} ({entity.entity_type})
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  )}
-
-                  <FormField
-                    control={form.control}
-                    name="description"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Description</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Describe what needs to be delivered..."
-                            className="min-h-[100px]"
-                            {...field}
+                        {/* Row 1: Dependency Level | Program Increment */}
+                        <div className="grid grid-cols-2 gap-4">
+                          <FormField
+                            control={form.control}
+                            name="dependency_level"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-[13px] font-medium">Dependency Level*</FormLabel>
+                                <Select onValueChange={field.onChange} value={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger className="h-9">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent className="z-[400]">
+                                    <SelectItem value="team">Team Dependency</SelectItem>
+                                    <SelectItem value="program">Program Dependency</SelectItem>
+                                    <SelectItem value="external">External Dependency</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
                           />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="type"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Type*</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="sequential">Sequential</SelectItem>
-                              <SelectItem value="concurrent">Concurrent</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                          <FormField
+                            control={form.control}
+                            name="pi_id"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-[13px] font-medium">Program Increment*</FormLabel>
+                                <Select onValueChange={field.onChange} value={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger className="h-9">
+                                      <SelectValue placeholder="Select PI" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent className="z-[400]">
+                                    {programIncrements?.map(pi => (
+                                      <SelectItem key={pi.id} value={pi.id}>{pi.name}</SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
 
-                    <FormField
-                      control={form.control}
-                      name="risk_level"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Risk Level*</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="low">Low</SelectItem>
-                              <SelectItem value="med">Medium</SelectItem>
-                              <SelectItem value="high">High</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+                        {/* Row 2: Requesting Team | Depends On Team (Team level) */}
+                        {dependencyLevel === 'team' && (
+                          <>
+                            <div className="grid grid-cols-2 gap-4">
+                              <FormField
+                                control={form.control}
+                                name="requesting_team_id"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-[13px] font-medium">Requesting Team*</FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value}>
+                                      <FormControl>
+                                        <SelectTrigger className="h-9">
+                                          <SelectValue placeholder="Select team" />
+                                        </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent className="z-[400]">
+                                        {teams?.map(team => (
+                                          <SelectItem key={team.id} value={team.id}>{team.name}</SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="needed_by_sprint_id"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Needed By Sprint</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select sprint" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {iterations?.map(sprint => (
-                                <SelectItem key={sprint.id} value={sprint.id}>{sprint.name}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                              <FormField
+                                control={form.control}
+                                name="depends_on_team_id"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-[13px] font-medium">Depends On Team*</FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value}>
+                                      <FormControl>
+                                        <SelectTrigger className="h-9">
+                                          <SelectValue placeholder="Select team" />
+                                        </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent className="z-[400]">
+                                        {teams?.map(team => (
+                                          <SelectItem key={team.id} value={team.id}>{team.name}</SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
 
-                    <FormField
-                      control={form.control}
-                      name="needed_by_date"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Or Needed By Date</FormLabel>
-                          <FormControl>
-                            <Input type="date" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-              </TabsContent>
+                            {/* Row 3: Work Item (Requesting) */}
+                            <FormField
+                              control={form.control}
+                              name="from_feature_id"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-[13px] font-medium">Work Item (Requesting)*</FormLabel>
+                                  <Select onValueChange={field.onChange} value={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger className="h-9">
+                                        <SelectValue placeholder="Select feature" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent className="z-[400]">
+                                      {features?.map(feature => (
+                                        <SelectItem key={feature.id} value={feature.id}>
+                                          {feature.display_id}: {feature.name}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </>
+                        )}
 
-              <TabsContent value="negotiation" className="space-y-4 mt-4">
-                <div className="space-y-4">
-                  <h3 className="font-semibold text-sm flex items-center gap-2">
-                    <Calendar className="h-4 w-4" />
-                    Negotiation & Commitment
-                  </h3>
+                        {/* Program Level Fields */}
+                        {dependencyLevel === 'program' && (
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                              control={form.control}
+                              name="requesting_program_id"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-[13px] font-medium">Requesting Program*</FormLabel>
+                                  <Select onValueChange={field.onChange} value={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger className="h-9">
+                                        <SelectValue placeholder="Select program" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent className="z-[400]">
+                                      {programs?.map(program => (
+                                        <SelectItem key={program.id} value={program.id}>{program.name}</SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
 
-                  <FormField
-                    control={form.control}
-                    name="status"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Status*</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="pending_commit">Pending Commit</SelectItem>
-                            <SelectItem value="negotiation">Negotiation</SelectItem>
-                            <SelectItem value="committed">Committed</SelectItem>
-                            <SelectItem value="in_progress">In Progress</SelectItem>
-                            <SelectItem value="delivered">Delivered</SelectItem>
-                            <SelectItem value="done">Done</SelectItem>
-                            <SelectItem value="no_work_done">No Work Done</SelectItem>
-                            <SelectItem value="rejected">Rejected</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                            <FormField
+                              control={form.control}
+                              name="depends_on_program_id"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-[13px] font-medium">Depends On Program*</FormLabel>
+                                  <Select onValueChange={field.onChange} value={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger className="h-9">
+                                        <SelectValue placeholder="Select program" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent className="z-[400]">
+                                      {programs?.map(program => (
+                                        <SelectItem key={program.id} value={program.id}>{program.name}</SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        )}
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="committed_by_sprint_id"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Committed By Sprint</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select sprint" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {iterations?.map(sprint => (
-                                <SelectItem key={sprint.id} value={sprint.id}>{sprint.name}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                        {/* External Entity Field */}
+                        {dependencyLevel === 'external' && (
+                          <FormField
+                            control={form.control}
+                            name="external_entity_id"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-[13px] font-medium">External Entity*</FormLabel>
+                                <Select onValueChange={field.onChange} value={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger className="h-9">
+                                      <SelectValue placeholder="Select external entity" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent className="z-[400]">
+                                    {externalEntities?.map(entity => (
+                                      <SelectItem key={entity.id} value={entity.id}>
+                                        {entity.name} ({entity.entity_type})
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        )}
 
-                    <FormField
-                      control={form.control}
-                      name="committed_by_date"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Or Committed By Date</FormLabel>
-                          <FormControl>
-                            <Input type="date" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+                        {/* Description - Full Width */}
+                        <FormField
+                          control={form.control}
+                          name="description"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-[13px] font-medium">Description</FormLabel>
+                              <FormControl>
+                                <Textarea
+                                  placeholder="Describe what needs to be delivered..."
+                                  className="min-h-[100px] resize-y"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
 
-                  <Separator />
+                        {/* Row 4: Type | Risk Level */}
+                        <div className="grid grid-cols-2 gap-4">
+                          <FormField
+                            control={form.control}
+                            name="type"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-[13px] font-medium">Type*</FormLabel>
+                                <Select onValueChange={field.onChange} value={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger className="h-9">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent className="z-[400]">
+                                    <SelectItem value="sequential">Sequential</SelectItem>
+                                    <SelectItem value="concurrent">Concurrent</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
 
-                  <div className="space-y-3">
-                    <FormField
-                      control={form.control}
-                      name="blocked_requestor"
-                      render={({ field }) => (
-                        <FormItem className="flex items-center gap-2 space-y-0">
-                          <FormControl>
-                            <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                          </FormControl>
-                          <FormLabel className="!mt-0 font-normal">
-                            Blocked (Requestor): Is this work still blocked?
-                          </FormLabel>
-                        </FormItem>
-                      )}
-                    />
+                          <FormField
+                            control={form.control}
+                            name="risk_level"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-[13px] font-medium">Risk Level*</FormLabel>
+                                <Select onValueChange={field.onChange} value={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger className="h-9">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent className="z-[400]">
+                                    <SelectItem value="low">Low</SelectItem>
+                                    <SelectItem value="med">Medium</SelectItem>
+                                    <SelectItem value="high">High</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
 
-                    {form.watch('blocked_requestor') && (
+                        {/* Needed By Sprint | Needed By Date */}
+                        <div className="grid grid-cols-2 gap-4">
+                          <FormField
+                            control={form.control}
+                            name="needed_by_sprint_id"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-[13px] font-medium">Needed By Sprint</FormLabel>
+                                <Select onValueChange={field.onChange} value={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger className="h-9">
+                                      <SelectValue placeholder="Select sprint" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent className="z-[400]">
+                                    {iterations?.map(sprint => (
+                                      <SelectItem key={sprint.id} value={sprint.id}>{sprint.name}</SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name="needed_by_date"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-[13px] font-medium">Or Needed By Date</FormLabel>
+                                <FormControl>
+                                  <Input type="date" className="h-9" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </TabsContent>
+
+                  {/* Negotiation Tab */}
+                  <TabsContent value="negotiation" className="m-0 focus-visible:outline-none p-5 pb-8">
+                    <div className="space-y-6">
+                      <h3 className="text-[13px] font-semibold flex items-center gap-2" style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}>
+                        <Calendar className="h-4 w-4" />
+                        Negotiation & Commitment
+                      </h3>
+
                       <FormField
                         control={form.control}
-                        name="blocked_reason_requestor"
+                        name="status"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Blocked Reason (Requestor)</FormLabel>
-                            <FormControl>
-                              <Textarea placeholder="Why is the requesting party blocked?" {...field} />
-                            </FormControl>
+                            <FormLabel className="text-[13px] font-medium">Status*</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value}>
+                              <FormControl>
+                                <SelectTrigger className="h-9">
+                                  <SelectValue />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent className="z-[400]">
+                                <SelectItem value="pending_commit">Pending Commit</SelectItem>
+                                <SelectItem value="negotiation">Negotiation</SelectItem>
+                                <SelectItem value="committed">Committed</SelectItem>
+                                <SelectItem value="in_progress">In Progress</SelectItem>
+                                <SelectItem value="delivered">Delivered</SelectItem>
+                                <SelectItem value="done">Done</SelectItem>
+                                <SelectItem value="no_work_done">No Work Done</SelectItem>
+                                <SelectItem value="rejected">Rejected</SelectItem>
+                              </SelectContent>
+                            </Select>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
-                    )}
 
-                    <FormField
-                      control={form.control}
-                      name="blocked_respondent"
-                      render={({ field }) => (
-                        <FormItem className="flex items-center gap-2 space-y-0">
-                          <FormControl>
-                            <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                          </FormControl>
-                          <FormLabel className="!mt-0 font-normal">
-                            Blocked (Respondent): Is this work still blocked?
-                          </FormLabel>
-                        </FormItem>
-                      )}
-                    />
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="committed_by_sprint_id"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-[13px] font-medium">Committed By Sprint</FormLabel>
+                              <Select onValueChange={field.onChange} value={field.value}>
+                                <FormControl>
+                                  <SelectTrigger className="h-9">
+                                    <SelectValue placeholder="Select sprint" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent className="z-[400]">
+                                  {iterations?.map(sprint => (
+                                    <SelectItem key={sprint.id} value={sprint.id}>{sprint.name}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
 
-                    {form.watch('blocked_respondent') && (
-                      <FormField
-                        control={form.control}
-                        name="blocked_reason_respondent"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Blocked Reason (Respondent)</FormLabel>
-                            <FormControl>
-                              <Textarea placeholder="Why is the responding party blocked?" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
+                        <FormField
+                          control={form.control}
+                          name="committed_by_date"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-[13px] font-medium">Or Committed By Date</FormLabel>
+                              <FormControl>
+                                <Input type="date" className="h-9" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <Separator />
+
+                      <div className="space-y-3">
+                        <FormField
+                          control={form.control}
+                          name="blocked_requestor"
+                          render={({ field }) => (
+                            <FormItem className="flex items-center gap-2 space-y-0">
+                              <FormControl>
+                                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                              </FormControl>
+                              <FormLabel className="!mt-0 font-normal text-[13px]">
+                                Blocked (Requestor): Is this work still blocked?
+                              </FormLabel>
+                            </FormItem>
+                          )}
+                        />
+
+                        {form.watch('blocked_requestor') && (
+                          <FormField
+                            control={form.control}
+                            name="blocked_reason_requestor"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-[13px] font-medium">Blocked Reason (Requestor)</FormLabel>
+                                <FormControl>
+                                  <Textarea placeholder="Why is the requesting party blocked?" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
                         )}
-                      />
-                    )}
 
-                    <FormField
-                      control={form.control}
-                      name="no_work_required"
-                      render={({ field }) => (
-                        <FormItem className="flex items-center gap-2 space-y-0">
-                          <FormControl>
-                            <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                          </FormControl>
-                          <FormLabel className="!mt-0 font-normal">
-                            No Work Required
-                          </FormLabel>
-                        </FormItem>
+                        <FormField
+                          control={form.control}
+                          name="blocked_respondent"
+                          render={({ field }) => (
+                            <FormItem className="flex items-center gap-2 space-y-0">
+                              <FormControl>
+                                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                              </FormControl>
+                              <FormLabel className="!mt-0 font-normal text-[13px]">
+                                Blocked (Respondent): Is this work still blocked?
+                              </FormLabel>
+                            </FormItem>
+                          )}
+                        />
+
+                        {form.watch('blocked_respondent') && (
+                          <FormField
+                            control={form.control}
+                            name="blocked_reason_respondent"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-[13px] font-medium">Blocked Reason (Respondent)</FormLabel>
+                                <FormControl>
+                                  <Textarea placeholder="Why is the responding party blocked?" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        )}
+
+                        <FormField
+                          control={form.control}
+                          name="no_work_required"
+                          render={({ field }) => (
+                            <FormItem className="flex items-center gap-2 space-y-0">
+                              <FormControl>
+                                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                              </FormControl>
+                              <FormLabel className="!mt-0 font-normal text-[13px]">
+                                No Work Required
+                              </FormLabel>
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      {form.watch('status') === 'rejected' && (
+                        <FormField
+                          control={form.control}
+                          name="rejection_reason"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-[13px] font-medium">Rejection Reason*</FormLabel>
+                              <FormControl>
+                                <Textarea placeholder="Explain why this dependency was rejected..." {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                       )}
-                    />
-                  </div>
+                    </div>
+                  </TabsContent>
 
-                  {form.watch('status') === 'rejected' && (
-                    <FormField
-                      control={form.control}
-                      name="rejection_reason"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Rejection Reason*</FormLabel>
-                          <FormControl>
-                            <Textarea placeholder="Explain why this dependency was rejected..." {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  )}
-                </div>
-              </TabsContent>
+                  {/* Stories Tab */}
+                  <TabsContent value="stories" className="m-0 focus-visible:outline-none p-5 pb-8">
+                    <div className="text-center text-sm py-12" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>
+                      Related stories will appear here
+                    </div>
+                  </TabsContent>
 
-              <TabsContent value="negotiation" className="space-y-4 mt-4">
-                <div className="text-center text-sm text-muted-foreground py-8">
-                  Negotiation history will appear here
-                </div>
-              </TabsContent>
+                  {/* Audit Tab */}
+                  <TabsContent value="audit" className="m-0 focus-visible:outline-none p-5 pb-8">
+                    <div className="text-center text-sm py-12" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>
+                      Audit log will appear here
+                    </div>
+                  </TabsContent>
+                </form>
+              </Form>
+            </div>
 
-              <TabsContent value="stories" className="space-y-4 mt-4">
-                <div className="text-center text-sm text-muted-foreground py-8">
-                  Related stories will appear here
-                </div>
-              </TabsContent>
+            {/* ═══════════════════════════════════════════════════════════
+                STICKY FOOTER
+                ═══════════════════════════════════════════════════════════ */}
+            <div 
+              className="flex justify-end gap-3 px-5 py-4 border-t shrink-0"
+              style={{ 
+                background: 'var(--surface-bg, hsl(var(--background)))',
+                borderColor: 'var(--border-default, hsl(var(--border)))'
+              }}
+            >
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={handleAttemptClose}
+                className="h-9 px-4 text-[13px]"
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="button"
+                onClick={handleSave}
+                disabled={mutation.isPending} 
+                className="h-9 px-4 text-[13px] text-white"
+                style={{ background: '#5C7C5C' }}
+                onMouseEnter={(e) => e.currentTarget.style.background = '#4A6A4A'}
+                onMouseLeave={(e) => e.currentTarget.style.background = '#5C7C5C'}
+              >
+                {mutation.isPending ? 'Saving...' : isEdit ? 'Save' : 'Create'}
+              </Button>
+            </div>
+          </Tabs>
+        </SheetContent>
+      </Sheet>
 
-              <TabsContent value="audit" className="space-y-4 mt-4">
-                <div className="text-center text-sm text-muted-foreground py-8">
-                  Audit log will appear here
-                </div>
-              </TabsContent>
+      {/* Unsaved Changes Dialog */}
+      <AlertDialog open={showUnsavedChangesDialog} onOpenChange={setShowUnsavedChangesDialog}>
+        <AlertDialogContent style={{ background: 'var(--surface-bg, hsl(var(--background)))', borderColor: 'var(--border-default, hsl(var(--border)))' }}>
+          <AlertDialogHeader>
+            <AlertDialogTitle style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}>Unsaved Changes</AlertDialogTitle>
+            <AlertDialogDescription style={{ color: 'var(--text-secondary, hsl(var(--muted-foreground)))' }}>
+              You have unsaved changes. Are you sure you want to leave? Your changes will be lost.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowUnsavedChangesDialog(false)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDiscardAndClose}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Discard Changes
+            </AlertDialogAction>
+            <AlertDialogAction 
+              onClick={handleSaveAndClose}
+              className="text-white"
+              style={{ background: '#5C7C5C' }}
+            >
+              Save & Close
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
-                <div className="flex justify-end gap-3 px-[var(--s3)] sm:px-[var(--s4)] md:px-[var(--s6)] py-[var(--s4)] mt-auto border-t sticky bottom-0 bg-background">
-                  <Button type="button" variant="outline" onClick={onClose}>
-                    Cancel
-                  </Button>
-                  <Button type="submit" disabled={mutation.isPending} className="bg-brand-primary hover:bg-brand-primary-hover text-white">
-                    {mutation.isPending ? 'Saving...' : isEdit ? 'Update' : 'Create'}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </div>
-        </Tabs>
-      </SheetContent>
-    </Sheet>
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent style={{ background: 'var(--surface-bg, hsl(var(--background)))', borderColor: 'var(--border-default, hsl(var(--border)))' }}>
+          <AlertDialogHeader>
+            <AlertDialogTitle style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}>Delete Dependency</AlertDialogTitle>
+            <AlertDialogDescription style={{ color: 'var(--text-secondary, hsl(var(--muted-foreground)))' }}>
+              Are you sure you want to delete this dependency? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => {
+                toast.info('Delete functionality coming soon');
+                setShowDeleteConfirm(false);
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
