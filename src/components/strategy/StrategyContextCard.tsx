@@ -1,7 +1,6 @@
 /**
  * StrategyContextCard — Mission, Vision, Values grid
- * Renders ONLY the 3 editable cards; parent provides accordion wrapper
- * No duplicate headers - parent handles section title
+ * Compact cards with reduced padding and crisp typography
  */
 
 import { useToast } from '@/hooks/use-toast';
@@ -22,7 +21,6 @@ interface StrategyContextCardProps {
 export function StrategyContextCard({ snapshot, onUpdate }: StrategyContextCardProps) {
   const { toast } = useToast();
 
-  // Parse values from snapshot
   const valuesArray = Array.isArray(snapshot?.values) 
     ? snapshot.values 
     : typeof snapshot?.values === 'string' 
@@ -105,32 +103,32 @@ export function StrategyContextCard({ snapshot, onUpdate }: StrategyContextCardP
   ];
 
   return (
-    <div className="p-3">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+    <div className="p-2.5">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
         {contextItems.map((item) => {
           const Icon = item.icon;
           return (
             <div 
               key={item.field}
-              className="p-3 rounded-md transition-all duration-150"
+              className="p-2.5 rounded-md transition-all duration-150"
               style={{
                 backgroundColor: 'var(--surface-2)',
                 border: '1px solid var(--border-subtle)',
               }}
             >
               {/* Label with Icon */}
-              <div className="flex items-center gap-2 mb-1">
+              <div className="flex items-center gap-1.5 mb-0.5">
                 <div 
-                  className="w-5 h-5 rounded-full flex items-center justify-center"
+                  className="w-4 h-4 rounded-full flex items-center justify-center"
                   style={{ backgroundColor: item.iconBg }}
                 >
                   <Icon 
-                    size={11}
+                    size={9}
                     style={{ color: item.iconColor }}
                   />
                 </div>
                 <span 
-                  className="text-[11px] font-semibold"
+                  className="text-[10px] font-semibold"
                   style={{ color: 'var(--text-secondary)' }}
                 >
                   {item.title}
@@ -139,14 +137,14 @@ export function StrategyContextCard({ snapshot, onUpdate }: StrategyContextCardP
 
               {/* Question */}
               <p 
-                className="text-[10px] italic mb-1.5"
+                className="text-[9px] italic mb-1"
                 style={{ color: 'var(--text-muted)' }}
               >
                 {item.question}
               </p>
 
               {/* Editable Value */}
-              <div className="min-h-[32px]">
+              <div className="min-h-[28px]">
                 <InlineEditTextarea
                   value={item.value}
                   onSave={(v) => handleSave(item.field, v)}
