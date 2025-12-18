@@ -1,11 +1,12 @@
 /**
- * OkrTree — Enterprise-grade OKR hierarchy view
- * Jira Align-inspired: dense, crisp, scannable
+ * OkrTree — CIO Cockpit OKR hierarchy
+ * Crystal clear hierarchy: Theme > Objective > KR
+ * Compact rows, aligned progress bars, subtle hover
  */
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Maximize2, ChevronRight, ChevronDown, Target, X } from 'lucide-react';
+import { Search, Maximize2, ChevronRight, ChevronDown, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useOKRTreeV2, OKRTreeV2Item } from '@/hooks/useOKRTreeV2';
 import { cn } from '@/lib/utils';
@@ -16,7 +17,6 @@ interface OkrTreeProps {
   onThemeClick?: (theme: any) => void;
 }
 
-// Status determination for objectives
 function getHealthStatus(progress: number, health?: string): { label: string; color: string; bg: string } {
   if (health === 'at_risk' || health === 'poor') {
     return { label: 'At Risk', color: 'var(--status-danger)', bg: 'var(--status-danger-bg)' };
@@ -39,7 +39,6 @@ function getProgressBarColor(progress: number): string {
   return 'var(--brand-primary)';
 }
 
-// Type chip colors using tokens
 const typeStyles = {
   theme: {
     bg: 'var(--secondary-green-bg)',
@@ -112,40 +111,35 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
 
     const isClickable = isObjective || (isTheme && !!onThemeClick);
 
-    // Indentation calculation
-    const indentPx = depth * 20;
+    // Clear hierarchy indentation: 24px per level
+    const indentPx = depth * 24;
 
     return (
       <div key={item.id}>
         <div
           className={cn(
-            "grid items-center transition-all duration-100",
+            "grid items-center transition-all duration-75",
             isClickable && "cursor-pointer",
             isSelected && "ring-1 ring-inset"
           )}
           role={isClickable ? 'button' : undefined}
           tabIndex={isClickable ? 0 : -1}
           style={{
-            gridTemplateColumns: '1fr 140px 52px 52px 100px',
-            minHeight: isTheme ? '40px' : '36px',
+            gridTemplateColumns: '1fr 120px 44px 44px 90px',
+            minHeight: isTheme ? '34px' : '30px',
             borderBottom: '1px solid var(--border-subtle)',
             backgroundColor: isSelected 
               ? 'var(--surface-active)' 
               : isTheme 
                 ? typeStyle.rowBg 
                 : 'transparent',
-            // Ring color for selected state
             ...(isSelected ? { '--tw-ring-color': 'var(--brand-primary)' } as any : {}),
           }}
           onMouseEnter={(e) => {
-            if (!isSelected) {
-              e.currentTarget.style.backgroundColor = 'var(--surface-hover)';
-            }
+            if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--surface-hover)';
           }}
           onMouseLeave={(e) => {
-            if (!isSelected) {
-              e.currentTarget.style.backgroundColor = isTheme ? typeStyle.rowBg : 'transparent';
-            }
+            if (!isSelected) e.currentTarget.style.backgroundColor = isTheme ? typeStyle.rowBg : 'transparent';
           }}
           onClick={() => {
             if (isClickable) handleActivate();
@@ -158,39 +152,36 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
             }
           }}
         >
-          {/* Item column: expand + type chip + name */}
+          {/* Item column: indent + expand + chip + name */}
           <div 
-            className="flex items-center gap-2 min-w-0 pr-2"
-            style={{ paddingLeft: `${indentPx + 12}px` }}
+            className="flex items-center gap-1.5 min-w-0 pr-2"
+            style={{ paddingLeft: `${indentPx + 10}px` }}
           >
-            {/* Expand/collapse button with better click target */}
+            {/* Expand/collapse */}
             {hasChildren ? (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   toggleExpand(item.id);
                 }}
-                className="flex items-center justify-center w-5 h-5 flex-shrink-0 rounded transition-colors hover:bg-[var(--surface-hover)]"
+                className="flex items-center justify-center w-4 h-4 flex-shrink-0 rounded transition-colors hover:bg-[var(--surface-hover)] focus-visible:ring-1 focus-visible:ring-ring"
                 style={{ color: 'var(--text-muted)' }}
                 aria-label={isExpanded ? 'Collapse' : 'Expand'}
               >
                 {isExpanded ? (
-                  <ChevronDown className="w-3.5 h-3.5" />
+                  <ChevronDown className="w-3 h-3" />
                 ) : (
-                  <ChevronRight className="w-3.5 h-3.5" />
+                  <ChevronRight className="w-3 h-3" />
                 )}
               </button>
             ) : (
-              <div className="w-5 flex-shrink-0" />
+              <div className="w-4 flex-shrink-0" />
             )}
             
-            {/* Type chip - compact */}
+            {/* Type chip - smaller */}
             <span 
-              className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide flex-shrink-0"
-              style={{ 
-                backgroundColor: typeStyle.bg, 
-                color: typeStyle.color,
-              }}
+              className="px-1 py-0.5 rounded text-[8px] font-bold uppercase tracking-wide flex-shrink-0"
+              style={{ backgroundColor: typeStyle.bg, color: typeStyle.color }}
             >
               {typeStyle.label}
             </span>
@@ -198,7 +189,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
             {/* Name */}
             <span 
               className={cn(
-                "text-[13px] truncate",
+                "text-[11px] truncate",
                 (isObjective || isTheme) && "font-medium"
               )}
               style={{ color: 'var(--text-primary)' }}
@@ -207,10 +198,10 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
             </span>
           </div>
 
-          {/* Progress bar column */}
-          <div className="flex items-center gap-2 px-2">
+          {/* Progress bar - aligned baseline */}
+          <div className="flex items-center gap-1.5 px-2">
             <div 
-              className="flex-1 h-[5px] rounded-full overflow-hidden"
+              className="flex-1 h-[4px] rounded-full overflow-hidden"
               style={{ backgroundColor: 'var(--progress-track)' }}
             >
               <div
@@ -223,55 +214,47 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
             </div>
           </div>
 
-          {/* Percentage column - mono-style aligned */}
+          {/* Percentage - right aligned mono */}
           <div className="text-right pr-2">
             <span 
-              className="text-[11px] font-mono tabular-nums"
-              style={{ 
-                color: item.progress > 0 ? 'var(--text-secondary)' : 'var(--text-muted)',
-              }}
+              className="text-[10px] font-mono tabular-nums"
+              style={{ color: item.progress > 0 ? 'var(--text-secondary)' : 'var(--text-muted)' }}
             >
               {item.progress > 0 ? `${Math.round(item.progress)}%` : '—'}
             </span>
           </div>
 
-          {/* Status chip column - only for objectives */}
+          {/* Status indicator - only for objectives */}
           <div className="flex items-center justify-center px-1">
             {isObjective && status && (
               <span 
-                className="px-1.5 py-0.5 rounded text-[9px] font-semibold whitespace-nowrap"
-                style={{ 
-                  backgroundColor: status.bg, 
-                  color: status.color,
-                }}
+                className="px-1 py-0.5 rounded text-[8px] font-semibold whitespace-nowrap"
+                style={{ backgroundColor: status.bg, color: status.color }}
               >
                 {status.label === 'On Track' ? '✓' : status.label === 'At Risk' ? '!' : status.label === 'Behind' ? '↓' : '○'}
               </span>
             )}
           </div>
 
-          {/* Owner column */}
-          <div className="flex items-center gap-1.5 px-2">
+          {/* Owner */}
+          <div className="flex items-center gap-1 px-2">
             {item.owner ? (
               <>
                 <div 
-                  className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-semibold flex-shrink-0"
-                  style={{ 
-                    backgroundColor: 'var(--brand-primary)',
-                    color: 'white',
-                  }}
+                  className="w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-semibold flex-shrink-0"
+                  style={{ backgroundColor: 'var(--brand-primary)', color: 'white' }}
                 >
                   {item.owner.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                 </div>
                 <span 
-                  className="text-[11px] truncate"
+                  className="text-[10px] truncate"
                   style={{ color: 'var(--text-muted)' }}
                 >
                   {item.owner.name.split(' ')[0]}
                 </span>
               </>
             ) : (
-              <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>—</span>
+              <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>—</span>
             )}
           </div>
         </div>
@@ -281,49 +264,33 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
     );
   };
 
-  // Only show skeleton on true initial load with no data
+  // Skeleton only on first load
   if (isLoading && treeData.length === 0) {
     return (
       <section 
-        className="rounded-xl overflow-hidden"
+        className="rounded-lg overflow-hidden"
         style={{
           backgroundColor: 'var(--surface-bg)',
           border: '1px solid var(--border-default)',
-          boxShadow: 'var(--shadow-card)',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
         }}
       >
         <div 
-          className="px-5 py-3 flex items-center justify-between"
+          className="px-4 py-2"
           style={{ borderBottom: '1px solid var(--border-subtle)' }}
         >
           <div className="h-4 w-20 rounded animate-pulse" style={{ backgroundColor: 'var(--muted)' }} />
-          <div className="flex gap-2">
-            <div className="h-7 w-32 rounded animate-pulse" style={{ backgroundColor: 'var(--muted)' }} />
-            <div className="h-7 w-7 rounded animate-pulse" style={{ backgroundColor: 'var(--muted)' }} />
-          </div>
         </div>
-        {/* Column header skeleton */}
-        <div className="py-2 px-4 animate-pulse" style={{ backgroundColor: 'var(--surface-subtle)' }}>
-          <div className="grid" style={{ gridTemplateColumns: '1fr 140px 52px 52px 100px' }}>
+        <div className="py-1.5 px-3" style={{ backgroundColor: 'var(--surface-subtle)' }}>
+          <div className="grid animate-pulse" style={{ gridTemplateColumns: '1fr 120px 44px 44px 90px' }}>
             {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="h-2.5 w-12 rounded" style={{ backgroundColor: 'var(--muted)' }} />
+              <div key={i} className="h-2.5 w-10 rounded" style={{ backgroundColor: 'var(--muted)' }} />
             ))}
           </div>
         </div>
-        {/* Row skeletons */}
-        <div className="p-2">
+        <div className="p-2 space-y-1">
           {[1, 2, 3, 4, 5].map((i) => (
-            <div 
-              key={i} 
-              className="flex items-center gap-3 p-2 rounded mb-1 animate-pulse"
-              style={{ paddingLeft: i % 2 === 0 ? '32px' : '12px' }}
-            >
-              <div className="h-4 w-4 rounded" style={{ backgroundColor: 'var(--muted)' }} />
-              <div className="h-3.5 rounded" style={{ backgroundColor: 'var(--muted)', width: `${120 + (i * 20)}px` }} />
-              <div className="flex-1" />
-              <div className="h-3 w-12 rounded" style={{ backgroundColor: 'var(--muted)' }} />
-              <div className="h-1.5 w-20 rounded-full" style={{ backgroundColor: 'var(--muted)' }} />
-            </div>
+            <div key={i} className="h-7 rounded animate-pulse" style={{ backgroundColor: 'var(--muted)', marginLeft: i % 2 === 0 ? '24px' : '0' }} />
           ))}
         </div>
       </section>
@@ -332,34 +299,34 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
 
   return (
     <section 
-      className="rounded-xl overflow-hidden flex flex-col"
+      className="rounded-lg overflow-hidden flex flex-col"
       style={{
         backgroundColor: 'var(--surface-bg)',
         border: '1px solid var(--border-default)',
-        boxShadow: 'var(--shadow-card)',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
       }}
     >
       {/* Header */}
       <div 
-        className="px-4 py-3 flex items-center justify-between flex-shrink-0"
+        className="px-4 py-2 flex items-center justify-between flex-shrink-0"
         style={{ borderBottom: '1px solid var(--border-subtle)' }}
       >
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <h2 
-            className="text-[15px] font-semibold"
+            className="text-[13px] font-semibold"
             style={{ color: 'var(--text-primary)' }}
           >
             OKR Tree
           </h2>
           {isRefreshing && (
-            <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>Refreshing…</span>
+            <span className="text-[9px]" style={{ color: 'var(--text-muted)' }}>Refreshing…</span>
           )}
-          {/* Type legend - compact pills */}
-          <div className="flex items-center gap-1">
+          {/* Type legend - smaller pills */}
+          <div className="flex items-center gap-0.5">
             {Object.entries(typeStyles).map(([key, style]) => (
               <span 
                 key={key}
-                className="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase"
+                className="px-1 py-0.5 rounded text-[7px] font-bold uppercase"
                 style={{ backgroundColor: style.bg, color: style.color }}
               >
                 {style.label}
@@ -369,41 +336,32 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
         </div>
         
         {/* Search + expand */}
-        <div className="flex items-center gap-2">
-          {/* Premium search input */}
-          <div className="relative w-48">
+        <div className="flex items-center gap-1.5">
+          <div className="relative w-40">
             <Search 
-              className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 pointer-events-none" 
+              className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 pointer-events-none" 
               style={{ color: 'var(--text-muted)' }} 
             />
             <input
               type="text"
-              placeholder="Search OKRs..."
+              placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-7 pl-8 pr-7 text-[12px] rounded-md transition-all outline-none"
+              className="w-full h-6 pl-7 pr-6 text-[11px] rounded-md transition-all outline-none focus-visible:ring-2 focus-visible:ring-ring"
               style={{ 
                 backgroundColor: 'var(--surface-subtle)', 
                 border: '1px solid var(--border-subtle)',
                 color: 'var(--text-primary)',
               }}
-              onFocus={(e) => {
-                e.currentTarget.style.borderColor = 'var(--brand-primary)';
-                e.currentTarget.style.boxShadow = '0 0 0 2px var(--ring-primary)';
-              }}
-              onBlur={(e) => {
-                e.currentTarget.style.borderColor = 'var(--border-subtle)';
-                e.currentTarget.style.boxShadow = 'none';
-              }}
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-[var(--surface-hover)] transition-colors"
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-[var(--surface-hover)] transition-colors"
                 style={{ color: 'var(--text-muted)' }}
                 aria-label="Clear search"
               >
-                <X className="h-3 w-3" />
+                <X className="h-2.5 w-2.5" />
               </button>
             )}
           </div>
@@ -411,7 +369,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
           <Button 
             variant="ghost" 
             size="icon" 
-            className="h-7 w-7 rounded-md"
+            className="h-6 w-6 rounded-md focus-visible:ring-2 focus-visible:ring-ring"
             onClick={() => navigate('/enterprise/okr-hub')}
             title="Open OKR Hub"
             style={{ 
@@ -420,46 +378,46 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
               border: '1px solid var(--border-subtle)',
             }}
           >
-            <Maximize2 className="h-3.5 w-3.5" />
+            <Maximize2 className="h-3 w-3" />
           </Button>
         </div>
       </div>
 
       {/* Sticky Column Headers */}
       <div
-        className="grid items-center py-2 sticky top-0 z-10 flex-shrink-0"
+        className="grid items-center py-1.5 sticky top-0 z-10 flex-shrink-0"
         style={{
-          gridTemplateColumns: '1fr 140px 52px 52px 100px',
+          gridTemplateColumns: '1fr 120px 44px 44px 90px',
           backgroundColor: 'var(--surface-subtle)',
           borderBottom: '1px solid var(--border-default)',
         }}
       >
         <div 
-          className="text-[10px] font-semibold uppercase tracking-wider pl-4"
+          className="text-[9px] font-semibold uppercase tracking-wider pl-3"
           style={{ color: 'var(--text-muted)' }}
         >
           Item
         </div>
         <div 
-          className="text-[10px] font-semibold uppercase tracking-wider px-2"
+          className="text-[9px] font-semibold uppercase tracking-wider px-2"
           style={{ color: 'var(--text-muted)' }}
         >
           Progress
         </div>
         <div 
-          className="text-[10px] font-semibold uppercase tracking-wider text-right pr-2"
+          className="text-[9px] font-semibold uppercase tracking-wider text-right pr-2"
           style={{ color: 'var(--text-muted)' }}
         >
           %
         </div>
         <div 
-          className="text-[10px] font-semibold uppercase tracking-wider text-center"
+          className="text-[9px] font-semibold uppercase tracking-wider text-center"
           style={{ color: 'var(--text-muted)' }}
         >
           Status
         </div>
         <div 
-          className="text-[10px] font-semibold uppercase tracking-wider px-2"
+          className="text-[9px] font-semibold uppercase tracking-wider px-2"
           style={{ color: 'var(--text-muted)' }}
         >
           Owner
@@ -467,28 +425,22 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
       </div>
 
       {/* Tree Content - scrollable */}
-      <div className="flex-1 overflow-y-auto" style={{ maxHeight: '380px' }}>
+      <div className="flex-1 overflow-y-auto" style={{ maxHeight: '320px' }}>
         {treeData.length > 0 ? (
           treeData.map((item) => renderTreeItem(item, 0))
         ) : (
-          <div className="py-10 px-5 text-center">
+          <div className="py-8 px-4 text-center">
             <div 
-              className="w-10 h-10 rounded-lg mx-auto flex items-center justify-center mb-3"
+              className="w-8 h-8 rounded-lg mx-auto flex items-center justify-center mb-2"
               style={{ backgroundColor: 'var(--surface-subtle)' }}
             >
-              <Target className="w-4 h-4" style={{ color: 'var(--text-muted)' }} />
+              <Search size={14} style={{ color: 'var(--text-muted)' }} />
             </div>
-            <p 
-              className="text-[13px] font-medium mb-1"
-              style={{ color: 'var(--text-primary)' }}
-            >
-              No OKRs linked
+            <p className="text-[12px] font-medium" style={{ color: 'var(--text-secondary)' }}>
+              No OKRs found
             </p>
-            <p 
-              className="text-[11px] max-w-[240px] mx-auto"
-              style={{ color: 'var(--text-muted)' }}
-            >
-              Create objectives to track progress and alignment.
+            <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-muted)' }}>
+              OKRs will appear here once created
             </p>
           </div>
         )}

@@ -1,11 +1,7 @@
 /**
- * ExposureGapsSection — Executive cockpit-style exposure surface
- * Compact rows, micro-visuals, aligned cards
- * 
- * KEY BEHAVIOR: Never blanks out once data is loaded.
- * - Skeleton only on first-ever load
- * - "Updating..." indicator during refetch
- * - Last good data persists across snapshot switches
+ * ExposureGapsSection — CIO Cockpit exposure surface
+ * Clean 3-column executive block with equal weight cards
+ * Compact rows, thin bars, improved scannability
  */
 
 import { useNavigate } from 'react-router-dom';
@@ -41,10 +37,8 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
   
   const { data, isLoading, isFetching, hasData } = useStrategyRoomSummary(snapshotId);
   
-  // Use data or safe defaults (NEVER undefined in render)
   const displayData = data ?? EMPTY_SUMMARY;
 
-  // Build "Needs Attention" list - memoized for stability
   const attentionItems = useMemo((): AttentionItem[] => {
     const items: AttentionItem[] = [];
     
@@ -84,52 +78,31 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
     return items;
   }, [displayData.atRiskObjectives, displayData.topRisks, displayData.alignmentGaps, displayData.misalignedEpics, displayData.misalignedFeatures]);
 
-  // Show skeleton ONLY on true first load (never had any data)
+  // Skeleton only on first load
   if (isLoading && !hasData) {
     return (
       <section 
         className="rounded-lg overflow-hidden"
         style={{ 
           backgroundColor: 'var(--surface-bg)', 
-          border: '1px solid var(--border-default)' 
+          border: '1px solid var(--border-default)',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
         }}
       >
         <div 
-          className="px-4 py-2"
+          className="px-4 py-1.5"
           style={{ borderBottom: '1px solid var(--border-subtle)' }}
         >
-          <div className="h-3.5 w-28 rounded animate-pulse" style={{ backgroundColor: 'var(--muted)' }} />
+          <div className="h-3 w-28 rounded animate-pulse" style={{ backgroundColor: 'var(--muted)' }} />
         </div>
-        <div className="p-3">
+        <div className="p-2.5">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
-            {['col-1', 'col-2', 'col-3'].map((key) => (
+            {['c1', 'c2', 'c3'].map((key) => (
               <div 
                 key={key}
-                className="rounded-md overflow-hidden min-h-[140px]"
-                style={{ 
-                  backgroundColor: 'var(--muted)', 
-                  border: '1px solid var(--border)' 
-                }}
-              >
-                <div 
-                  className="px-3 py-2 flex items-center gap-2"
-                  style={{ borderBottom: '1px solid var(--border)' }}
-                >
-                  <div className="h-3 w-3 rounded animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
-                  <div className="h-2.5 w-20 rounded animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
-                </div>
-                <div className="p-3 space-y-2">
-                  {['row-1', 'row-2', 'row-3'].map((rowKey) => (
-                    <div key={rowKey} className="flex items-center justify-between">
-                      <div className="h-2.5 w-16 rounded animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
-                      <div className="h-3 w-5 rounded animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
-                    </div>
-                  ))}
-                </div>
-                <div className="px-3 pb-2.5">
-                  <div className="h-6 w-full rounded animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
-                </div>
-              </div>
+                className="rounded-md min-h-[120px] animate-pulse"
+                style={{ backgroundColor: 'var(--muted)', border: '1px solid var(--border)' }}
+              />
             ))}
           </div>
         </div>
@@ -137,7 +110,6 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
     );
   }
 
-  // Determine if we're updating (but have data to show)
   const isUpdating = isFetching && hasData;
 
   return (
@@ -145,38 +117,42 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
       className="rounded-lg overflow-hidden"
       style={{ 
         backgroundColor: 'var(--surface-bg)', 
-        border: '1px solid var(--border-default)' 
+        border: '1px solid var(--border-default)',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
       }}
     >
       {/* Section Header */}
       <div 
-        className="px-4 py-2 flex items-center justify-between"
+        className="px-4 py-1.5 flex items-center justify-between"
         style={{ borderBottom: '1px solid var(--border-subtle)' }}
       >
-        <h2 
-          className="text-xs font-semibold uppercase tracking-wide"
-          style={{ color: 'var(--text-primary)' }}
-        >
-          Exposure & Gaps
-        </h2>
+        <div className="flex items-center gap-2">
+          <Shield size={12} style={{ color: 'var(--status-danger)' }} />
+          <h2 
+            className="text-[11px] font-semibold uppercase tracking-wide"
+            style={{ color: 'var(--text-secondary)' }}
+          >
+            Exposure & Gaps
+          </h2>
+        </div>
         {isUpdating && (
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1">
             <Loader2 size={10} className="animate-spin" style={{ color: 'var(--text-muted)' }} />
-            <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>Updating…</span>
+            <span className="text-[9px]" style={{ color: 'var(--text-muted)' }}>Updating…</span>
           </div>
         )}
       </div>
 
-      <div className="p-3">
+      <div className="p-2.5">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
           {/* Risk Exposure Column */}
           <CockpitCard
             title="Risk Exposure"
-            icon={<Shield size={12} />}
+            icon={<Shield size={11} />}
             iconColor="text-status-danger"
-            cta={{ label: 'View all risks', onClick: () => navigate('/enterprise/risks') }}
+            cta={{ label: 'View all', onClick: () => navigate('/enterprise/risks') }}
           >
-            <div className="space-y-1">
+            <div className="space-y-0.5">
               <DataRow 
                 label="Critical/High" 
                 value={displayData.highRisks} 
@@ -201,13 +177,13 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
             </div>
 
             {displayData.overdueRisks > 0 && (
-              <div className="pt-2 mt-2" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+              <div className="pt-1.5 mt-1.5" style={{ borderTop: '1px solid var(--border-subtle)' }}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1">
-                    <Clock size={10} className="text-status-danger" />
-                    <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>Overdue</span>
+                    <Clock size={9} className="text-status-danger" />
+                    <span className="text-[9px]" style={{ color: 'var(--text-muted)' }}>Overdue</span>
                   </div>
-                  <span className="text-[11px] font-semibold tabular-nums text-status-danger">
+                  <span className="text-[10px] font-semibold tabular-nums text-status-danger">
                     {displayData.overdueRisks}
                   </span>
                 </div>
@@ -218,11 +194,11 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
           {/* Alignment Gaps Column */}
           <CockpitCard
             title="Alignment Gaps"
-            icon={<Target size={12} />}
+            icon={<Target size={11} />}
             iconColor="text-secondary-bronze"
             cta={{ label: 'View backlog', onClick: () => navigate('/enterprise/backlog') }}
           >
-            <div className="space-y-1">
+            <div className="space-y-0.5">
               <DataRow label="Orphan Themes" value={0} variant="muted" />
               <DataRow 
                 label="Unlinked Epics" 
@@ -236,9 +212,9 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
               />
             </div>
 
-            <div className="pt-2 mt-2" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+            <div className="pt-1.5 mt-1.5" style={{ borderTop: '1px solid var(--border-subtle)' }}>
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-medium" style={{ color: 'var(--text-muted)' }}>Total gaps</span>
+                <span className="text-[9px] font-medium" style={{ color: 'var(--text-muted)' }}>Total gaps</span>
                 <span className={cn(
                   "text-sm font-bold tabular-nums",
                   displayData.alignmentGaps > 0 ? "text-secondary-bronze" : ""
@@ -252,13 +228,13 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
           {/* Needs Attention Column */}
           <CockpitCard
             title="Needs Attention"
-            icon={<AlertTriangle size={12} />}
+            icon={<AlertTriangle size={11} />}
             iconColor="text-status-warning"
           >
             {attentionItems.length === 0 ? (
-              <div className="py-3 text-center">
-                <CheckCircle2 size={16} className="mx-auto mb-1 text-status-success" />
-                <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>No items need attention</span>
+              <div className="py-2 text-center">
+                <CheckCircle2 size={14} className="mx-auto mb-0.5 text-status-success" />
+                <span className="text-[9px]" style={{ color: 'var(--text-muted)' }}>No items need attention</span>
               </div>
             ) : (
               <div className="space-y-0.5">
@@ -266,8 +242,8 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
                   <AttentionRow key={item.id} item={item} onClick={() => navigate(item.link)} />
                 ))}
                 {attentionItems.length > 4 && (
-                  <div className="text-center pt-1">
-                    <span className="text-[9px]" style={{ color: 'var(--text-muted)' }}>
+                  <div className="text-center pt-0.5">
+                    <span className="text-[8px]" style={{ color: 'var(--text-muted)' }}>
                       +{attentionItems.length - 4} more
                     </span>
                   </div>
@@ -295,11 +271,12 @@ function CockpitCard({ title, icon, iconColor, children, cta }: CockpitCardProps
       className="rounded-md overflow-hidden flex flex-col"
       style={{ 
         backgroundColor: 'var(--surface-2)', 
-        border: '1px solid var(--border-subtle)' 
+        border: '1px solid var(--border-subtle)',
+        minHeight: '120px',
       }}
     >
       <div 
-        className="px-3 py-1.5 flex items-center gap-1.5"
+        className="px-2.5 py-1.5 flex items-center gap-1.5"
         style={{ 
           borderBottom: '1px solid var(--border-subtle)',
           backgroundColor: 'var(--surface-3)'
@@ -307,26 +284,26 @@ function CockpitCard({ title, icon, iconColor, children, cta }: CockpitCardProps
       >
         <span className={iconColor}>{icon}</span>
         <span 
-          className="text-[10px] font-semibold uppercase tracking-wide"
+          className="text-[9px] font-semibold uppercase tracking-wide"
           style={{ color: 'var(--text-muted)' }}
         >
           {title}
         </span>
       </div>
       
-      <div className="p-2.5 flex-1">{children}</div>
+      <div className="p-2 flex-1">{children}</div>
 
       {cta && (
-        <div className="px-2.5 pb-2">
+        <div className="px-2 pb-1.5">
           <Button
             variant="ghost"
             size="sm"
-            className="w-full h-6 text-[10px] hover:bg-[var(--surface-hover)]"
+            className="w-full h-5 text-[9px] hover:bg-[var(--surface-hover)] focus-visible:ring-1"
             style={{ color: 'var(--text-muted)' }}
             onClick={cta.onClick}
           >
             {cta.label}
-            <ChevronRight size={10} className="ml-1" />
+            <ChevronRight size={9} className="ml-0.5" />
           </Button>
         </div>
       )}
@@ -370,10 +347,10 @@ function DataRow({ label, value, total = 0, variant = 'muted', showBar }: DataRo
         (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
       }}
     >
-      <span className="text-[10px] flex-1" style={{ color: 'var(--text-muted)' }}>{label}</span>
+      <span className="text-[9px] flex-1" style={{ color: 'var(--text-muted)' }}>{label}</span>
       {showBar && total > 0 && (
         <div 
-          className="w-12 h-1 rounded-full overflow-hidden"
+          className="w-10 h-[3px] rounded-full overflow-hidden"
           style={{ backgroundColor: 'var(--border-default)' }}
         >
           <div 
@@ -383,7 +360,7 @@ function DataRow({ label, value, total = 0, variant = 'muted', showBar }: DataRo
         </div>
       )}
       <span 
-        className="text-[11px] font-semibold tabular-nums w-5 text-right"
+        className="text-[10px] font-semibold tabular-nums w-4 text-right"
         style={{ color: valueColors[variant] }}
       >
         {value}
@@ -402,7 +379,7 @@ function AttentionRow({ item, onClick }: { item: AttentionItem; onClick: () => v
   return (
     <button
       onClick={onClick}
-      className="w-full px-1.5 py-1.5 rounded text-left flex items-center gap-2 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring group"
+      className="w-full px-1 py-1 rounded text-left flex items-center gap-1.5 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring group"
       style={{ backgroundColor: 'transparent' }}
       onMouseEnter={(e) => {
         (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)';
@@ -412,22 +389,22 @@ function AttentionRow({ item, onClick }: { item: AttentionItem; onClick: () => v
       }}
     >
       <div 
-        className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+        className="w-1 h-1 rounded-full flex-shrink-0"
         style={{ backgroundColor: severityColors[item.severity] }}
       />
       <div className="flex-1 min-w-0">
         <div 
-          className="text-[10px] font-medium truncate group-hover:text-[var(--text-primary)]"
+          className="text-[9px] font-medium truncate group-hover:text-[var(--text-primary)]"
           style={{ color: 'var(--text-secondary)' }}
         >
           {item.title}
         </div>
-        <div className="text-[9px]" style={{ color: 'var(--text-muted)' }}>
+        <div className="text-[8px] leading-tight" style={{ color: 'var(--text-muted)' }}>
           {item.reason}
         </div>
       </div>
       <ChevronRight 
-        size={10} 
+        size={9} 
         className="opacity-0 group-hover:opacity-50 transition-opacity flex-shrink-0" 
         style={{ color: 'var(--text-muted)' }}
       />

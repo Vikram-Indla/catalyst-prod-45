@@ -1,3 +1,8 @@
+/**
+ * StrategyStack — CIO Cockpit "Data Table Card" style
+ * Enterprise list table feel with sticky header, compact rows, tighter spacing
+ */
+
 import { useState } from 'react';
 import { Target, Layers, Zap, Grid3X3, ChevronRight, X, AlertTriangle, User } from 'lucide-react';
 import { useStrategyPyramidCounts } from '@/hooks/useExecutionMetrics';
@@ -20,7 +25,6 @@ interface LayerConfig {
   description: string;
 }
 
-// Theme token-based colors via CSS vars
 const layerConfigs: LayerConfig[] = [
   { 
     key: 'objectives', 
@@ -76,29 +80,13 @@ interface LayerDetailsData {
 function getStatusColor(status?: string): { bg: string; text: string; border: string } {
   switch (status) {
     case 'On Track':
-      return { 
-        bg: 'var(--status-success-bg)', 
-        text: 'var(--status-success)', 
-        border: 'var(--status-success)' 
-      };
+      return { bg: 'var(--status-success-bg)', text: 'var(--status-success)', border: 'var(--status-success)' };
     case 'At Risk':
-      return { 
-        bg: 'var(--status-warning-bg)', 
-        text: 'var(--status-warning)', 
-        border: 'var(--status-warning)' 
-      };
+      return { bg: 'var(--status-warning-bg)', text: 'var(--status-warning)', border: 'var(--status-warning)' };
     case 'Behind':
-      return { 
-        bg: 'var(--status-danger-bg)', 
-        text: 'var(--status-danger)', 
-        border: 'var(--status-danger)' 
-      };
+      return { bg: 'var(--status-danger-bg)', text: 'var(--status-danger)', border: 'var(--status-danger)' };
     default:
-      return { 
-        bg: 'var(--surface-subtle)', 
-        text: 'var(--text-muted)', 
-        border: 'var(--border-default)' 
-      };
+      return { bg: 'var(--surface-subtle)', text: 'var(--text-muted)', border: 'var(--border-default)' };
   }
 }
 
@@ -213,30 +201,30 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
 
   return (
     <section 
-      className="rounded-xl overflow-hidden"
+      className="rounded-lg overflow-hidden"
       style={{
         backgroundColor: 'var(--surface-bg)',
         border: '1px solid var(--border-default)',
-        boxShadow: 'var(--shadow-card)',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
       }}
     >
       {/* Header */}
       <div 
-        className="px-4 py-3 flex items-center justify-between"
+        className="px-4 py-2 flex items-center justify-between"
         style={{ borderBottom: '1px solid var(--border-subtle)' }}
       >
         <div>
           <h2 
-            className="text-[15px] font-semibold"
+            className="text-[13px] font-semibold"
             style={{ color: 'var(--text-primary)' }}
           >
             Strategy Coverage & Alignment
           </h2>
           <p 
-            className="text-[11px] mt-0.5"
+            className="text-[10px]"
             style={{ color: 'var(--text-muted)' }}
           >
-            Coverage across strategic layers • Click to expand details
+            Coverage across strategic layers • Click to expand
           </p>
         </div>
       </div>
@@ -253,32 +241,32 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
         >
           {/* Sticky Table Header */}
           <div 
-            className="sticky top-0 z-10 grid items-center py-2 px-4"
+            className="sticky top-0 z-10 grid items-center py-1.5 px-3"
             style={{
-              gridTemplateColumns: '1fr 60px 140px 80px 60px 24px',
+              gridTemplateColumns: '1fr 50px 120px 70px 50px 20px',
               backgroundColor: 'var(--surface-subtle)',
               borderBottom: '1px solid var(--border-default)',
             }}
           >
-            <div className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
+            <div className="text-[9px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
               Layer
             </div>
-            <div className="text-[10px] font-semibold uppercase tracking-wider text-center" style={{ color: 'var(--text-muted)' }}>
+            <div className="text-[9px] font-semibold uppercase tracking-wider text-center" style={{ color: 'var(--text-muted)' }}>
               Count
             </div>
-            <div className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
+            <div className="text-[9px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
               Aligned
             </div>
-            <div className="text-[10px] font-semibold uppercase tracking-wider text-center" style={{ color: 'var(--text-muted)' }}>
+            <div className="text-[9px] font-semibold uppercase tracking-wider text-center" style={{ color: 'var(--text-muted)' }}>
               Coverage
             </div>
-            <div className="text-[10px] font-semibold uppercase tracking-wider text-center" style={{ color: 'var(--text-muted)' }}>
+            <div className="text-[9px] font-semibold uppercase tracking-wider text-center" style={{ color: 'var(--text-muted)' }}>
               Gap
             </div>
             <div />
           </div>
 
-          {/* Table Rows */}
+          {/* Table Rows - Compact */}
           <div>
             {layerConfigs.map((layer, index) => {
               const data = getLayerData(layer.key);
@@ -292,34 +280,38 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                 <div
                   key={layer.key}
                   onClick={() => handleRowClick(layer.key)}
-                  className="grid items-center py-2 px-4 cursor-pointer transition-all duration-150"
+                  className="grid items-center py-1.5 px-3 cursor-pointer transition-all duration-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleRowClick(layer.key);
+                    }
+                  }}
                   style={{
-                    gridTemplateColumns: '1fr 60px 140px 80px 60px 24px',
+                    gridTemplateColumns: '1fr 50px 120px 70px 50px 20px',
                     borderBottom: isLast ? 'none' : '1px solid var(--border-subtle)',
                     backgroundColor: isSelected ? 'var(--surface-hover)' : 'transparent',
                     boxShadow: isSelected ? 'inset 0 0 0 1px var(--brand-primary)' : 'none',
+                    minHeight: '36px',
                   }}
                   onMouseEnter={(e) => {
-                    if (!isSelected) {
-                      e.currentTarget.style.backgroundColor = 'var(--surface-hover)';
-                    }
+                    if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--surface-hover)';
                   }}
                   onMouseLeave={(e) => {
-                    if (!isSelected) {
-                      e.currentTarget.style.backgroundColor = 'transparent';
-                    }
+                    if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent';
                   }}
                 >
                   {/* Layer Name with Icon */}
                   <div className="flex items-center gap-2">
                     <div 
-                      className="w-6 h-6 rounded flex items-center justify-center flex-shrink-0"
+                      className="w-5 h-5 rounded flex items-center justify-center flex-shrink-0"
                       style={{ backgroundColor: layer.iconBgColor }}
                     >
-                      <Icon size={12} style={{ color: layer.iconColor }} />
+                      <Icon size={11} style={{ color: layer.iconColor }} />
                     </div>
                     <span 
-                      className="text-[13px] font-medium truncate"
+                      className="text-[12px] font-medium truncate"
                       style={{ color: 'var(--text-primary)' }}
                     >
                       {layer.label}
@@ -329,20 +321,19 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                   {/* Count */}
                   <div className="text-center">
                     <span 
-                      className="text-[13px] tabular-nums font-medium"
+                      className="text-[12px] tabular-nums font-medium"
                       style={{ color: data.count === 0 ? 'var(--text-muted)' : 'var(--text-primary)' }}
                     >
                       {isLoading || okrLoading ? '–' : data.count}
                     </span>
                   </div>
                   
-                  {/* Aligned: Pill + Progress Bar */}
-                  <div className="flex items-center gap-2">
+                  {/* Aligned: Progress Bar + % */}
+                  <div className="flex items-center gap-1.5">
                     {data.count > 0 ? (
                       <>
-                        {/* Mini progress bar */}
                         <div 
-                          className="flex-1 h-1 rounded-full overflow-hidden"
+                          className="flex-1 h-[3px] rounded-full overflow-hidden"
                           style={{ backgroundColor: 'var(--progress-bg)' }}
                         >
                           <div 
@@ -353,9 +344,8 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                             }}
                           />
                         </div>
-                        {/* % Pill */}
                         <span 
-                          className="text-[10px] font-semibold tabular-nums px-1.5 py-0.5 rounded"
+                          className="text-[9px] font-semibold tabular-nums px-1 py-0.5 rounded"
                           style={{ 
                             backgroundColor: 'var(--surface-subtle)',
                             color: coverageStatus.color,
@@ -366,7 +356,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                         </span>
                       </>
                     ) : (
-                      <span className="text-[12px]" style={{ color: 'var(--text-muted)' }}>—</span>
+                      <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>—</span>
                     )}
                   </div>
                   
@@ -374,13 +364,13 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                   <div className="text-center">
                     {data.count > 0 ? (
                       <span 
-                        className="text-[10px] font-medium"
+                        className="text-[9px] font-medium"
                         style={{ color: coverageStatus.color }}
                       >
                         {coverageStatus.label}
                       </span>
                     ) : (
-                      <span className="text-[12px]" style={{ color: 'var(--text-muted)' }}>—</span>
+                      <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>—</span>
                     )}
                   </div>
                   
@@ -388,29 +378,26 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                   <div className="text-center">
                     {hasGap ? (
                       <span 
-                        className="inline-flex items-center gap-1 text-[11px] font-semibold tabular-nums px-1.5 py-0.5 rounded"
+                        className="inline-flex items-center gap-0.5 text-[10px] font-semibold tabular-nums px-1 py-0.5 rounded"
                         style={{ 
                           backgroundColor: 'var(--status-warning-bg)',
                           color: 'var(--status-warning)',
                           border: '1px solid var(--status-warning)',
                         }}
                       >
-                        <AlertTriangle size={10} />
+                        <AlertTriangle size={8} />
                         {data.gap}
                       </span>
                     ) : (
-                      <span className="text-[12px] tabular-nums" style={{ color: 'var(--text-muted)' }}>0</span>
+                      <span className="text-[11px] tabular-nums" style={{ color: 'var(--text-muted)' }}>0</span>
                     )}
                   </div>
                   
                   {/* Chevron */}
                   <div className="flex justify-center">
                     <ChevronRight 
-                      size={14} 
-                      className={cn(
-                        "transition-transform",
-                        isSelected && "rotate-90"
-                      )}
+                      size={12} 
+                      className={cn("transition-transform", isSelected && "rotate-90")}
                       style={{ color: 'var(--text-muted)' }}
                     />
                   </div>
@@ -428,24 +415,24 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
           >
             {/* Panel Header */}
             <div 
-              className="px-4 py-3 flex items-center justify-between flex-shrink-0"
+              className="px-3 py-2 flex items-center justify-between flex-shrink-0"
               style={{ borderBottom: '1px solid var(--border-subtle)' }}
             >
               <div className="flex items-center gap-2">
                 <div 
-                  className="w-6 h-6 rounded flex items-center justify-center"
+                  className="w-5 h-5 rounded flex items-center justify-center"
                   style={{ backgroundColor: selectedConfig.iconBgColor }}
                 >
-                  <selectedConfig.icon size={12} style={{ color: selectedConfig.iconColor }} />
+                  <selectedConfig.icon size={11} style={{ color: selectedConfig.iconColor }} />
                 </div>
                 <div>
                   <h3 
-                    className="text-[13px] font-semibold"
+                    className="text-[12px] font-semibold"
                     style={{ color: 'var(--text-primary)' }}
                   >
                     {selectedLayerDetails.title}
                   </h3>
-                  <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
+                  <p className="text-[9px]" style={{ color: 'var(--text-muted)' }}>
                     {selectedLayerData?.count} items • {selectedLayerData?.gap} gaps
                   </p>
                 </div>
@@ -455,51 +442,51 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                   e.stopPropagation();
                   setSelectedLayer(null);
                 }}
-                className="p-1.5 rounded transition-colors"
+                className="p-1 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 style={{ color: 'var(--text-muted)' }}
                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--surface-hover)'}
                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               >
-                <X size={14} />
+                <X size={12} />
               </button>
             </div>
 
             {/* Panel Content */}
-            <div className="flex-1 overflow-auto p-3 space-y-3" style={{ maxHeight: '280px' }}>
-              {/* Gap Alert (if gaps exist) */}
+            <div className="flex-1 overflow-auto p-2.5 space-y-2" style={{ maxHeight: '240px' }}>
+              {/* Gap Alert */}
               {selectedLayerDetails.gapItems.length > 0 && (
                 <div 
-                  className="p-2.5 rounded-lg"
+                  className="p-2 rounded-md"
                   style={{
                     backgroundColor: 'var(--status-warning-bg)',
                     border: '1px solid var(--status-warning)',
                   }}
                 >
-                  <div className="flex items-center gap-1.5 mb-2">
-                    <AlertTriangle size={12} style={{ color: 'var(--status-warning)' }} />
+                  <div className="flex items-center gap-1 mb-1.5">
+                    <AlertTriangle size={10} style={{ color: 'var(--status-warning)' }} />
                     <span 
-                      className="text-[11px] font-semibold uppercase tracking-wide"
+                      className="text-[9px] font-semibold uppercase tracking-wide"
                       style={{ color: 'var(--status-warning)' }}
                     >
-                      Alignment Gaps ({selectedLayerDetails.gapItems.length})
+                      Gaps ({selectedLayerDetails.gapItems.length})
                     </span>
                   </div>
-                  <div className="space-y-1.5">
+                  <div className="space-y-1">
                     {selectedLayerDetails.gapItems.map((gap, i) => (
-                      <div key={i} className="flex items-start gap-2">
+                      <div key={i} className="flex items-start gap-1.5">
                         <div 
-                          className="w-1 h-1 rounded-full mt-1.5 flex-shrink-0"
+                          className="w-1 h-1 rounded-full mt-1 flex-shrink-0"
                           style={{ backgroundColor: 'var(--status-warning)' }}
                         />
                         <div>
                           <span 
-                            className="text-[12px] font-medium block"
+                            className="text-[11px] font-medium block"
                             style={{ color: 'var(--text-primary)' }}
                           >
                             {gap.name}
                           </span>
                           <span 
-                            className="text-[10px]"
+                            className="text-[9px]"
                             style={{ color: 'var(--text-muted)' }}
                           >
                             {gap.reason}
@@ -511,76 +498,60 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                 </div>
               )}
 
-              {/* Issue-style Item Rows */}
-              <div className="space-y-1.5">
+              {/* Item Rows - Compact list style */}
+              <div className="space-y-1">
                 {selectedLayerDetails.items.map((item, i) => {
                   const statusColors = getStatusColor(item.status);
                   return (
                     <div 
                       key={i} 
-                      className="p-2.5 rounded-lg transition-colors"
+                      className="p-2 rounded-md transition-colors"
                       style={{
                         backgroundColor: 'var(--surface-bg)',
                         border: '1px solid var(--border-subtle)',
                       }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = 'var(--border-default)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = 'var(--border-subtle)';
-                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.borderColor = 'var(--border-default)'}
+                      onMouseLeave={(e) => e.currentTarget.style.borderColor = 'var(--border-subtle)'}
                     >
-                      {/* Row: Name + Status Chip | Progress + Owner */}
-                      <div className="flex items-start justify-between gap-3">
-                        {/* Left: Name + Status */}
+                      <div className="flex items-start justify-between gap-2">
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
+                          <div className="flex items-center gap-1.5 mb-0.5">
                             <span 
-                              className="text-[12px] font-medium truncate"
+                              className="text-[11px] font-medium truncate"
                               style={{ color: 'var(--text-primary)' }}
                             >
                               {item.name}
                             </span>
                             {item.status && (
                               <span 
-                                className="text-[9px] font-semibold uppercase px-1.5 py-0.5 rounded flex-shrink-0"
-                                style={{ 
-                                  backgroundColor: statusColors.bg,
-                                  color: statusColors.text,
-                                }}
+                                className="text-[8px] font-semibold uppercase px-1 py-0.5 rounded flex-shrink-0"
+                                style={{ backgroundColor: statusColors.bg, color: statusColors.text }}
                               >
                                 {item.status}
                               </span>
                             )}
                           </div>
                           {item.linked && (
-                            <p 
-                              className="text-[10px] truncate"
-                              style={{ color: 'var(--text-muted)' }}
-                            >
+                            <p className="text-[9px] truncate" style={{ color: 'var(--text-muted)' }}>
                               → {item.linked}
                             </p>
                           )}
                         </div>
                         
-                        {/* Right: Progress + Owner */}
-                        <div className="flex items-center gap-2 flex-shrink-0">
+                        <div className="flex items-center gap-1.5 flex-shrink-0">
                           {item.progress !== undefined && (
-                            <div className="flex items-center gap-1.5">
+                            <div className="flex items-center gap-1">
                               <div 
-                                className="w-12 h-1 rounded-full overflow-hidden"
+                                className="w-10 h-[3px] rounded-full overflow-hidden"
                                 style={{ backgroundColor: 'var(--progress-bg)' }}
                               >
                                 <div 
                                   className="h-full rounded-full"
-                                  style={{ 
-                                    width: `${item.progress}%`,
-                                    backgroundColor: statusColors.border,
-                                  }}
+                                  style={{ width: `${item.progress}%`, backgroundColor: statusColors.border }}
                                 />
                               </div>
                               <span 
-                                className="text-[10px] tabular-nums font-medium w-7 text-right"
+                                className="text-[9px] tabular-nums font-medium w-6 text-right"
                                 style={{ color: 'var(--text-muted)' }}
                               >
                                 {item.progress}%
@@ -589,12 +560,12 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                           )}
                           {item.owner && (
                             <div 
-                              className="flex items-center gap-1 px-1.5 py-0.5 rounded"
+                              className="flex items-center gap-0.5 px-1 py-0.5 rounded"
                               style={{ backgroundColor: 'var(--surface-subtle)' }}
                             >
-                              <User size={10} style={{ color: 'var(--text-muted)' }} />
+                              <User size={8} style={{ color: 'var(--text-muted)' }} />
                               <span 
-                                className="text-[9px] font-medium truncate max-w-[60px]"
+                                className="text-[8px] font-medium truncate max-w-[50px]"
                                 style={{ color: 'var(--text-muted)' }}
                               >
                                 {item.owner.split(' ')[0]}
