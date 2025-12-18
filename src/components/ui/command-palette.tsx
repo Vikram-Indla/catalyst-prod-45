@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Command } from "cmdk";
 import { useNavigate } from "react-router-dom";
-import { Search, Home, Building2, Package, Briefcase, FolderKanban, Rocket, FileText, Target, Boxes, AlertTriangle } from "lucide-react";
+import { Search, Home, Building2, Package, Briefcase, FolderKanban, Rocket, FileText, Target, Square, AlertTriangle } from "lucide-react";
 import { projects, activityItems } from "@/data/homePageData";
 import { WorkItemTypeIcon } from "@/components/ja/icons/WorkItemTypeIcon";
 import { cn } from "@/lib/utils";
@@ -24,7 +24,7 @@ const navigationItems = [
 // Quick actions
 const quickActions = [
   { name: "Create Business Request", path: "/industry?create=true", icon: FileText },
-  { name: "Create Epic", path: "/items/epics?create=true", icon: Boxes },
+  { name: "Create Epic", path: "/items/epics?create=true", icon: Square },
   { name: "Create Objective", path: "/enterprise/okr-hub?create=true", icon: Target },
   { name: "Create Risk", path: "/enterprise/risks?create=true", icon: AlertTriangle },
 ];

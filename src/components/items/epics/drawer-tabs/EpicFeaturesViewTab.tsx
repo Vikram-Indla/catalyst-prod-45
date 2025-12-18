@@ -23,9 +23,9 @@ interface EpicFeaturesViewTabProps {
 }
 
 const TYPE_BADGE_CONFIG: Record<string, { bg: string; text: string }> = {
-  'epic': { bg: 'bg-purple-100', text: 'text-purple-700' },
-  'feature': { bg: 'bg-emerald-100', text: 'text-emerald-700' },
-  'story': { bg: 'bg-sky-100', text: 'text-sky-700' },
+  'epic': { bg: 'bg-workitem-epic/20', text: 'text-workitem-epic' },
+  'feature': { bg: 'bg-workitem-feature/20', text: 'text-workitem-feature' },
+  'story': { bg: 'bg-workitem-story/20', text: 'text-workitem-story' },
 };
 
 export function EpicFeaturesViewTab({ epicId }: EpicFeaturesViewTabProps) {

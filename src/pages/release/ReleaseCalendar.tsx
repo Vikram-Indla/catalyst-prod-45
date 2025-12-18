@@ -419,10 +419,10 @@ export default function ReleaseCalendar() {
                         <td className="px-4 py-3 border-b border-border">
                           <span className={cn(
                             "px-2 py-0.5 rounded text-[10px] font-semibold uppercase",
-                            item.type === 'epic' && "bg-purple-100 text-purple-700",
-                            item.type === 'story' && "bg-green-100 text-green-700",
+                            item.type === 'epic' && "bg-workitem-epic/20 text-workitem-epic",
+                            item.type === 'story' && "bg-workitem-story/20 text-workitem-story",
                             item.type === 'task' && "bg-blue-100 text-blue-700",
-                            item.type === 'defect' && "bg-red-100 text-red-700"
+                            item.type === 'defect' && "bg-destructive/20 text-destructive"
                           )}>
                             {item.type}
                           </span>

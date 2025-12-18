@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronRight, ChevronDown, Target, FileText, CheckSquare, ListTodo, Star, AlertCircle } from 'lucide-react';
+import { ChevronRight, ChevronDown, Target, FileText, CheckSquare, ListTodo, Star, AlertCircle, Square, Gem } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -45,9 +45,9 @@ export function WorkTreeHierarchy({ view, data, isLoading, narrowToProgram }: Wo
       case 'goal': return <Star className="h-4 w-4" />;
       case 'theme-group': return <Target className="h-4 w-4" />;
       case 'theme': return <Target className="h-4 w-4" />;
-      case 'epic': return <FileText className="h-4 w-4" />;
-      case 'feature': return <CheckSquare className="h-4 w-4" />;
-      case 'story': return <FileText className="h-4 w-4" />;
+      case 'epic': return <Square className="h-4 w-4 text-workitem-epic" />;
+      case 'feature': return <Gem className="h-4 w-4 text-workitem-feature" />;
+      case 'story': return <FileText className="h-4 w-4 text-workitem-story" />;
       case 'task': return <ListTodo className="h-4 w-4" />;
       default: return <FileText className="h-4 w-4" />;
     }
