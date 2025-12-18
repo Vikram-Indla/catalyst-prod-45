@@ -1,4 +1,4 @@
-import { LayoutDashboard, AlertCircle, Tag, Calendar, Settings, BarChart3 } from 'lucide-react';
+import { LayoutDashboard, AlertCircle, Tag, Calendar, Settings, List, Users, FileText } from 'lucide-react';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 
 interface ReleaseRoomSidebarProps {
@@ -11,9 +11,10 @@ const releaseSidebarConfig: SidebarConfig = {
   badge: 'RL',
   label: 'Release',
   items: [
-    { id: 'incident-room', title: 'Incident Room', path: '/release/incident-room', icon: AlertCircle, exact: false },
-    { id: 'incidents', title: 'Incidents', path: '/release/incidents', icon: BarChart3, exact: false },
-    { id: 'incidents-list', title: 'Incident List', path: '/release/incidents/list', icon: AlertCircle, exact: true },
+    { id: 'incidents', title: 'Incidents', path: '/release/incidents', icon: List, exact: true },
+    { id: 'incidents-dashboard', title: 'Incident Dashboard', path: '/release/incidents/dashboard', icon: LayoutDashboard, exact: true },
+    { id: 'committee-queue', title: 'CAP Committee Queue', path: '/release/committee-queue', icon: Users, exact: true },
+    { id: 'incident-reports', title: 'Incident Reports', path: '/release/incident-reports', icon: FileText, exact: true },
     { id: 'versions', title: 'Versions', path: '/release/versions', icon: Tag, exact: false },
     { id: 'calendar', title: 'Calendar', path: '/release/calendar', icon: Calendar, exact: true },
   ],
