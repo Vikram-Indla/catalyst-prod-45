@@ -2,6 +2,13 @@
  * OkrTree — CIO Cockpit OKR hierarchy
  * Crystal clear hierarchy: Theme > Objective > KR
  * Compact rows, aligned progress bars, subtle hover
+ * 
+ * TYPOGRAPHY LOCK (JOB-190):
+ * - Section title: text-sm font-semibold (14px)
+ * - Table headers: text-xs font-semibold uppercase (12px min)
+ * - Row text: text-sm (14px) or text-xs (12px) minimum
+ * - NO text-[7px], text-[8px], text-[9px], text-[10px], text-[11px]
+ * - NO text-muted - use var(--text-secondary) for readable supporting text
  */
 
 import { useState } from 'react';
@@ -10,6 +17,7 @@ import { Search, Maximize2, ChevronRight, ChevronDown, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useOKRTreeV2, OKRTreeV2Item } from '@/hooks/useOKRTreeV2';
 import { cn } from '@/lib/utils';
+import { TYPOGRAPHY } from './strategyRoomTypography';
 
 interface OkrTreeProps {
   selectedSnapshot: string;
@@ -30,7 +38,7 @@ function getHealthStatus(progress: number, health?: string): { label: string; co
   if (progress > 0) {
     return { label: 'Behind', color: 'var(--status-danger)', bg: 'var(--status-danger-bg)' };
   }
-  return { label: 'Not Started', color: 'var(--text-muted)', bg: 'var(--surface-subtle)' };
+  return { label: 'Not Started', color: 'var(--text-secondary)', bg: 'var(--surface-subtle)' };
 }
 
 function getProgressBarColor(progress: number): string {
@@ -178,9 +186,9 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
               <div className="w-4 flex-shrink-0" />
             )}
             
-            {/* Type chip - smaller */}
+            {/* Type chip - readable size */}
             <span 
-              className="px-1 py-0.5 rounded text-[8px] font-bold uppercase tracking-wide flex-shrink-0"
+              className={cn(TYPOGRAPHY.typeBadge, 'px-1 py-0.5 rounded flex-shrink-0')}
               style={{ backgroundColor: typeStyle.bg, color: typeStyle.color }}
             >
               {typeStyle.label}
@@ -189,7 +197,8 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
             {/* Name */}
             <span 
               className={cn(
-                "text-[11px] truncate",
+                TYPOGRAPHY.tableCell,
+                "truncate",
                 (isObjective || isTheme) && "font-medium"
               )}
               style={{ color: 'var(--text-primary)' }}
@@ -214,11 +223,11 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
             </div>
           </div>
 
-          {/* Percentage - right aligned mono */}
+          {/* Percentage - right aligned */}
           <div className="text-right pr-2">
             <span 
-              className="text-[10px] font-mono tabular-nums"
-              style={{ color: item.progress > 0 ? 'var(--text-secondary)' : 'var(--text-muted)' }}
+              className={cn(TYPOGRAPHY.progressPercent)}
+              style={{ color: item.progress > 0 ? 'var(--text-secondary)' : 'var(--text-secondary)' }}
             >
               {item.progress > 0 ? `${Math.round(item.progress)}%` : '—'}
             </span>
@@ -228,7 +237,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
           <div className="flex items-center justify-center px-1">
             {isObjective && status && (
               <span 
-                className="px-1 py-0.5 rounded text-[8px] font-semibold whitespace-nowrap"
+                className={cn(TYPOGRAPHY.statusBadge, 'px-1.5 py-0.5 rounded whitespace-nowrap')}
                 style={{ backgroundColor: status.bg, color: status.color }}
               >
                 {status.label === 'On Track' ? '✓' : status.label === 'At Risk' ? '!' : status.label === 'Behind' ? '↓' : '○'}
@@ -313,20 +322,20 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
       >
         <div className="flex items-center gap-2">
           <h2 
-            className="text-[13px] font-semibold"
+            className={cn(TYPOGRAPHY.sectionTitle)}
             style={{ color: 'var(--text-primary)' }}
           >
             OKR Tree
           </h2>
           {isRefreshing && (
-            <span className="text-[9px]" style={{ color: 'var(--text-muted)' }}>Refreshing…</span>
+            <span className={cn(TYPOGRAPHY.microcopy)} style={{ color: 'var(--text-secondary)' }}>Refreshing…</span>
           )}
-          {/* Type legend - smaller pills */}
+          {/* Type legend */}
           <div className="flex items-center gap-0.5">
             {Object.entries(typeStyles).map(([key, style]) => (
               <span 
                 key={key}
-                className="px-1 py-0.5 rounded text-[7px] font-bold uppercase"
+                className={cn(TYPOGRAPHY.typeBadge, 'px-1 py-0.5 rounded')}
                 style={{ backgroundColor: style.bg, color: style.color }}
               >
                 {style.label}
