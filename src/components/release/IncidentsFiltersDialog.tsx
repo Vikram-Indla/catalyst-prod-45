@@ -5,16 +5,9 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ChevronUp, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import type { IncidentFilters, IncidentStatus, SupportLevel } from '@/types/incident';
 
-export interface IncidentFilters {
-  status?: string[];
-  priority?: string[];
-  component?: string[];
-  assignee?: string[];
-  activeSmartFilter?: SmartFilterType;
-}
-
-type SmartFilterType = 'open' | 'critical' | 'myAssigned' | 'overdue' | null;
+type SmartFilterType = 'open' | 'critical' | 'major' | 'sla_breach' | null;
 
 interface IncidentsFiltersDialogProps {
   open: boolean;
@@ -23,61 +16,60 @@ interface IncidentsFiltersDialogProps {
   onFiltersChange: (filters: IncidentFilters) => void;
 }
 
-const STATUS_OPTIONS = [
+const STATUS_OPTIONS: { value: IncidentStatus; label: string }[] = [
   { value: 'open', label: 'Open' },
-  { value: 'in-progress', label: 'In Progress' },
-  { value: 'analysis', label: 'Analysis' },
-  { value: 'implementing', label: 'Implementing' },
-  { value: 'pending', label: 'Pending' },
+  { value: 'triage', label: 'Triage' },
+  { value: 'to_committee', label: 'To Committee' },
+  { value: 'in_progress', label: 'In Progress' },
   { value: 'resolved', label: 'Resolved' },
+  { value: 'converted', label: 'Converted' },
   { value: 'closed', label: 'Closed' },
 ];
 
-const PRIORITY_OPTIONS = [
-  { value: 'critical', label: 'Critical' },
-  { value: 'high', label: 'High' },
-  { value: 'medium', label: 'Medium' },
-  { value: 'low', label: 'Low' },
+const SUPPORT_LEVEL_OPTIONS: { value: SupportLevel; label: string }[] = [
+  { value: 'L1', label: 'L1 - First Line' },
+  { value: 'L2', label: 'L2 - Second Line' },
+  { value: 'L3', label: 'L3 - Third Line' },
 ];
 
 const SMART_FILTER_CONFIG = [
   { 
     id: 'open' as SmartFilterType, 
     label: 'Open Incidents', 
-    tooltip: 'Shows all incidents that are not Resolved or Closed.' 
+    tooltip: 'Shows all incidents that are not Resolved, Converted, or Closed.' 
   },
   { 
     id: 'critical' as SmartFilterType, 
-    label: 'Critical Priority', 
-    tooltip: 'Shows incidents with Critical priority level.' 
+    label: 'SEV1/SEV2', 
+    tooltip: 'Shows incidents with SEV1 or SEV2 severity.' 
   },
   { 
-    id: 'myAssigned' as SmartFilterType, 
-    label: 'Assigned to Me', 
-    tooltip: 'Shows incidents assigned to the current user.' 
+    id: 'major' as SmartFilterType, 
+    label: 'Major Incidents', 
+    tooltip: 'Shows incidents flagged as Major.' 
   },
   { 
-    id: 'overdue' as SmartFilterType, 
-    label: 'Overdue', 
-    tooltip: 'Shows incidents past their target date.' 
+    id: 'sla_breach' as SmartFilterType, 
+    label: 'SLA Breach', 
+    tooltip: 'Shows incidents with breached SLAs.' 
   },
 ];
 
 // Multi-select dropdown component
-function MultiSelectDropdown({ 
+function MultiSelectDropdown<T extends string>({ 
   options, 
   selected, 
   onChange, 
   placeholder = 'Select...',
 }: { 
-  options: { value: string; label: string }[]; 
-  selected: string[]; 
-  onChange: (values: string[]) => void;
+  options: { value: T; label: string }[]; 
+  selected: T[]; 
+  onChange: (values: T[]) => void;
   placeholder?: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const toggleOption = (value: string) => {
+  const toggleOption = (value: T) => {
     const newValues = selected.includes(value)
       ? selected.filter(v => v !== value)
       : [...selected, value];
@@ -185,15 +177,16 @@ export function IncidentsFiltersDialog({
   onFiltersChange,
 }: IncidentsFiltersDialogProps) {
   const [localFilters, setLocalFilters] = useState<IncidentFilters>(filters);
+  const [activeSmartFilter, setActiveSmartFilter] = useState<SmartFilterType>(null);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     status: true,
-    priority: true,
-    classification: false,
+    supportLevel: true,
   });
 
   useEffect(() => {
     if (open) {
       setLocalFilters(filters);
+      setActiveSmartFilter(null);
     }
   }, [open, filters]);
 
@@ -202,32 +195,25 @@ export function IncidentsFiltersDialog({
   };
 
   const handleSmartFilterClick = (filterId: SmartFilterType) => {
-    let newFilters: IncidentFilters = { activeSmartFilter: filterId };
+    setActiveSmartFilter(filterId);
+    let newFilters: IncidentFilters = {};
     
     switch (filterId) {
       case 'open':
         newFilters = {
-          ...newFilters,
-          status: STATUS_OPTIONS.filter(s => s.value !== 'resolved' && s.value !== 'closed').map(s => s.value),
+          status: ['open', 'triage', 'to_committee', 'in_progress'],
         };
         break;
       case 'critical':
         newFilters = {
-          ...newFilters,
-          priority: ['critical'],
+          severity: ['SEV1', 'SEV2'],
         };
         break;
-      case 'myAssigned':
-        // Would typically filter by current user
-        newFilters = {
-          ...newFilters,
-        };
+      case 'major':
+        // Filter will be applied in hook
         break;
-      case 'overdue':
-        newFilters = {
-          ...newFilters,
-          status: STATUS_OPTIONS.filter(s => s.value !== 'resolved' && s.value !== 'closed').map(s => s.value),
-        };
+      case 'sla_breach':
+        // Filter will be applied in hook
         break;
     }
     
@@ -236,6 +222,7 @@ export function IncidentsFiltersDialog({
 
   const handleClearFilters = () => {
     setLocalFilters({});
+    setActiveSmartFilter(null);
   };
 
   const handleApplyFilters = () => {
@@ -248,11 +235,11 @@ export function IncidentsFiltersDialog({
   };
 
   const updateFilter = <K extends keyof IncidentFilters>(key: K, value: IncidentFilters[K]) => {
-    setLocalFilters(prev => ({ ...prev, [key]: value, activeSmartFilter: null }));
+    setLocalFilters(prev => ({ ...prev, [key]: value }));
+    setActiveSmartFilter(null);
   };
 
-  const activeFilterCount = Object.entries(localFilters).filter(([key, value]) => {
-    if (key === 'activeSmartFilter') return false;
+  const activeFilterCount = Object.entries(localFilters).filter(([, value]) => {
     if (Array.isArray(value)) return value.length > 0;
     return value !== undefined && value !== '' && value !== null;
   }).length;
@@ -284,7 +271,7 @@ export function IncidentsFiltersDialog({
                       type="button"
                       className={cn(
                         "px-3 py-1.5 border rounded-md text-sm cursor-pointer transition-all whitespace-nowrap font-medium",
-                        localFilters.activeSmartFilter === sf.id
+                        activeSmartFilter === sf.id
                           ? "bg-brand-primary border-brand-primary text-white"
                           : "bg-white border-border text-foreground hover:border-brand-primary hover:bg-brand-primary/5"
                       )}
@@ -312,7 +299,7 @@ export function IncidentsFiltersDialog({
           >
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-muted-foreground">Status</label>
-              <MultiSelectDropdown
+              <MultiSelectDropdown<IncidentStatus>
                 options={STATUS_OPTIONS}
                 selected={localFilters.status || []}
                 onChange={(values) => updateFilter('status', values.length > 0 ? values : undefined)}
@@ -321,19 +308,19 @@ export function IncidentsFiltersDialog({
             </div>
           </AccordionSection>
 
-          {/* Priority Section */}
+          {/* Support Level Section */}
           <AccordionSection 
-            title="Priority" 
-            isOpen={openSections.priority} 
-            onToggle={() => toggleSection('priority')}
+            title="Support Level" 
+            isOpen={openSections.supportLevel} 
+            onToggle={() => toggleSection('supportLevel')}
           >
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-muted-foreground">Priority Level</label>
-              <MultiSelectDropdown
-                options={PRIORITY_OPTIONS}
-                selected={localFilters.priority || []}
-                onChange={(values) => updateFilter('priority', values.length > 0 ? values : undefined)}
-                placeholder="All priorities"
+              <label className="text-xs font-medium text-muted-foreground">Support Level</label>
+              <MultiSelectDropdown<SupportLevel>
+                options={SUPPORT_LEVEL_OPTIONS}
+                selected={localFilters.support_level || []}
+                onChange={(values) => updateFilter('support_level', values.length > 0 ? values : undefined)}
+                placeholder="All levels"
               />
             </div>
           </AccordionSection>
