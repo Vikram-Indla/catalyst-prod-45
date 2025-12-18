@@ -1,16 +1,16 @@
 /**
- * StrategyRoom — Premium CIO-grade Enterprise Strategy Cockpit
- * V2: Upgraded with executive health strip, improved section containers, dark mode depth
+ * StrategyRoom — CIO-grade Enterprise Strategy Cockpit
+ * Executive read-only view for strategic health and alignment
  */
 
 import { useState, useEffect } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { StrategyContextCard } from '@/components/strategy/StrategyContextCard';
-import { ExecutiveSummaryCard } from '@/components/strategy/ExecutiveSummaryCard';
+import { StrategicPulseSection } from '@/components/strategy/StrategicPulseSection';
+import { ExposureGapsSection } from '@/components/strategy/ExposureGapsSection';
 import { StrategyStack } from '@/components/strategy/StrategyStack';
 import { OkrTree } from '@/components/strategy/OkrTree';
-import { SnapshotHealthStrip } from '@/components/strategy/SnapshotHealthStrip';
 import { ObjectiveAnalyticsDrawer } from '@/modules/okr-v2';
 import { ThemeDetailsDrawer } from '@/components/backlog/ThemeDetailsDrawer';
 import { useQuery } from '@tanstack/react-query';
@@ -157,49 +157,30 @@ export default function StrategyRoomPage() {
 
   return (
     <PageChrome rightActions={snapshotSelector}>
-      <div 
-        className="px-6 py-4 pb-8 max-w-[1400px] mx-auto"
-        style={{ backgroundColor: 'var(--page-bg)' }}
-      >
-        {/* Executive Health Strip — Quick snapshot health at a glance */}
-        <div 
-          className="mb-5 p-3 rounded-lg"
-          style={{
-            backgroundColor: 'var(--surface-subtle)',
-            border: '1px solid var(--border-subtle)',
-          }}
-        >
-          <SnapshotHealthStrip snapshotId={effectiveSelectedSnapshotId} />
-        </div>
+      <div className="px-5 py-4 pb-6 max-w-[1400px] mx-auto bg-background">
+        {/* Executive Cockpit Grid — Tighter vertical rhythm */}
+        <div className="space-y-3">
+          {/* Section 1: Strategic Pulse — Signal-led health cockpit */}
+          <StrategicPulseSection snapshotId={effectiveSelectedSnapshotId} />
 
-        {/* Section Grid — Improved density and rhythm */}
-        <div className="space-y-4">
-          {/* Section 1: Strategy Context - Mission/Vision/Values */}
-          <section>
-            <StrategyContextCard snapshot={selectedSnapshot} onUpdate={refetchSnapshots} />
-          </section>
+          {/* Section 2: Exposure & Gaps — Risk surface */}
+          <ExposureGapsSection snapshotId={effectiveSelectedSnapshotId} />
 
-          {/* Section 2: Executive Summary - 4 unique KPI tiles */}
-          <section>
-            <ExecutiveSummaryCard snapshotId={effectiveSelectedSnapshotId} />
-          </section>
+          {/* Section 3: Coverage & Alignment — Strategy layers */}
+          <StrategyStack 
+            onLayerClick={handlePyramidLayerClick} 
+            snapshotId={effectiveSelectedSnapshotId}
+          />
 
-          {/* Section 3: Strategy Coverage & Alignment - drilldown table */}
-          <section>
-            <StrategyStack 
-              onLayerClick={handlePyramidLayerClick} 
-              snapshotId={effectiveSelectedSnapshotId}
-            />
-          </section>
+          {/* Section 4: OKR Tree — Execution details */}
+          <OkrTree
+            selectedSnapshot={effectiveSelectedSnapshotId}
+            onObjectiveClick={handleObjectiveClick}
+            onThemeClick={handleThemeClick}
+          />
 
-          {/* Section 4: OKR Tree - hierarchical list */}
-          <section>
-            <OkrTree
-              selectedSnapshot={effectiveSelectedSnapshotId}
-              onObjectiveClick={handleObjectiveClick}
-              onThemeClick={handleThemeClick}
-            />
-          </section>
+          {/* Section 5: Strategy Context — Collapsible mission/vision */}
+          <StrategyContextCard snapshot={selectedSnapshot} onUpdate={refetchSnapshots} />
         </div>
       </div>
 
