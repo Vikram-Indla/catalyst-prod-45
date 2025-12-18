@@ -1,11 +1,10 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Paperclip, Clock, User, Loader2, AlertTriangle, CheckCircle, XCircle, FileText, GitBranch, Edit2, Save, X, Plus, UserPlus, ArrowRightCircle } from 'lucide-react';
+import { ArrowLeft, Paperclip, Clock, User, Loader2, AlertTriangle, CheckCircle, XCircle, FileText, GitBranch, Edit2, Plus, UserPlus, ArrowRightCircle, History, MessageSquare, Timer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
@@ -20,11 +19,17 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
-import { useIncident, useUpdateIncident, useReleaseVersions, useAddComment } from '@/hooks/useIncidents';
+import { useIncident, useUpdateIncident, useReleaseVersions, useAddComment, useWorkgroups } from '@/hooks/useIncidents';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
-import type { IncidentStatus, SeverityLevel, SupportLevel, VoteStatus, CommitteeMember, ImpactLevel, UrgencyLevel, DeliveryStage, Incident } from '@/types/incident';
+import type { IncidentStatus, SeverityLevel, SupportLevel, VoteStatus, CommitteeMember, Incident, PriorityLevel } from '@/types/incident';
 
 // Status options
 const STATUS_OPTIONS: { value: IncidentStatus; label: string }[] = [
@@ -35,6 +40,15 @@ const STATUS_OPTIONS: { value: IncidentStatus; label: string }[] = [
   { value: 'resolved', label: 'Resolved' },
   { value: 'converted', label: 'Converted' },
   { value: 'closed', label: 'Closed' },
+];
+
+// Testing Status options
+const TESTING_STATUS_OPTIONS = [
+  { value: 'not_started', label: 'Not Started' },
+  { value: 'dev_test', label: 'Dev Test' },
+  { value: 'qa', label: 'QA' },
+  { value: 'uat', label: 'UAT' },
+  { value: 'prod_verified', label: 'Prod Verified' },
 ];
 
 // Severity badge
@@ -48,6 +62,22 @@ const SeverityBadge = ({ severity }: { severity: SeverityLevel }) => {
   return (
     <Badge variant="outline" className={cn('text-xs font-medium', colors[severity])}>
       {severity}
+    </Badge>
+  );
+};
+
+// Priority badge
+const PriorityBadge = ({ priority }: { priority: PriorityLevel | undefined | null }) => {
+  if (!priority) return <span className="text-muted-foreground">-</span>;
+  const colors: Record<string, string> = {
+    P1: 'bg-red-100 text-red-800 border-red-200',
+    P2: 'bg-orange-100 text-orange-800 border-orange-200',
+    P3: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+    P4: 'bg-blue-100 text-blue-800 border-blue-200',
+  };
+  return (
+    <Badge variant="outline" className={cn('text-xs font-medium', colors[priority])}>
+      {priority}
     </Badge>
   );
 };
@@ -71,7 +101,7 @@ const StatusBadge = ({ status }: { status: IncidentStatus }) => {
   );
 };
 
-// SLA Timer component
+// SLA Timer component with visual indicators
 const SlaTimer = ({ label, dueAt, metAt, breached }: { 
   label: string; 
   dueAt?: string; 
@@ -86,38 +116,63 @@ const SlaTimer = ({ label, dueAt, metAt, breached }: {
   const isBreached = breached;
   
   let timeRemaining = '';
+  let progressPercent = 100;
+  
   if (isMet) {
     timeRemaining = 'Met';
+    progressPercent = 100;
   } else if (isBreached) {
     timeRemaining = 'Breached';
+    progressPercent = 100;
   } else {
     const diff = due.getTime() - now.getTime();
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     if (diff < 0) {
       timeRemaining = 'Overdue';
+      progressPercent = 100;
     } else if (hours > 24) {
       timeRemaining = `${Math.floor(hours / 24)}d ${hours % 24}h`;
-    } else {
+      progressPercent = 30;
+    } else if (hours > 0) {
       timeRemaining = `${hours}h ${minutes}m`;
+      progressPercent = 60;
+    } else {
+      timeRemaining = `${minutes}m`;
+      progressPercent = 85;
     }
   }
   
   return (
     <div className={cn(
-      "p-2 rounded border text-xs",
+      "p-3 rounded-lg border",
       isBreached ? "bg-red-50 border-red-200" : isMet ? "bg-green-50 border-green-200" : "bg-muted/50 border-border"
     )}>
-      <div className="flex items-center justify-between">
-        <span className="text-muted-foreground">{label}</span>
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <Timer className={cn(
+            "h-4 w-4",
+            isBreached ? "text-red-600" : isMet ? "text-green-600" : "text-muted-foreground"
+          )} />
+          <span className="text-xs font-medium text-foreground">{label}</span>
+        </div>
         <span className={cn(
-          "font-medium",
+          "text-sm font-semibold",
           isBreached ? "text-red-700" : isMet ? "text-green-700" : "text-foreground"
         )}>
           {timeRemaining}
         </span>
       </div>
-      <div className="text-[10px] text-muted-foreground mt-0.5">
+      <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
+        <div 
+          className={cn(
+            "h-full rounded-full transition-all",
+            isBreached ? "bg-red-500" : isMet ? "bg-green-500" : progressPercent > 70 ? "bg-orange-500" : "bg-blue-500"
+          )}
+          style={{ width: `${progressPercent}%` }}
+        />
+      </div>
+      <div className="text-[10px] text-muted-foreground mt-1">
         Due: {format(due, 'MMM d, h:mm a')}
       </div>
     </div>
@@ -170,14 +225,9 @@ function EditableField({
     setIsEditing(false);
   };
 
-  const handleCancel = () => {
-    setEditValue(value || '');
-    setIsEditing(false);
-  };
-
   if (disabled) {
     return (
-      <div className="flex items-center justify-between py-1">
+      <div className="flex items-center justify-between py-1.5 border-b border-border/30 last:border-0">
         <span className="text-xs text-muted-foreground">{label}</span>
         <span className="text-xs text-foreground">{renderValue ? renderValue(value) : value || '-'}</span>
       </div>
@@ -186,7 +236,7 @@ function EditableField({
 
   if (isEditing) {
     return (
-      <div className="py-1 space-y-1">
+      <div className="py-1.5 space-y-1 border-b border-border/30 last:border-0">
         <span className="text-xs text-muted-foreground">{label}</span>
         {type === 'select' && options ? (
           <Select value={editValue} onValueChange={(v) => { setEditValue(v); onSave(v); setIsEditing(false); }}>
@@ -200,26 +250,22 @@ function EditableField({
             </SelectContent>
           </Select>
         ) : type === 'textarea' ? (
-          <div className="space-y-1">
-            <Textarea
-              value={editValue}
-              onChange={(e) => setEditValue(e.target.value)}
-              onBlur={handleSave}
-              autoFocus
-              className="text-xs min-h-[60px]"
-            />
-          </div>
+          <Textarea
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            onBlur={handleSave}
+            autoFocus
+            className="text-xs min-h-[60px]"
+          />
         ) : (
-          <div className="flex gap-1">
-            <Input
-              value={editValue}
-              onChange={(e) => setEditValue(e.target.value)}
-              onBlur={handleSave}
-              onKeyDown={(e) => e.key === 'Enter' && handleSave()}
-              autoFocus
-              className="h-7 text-xs"
-            />
-          </div>
+          <Input
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            onBlur={handleSave}
+            onKeyDown={(e) => e.key === 'Enter' && handleSave()}
+            autoFocus
+            className="h-7 text-xs"
+          />
         )}
       </div>
     );
@@ -227,7 +273,7 @@ function EditableField({
 
   return (
     <div 
-      className="flex items-center justify-between py-1 group cursor-pointer hover:bg-muted/30 -mx-2 px-2 rounded"
+      className="flex items-center justify-between py-1.5 group cursor-pointer hover:bg-muted/30 -mx-2 px-2 rounded border-b border-border/30 last:border-0"
       onClick={() => setIsEditing(true)}
     >
       <span className="text-xs text-muted-foreground">{label}</span>
@@ -304,13 +350,15 @@ function ConvertDialog({
 export default function IncidentViewPage() {
   const { incidentId } = useParams<{ incidentId: string }>();
   const navigate = useNavigate();
-  const { data: incident, isLoading, error, refetch } = useIncident(incidentId || '');
+  const { data: incident, isLoading, error } = useIncident(incidentId || '');
   const updateIncident = useUpdateIncident();
   const addComment = useAddComment();
   const { data: releaseVersions } = useReleaseVersions();
+  const { data: workgroups } = useWorkgroups();
   
   const [showConvertDialog, setShowConvertDialog] = useState(false);
   const [newComment, setNewComment] = useState('');
+  const [activeTab, setActiveTab] = useState('comments');
 
   const isConverted = incident?.status === 'converted';
   const isL3 = incident?.support_level === 'L3';
@@ -402,7 +450,7 @@ export default function IncidentViewPage() {
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Header */}
-      <div className="h-12 border-b border-border bg-card flex-shrink-0 px-4 flex items-center justify-between">
+      <div className="h-14 border-b border-border bg-card flex-shrink-0 px-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link to="/release/incidents/list">
             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
@@ -422,6 +470,7 @@ export default function IncidentViewPage() {
               </SelectContent>
             </Select>
             <SeverityBadge severity={incident.severity} />
+            <PriorityBadge priority={incident.priority} />
             {incident.is_major_incident && (
               <Badge variant="destructive" className="text-[10px]">Major Incident</Badge>
             )}
@@ -445,42 +494,404 @@ export default function IncidentViewPage() {
       </div>
 
       {/* Main Content - 70/30 Split */}
-      <div className="flex-1 overflow-hidden grid grid-cols-1 lg:grid-cols-[1fr_320px]">
+      <div className="flex-1 overflow-hidden grid grid-cols-1 lg:grid-cols-[1fr_360px]">
         {/* Left Column - Main Content */}
         <div className="overflow-y-auto p-4 space-y-4 border-r border-border">
-          {/* Editable Summary */}
-          <div className="group">
-            <EditableField
-              label=""
-              value={incident.title}
-              onSave={(v) => handleFieldUpdate('title', v)}
-              disabled={isConverted}
-              renderValue={(v) => (
-                <h1 className="text-lg font-semibold text-foreground leading-tight">{v}</h1>
+          {/* Section 1: Incident Overview */}
+          <div className="bg-card border border-border rounded-lg p-4">
+            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Incident Overview</h2>
+            
+            {/* Editable Summary */}
+            <div className="mb-4">
+              <EditableField
+                label=""
+                value={incident.title}
+                onSave={(v) => handleFieldUpdate('title', v)}
+                disabled={isConverted}
+                renderValue={(v) => (
+                  <h1 className="text-lg font-semibold text-foreground leading-tight">{v}</h1>
+                )}
+              />
+            </div>
+
+            {/* Editable Description */}
+            <div className="mb-4">
+              <label className="text-xs text-muted-foreground mb-1 block">Description</label>
+              {isConverted ? (
+                <div className="prose prose-sm max-w-none text-foreground text-sm">
+                  {incident.description ? (
+                    <div dangerouslySetInnerHTML={{ __html: incident.description }} />
+                  ) : (
+                    <p className="text-muted-foreground italic">No description provided</p>
+                  )}
+                </div>
+              ) : (
+                <Textarea
+                  value={incident.description || ''}
+                  onChange={() => {}}
+                  onBlur={(e) => handleFieldUpdate('description', e.target.value)}
+                  placeholder="Add a description..."
+                  className="min-h-[100px] text-sm border-border"
+                />
               )}
-            />
+            </div>
+
+            {/* Context fields */}
+            <div className="grid grid-cols-3 gap-4 text-sm">
+              <div>
+                <span className="text-xs text-muted-foreground">Business Process</span>
+                <p className="text-foreground">-</p>
+              </div>
+              <div>
+                <span className="text-xs text-muted-foreground">Delivery Platform</span>
+                <p className="text-foreground">-</p>
+              </div>
+              <div>
+                <span className="text-xs text-muted-foreground">Source Department</span>
+                <p className="text-foreground">-</p>
+              </div>
+            </div>
           </div>
 
-          {/* Editable Description */}
+          {/* Section 2: Operational Details */}
           <div className="bg-card border border-border rounded-lg p-4">
-            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Description</h2>
-            {isConverted ? (
-              <div className="prose prose-sm max-w-none text-foreground">
-                {incident.description ? (
-                  <div dangerouslySetInnerHTML={{ __html: incident.description }} />
-                ) : (
-                  <p className="text-muted-foreground italic">No description provided</p>
-                )}
+            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Operational Details</h2>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div>
+                <EditableField
+                  label="Severity"
+                  value={incident.severity}
+                  type="select"
+                  options={[
+                    { value: 'SEV1', label: 'SEV1 - Critical' },
+                    { value: 'SEV2', label: 'SEV2 - High' },
+                    { value: 'SEV3', label: 'SEV3 - Medium' },
+                    { value: 'SEV4', label: 'SEV4 - Low' },
+                  ]}
+                  onSave={(v) => handleFieldUpdate('severity', v)}
+                  disabled={isConverted}
+                  renderValue={(v) => <SeverityBadge severity={v as SeverityLevel} />}
+                />
+              </div>
+              <div>
+                <EditableField
+                  label="Impact"
+                  value={incident.impact}
+                  type="select"
+                  options={[
+                    { value: 'high', label: 'High' },
+                    { value: 'medium', label: 'Medium' },
+                    { value: 'low', label: 'Low' },
+                  ]}
+                  onSave={(v) => handleFieldUpdate('impact', v)}
+                  disabled={isConverted}
+                />
+              </div>
+              <div>
+                <EditableField
+                  label="Urgency"
+                  value={incident.urgency}
+                  type="select"
+                  options={[
+                    { value: 'high', label: 'High' },
+                    { value: 'medium', label: 'Medium' },
+                    { value: 'low', label: 'Low' },
+                  ]}
+                  onSave={(v) => handleFieldUpdate('urgency', v)}
+                  disabled={isConverted}
+                />
+              </div>
+              <div>
+                <EditableField
+                  label="Priority"
+                  value={incident.priority || '-'}
+                  onSave={() => {}}
+                  disabled
+                  renderValue={(v) => v ? <PriorityBadge priority={v as PriorityLevel} /> : '-'}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+              <div>
+                <EditableField
+                  label="Support Level"
+                  value={incident.support_level || ''}
+                  type="select"
+                  options={[
+                    { value: 'L1', label: 'L1 - First Line' },
+                    { value: 'L2', label: 'L2 - Second Line' },
+                    { value: 'L3', label: 'L3 - Third Line' },
+                  ]}
+                  onSave={(v) => handleFieldUpdate('support_level', v)}
+                  disabled={isConverted}
+                />
+              </div>
+              <div>
+                <EditableField
+                  label="Workgroup"
+                  value={incident.assignee_workgroup_id || ''}
+                  type="select"
+                  options={workgroups?.map((w) => ({ value: w.id, label: w.name })) || []}
+                  onSave={(v) => handleFieldUpdate('assignee_workgroup_id', v)}
+                  disabled={isConverted}
+                  renderValue={() => incident.assignee_workgroup?.name || '-'}
+                />
+              </div>
+              <div>
+                <EditableField
+                  label="Assignee"
+                  value={incident.assignee?.full_name || '-'}
+                  onSave={() => {}}
+                  disabled
+                />
+              </div>
+              <div>
+                <EditableField
+                  label="Delivery Stage"
+                  value={incident.delivery_stage || ''}
+                  type="select"
+                  options={[
+                    { value: 'stage', label: 'Stage' },
+                    { value: 'qa', label: 'QA' },
+                    { value: 'beta', label: 'Beta' },
+                    { value: 'prod', label: 'Production' },
+                  ]}
+                  onSave={(v) => handleFieldUpdate('delivery_stage', v)}
+                  disabled={isConverted}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+              <div>
+                <EditableField
+                  label="Testing Status"
+                  value={(incident as unknown as { testing_status?: string }).testing_status || 'not_started'}
+                  type="select"
+                  options={TESTING_STATUS_OPTIONS}
+                  onSave={(v) => handleFieldUpdate('testing_status', v)}
+                  disabled={isConverted}
+                  renderValue={(v) => TESTING_STATUS_OPTIONS.find(o => o.value === v)?.label || 'Not Started'}
+                />
+              </div>
+              <div>
+                <EditableField
+                  label="Change Number"
+                  value={(incident as unknown as { change_number?: string }).change_number || ''}
+                  onSave={(v) => handleFieldUpdate('change_number', v)}
+                  disabled={isConverted}
+                />
+              </div>
+              <div>
+                <EditableField
+                  label="Release Version"
+                  value={incident.release_version_id || ''}
+                  type="select"
+                  options={releaseVersions?.map((v) => ({ value: v.id, label: v.version })) || []}
+                  onSave={(v) => handleFieldUpdate('release_version_id', v)}
+                  disabled={isConverted}
+                  renderValue={() => incident.release_version?.version || '-'}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Section 3: SLA Status */}
+          <div className="bg-card border border-border rounded-lg p-4">
+            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">SLA Status</h2>
+            
+            {incident.sla ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <SlaTimer 
+                  label="Response SLA" 
+                  dueAt={incident.sla.response_due_at} 
+                  metAt={incident.sla.response_met_at}
+                  breached={incident.sla.response_breached}
+                />
+                <SlaTimer 
+                  label="Resolution SLA" 
+                  dueAt={incident.sla.resolution_due_at} 
+                  metAt={incident.sla.resolution_met_at}
+                  breached={incident.sla.resolution_breached}
+                />
               </div>
             ) : (
-              <Textarea
-                value={incident.description || ''}
-                onChange={(e) => {}}
-                onBlur={(e) => handleFieldUpdate('description', e.target.value)}
-                placeholder="Add a description..."
-                className="min-h-[120px] text-sm border-0 p-0 focus-visible:ring-0 resize-none"
-              />
+              <p className="text-sm text-muted-foreground italic">No SLA record for this incident</p>
             )}
+
+            {/* SLA Breach Indicators */}
+            {incident.sla && (incident.sla.response_breached || incident.sla.resolution_breached) && (
+              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <div className="flex items-center gap-2 text-red-800">
+                  <AlertTriangle className="h-4 w-4" />
+                  <span className="text-sm font-medium">SLA Breach Alert</span>
+                </div>
+                <p className="text-xs text-red-700 mt-1">
+                  {incident.sla.response_breached && 'Response SLA breached. '}
+                  {incident.sla.resolution_breached && 'Resolution SLA breached.'}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Section 4: Activity & History Tabs */}
+          <div className="bg-card border border-border rounded-lg p-4">
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <TabsList className="grid w-full grid-cols-4 mb-4">
+                <TabsTrigger value="comments" className="text-xs">
+                  <MessageSquare className="h-3 w-3 mr-1" />
+                  Comments ({incident.comments?.length || 0})
+                </TabsTrigger>
+                <TabsTrigger value="history" className="text-xs">
+                  <History className="h-3 w-3 mr-1" />
+                  History
+                </TabsTrigger>
+                <TabsTrigger value="sla_events" className="text-xs">
+                  <Timer className="h-3 w-3 mr-1" />
+                  SLA Events
+                </TabsTrigger>
+                <TabsTrigger value="linked" className="text-xs">
+                  <GitBranch className="h-3 w-3 mr-1" />
+                  Linked Items
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="comments" className="space-y-3">
+                {/* Add Comment */}
+                <div className="flex gap-2">
+                  <Input
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    placeholder="Add a comment..."
+                    className="text-sm"
+                    onKeyDown={(e) => e.key === 'Enter' && handleAddComment()}
+                  />
+                  <Button 
+                    size="sm" 
+                    onClick={handleAddComment}
+                    disabled={!newComment.trim() || addComment.isPending}
+                    className="bg-brand-primary text-white"
+                  >
+                    Add
+                  </Button>
+                </div>
+
+                {incident.comments && incident.comments.length > 0 ? (
+                  <div className="space-y-3 max-h-64 overflow-y-auto">
+                    {incident.comments.map((comment) => (
+                      <div key={comment.id} className="border-b border-border/50 pb-3 last:border-0 last:pb-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-[10px] font-medium">
+                            {comment.author?.avatar_initials || comment.author?.full_name?.charAt(0) || 'S'}
+                          </div>
+                          <span className="text-xs font-medium text-foreground">
+                            {comment.author?.full_name || 'System'}
+                          </span>
+                          <span className="text-[10px] text-muted-foreground">
+                            {format(new Date(comment.created_at), 'MMM d, h:mm a')}
+                          </span>
+                          <Badge variant="outline" className="text-[9px] px-1 py-0">{comment.comment_type}</Badge>
+                        </div>
+                        <div className="text-xs text-foreground ml-8">{comment.content}</div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground italic py-4 text-center">No comments yet</p>
+                )}
+              </TabsContent>
+
+              <TabsContent value="history" className="max-h-64 overflow-y-auto">
+                {incident.history && incident.history.length > 0 ? (
+                  <div className="space-y-2">
+                    {incident.history.map((event) => (
+                      <div key={event.id} className="text-xs py-2 border-b border-border/50 last:border-0">
+                        <div className="flex items-center gap-2">
+                          <History className="h-3 w-3 text-muted-foreground" />
+                          <span className="font-medium text-foreground">{event.field_name}</span>
+                          <span className="text-muted-foreground">changed</span>
+                        </div>
+                        <div className="ml-5 text-muted-foreground">
+                          <span className="line-through">{event.old_value || '(empty)'}</span>
+                          {' → '}
+                          <span className="text-foreground">{event.new_value || '(empty)'}</span>
+                        </div>
+                        <div className="ml-5 text-[10px] text-muted-foreground mt-0.5">
+                          {format(new Date(event.changed_at), 'MMM d, h:mm a')}
+                          {event.changer && ` by ${event.changer.full_name}`}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground italic py-4 text-center">No history yet</p>
+                )}
+              </TabsContent>
+
+              <TabsContent value="sla_events" className="max-h-64 overflow-y-auto">
+                <p className="text-xs text-muted-foreground italic py-4 text-center">SLA events will appear here</p>
+              </TabsContent>
+
+              <TabsContent value="linked" className="max-h-64 overflow-y-auto">
+                {incident.converted_to_type ? (
+                  <div className="flex items-center gap-2 p-3 bg-teal-50 rounded border border-teal-200">
+                    {incident.converted_to_type === 'story' && <FileText className="h-4 w-4 text-teal-600" />}
+                    {incident.converted_to_type === 'feature' && <GitBranch className="h-4 w-4 text-teal-600" />}
+                    {incident.converted_to_type === 'epic' && <GitBranch className="h-4 w-4 text-teal-600" />}
+                    {incident.converted_to_type === 'business_request' && <FileText className="h-4 w-4 text-teal-600" />}
+                    <span className="text-sm text-teal-800 capitalize">
+                      Converted to {incident.converted_to_type.replace('_', ' ')}
+                    </span>
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground italic py-4 text-center">No linked work items</p>
+                )}
+              </TabsContent>
+            </Tabs>
+          </div>
+
+          {/* Attachments */}
+          <div className="bg-card border border-border rounded-lg p-4">
+            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+              Attachments ({incident.attachments?.length || 0})
+            </h2>
+            {incident.attachments && incident.attachments.length > 0 ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                {incident.attachments.map((att) => (
+                  <div key={att.id} className="flex items-center gap-2 p-2 bg-muted/30 rounded hover:bg-muted/50 cursor-pointer">
+                    <Paperclip className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                    <span className="text-xs text-foreground flex-1 truncate">{att.file_name}</span>
+                    <span className="text-[10px] text-muted-foreground">
+                      {(att.file_size / 1024).toFixed(1)} KB
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground italic">No attachments</p>
+            )}
+          </div>
+        </div>
+
+        {/* Right Column - Sidebar */}
+        <div className="overflow-y-auto p-4 space-y-4 bg-muted/20">
+          {/* People Panel */}
+          <div className="bg-card border border-border rounded-lg p-4">
+            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">People</h2>
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <User className="h-3.5 w-3.5 text-muted-foreground" />
+                <span className="text-xs text-muted-foreground">Reporter:</span>
+                <span className="text-xs text-foreground">{incident.reporter?.full_name || incident.reporter_name || '-'}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <User className="h-3.5 w-3.5 text-muted-foreground" />
+                <span className="text-xs text-muted-foreground">Assignee:</span>
+                <span className="text-xs text-foreground">{incident.assignee?.full_name || '-'}</span>
+              </div>
+            </div>
           </div>
 
           {/* CAP Committee Panel */}
@@ -491,7 +902,7 @@ export default function IncidentViewPage() {
                 {!isConverted && (
                   <Button variant="ghost" size="sm" className="h-6 text-xs">
                     <UserPlus className="h-3 w-3 mr-1" />
-                    Add Approver
+                    Add
                   </Button>
                 )}
               </div>
@@ -524,265 +935,34 @@ export default function IncidentViewPage() {
                           </Badge>
                         )}
                       </div>
-                      <div className="flex items-center gap-2">
-                        <VoteIcon vote={member.vote?.vote || 'pending'} />
-                        {member.vote?.voted_at && (
-                          <span className="text-[10px] text-muted-foreground">
-                            {format(new Date(member.vote.voted_at), 'MMM d, h:mm a')}
-                          </span>
-                        )}
-                      </div>
+                      <VoteIcon vote={member.vote?.vote || 'pending'} />
                     </div>
                   ))}
                 </div>
               )}
-              
-              {incident.committee.decision_note && (
-                <div className="mt-3 p-2 bg-muted/50 rounded text-xs text-muted-foreground">
-                  <span className="font-medium">Decision Note:</span> {incident.committee.decision_note}
+            </div>
+          )}
+
+          {/* Dates Panel */}
+          <div className="bg-card border border-border rounded-lg p-4">
+            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Dates</h2>
+            <div className="space-y-2 text-xs">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Created:</span>
+                <span className="text-foreground">{format(new Date(incident.created_at), 'MMM d, yyyy h:mm a')}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Updated:</span>
+                <span className="text-foreground">{format(new Date(incident.updated_at), 'MMM d, yyyy h:mm a')}</span>
+              </div>
+              {incident.resolved_at && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Resolved:</span>
+                  <span className="text-foreground">{format(new Date(incident.resolved_at), 'MMM d, yyyy h:mm a')}</span>
                 </div>
               )}
             </div>
-          )}
-
-          {/* Comments with Add */}
-          <div className="bg-card border border-border rounded-lg p-4">
-            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
-              Comments ({incident.comments?.length || 0})
-            </h2>
-            
-            {/* Add Comment */}
-            <div className="mb-4 flex gap-2">
-              <Input
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Add a comment..."
-                className="text-sm"
-                onKeyDown={(e) => e.key === 'Enter' && handleAddComment()}
-              />
-              <Button 
-                size="sm" 
-                onClick={handleAddComment}
-                disabled={!newComment.trim() || addComment.isPending}
-                className="bg-brand-primary text-white"
-              >
-                Add
-              </Button>
-            </div>
-
-            {incident.comments && incident.comments.length > 0 ? (
-              <div className="space-y-3">
-                {incident.comments.map((comment) => (
-                  <div key={comment.id} className="border-b border-border/50 pb-3 last:border-0 last:pb-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <div className="w-5 h-5 rounded-full bg-muted flex items-center justify-center text-[9px] font-medium">
-                        {comment.author?.avatar_initials || comment.author?.full_name?.charAt(0) || 'S'}
-                      </div>
-                      <span className="text-xs font-medium text-foreground">
-                        {comment.author?.full_name || 'System'}
-                      </span>
-                      <span className="text-[10px] text-muted-foreground">
-                        {format(new Date(comment.created_at), 'MMM d, h:mm a')}
-                      </span>
-                      <Badge variant="outline" className="text-[9px] px-1 py-0">{comment.comment_type}</Badge>
-                    </div>
-                    <div className="text-xs text-foreground ml-7">{comment.content}</div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-xs text-muted-foreground italic">No comments yet</p>
-            )}
           </div>
-
-          {/* Attachments */}
-          <div className="bg-card border border-border rounded-lg p-4">
-            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
-              Attachments ({incident.attachments?.length || 0})
-            </h2>
-            {incident.attachments && incident.attachments.length > 0 ? (
-              <div className="space-y-2">
-                {incident.attachments.map((att) => (
-                  <div key={att.id} className="flex items-center gap-2 p-2 bg-muted/30 rounded hover:bg-muted/50 cursor-pointer">
-                    <Paperclip className="h-3.5 w-3.5 text-muted-foreground" />
-                    <span className="text-xs text-foreground flex-1 truncate">{att.file_name}</span>
-                    <span className="text-[10px] text-muted-foreground">
-                      {(att.file_size / 1024).toFixed(1)} KB
-                    </span>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-xs text-muted-foreground italic">No attachments</p>
-            )}
-          </div>
-        </div>
-
-        {/* Right Column - Metadata */}
-        <div className="overflow-y-auto p-4 space-y-4 bg-muted/20">
-          {/* Details Panel */}
-          <div className="bg-card border border-border rounded-lg p-4">
-            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Details</h2>
-            <div className="space-y-1">
-              <EditableField
-                label="Severity"
-                value={incident.severity}
-                type="select"
-                options={[
-                  { value: 'SEV1', label: 'SEV1 - Critical' },
-                  { value: 'SEV2', label: 'SEV2 - High' },
-                  { value: 'SEV3', label: 'SEV3 - Medium' },
-                  { value: 'SEV4', label: 'SEV4 - Low' },
-                ]}
-                onSave={(v) => handleFieldUpdate('severity', v)}
-                disabled={isConverted}
-                renderValue={(v) => <SeverityBadge severity={v as SeverityLevel} />}
-              />
-              <EditableField
-                label="Impact"
-                value={incident.impact}
-                type="select"
-                options={[
-                  { value: 'high', label: 'High' },
-                  { value: 'medium', label: 'Medium' },
-                  { value: 'low', label: 'Low' },
-                ]}
-                onSave={(v) => handleFieldUpdate('impact', v)}
-                disabled={isConverted}
-              />
-              <EditableField
-                label="Urgency"
-                value={incident.urgency}
-                type="select"
-                options={[
-                  { value: 'high', label: 'High' },
-                  { value: 'medium', label: 'Medium' },
-                  { value: 'low', label: 'Low' },
-                ]}
-                onSave={(v) => handleFieldUpdate('urgency', v)}
-                disabled={isConverted}
-              />
-              <EditableField
-                label="Priority"
-                value={incident.priority || '-'}
-                onSave={() => {}}
-                disabled
-              />
-              <EditableField
-                label="Support Level"
-                value={incident.support_level || '-'}
-                onSave={() => {}}
-                disabled={isConverted}
-              />
-              <EditableField
-                label="Workgroup"
-                value={incident.assignee_workgroup?.name || '-'}
-                onSave={() => {}}
-                disabled={isConverted}
-              />
-              <EditableField
-                label="Release Version"
-                value={incident.release_version_id || ''}
-                type="select"
-                options={releaseVersions?.map((v) => ({ value: v.id, label: v.version })) || []}
-                onSave={(v) => handleFieldUpdate('release_version_id', v)}
-                disabled={isConverted}
-                renderValue={() => incident.release_version?.version || '-'}
-              />
-              <EditableField
-                label="Delivery Stage"
-                value={incident.delivery_stage || ''}
-                type="select"
-                options={[
-                  { value: 'stage', label: 'Stage' },
-                  { value: 'qa', label: 'QA' },
-                  { value: 'beta', label: 'Beta' },
-                  { value: 'prod', label: 'Production' },
-                ]}
-                onSave={(v) => handleFieldUpdate('delivery_stage', v)}
-                disabled={isConverted}
-              />
-            </div>
-          </div>
-
-          {/* SLA Panel */}
-          {incident.sla && (
-            <div className="bg-card border border-border rounded-lg p-4">
-              <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">SLA Status</h2>
-              <div className="space-y-2">
-                <SlaTimer 
-                  label="Response" 
-                  dueAt={incident.sla.response_due_at} 
-                  metAt={incident.sla.response_met_at}
-                  breached={incident.sla.response_breached}
-                />
-                <SlaTimer 
-                  label="Resolution" 
-                  dueAt={incident.sla.resolution_due_at} 
-                  metAt={incident.sla.resolution_met_at}
-                  breached={incident.sla.resolution_breached}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* People Panel */}
-          <div className="bg-card border border-border rounded-lg p-4">
-            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">People</h2>
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <User className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="text-xs text-muted-foreground">Reporter:</span>
-                <span className="text-xs text-foreground">{incident.reporter?.full_name || incident.reporter_name || '-'}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <User className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="text-xs text-muted-foreground">Assignee:</span>
-                <span className="text-xs text-foreground">{incident.assignee?.full_name || '-'}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Linked Work Items */}
-          {incident.converted_to_type && (
-            <div className="bg-card border border-border rounded-lg p-4">
-              <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">Linked Items</h2>
-              <div className="flex items-center gap-2 p-2 bg-teal-50 rounded border border-teal-200">
-                {incident.converted_to_type === 'story' && <FileText className="h-3.5 w-3.5 text-teal-600" />}
-                {incident.converted_to_type === 'feature' && <GitBranch className="h-3.5 w-3.5 text-teal-600" />}
-                {incident.converted_to_type === 'epic' && <GitBranch className="h-3.5 w-3.5 text-teal-600" />}
-                {incident.converted_to_type === 'business_request' && <FileText className="h-3.5 w-3.5 text-teal-600" />}
-                <span className="text-xs text-teal-800 capitalize">
-                  Converted to {incident.converted_to_type.replace('_', ' ')}
-                </span>
-              </div>
-              {incident.conversion_reason && (
-                <p className="text-[10px] text-muted-foreground mt-2">{incident.conversion_reason}</p>
-              )}
-            </div>
-          )}
-
-          {/* History Panel */}
-          {incident.history && incident.history.length > 0 && (
-            <div className="bg-card border border-border rounded-lg p-4">
-              <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">History</h2>
-              <div className="space-y-2 max-h-48 overflow-y-auto">
-                {incident.history.slice(0, 10).map((event) => (
-                  <div key={event.id} className="text-[10px] text-muted-foreground py-1 border-b border-border/50 last:border-0">
-                    <span className="font-medium text-foreground">{event.field_name}</span>
-                    {' changed from '}
-                    <span className="text-foreground">{event.old_value || '(empty)'}</span>
-                    {' to '}
-                    <span className="text-foreground">{event.new_value || '(empty)'}</span>
-                    <div className="text-[9px] mt-0.5">
-                      {format(new Date(event.changed_at), 'MMM d, h:mm a')}
-                      {event.changer && ` by ${event.changer.full_name}`}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
