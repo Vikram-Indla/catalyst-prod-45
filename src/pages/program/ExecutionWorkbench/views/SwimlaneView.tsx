@@ -2,6 +2,7 @@
  * WorkBench views: Table/Gantt/Roadmap/Board/Swimlane
  * 
  * Variant E: Swimlane View - Swimlanes grouped by Owner
+ * Enhanced with Claude Variant A styling
  */
 
 import React, { useState, useMemo } from 'react';
@@ -9,28 +10,37 @@ import { WorkItem, HealthStatus } from '../types';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { ChevronRight, ChevronDown, User } from 'lucide-react';
+import { ChevronRight, ChevronDown, Square, Gem, FileText, User } from 'lucide-react';
 
 interface SwimlaneViewProps {
   items: WorkItem[];
   onItemClick: (item: WorkItem) => void;
 }
 
-function getHealthColor(health: HealthStatus): string {
+function getHealthBadgeStyle(health: HealthStatus): string {
   switch (health) {
-    case 'On Track': return 'bg-secondary-green/20 text-secondary-green border-secondary-green/30';
-    case 'At Risk': return 'bg-brand-gold/20 text-brand-gold border-brand-gold/30';
-    case 'Blocked': return 'bg-destructive/20 text-destructive border-destructive/30';
+    case 'On Track': return 'bg-secondary-green/15 text-secondary-green border-secondary-green/30';
+    case 'At Risk': return 'bg-brand-gold/15 text-brand-gold border-brand-gold/30';
+    case 'Blocked': return 'bg-destructive/15 text-destructive border-destructive/30';
     default: return 'bg-muted text-muted-foreground';
   }
 }
 
-function getTypeColor(type: string): string {
+function getTypeIcon(type: string): { icon: React.ElementType; colorClass: string } {
   switch (type) {
-    case 'epic': return 'bg-brand-primary/20 text-brand-primary';
-    case 'feature': return 'bg-secondary-bronze/20 text-secondary-bronze';
-    case 'story': return 'bg-brand-gold/20 text-brand-gold';
-    default: return 'bg-muted text-muted-foreground';
+    case 'epic': return { icon: Square, colorClass: 'text-workitem-epic' };
+    case 'feature': return { icon: Gem, colorClass: 'text-workitem-feature' };
+    case 'story': return { icon: FileText, colorClass: 'text-workitem-story' };
+    default: return { icon: FileText, colorClass: 'text-muted-foreground' };
+  }
+}
+
+function getProgressBarColor(health: HealthStatus): string {
+  switch (health) {
+    case 'On Track': return 'bg-secondary-green';
+    case 'At Risk': return 'bg-brand-gold';
+    case 'Blocked': return 'bg-destructive';
+    default: return 'bg-brand-primary';
   }
 }
 
@@ -45,56 +55,65 @@ interface SwimlaneRowProps {
 function SwimlaneRow({ item, depth, onItemClick, expandedIds, toggleExpand }: SwimlaneRowProps) {
   const hasChildren = item.children && item.children.length > 0;
   const isExpanded = expandedIds.has(item.id);
+  const typeIcon = getTypeIcon(item.type);
+  const TypeIcon = typeIcon.icon;
 
   return (
     <>
       <div 
         className={cn(
-          "flex items-center gap-3 py-2 px-3 border-b border-border/30 hover:bg-muted/30 cursor-pointer transition-colors",
+          "flex items-center gap-2.5 py-2 px-3 border-b border-border/30 hover:bg-muted/40 cursor-pointer transition-colors",
           depth > 0 && "bg-muted/10"
         )}
-        style={{ paddingLeft: `${12 + depth * 24}px` }}
+        style={{ paddingLeft: `${12 + depth * 20}px` }}
         onClick={() => onItemClick(item)}
       >
         {hasChildren ? (
           <button 
             onClick={(e) => { e.stopPropagation(); toggleExpand(item.id); }}
-            className="p-0.5 hover:bg-muted rounded"
+            className="p-0.5 hover:bg-muted rounded flex-shrink-0"
           >
             {isExpanded ? (
-              <ChevronDown className="h-4 w-4 text-muted-foreground" />
+              <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
             ) : (
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
             )}
           </button>
         ) : (
-          <span className="w-5" />
+          <span className="w-4 flex-shrink-0" />
         )}
 
-        <Badge variant="outline" className={cn("text-[10px] capitalize", getTypeColor(item.type))}>
-          {item.type}
-        </Badge>
+        <TypeIcon className={cn("h-3.5 w-3.5 flex-shrink-0", typeIcon.colorClass)} />
 
-        <span className="font-mono text-xs text-muted-foreground">{item.key}</span>
+        <span className="font-mono text-[10px] text-muted-foreground flex-shrink-0">{item.key}</span>
 
-        <span className="text-sm flex-1 truncate">{item.title}</span>
+        <span className={cn(
+          "text-xs flex-1 truncate",
+          depth === 0 ? "font-medium" : ""
+        )}>
+          {item.title}
+        </span>
 
-        <Badge variant="outline" className={cn("text-[10px]", getHealthColor(item.health))}>
+        <div className={cn(
+          "inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-medium border",
+          getHealthBadgeStyle(item.health)
+        )}>
+          <span className="w-1 h-1 rounded-full bg-current" />
           {item.health}
-        </Badge>
+        </div>
 
-        <div className="flex items-center gap-2 min-w-[80px]">
+        <div className="flex items-center gap-1.5 min-w-[70px]">
           <div className="flex-1 h-1 bg-muted rounded-full overflow-hidden">
             <div 
-              className="h-full bg-brand-primary"
+              className={cn("h-full rounded-full", getProgressBarColor(item.health))}
               style={{ width: `${item.progress}%` }}
             />
           </div>
-          <span className="text-[10px] text-muted-foreground w-8 text-right">{item.progress}%</span>
+          <span className="text-[9px] text-muted-foreground w-6 text-right tabular-nums">{item.progress}%</span>
         </div>
 
         {item.endDate && (
-          <span className="text-xs text-muted-foreground">
+          <span className="text-[10px] text-muted-foreground flex-shrink-0">
             {format(new Date(item.endDate), 'MMM d')}
           </span>
         )}
@@ -160,7 +179,7 @@ export function SwimlaneView({ items, onItemClick }: SwimlaneViewProps) {
     return Array.from(ownerMap.entries())
       .map(([owner, ownerItems]) => ({
         owner,
-        initials: owner === 'Unassigned' ? '?' : owner.split(' ').map(n => n[0]).join('').toUpperCase(),
+        initials: owner === 'Unassigned' ? '?' : owner.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2),
         items: ownerItems
       }))
       .sort((a, b) => {
@@ -171,26 +190,25 @@ export function SwimlaneView({ items, onItemClick }: SwimlaneViewProps) {
   }, [items]);
 
   if (lanes.length === 0) {
-    return (
-      <div className="flex items-center justify-center h-64 text-muted-foreground">
-        No items match your filters
-      </div>
-    );
+    return null;
   }
 
   return (
-    <div className="flex flex-col flex-1 overflow-auto">
+    <div className="flex flex-col flex-1 overflow-auto p-3 gap-3">
       {lanes.map(lane => {
         const isCollapsed = collapsedLanes.has(lane.owner);
+        const onTrackCount = lane.items.filter(i => i.health === 'On Track').length;
+        const atRiskCount = lane.items.filter(i => i.health === 'At Risk').length;
+        const blockedCount = lane.items.filter(i => i.health === 'Blocked').length;
         
         return (
-          <div key={lane.owner} className="border-b border-border">
+          <div key={lane.owner} className="rounded-lg border border-border overflow-hidden bg-card">
             {/* Lane header */}
             <div 
-              className="flex items-center gap-3 px-4 py-3 bg-muted/50 cursor-pointer hover:bg-muted/70 transition-colors sticky top-0 z-10"
+              className="flex items-center gap-3 px-4 py-3 bg-brand-gold/[0.06] cursor-pointer hover:bg-brand-gold/[0.1] transition-colors border-b border-border/50"
               onClick={() => toggleLane(lane.owner)}
             >
-              <button className="p-0.5">
+              <button className="p-0.5 flex-shrink-0">
                 {isCollapsed ? (
                   <ChevronRight className="h-4 w-4 text-muted-foreground" />
                 ) : (
@@ -198,26 +216,32 @@ export function SwimlaneView({ items, onItemClick }: SwimlaneViewProps) {
                 )}
               </button>
 
-              <div className="h-8 w-8 rounded-full bg-brand-primary/20 text-brand-primary flex items-center justify-center text-xs font-semibold">
+              <div className="h-7 w-7 rounded-full bg-gradient-to-br from-secondary-bronze to-brand-primary text-white flex items-center justify-center text-[10px] font-semibold flex-shrink-0">
                 {lane.initials}
               </div>
 
               <span className="font-semibold text-sm">{lane.owner}</span>
 
-              <Badge variant="outline" className="text-xs">
-                {lane.items.length} {lane.items.length === 1 ? 'epic' : 'epics'}
-              </Badge>
+              <span className="text-[10px] bg-muted px-2 py-0.5 rounded-full text-muted-foreground">
+                {lane.items.length} epic{lane.items.length !== 1 ? 's' : ''}
+              </span>
 
               {/* Summary stats */}
-              <div className="ml-auto flex items-center gap-4 text-xs text-muted-foreground">
-                <span>
-                  {lane.items.filter(i => i.health === 'On Track').length} on track
+              <div className="ml-auto flex items-center gap-4 text-[10px]">
+                <span className="flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-secondary-green" />
+                  <span className="text-secondary-green font-medium">{onTrackCount}</span>
+                  <span className="text-muted-foreground">on track</span>
                 </span>
-                <span>
-                  {lane.items.filter(i => i.health === 'At Risk').length} at risk
+                <span className="flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-brand-gold" />
+                  <span className="text-brand-gold font-medium">{atRiskCount}</span>
+                  <span className="text-muted-foreground">at risk</span>
                 </span>
-                <span>
-                  {lane.items.filter(i => i.health === 'Blocked').length} blocked
+                <span className="flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-destructive" />
+                  <span className="text-destructive font-medium">{blockedCount}</span>
+                  <span className="text-muted-foreground">blocked</span>
                 </span>
               </div>
             </div>
