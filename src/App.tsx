@@ -211,6 +211,7 @@ import {
   IncidentsList,
   IncidentDetail,
   IncidentsDashboard,
+  CreateIncident,
   VersionsList,
   VersionDetail,
   ReleaseCalendar,
@@ -597,12 +598,13 @@ const App = () => (
               <Route path="/knowledge-hub/documents/:documentId" element={<KnowledgeHubDocumentPage />} />
               
               {/* Release Management Routes */}
-              <Route path="/release" element={<Navigate to="/release/incident-room" replace />} />
+              <Route path="/release" element={<Navigate to="/release/incidents" replace />} />
               <Route path="/release/overview" element={<ReleaseOverview />} />
               <Route path="/release/incident-room" element={<IncidentRoomList />} />
               <Route path="/release/incident-room/:incidentId" element={<IncidentRoomDetail />} />
               <Route path="/release/incidents" element={<IncidentsDashboard />} />
               <Route path="/release/incidents/list" element={<IncidentsList />} />
+              <Route path="/release/incidents/create" element={<CreateIncident />} />
               <Route path="/release/incidents/:incidentId" element={<IncidentDetail />} />
               <Route path="/release/versions" element={<VersionsList />} />
               <Route path="/release/versions/calendar" element={<ReleaseCalendar />} />

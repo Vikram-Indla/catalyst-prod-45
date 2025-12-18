@@ -87,9 +87,9 @@ export function CreateDropdown() {
   const handleItemClick = (type: string) => {
     setOpen(false);
     
-    // Handle incident creation - route to incident room with create param
+    // Handle incident creation - route to create page
     if (type === 'incident') {
-      navigate('/release/incident-room?create=true');
+      navigate('/release/incidents/create');
       return;
     }
     
