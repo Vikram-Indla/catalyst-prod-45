@@ -4,12 +4,12 @@
  * Primary: Strategy Health (large left card)
  * Secondary: Progress, At Risk, Gaps, Open Risks (compact right cards)
  * 
- * TYPOGRAPHY LOCK (JOB-190):
- * - Section title: text-sm font-semibold tracking-wide (14px min)
- * - Card label: text-sm font-medium (14px min)
- * - Primary value: text-3xl font-semibold (30px) - MOST DOMINANT
- * - Subtext: text-sm text-secondary (readable, NO opacity stacking)
- * - NO text-muted, opacity-60, opacity-50 on content
+ * TYPOGRAPHY LOCK:
+ * - Section title: text-[12px] font-semibold tracking-[0.08em] uppercase text-muted-foreground
+ * - Card label: text-[12px] font-medium text-muted-foreground
+ * - Primary value: text-[28px] leading-[32px] font-semibold text-foreground
+ * - Subtext: text-[12px] leading-[16px] text-muted-foreground
+ * - NO opacity-*, NO text-white/* on content text
  */
 
 import { useNavigate } from 'react-router-dom';
@@ -28,7 +28,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
-import { TYPOGRAPHY, TEXT_CLASSES } from './strategyRoomTypography';
+import { TYPOGRAPHY, TEXT_COLORS } from './strategyRoomTypography';
 
 interface StrategicPulseSectionProps {
   snapshotId?: string;
@@ -58,30 +58,16 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
   if (isLoading && !hasData) {
     return (
       <section 
-        className="rounded-lg overflow-hidden"
-        style={{ 
-          backgroundColor: 'var(--surface-bg)', 
-          border: '1px solid var(--border-default)',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-        }}
+        className="rounded-lg overflow-hidden bg-card border border-border"
+        style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
       >
-        <div 
-          className="px-4 py-2.5 flex items-center justify-between"
-          style={{ borderBottom: '1px solid var(--border-subtle)' }}
-        >
+        <div className="px-4 py-2.5 border-b border-border/50">
           <Skeleton className="h-4 w-32" />
         </div>
         <div className="p-3">
           <div className="flex flex-col lg:flex-row gap-3">
             {/* Primary card skeleton */}
-            <div 
-              className="lg:w-[220px] flex-shrink-0 p-4 rounded-md"
-              style={{ 
-                backgroundColor: 'var(--surface-2)', 
-                border: '1px solid var(--border-subtle)',
-                minHeight: '120px',
-              }}
-            >
+            <div className="lg:w-[220px] flex-shrink-0 p-4 rounded-md bg-muted border border-border/50 min-h-[120px]">
               <Skeleton className="h-4 w-28 mb-3" />
               <Skeleton className="h-8 w-24 mb-2" />
               <Skeleton className="h-4 w-32" />
@@ -89,15 +75,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
             {/* Secondary cards skeleton */}
             <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-2">
               {['s1', 's2', 's3', 's4'].map((key) => (
-                <div 
-                  key={key}
-                  className="p-3 rounded-md"
-                  style={{ 
-                    backgroundColor: 'var(--surface-2)', 
-                    border: '1px solid var(--border-subtle)',
-                    minHeight: '100px',
-                  }}
-                >
+                <div key={key} className="p-3 rounded-md bg-muted border border-border/50 min-h-[100px]">
                   <Skeleton className="h-4 w-20 mb-2" />
                   <Skeleton className="h-8 w-14 mb-1" />
                   <Skeleton className="h-4 w-24" />
@@ -114,28 +92,21 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
 
   return (
     <section 
-      className="rounded-lg overflow-hidden"
-      style={{ 
-        backgroundColor: 'var(--surface-bg)', 
-        border: '1px solid var(--border-default)',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-      }}
+      className="rounded-lg overflow-hidden bg-card border border-border"
+      style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
     >
-      {/* Section Header - text-sm font-semibold tracking-wide */}
-      <div 
-        className="px-4 py-2.5 flex items-center justify-between"
-        style={{ borderBottom: '1px solid var(--border-subtle)' }}
-      >
+      {/* Section Header */}
+      <div className="px-4 py-2.5 flex items-center justify-between border-b border-border/50">
         <div className="flex items-center gap-2">
-          <Activity size={14} style={{ color: 'var(--brand-primary)' }} />
-          <h2 className={cn(TYPOGRAPHY.sectionTitle, TEXT_CLASSES.secondary)}>
+          <Activity size={14} className="text-primary" />
+          <h2 className={cn(TYPOGRAPHY.sectionTitle, TEXT_COLORS.muted)}>
             Strategic Pulse
           </h2>
         </div>
         {isUpdating && (
           <div className="flex items-center gap-1.5">
-            <Loader2 size={12} className="animate-spin" style={{ color: 'var(--text-secondary)' }} />
-            <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Refreshing…</span>
+            <Loader2 size={12} className="animate-spin text-muted-foreground" />
+            <span className={cn(TYPOGRAPHY.subtext, TEXT_COLORS.muted)}>Refreshing…</span>
           </div>
         )}
       </div>
@@ -144,32 +115,37 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
         <div className="flex flex-col lg:flex-row gap-3">
           {/* PRIMARY CARD: Strategy Health */}
           <div 
-            className="lg:w-[220px] flex-shrink-0 p-4 rounded-md flex flex-col justify-between"
+            className="lg:w-[220px] flex-shrink-0 p-4 rounded-md flex flex-col justify-between bg-muted/50 border border-border/50"
             style={{
-              backgroundColor: 'var(--surface-2)',
-              border: '1px solid var(--border-subtle)',
-              borderLeft: `4px solid ${displayData.overallStatus === 'on-track' ? 'var(--status-success)' : displayData.overallStatus === 'at-risk' ? 'var(--status-warning)' : 'var(--status-danger)'}`,
+              borderLeftWidth: '4px',
+              borderLeftColor: displayData.overallStatus === 'on-track' 
+                ? 'var(--status-success)' 
+                : displayData.overallStatus === 'at-risk' 
+                  ? 'var(--status-warning)' 
+                  : 'var(--status-danger)',
               minHeight: '120px',
             }}
           >
             <div>
-              {/* Label: text-sm font-medium text-secondary */}
-              <span className={cn(TYPOGRAPHY.cardLabel, TEXT_CLASSES.secondary)}>
+              {/* Label */}
+              <span className={cn(TYPOGRAPHY.cardLabel, TEXT_COLORS.muted)}>
                 Strategy Health
               </span>
               
-              {/* Primary Value: Status badge is the dominant element */}
+              {/* Primary Value: Status badge */}
               <div className="flex items-center gap-2 mt-2">
                 <span className={cn(
-                  "inline-flex items-center px-3 py-1.5 rounded text-base font-bold",
-                  config.bgClass, "text-white"
+                  "inline-flex items-center px-3 py-1.5 rounded font-bold",
+                  TYPOGRAPHY.primaryMetricStatus,
+                  config.bgClass,
+                  "text-white"
                 )}>
                   {config.label}
                 </span>
               </div>
               
-              {/* Subtext: text-sm text-secondary (readable) */}
-              <p className={cn(TYPOGRAPHY.subtext, TEXT_CLASSES.secondary, 'mt-2')}>
+              {/* Subtext */}
+              <p className={cn(TYPOGRAPHY.subtext, TEXT_COLORS.muted, 'mt-2')}>
                 {displayData.overallStatus === 'on-track' 
                   ? 'Execution on track' 
                   : displayData.overallStatus === 'at-risk' 
@@ -179,12 +155,9 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
             </div>
 
             {/* Trend indicator */}
-            <div 
-              className="flex items-center gap-1.5 mt-3 pt-2" 
-              style={{ borderTop: '1px solid var(--border-subtle)' }}
-            >
+            <div className="flex items-center gap-1.5 mt-3 pt-2 border-t border-border/50">
               <TrendIcon size={16} className={config.textClass} />
-              <span className={cn(TYPOGRAPHY.subtext, 'font-medium')} style={{ color: 'var(--text-secondary)' }}>
+              <span className={cn(TYPOGRAPHY.subtext, 'font-medium', TEXT_COLORS.muted)}>
                 {overallProgress}% · {trendLabel}
               </span>
             </div>
@@ -210,7 +183,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
               icon={<AlertTriangle size={18} />}
               onClick={() => navigate('/enterprise/okr-hub')}
               accentColor={atRiskCount > 0 ? 'warning' : 'muted'}
-              valueColor={atRiskCount > 0 ? 'var(--status-warning)' : undefined}
+              valueColor={atRiskCount > 0 ? 'text-status-warning' : undefined}
             />
 
             <CompactKPITile
@@ -220,7 +193,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
               icon={<Target size={18} />}
               onClick={() => navigate('/enterprise/backlog')}
               accentColor={displayData.alignmentGaps > 0 ? 'bronze' : 'muted'}
-              valueColor={displayData.alignmentGaps > 0 ? 'var(--secondary-bronze)' : undefined}
+              valueColor={displayData.alignmentGaps > 0 ? 'text-secondary-bronze' : undefined}
             />
 
             <CompactKPITile
@@ -230,7 +203,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
               icon={<Shield size={18} />}
               onClick={() => navigate('/enterprise/risks')}
               accentColor={displayData.highRisks > 0 ? 'danger' : 'muted'}
-              valueColor={displayData.highRisks > 0 ? 'var(--status-danger)' : undefined}
+              valueColor={displayData.highRisks > 0 ? 'text-status-danger' : undefined}
             />
           </div>
         </div>
@@ -263,80 +236,65 @@ function CompactKPITile({
   progressValue = 0
 }: CompactKPITileProps) {
   const accentBorders: Record<string, string> = {
-    primary: 'var(--brand-primary)',
+    primary: 'var(--primary)',
     warning: 'var(--status-warning)',
     danger: 'var(--status-danger)',
     bronze: 'var(--secondary-bronze)',
-    muted: 'var(--border-subtle)',
+    muted: 'transparent',
   };
 
   const iconColors: Record<string, string> = {
-    primary: 'var(--brand-primary)',
-    warning: 'var(--status-warning)',
-    danger: 'var(--status-danger)',
-    bronze: 'var(--secondary-bronze)',
-    muted: 'var(--text-secondary)',
+    primary: 'text-primary',
+    warning: 'text-status-warning',
+    danger: 'text-status-danger',
+    bronze: 'text-secondary-bronze',
+    muted: 'text-muted-foreground',
   };
 
   return (
     <button
       onClick={onClick}
-      className="p-3 rounded-md text-left transition-all relative group w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+      className="p-3 rounded-md text-left transition-all relative group w-full bg-muted/50 border border-border/50 hover:bg-accent hover:border-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
       style={{
-        backgroundColor: 'var(--surface-2)',
-        border: '1px solid var(--border-subtle)',
-        borderLeft: `3px solid ${accentBorders[accentColor]}`,
+        borderLeftWidth: '3px',
+        borderLeftColor: accentBorders[accentColor],
         minHeight: '100px',
       }}
-      onMouseEnter={(e) => {
-        (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)';
-        (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-default)';
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-2)';
-        (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-subtle)';
-      }}
     >
-      {/* Label row: text-sm font-medium text-secondary */}
+      {/* Label row */}
       <div className="flex items-center justify-between mb-1.5">
-        <span className={cn(TYPOGRAPHY.cardLabel, TEXT_CLASSES.secondary)}>
+        <span className={cn(TYPOGRAPHY.cardLabel, TEXT_COLORS.muted)}>
           {label}
         </span>
-        <span style={{ color: iconColors[accentColor] }}>{icon}</span>
+        <span className={iconColors[accentColor]}>{icon}</span>
       </div>
       
-      {/* Primary Value: text-3xl font-semibold - MOST DOMINANT */}
-      <span 
-        className={cn(TYPOGRAPHY.primaryMetric, 'block', TEXT_CLASSES.primary)}
-        style={{ color: valueColor || 'var(--text-primary)' }}
-      >
+      {/* Primary Value */}
+      <span className={cn(
+        TYPOGRAPHY.primaryMetric, 
+        'block',
+        valueColor || TEXT_COLORS.primary
+      )}>
         {value}
       </span>
       
-      {/* Subtext: text-sm text-secondary (readable) */}
-      <p className={cn(TYPOGRAPHY.subtext, TEXT_CLASSES.secondary, 'mt-1')}>
+      {/* Subtext */}
+      <p className={cn(TYPOGRAPHY.subtext, TEXT_COLORS.muted, 'mt-1')}>
         {subtext}
       </p>
 
       {showProgress && (
-        <div 
-          className="w-full h-1.5 rounded-full mt-2.5 overflow-hidden"
-          style={{ backgroundColor: 'var(--border-default)' }}
-        >
+        <div className="w-full h-1.5 rounded-full mt-2.5 overflow-hidden bg-border">
           <div 
-            className="h-full rounded-full transition-all"
-            style={{ 
-              width: `${progressValue}%`,
-              backgroundColor: 'var(--brand-primary)'
-            }}
+            className="h-full rounded-full transition-all bg-primary"
+            style={{ width: `${progressValue}%` }}
           />
         </div>
       )}
 
       <ChevronRight 
         size={14} 
-        className="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-60 transition-opacity" 
-        style={{ color: 'var(--text-secondary)' }}
+        className="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-60 transition-opacity text-muted-foreground" 
       />
     </button>
   );
