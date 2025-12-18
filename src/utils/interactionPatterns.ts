@@ -93,8 +93,8 @@ export const STALE_INDICATOR = {
   text: 'Data may be stale',
   /** Alternative for longer context */
   altText: 'Showing last available data',
-  /** Style - italic, subtle */
-  className: 'text-[11px] text-muted-foreground/70 italic',
+  /** Style - italic, readable (no opacity reduction) */
+  className: 'text-[11px] text-muted-foreground italic',
 } as const;
 
 /**
@@ -105,9 +105,9 @@ export const STALE_INDICATOR = {
  */
 export const EMPTY_STATE = {
   /** Icon opacity - not attention-grabbing */
-  iconClassName: 'text-muted-foreground/50',
-  /** Text style */
-  textClassName: 'text-sm text-muted-foreground/70',
+  iconClassName: 'text-muted-foreground/60',
+  /** Text style - readable, not faded */
+  textClassName: 'text-sm text-muted-foreground',
   /** Container */
   containerClassName: 'flex flex-col items-center justify-center py-8 gap-2',
 } as const;

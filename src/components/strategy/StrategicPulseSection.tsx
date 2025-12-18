@@ -127,14 +127,14 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
       <div className="px-4 py-2.5 flex items-center justify-between border-b border-border/50">
         <div className="flex items-center gap-2">
           <Activity size={14} className="text-primary" />
-          <h2 className={cn(TYPOGRAPHY.sectionTitle, TEXT_COLORS.muted)}>
+          <h2 className={cn(TYPOGRAPHY.sectionTitle, 'text-foreground/90')}>
             Strategic Pulse
           </h2>
         </div>
         <div className="flex items-center gap-2">
           {/* Stale data indicator - CATALYST STANDARD */}
           {showStaleIndicator && (
-            <span className="text-[11px] text-muted-foreground/70 italic">
+            <span className="text-[11px] text-muted-foreground italic">
               Data may be stale
             </span>
           )}
@@ -165,7 +165,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
           >
             <div>
               {/* Label */}
-              <span className={cn(TYPOGRAPHY.cardLabel, TEXT_COLORS.muted)}>
+              <span className={cn(TYPOGRAPHY.cardLabel, 'text-foreground/80')}>
                 Strategy Health
               </span>
               
@@ -182,7 +182,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
               </div>
               
               {/* Subtext */}
-              <p className={cn(TYPOGRAPHY.subtext, TEXT_COLORS.muted, 'mt-2')}>
+              <p className={cn(TYPOGRAPHY.subtext, 'text-muted-foreground', 'mt-2')}>
                 {displayData.overallStatus === 'on-track' 
                   ? 'Execution on track' 
                   : displayData.overallStatus === 'at-risk' 
@@ -194,7 +194,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
             {/* Trend indicator */}
             <div className="flex items-center gap-1.5 mt-3 pt-2 border-t border-border/50">
               <TrendIcon size={16} className={config.textClass} />
-              <span className={cn(TYPOGRAPHY.subtext, 'font-medium', TEXT_COLORS.muted)}>
+              <span className={cn(TYPOGRAPHY.subtext, 'font-medium text-muted-foreground')}>
                 {overallProgress}% · {trendLabel}
               </span>
             </div>
@@ -305,10 +305,10 @@ function CompactKPITile({
     >
       {/* Label row - icon supports, doesn't compete */}
       <div className="flex items-center justify-between mb-1.5">
-        <span className={cn(TYPOGRAPHY.cardLabel, 'text-muted-foreground/80')}>
+        <span className={cn(TYPOGRAPHY.cardLabel, 'text-foreground/80')}>
           {label}
         </span>
-        <span className={cn(iconColors[accentColor], 'opacity-70')}>{icon}</span>
+        <span className={cn(iconColors[accentColor], 'opacity-80')}>{icon}</span>
       </div>
       
       {/* Primary Value - strongest visual weight */}
@@ -320,8 +320,8 @@ function CompactKPITile({
         {value}
       </span>
       
-      {/* Subtext - slightly muted from primary */}
-      <p className={cn(TYPOGRAPHY.subtext, 'text-muted-foreground/70 mt-1')}>
+      {/* Subtext - secondary but readable */}
+      <p className={cn(TYPOGRAPHY.subtext, 'text-muted-foreground mt-1')}>
         {subtext}
       </p>
 
