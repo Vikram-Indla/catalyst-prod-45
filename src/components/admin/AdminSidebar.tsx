@@ -17,7 +17,8 @@ import {
   Upload,
   Columns,
   Boxes,
-  Code2
+  Code2,
+  AlertTriangle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -73,6 +74,17 @@ const adminSections = [
     items: [
       { label: 'Resource Inventory', path: '/admin/resourceinventory', icon: Boxes },
       { label: 'Development Inventory', path: '/admin/developmentinventory', icon: Code2 },
+    ],
+  },
+  {
+    title: 'Incident Management',
+    items: [
+      { label: 'Workgroups', path: '/admin/incidents/workgroups', icon: Users },
+      { label: 'Field Configuration', path: '/admin/incidents/fields', icon: Settings },
+      { label: 'SLA Policies', path: '/admin/incidents/sla', icon: Activity },
+      { label: 'CAP Committee', path: '/admin/incidents/cap-policy', icon: Shield },
+      { label: 'Conversion Rules', path: '/admin/incidents/conversion', icon: Activity },
+      { label: 'Audit & Compliance', path: '/admin/incidents/audit', icon: AlertTriangle },
     ],
   },
   {

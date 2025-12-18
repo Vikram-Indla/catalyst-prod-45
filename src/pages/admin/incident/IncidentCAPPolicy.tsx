@@ -95,8 +95,8 @@ export default function IncidentCAPPolicy() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('incident_user_profiles')
-        .select('id, display_name, email')
-        .order('display_name');
+        .select('id, full_name, email')
+        .order('full_name');
 
       if (error) throw error;
       return data as UserProfile[];
@@ -177,7 +177,7 @@ export default function IncidentCAPPolicy() {
 
   const getUserName = (userId: string) => {
     const user = userProfiles.find((u) => u.id === userId);
-    return user?.display_name || user?.email || 'Unknown User';
+    return user?.full_name || user?.email || 'Unknown User';
   };
 
   const getAvailableUsers = () => {
@@ -386,7 +386,7 @@ export default function IncidentCAPPolicy() {
                   <SelectContent>
                     {getAvailableUsers().map((user) => (
                       <SelectItem key={user.id} value={user.id}>
-                        {user.display_name} ({user.email})
+                        {user.full_name} ({user.email})
                       </SelectItem>
                     ))}
                   </SelectContent>
