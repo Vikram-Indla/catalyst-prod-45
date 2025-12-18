@@ -62,7 +62,7 @@ export function useIncident(id: string) {
           assignee:incident_user_profiles!incidents_assignee_id_fkey(*, workgroup:workgroups(*)),
           reporter:incident_user_profiles!incidents_reporter_id_fkey(*),
           assignee_workgroup:workgroups(*),
-          committee:incident_committees(
+          committee:incident_committees!incidents_committee_id_fkey(
             *,
             members:committee_members(
               *,
