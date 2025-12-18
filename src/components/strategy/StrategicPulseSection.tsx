@@ -2,15 +2,11 @@
  * StrategicPulseSection — Executive KPI cockpit
  * Primary: Strategy Health (large left card)
  * Secondary: Progress, At Risk, Gaps, Open Risks (compact right cards)
- * Uses stale-while-revalidate to prevent blanking on snapshot switch
+ * Consumes unified data from useStrategyRoomSummary to prevent UI pulsing
  */
 
-import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useOKRv2StrategyMetrics } from '@/hooks/useOKRv2StrategyMetrics';
-import { useStrategyPyramidCounts } from '@/hooks/useExecutionMetrics';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { useStrategyRoomSummary } from '@/hooks/useStrategyRoomSummary';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -20,7 +16,8 @@ import {
   Target, 
   Shield,
   Activity,
-  ChevronRight
+  ChevronRight,
+  Loader2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -28,101 +25,28 @@ interface StrategicPulseSectionProps {
   snapshotId?: string;
 }
 
-type OverallStatus = 'on-track' | 'at-risk' | 'off-track';
-
 export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps) {
   const navigate = useNavigate();
   
-  // Store last valid data to prevent blanking
-  const lastValidDataRef = useRef<{
-    overallProgress: number;
-    objectivesCount: number;
-    atRiskCount: number;
-    alignmentGaps: number;
-    openRisks: number;
-    highRisks: number;
-    overallStatus: OverallStatus;
-  } | null>(null);
+  const { data, isLoading, isFetching } = useStrategyRoomSummary(snapshotId);
   
-  const { data: okrMetrics, isLoading: okrLoading, isFetching: okrFetching } = useOKRv2StrategyMetrics(snapshotId);
-  const { data: counts, isLoading: countsLoading, isFetching: countsFetching } = useStrategyPyramidCounts(snapshotId);
+  // Determine loading states
+  const isFirstLoad = isLoading && !data;
+  const isUpdating = isFetching && !isLoading && !!data;
 
-  const { data: riskData, isLoading: risksLoading, isFetching: risksFetching } = useQuery({
-    queryKey: ['strategic-pulse-risks', snapshotId],
-    queryFn: async () => {
-      const { data: risks } = await supabase
-        .from('risks')
-        .select('impact, status')
-        .not('status', 'eq', 'Closed');
-
-      const riskList = risks || [];
-      const high = riskList.filter(r => {
-        const impact = (r.impact || '').toLowerCase();
-        return impact === 'critical' || impact === 'high' || impact === '5' || impact === '4';
-      }).length;
-
-      return { total: riskList.length, high };
-    },
-    staleTime: 60 * 1000, // 60 seconds
-    gcTime: 10 * 60 * 1000, // 10 minutes cache
-  });
-
-  const isInitialLoading = okrLoading || countsLoading || risksLoading;
-  const isRefreshing = (okrFetching || countsFetching || risksFetching) && !isInitialLoading;
-
-  // Compute current values
-  const objectivesCount = okrMetrics?.count ?? 0;
-  const hasObjectives = objectivesCount > 0;
-  const overallProgress = hasObjectives ? Math.round(okrMetrics?.avgProgress ?? 0) : 0;
-  
-  const atRiskCount = hasObjectives 
-    ? (okrMetrics?.objectives?.filter(obj => {
-        const health = (obj.health || '').toLowerCase();
-        return health === 'at_risk' || health === 'poor';
-      }).length ?? 0)
-    : 0;
-
-  const misalignedEpics = counts?.misalignedEpics ?? 0;
-  const misalignedFeatures = counts?.misalignedFeatures ?? 0;
-  const alignmentGaps = misalignedEpics + misalignedFeatures;
-
-  const openRisks = riskData?.total ?? 0;
-  const highRisks = riskData?.high ?? 0;
-
-  const determineOverallStatus = (): OverallStatus => {
-    if (!hasObjectives) return 'at-risk';
-    if (highRisks > 2 || atRiskCount > 3 || overallProgress < 30) return 'off-track';
-    if (highRisks > 0 || atRiskCount > 0 || alignmentGaps > 3 || overallProgress < 60) return 'at-risk';
-    return 'on-track';
+  // Use data or safe defaults (never undefined/null in render)
+  const displayData = data ?? {
+    avgProgress: 0,
+    objectivesCount: 0,
+    atRiskObjectives: [],
+    alignmentGaps: 0,
+    totalRisks: 0,
+    highRisks: 0,
+    overallStatus: 'at-risk' as const,
   };
 
-  const overallStatus = determineOverallStatus();
-
-  // Update last valid data when we have real data
-  if (!isInitialLoading) {
-    lastValidDataRef.current = {
-      overallProgress,
-      objectivesCount,
-      atRiskCount,
-      alignmentGaps,
-      openRisks,
-      highRisks,
-      overallStatus,
-    };
-  }
-
-  // Use last valid data during initial load, or current data
-  const displayData = isInitialLoading && lastValidDataRef.current 
-    ? lastValidDataRef.current 
-    : {
-        overallProgress,
-        objectivesCount,
-        atRiskCount,
-        alignmentGaps,
-        openRisks,
-        highRisks,
-        overallStatus,
-      };
+  const atRiskCount = displayData.atRiskObjectives?.length ?? 0;
+  const overallProgress = displayData.avgProgress;
 
   const statusConfig = {
     'on-track': { label: 'On Track', bgClass: 'bg-status-success', textClass: 'text-status-success' },
@@ -131,11 +55,11 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
   };
 
   const config = statusConfig[displayData.overallStatus];
-  const TrendIcon = displayData.overallProgress >= 50 ? TrendingUp : displayData.overallProgress >= 30 ? Minus : TrendingDown;
-  const trendLabel = displayData.overallProgress >= 50 ? 'Ahead' : displayData.overallProgress >= 30 ? 'On pace' : 'Behind';
+  const TrendIcon = overallProgress >= 50 ? TrendingUp : overallProgress >= 30 ? Minus : TrendingDown;
+  const trendLabel = overallProgress >= 50 ? 'Ahead' : overallProgress >= 30 ? 'On pace' : 'Behind';
 
-  // Only show skeleton on true initial load with no cached data
-  if (isInitialLoading && !lastValidDataRef.current) {
+  // Show skeleton only on true first load (no cached data at all)
+  if (isFirstLoad) {
     return (
       <section 
         className="rounded-lg overflow-hidden"
@@ -165,7 +89,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
             <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-2">
               {[1, 2, 3, 4].map((i) => (
                 <div 
-                  key={i} 
+                  key={`pulse-skeleton-${i}`}
                   className="p-3 rounded-md min-h-[56px]"
                   style={{ backgroundColor: 'var(--muted)', border: '1px solid var(--border)' }}
                 >
@@ -200,10 +124,13 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
         >
           Strategic Pulse
         </h2>
-        {isRefreshing && (
-          <span className="text-[10px] font-medium" style={{ color: 'var(--text-muted)' }}>
-            Refreshing…
-          </span>
+        {isUpdating && (
+          <div className="flex items-center gap-1.5">
+            <Loader2 size={10} className="animate-spin" style={{ color: 'var(--text-muted)' }} />
+            <span className="text-[10px] font-medium" style={{ color: 'var(--text-muted)' }}>
+              Updating…
+            </span>
+          </div>
         )}
       </div>
 
@@ -252,7 +179,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
             <div className="flex items-center gap-1.5 mt-3 pt-2" style={{ borderTop: '1px solid var(--border-subtle)' }}>
               <TrendIcon size={12} className={config.textClass} />
               <span className="text-[10px] font-medium" style={{ color: 'var(--text-muted)' }}>
-                {displayData.overallProgress}% progress · {trendLabel}
+                {overallProgress}% progress · {trendLabel}
               </span>
             </div>
           </div>
@@ -261,29 +188,32 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
           <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-2">
             {/* Progress */}
             <CompactKPITile
+              key="pulse-progress"
               label="Progress"
-              value={displayData.objectivesCount > 0 ? `${displayData.overallProgress}%` : '—'}
+              value={displayData.objectivesCount > 0 ? `${overallProgress}%` : '—'}
               subtext={`${displayData.objectivesCount} objective${displayData.objectivesCount !== 1 ? 's' : ''}`}
               icon={<BarChart3 size={12} />}
               onClick={() => navigate('/enterprise/okr-hub')}
               accentColor="primary"
               showProgress={displayData.objectivesCount > 0}
-              progressValue={displayData.overallProgress}
+              progressValue={overallProgress}
             />
 
             {/* At Risk */}
             <CompactKPITile
+              key="pulse-at-risk"
               label="At Risk"
-              value={displayData.atRiskCount}
-              subtext={displayData.atRiskCount === 0 ? 'All healthy' : 'Need attention'}
+              value={atRiskCount}
+              subtext={atRiskCount === 0 ? 'All healthy' : 'Need attention'}
               icon={<AlertTriangle size={12} />}
               onClick={() => navigate('/enterprise/okr-hub')}
-              accentColor={displayData.atRiskCount > 0 ? 'warning' : 'muted'}
-              valueColor={displayData.atRiskCount > 0 ? 'var(--status-warning)' : undefined}
+              accentColor={atRiskCount > 0 ? 'warning' : 'muted'}
+              valueColor={atRiskCount > 0 ? 'var(--status-warning)' : undefined}
             />
 
             {/* Alignment Gaps */}
             <CompactKPITile
+              key="pulse-gaps"
               label="Alignment Gaps"
               value={displayData.alignmentGaps}
               subtext={displayData.alignmentGaps === 0 ? 'Fully aligned' : 'Unlinked items'}
@@ -295,8 +225,9 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
 
             {/* Open Risks */}
             <CompactKPITile
+              key="pulse-risks"
               label="Open Risks"
-              value={displayData.openRisks}
+              value={displayData.totalRisks}
               subtext={displayData.highRisks > 0 ? `${displayData.highRisks} high severity` : 'No critical'}
               icon={<Shield size={12} />}
               onClick={() => navigate('/enterprise/risks')}
