@@ -1,3 +1,22 @@
+/**
+ * StrategyRoomPage — CIO-grade Enterprise Strategy Cockpit
+ * Executive read-only view for strategic health and alignment
+ * 
+ * UX STABILITY LOCK (NON-NEGOTIABLE):
+ * ─────────────────────────────────────────────────
+ * 1. NO font size changes during loading/refresh
+ * 2. NO greying out content during loading/refresh
+ * 3. NO skeletons after first successful load
+ * 4. NO layout shift, twitching, or flicker
+ * 5. UI consistency > data freshness
+ * 6. If data is refreshing → keep last visible UI intact
+ * 
+ * SNAPSHOT SWITCHING:
+ * - Previous data remains visible until new data is ready
+ * - If new data fails: keep previous + show "Data may be outdated"
+ * - 200ms debounce prevents rapid-switch flicker
+ */
+
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
@@ -12,7 +31,9 @@ import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { PageChrome } from '@/components/layout/PageChrome';
 import { toast } from 'sonner';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { Calendar, ChevronDown, Compass } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { cn } from '@/lib/utils';
 
 type ObjectiveLevel = "OBJECTIVES";
 
@@ -29,12 +50,12 @@ export default function StrategyRoomPage() {
   const [snapshotSearchQuery, setSnapshotSearchQuery] = useState('');
   const [selectedTheme, setSelectedTheme] = useState<any>(null);
   const [themeDrawerOpen, setThemeDrawerOpen] = useState(false);
-  const [showContext, setShowContext] = useState(false);
+  const [contextOpen, setContextOpen] = useState(false);
 
   // Debounce timer ref
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Debounced snapshot change handler
+  // Debounced snapshot change handler - prevents flicker during rapid changes
   const handleSnapshotChange = useCallback((newSnapshotId: string) => {
     setSelectedSnapshotId(newSnapshotId);
     
@@ -58,7 +79,7 @@ export default function StrategyRoomPage() {
     };
   }, []);
 
-  const { data: snapshots = [], isLoading: snapshotsLoading, isFetching: snapshotsFetching, refetch: refetchSnapshots } = useQuery({
+  const { data: snapshots = [], isLoading: snapshotsLoading, refetch: refetchSnapshots } = useQuery({
     queryKey: ['strategy-snapshots'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -125,141 +146,91 @@ export default function StrategyRoomPage() {
     s.name.toLowerCase().includes(snapshotSearchQuery.toLowerCase())
   );
 
-  const showInitialSkeleton = snapshotsLoading && snapshots.length === 0;
-
-  if (showInitialSkeleton) {
+  // Skeleton only on INITIAL load - matches final layout exactly
+  // ⚠️ After first success, NEVER show skeletons again
+  if (snapshotsLoading && snapshots.length === 0) {
     return (
       <PageChrome>
-        <div className="px-5 py-4 space-y-4 pb-6 max-w-[1400px] mx-auto">
-          {/* Strategic Pulse Skeleton */}
-          <section 
-            className="rounded-lg overflow-hidden"
-            style={{ backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-default)' }}
-          >
-            <div className="px-4 py-2" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-              <div className="h-3 w-28 rounded animate-pulse" style={{ backgroundColor: 'var(--muted)' }} />
-            </div>
-            <div className="p-3">
-              <div className="flex flex-col lg:flex-row gap-2">
+        <div className="px-5 py-4 pb-6 max-w-[1400px] mx-auto">
+          <div className="space-y-3">
+            {/* Strategic Pulse Skeleton */}
+            <SkeletonSection>
+              <div className="flex flex-col lg:flex-row gap-3">
                 <div 
-                  className="lg:w-[220px] min-h-[100px] p-3 rounded-md flex-shrink-0 animate-pulse"
-                  style={{ backgroundColor: 'var(--muted)', border: '1px solid var(--border)' }}
-                />
+                  className="lg:w-[240px] min-h-[120px] p-4 rounded-md flex-shrink-0 bg-muted border border-border"
+                >
+                  <div className="h-3 w-24 rounded mb-3 animate-pulse bg-muted-foreground/15" />
+                  <div className="h-7 w-20 rounded mb-2 animate-pulse bg-muted-foreground/15" />
+                  <div className="h-2.5 w-28 rounded animate-pulse bg-muted-foreground/15" />
+                </div>
                 <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-2">
                   {[1, 2, 3, 4].map((i) => (
                     <div 
-                      key={i}
-                      className="p-2.5 rounded-md min-h-[52px] animate-pulse"
-                      style={{ backgroundColor: 'var(--muted)', border: '1px solid var(--border)' }}
-                    />
+                      key={i} 
+                      className="p-3 rounded-md min-h-[56px] bg-muted border border-border"
+                    >
+                      <div className="h-2.5 w-14 rounded mb-2 animate-pulse bg-muted-foreground/15" />
+                      <div className="h-5 w-10 rounded mb-1 animate-pulse bg-muted-foreground/15" />
+                      <div className="h-2 w-16 rounded animate-pulse bg-muted-foreground/15" />
+                    </div>
                   ))}
                 </div>
               </div>
-            </div>
-          </section>
+            </SkeletonSection>
 
-          {/* Exposure & Gaps Skeleton */}
-          <section 
-            className="rounded-lg overflow-hidden"
-            style={{ backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-default)' }}
-          >
-            <div className="px-4 py-2" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-              <div className="h-3 w-28 rounded animate-pulse" style={{ backgroundColor: 'var(--muted)' }} />
-            </div>
-            <div className="p-3">
+            {/* Exposure & Gaps Skeleton */}
+            <SkeletonSection>
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
-                {[1, 2, 3].map((col) => (
-                  <div 
-                    key={col}
-                    className="rounded-md min-h-[120px] animate-pulse"
-                    style={{ backgroundColor: 'var(--muted)', border: '1px solid var(--border)' }}
-                  />
+                {[1, 2, 3].map((i) => (
+                  <SkeletonCard key={i} rows={4} />
                 ))}
               </div>
-            </div>
-          </section>
+            </SkeletonSection>
 
-          {/* Strategy Coverage Skeleton */}
-          <section 
-            className="rounded-lg overflow-hidden"
-            style={{ backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-default)' }}
-          >
-            <div className="px-4 py-2.5" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-              <div className="h-4 w-36 rounded animate-pulse" style={{ backgroundColor: 'var(--muted)' }} />
-            </div>
-            <div className="p-3">
-              <div className="flex gap-3">
-                <div className="w-44 space-y-1.5">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="h-9 rounded animate-pulse" style={{ backgroundColor: 'var(--muted)' }} />
-                  ))}
-                </div>
-                <div className="flex-1 rounded-md min-h-[140px] animate-pulse" style={{ backgroundColor: 'var(--muted)' }} />
-              </div>
-            </div>
-          </section>
+            {/* Strategy Coverage Skeleton */}
+            <SkeletonSection height="h-48" />
 
-          {/* OKR Tree Skeleton */}
-          <section 
-            className="rounded-lg overflow-hidden"
-            style={{ backgroundColor: 'var(--surface-bg)', border: '1px solid var(--border-default)' }}
-          >
-            <div className="px-4 py-2.5" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-              <div className="h-4 w-20 rounded animate-pulse" style={{ backgroundColor: 'var(--muted)' }} />
-            </div>
-            <div className="p-3 space-y-1.5">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="h-8 rounded animate-pulse" style={{ backgroundColor: 'var(--muted)' }} />
-              ))}
-            </div>
-          </section>
+            {/* OKR Tree Skeleton */}
+            <SkeletonSection height="h-64" />
+
+            {/* Strategy Context Skeleton */}
+            <SkeletonSection height="h-12" />
+          </div>
         </div>
       </PageChrome>
     );
   }
 
+  // Empty state - no snapshots
   if (!effectiveSelectedSnapshotId && snapshots.length === 0) {
     return (
       <PageChrome>
-        <div className="px-6 py-8 text-center" style={{ color: 'var(--text-muted)' }}>
+        <div className="px-6 py-8 text-center text-muted-foreground">
           No strategic snapshots found. Create one to get started.
         </div>
       </PageChrome>
     );
   }
 
+  // Snapshot selector for PageChrome rightActions
   const snapshotSelector = (
-    <div className="flex items-center gap-2">
-      <span 
-        className="text-[11px] font-medium"
-        style={{ color: 'var(--text-muted)' }}
-      >
-        Snapshot:
+    <div className="flex items-center gap-3">
+      <Calendar size={14} className="text-muted-foreground" />
+      <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+        Snapshot
       </span>
-      <div className="w-52">
+      <div className="w-56">
         <Select value={effectiveSelectedSnapshotId} onValueChange={handleSnapshotChange}>
-          <SelectTrigger 
-            className="h-7 text-[12px] rounded-md"
-            style={{ 
-              backgroundColor: 'var(--surface-2)', 
-              borderColor: 'var(--border-subtle)',
-              color: 'var(--text-primary)'
-            }}
-          >
+          <SelectTrigger className="h-8 text-[13px] rounded-md bg-background border-border">
             <SelectValue placeholder="Select snapshot" />
           </SelectTrigger>
-          <SelectContent className="z-[400]">
+          <SelectContent className="z-[400] bg-popover">
             <div className="p-2">
               <Input
-                placeholder="Search..."
+                placeholder="Search snapshots..."
                 value={snapshotSearchQuery}
                 onChange={(e) => setSnapshotSearchQuery(e.target.value)}
-                className="mb-2 h-6 text-[11px]"
-                style={{ 
-                  backgroundColor: 'var(--surface-2)', 
-                  borderColor: 'var(--border-subtle)',
-                  color: 'var(--text-primary)'
-                }}
+                className="mb-2 h-7 text-[12px]"
               />
             </div>
             {filteredSnapshots.map((snapshot) => (
@@ -275,82 +246,62 @@ export default function StrategyRoomPage() {
 
   return (
     <PageChrome rightActions={snapshotSelector}>
-      {/* Tighter spacing: 16-20px gaps between sections */}
-      <div 
-        className="px-5 py-4 pb-6 max-w-[1400px] mx-auto"
-        style={{ backgroundColor: 'var(--page-bg)' }}
-      >
-        {/* Section 1: Strategic Pulse */}
-        <StrategicPulseSection snapshotId={effectiveDebouncedSnapshotId} />
+      <div className="px-5 py-4 pb-6 max-w-[1400px] mx-auto bg-background">
+        {/* Executive Cockpit Grid — Tighter vertical rhythm */}
+        <div className="space-y-3">
+          {/* Section 1: Strategic Pulse — Signal-led health cockpit */}
+          <StrategicPulseSection snapshotId={effectiveDebouncedSnapshotId} />
 
-        {/* Section 2: Exposure & Gaps - 16px gap */}
-        <div className="mt-4">
+          {/* Section 2: Exposure & Gaps — Risk surface */}
           <ExposureGapsSection snapshotId={effectiveDebouncedSnapshotId} />
-        </div>
 
-        {/* Section 3: Coverage & Alignment - 16px gap */}
-        <div className="mt-4">
+          {/* Section 3: Coverage & Alignment — Strategy layers */}
           <StrategyStack 
             onLayerClick={handlePyramidLayerClick} 
             snapshotId={effectiveDebouncedSnapshotId}
           />
-        </div>
 
-        {/* Section 4: OKR Tree - 16px gap */}
-        <div className="mt-4">
+          {/* Section 4: OKR Tree — Execution details */}
           <OkrTree
             selectedSnapshot={effectiveDebouncedSnapshotId}
             onObjectiveClick={handleObjectiveClick}
             onThemeClick={handleThemeClick}
           />
-        </div>
 
-        {/* Collapsible: Strategy Context - 16px gap */}
-        <div 
-          className="mt-4 rounded-lg overflow-hidden"
-          style={{
-            backgroundColor: 'var(--surface-bg)',
-            border: '1px solid var(--border-default)',
-            boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
-          }}
-        >
-          <button
-            onClick={() => setShowContext(!showContext)}
-            className="w-full px-4 py-2.5 flex items-center justify-between transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
-            style={{ 
-              borderBottom: showContext ? '1px solid var(--border-subtle)' : 'none',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'var(--surface-hover)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
-            }}
-          >
-            <div>
-              <h2 
-                className="text-[13px] font-semibold"
-                style={{ color: 'var(--text-primary)' }}
-              >
-                Strategy Context
-              </h2>
-              <p 
-                className="text-[10px] mt-0.5"
-                style={{ color: 'var(--text-muted)' }}
-              >
-                Mission, vision, and values
-              </p>
-            </div>
-            {showContext ? (
-              <ChevronUp size={16} style={{ color: 'var(--text-muted)' }} />
-            ) : (
-              <ChevronDown size={16} style={{ color: 'var(--text-muted)' }} />
-            )}
-          </button>
-          
-          {showContext && (
-            <StrategyContextCard snapshot={selectedSnapshot} onUpdate={refetchSnapshots} />
-          )}
+          {/* Section 5: Strategy Context — Collapsible accordion */}
+          <Collapsible open={contextOpen} onOpenChange={setContextOpen}>
+            <section className="rounded-lg overflow-hidden bg-card border border-border">
+              <CollapsibleTrigger asChild>
+                <button
+                  className="w-full px-4 py-2.5 flex items-center justify-between transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+                >
+                  <div className="flex items-center gap-2">
+                    <Compass size={14} className="text-primary" />
+                    <div className="text-left">
+                      <h2 className="text-xs font-semibold uppercase tracking-wide text-foreground">
+                        Strategy Context
+                      </h2>
+                      <p className="text-[10px] text-muted-foreground">
+                        Mission, vision, and values
+                      </p>
+                    </div>
+                  </div>
+                  <ChevronDown 
+                    size={14} 
+                    className={cn(
+                      "transition-transform duration-200 text-muted-foreground",
+                      contextOpen && "rotate-180"
+                    )}
+                  />
+                </button>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <div className="border-t border-border">
+                  <StrategyContextCard snapshot={selectedSnapshot} onUpdate={refetchSnapshots} />
+                </div>
+              </CollapsibleContent>
+            </section>
+          </Collapsible>
         </div>
       </div>
 
@@ -372,5 +323,44 @@ export default function StrategyRoomPage() {
         }}
       />
     </PageChrome>
+  );
+}
+
+// ─────────────────────────────────────────────────
+// Skeleton components for INITIAL loading state ONLY
+// ⚠️ These are ONLY shown on first load, NEVER after first success
+// ─────────────────────────────────────────────────
+
+function SkeletonSection({ children, height }: { children?: React.ReactNode; height?: string }) {
+  return (
+    <div className={cn("rounded-lg overflow-hidden bg-card border border-border", height)}>
+      <div className="px-4 py-2 border-b border-border/50">
+        <div className="h-3 w-24 rounded animate-pulse bg-muted" />
+      </div>
+      {children ? (
+        <div className="p-3">{children}</div>
+      ) : (
+        <div className="p-3 flex-1" />
+      )}
+    </div>
+  );
+}
+
+function SkeletonCard({ rows = 3 }: { rows?: number }) {
+  return (
+    <div className="rounded-md overflow-hidden min-h-[140px] bg-muted border border-border">
+      <div className="px-3 py-2 flex items-center gap-2 border-b border-border">
+        <div className="h-3 w-3 rounded animate-pulse bg-muted-foreground/20" />
+        <div className="h-2.5 w-20 rounded animate-pulse bg-muted-foreground/20" />
+      </div>
+      <div className="p-3 space-y-2">
+        {Array.from({ length: rows }).map((_, i) => (
+          <div key={i} className="flex items-center justify-between">
+            <div className="h-2.5 w-16 rounded animate-pulse bg-muted-foreground/20" />
+            <div className="h-3 w-5 rounded animate-pulse bg-muted-foreground/20" />
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }

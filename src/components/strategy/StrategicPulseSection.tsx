@@ -4,12 +4,37 @@
  * Primary: Strategy Health (large left card)
  * Secondary: Progress, At Risk, Gaps, Open Risks (compact right cards)
  * 
- * TYPOGRAPHY LOCK:
- * - Section title: text-[12px] font-semibold tracking-[0.08em] uppercase text-muted-foreground
- * - Card label: text-[12px] font-medium text-muted-foreground
- * - Primary value: text-[28px] leading-[32px] font-semibold text-foreground
- * - Subtext: text-[12px] leading-[16px] text-muted-foreground
- * - NO opacity-*, NO text-white/* on content text
+ * TYPOGRAPHY LOCK (CIO COCKPIT UX — NON-NEGOTIABLE):
+ * ─────────────────────────────────────────────────
+ * KPI VALUE:
+ *   - Font size: 30px (desktop)
+ *   - Font weight: 600-700
+ *   - Line height: 1.15
+ *   - Color: primary text (NEVER muted, NEVER greyed)
+ *   - ⚠️ MUST NEVER become smaller during refresh
+ * 
+ * KPI LABEL:
+ *   - Font size: 14px
+ *   - Font weight: 500
+ *   - Color: secondary text token
+ * 
+ * KPI SUBTEXT:
+ *   - Font size: 13px
+ *   - Font weight: 400
+ *   - Color: muted text token
+ *   - ⚠️ MUST remain visible during refresh
+ * 
+ * STATUS TEXT (e.g., "Off Track"):
+ *   - Font size: 15px
+ *   - Font weight: 600
+ *   - Color: semantic (risk/warning/success)
+ *   - ⚠️ MUST NEVER fade or shrink
+ * 
+ * LOADING BEHAVIOR:
+ *   - Skeleton allowed ONCE on initial load only
+ *   - After first success: NEVER show skeleton again
+ *   - During refresh: show "Refreshing…" in header, keep content visible
+ *   - NO greying, NO opacity reduction, NO layout shift
  */
 
 import { useNavigate } from 'react-router-dom';
