@@ -305,7 +305,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
         <div className="flex items-center gap-2">
           {/* Stale data indicator - CATALYST STANDARD */}
           {showStaleIndicator && (
-            <span className="text-[11px] text-muted-foreground/70 italic">
+            <span className="text-[11px] text-muted-foreground italic">
               Data may be stale
             </span>
           )}
