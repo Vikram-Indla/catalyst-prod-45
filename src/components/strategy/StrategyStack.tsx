@@ -370,7 +370,11 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                 <div
                   key={layer.key}
                   onClick={() => handleRowClick(layer.key)}
-                  className="grid items-center py-1.5 px-3 cursor-pointer transition-all duration-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+                  className={cn(
+                    "grid items-center py-1.5 px-3 cursor-pointer",
+                    "transition-[background-color] duration-100",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+                  )}
                   tabIndex={0}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
@@ -386,7 +390,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                     minHeight: '36px',
                   }}
                   onMouseEnter={(e) => {
-                    if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--surface-hover)';
+                    if (!isSelected) e.currentTarget.style.backgroundColor = 'hsl(var(--accent) / 0.4)';
                   }}
                   onMouseLeave={(e) => {
                     if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent';

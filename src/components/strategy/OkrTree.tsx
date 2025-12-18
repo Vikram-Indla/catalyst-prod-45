@@ -178,7 +178,8 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
       <div key={item.id}>
         <div
           className={cn(
-            "grid items-center transition-all duration-75",
+            "grid items-center",
+            "transition-[background-color] duration-75",
             isClickable && "cursor-pointer",
             isSelected && "ring-1 ring-inset"
           )}
@@ -196,7 +197,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
             ...(isSelected ? { '--tw-ring-color': 'var(--brand-primary)' } as any : {}),
           }}
           onMouseEnter={(e) => {
-            if (!isSelected) e.currentTarget.style.backgroundColor = 'var(--surface-hover)';
+            if (!isSelected) e.currentTarget.style.backgroundColor = 'hsl(var(--accent) / 0.35)';
           }}
           onMouseLeave={(e) => {
             if (!isSelected) e.currentTarget.style.backgroundColor = isTheme ? typeStyle.rowBg : 'transparent';
@@ -259,38 +260,39 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
             </span>
           </div>
 
-          {/* Progress bar - aligned baseline */}
+          {/* Progress bar - secondary signal, percentage is primary */}
           <div className="flex items-center gap-1.5 px-2">
             <div 
               className="flex-1 h-[4px] rounded-full overflow-hidden"
               style={{ backgroundColor: 'var(--progress-track)' }}
             >
               <div
-                className="h-full rounded-full transition-all duration-300"
+                className="h-full rounded-full"
                 style={{
                   width: `${Math.min(100, item.progress)}%`,
                   backgroundColor: getProgressBarColor(item.progress),
+                  opacity: 0.85,
                 }}
               />
             </div>
           </div>
 
-          {/* Percentage - right aligned */}
+          {/* Percentage - primary signal, anchors the eye */}
           <div className="text-right pr-2">
             <span 
-              className={cn(TYPOGRAPHY.progressPercent)}
-              style={{ color: item.progress > 0 ? 'var(--text-secondary)' : 'var(--text-secondary)' }}
+              className={cn(TYPOGRAPHY.progressPercent, 'font-medium')}
+              style={{ color: item.progress > 0 ? 'var(--text-primary)' : 'var(--text-secondary)' }}
             >
               {item.progress > 0 ? `${Math.round(item.progress)}%` : '—'}
             </span>
           </div>
 
-          {/* Status indicator - only for objectives */}
+          {/* Status indicator - readable but quiet */}
           <div className="flex items-center justify-center px-1">
             {isObjective && status && (
               <span 
                 className={cn(TYPOGRAPHY.statusBadge, 'px-1.5 py-0.5 rounded whitespace-nowrap')}
-                style={{ backgroundColor: status.bg, color: status.color }}
+                style={{ backgroundColor: status.bg, color: status.color, opacity: 0.9 }}
               >
                 {status.label === 'On Track' ? '✓' : status.label === 'At Risk' ? '!' : status.label === 'Behind' ? '↓' : '○'}
               </span>
