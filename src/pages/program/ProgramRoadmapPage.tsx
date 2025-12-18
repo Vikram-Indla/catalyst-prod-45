@@ -17,7 +17,7 @@ import { useParams } from 'react-router-dom';
 import { ProgramPageLayout } from '@/components/program/ProgramPageLayout';
 import { Search, Home, Filter, Info, ChevronDown, Check, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { ProgramRoadmapFiltersDialog, ProgramFilters, DEFAULT_FILTERS } from '@/components/program/ProgramRoadmapFiltersDialog';
+import { ProgramRoadmapFiltersDialog, ProgramFilters, DEFAULT_FILTERS, getCurrentQuarterDates, getNextQuarterDates } from '@/components/program/ProgramRoadmapFiltersDialog';
 
 // ===== TYPES =====
 interface LinkedFeature {
@@ -375,23 +375,35 @@ export default function ProgramRoadmapPage() {
     return endDate < TODAY && program.progress < 100;
   };
   
-  // Helper to check if program is active in a period
-  const isProgramActiveInPeriod = (program: ProgramItem, period: string | null): boolean => {
-    if (!period) return true;
-    const start = parseDate(program.startDate);
-    const end = parseDate(program.endDate);
+  // Helper to check if program is active in a period using timeline overlap logic
+  // A program is active if: program.start_date <= period_end AND program.end_date >= period_start
+  const isProgramActiveInPeriod = (program: ProgramItem, filters: ProgramFilters): boolean => {
+    if (filters.activeInPeriod === 'any') return true;
     
-    if (period === 'This Quarter') {
-      const q4Start = new Date('2025-10-01');
-      const q4End = new Date('2025-12-31');
-      return start <= q4End && end >= q4Start;
+    const programStart = parseDate(program.startDate);
+    const programEnd = parseDate(program.endDate);
+    
+    let periodStart: Date;
+    let periodEnd: Date;
+    
+    if (filters.activeInPeriod === 'this-quarter') {
+      const quarter = getCurrentQuarterDates();
+      periodStart = quarter.start;
+      periodEnd = quarter.end;
+    } else if (filters.activeInPeriod === 'next-quarter') {
+      const quarter = getNextQuarterDates();
+      periodStart = quarter.start;
+      periodEnd = quarter.end;
+    } else if (filters.activeInPeriod === 'custom') {
+      if (!filters.customRangeStart || !filters.customRangeEnd) return true;
+      periodStart = filters.customRangeStart;
+      periodEnd = filters.customRangeEnd;
+    } else {
+      return true;
     }
-    if (period === 'Next Quarter') {
-      const q1Start = new Date('2026-01-01');
-      const q1End = new Date('2026-03-31');
-      return start <= q1End && end >= q1Start;
-    }
-    return true;
+    
+    // Timeline overlap logic: program overlaps period if program starts before period ends AND program ends after period starts
+    return programStart <= periodEnd && programEnd >= periodStart;
   };
   
   // Helper to check if program has open features only
@@ -407,7 +419,7 @@ export default function ProgramRoadmapPage() {
     if (filters.linkedProjects.length > 0) count += filters.linkedProjects.length;
     if (filters.status.length > 0) count += filters.status.length;
     if (filters.health.length > 0) count += filters.health.length;
-    if (filters.activeInPeriod) count += 1;
+    if (filters.activeInPeriod !== 'any') count += 1;
     if (filters.overdueOnly) count += 1;
     if (filters.hasDependencies !== null) count += 1;
     if (filters.blockedOrBlocking !== null) count += 1;
@@ -452,9 +464,9 @@ export default function ProgramRoadmapPage() {
       filtered = filtered.filter(p => filters.health.includes(p.health));
     }
     
-    // Active in period filter
-    if (filters.activeInPeriod) {
-      filtered = filtered.filter(p => isProgramActiveInPeriod(p, filters.activeInPeriod));
+    // Active in period filter (timeline overlap logic)
+    if (filters.activeInPeriod !== 'any') {
+      filtered = filtered.filter(p => isProgramActiveInPeriod(p, filters));
     }
     
     // Overdue filter
