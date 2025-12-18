@@ -104,10 +104,22 @@ export const TEXT_COLORS = {
   // ⚠️ KPI VALUES MUST use this — NEVER muted
   primary: 'text-foreground',
   
+  // Secondary-strong - labels, descriptors that must be readable
+  // Darker than muted, used for card labels, status text
+  secondaryStrong: 'text-[hsl(var(--text-secondary-strong))]',
+  
   // Secondary/muted content - supporting text, still clearly readable
   // Maps to --muted-foreground in both light and dark themes
   muted: 'text-muted-foreground',
 } as const;
+
+// ─────────────────────────────────────────────────
+// FORBIDDEN PATTERNS — Strategy Room only
+// ─────────────────────────────────────────────────
+// ❌ text-[10px] — minimum is 11px
+// ❌ text-foreground/50, /60, /70 — use tokens
+// ❌ opacity-50, opacity-60 on text containers
+// ❌ text-muted-foreground on titles/labels
 
 // ─────────────────────────────────────────────────
 // LOADING STATE RULES — LOCKED

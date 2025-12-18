@@ -179,7 +179,10 @@
   --secondary: 210 14% 97%;
   --secondary-foreground: 0 0% 15%;
   --muted: 210 14% 97%;
-  --muted-foreground: 215 14% 45%;
+  --muted-foreground: 215 16% 38%;
+  
+  /* Strategy Room Typography Tokens — LOCKED */
+  --text-secondary-strong: 215 16% 35%;
   --accent: 210 14% 97%;
   --accent-foreground: 0 0% 15%;
   --destructive: 0 63% 45%;
@@ -241,8 +244,9 @@
   
   /* Text */
   --text-primary: #24292F;
-  --text-secondary: #57606A;
-  --text-muted: #8B949E;
+  --text-secondary: #4A5568;
+  --text-secondary-strong: #3D4852;
+  --text-muted: #6B7785;
   --text-faint: #B1B8C0;
   --text-link: #5C7C5C;
   --text-link-hover: #4A6A4A;
@@ -378,7 +382,8 @@
   --nav-text: #A8B4C2;
   --text-primary: #E6EDF3;
   --text-secondary: #A8B4C2;
-  --text-muted: #768390;
+  --text-secondary-strong: #B8C4D2;
+  --text-muted: #8B96A4;
   --text-faint: #545D68;        /* Decorative only */
   --text-link: #6B8E6B;
   --text-link-hover: #7DA37D;
@@ -511,7 +516,8 @@
   --secondary: 215 22% 14%;
   --secondary-foreground: 210 25% 93%;
   --muted: 215 22% 14%;
-  --muted-foreground: 212 12% 52%;
+  --muted-foreground: 212 14% 58%;
+  --text-secondary-strong: 210 18% 72%;
   --accent: 215 20% 17%;
   --accent-foreground: 210 25% 93%;
   --destructive: 0 65% 67%;
