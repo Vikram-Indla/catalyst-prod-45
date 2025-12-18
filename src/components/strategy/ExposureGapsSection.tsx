@@ -1,6 +1,6 @@
 /**
- * ExposureGapsSection — Executive table-like exposure surface
- * Compact rows, clear labels, subtle styling
+ * ExposureGapsSection — Executive cockpit-style exposure surface
+ * Compact rows, micro-visuals, aligned cards
  */
 
 import { useNavigate } from 'react-router-dom';
@@ -14,7 +14,6 @@ import {
   Target, 
   Clock, 
   ChevronRight,
-  AlertCircle,
   CheckCircle2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -94,6 +93,7 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
 
   const highRisks = riskData?.high ?? 0;
   const overdueRisks = riskData?.overdue ?? 0;
+  const totalRisks = riskData?.total ?? 0;
 
   // Build "Needs Attention" list
   const attentionItems: AttentionItem[] = [];
@@ -131,33 +131,30 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
     });
   }
 
-  const hasExposure = highRisks > 0 || atRiskObjectives.length > 0 || alignmentGaps > 0 || overdueRisks > 0;
-
   if (isLoading) {
     return (
       <section className="rounded-lg border border-border bg-card overflow-hidden">
-        <div className="px-4 py-2.5 border-b border-border">
-          <div className="h-4 w-32 bg-muted/50 rounded animate-pulse" />
-          <div className="h-3 w-44 bg-muted/30 rounded animate-pulse mt-1" />
+        <div className="px-4 py-2 border-b border-border">
+          <div className="h-3.5 w-28 bg-muted/50 rounded animate-pulse" />
         </div>
-        <div className="p-4">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+        <div className="p-3">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
             {[1, 2, 3].map((col) => (
-              <div key={col} className="rounded-md border border-border bg-muted/20 overflow-hidden animate-pulse">
+              <div key={col} className="rounded-md border border-border bg-card overflow-hidden animate-pulse">
                 <div className="px-3 py-2 border-b border-border flex items-center gap-2">
-                  <div className="h-3.5 w-3.5 bg-muted/50 rounded" />
-                  <div className="h-3 w-24 bg-muted/50 rounded" />
+                  <div className="h-3 w-3 bg-muted/50 rounded" />
+                  <div className="h-2.5 w-20 bg-muted/40 rounded" />
                 </div>
                 <div className="p-3 space-y-2">
                   {[1, 2, 3].map((row) => (
-                    <div key={row} className="flex items-center justify-between py-0.5">
-                      <div className="h-2.5 w-20 bg-muted/40 rounded" />
-                      <div className="h-3 w-6 bg-muted/40 rounded" />
+                    <div key={row} className="flex items-center justify-between">
+                      <div className="h-2.5 w-16 bg-muted/30 rounded" />
+                      <div className="h-3 w-5 bg-muted/40 rounded" />
                     </div>
                   ))}
                 </div>
-                <div className="px-3 pb-3">
-                  <div className="h-7 w-full bg-muted/30 rounded" />
+                <div className="px-3 pb-2.5">
+                  <div className="h-6 w-full bg-muted/20 rounded" />
                 </div>
               </div>
             ))}
@@ -169,153 +166,171 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
 
   return (
     <section className="rounded-lg border border-border bg-card overflow-hidden">
-      {/* Section Header */}
-      <div className="px-4 py-2.5 border-b border-border flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          {hasExposure && <AlertCircle size={14} className="text-status-warning" />}
-          <div>
-            <h2 className="text-sm font-semibold text-foreground">Exposure & Gaps</h2>
-            <p className="text-[11px] text-muted-foreground">Where could strategy fail?</p>
-          </div>
-        </div>
-        {!hasExposure && (
-          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-status-success/10 text-status-success">
-            <CheckCircle2 size={10} />
-            No critical exposure
-          </div>
-        )}
+      {/* Section Header - compact */}
+      <div className="px-4 py-2 border-b border-border">
+        <h2 className="text-xs font-semibold text-foreground uppercase tracking-wide">Exposure & Gaps</h2>
       </div>
 
-      <div className="p-4">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+      <div className="p-3">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
           {/* Risk Exposure Column */}
-          <div className="rounded-md border border-border bg-muted/20 overflow-hidden">
-            <div className="px-3 py-2 border-b border-border flex items-center gap-2">
-              <Shield size={13} className="text-status-danger" />
-              <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                Risk Exposure
-              </span>
-            </div>
-            
-            <div className="p-3 space-y-1.5">
-              <TableRow label="Critical/High" value={highRisks} variant={highRisks > 0 ? 'danger' : 'muted'} />
-              <TableRow label="Medium" value={riskData?.medium ?? 0} variant={(riskData?.medium ?? 0) > 0 ? 'warning' : 'muted'} />
-              <TableRow label="Low" value={riskData?.low ?? 0} variant="muted" />
-              
-              {overdueRisks > 0 && (
-                <div className="pt-1.5 mt-1.5 border-t border-border">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5">
-                      <Clock size={11} className="text-status-danger" />
-                      <span className="text-[11px] text-muted-foreground">Overdue</span>
-                    </div>
-                    <span className="text-[12px] font-semibold tabular-nums text-status-danger">
-                      {overdueRisks}
-                    </span>
-                  </div>
-                </div>
-              )}
+          <CockpitCard
+            title="Risk Exposure"
+            icon={<Shield size={12} />}
+            iconColor="text-status-danger"
+            cta={{ label: 'View all risks', onClick: () => navigate('/enterprise/risks') }}
+          >
+            <div className="space-y-1">
+              <DataRow 
+                label="Critical/High" 
+                value={highRisks} 
+                total={totalRisks}
+                variant={highRisks > 0 ? 'danger' : 'muted'} 
+                showBar
+              />
+              <DataRow 
+                label="Medium" 
+                value={riskData?.medium ?? 0} 
+                total={totalRisks}
+                variant={(riskData?.medium ?? 0) > 0 ? 'warning' : 'muted'} 
+                showBar
+              />
+              <DataRow 
+                label="Low" 
+                value={riskData?.low ?? 0} 
+                total={totalRisks}
+                variant="muted" 
+                showBar
+              />
             </div>
 
-            <div className="px-3 pb-3">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-full h-7 text-[11px] text-muted-foreground hover:text-foreground"
-                onClick={() => navigate('/enterprise/risks')}
-              >
-                View all risks
-                <ChevronRight size={12} className="ml-1" />
-              </Button>
-            </div>
-          </div>
-
-          {/* Alignment Gaps Column */}
-          <div className="rounded-md border border-border bg-muted/20 overflow-hidden">
-            <div className="px-3 py-2 border-b border-border flex items-center gap-2">
-              <Target size={13} className="text-secondary-bronze" />
-              <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                Alignment Gaps
-              </span>
-            </div>
-            
-            <div className="p-3 space-y-1.5">
-              <TableRow label="Orphan Themes" value={0} variant="muted" />
-              <TableRow label="Unlinked Epics" value={misalignedEpics} variant={misalignedEpics > 0 ? 'bronze' : 'muted'} />
-              <TableRow label="Unlinked Features" value={misalignedFeatures} variant={misalignedFeatures > 0 ? 'bronze' : 'muted'} />
-              
-              <div className="pt-1.5 mt-1.5 border-t border-border">
+            {overdueRisks > 0 && (
+              <div className="pt-2 mt-2 border-t border-border">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-medium text-muted-foreground">Total gaps</span>
-                  <span className={cn(
-                    "text-sm font-bold tabular-nums",
-                    alignmentGaps > 0 ? "text-secondary-bronze" : "text-muted-foreground"
-                  )}>
-                    {alignmentGaps}
+                  <div className="flex items-center gap-1">
+                    <Clock size={10} className="text-status-danger" />
+                    <span className="text-[10px] text-muted-foreground">Overdue</span>
+                  </div>
+                  <span className="text-[11px] font-semibold tabular-nums text-status-danger">
+                    {overdueRisks}
                   </span>
                 </div>
               </div>
+            )}
+          </CockpitCard>
+
+          {/* Alignment Gaps Column */}
+          <CockpitCard
+            title="Alignment Gaps"
+            icon={<Target size={12} />}
+            iconColor="text-secondary-bronze"
+            cta={{ label: 'View backlog', onClick: () => navigate('/enterprise/backlog') }}
+          >
+            <div className="space-y-1">
+              <DataRow label="Orphan Themes" value={0} variant="muted" />
+              <DataRow 
+                label="Unlinked Epics" 
+                value={misalignedEpics} 
+                variant={misalignedEpics > 0 ? 'bronze' : 'muted'} 
+              />
+              <DataRow 
+                label="Unlinked Features" 
+                value={misalignedFeatures} 
+                variant={misalignedFeatures > 0 ? 'bronze' : 'muted'} 
+              />
             </div>
 
-            <div className="px-3 pb-3">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-full h-7 text-[11px] text-muted-foreground hover:text-foreground"
-                onClick={() => navigate('/enterprise/backlog')}
-              >
-                View strategic backlog
-                <ChevronRight size={12} className="ml-1" />
-              </Button>
+            <div className="pt-2 mt-2 border-t border-border">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-medium text-muted-foreground">Total gaps</span>
+                <span className={cn(
+                  "text-sm font-bold tabular-nums",
+                  alignmentGaps > 0 ? "text-secondary-bronze" : "text-muted-foreground"
+                )}>
+                  {alignmentGaps}
+                </span>
+              </div>
             </div>
-          </div>
+          </CockpitCard>
 
           {/* Needs Attention Column */}
-          <div className="rounded-md border border-border bg-muted/20 overflow-hidden">
-            <div className="px-3 py-2 border-b border-border flex items-center gap-2">
-              <AlertTriangle size={13} className="text-status-warning" />
-              <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                Needs Attention
-              </span>
-            </div>
-            
-            <div className="p-3">
-              {attentionItems.length === 0 ? (
-                <div className="py-4 text-center">
-                  <CheckCircle2 size={20} className="mx-auto mb-1.5 text-status-success" />
-                  <span className="text-[11px] text-muted-foreground">No items need immediate attention</span>
-                </div>
-              ) : (
-                <div className="space-y-1">
-                  {attentionItems.slice(0, 4).map((item) => (
-                    <AttentionRow key={item.id} item={item} onClick={() => navigate(item.link)} />
-                  ))}
-                  {attentionItems.length > 4 && (
-                    <div className="text-center pt-1.5">
-                      <span className="text-[10px] text-muted-foreground">
-                        +{attentionItems.length - 4} more
-                      </span>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
+          <CockpitCard
+            title="Needs Attention"
+            icon={<AlertTriangle size={12} />}
+            iconColor="text-status-warning"
+          >
+            {attentionItems.length === 0 ? (
+              <div className="py-3 text-center">
+                <CheckCircle2 size={16} className="mx-auto mb-1 text-status-success" />
+                <span className="text-[10px] text-muted-foreground">No items need attention</span>
+              </div>
+            ) : (
+              <div className="space-y-0.5">
+                {attentionItems.slice(0, 4).map((item) => (
+                  <AttentionRow key={item.id} item={item} onClick={() => navigate(item.link)} />
+                ))}
+                {attentionItems.length > 4 && (
+                  <div className="text-center pt-1">
+                    <span className="text-[9px] text-muted-foreground">
+                      +{attentionItems.length - 4} more
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+          </CockpitCard>
         </div>
       </div>
     </section>
   );
 }
 
-function TableRow({ 
-  label, 
-  value, 
-  variant = 'muted' 
-}: { 
-  label: string; 
-  value: number; 
+interface CockpitCardProps {
+  title: string;
+  icon: React.ReactNode;
+  iconColor: string;
+  children: React.ReactNode;
+  cta?: { label: string; onClick: () => void };
+}
+
+function CockpitCard({ title, icon, iconColor, children, cta }: CockpitCardProps) {
+  return (
+    <div className="rounded-md border border-border bg-card overflow-hidden flex flex-col">
+      <div className="px-3 py-1.5 border-b border-border flex items-center gap-1.5 bg-muted/30">
+        <span className={iconColor}>{icon}</span>
+        <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+          {title}
+        </span>
+      </div>
+      
+      <div className="p-2.5 flex-1">{children}</div>
+
+      {cta && (
+        <div className="px-2.5 pb-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full h-6 text-[10px] text-muted-foreground hover:text-foreground hover:bg-muted/50"
+            onClick={cta.onClick}
+          >
+            {cta.label}
+            <ChevronRight size={10} className="ml-1" />
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface DataRowProps {
+  label: string;
+  value: number;
+  total?: number;
   variant?: 'muted' | 'danger' | 'warning' | 'bronze';
-}) {
+  showBar?: boolean;
+}
+
+function DataRow({ label, value, total = 0, variant = 'muted', showBar }: DataRowProps) {
   const valueColors = {
     muted: 'text-muted-foreground',
     danger: 'text-status-danger',
@@ -323,10 +338,27 @@ function TableRow({
     bronze: 'text-secondary-bronze',
   };
 
+  const barColors = {
+    muted: 'bg-muted-foreground/30',
+    danger: 'bg-status-danger',
+    warning: 'bg-status-warning',
+    bronze: 'bg-secondary-bronze',
+  };
+
+  const barWidth = total > 0 ? Math.round((value / total) * 100) : 0;
+
   return (
-    <div className="flex items-center justify-between py-0.5">
-      <span className="text-[11px] text-muted-foreground">{label}</span>
-      <span className={cn("text-[12px] font-semibold tabular-nums", valueColors[variant])}>
+    <div className="flex items-center gap-2 py-0.5 group hover:bg-muted/30 rounded px-1 -mx-1 transition-colors">
+      <span className="text-[10px] text-muted-foreground flex-1">{label}</span>
+      {showBar && total > 0 && (
+        <div className="w-12 h-1 rounded-full bg-border overflow-hidden">
+          <div 
+            className={cn("h-full rounded-full transition-all", barColors[variant])}
+            style={{ width: `${barWidth}%` }}
+          />
+        </div>
+      )}
+      <span className={cn("text-[11px] font-semibold tabular-nums w-5 text-right", valueColors[variant])}>
         {value}
       </span>
     </div>
@@ -334,36 +366,26 @@ function TableRow({
 }
 
 function AttentionRow({ item, onClick }: { item: AttentionItem; onClick: () => void }) {
-  const severityStyles = {
-    critical: 'bg-status-danger/10 text-status-danger',
-    high: 'bg-status-warning/10 text-status-warning',
-    medium: 'bg-secondary-bronze/10 text-secondary-bronze',
+  const severityDots = {
+    critical: 'bg-status-danger',
+    high: 'bg-status-warning',
+    medium: 'bg-secondary-bronze',
   };
-
-  const typeIcons = {
-    objective: Target,
-    risk: Shield,
-    gap: AlertTriangle,
-  };
-
-  const Icon = typeIcons[item.type];
 
   return (
     <button
       onClick={onClick}
       className={cn(
-        "w-full px-2 py-1.5 rounded text-left flex items-center gap-2 transition-colors",
-        "hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        "w-full px-1.5 py-1 rounded text-left flex items-center gap-2 transition-colors",
+        "hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring group"
       )}
     >
-      <div className={cn("w-5 h-5 rounded flex-shrink-0 flex items-center justify-center", severityStyles[item.severity])}>
-        <Icon size={10} />
-      </div>
+      <div className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0", severityDots[item.severity])} />
       <div className="flex-1 min-w-0">
-        <div className="text-[11px] font-medium text-foreground truncate">{item.title}</div>
-        <div className="text-[10px] text-muted-foreground">{item.reason}</div>
+        <div className="text-[10px] font-medium text-foreground truncate leading-tight">{item.title}</div>
+        <div className="text-[9px] text-muted-foreground leading-tight">{item.reason}</div>
       </div>
-      <ChevronRight size={12} className="text-muted-foreground/50 flex-shrink-0" />
+      <ChevronRight size={10} className="text-muted-foreground/40 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
     </button>
   );
 }
