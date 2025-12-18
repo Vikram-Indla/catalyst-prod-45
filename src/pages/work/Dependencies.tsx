@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Search, Plus, Download, MoreHorizontal, AlertTriangle, CheckCircle2, Clock, Grid3x3, GitBranch, List } from 'lucide-react';
+import { Search, Plus, Download, MoreHorizontal, AlertTriangle, CheckCircle2, Clock, Grid3x3, GitBranch, List, Filter } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { DependencyDetailsDrawer } from '@/components/dependencies/DependencyDetailsDrawer';
 import { DependencyMatrix } from '@/components/dependencies/DependencyMatrix';
@@ -50,6 +50,22 @@ export default function DependenciesPage() {
 
   const activeProgramId = programId || defaultProgram?.id;
 
+  // Fetch current program name for scope label
+  const { data: currentProgram } = useQuery({
+    queryKey: ['program-details', activeProgramId],
+    queryFn: async () => {
+      if (!activeProgramId) return null;
+      const { data, error } = await supabase
+        .from('programs')
+        .select('id, name, key')
+        .eq('id', activeProgramId)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!activeProgramId,
+  });
+
   // Fetch program increments for filter
   const { data: programIncrements } = useQuery({
     queryKey: ['program-increments'],
@@ -63,16 +79,45 @@ export default function DependenciesPage() {
     },
   });
 
-  // Fetch dependencies with filters
+  // Fetch feature IDs belonging to this program (via epics)
+  const { data: programFeatureIds } = useQuery({
+    queryKey: ['program-feature-ids', activeProgramId],
+    queryFn: async () => {
+      if (!activeProgramId) return [];
+      
+      // Get all epics for this program
+      const { data: epics, error: epicsError } = await supabase
+        .from('epics')
+        .select('id')
+        .eq('program_id', activeProgramId);
+      
+      if (epicsError) throw epicsError;
+      if (!epics?.length) return [];
+      
+      const epicIds = epics.map(e => e.id);
+      
+      // Get all features linked to these epics
+      const { data: features, error: featuresError } = await supabase
+        .from('features')
+        .select('id')
+        .in('epic_id', epicIds);
+      
+      if (featuresError) throw featuresError;
+      return features?.map(f => f.id) || [];
+    },
+    enabled: !!activeProgramId,
+  });
+
+  // Fetch dependencies with filters - scoped to program if programId present
   const { data: dependencies, isLoading } = useQuery({
-    queryKey: ['dependencies-grid', piFilter, levelFilter, typeFilter, statusFilter, viewMode],
+    queryKey: ['dependencies-grid', activeProgramId, programFeatureIds, piFilter, levelFilter, typeFilter, statusFilter, viewMode],
     queryFn: async () => {
       let query = supabase
         .from('dependencies')
         .select(`
           *,
-          from_feature:features!dependencies_from_feature_id_fkey(id, name, display_id, team_id, teams(name)),
-          to_feature:features!dependencies_to_feature_id_fkey(id, name, display_id, team_id, teams(name)),
+          from_feature:features!dependencies_from_feature_id_fkey(id, name, display_id, team_id, epic_id, teams(name)),
+          to_feature:features!dependencies_to_feature_id_fkey(id, name, display_id, team_id, epic_id, teams(name)),
           needed_by_sprint:iterations!dependencies_needed_by_sprint_id_fkey(id, name, start_date),
           committed_by_sprint:iterations!dependencies_committed_by_sprint_id_fkey(id, name, start_date),
           requesting_team:teams!dependencies_requesting_team_id_fkey(id, name),
@@ -85,14 +130,26 @@ export default function DependenciesPage() {
       if (typeFilter && typeFilter !== 'all') query = query.eq('type', typeFilter as any);
       if (statusFilter && statusFilter !== 'all') query = query.eq('status', statusFilter as any);
 
-      // TODO: Implement viewMode filtering based on current user
-      // yourRequests: where requesting_team/program matches user's context
-      // toDo: where depends_on_team/program matches user's context AND status requires action
-
       const { data, error } = await query.order('rank_order', { ascending: true });
       if (error) throw error;
+      
+      // If we have a program context, filter client-side to include dependencies
+      // where either from_feature_id OR to_feature_id belongs to program
+      if (activeProgramId && programFeatureIds && programFeatureIds.length > 0) {
+        const featureIdSet = new Set(programFeatureIds);
+        return data?.filter(dep => 
+          featureIdSet.has(dep.from_feature_id) || featureIdSet.has(dep.to_feature_id)
+        ) || [];
+      }
+      
+      // If program has no features, return empty for program context
+      if (activeProgramId && (!programFeatureIds || programFeatureIds.length === 0)) {
+        return [];
+      }
+      
       return data;
     },
+    enabled: !activeProgramId || (!!programFeatureIds),
   });
 
   const filteredDependencies = dependencies?.filter(dep => {
@@ -172,8 +229,21 @@ export default function DependenciesPage() {
         <div className="h-full flex flex-col" style={{ padding: 'var(--s3) var(--s6)' }}>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between" style={{ gap: 'var(--s3)', marginBottom: 'var(--s6)' }}>
             <div className="min-w-0">
-              <h1 className="text-lg sm:text-xl lg:text-2xl font-semibold truncate">Dependencies</h1>
-              <p className="text-xs sm:text-sm text-muted-foreground">Manage cross-team and cross-program dependencies</p>
+              <div className="flex items-center gap-3">
+                <h1 className="text-lg sm:text-xl lg:text-2xl font-semibold truncate">Dependencies</h1>
+                {activeProgramId && (
+                  <Badge variant="outline" className="bg-brand-gold/10 text-brand-gold border-brand-gold/30 flex items-center gap-1.5 shrink-0">
+                    <Filter className="h-3 w-3" />
+                    Scoped to: {currentProgram?.name || 'Program'}
+                  </Badge>
+                )}
+              </div>
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                {activeProgramId 
+                  ? `Dependencies involving ${currentProgram?.name || 'this program'}'s work items`
+                  : 'Manage cross-team and cross-program dependencies'
+                }
+              </p>
             </div>
             <div className="flex flex-wrap items-center" style={{ gap: 'var(--s2)' }}>
               <div className="flex items-center gap-1 border rounded-lg p-1">
