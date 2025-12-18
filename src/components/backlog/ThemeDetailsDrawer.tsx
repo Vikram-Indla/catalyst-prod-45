@@ -66,6 +66,7 @@ import { UnifiedAuditHistoryTab } from '@/components/shared/UnifiedAuditHistoryT
 import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
 import { LinkObjectivePicker } from './pickers/LinkObjectivePicker';
 import { LinkEpicPicker } from './pickers/LinkEpicPicker';
+import { ProgressSparkline, generateMockProgressHistory } from './ProgressSparkline';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
@@ -189,20 +190,22 @@ function KPICard({
   value, 
   subValue, 
   icon: Icon,
-  overflow
+  overflow,
+  sparkline
 }: { 
   label: string; 
   value: string | number; 
   subValue?: string; 
   icon: React.ElementType;
   overflow?: boolean;
+  sparkline?: React.ReactNode;
 }) {
   return (
     <div 
-      className="flex-1 min-w-[120px] p-3 rounded-lg"
+      className="flex-1 min-w-[140px] p-3 rounded-lg"
       style={{ 
-        backgroundColor: 'var(--surface-subtle)',
-        border: '1px solid var(--border-subtle)',
+        backgroundColor: 'var(--surface-1)',
+        border: '1px solid var(--border-default)',
       }}
     >
       <div className="flex items-center gap-2 mb-1.5">
@@ -223,11 +226,14 @@ function KPICard({
           </TooltipProvider>
         )}
       </div>
-      <div className="text-[18px] font-semibold" style={{ color: 'var(--text-primary)' }}>
-        {value}
+      <div className="flex items-center justify-between gap-2">
+        <div className="text-[18px] font-semibold" style={{ color: 'var(--text-primary)' }}>
+          {value}
+        </div>
+        {sparkline}
       </div>
       {subValue && (
-        <div className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
+        <div className="text-[10px] mt-1" style={{ color: 'var(--text-muted)' }}>
           {subValue}
         </div>
       )}
@@ -866,6 +872,16 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                       label="Overall Progress" 
                       value={`${kpiMetrics.overallProgress}%`}
                       overflow={kpiMetrics.overallOverflow}
+                      sparkline={
+                        kpiMetrics.overallProgress > 0 ? (
+                          <ProgressSparkline 
+                            data={generateMockProgressHistory(kpiMetrics.overallProgress)}
+                            width={80}
+                            height={24}
+                            ariaLabel="Overall progress trend"
+                          />
+                        ) : undefined
+                      }
                     />
                     <KPICard 
                       icon={Target}
