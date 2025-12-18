@@ -1,25 +1,28 @@
 /**
  * =====================================================
- * Theme Details Drawer - Premium Enterprise Work Item Panel
+ * Theme Intelligence Panel - Enterprise CIO-Grade Drawer
  * =====================================================
  * 
- * CIO-grade detail drawer with clear header, well-spaced sections,
- * and premium empty states. Token-based colors throughout.
+ * Executive-grade Theme details drawer with READ/EDIT modes,
+ * KPI band, tabs layout, and enhanced link pickers.
+ * NO HEALTH CONCEPT - Removed completely.
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { 
   Trash2, Copy, X, Pencil, Link as LinkIcon, ChevronDown, 
   Maximize2, Minimize2, MoreVertical, Plus, ChevronRight,
-  Target, Layers, Clock, User, FileText, History
+  Target, Layers, Clock, FileText, History, BarChart3,
+  AlertTriangle, Search, ArrowUpDown, Eye
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
   Dialog,
   DialogContent,
@@ -53,13 +56,16 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  TooltipProvider,
+} from '@/components/ui/tooltip';
 import { RichTextEditor } from '@/components/business-requests/RichTextEditor';
 import { UnifiedAuditHistoryTab } from '@/components/shared/UnifiedAuditHistoryTab';
 import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
+import { LinkObjectivePicker } from './pickers/LinkObjectivePicker';
+import { LinkEpicPicker } from './pickers/LinkEpicPicker';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
@@ -98,6 +104,34 @@ const THEME_STATES: Record<string, { label: string; color: string; bg: string }>
   'cancelled': { label: 'Cancelled', color: 'var(--status-danger)', bg: 'var(--status-danger-bg)' },
 };
 
+// Epic states for breakdown
+const EPIC_STATES: Record<string, { label: string; color: string }> = {
+  'funnel': { label: 'Funnel', color: 'var(--text-muted)' },
+  'candidate': { label: 'Candidate', color: 'var(--status-info)' },
+  'analysis': { label: 'Analysis', color: 'var(--status-warning)' },
+  'backlog': { label: 'Backlog', color: 'var(--brand-primary)' },
+  'implementing': { label: 'Implementing', color: 'var(--status-success)' },
+  'done': { label: 'Done', color: 'var(--text-muted)' },
+};
+
+/**
+ * Normalize and clamp progress to 0-100%
+ * Handles both fraction (0-1) and percent (0-100) values
+ */
+function normalizeProgress(value: number | null | undefined): { percent: number; overflow: boolean } {
+  if (value === null || value === undefined) {
+    return { percent: 0, overflow: false };
+  }
+  
+  // If value is <= 1, treat as fraction (0.0 to 1.0)
+  // Otherwise, treat as already a percentage
+  const rawPercent = value <= 1 ? Math.round(value * 100) : Math.round(value);
+  const overflow = rawPercent > 100;
+  const percent = Math.max(0, Math.min(100, rawPercent));
+  
+  return { percent, overflow };
+}
+
 // Status chip component
 function StatusChip({ status }: { status: string }) {
   const state = THEME_STATES[status] || THEME_STATES['proposed'];
@@ -111,68 +145,92 @@ function StatusChip({ status }: { status: string }) {
   );
 }
 
-// Progress indicator for objectives
-function ProgressBar({ value }: { value: number }) {
-  const percentage = Math.round(value * 100);
-  const color = percentage >= 70 ? 'var(--status-success)' : percentage >= 40 ? 'var(--status-warning)' : 'var(--status-danger)';
+// Progress bar with normalization
+function ProgressBar({ value, showOverflowWarning = false }: { value: number | null; showOverflowWarning?: boolean }) {
+  const { percent, overflow } = normalizeProgress(value);
+  const color = percent >= 70 ? 'var(--status-success)' : percent >= 40 ? 'var(--status-warning)' : 'var(--status-danger)';
+  
   return (
-    <div className="flex items-center gap-2">
-      <div 
-        className="w-16 h-1 rounded-full overflow-hidden"
-        style={{ backgroundColor: 'var(--progress-track)' }}
-      >
+    <TooltipProvider>
+      <div className="flex items-center gap-2">
         <div 
-          className="h-full rounded-full transition-all"
-          style={{ width: `${percentage}%`, backgroundColor: color }}
-        />
+          className="w-16 h-1.5 rounded-full overflow-hidden"
+          style={{ backgroundColor: 'var(--progress-track)' }}
+        >
+          <div 
+            className="h-full rounded-full transition-all"
+            style={{ width: `${percent}%`, backgroundColor: color }}
+          />
+        </div>
+        <span 
+          className="text-[10px] font-mono tabular-nums"
+          style={{ color: 'var(--text-muted)' }}
+        >
+          {percent}%
+        </span>
+        {showOverflowWarning && overflow && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <AlertTriangle size={10} style={{ color: 'var(--status-warning)' }} />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="text-xs">Rollup exceeds 100%</p>
+            </TooltipContent>
+          </Tooltip>
+        )}
       </div>
-      <span 
-        className="text-[10px] font-mono tabular-nums"
-        style={{ color: 'var(--text-muted)' }}
-      >
-        {percentage}%
-      </span>
-    </div>
+    </TooltipProvider>
   );
 }
 
-// Section header component
-function SectionHeader({ 
-  icon: Icon, 
-  title, 
-  count, 
-  action 
+// KPI Card component
+function KPICard({ 
+  label, 
+  value, 
+  subValue, 
+  icon: Icon,
+  overflow
 }: { 
-  icon: React.ElementType; 
-  title: string; 
-  count?: number; 
-  action?: React.ReactNode;
+  label: string; 
+  value: string | number; 
+  subValue?: string; 
+  icon: React.ElementType;
+  overflow?: boolean;
 }) {
   return (
-    <div className="flex items-center justify-between pb-3" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-      <div className="flex items-center gap-2">
-        <div 
-          className="w-6 h-6 rounded flex items-center justify-center"
-          style={{ backgroundColor: 'var(--surface-subtle)' }}
-        >
-          <Icon size={12} style={{ color: 'var(--text-muted)' }} />
-        </div>
-        <span 
-          className="text-[11px] font-semibold uppercase tracking-wider"
-          style={{ color: 'var(--text-muted)' }}
-        >
-          {title}
+    <div 
+      className="flex-1 min-w-[120px] p-3 rounded-lg"
+      style={{ 
+        backgroundColor: 'var(--surface-subtle)',
+        border: '1px solid var(--border-subtle)',
+      }}
+    >
+      <div className="flex items-center gap-2 mb-1.5">
+        <Icon size={12} style={{ color: 'var(--text-muted)' }} />
+        <span className="text-[10px] font-medium uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
+          {label}
         </span>
-        {count !== undefined && count > 0 && (
-          <span 
-            className="text-[10px] font-semibold px-1.5 py-0.5 rounded"
-            style={{ backgroundColor: 'var(--brand-gold-bg)', color: 'var(--brand-gold)' }}
-          >
-            {count}
-          </span>
+        {overflow && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <AlertTriangle size={10} style={{ color: 'var(--status-warning)' }} />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-xs">Rollup exceeds 100%</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         )}
       </div>
-      {action}
+      <div className="text-[18px] font-semibold" style={{ color: 'var(--text-primary)' }}>
+        {value}
+      </div>
+      {subValue && (
+        <div className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
+          {subValue}
+        </div>
+      )}
     </div>
   );
 }
@@ -180,21 +238,51 @@ function SectionHeader({
 // Empty state component
 function EmptyState({ icon: Icon, message, hint }: { icon: React.ElementType; message: string; hint?: string }) {
   return (
-    <div className="py-6 flex flex-col items-center justify-center text-center">
+    <div className="py-8 flex flex-col items-center justify-center text-center">
       <div 
-        className="w-8 h-8 rounded-lg flex items-center justify-center mb-2"
+        className="w-10 h-10 rounded-lg flex items-center justify-center mb-3"
         style={{ backgroundColor: 'var(--surface-subtle)' }}
       >
-        <Icon size={14} style={{ color: 'var(--text-muted)' }} />
+        <Icon size={16} style={{ color: 'var(--text-muted)' }} />
       </div>
       <p className="text-[12px] font-medium" style={{ color: 'var(--text-secondary)' }}>{message}</p>
-      {hint && <p className="text-[11px] mt-0.5" style={{ color: 'var(--text-muted)' }}>{hint}</p>}
+      {hint && <p className="text-[11px] mt-1" style={{ color: 'var(--text-muted)' }}>{hint}</p>}
+    </div>
+  );
+}
+
+// Truncated description with expand
+function TruncatedDescription({ content }: { content: string }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  // Strip HTML for preview
+  const plainText = content?.replace(/<[^>]*>/g, '') || '';
+  const shouldTruncate = plainText.length > 150;
+  const displayText = shouldTruncate && !isExpanded ? plainText.slice(0, 150) + '...' : plainText;
+  
+  return (
+    <div>
+      <p className="text-[12px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+        {displayText}
+      </p>
+      {shouldTruncate && (
+        <button 
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="mt-1 text-[11px] font-medium"
+          style={{ color: 'var(--brand-primary)' }}
+        >
+          {isExpanded ? 'Show less' : 'Expand'}
+        </button>
+      )}
     </div>
   );
 }
 
 export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawerProps) {
   const queryClient = useQueryClient();
+  
+  // Mode state: READ (default) or EDIT
+  const [mode, setMode] = useState<'read' | 'edit'>('read');
   const [hasChanges, setHasChanges] = useState(false);
   const [formData, setFormData] = useState<Partial<Theme>>({});
   const [isExpanded, setIsExpanded] = useState(false);
@@ -203,12 +291,19 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
   const [showUnsavedChangesDialog, setShowUnsavedChangesDialog] = useState(false);
   const [showLinkObjectiveDialog, setShowLinkObjectiveDialog] = useState(false);
   const [showLinkEpicDialog, setShowLinkEpicDialog] = useState(false);
-  const [auditHistoryOpen, setAuditHistoryOpen] = useState(false);
   const [selectedEpicId, setSelectedEpicId] = useState<string | null>(null);
   const [selectedEpic, setSelectedEpic] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState('overview');
+  
+  // Search and sort state for alignment lists
+  const [objectiveSearch, setObjectiveSearch] = useState('');
+  const [epicSearch, setEpicSearch] = useState('');
+  const [objectiveSort, setObjectiveSort] = useState<'name' | 'progress'>('name');
+  const [epicSort, setEpicSort] = useState<'name' | 'state'>('name');
+  
   const nameInputRef = useRef<HTMLInputElement>(null);
 
-  // Reset form data when theme changes
+  // Reset form data and mode when theme changes
   useEffect(() => {
     if (theme) {
       setFormData({
@@ -219,6 +314,8 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
       });
       setEditedName(theme.name);
       setHasChanges(false);
+      setMode('read'); // Always open in read mode
+      setActiveTab('overview');
     }
   }, [theme]);
 
@@ -238,14 +335,14 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
     enabled: !!theme?.snapshot_id,
   });
 
-  // Fetch linked objectives
+  // Fetch linked objectives (NO HEALTH FIELD)
   const { data: objectives = [] } = useQuery({
     queryKey: ['theme-objectives', theme?.id],
     queryFn: async () => {
       if (!theme?.id) return [];
       const { data, error } = await supabase
         .from('objectives')
-        .select('id, name, status, overall_progress, health')
+        .select('id, name, status, overall_progress, owner_id, updated_at')
         .eq('theme_id', theme.id)
         .order('name');
       if (error) throw error;
@@ -261,7 +358,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
       if (!theme?.id) return [];
       const { data, error } = await supabase
         .from('epics')
-        .select('id, name, epic_key, state')
+        .select('id, name, epic_key, state, owner_id, updated_at')
         .eq('theme_id', theme.id)
         .order('name');
       if (error) throw error;
@@ -270,45 +367,94 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
     enabled: !!theme?.id,
   });
 
-  // Fetch available objectives for linking
-  const { data: availableObjectives = [] } = useQuery({
-    queryKey: ['available-objectives-for-theme', theme?.id],
-    queryFn: async () => {
-      if (!theme?.id) return [];
-      const { data, error } = await supabase
-        .from('objectives')
-        .select('id, name, status')
-        .neq('theme_id', theme.id)
-        .order('name');
-      if (error) throw error;
-      const { data: unlinkedData } = await supabase
-        .from('objectives')
-        .select('id, name, status')
-        .is('theme_id', null)
-        .order('name');
-      const combined = [...(data || []), ...(unlinkedData || [])];
-      const unique = combined.filter((item, index, self) => 
-        index === self.findIndex((t) => t.id === item.id)
-      );
-      return unique;
-    },
-    enabled: showLinkObjectiveDialog && !!theme?.id,
-  });
+  // Calculate KPI metrics
+  const kpiMetrics = useMemo(() => {
+    // Calculate average progress across objectives
+    const objectivesWithProgress = objectives.filter(o => o.overall_progress !== null);
+    const avgObjectiveProgress = objectivesWithProgress.length > 0
+      ? objectivesWithProgress.reduce((sum, o) => {
+          const { percent } = normalizeProgress(o.overall_progress);
+          return sum + percent;
+        }, 0) / objectivesWithProgress.length
+      : 0;
+    
+    // Check if any objective has overflow
+    const hasOverflow = objectives.some(o => {
+      const { overflow } = normalizeProgress(o.overall_progress);
+      return overflow;
+    });
+    
+    // Overall progress - use avg of objectives if available
+    const overallProgress = normalizeProgress(avgObjectiveProgress / 100);
+    
+    // Epic state breakdown
+    const epicStateBreakdown = epics.reduce((acc, epic) => {
+      const state = epic.state || 'funnel';
+      acc[state] = (acc[state] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    
+    // Count gaps (themes without objectives or epics)
+    const gaps = (objectives.length === 0 ? 1 : 0) + (epics.length === 0 ? 1 : 0);
+    
+    return {
+      overallProgress: overallProgress.percent,
+      overallOverflow: hasOverflow,
+      objectiveCount: objectives.length,
+      avgObjectiveProgress: Math.round(avgObjectiveProgress),
+      epicCount: epics.length,
+      epicStateBreakdown,
+      gaps,
+    };
+  }, [objectives, epics]);
 
-  // Fetch available epics for linking
-  const { data: availableEpics = [] } = useQuery({
-    queryKey: ['available-epics-for-theme', theme?.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('epics')
-        .select('id, name, epic_key')
-        .is('theme_id', null)
-        .order('name');
-      if (error) throw error;
-      return data || [];
-    },
-    enabled: showLinkEpicDialog,
-  });
+  // Filter and sort objectives
+  const filteredObjectives = useMemo(() => {
+    let result = [...objectives];
+    
+    if (objectiveSearch) {
+      const search = objectiveSearch.toLowerCase();
+      result = result.filter(o => o.name?.toLowerCase().includes(search));
+    }
+    
+    if (objectiveSort === 'progress') {
+      result.sort((a, b) => {
+        const { percent: pA } = normalizeProgress(a.overall_progress);
+        const { percent: pB } = normalizeProgress(b.overall_progress);
+        return pB - pA;
+      });
+    } else {
+      result.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    }
+    
+    return result;
+  }, [objectives, objectiveSearch, objectiveSort]);
+
+  // Filter and sort epics
+  const filteredEpics = useMemo(() => {
+    let result = [...epics];
+    
+    if (epicSearch) {
+      const search = epicSearch.toLowerCase();
+      result = result.filter(e => 
+        e.name?.toLowerCase().includes(search) || 
+        e.epic_key?.toLowerCase().includes(search)
+      );
+    }
+    
+    if (epicSort === 'state') {
+      const stateOrder = ['implementing', 'backlog', 'analysis', 'candidate', 'funnel', 'done'];
+      result.sort((a, b) => {
+        const aIdx = stateOrder.indexOf(a.state || 'funnel');
+        const bIdx = stateOrder.indexOf(b.state || 'funnel');
+        return aIdx - bIdx;
+      });
+    } else {
+      result.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    }
+    
+    return result;
+  }, [epics, epicSearch, epicSort]);
 
   // Mutations
   const saveMutation = useMutation({
@@ -332,6 +478,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
       queryClient.invalidateQueries({ queryKey: ['themes'] });
       toast.success('Theme saved');
       setHasChanges(false);
+      setMode('read');
     },
     onError: () => {
       toast.error('Failed to save theme');
@@ -391,43 +538,11 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
     },
   });
 
-  const linkObjectiveMutation = useMutation({
-    mutationFn: async (objectiveId: string) => {
-      const { error } = await supabase
-        .from('objectives')
-        .update({ theme_id: theme?.id })
-        .eq('id', objectiveId);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['theme-objectives', theme?.id] });
-      queryClient.invalidateQueries({ queryKey: ['available-objectives-for-theme'] });
-      toast.success('Objective linked');
-      setShowLinkObjectiveDialog(false);
-    },
-  });
-
-  const linkEpicMutation = useMutation({
-    mutationFn: async (epicId: string) => {
-      const { error } = await supabase
-        .from('epics')
-        .update({ theme_id: theme?.id })
-        .eq('id', epicId);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['theme-epics', theme?.id] });
-      queryClient.invalidateQueries({ queryKey: ['available-epics-for-theme'] });
-      toast.success('Epic linked');
-      setShowLinkEpicDialog(false);
-    },
-  });
-
   if (!theme) return null;
 
   const drawerWidthClass = isExpanded
-    ? 'w-screen sm:w-[70vw] sm:max-w-[1120px]'
-    : 'w-screen sm:w-[65vw] sm:max-w-[980px]';
+    ? 'w-screen sm:w-[75vw] sm:max-w-[1200px]'
+    : 'w-screen sm:w-[65vw] sm:max-w-[900px]';
 
   const handleCopyLink = () => {
     const url = `${window.location.origin}/backlog/themes/${theme.id}`;
@@ -470,6 +585,25 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
     saveMutation.mutate(formData, { onSuccess: () => onClose() });
   };
 
+  const handleCancel = () => {
+    if (hasChanges) {
+      setShowUnsavedChangesDialog(true);
+    } else {
+      setMode('read');
+    }
+  };
+
+  const handleDiscard = () => {
+    setFormData({
+      name: theme.name,
+      description: theme.description,
+      status: theme.status,
+      snapshot_id: theme.snapshot_id,
+    });
+    setHasChanges(false);
+    setMode('read');
+  };
+
   const handleFieldChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     setHasChanges(true);
@@ -501,8 +635,8 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
             >
               {/* Left: ID, Title, Meta */}
               <div className="flex-1 min-w-0">
-                {/* ID + Link */}
-                <div className="flex items-center gap-2 mb-1.5">
+                {/* ID + Status + Snapshot Lens */}
+                <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                   <span 
                     className="text-[11px] font-semibold px-1.5 py-0.5 rounded"
                     style={{ backgroundColor: 'var(--secondary-green-bg)', color: 'var(--secondary-green)' }}
@@ -520,6 +654,21 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                     <LinkIcon size={12} />
                   </button>
                   <StatusChip status={formData.status || 'proposed'} />
+                  
+                  {/* Snapshot lens - shown once */}
+                  {snapshot && (
+                    <span 
+                      className="text-[10px] px-2 py-0.5 rounded-full"
+                      style={{ 
+                        backgroundColor: 'var(--surface-subtle)',
+                        border: '1px solid var(--border-subtle)',
+                        color: 'var(--text-muted)'
+                      }}
+                    >
+                      <Eye size={10} className="inline mr-1" style={{ marginTop: -1 }} />
+                      Viewing under: {snapshot.name}
+                    </span>
+                  )}
                 </div>
 
                 {/* Editable title */}
@@ -546,14 +695,16 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                       >
                         {formData.name || theme.name}
                       </SheetTitle>
-                      <button
-                        onClick={handleStartEditName}
-                        className="opacity-0 group-hover:opacity-100 p-1 rounded transition-all"
-                        style={{ color: 'var(--text-muted)' }}
-                        title="Rename"
-                      >
-                        <Pencil size={12} />
-                      </button>
+                      {mode === 'edit' && (
+                        <button
+                          onClick={handleStartEditName}
+                          className="opacity-0 group-hover:opacity-100 p-1 rounded transition-all"
+                          style={{ color: 'var(--text-muted)' }}
+                          title="Rename"
+                        >
+                          <Pencil size={12} />
+                        </button>
+                      )}
                     </>
                   )}
                 </div>
@@ -564,37 +715,58 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                     <Clock size={10} />
                     <span>Updated {formatDistanceToNow(new Date(lastUpdated), { addSuffix: true })}</span>
                   </div>
-                  {snapshot && (
-                    <div className="flex items-center gap-1">
-                      <Target size={10} />
-                      <span>{snapshot.name}</span>
-                    </div>
-                  )}
                 </div>
               </div>
 
               {/* Right: Actions */}
               <div className="flex items-center gap-1.5 shrink-0">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
+                {mode === 'read' ? (
+                  // READ MODE: Edit button
+                  <Button
+                    size="sm"
+                    className="h-7 px-3 text-[12px] font-medium"
+                    style={{ 
+                      backgroundColor: 'var(--brand-primary)', 
+                      color: 'white',
+                    }}
+                    onClick={() => setMode('edit')}
+                  >
+                    <Pencil size={12} className="mr-1.5" />
+                    Edit
+                  </Button>
+                ) : (
+                  // EDIT MODE: Save dropdown + Cancel
+                  <>
                     <Button
                       size="sm"
-                      className="h-7 px-3 text-[12px] font-medium"
-                      style={{ 
-                        backgroundColor: 'var(--brand-primary)', 
-                        color: 'white',
-                      }}
-                      disabled={saveMutation.isPending}
+                      variant="outline"
+                      className="h-7 px-3 text-[12px]"
+                      onClick={handleCancel}
                     >
-                      {saveMutation.isPending ? 'Saving...' : 'Save'}
-                      <ChevronDown size={12} className="ml-1" />
+                      Cancel
                     </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="z-[400]">
-                    <DropdownMenuItem onSelect={handleSave}>Save</DropdownMenuItem>
-                    <DropdownMenuItem onSelect={handleSaveAndClose}>Save & Close</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          size="sm"
+                          className="h-7 px-3 text-[12px] font-medium"
+                          style={{ 
+                            backgroundColor: 'var(--brand-primary)', 
+                            color: 'white',
+                          }}
+                          disabled={saveMutation.isPending}
+                        >
+                          {saveMutation.isPending ? 'Saving...' : 'Save'}
+                          <ChevronDown size={12} className="ml-1" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="z-[400]">
+                        <DropdownMenuItem onSelect={handleSave}>Save</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={handleSaveAndClose}>Save & Close</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </>
+                )}
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -644,404 +816,436 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
             <SheetDescription className="sr-only">Theme details panel</SheetDescription>
           </SheetHeader>
 
-          {/* Scrollable Content */}
-          <div className="flex-1 overflow-y-auto min-h-0">
-            <div className="p-4 md:p-5 space-y-4">
-              
-              {/* SECTION 1: Strategic Context */}
-              <section 
-                className="rounded-lg p-4"
-                style={{ 
-                  backgroundColor: 'var(--surface-bg)',
-                  border: '1px solid var(--border-default)',
-                }}
-              >
-                <SectionHeader icon={FileText} title="Strategic Context" />
+          {/* Tabs Navigation */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
+            <div 
+              className="px-4 md:px-5 shrink-0"
+              style={{ borderBottom: '1px solid var(--border-subtle)' }}
+            >
+              <TabsList className="h-10 bg-transparent p-0 gap-4">
+                <TabsTrigger 
+                  value="overview" 
+                  className="h-10 px-0 bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none rounded-none border-b-2 border-transparent data-[state=active]:border-[var(--brand-primary)] text-[12px] font-medium"
+                  style={{ color: activeTab === 'overview' ? 'var(--brand-primary)' : 'var(--text-muted)' }}
+                >
+                  Overview
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="alignment" 
+                  className="h-10 px-0 bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none rounded-none border-b-2 border-transparent data-[state=active]:border-[var(--brand-primary)] text-[12px] font-medium"
+                  style={{ color: activeTab === 'alignment' ? 'var(--brand-primary)' : 'var(--text-muted)' }}
+                >
+                  Alignment
+                  <span 
+                    className="ml-1.5 text-[10px] px-1.5 py-0.5 rounded"
+                    style={{ backgroundColor: 'var(--brand-gold-bg)', color: 'var(--brand-gold)' }}
+                  >
+                    {objectives.length + epics.length}
+                  </span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="activity" 
+                  className="h-10 px-0 bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none rounded-none border-b-2 border-transparent data-[state=active]:border-[var(--brand-primary)] text-[12px] font-medium"
+                  style={{ color: activeTab === 'activity' ? 'var(--brand-primary)' : 'var(--text-muted)' }}
+                >
+                  Activity
+                </TabsTrigger>
+              </TabsList>
+            </div>
+
+            {/* Tab Content */}
+            <ScrollArea className="flex-1">
+              <div className="p-4 md:p-5">
                 
-                <div className="pt-4 space-y-4">
-                  <div className="grid grid-cols-2 gap-3">
-                    {/* Snapshot (read-only) */}
-                    <div className="space-y-1.5">
-                      <Label className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
-                        Snapshot
-                      </Label>
-                      <div 
-                        className="h-8 px-3 flex items-center rounded-md text-[12px]"
-                        style={{ 
-                          backgroundColor: 'var(--surface-subtle)', 
-                          border: '1px solid var(--border-subtle)',
-                          color: 'var(--text-secondary)'
-                        }}
-                      >
-                        {snapshot?.name || 'No snapshot assigned'}
-                      </div>
-                    </div>
-                    
-                    {/* State */}
-                    <div className="space-y-1.5">
-                      <Label className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
-                        State
-                      </Label>
-                      <Select 
-                        value={formData.status || 'proposed'} 
-                        onValueChange={(v) => handleFieldChange('status', v)}
-                      >
-                        <SelectTrigger 
-                          className="h-8 text-[12px]"
-                          style={{ 
-                            backgroundColor: 'var(--surface-bg)', 
-                            borderColor: 'var(--border-default)',
-                            color: 'var(--text-primary)'
-                          }}
-                        >
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="z-[400]">
-                          {Object.entries(THEME_STATES).map(([value, { label }]) => (
-                            <SelectItem key={value} value={value}>{label}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                {/* OVERVIEW TAB */}
+                <TabsContent value="overview" className="mt-0 space-y-4">
+                  {/* KPI Band */}
+                  <div className="flex flex-wrap gap-3">
+                    <KPICard 
+                      icon={BarChart3}
+                      label="Overall Progress" 
+                      value={`${kpiMetrics.overallProgress}%`}
+                      overflow={kpiMetrics.overallOverflow}
+                    />
+                    <KPICard 
+                      icon={Target}
+                      label="Objectives" 
+                      value={kpiMetrics.objectiveCount}
+                      subValue={kpiMetrics.objectiveCount > 0 ? `Avg: ${kpiMetrics.avgObjectiveProgress}%` : undefined}
+                    />
+                    <KPICard 
+                      icon={Layers}
+                      label="Epics" 
+                      value={kpiMetrics.epicCount}
+                      subValue={kpiMetrics.epicCount > 0 
+                        ? Object.entries(kpiMetrics.epicStateBreakdown)
+                            .filter(([_, count]) => count > 0)
+                            .slice(0, 2)
+                            .map(([state, count]) => `${count} ${EPIC_STATES[state]?.label || state}`)
+                            .join(', ')
+                        : undefined
+                      }
+                    />
+                    {kpiMetrics.gaps > 0 && (
+                      <KPICard 
+                        icon={AlertTriangle}
+                        label="Gaps" 
+                        value={kpiMetrics.gaps}
+                        subValue="Missing links"
+                      />
+                    )}
                   </div>
 
-                  {/* Description */}
-                  <div className="space-y-1.5">
-                    <Label className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
-                      Description
-                    </Label>
-                    <RichTextEditor
-                      value={formData.description || ''}
-                      onChange={(value) => handleFieldChange('description', value)}
-                      placeholder="Describe the strategic intent..."
-                    />
-                  </div>
-                </div>
-              </section>
-
-              {/* SECTION 2: Linked Objectives */}
-              <section 
-                className="rounded-lg p-4"
-                style={{ 
-                  backgroundColor: 'var(--surface-bg)',
-                  border: '1px solid var(--border-default)',
-                }}
-              >
-                <SectionHeader 
-                  icon={Target} 
-                  title="Linked Objectives" 
-                  count={objectives.length}
-                  action={
-                    <Button 
-                      size="sm" 
-                      variant="ghost" 
-                      className="h-6 text-[10px] gap-1"
-                      style={{ color: 'var(--text-muted)' }}
-                      onClick={() => setShowLinkObjectiveDialog(true)}
-                    >
-                      <Plus size={10} />
-                      Link
-                    </Button>
-                  }
-                />
-                
-                <div className="pt-3">
-                  {objectives.length === 0 ? (
-                    <EmptyState 
-                      icon={Target} 
-                      message="No objectives linked" 
-                      hint="Link objectives to track strategic alignment"
-                    />
-                  ) : (
-                    <div className="space-y-1">
-                      {objectives.map((obj) => (
-                        <div 
-                          key={obj.id} 
-                          className="flex items-center justify-between gap-3 py-2 px-2 rounded-md transition-colors cursor-pointer"
-                          style={{ backgroundColor: 'transparent' }}
-                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--surface-hover)'}
-                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                        >
-                          <div className="flex items-center gap-2 min-w-0">
-                            <span 
-                              className="text-[9px] font-semibold px-1.5 py-0.5 rounded"
-                              style={{ backgroundColor: 'var(--brand-gold-bg)', color: 'var(--brand-gold)' }}
-                            >
-                              OBJ
-                            </span>
-                            <span 
-                              className="text-[12px] font-medium truncate"
-                              style={{ color: 'var(--text-primary)' }}
-                            >
-                              {obj.name}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2 shrink-0">
-                            {obj.overall_progress !== null && (
-                              <ProgressBar value={obj.overall_progress || 0} />
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </section>
-
-              {/* SECTION 3: Aligned Epics */}
-              <section 
-                className="rounded-lg p-4"
-                style={{ 
-                  backgroundColor: 'var(--surface-bg)',
-                  border: '1px solid var(--border-default)',
-                }}
-              >
-                <SectionHeader 
-                  icon={Layers} 
-                  title="Aligned Epics" 
-                  count={epics.length}
-                  action={
-                    <Button 
-                      size="sm" 
-                      variant="ghost" 
-                      className="h-6 text-[10px] gap-1"
-                      style={{ color: 'var(--text-muted)' }}
-                      onClick={() => setShowLinkEpicDialog(true)}
-                    >
-                      <Plus size={10} />
-                      Link
-                    </Button>
-                  }
-                />
-                
-                <div className="pt-3">
-                  {epics.length === 0 ? (
-                    <EmptyState 
-                      icon={Layers} 
-                      message="No epics aligned" 
-                      hint="Link epics to show delivery alignment"
-                    />
-                  ) : (
-                    <div className="space-y-1">
-                      {epics.map((epic) => (
-                        <div 
-                          key={epic.id} 
-                          className="flex items-center justify-between gap-3 py-2 px-2 rounded-md transition-colors cursor-pointer"
-                          style={{ backgroundColor: 'transparent' }}
-                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--surface-hover)'}
-                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                          onClick={() => {
-                            setSelectedEpic(epic);
-                            setSelectedEpicId(epic.id);
-                          }}
-                        >
-                          <div className="flex items-center gap-2 min-w-0">
-                            <span 
-                              className="text-[9px] font-mono"
-                              style={{ color: 'var(--secondary-bronze)' }}
-                            >
-                              {epic.epic_key || 'E-???'}
-                            </span>
-                            <span 
-                              className="text-[12px] font-medium truncate"
-                              style={{ color: 'var(--text-primary)' }}
-                            >
-                              {epic.name}
-                            </span>
-                          </div>
-                          {epic.state && (
-                            <StatusChip status={epic.state} />
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </section>
-
-              {/* SECTION 4: Audit History (Collapsible) */}
-              <Collapsible open={auditHistoryOpen} onOpenChange={setAuditHistoryOpen}>
-                <CollapsibleTrigger asChild>
-                  <button 
-                    className="w-full flex items-center justify-between p-4 rounded-lg transition-colors"
+                  {/* Summary / Description */}
+                  <section 
+                    className="rounded-lg p-4"
                     style={{ 
                       backgroundColor: 'var(--surface-bg)',
                       border: '1px solid var(--border-default)',
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--surface-hover)'}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--surface-bg)'}
                   >
-                    <div className="flex items-center gap-2">
-                      <div 
-                        className="w-6 h-6 rounded flex items-center justify-center"
-                        style={{ backgroundColor: 'var(--surface-subtle)' }}
-                      >
-                        <History size={12} style={{ color: 'var(--text-muted)' }} />
+                    <div className="flex items-center gap-2 mb-3">
+                      <FileText size={14} style={{ color: 'var(--text-muted)' }} />
+                      <span className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
+                        Description
+                      </span>
+                    </div>
+                    
+                    {mode === 'read' ? (
+                      formData.description ? (
+                        <TruncatedDescription content={formData.description} />
+                      ) : (
+                        <p className="text-[12px]" style={{ color: 'var(--text-muted)' }}>
+                          No description provided
+                        </p>
+                      )
+                    ) : (
+                      <div className="space-y-3">
+                        <div className="space-y-1.5">
+                          <Label className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
+                            State
+                          </Label>
+                          <Select 
+                            value={formData.status || 'proposed'} 
+                            onValueChange={(v) => handleFieldChange('status', v)}
+                          >
+                            <SelectTrigger 
+                              className="h-8 text-[12px]"
+                              style={{ 
+                                backgroundColor: 'var(--surface-bg)', 
+                                borderColor: 'var(--border-default)',
+                                color: 'var(--text-primary)'
+                              }}
+                            >
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="z-[400]">
+                              {Object.entries(THEME_STATES).map(([value, { label }]) => (
+                                <SelectItem key={value} value={value}>{label}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
+                            Description
+                          </Label>
+                          <RichTextEditor
+                            value={formData.description || ''}
+                            onChange={(value) => handleFieldChange('description', value)}
+                            placeholder="Describe the strategic intent..."
+                          />
+                        </div>
                       </div>
-                      <span 
-                        className="text-[11px] font-semibold uppercase tracking-wider"
+                    )}
+                  </section>
+                </TabsContent>
+
+                {/* ALIGNMENT TAB */}
+                <TabsContent value="alignment" className="mt-0 space-y-4">
+                  {/* Linked Objectives */}
+                  <section 
+                    className="rounded-lg p-4"
+                    style={{ 
+                      backgroundColor: 'var(--surface-bg)',
+                      border: '1px solid var(--border-default)',
+                    }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <Target size={14} style={{ color: 'var(--text-muted)' }} />
+                        <span className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
+                          Linked Objectives
+                        </span>
+                        {objectives.length > 0 && (
+                          <span 
+                            className="text-[10px] font-semibold px-1.5 py-0.5 rounded"
+                            style={{ backgroundColor: 'var(--brand-gold-bg)', color: 'var(--brand-gold)' }}
+                          >
+                            {objectives.length}
+                          </span>
+                        )}
+                      </div>
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        className="h-6 text-[10px] gap-1"
                         style={{ color: 'var(--text-muted)' }}
+                        onClick={() => setShowLinkObjectiveDialog(true)}
                       >
+                        <Plus size={10} />
+                        Link
+                      </Button>
+                    </div>
+                    
+                    {objectives.length > 0 && (
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="relative flex-1">
+                          <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-muted)' }} />
+                          <Input
+                            placeholder="Search objectives..."
+                            value={objectiveSearch}
+                            onChange={(e) => setObjectiveSearch(e.target.value)}
+                            className="h-7 text-[11px] pl-7"
+                            style={{ backgroundColor: 'var(--surface-subtle)', borderColor: 'var(--border-subtle)' }}
+                          />
+                        </div>
+                        <Select value={objectiveSort} onValueChange={(v) => setObjectiveSort(v as 'name' | 'progress')}>
+                          <SelectTrigger className="h-7 w-[100px] text-[10px]" style={{ backgroundColor: 'var(--surface-subtle)', borderColor: 'var(--border-subtle)' }}>
+                            <ArrowUpDown size={10} className="mr-1" />
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="z-[400]">
+                            <SelectItem value="name">Name</SelectItem>
+                            <SelectItem value="progress">Progress</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                    
+                    <div>
+                      {objectives.length === 0 ? (
+                        <EmptyState 
+                          icon={Target} 
+                          message="No objectives linked" 
+                          hint="Link objectives to track strategic alignment"
+                        />
+                      ) : filteredObjectives.length === 0 ? (
+                        <EmptyState 
+                          icon={Search} 
+                          message="No matching objectives" 
+                        />
+                      ) : (
+                        <div className="space-y-1">
+                          {filteredObjectives.map((obj) => (
+                            <div 
+                              key={obj.id} 
+                              className="flex items-center justify-between gap-3 py-2.5 px-3 rounded-md transition-colors cursor-pointer"
+                              style={{ backgroundColor: 'transparent' }}
+                              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--surface-hover)'}
+                              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                            >
+                              <div className="flex items-center gap-2 min-w-0 flex-1">
+                                <span 
+                                  className="text-[9px] font-semibold px-1.5 py-0.5 rounded shrink-0"
+                                  style={{ backgroundColor: 'var(--brand-gold-bg)', color: 'var(--brand-gold)' }}
+                                >
+                                  OBJ
+                                </span>
+                                <span 
+                                  className="text-[12px] font-medium truncate"
+                                  style={{ color: 'var(--text-primary)' }}
+                                >
+                                  {obj.name}
+                                </span>
+                                {obj.status && (
+                                  <span 
+                                    className="text-[9px] px-1.5 py-0.5 rounded shrink-0"
+                                    style={{ 
+                                      backgroundColor: 'var(--surface-subtle)', 
+                                      color: 'var(--text-muted)'
+                                    }}
+                                  >
+                                    {obj.status.replace('_', ' ')}
+                                  </span>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-2 shrink-0">
+                                <ProgressBar value={obj.overall_progress} showOverflowWarning />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </section>
+
+                  {/* Aligned Epics */}
+                  <section 
+                    className="rounded-lg p-4"
+                    style={{ 
+                      backgroundColor: 'var(--surface-bg)',
+                      border: '1px solid var(--border-default)',
+                    }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <Layers size={14} style={{ color: 'var(--text-muted)' }} />
+                        <span className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
+                          Aligned Epics
+                        </span>
+                        {epics.length > 0 && (
+                          <span 
+                            className="text-[10px] font-semibold px-1.5 py-0.5 rounded"
+                            style={{ backgroundColor: 'var(--secondary-bronze-bg)', color: 'var(--secondary-bronze)' }}
+                          >
+                            {epics.length}
+                          </span>
+                        )}
+                      </div>
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        className="h-6 text-[10px] gap-1"
+                        style={{ color: 'var(--text-muted)' }}
+                        onClick={() => setShowLinkEpicDialog(true)}
+                      >
+                        <Plus size={10} />
+                        Link
+                      </Button>
+                    </div>
+                    
+                    {epics.length > 0 && (
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="relative flex-1">
+                          <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-muted)' }} />
+                          <Input
+                            placeholder="Search epics..."
+                            value={epicSearch}
+                            onChange={(e) => setEpicSearch(e.target.value)}
+                            className="h-7 text-[11px] pl-7"
+                            style={{ backgroundColor: 'var(--surface-subtle)', borderColor: 'var(--border-subtle)' }}
+                          />
+                        </div>
+                        <Select value={epicSort} onValueChange={(v) => setEpicSort(v as 'name' | 'state')}>
+                          <SelectTrigger className="h-7 w-[100px] text-[10px]" style={{ backgroundColor: 'var(--surface-subtle)', borderColor: 'var(--border-subtle)' }}>
+                            <ArrowUpDown size={10} className="mr-1" />
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="z-[400]">
+                            <SelectItem value="name">Name</SelectItem>
+                            <SelectItem value="state">State</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                    
+                    <div>
+                      {epics.length === 0 ? (
+                        <EmptyState 
+                          icon={Layers} 
+                          message="No epics aligned" 
+                          hint="Link epics to show delivery alignment"
+                        />
+                      ) : filteredEpics.length === 0 ? (
+                        <EmptyState 
+                          icon={Search} 
+                          message="No matching epics" 
+                        />
+                      ) : (
+                        <div className="space-y-1">
+                          {filteredEpics.map((epic) => (
+                            <div 
+                              key={epic.id} 
+                              className="flex items-center justify-between gap-3 py-2.5 px-3 rounded-md transition-colors cursor-pointer"
+                              style={{ backgroundColor: 'transparent' }}
+                              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--surface-hover)'}
+                              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                              onClick={() => {
+                                setSelectedEpic(epic);
+                                setSelectedEpicId(epic.id);
+                              }}
+                            >
+                              <div className="flex items-center gap-2 min-w-0 flex-1">
+                                <span 
+                                  className="text-[10px] font-mono shrink-0"
+                                  style={{ color: 'var(--secondary-bronze)' }}
+                                >
+                                  {epic.epic_key || 'E-???'}
+                                </span>
+                                <span 
+                                  className="text-[12px] font-medium truncate"
+                                  style={{ color: 'var(--text-primary)' }}
+                                >
+                                  {epic.name}
+                                </span>
+                              </div>
+                              {epic.state && (
+                                <span 
+                                  className="text-[9px] px-1.5 py-0.5 rounded shrink-0"
+                                  style={{ 
+                                    backgroundColor: 'var(--surface-subtle)', 
+                                    color: EPIC_STATES[epic.state]?.color || 'var(--text-muted)'
+                                  }}
+                                >
+                                  {EPIC_STATES[epic.state]?.label || epic.state}
+                                </span>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </section>
+                </TabsContent>
+
+                {/* ACTIVITY TAB */}
+                <TabsContent value="activity" className="mt-0">
+                  <section 
+                    className="rounded-lg p-4"
+                    style={{ 
+                      backgroundColor: 'var(--surface-bg)',
+                      border: '1px solid var(--border-default)',
+                    }}
+                  >
+                    <div className="flex items-center gap-2 mb-3">
+                      <History size={14} style={{ color: 'var(--text-muted)' }} />
+                      <span className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
                         Audit History
                       </span>
                     </div>
-                    <ChevronRight 
-                      size={14} 
-                      className={cn("transition-transform", auditHistoryOpen && "rotate-90")}
-                      style={{ color: 'var(--text-muted)' }}
-                    />
-                  </button>
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                  <div 
-                    className="rounded-b-lg p-4 -mt-1"
-                    style={{ 
-                      backgroundColor: 'var(--surface-bg)',
-                      border: '1px solid var(--border-default)',
-                      borderTop: 'none',
-                    }}
-                  >
-                    <div className="h-[360px]">
+                    <div className="h-[400px]">
                       <UnifiedAuditHistoryTab entityType="theme" entityId={theme.id} />
                     </div>
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
-            </div>
-          </div>
+                  </section>
+                </TabsContent>
+              </div>
+            </ScrollArea>
+          </Tabs>
         </SheetContent>
       </Sheet>
 
-      {/* Link Objective Dialog */}
-      <Dialog open={showLinkObjectiveDialog} onOpenChange={setShowLinkObjectiveDialog}>
-        <DialogContent 
-          className="sm:max-w-md"
-          style={{ backgroundColor: 'var(--surface-bg)', borderColor: 'var(--border-default)' }}
-        >
-          <DialogHeader style={{ borderBottom: '1px solid var(--border-subtle)' }} className="pb-4">
-            <DialogTitle className="text-[15px] font-semibold" style={{ color: 'var(--text-primary)' }}>
-              Link Objective
-            </DialogTitle>
-            <DialogDescription className="text-[12px]" style={{ color: 'var(--text-muted)' }}>
-              Select an objective to link to this theme
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="py-4">
-            {availableObjectives.length > 0 ? (
-              <ScrollArea className="h-[280px] pr-4">
-                <div className="space-y-1.5">
-                  {availableObjectives.map((obj) => (
-                    <button
-                      key={obj.id}
-                      onClick={() => linkObjectiveMutation.mutate(obj.id)}
-                      className="w-full text-left p-3 rounded-lg text-[12px] transition-colors"
-                      style={{ 
-                        backgroundColor: 'var(--surface-subtle)',
-                        border: '1px solid var(--border-subtle)',
-                        color: 'var(--text-primary)'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = 'var(--brand-primary)';
-                        e.currentTarget.style.backgroundColor = 'var(--surface-hover)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = 'var(--border-subtle)';
-                        e.currentTarget.style.backgroundColor = 'var(--surface-subtle)';
-                      }}
-                    >
-                      {obj.name}
-                    </button>
-                  ))}
-                </div>
-              </ScrollArea>
-            ) : (
-              <EmptyState 
-                icon={Target} 
-                message="No unlinked objectives" 
-                hint="Create objectives first"
-              />
-            )}
-          </div>
+      {/* Link Objective Picker */}
+      <LinkObjectivePicker
+        open={showLinkObjectiveDialog}
+        onClose={() => setShowLinkObjectiveDialog(false)}
+        themeId={theme?.id}
+        linkedObjectiveIds={objectives.map(o => o.id)}
+        onLinked={() => {
+          queryClient.invalidateQueries({ queryKey: ['theme-objectives', theme?.id] });
+        }}
+      />
 
-          <DialogFooter style={{ borderTop: '1px solid var(--border-subtle)' }} className="pt-4">
-            <Button 
-              variant="outline" 
-              onClick={() => setShowLinkObjectiveDialog(false)}
-              className="text-[12px]"
-            >
-              Cancel
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Link Epic Dialog */}
-      <Dialog open={showLinkEpicDialog} onOpenChange={setShowLinkEpicDialog}>
-        <DialogContent 
-          className="sm:max-w-md"
-          style={{ backgroundColor: 'var(--surface-bg)', borderColor: 'var(--border-default)' }}
-        >
-          <DialogHeader style={{ borderBottom: '1px solid var(--border-subtle)' }} className="pb-4">
-            <DialogTitle className="text-[15px] font-semibold" style={{ color: 'var(--text-primary)' }}>
-              Link Epic
-            </DialogTitle>
-            <DialogDescription className="text-[12px]" style={{ color: 'var(--text-muted)' }}>
-              Select an epic to align with this theme
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="py-4">
-            {availableEpics.length > 0 ? (
-              <ScrollArea className="h-[280px] pr-4">
-                <div className="space-y-1.5">
-                  {availableEpics.map((epic) => (
-                    <button
-                      key={epic.id}
-                      onClick={() => linkEpicMutation.mutate(epic.id)}
-                      className="w-full text-left p-3 rounded-lg text-[12px] transition-colors"
-                      style={{ 
-                        backgroundColor: 'var(--surface-subtle)',
-                        border: '1px solid var(--border-subtle)',
-                        color: 'var(--text-primary)'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = 'var(--brand-primary)';
-                        e.currentTarget.style.backgroundColor = 'var(--surface-hover)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = 'var(--border-subtle)';
-                        e.currentTarget.style.backgroundColor = 'var(--surface-subtle)';
-                      }}
-                    >
-                      <span className="font-mono text-[10px] mr-2" style={{ color: 'var(--secondary-bronze)' }}>
-                        {epic.epic_key}
-                      </span>
-                      {epic.name}
-                    </button>
-                  ))}
-                </div>
-              </ScrollArea>
-            ) : (
-              <EmptyState 
-                icon={Layers} 
-                message="No unlinked epics" 
-                hint="Create epics first"
-              />
-            )}
-          </div>
-
-          <DialogFooter style={{ borderTop: '1px solid var(--border-subtle)' }} className="pt-4">
-            <Button 
-              variant="outline" 
-              onClick={() => setShowLinkEpicDialog(false)}
-              className="text-[12px]"
-            >
-              Cancel
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Link Epic Picker */}
+      <LinkEpicPicker
+        open={showLinkEpicDialog}
+        onClose={() => setShowLinkEpicDialog(false)}
+        themeId={theme?.id}
+        linkedEpicIds={epics.map(e => e.id)}
+        onLinked={() => {
+          queryClient.invalidateQueries({ queryKey: ['theme-epics', theme?.id] });
+        }}
+      />
 
       {/* Unsaved Changes Dialog */}
       <AlertDialog open={showUnsavedChangesDialog} onOpenChange={setShowUnsavedChangesDialog}>
@@ -1049,13 +1253,17 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
           <AlertDialogHeader>
             <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
             <AlertDialogDescription>
-              You have unsaved changes. Are you sure you want to leave?
+              You have unsaved changes. What would you like to do?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction 
-              onClick={() => { setShowUnsavedChangesDialog(false); onClose(); }} 
+              onClick={() => { 
+                setShowUnsavedChangesDialog(false); 
+                handleDiscard();
+                if (mode === 'read') onClose();
+              }} 
               className="bg-destructive text-destructive-foreground"
             >
               Discard
