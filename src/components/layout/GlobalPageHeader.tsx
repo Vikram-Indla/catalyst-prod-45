@@ -113,7 +113,7 @@ export const ROUTE_META: Record<string, { sectionLabel: string; pageTitle: strin
   '/product/capacity': { sectionLabel: 'Product', pageTitle: 'Capacity Planning' },
   '/program/:programId/backlog': { sectionLabel: 'Program', pageTitle: 'Program Backlog' },
   '/program/:programId/epic-backlog': { sectionLabel: 'Program', pageTitle: 'Epic Backlog' },
-  '/program/:programId/roadmaps': { sectionLabel: 'Program', pageTitle: 'Epic Roadmap' },
+  '/program/:programId/roadmaps': { sectionLabel: 'Program', pageTitle: 'Program Roadmap' },
   '/project/:projectKey': { sectionLabel: 'Project', pageTitle: 'Project' },
   '/releases': { sectionLabel: 'Release', pageTitle: 'Releases' },
 };

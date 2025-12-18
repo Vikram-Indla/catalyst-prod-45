@@ -298,7 +298,7 @@ const App = () => (
               <Route path="/program/:programId/features" element={<FeaturesWithSidebar />} />
               <Route path="/program/:programId/program-board" element={<ProgramBoardWithSidebar />} />
               <Route path="/program/:programId/dependencies" element={<DependenciesPage />} />
-              <Route path="/program/:programId/roadmaps" element={<RoadmapsWithSidebar />} />
+              <Route path="/program/:programId/roadmaps" element={<ProgramRoadmapPage />} />
               <Route path="/program/:programId/objectives-tree" element={<OKRHub />} />
               <Route path="/program/:programId/forecast" element={<PlaceholderPage />} />
               <Route path="/program/:programId/capacity" element={<CapacityWithSidebar />} />
@@ -407,7 +407,7 @@ const App = () => (
               <Route path="/programs/:programId/features" element={<FeaturesWithSidebar />} />
               <Route path="/programs/:programId/backlog" element={<BacklogWithSidebar />} />
               <Route path="/programs/:programId/epic-backlog" element={<EpicBacklogWithSidebar />} />
-              <Route path="/programs/:programId/roadmaps" element={<RoadmapsWithSidebar />} />
+              <Route path="/programs/:programId/roadmaps" element={<ProgramRoadmapPage />} />
               <Route path="/programs/:programId/objective-tree" element={<OKRHub />} />
               <Route path="/programs/:programId/work-tree" element={<WorkTreePage />} />
               <Route path="/programs/:programId/program-board" element={<ProgramBoardWithSidebar />} />
@@ -492,7 +492,7 @@ const App = () => (
               <Route path="/programs/:programId/objective-tree" element={<OKRHub />} />
               <Route path="/programs/:programId/work-tree" element={<WorkTreePage />} />
               <Route path="/programs/:programId/backlog" element={<BacklogWithSidebar />} />
-              <Route path="/programs/:programId/roadmaps" element={<RoadmapsWithSidebar />} />
+              <Route path="/programs/:programId/roadmaps" element={<ProgramRoadmapPage />} />
               <Route path="/programs/:programId/program-roadmap" element={<ProgramRoadmapPage />} />
               <Route path="/programs/:programId/dependencies" element={<DependenciesPage />} />
               <Route path="/programs/:programId/forecast" element={<PlaceholderPage />} />
