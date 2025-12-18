@@ -1,8 +1,10 @@
 /**
  * StrategicPulseSection — Signal-led KPI tiles
  * 5 equal tiles: Strategy Health, Progress, At Risk, Gaps, Open Risks
+ * Uses keepPreviousData pattern to prevent blanking on snapshot switch
  */
 
+import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useOKRv2StrategyMetrics } from '@/hooks/useOKRv2StrategyMetrics';
 import { useStrategyPyramidCounts } from '@/hooks/useExecutionMetrics';
@@ -17,7 +19,8 @@ import {
   Target, 
   Shield,
   Activity,
-  ChevronRight
+  ChevronRight,
+  RefreshCw
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -30,10 +33,21 @@ type OverallStatus = 'on-track' | 'at-risk' | 'off-track';
 export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps) {
   const navigate = useNavigate();
   
-  const { data: okrMetrics, isLoading: okrLoading } = useOKRv2StrategyMetrics(snapshotId);
-  const { data: counts, isLoading: countsLoading } = useStrategyPyramidCounts(snapshotId);
+  // Store last valid data to prevent blanking
+  const lastValidDataRef = useRef<{
+    overallProgress: number;
+    objectivesCount: number;
+    atRiskCount: number;
+    alignmentGaps: number;
+    openRisks: number;
+    highRisks: number;
+    overallStatus: OverallStatus;
+  } | null>(null);
+  
+  const { data: okrMetrics, isLoading: okrLoading, isFetching: okrFetching } = useOKRv2StrategyMetrics(snapshotId);
+  const { data: counts, isLoading: countsLoading, isFetching: countsFetching } = useStrategyPyramidCounts(snapshotId);
 
-  const { data: riskData, isLoading: risksLoading } = useQuery({
+  const { data: riskData, isLoading: risksLoading, isFetching: risksFetching } = useQuery({
     queryKey: ['strategic-pulse-risks', snapshotId],
     queryFn: async () => {
       const { data: risks } = await supabase
@@ -49,10 +63,13 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
 
       return { total: riskList.length, high };
     },
+    staleTime: 30000, // Keep data fresh for 30s
   });
 
-  const isLoading = okrLoading || countsLoading || risksLoading;
+  const isInitialLoading = okrLoading || countsLoading || risksLoading;
+  const isRefreshing = (okrFetching || countsFetching || risksFetching) && !isInitialLoading;
 
+  // Compute current values
   const objectivesCount = okrMetrics?.count ?? 0;
   const hasObjectives = objectivesCount > 0;
   const overallProgress = hasObjectives ? Math.round(okrMetrics?.avgProgress ?? 0) : 0;
@@ -80,29 +97,74 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
 
   const overallStatus = determineOverallStatus();
 
+  // Update last valid data when we have real data
+  if (!isInitialLoading) {
+    lastValidDataRef.current = {
+      overallProgress,
+      objectivesCount,
+      atRiskCount,
+      alignmentGaps,
+      openRisks,
+      highRisks,
+      overallStatus,
+    };
+  }
+
+  // Use last valid data during initial load, or current data
+  const displayData = isInitialLoading && lastValidDataRef.current 
+    ? lastValidDataRef.current 
+    : {
+        overallProgress,
+        objectivesCount,
+        atRiskCount,
+        alignmentGaps,
+        openRisks,
+        highRisks,
+        overallStatus,
+      };
+
   const statusConfig = {
-    'on-track': { label: 'On Track', textClass: 'text-status-success', bgClass: 'bg-status-success' },
-    'at-risk': { label: 'At Risk', textClass: 'text-status-warning', bgClass: 'bg-status-warning' },
-    'off-track': { label: 'Off Track', textClass: 'text-status-danger', bgClass: 'bg-status-danger' },
+    'on-track': { label: 'On Track', bgClass: 'bg-status-success' },
+    'at-risk': { label: 'At Risk', bgClass: 'bg-status-warning' },
+    'off-track': { label: 'Off Track', bgClass: 'bg-status-danger' },
   };
 
-  const config = statusConfig[overallStatus];
-  const TrendIcon = overallProgress >= 50 ? TrendingUp : overallProgress >= 30 ? Minus : TrendingDown;
-  const trendLabel = overallProgress >= 50 ? 'Ahead' : overallProgress >= 30 ? 'On pace' : 'Behind';
+  const config = statusConfig[displayData.overallStatus];
+  const TrendIcon = displayData.overallProgress >= 50 ? TrendingUp : displayData.overallProgress >= 30 ? Minus : TrendingDown;
+  const trendLabel = displayData.overallProgress >= 50 ? 'Ahead' : displayData.overallProgress >= 30 ? 'On pace' : 'Behind';
 
-  if (isLoading) {
+  // Only show skeleton on true initial load with no cached data
+  if (isInitialLoading && !lastValidDataRef.current) {
     return (
-      <section className="rounded-lg border border-border bg-card overflow-hidden">
-        <div className="px-4 py-2 border-b border-border">
-          <div className="h-3.5 w-24 bg-muted/50 rounded animate-pulse" />
+      <section 
+        className="rounded-lg overflow-hidden"
+        style={{ 
+          backgroundColor: 'var(--surface-bg)', 
+          border: '1px solid var(--border-default)' 
+        }}
+      >
+        <div 
+          className="px-4 py-2 flex items-center justify-between"
+          style={{ borderBottom: '1px solid var(--border-subtle)' }}
+        >
+          <div className="h-3.5 w-24 rounded animate-pulse" style={{ backgroundColor: 'var(--surface-3)' }} />
         </div>
         <div className="p-3">
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
             {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="p-3 rounded-md border border-border bg-muted/20 animate-pulse">
-                <div className="h-2.5 w-16 bg-muted/40 rounded mb-2" />
-                <div className="h-6 w-12 bg-muted/50 rounded mb-1.5" />
-                <div className="h-2 w-20 bg-muted/30 rounded" />
+              <div 
+                key={i} 
+                className="p-3 rounded-md animate-pulse"
+                style={{ 
+                  backgroundColor: 'var(--surface-2)', 
+                  border: '1px solid var(--border-subtle)',
+                  borderLeft: '2px solid var(--border-default)'
+                }}
+              >
+                <div className="h-2.5 w-16 rounded mb-2.5" style={{ backgroundColor: 'var(--surface-3)' }} />
+                <div className="h-6 w-12 rounded mb-2" style={{ backgroundColor: 'var(--surface-3)' }} />
+                <div className="h-2 w-20 rounded mb-2" style={{ backgroundColor: 'var(--surface-3)' }} />
+                <div className="h-1 w-full rounded-full" style={{ backgroundColor: 'var(--surface-3)' }} />
               </div>
             ))}
           </div>
@@ -112,10 +174,30 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
   }
 
   return (
-    <section className="rounded-lg border border-border bg-card overflow-hidden">
-      {/* Section Header - compact */}
-      <div className="px-4 py-2 border-b border-border">
-        <h2 className="text-xs font-semibold text-foreground uppercase tracking-wide">Strategic Pulse</h2>
+    <section 
+      className="rounded-lg overflow-hidden"
+      style={{ 
+        backgroundColor: 'var(--surface-bg)', 
+        border: '1px solid var(--border-default)' 
+      }}
+    >
+      {/* Section Header */}
+      <div 
+        className="px-4 py-2 flex items-center justify-between"
+        style={{ borderBottom: '1px solid var(--border-subtle)' }}
+      >
+        <h2 
+          className="text-xs font-semibold uppercase tracking-wide"
+          style={{ color: 'var(--text-primary)' }}
+        >
+          Strategic Pulse
+        </h2>
+        {isRefreshing && (
+          <div className="flex items-center gap-1.5">
+            <RefreshCw size={10} className="animate-spin" style={{ color: 'var(--text-muted)' }} />
+            <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>Refreshing…</span>
+          </div>
+        )}
       </div>
 
       <div className="p-3">
@@ -126,17 +208,17 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
             icon={<Activity size={13} />}
             accentColor="primary"
           >
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 mt-1">
               <span className={cn(
-                "inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold",
+                "inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold",
                 config.bgClass, "text-white"
               )}>
                 {config.label}
               </span>
             </div>
-            <p className="text-[10px] text-muted-foreground mt-1 leading-tight">
-              {overallStatus === 'on-track' ? 'Execution on track' : 
-               overallStatus === 'at-risk' ? 'Needs attention' : 'Intervention needed'}
+            <p className="text-[10px] mt-1.5 leading-tight" style={{ color: 'var(--text-muted)' }}>
+              {displayData.overallStatus === 'on-track' ? 'Execution on track' : 
+               displayData.overallStatus === 'at-risk' ? 'Needs attention' : 'Intervention needed'}
             </p>
           </KPITile>
 
@@ -147,30 +229,38 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
             onClick={() => navigate('/enterprise/okr-hub')}
             accentColor="primary"
           >
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-xl font-bold tabular-nums text-foreground">
-                {hasObjectives ? `${overallProgress}%` : '—'}
+            <div className="flex items-baseline gap-1.5 mt-0.5">
+              <span 
+                className="text-xl font-bold tabular-nums"
+                style={{ color: 'var(--text-primary)' }}
+              >
+                {displayData.objectivesCount > 0 ? `${displayData.overallProgress}%` : '—'}
               </span>
-              {hasObjectives && (
+              {displayData.objectivesCount > 0 && (
                 <span className={cn(
                   "inline-flex items-center gap-0.5 text-[10px] font-medium",
-                  overallProgress >= 50 ? 'text-status-success' : 
-                  overallProgress >= 30 ? 'text-muted-foreground' : 'text-status-danger'
-                )}>
+                  displayData.overallProgress >= 50 ? 'text-status-success' : 
+                  displayData.overallProgress >= 30 ? '' : 'text-status-danger'
+                )} style={displayData.overallProgress >= 30 && displayData.overallProgress < 50 ? { color: 'var(--text-muted)' } : {}}>
                   <TrendIcon size={10} />
                   {trendLabel}
                 </span>
               )}
             </div>
-            <p className="text-[10px] text-muted-foreground mt-0.5">
-              {objectivesCount} objective{objectivesCount !== 1 ? 's' : ''}
+            <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-muted)' }}>
+              {displayData.objectivesCount} objective{displayData.objectivesCount !== 1 ? 's' : ''}
             </p>
-            {/* Micro progress bar */}
-            {hasObjectives && (
-              <div className="w-full h-1 rounded-full mt-2 bg-border overflow-hidden">
+            {displayData.objectivesCount > 0 && (
+              <div 
+                className="w-full h-1 rounded-full mt-2 overflow-hidden"
+                style={{ backgroundColor: 'var(--border-default)' }}
+              >
                 <div 
-                  className="h-full rounded-full bg-primary transition-all"
-                  style={{ width: `${overallProgress}%` }}
+                  className="h-full rounded-full transition-all"
+                  style={{ 
+                    width: `${displayData.overallProgress}%`,
+                    backgroundColor: 'var(--brand-primary)'
+                  }}
                 />
               </div>
             )}
@@ -181,16 +271,16 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
             label="At Risk"
             icon={<AlertTriangle size={13} />}
             onClick={() => navigate('/enterprise/okr-hub')}
-            accentColor={atRiskCount > 0 ? 'warning' : 'muted'}
+            accentColor={displayData.atRiskCount > 0 ? 'warning' : 'muted'}
           >
             <span className={cn(
-              "text-xl font-bold tabular-nums",
-              atRiskCount > 0 ? 'text-status-warning' : 'text-foreground'
-            )}>
-              {atRiskCount}
+              "text-xl font-bold tabular-nums mt-0.5 inline-block",
+              displayData.atRiskCount > 0 ? 'text-status-warning' : ''
+            )} style={displayData.atRiskCount === 0 ? { color: 'var(--text-primary)' } : {}}>
+              {displayData.atRiskCount}
             </span>
-            <p className="text-[10px] text-muted-foreground mt-0.5">
-              {atRiskCount === 0 ? 'All healthy' : 'Need attention'}
+            <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-muted)' }}>
+              {displayData.atRiskCount === 0 ? 'All healthy' : 'Need attention'}
             </p>
           </KPITile>
 
@@ -199,16 +289,16 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
             label="Alignment Gaps"
             icon={<Target size={13} />}
             onClick={() => navigate('/enterprise/backlog')}
-            accentColor={alignmentGaps > 0 ? 'bronze' : 'muted'}
+            accentColor={displayData.alignmentGaps > 0 ? 'bronze' : 'muted'}
           >
             <span className={cn(
-              "text-xl font-bold tabular-nums",
-              alignmentGaps > 0 ? 'text-secondary-bronze' : 'text-foreground'
-            )}>
-              {alignmentGaps}
+              "text-xl font-bold tabular-nums mt-0.5 inline-block",
+              displayData.alignmentGaps > 0 ? 'text-secondary-bronze' : ''
+            )} style={displayData.alignmentGaps === 0 ? { color: 'var(--text-primary)' } : {}}>
+              {displayData.alignmentGaps}
             </span>
-            <p className="text-[10px] text-muted-foreground mt-0.5">
-              {alignmentGaps === 0 ? 'Fully aligned' : 'Unlinked items'}
+            <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-muted)' }}>
+              {displayData.alignmentGaps === 0 ? 'Fully aligned' : 'Unlinked items'}
             </p>
           </KPITile>
 
@@ -217,16 +307,16 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
             label="Open Risks"
             icon={<Shield size={13} />}
             onClick={() => navigate('/enterprise/risks')}
-            accentColor={highRisks > 0 ? 'danger' : 'muted'}
+            accentColor={displayData.highRisks > 0 ? 'danger' : 'muted'}
           >
             <span className={cn(
-              "text-xl font-bold tabular-nums",
-              highRisks > 0 ? 'text-status-danger' : 'text-foreground'
-            )}>
-              {openRisks}
+              "text-xl font-bold tabular-nums mt-0.5 inline-block",
+              displayData.highRisks > 0 ? 'text-status-danger' : ''
+            )} style={displayData.highRisks === 0 ? { color: 'var(--text-primary)' } : {}}>
+              {displayData.openRisks}
             </span>
-            <p className="text-[10px] text-muted-foreground mt-0.5">
-              {highRisks > 0 ? `${highRisks} high severity` : 'No critical'}
+            <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-muted)' }}>
+              {displayData.highRisks > 0 ? `${displayData.highRisks} high severity` : 'No critical'}
             </p>
           </KPITile>
         </div>
@@ -244,20 +334,20 @@ interface KPITileProps {
 }
 
 function KPITile({ label, icon, children, onClick, accentColor = 'muted' }: KPITileProps) {
-  const accentBorders = {
-    primary: 'border-l-primary',
-    warning: 'border-l-status-warning',
-    danger: 'border-l-status-danger',
-    bronze: 'border-l-secondary-bronze',
-    muted: 'border-l-border',
+  const accentBorders: Record<string, string> = {
+    primary: 'var(--brand-primary)',
+    warning: 'var(--status-warning)',
+    danger: 'var(--status-danger)',
+    bronze: 'var(--secondary-bronze)',
+    muted: 'var(--border-default)',
   };
 
-  const iconColors = {
-    primary: 'text-primary',
-    warning: 'text-status-warning',
-    danger: 'text-status-danger',
-    bronze: 'text-secondary-bronze',
-    muted: 'text-muted-foreground',
+  const iconColors: Record<string, string> = {
+    primary: 'var(--brand-primary)',
+    warning: 'var(--status-warning)',
+    danger: 'var(--status-danger)',
+    bronze: 'var(--secondary-bronze)',
+    muted: 'var(--text-muted)',
   };
 
   const Wrapper = onClick ? 'button' : 'div';
@@ -266,20 +356,31 @@ function KPITile({ label, icon, children, onClick, accentColor = 'muted' }: KPIT
     <Wrapper
       onClick={onClick}
       className={cn(
-        "p-3 rounded-md text-left transition-all border border-border bg-card relative group",
-        "border-l-2",
-        accentBorders[accentColor],
-        onClick && [
-          "hover:bg-muted/40 hover:border-border/80",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
-        ]
+        "p-3 rounded-md text-left transition-all relative group",
+        onClick && "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
       )}
+      style={{
+        backgroundColor: 'var(--surface-2)',
+        border: '1px solid var(--border-subtle)',
+        borderLeft: `2px solid ${accentBorders[accentColor]}`,
+      }}
+      onMouseEnter={onClick ? (e) => {
+        (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)';
+        (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-default)';
+      } : undefined}
+      onMouseLeave={onClick ? (e) => {
+        (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-2)';
+        (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-subtle)';
+      } : undefined}
     >
-      <div className="flex items-center justify-between mb-1.5">
-        <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+      <div className="flex items-center justify-between mb-0.5">
+        <span 
+          className="text-[10px] font-semibold uppercase tracking-wide"
+          style={{ color: 'var(--text-muted)' }}
+        >
           {label}
         </span>
-        <span className={iconColors[accentColor]}>{icon}</span>
+        <span style={{ color: iconColors[accentColor] }}>{icon}</span>
       </div>
       
       {children}
@@ -287,7 +388,8 @@ function KPITile({ label, icon, children, onClick, accentColor = 'muted' }: KPIT
       {onClick && (
         <ChevronRight 
           size={12} 
-          className="absolute top-3 right-2.5 opacity-0 group-hover:opacity-40 transition-opacity text-muted-foreground" 
+          className="absolute top-3 right-2.5 opacity-0 group-hover:opacity-40 transition-opacity" 
+          style={{ color: 'var(--text-muted)' }}
         />
       )}
     </Wrapper>

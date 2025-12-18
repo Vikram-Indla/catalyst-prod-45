@@ -1,8 +1,10 @@
 /**
  * ExposureGapsSection — Executive cockpit-style exposure surface
  * Compact rows, micro-visuals, aligned cards
+ * Uses keepPreviousData pattern to prevent blanking on snapshot switch
  */
 
+import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -14,7 +16,8 @@ import {
   Target, 
   Clock, 
   ChevronRight,
-  CheckCircle2
+  CheckCircle2,
+  RefreshCw
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -35,10 +38,18 @@ interface AttentionItem {
 export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
   const navigate = useNavigate();
   
-  const { data: okrMetrics, isLoading: okrLoading } = useOKRv2StrategyMetrics(snapshotId);
-  const { data: counts, isLoading: countsLoading } = useStrategyPyramidCounts(snapshotId);
+  // Store last valid data to prevent blanking
+  const lastValidDataRef = useRef<{
+    atRiskObjectives: any[];
+    misalignedEpics: number;
+    misalignedFeatures: number;
+    riskData: { total: number; high: number; medium: number; low: number; overdue: number; topRisks: any[] };
+  } | null>(null);
+  
+  const { data: okrMetrics, isLoading: okrLoading, isFetching: okrFetching } = useOKRv2StrategyMetrics(snapshotId);
+  const { data: counts, isLoading: countsLoading, isFetching: countsFetching } = useStrategyPyramidCounts(snapshotId);
 
-  const { data: riskData, isLoading: risksLoading } = useQuery({
+  const { data: riskData, isLoading: risksLoading, isFetching: risksFetching } = useQuery({
     queryKey: ['exposure-risks', snapshotId],
     queryFn: async () => {
       const { data: risks } = await supabase
@@ -78,9 +89,11 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
         topRisks 
       };
     },
+    staleTime: 30000,
   });
 
-  const isLoading = okrLoading || countsLoading || risksLoading;
+  const isInitialLoading = okrLoading || countsLoading || risksLoading;
+  const isRefreshing = (okrFetching || countsFetching || risksFetching) && !isInitialLoading;
 
   const atRiskObjectives = okrMetrics?.objectives?.filter(obj => {
     const health = (obj.health || '').toLowerCase();
@@ -89,16 +102,36 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
 
   const misalignedEpics = counts?.misalignedEpics ?? 0;
   const misalignedFeatures = counts?.misalignedFeatures ?? 0;
-  const alignmentGaps = misalignedEpics + misalignedFeatures;
 
-  const highRisks = riskData?.high ?? 0;
-  const overdueRisks = riskData?.overdue ?? 0;
-  const totalRisks = riskData?.total ?? 0;
+  // Update last valid data when we have real data
+  if (!isInitialLoading && riskData) {
+    lastValidDataRef.current = {
+      atRiskObjectives,
+      misalignedEpics,
+      misalignedFeatures,
+      riskData,
+    };
+  }
+
+  // Use last valid data during initial load, or current data
+  const displayData = isInitialLoading && lastValidDataRef.current 
+    ? lastValidDataRef.current 
+    : {
+        atRiskObjectives,
+        misalignedEpics,
+        misalignedFeatures,
+        riskData: riskData ?? { total: 0, high: 0, medium: 0, low: 0, overdue: 0, topRisks: [] },
+      };
+
+  const alignmentGaps = displayData.misalignedEpics + displayData.misalignedFeatures;
+  const highRisks = displayData.riskData.high;
+  const overdueRisks = displayData.riskData.overdue;
+  const totalRisks = displayData.riskData.total;
 
   // Build "Needs Attention" list
   const attentionItems: AttentionItem[] = [];
   
-  atRiskObjectives.slice(0, 2).forEach(obj => {
+  displayData.atRiskObjectives.slice(0, 2).forEach(obj => {
     attentionItems.push({
       id: obj.id,
       type: 'objective',
@@ -109,7 +142,7 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
     });
   });
 
-  (riskData?.topRisks || []).slice(0, 2).forEach(risk => {
+  (displayData.riskData.topRisks || []).slice(0, 2).forEach(risk => {
     attentionItems.push({
       id: risk.id,
       type: 'risk',
@@ -125,36 +158,56 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
       id: 'alignment-gaps',
       type: 'gap',
       title: `${alignmentGaps} Alignment Gap${alignmentGaps !== 1 ? 's' : ''}`,
-      reason: `${misalignedEpics} epics, ${misalignedFeatures} features`,
+      reason: `${displayData.misalignedEpics} epics, ${displayData.misalignedFeatures} features`,
       severity: alignmentGaps > 5 ? 'high' : 'medium',
       link: '/enterprise/backlog',
     });
   }
 
-  if (isLoading) {
+  // Only show skeleton on true initial load with no cached data
+  if (isInitialLoading && !lastValidDataRef.current) {
     return (
-      <section className="rounded-lg border border-border bg-card overflow-hidden">
-        <div className="px-4 py-2 border-b border-border">
-          <div className="h-3.5 w-28 bg-muted/50 rounded animate-pulse" />
+      <section 
+        className="rounded-lg overflow-hidden"
+        style={{ 
+          backgroundColor: 'var(--surface-bg)', 
+          border: '1px solid var(--border-default)' 
+        }}
+      >
+        <div 
+          className="px-4 py-2"
+          style={{ borderBottom: '1px solid var(--border-subtle)' }}
+        >
+          <div className="h-3.5 w-28 rounded animate-pulse" style={{ backgroundColor: 'var(--surface-3)' }} />
         </div>
         <div className="p-3">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
             {[1, 2, 3].map((col) => (
-              <div key={col} className="rounded-md border border-border bg-card overflow-hidden animate-pulse">
-                <div className="px-3 py-2 border-b border-border flex items-center gap-2">
-                  <div className="h-3 w-3 bg-muted/50 rounded" />
-                  <div className="h-2.5 w-20 bg-muted/40 rounded" />
+              <div 
+                key={col} 
+                className="rounded-md overflow-hidden animate-pulse"
+                style={{ 
+                  backgroundColor: 'var(--surface-2)', 
+                  border: '1px solid var(--border-subtle)' 
+                }}
+              >
+                <div 
+                  className="px-3 py-2 flex items-center gap-2"
+                  style={{ borderBottom: '1px solid var(--border-subtle)', backgroundColor: 'var(--surface-3)' }}
+                >
+                  <div className="h-3 w-3 rounded" style={{ backgroundColor: 'var(--surface-4)' }} />
+                  <div className="h-2.5 w-20 rounded" style={{ backgroundColor: 'var(--surface-4)' }} />
                 </div>
                 <div className="p-3 space-y-2">
                   {[1, 2, 3].map((row) => (
                     <div key={row} className="flex items-center justify-between">
-                      <div className="h-2.5 w-16 bg-muted/30 rounded" />
-                      <div className="h-3 w-5 bg-muted/40 rounded" />
+                      <div className="h-2.5 w-16 rounded" style={{ backgroundColor: 'var(--surface-3)' }} />
+                      <div className="h-3 w-5 rounded" style={{ backgroundColor: 'var(--surface-3)' }} />
                     </div>
                   ))}
                 </div>
                 <div className="px-3 pb-2.5">
-                  <div className="h-6 w-full bg-muted/20 rounded" />
+                  <div className="h-6 w-full rounded" style={{ backgroundColor: 'var(--surface-3)' }} />
                 </div>
               </div>
             ))}
@@ -165,10 +218,30 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
   }
 
   return (
-    <section className="rounded-lg border border-border bg-card overflow-hidden">
-      {/* Section Header - compact */}
-      <div className="px-4 py-2 border-b border-border">
-        <h2 className="text-xs font-semibold text-foreground uppercase tracking-wide">Exposure & Gaps</h2>
+    <section 
+      className="rounded-lg overflow-hidden"
+      style={{ 
+        backgroundColor: 'var(--surface-bg)', 
+        border: '1px solid var(--border-default)' 
+      }}
+    >
+      {/* Section Header */}
+      <div 
+        className="px-4 py-2 flex items-center justify-between"
+        style={{ borderBottom: '1px solid var(--border-subtle)' }}
+      >
+        <h2 
+          className="text-xs font-semibold uppercase tracking-wide"
+          style={{ color: 'var(--text-primary)' }}
+        >
+          Exposure & Gaps
+        </h2>
+        {isRefreshing && (
+          <div className="flex items-center gap-1.5">
+            <RefreshCw size={10} className="animate-spin" style={{ color: 'var(--text-muted)' }} />
+            <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>Refreshing…</span>
+          </div>
+        )}
       </div>
 
       <div className="p-3">
@@ -190,14 +263,14 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
               />
               <DataRow 
                 label="Medium" 
-                value={riskData?.medium ?? 0} 
+                value={displayData.riskData.medium} 
                 total={totalRisks}
-                variant={(riskData?.medium ?? 0) > 0 ? 'warning' : 'muted'} 
+                variant={displayData.riskData.medium > 0 ? 'warning' : 'muted'} 
                 showBar
               />
               <DataRow 
                 label="Low" 
-                value={riskData?.low ?? 0} 
+                value={displayData.riskData.low} 
                 total={totalRisks}
                 variant="muted" 
                 showBar
@@ -205,11 +278,11 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
             </div>
 
             {overdueRisks > 0 && (
-              <div className="pt-2 mt-2 border-t border-border">
+              <div className="pt-2 mt-2" style={{ borderTop: '1px solid var(--border-subtle)' }}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1">
                     <Clock size={10} className="text-status-danger" />
-                    <span className="text-[10px] text-muted-foreground">Overdue</span>
+                    <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>Overdue</span>
                   </div>
                   <span className="text-[11px] font-semibold tabular-nums text-status-danger">
                     {overdueRisks}
@@ -230,23 +303,23 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
               <DataRow label="Orphan Themes" value={0} variant="muted" />
               <DataRow 
                 label="Unlinked Epics" 
-                value={misalignedEpics} 
-                variant={misalignedEpics > 0 ? 'bronze' : 'muted'} 
+                value={displayData.misalignedEpics} 
+                variant={displayData.misalignedEpics > 0 ? 'bronze' : 'muted'} 
               />
               <DataRow 
                 label="Unlinked Features" 
-                value={misalignedFeatures} 
-                variant={misalignedFeatures > 0 ? 'bronze' : 'muted'} 
+                value={displayData.misalignedFeatures} 
+                variant={displayData.misalignedFeatures > 0 ? 'bronze' : 'muted'} 
               />
             </div>
 
-            <div className="pt-2 mt-2 border-t border-border">
+            <div className="pt-2 mt-2" style={{ borderTop: '1px solid var(--border-subtle)' }}>
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-medium text-muted-foreground">Total gaps</span>
+                <span className="text-[10px] font-medium" style={{ color: 'var(--text-muted)' }}>Total gaps</span>
                 <span className={cn(
                   "text-sm font-bold tabular-nums",
-                  alignmentGaps > 0 ? "text-secondary-bronze" : "text-muted-foreground"
-                )}>
+                  alignmentGaps > 0 ? "text-secondary-bronze" : ""
+                )} style={alignmentGaps === 0 ? { color: 'var(--text-muted)' } : {}}>
                   {alignmentGaps}
                 </span>
               </div>
@@ -262,7 +335,7 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
             {attentionItems.length === 0 ? (
               <div className="py-3 text-center">
                 <CheckCircle2 size={16} className="mx-auto mb-1 text-status-success" />
-                <span className="text-[10px] text-muted-foreground">No items need attention</span>
+                <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>No items need attention</span>
               </div>
             ) : (
               <div className="space-y-0.5">
@@ -271,7 +344,7 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
                 ))}
                 {attentionItems.length > 4 && (
                   <div className="text-center pt-1">
-                    <span className="text-[9px] text-muted-foreground">
+                    <span className="text-[9px]" style={{ color: 'var(--text-muted)' }}>
                       +{attentionItems.length - 4} more
                     </span>
                   </div>
@@ -295,10 +368,25 @@ interface CockpitCardProps {
 
 function CockpitCard({ title, icon, iconColor, children, cta }: CockpitCardProps) {
   return (
-    <div className="rounded-md border border-border bg-card overflow-hidden flex flex-col">
-      <div className="px-3 py-1.5 border-b border-border flex items-center gap-1.5 bg-muted/30">
+    <div 
+      className="rounded-md overflow-hidden flex flex-col"
+      style={{ 
+        backgroundColor: 'var(--surface-2)', 
+        border: '1px solid var(--border-subtle)' 
+      }}
+    >
+      <div 
+        className="px-3 py-1.5 flex items-center gap-1.5"
+        style={{ 
+          borderBottom: '1px solid var(--border-subtle)',
+          backgroundColor: 'var(--surface-3)'
+        }}
+      >
         <span className={iconColor}>{icon}</span>
-        <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+        <span 
+          className="text-[10px] font-semibold uppercase tracking-wide"
+          style={{ color: 'var(--text-muted)' }}
+        >
           {title}
         </span>
       </div>
@@ -310,7 +398,8 @@ function CockpitCard({ title, icon, iconColor, children, cta }: CockpitCardProps
           <Button
             variant="ghost"
             size="sm"
-            className="w-full h-6 text-[10px] text-muted-foreground hover:text-foreground hover:bg-muted/50"
+            className="w-full h-6 text-[10px] hover:bg-[var(--surface-hover)]"
+            style={{ color: 'var(--text-muted)' }}
             onClick={cta.onClick}
           >
             {cta.label}
@@ -331,34 +420,49 @@ interface DataRowProps {
 }
 
 function DataRow({ label, value, total = 0, variant = 'muted', showBar }: DataRowProps) {
-  const valueColors = {
-    muted: 'text-muted-foreground',
-    danger: 'text-status-danger',
-    warning: 'text-status-warning',
-    bronze: 'text-secondary-bronze',
+  const valueColors: Record<string, string> = {
+    muted: 'var(--text-muted)',
+    danger: 'var(--status-danger)',
+    warning: 'var(--status-warning)',
+    bronze: 'var(--secondary-bronze)',
   };
 
-  const barColors = {
-    muted: 'bg-muted-foreground/30',
-    danger: 'bg-status-danger',
-    warning: 'bg-status-warning',
-    bronze: 'bg-secondary-bronze',
+  const barColors: Record<string, string> = {
+    muted: 'var(--text-muted)',
+    danger: 'var(--status-danger)',
+    warning: 'var(--status-warning)',
+    bronze: 'var(--secondary-bronze)',
   };
 
   const barWidth = total > 0 ? Math.round((value / total) * 100) : 0;
 
   return (
-    <div className="flex items-center gap-2 py-0.5 group hover:bg-muted/30 rounded px-1 -mx-1 transition-colors">
-      <span className="text-[10px] text-muted-foreground flex-1">{label}</span>
+    <div 
+      className="flex items-center gap-2 py-0.5 rounded px-1 -mx-1 transition-colors"
+      style={{ backgroundColor: 'transparent' }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)';
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
+      }}
+    >
+      <span className="text-[10px] flex-1" style={{ color: 'var(--text-muted)' }}>{label}</span>
       {showBar && total > 0 && (
-        <div className="w-12 h-1 rounded-full bg-border overflow-hidden">
+        <div 
+          className="w-12 h-1 rounded-full overflow-hidden"
+          style={{ backgroundColor: 'var(--border-default)' }}
+        >
           <div 
-            className={cn("h-full rounded-full transition-all", barColors[variant])}
-            style={{ width: `${barWidth}%` }}
+            className="h-full rounded-full transition-all"
+            style={{ width: `${barWidth}%`, backgroundColor: barColors[variant], opacity: variant === 'muted' ? 0.3 : 1 }}
           />
         </div>
       )}
-      <span className={cn("text-[11px] font-semibold tabular-nums w-5 text-right", valueColors[variant])}>
+      <span 
+        className="text-[11px] font-semibold tabular-nums w-5 text-right"
+        style={{ color: valueColors[variant] }}
+      >
         {value}
       </span>
     </div>
@@ -366,26 +470,47 @@ function DataRow({ label, value, total = 0, variant = 'muted', showBar }: DataRo
 }
 
 function AttentionRow({ item, onClick }: { item: AttentionItem; onClick: () => void }) {
-  const severityDots = {
-    critical: 'bg-status-danger',
-    high: 'bg-status-warning',
-    medium: 'bg-secondary-bronze',
+  const severityColors: Record<string, string> = {
+    critical: 'var(--status-danger)',
+    high: 'var(--status-warning)',
+    medium: 'var(--secondary-bronze)',
   };
 
   return (
     <button
       onClick={onClick}
-      className={cn(
-        "w-full px-1.5 py-1 rounded text-left flex items-center gap-2 transition-colors",
-        "hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring group"
-      )}
+      className="w-full px-1.5 py-1.5 rounded text-left flex items-center gap-2 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring group"
+      style={{ backgroundColor: 'transparent' }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)';
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
+      }}
     >
-      <div className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0", severityDots[item.severity])} />
+      <div 
+        className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+        style={{ backgroundColor: severityColors[item.severity] }}
+      />
       <div className="flex-1 min-w-0">
-        <div className="text-[10px] font-medium text-foreground truncate leading-tight">{item.title}</div>
-        <div className="text-[9px] text-muted-foreground leading-tight">{item.reason}</div>
+        <div 
+          className="text-[10px] font-medium truncate leading-tight"
+          style={{ color: 'var(--text-primary)' }}
+        >
+          {item.title}
+        </div>
+        <div 
+          className="text-[9px] leading-tight"
+          style={{ color: 'var(--text-muted)' }}
+        >
+          {item.reason}
+        </div>
       </div>
-      <ChevronRight size={10} className="text-muted-foreground/40 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+      <ChevronRight 
+        size={10} 
+        className="flex-shrink-0 opacity-0 group-hover:opacity-60 transition-opacity" 
+        style={{ color: 'var(--text-muted)' }}
+      />
     </button>
   );
 }

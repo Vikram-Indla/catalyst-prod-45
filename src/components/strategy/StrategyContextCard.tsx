@@ -1,3 +1,8 @@
+/**
+ * StrategyContextCard — Mission, Vision, Values grid
+ * Renders ONLY the 3 editable cards; parent provides accordion wrapper
+ */
+
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { InlineEditTextarea } from '@/components/ui/InlineEditTextarea';
@@ -73,9 +78,9 @@ export function StrategyContextCard({ snapshot, onUpdate }: StrategyContextCardP
       value: snapshot?.mission || '',
       field: 'mission' as const,
       placeholder: 'Lead the industrial and mineral ecosystem...',
-      iconColor: '#5C7C5C',
+      iconColor: 'var(--brand-primary)',
       iconBg: 'rgba(92, 124, 92, 0.1)',
-      labelColor: '#5C7C5C',
+      labelColor: 'var(--brand-primary)',
     },
     {
       icon: Eye,
@@ -84,9 +89,9 @@ export function StrategyContextCard({ snapshot, onUpdate }: StrategyContextCardP
       value: snapshot?.vision || '',
       field: 'vision' as const,
       placeholder: 'Make Saudi Arabia a global magnet...',
-      iconColor: '#5C7C5C',
+      iconColor: 'var(--brand-primary)',
       iconBg: 'rgba(92, 124, 92, 0.1)',
-      labelColor: '#5C7C5C',
+      labelColor: 'var(--brand-primary)',
     },
     {
       icon: Star,
@@ -95,98 +100,67 @@ export function StrategyContextCard({ snapshot, onUpdate }: StrategyContextCardP
       value: valuesString,
       field: 'values' as const,
       placeholder: 'Ambition, Influence, Confidence...',
-      iconColor: '#8B7355',
+      iconColor: 'var(--secondary-bronze)',
       iconBg: 'rgba(139, 115, 85, 0.1)',
-      labelColor: '#8B7355',
+      labelColor: 'var(--secondary-bronze)',
     },
   ];
 
   return (
-    <section 
-      className="rounded-xl overflow-hidden"
-      style={{
-        backgroundColor: 'var(--surface-bg)',
-        border: '1px solid var(--border-default)',
-        boxShadow: 'var(--shadow-card)',
-      }}
-    >
-      {/* Header with section title pattern */}
-      <div 
-        className="px-5 py-3 flex items-center justify-between"
-        style={{ borderBottom: '1px solid var(--border-subtle)' }}
-      >
-        <div>
-          <h2 
-            className="text-[15px] font-semibold"
-            style={{ color: 'var(--text-primary)' }}
-          >
-            Strategy Context
-          </h2>
-          <p 
-            className="text-[12px] mt-0.5"
-            style={{ color: 'var(--text-muted)' }}
-          >
-            Mission, vision, and values guiding this snapshot
-          </p>
-        </div>
-      </div>
-
-      {/* Content Grid — Reduced padding for density */}
-      <div className="p-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {contextItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <div 
-                key={item.field}
-                className="p-3 rounded-lg transition-all duration-150"
-                style={{
-                  backgroundColor: 'var(--surface-subtle)',
-                  border: '1px solid var(--border-subtle)',
-                }}
-              >
-                {/* Label with Colored Icon Background */}
-                <div className="flex items-center gap-2 mb-1.5">
-                  <div 
-                    className="w-5 h-5 rounded-full flex items-center justify-center"
-                    style={{ backgroundColor: item.iconBg }}
-                  >
-                    <Icon 
-                      size={12}
-                      style={{ color: item.iconColor }}
-                    />
-                  </div>
-                  <span 
-                    className="text-[10px] font-semibold uppercase tracking-wider"
-                    style={{ color: item.labelColor }}
-                  >
-                    {item.title}
-                  </span>
-                </div>
-
-                {/* Question */}
-                <p 
-                  className="text-[11px] italic mb-1.5"
-                  style={{ color: 'var(--text-muted)' }}
+    <div className="p-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        {contextItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <div 
+              key={item.field}
+              className="p-3 rounded-lg transition-all duration-150"
+              style={{
+                backgroundColor: 'var(--surface-subtle)',
+                border: '1px solid var(--border-subtle)',
+              }}
+            >
+              {/* Label with Colored Icon Background */}
+              <div className="flex items-center gap-2 mb-1.5">
+                <div 
+                  className="w-5 h-5 rounded-full flex items-center justify-center"
+                  style={{ backgroundColor: item.iconBg }}
                 >
-                  {item.question}
-                </p>
-
-                {/* Editable Value */}
-                <div className="min-h-[36px]">
-                  <InlineEditTextarea
-                    value={item.value}
-                    onSave={(v) => handleSave(item.field, v)}
-                    placeholder={item.placeholder}
-                    emptyText="Not set"
-                    aria-label={`Edit ${item.title}`}
+                  <Icon 
+                    size={12}
+                    style={{ color: item.iconColor }}
                   />
                 </div>
+                <span 
+                  className="text-[10px] font-semibold uppercase tracking-wider"
+                  style={{ color: item.labelColor }}
+                >
+                  {item.title}
+                </span>
               </div>
-            );
-          })}
-        </div>
+
+              {/* Question */}
+              <p 
+                className="text-[11px] italic mb-1.5"
+                style={{ color: 'var(--text-muted)' }}
+              >
+                {item.question}
+              </p>
+
+              {/* Editable Value */}
+              <div className="min-h-[36px]">
+                <InlineEditTextarea
+                  value={item.value}
+                  onSave={(v) => handleSave(item.field, v)}
+                  placeholder={item.placeholder}
+                  emptyText="Not set"
+                  aria-label={`Edit ${item.title}`}
+                />
+              </div>
+            </div>
+          );
+        })}
       </div>
-    </section>
+    </div>
   );
 }
