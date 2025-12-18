@@ -110,52 +110,54 @@ export function StrategyContextCard({ snapshot, onUpdate }: StrategyContextCardP
         boxShadow: 'var(--shadow-card)',
       }}
     >
-      {/* Header */}
+      {/* Header with section title pattern */}
       <div 
-        className="px-6 py-4"
+        className="px-5 py-3 flex items-center justify-between"
         style={{ borderBottom: '1px solid var(--border-subtle)' }}
       >
-        <h2 
-          className="text-lg font-semibold"
-          style={{ color: 'var(--text-primary)' }}
-        >
-          Strategy Context
-        </h2>
-        <p 
-          className="text-sm mt-0.5"
-          style={{ color: 'var(--text-secondary)' }}
-        >
-          Mission, vision, and values guiding this snapshot
-        </p>
+        <div>
+          <h2 
+            className="text-[15px] font-semibold"
+            style={{ color: 'var(--text-primary)' }}
+          >
+            Strategy Context
+          </h2>
+          <p 
+            className="text-[12px] mt-0.5"
+            style={{ color: 'var(--text-muted)' }}
+          >
+            Mission, vision, and values guiding this snapshot
+          </p>
+        </div>
       </div>
 
-      {/* Content Grid */}
-      <div className="p-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* Content Grid — Reduced padding for density */}
+      <div className="p-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {contextItems.map((item) => {
             const Icon = item.icon;
             return (
               <div 
                 key={item.field}
-                className="p-4 rounded-lg transition-all duration-150"
+                className="p-3 rounded-lg transition-all duration-150"
                 style={{
                   backgroundColor: 'var(--surface-subtle)',
                   border: '1px solid var(--border-subtle)',
                 }}
               >
                 {/* Label with Colored Icon Background */}
-                <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-center gap-2 mb-1.5">
                   <div 
-                    className="w-6 h-6 rounded-full flex items-center justify-center"
+                    className="w-5 h-5 rounded-full flex items-center justify-center"
                     style={{ backgroundColor: item.iconBg }}
                   >
                     <Icon 
-                      size={14}
+                      size={12}
                       style={{ color: item.iconColor }}
                     />
                   </div>
                   <span 
-                    className="text-[11px] font-semibold uppercase tracking-wider"
+                    className="text-[10px] font-semibold uppercase tracking-wider"
                     style={{ color: item.labelColor }}
                   >
                     {item.title}
@@ -164,14 +166,14 @@ export function StrategyContextCard({ snapshot, onUpdate }: StrategyContextCardP
 
                 {/* Question */}
                 <p 
-                  className="text-xs italic mb-2"
-                  style={{ color: 'var(--text-secondary)' }}
+                  className="text-[11px] italic mb-1.5"
+                  style={{ color: 'var(--text-muted)' }}
                 >
                   {item.question}
                 </p>
 
                 {/* Editable Value */}
-                <div className="min-h-[40px]">
+                <div className="min-h-[36px]">
                   <InlineEditTextarea
                     value={item.value}
                     onSave={(v) => handleSave(item.field, v)}
