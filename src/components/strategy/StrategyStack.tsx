@@ -124,7 +124,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
   const [selectedLayer, setSelectedLayer] = useState<LayerKey | null>(null);
   
   // Use LKG-enabled hook for coverage data
-  const { data: counts, isLoading, isFetching, hasData } = useStrategyCoverageData(snapshotId);
+  const { data: counts, isLoading, isFetching, hasData, isStale, error } = useStrategyCoverageData(snapshotId);
   const { data: okrMetrics, isLoading: okrLoading, isFetching: okrFetching } = useOKRv2StrategyMetrics(snapshotId);
   
   // Use safe fallbacks - never show undefined/NaN
@@ -132,6 +132,10 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
 
   // Use safe number conversion - prevents NaN in charts
   const objectivesCount = safeNumber(okrMetrics?.count);
+  
+  // Show stale indicator when showing cached data after error
+  const showStaleIndicator = isStale && !isFetching && !!error;
+  const isRefreshing = (isFetching || okrFetching) && hasData;
 
   // LKG-aware getLayerData - uses displayCounts to prevent empty states
   const getLayerData = (key: LayerKey) => {
@@ -298,13 +302,21 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
             </p>
           </div>
         </div>
-        {/* Refreshing indicator - shows during background fetch, not initial load */}
-        {(isFetching || okrFetching) && hasData && (
-          <div className="flex items-center gap-1.5">
-            <Loader2 size={12} className="animate-spin text-muted-foreground" />
-            <span className={cn(TYPOGRAPHY.microcopy)} style={{ color: 'var(--text-secondary)' }}>Refreshing…</span>
-          </div>
-        )}
+        <div className="flex items-center gap-2">
+          {/* Stale data indicator */}
+          {showStaleIndicator && (
+            <span className="text-[11px] text-muted-foreground/70 italic">
+              Data may be stale
+            </span>
+          )}
+          {/* Refreshing indicator - shows during background fetch, not initial load */}
+          {isRefreshing && (
+            <div className="flex items-center gap-1.5">
+              <Loader2 size={12} className="animate-spin text-muted-foreground" />
+              <span className={cn(TYPOGRAPHY.microcopy)} style={{ color: 'var(--text-secondary)' }}>Refreshing…</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Two-part layout */}

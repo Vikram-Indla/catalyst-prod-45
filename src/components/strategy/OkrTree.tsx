@@ -84,10 +84,11 @@ const typeStyles = {
 
 export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: OkrTreeProps) {
   const navigate = useNavigate();
-  const { data: treeData = [], isLoading, isFetching } = useOKRTreeV2(selectedSnapshot);
+  const { data: treeData = [], isLoading, isFetching, error } = useOKRTreeV2(selectedSnapshot);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [showStaleIndicator, setShowStaleIndicator] = useState(false);
   
   // LKG caching for smooth transitions
   const lkgDataRef = useRef<OKRTreeV2Item[]>([]);
@@ -110,11 +111,19 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
       lkgDataRef.current = treeData;
       hasEverLoadedRef.current = true;
       setLKGData(selectedSnapshot, 'okrTree', treeData);
+      setShowStaleIndicator(false);
     }
   }, [treeData, selectedSnapshot]);
   
   // Determine display data: prefer fresh data, fallback to LKG
   const displayData = treeData.length > 0 ? treeData : lkgDataRef.current;
+  
+  // Track errors to show stale indicator
+  useEffect(() => {
+    if (error && displayData.length > 0 && !isFetching) {
+      setShowStaleIndicator(true);
+    }
+  }, [error, displayData.length, isFetching]);
   
   // Loading states
   const isInitialLoading = isLoading && !hasEverLoadedRef.current && displayData.length === 0;
@@ -370,6 +379,13 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
           >
             OKR Tree
           </h2>
+          {/* Stale data indicator */}
+          {showStaleIndicator && (
+            <span className="text-[11px] text-muted-foreground/70 italic">
+              Data may be stale
+            </span>
+          )}
+          {/* Refreshing indicator */}
           {isRefreshing && (
             <div className="flex items-center gap-1.5">
               <Loader2 size={12} className="animate-spin text-muted-foreground" />

@@ -54,9 +54,12 @@ interface AttentionItem {
 export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
   const navigate = useNavigate();
   
-  const { data, isLoading, isFetching, hasData } = useStrategyRoomSummary(snapshotId);
+  const { data, isLoading, isFetching, hasData, isStale, error } = useStrategyRoomSummary(snapshotId);
   
   const displayData = data ?? EMPTY_SUMMARY;
+  
+  // Show stale indicator if we're showing cached data after an error
+  const showStaleIndicator = isStale && !isFetching && !!error;
 
   const attentionItems = useMemo((): AttentionItem[] => {
     const items: AttentionItem[] = [];
@@ -140,12 +143,21 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
             Exposure & Gaps
           </h2>
         </div>
-        {isUpdating && (
-          <div className="flex items-center gap-1.5">
-            <Loader2 size={12} className="animate-spin text-muted-foreground" />
-            <span className={cn(TYPOGRAPHY.subtext, TEXT_COLORS.muted)}>Refreshing…</span>
-          </div>
-        )}
+        <div className="flex items-center gap-2">
+          {/* Stale data indicator */}
+          {showStaleIndicator && (
+            <span className="text-[11px] text-muted-foreground/70 italic">
+              Data may be stale
+            </span>
+          )}
+          {/* Refreshing indicator */}
+          {isUpdating && (
+            <div className="flex items-center gap-1.5">
+              <Loader2 size={12} className="animate-spin text-muted-foreground" />
+              <span className={cn(TYPOGRAPHY.subtext, TEXT_COLORS.muted)}>Refreshing…</span>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="p-3">

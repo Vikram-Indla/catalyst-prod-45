@@ -62,9 +62,12 @@ interface StrategicPulseSectionProps {
 export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps) {
   const navigate = useNavigate();
   
-  const { data, isLoading, isFetching, hasData } = useStrategyRoomSummary(snapshotId);
+  const { data, isLoading, isFetching, hasData, isStale, error } = useStrategyRoomSummary(snapshotId);
   
   const displayData = data ?? EMPTY_SUMMARY;
+  
+  // Show stale indicator if we're showing cached data after an error or stale fetch
+  const showStaleIndicator = isStale && !isFetching && !!error;
 
   const atRiskCount = displayData.atRiskObjectives?.length ?? 0;
   const overallProgress = displayData.avgProgress;
@@ -128,12 +131,21 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
             Strategic Pulse
           </h2>
         </div>
-        {isUpdating && (
-          <div className="flex items-center gap-1.5">
-            <Loader2 size={12} className="animate-spin text-muted-foreground" />
-            <span className={cn(TYPOGRAPHY.subtext, TEXT_COLORS.muted)}>Refreshing…</span>
-          </div>
-        )}
+        <div className="flex items-center gap-2">
+          {/* Stale data indicator - subtle, non-intrusive */}
+          {showStaleIndicator && (
+            <span className="text-[11px] text-muted-foreground/70 italic">
+              Data may be stale
+            </span>
+          )}
+          {/* Refreshing indicator - small spinner only */}
+          {isUpdating && (
+            <div className="flex items-center gap-1.5">
+              <Loader2 size={12} className="animate-spin text-muted-foreground" />
+              <span className={cn(TYPOGRAPHY.subtext, TEXT_COLORS.muted)}>Refreshing…</span>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="p-3">
