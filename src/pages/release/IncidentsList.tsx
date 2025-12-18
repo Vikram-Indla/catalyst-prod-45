@@ -1,7 +1,6 @@
 import { useState, useMemo, lazy, Suspense } from 'react';
-import { Search, ChevronLeft, ChevronRight, Filter, Download, List, LayoutGrid, Maximize2, Minimize2 } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, Filter, Download, List, LayoutGrid, Maximize2, Minimize2, Loader2 } from 'lucide-react';
 import { StatusBadge } from '@/components/release/StatusBadge';
-import { PriorityBadge } from '@/components/release/PriorityBadge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -9,39 +8,55 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import incidentsData from '@/data/incidents.json';
-import type { Incident } from '@/types/release';
-import { IncidentsFiltersDialog, IncidentFilters } from '@/components/release/IncidentsFiltersDialog';
+import { useIncidents } from '@/hooks/useIncidents';
+import type { IncidentFilters } from '@/types/incident';
+import { IncidentsFiltersDialog } from '@/components/release/IncidentsFiltersDialog';
 
-// Lazy load the modal to prevent 504 timeout
+// Lazy load the modal
 const IncidentDetailModal = lazy(() => import('@/components/incidents/modal/IncidentDetailModal'));
-
-// Cast and enhance incidents data
-const rawIncidents = incidentsData.incidents as any[];
-const incidents: Incident[] = rawIncidents.map(inc => ({
-  ...inc,
-  severity: inc.severity || 'SEV2',
-  labels: inc.labels || ['production'],
-  isMajorIncident: inc.isMajorIncident || false,
-  slackChannel: inc.slackChannel || null,
-  attachments: inc.attachments || [
-    { id: 'att-1', name: 'error_logs.txt', size: '2.3 MB', uploadedBy: inc.assignee?.name || 'User', uploadedAt: '07 Feb 2025 3:19am' },
-  ],
-  releaseVersion: inc.releaseVersion || 'Release 2 - Sectorial',
-}));
 
 type ViewMode = 'list' | 'kanban';
 
-// Status columns for Kanban
+// Status columns for Kanban - aligned with database enum values
 const KANBAN_COLUMNS = [
   { id: 'open', label: 'Open', color: 'bg-blue-500' },
-  { id: 'in-progress', label: 'In Progress', color: 'bg-orange-500' },
-  { id: 'analysis', label: 'Analysis', color: 'bg-yellow-500' },
-  { id: 'implementing', label: 'Implementing', color: 'bg-purple-500' },
-  { id: 'pending', label: 'Pending', color: 'bg-amber-500' },
+  { id: 'triage', label: 'Triage', color: 'bg-yellow-500' },
+  { id: 'to_committee', label: 'To Committee', color: 'bg-purple-500' },
+  { id: 'in_progress', label: 'In Progress', color: 'bg-orange-500' },
   { id: 'resolved', label: 'Resolved', color: 'bg-green-500' },
+  { id: 'converted', label: 'Converted', color: 'bg-teal-500' },
   { id: 'closed', label: 'Closed', color: 'bg-gray-500' },
 ];
+
+// Severity badge component
+const SeverityBadge = ({ severity }: { severity: string }) => {
+  const colors: Record<string, string> = {
+    SEV1: 'bg-red-100 text-red-800 border-red-200',
+    SEV2: 'bg-orange-100 text-orange-800 border-orange-200',
+    SEV3: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+    SEV4: 'bg-blue-100 text-blue-800 border-blue-200',
+  };
+  return (
+    <Badge variant="outline" className={cn('text-xs font-medium', colors[severity] || 'bg-gray-100')}>
+      {severity}
+    </Badge>
+  );
+};
+
+// Support Level badge
+const SupportLevelBadge = ({ level }: { level: string | null | undefined }) => {
+  if (!level) return <span className="text-muted-foreground text-sm">-</span>;
+  const colors: Record<string, string> = {
+    L1: 'bg-green-100 text-green-800',
+    L2: 'bg-blue-100 text-blue-800',
+    L3: 'bg-purple-100 text-purple-800',
+  };
+  return (
+    <Badge variant="outline" className={cn('text-xs font-medium', colors[level] || 'bg-gray-100')}>
+      {level}
+    </Badge>
+  );
+};
 
 export default function IncidentsList() {
   const [viewMode, setViewMode] = useState<ViewMode>('list');
@@ -49,40 +64,37 @@ export default function IncidentsList() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [filtersDialogOpen, setFiltersDialogOpen] = useState(false);
-  const [filters, setFilters] = useState<IncidentFilters>({});
+  const [filters, setFilters] = useState<IncidentFilters>({
+    status: ['open', 'triage', 'to_committee', 'in_progress'], // Default: Open incidents only
+  });
   const [kanbanExpanded, setKanbanExpanded] = useState<boolean | undefined>(undefined);
   const [collapsedColumns, setCollapsedColumns] = useState<Set<string>>(
-    new Set(['analysis', 'implementing', 'pending', 'resolved', 'closed'])
+    new Set(['converted', 'closed'])
   );
-  const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
+  const [selectedIncidentId, setSelectedIncidentId] = useState<string | null>(null);
   const pageSize = 20;
 
+  // Fetch incidents from Supabase
+  const { data: incidents = [], isLoading, error } = useIncidents(filters as any);
+
+  // Client-side search filter
   const filteredIncidents = useMemo(() => {
-    let result = incidents;
-    
-    // Search filter
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      result = result.filter(inc => 
-        inc.id.toLowerCase().includes(q) ||
-        inc.summary.toLowerCase().includes(q) ||
-        inc.component.toLowerCase().includes(q) ||
-        inc.assignee.name.toLowerCase().includes(q)
-      );
-    }
-    
-    // Status filter
-    if (filters.status && filters.status.length > 0) {
-      result = result.filter(inc => filters.status!.includes(inc.status));
-    }
-    
-    // Priority filter
-    if (filters.priority && filters.priority.length > 0) {
-      result = result.filter(inc => filters.priority!.includes(inc.priority));
-    }
-    
-    return result;
-  }, [searchQuery, filters]);
+    if (!searchQuery) return incidents;
+    const q = searchQuery.toLowerCase();
+    return incidents.filter(inc => 
+      inc.incident_key?.toLowerCase().includes(q) ||
+      inc.title?.toLowerCase().includes(q) ||
+      inc.reporter_name?.toLowerCase().includes(q)
+    );
+  }, [incidents, searchQuery]);
+
+  // Calculate aging (days since created)
+  const getAgingDays = (createdAt: string) => {
+    const created = new Date(createdAt);
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - created.getTime());
+    return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  };
 
   // Calculate active filter count
   const activeFilterCount = Object.entries(filters).filter(([key, value]) => {
@@ -95,15 +107,6 @@ export default function IncidentsList() {
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = startIndex + pageSize;
   const paginatedIncidents = filteredIncidents.slice(startIndex, endIndex);
-
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
-  };
-
-  const isOverdue = (dateStr: string) => {
-    return new Date(dateStr) < new Date();
-  };
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
@@ -127,7 +130,7 @@ export default function IncidentsList() {
 
   // Group incidents by status for Kanban view
   const incidentsByStatus = useMemo(() => {
-    const grouped: Record<string, Incident[]> = {};
+    const grouped: Record<string, typeof filteredIncidents> = {};
     KANBAN_COLUMNS.forEach(col => {
       grouped[col.id] = filteredIncidents.filter(inc => inc.status === col.id);
     });
@@ -150,31 +153,33 @@ export default function IncidentsList() {
   // Expand/Collapse all handler
   const handleExpandCollapseAll = () => {
     if (kanbanExpanded) {
-      // Collapse all
       setCollapsedColumns(new Set(KANBAN_COLUMNS.map(c => c.id)));
       setKanbanExpanded(false);
     } else {
-      // Expand all
       setCollapsedColumns(new Set());
       setKanbanExpanded(true);
     }
   };
 
-  const getTimeInStatus = (updatedAt?: string) => {
-    if (!updatedAt) return null;
-    try {
-      const updated = new Date(updatedAt);
-      const now = new Date();
-      const diffTime = Math.abs(now.getTime() - updated.getTime());
-      return Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    } catch {
-      return null;
-    }
-  };
+  // Find selected incident for modal
+  const selectedIncident = selectedIncidentId 
+    ? incidents.find(inc => inc.id === selectedIncidentId)
+    : null;
+
+  if (error) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-destructive text-lg font-medium">Failed to load incidents</p>
+          <p className="text-muted-foreground text-sm mt-1">{(error as Error).message}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-full flex flex-col bg-background">
-      {/* Header - fixed height 72px to align with sidebar */}
+      {/* Header */}
       <div className="h-[72px] border-b border-border bg-card flex-shrink-0">
         <div className="h-full px-4 sm:px-6 flex items-center">
           <div className="min-w-0">
@@ -184,7 +189,7 @@ export default function IncidentsList() {
         </div>
       </div>
 
-      {/* Toolbar - no top border, only bottom */}
+      {/* Toolbar */}
       <div className="flex flex-col gap-3 px-4 sm:px-6 py-3 bg-card">
         <div className="flex items-center justify-between gap-4">
           {/* Search */}
@@ -289,7 +294,11 @@ export default function IncidentsList() {
 
       {/* Content */}
       <div className="flex-1 flex flex-col min-h-0">
-        {viewMode === 'list' ? (
+        {isLoading ? (
+          <div className="flex-1 flex items-center justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+        ) : viewMode === 'list' ? (
           <div className="flex-1 p-4 sm:p-6 min-h-0 flex flex-col">
             <Card className="flex-1 flex flex-col min-h-0 overflow-hidden border border-border rounded shadow-none">
               <div className="flex-1 overflow-x-auto overflow-y-auto">
@@ -304,10 +313,13 @@ export default function IncidentsList() {
                         />
                       </th>
                       <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-r border-border whitespace-nowrap">
-                        Incident ID
+                        INC Number
                       </th>
-                      <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-r border-border min-w-[200px]">
+                      <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-r border-border min-w-[250px]">
                         Summary
+                      </th>
+                      <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-r border-border whitespace-nowrap">
+                        Severity
                       </th>
                       <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-r border-border whitespace-nowrap">
                         Priority
@@ -316,18 +328,24 @@ export default function IncidentsList() {
                         Status
                       </th>
                       <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-r border-border whitespace-nowrap">
-                        Assignee
+                        Support Level
                       </th>
                       <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-r border-border whitespace-nowrap">
-                        Target Date
+                        Work Group
                       </th>
                       <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border whitespace-nowrap">
-                        Component
+                        Aging
                       </th>
                     </tr>
                   </thead>
                   <tbody>
-                    {paginatedIncidents.map((incident) => (
+                    {paginatedIncidents.length === 0 ? (
+                      <tr>
+                        <td colSpan={9} className="px-4 py-12 text-center text-muted-foreground">
+                          No incidents found
+                        </td>
+                      </tr>
+                    ) : paginatedIncidents.map((incident) => (
                       <tr key={incident.id} className="hover:bg-muted/30 group">
                         <td className="px-4 py-3.5 border-b border-r border-border last:border-r-0 bg-card">
                           <Checkbox 
@@ -338,34 +356,46 @@ export default function IncidentsList() {
                         </td>
                         <td className="px-4 py-3.5 border-b border-r border-border bg-card">
                           <button 
-                            onClick={() => setSelectedIncident(incident)}
+                            onClick={() => setSelectedIncidentId(incident.id)}
                             className="font-mono text-sm font-medium text-brand-primary hover:underline cursor-pointer"
                           >
-                            {incident.id}
+                            {incident.incident_key || '-'}
                           </button>
+                          {incident.is_major_incident && (
+                            <Badge variant="destructive" className="ml-2 text-[10px] px-1.5">Major</Badge>
+                          )}
                         </td>
-                        <td className="px-4 py-3.5 border-b border-r border-border bg-card max-w-[300px]">
-                          <span className="text-sm text-foreground truncate block">{incident.summary}</span>
-                        </td>
-                        <td className="px-4 py-3.5 border-b border-r border-border bg-card">
-                          <PriorityBadge priority={incident.priority} />
-                        </td>
-                        <td className="px-4 py-3.5 border-b border-r border-border bg-card">
-                          <StatusBadge status={incident.status} />
+                        <td className="px-4 py-3.5 border-b border-r border-border bg-card max-w-[350px]">
+                          <span className="text-sm text-foreground truncate block">{incident.title}</span>
                         </td>
                         <td className="px-4 py-3.5 border-b border-r border-border bg-card">
-                          <span className="text-sm text-foreground">{incident.assignee.name}</span>
+                          <SeverityBadge severity={incident.severity} />
                         </td>
                         <td className="px-4 py-3.5 border-b border-r border-border bg-card">
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-sm text-foreground">{formatDate(incident.targetDate)}</span>
-                            {isOverdue(incident.targetDate) && incident.status !== 'closed' && incident.status !== 'resolved' && (
-                              <span className="w-2 h-2 rounded-full bg-destructive" />
-                            )}
-                          </div>
+                          {incident.priority ? (
+                            <Badge variant="outline" className="text-xs">{incident.priority}</Badge>
+                          ) : (
+                            <span className="text-muted-foreground text-sm">-</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3.5 border-b border-r border-border bg-card">
+                          <StatusBadge status={incident.status as any} />
+                        </td>
+                        <td className="px-4 py-3.5 border-b border-r border-border bg-card">
+                          <SupportLevelBadge level={incident.support_level} />
+                        </td>
+                        <td className="px-4 py-3.5 border-b border-r border-border bg-card">
+                          <span className="text-sm text-foreground">
+                            {incident.assignee_workgroup?.name || '-'}
+                          </span>
                         </td>
                         <td className="px-4 py-3.5 border-b border-border bg-card">
-                          <span className="text-sm text-foreground">{incident.component}</span>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-sm text-foreground">{getAgingDays(incident.created_at)}d</span>
+                            {getAgingDays(incident.created_at) > 7 && (
+                              <span className="w-2 h-2 rounded-full bg-destructive" title="Aging > 7 days" />
+                            )}
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -377,7 +407,7 @@ export default function IncidentsList() {
             {/* Footer */}
             <div className="pt-4 flex items-center justify-between">
               <div className="text-sm text-muted-foreground">
-                Showing {startIndex + 1}-{Math.min(endIndex, filteredIncidents.length)} of {filteredIncidents.length} incidents
+                Showing {filteredIncidents.length > 0 ? startIndex + 1 : 0}-{Math.min(endIndex, filteredIncidents.length)} of {filteredIncidents.length} incidents
               </div>
               <div className="flex items-center gap-1">
                 <button 
@@ -491,38 +521,32 @@ export default function IncidentsList() {
                           {columnIncidents.map((incident) => (
                             <Card 
                               key={incident.id} 
+                              onClick={() => setSelectedIncidentId(incident.id)}
                               className="cursor-pointer hover:shadow-lg hover:border-brand-primary/30 transition-all duration-200 bg-card border-border/60"
                             >
                               <CardContent className="p-4 space-y-3">
                                 <div className="flex items-start justify-between gap-2">
-                                  <span className="text-sm font-medium line-clamp-2 text-foreground/90">{incident.summary}</span>
+                                  <span className="text-sm font-medium line-clamp-2 text-foreground/90">{incident.title}</span>
+                                  {incident.is_major_incident && (
+                                    <Badge variant="destructive" className="text-[10px] px-1.5 shrink-0">Major</Badge>
+                                  )}
                                 </div>
                                 
                                 <div className="text-xs text-brand-primary font-mono font-medium">
-                                  {incident.id}
+                                  {incident.incident_key}
                                 </div>
 
-                                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                                  <span>👤 {incident.assignee.name}</span>
+                                <div className="flex items-center gap-2">
+                                  <SeverityBadge severity={incident.severity} />
+                                  <SupportLevelBadge level={incident.support_level} />
                                 </div>
-
-                                {getTimeInStatus(incident.targetDate) !== null && (
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground cursor-help">
-                                        <span>⏱ {getTimeInStatus(incident.targetDate)}d in status</span>
-                                      </div>
-                                    </TooltipTrigger>
-                                    <TooltipContent side="top" className="text-xs">
-                                      Time in current status: {getTimeInStatus(incident.targetDate)} days
-                                    </TooltipContent>
-                                  </Tooltip>
-                                )}
 
                                 <div className="flex items-center justify-between pt-1 border-t border-border/30">
-                                  <PriorityBadge priority={incident.priority} />
                                   <span className="text-xs text-muted-foreground">
-                                    📅 {formatDate(incident.targetDate)}
+                                    {incident.assignee_workgroup?.name || 'Unassigned'}
+                                  </span>
+                                  <span className="text-xs text-muted-foreground">
+                                    {getAgingDays(incident.created_at)}d ago
                                   </span>
                                 </div>
                               </CardContent>
@@ -556,10 +580,10 @@ export default function IncidentsList() {
       {selectedIncident && (
         <Suspense fallback={null}>
           <IncidentDetailModal
-            incident={selectedIncident}
+            incident={selectedIncident as any}
             isOpen={!!selectedIncident}
-            onClose={() => setSelectedIncident(null)}
-            parentIncidentId="INC-1246"
+            onClose={() => setSelectedIncidentId(null)}
+            parentIncidentId={selectedIncident.incident_key || ''}
           />
         </Suspense>
       )}
