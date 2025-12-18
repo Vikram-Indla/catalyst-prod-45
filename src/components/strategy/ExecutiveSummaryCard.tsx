@@ -52,7 +52,7 @@ function KPITile({
   return (
     <button
       onClick={onClick}
-      className="relative flex flex-col items-start p-5 transition-all duration-200 text-left group flex-1 min-w-0 rounded-lg"
+      className="relative flex flex-col items-start p-4 transition-all duration-200 text-left group flex-1 min-w-0 rounded-lg"
       style={{
         backgroundColor: 'var(--surface-subtle)',
         border: '1px solid var(--border-subtle)',
@@ -60,7 +60,7 @@ function KPITile({
       onMouseEnter={(e) => {
         e.currentTarget.style.borderColor = 'var(--border-accent)';
         e.currentTarget.style.boxShadow = 'var(--shadow-md)';
-        e.currentTarget.style.transform = 'translateY(-2px)';
+        e.currentTarget.style.transform = 'translateY(-1px)';
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.borderColor = 'var(--border-subtle)';
@@ -70,15 +70,15 @@ function KPITile({
       aria-label={`${label}: ${value}`}
     >
       {/* Header with label and icon */}
-      <div className="flex items-start justify-between w-full mb-3">
+      <div className="flex items-start justify-between w-full mb-2">
         <span 
-          className="text-[11px] font-semibold uppercase tracking-wider"
-          style={{ color: 'var(--text-secondary)' }}
+          className="text-[10px] font-semibold uppercase tracking-wider"
+          style={{ color: 'var(--text-muted)' }}
         >
           {label}
         </span>
         <div 
-          className="w-8 h-8 rounded-lg flex items-center justify-center"
+          className="w-7 h-7 rounded-md flex items-center justify-center"
           style={{ backgroundColor: iconBgColor }}
         >
           {icon}
@@ -88,14 +88,14 @@ function KPITile({
       {/* Value */}
       {isLoading ? (
         <span 
-          className="text-3xl font-bold leading-none mb-1"
+          className="text-2xl font-bold leading-none mb-0.5"
           style={{ color: 'var(--text-muted)' }}
         >
           —
         </span>
       ) : (
         <span 
-          className="text-3xl font-bold leading-none mb-1 tabular-nums"
+          className="text-2xl font-bold leading-none mb-0.5 tabular-nums"
           style={{ 
             color: 'var(--text-primary)'
           }}
@@ -106,8 +106,8 @@ function KPITile({
       
       {/* Subtext */}
       <span 
-        className="text-xs leading-snug"
-        style={{ color: 'var(--text-secondary)' }}
+        className="text-[11px] leading-snug"
+        style={{ color: 'var(--text-muted)' }}
       >
         {subtext}
       </span>
@@ -115,7 +115,7 @@ function KPITile({
       {/* Progress bar (only for Overall Progress) */}
       {showProgress && (
         <div 
-          className="w-full h-2 rounded-full mt-3 overflow-hidden"
+          className="w-full h-1.5 rounded-full mt-2.5 overflow-hidden"
           style={{ backgroundColor: 'var(--progress-bg)' }}
         >
           <div 
@@ -226,27 +226,27 @@ export function ExecutiveSummaryCard({ snapshotId }: ExecutiveSummaryCardProps) 
         boxShadow: 'var(--shadow-card)',
       }}
     >
-      {/* Header */}
+      {/* Header with section title pattern */}
       <div 
-        className="px-6 py-4"
+        className="px-5 py-3"
         style={{ borderBottom: '1px solid var(--border-subtle)' }}
       >
         <h2 
-          className="text-lg font-semibold"
+          className="text-[15px] font-semibold"
           style={{ color: 'var(--text-primary)' }}
         >
           Executive Summary
         </h2>
         <p 
-          className="text-sm mt-0.5"
-          style={{ color: 'var(--text-secondary)' }}
+          className="text-[12px] mt-0.5"
+          style={{ color: 'var(--text-muted)' }}
         >
           Key performance indicators at a glance
         </p>
       </div>
 
-      {/* KPI Grid */}
-      <div className="p-6">
+      {/* KPI Grid — Reduced padding for density */}
+      <div className="p-4">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Overall Progress - Green */}
           <KPITile

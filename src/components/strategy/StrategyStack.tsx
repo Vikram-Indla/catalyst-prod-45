@@ -187,21 +187,21 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
         boxShadow: 'var(--shadow-card)',
       }}
     >
-      {/* Header */}
+      {/* Header with section title pattern */}
       <div 
-        className="px-6 py-4 flex items-center justify-between"
+        className="px-5 py-3 flex items-center justify-between"
         style={{ borderBottom: '1px solid var(--border-subtle)' }}
       >
         <div>
           <h2 
-            className="text-lg font-semibold"
+            className="text-[15px] font-semibold"
             style={{ color: 'var(--text-primary)' }}
           >
             Strategy Coverage & Alignment
           </h2>
           <p 
-            className="text-sm mt-0.5"
-            style={{ color: 'var(--text-secondary)' }}
+            className="text-[12px] mt-0.5"
+            style={{ color: 'var(--text-muted)' }}
           >
             Coverage across strategic layers
           </p>
@@ -220,36 +220,36 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
               }}
             >
               <th 
-                className="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider w-48"
-                style={{ color: 'var(--text-secondary)' }}
+                className="px-5 py-2.5 text-left text-[10px] font-semibold uppercase tracking-wider w-48"
+                style={{ color: 'var(--text-muted)' }}
               >
                 Layer
               </th>
               <th 
-                className="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider w-24"
-                style={{ color: 'var(--text-secondary)' }}
+                className="px-5 py-2.5 text-left text-[10px] font-semibold uppercase tracking-wider w-20"
+                style={{ color: 'var(--text-muted)' }}
               >
                 Count
               </th>
               <th 
-                className="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider"
-                style={{ color: 'var(--text-secondary)' }}
+                className="px-5 py-2.5 text-left text-[10px] font-semibold uppercase tracking-wider"
+                style={{ color: 'var(--text-muted)' }}
               >
                 Coverage
               </th>
               <th 
-                className="px-6 py-3 text-right text-[11px] font-semibold uppercase tracking-wider w-28"
-                style={{ color: 'var(--text-secondary)' }}
+                className="px-5 py-2.5 text-right text-[10px] font-semibold uppercase tracking-wider w-24"
+                style={{ color: 'var(--text-muted)' }}
               >
                 % Aligned
               </th>
               <th 
-                className="px-6 py-3 text-right text-[11px] font-semibold uppercase tracking-wider w-20"
-                style={{ color: 'var(--text-secondary)' }}
+                className="px-5 py-2.5 text-right text-[10px] font-semibold uppercase tracking-wider w-16"
+                style={{ color: 'var(--text-muted)' }}
               >
                 Gap
               </th>
-              <th className="w-10"></th>
+              <th className="w-8"></th>
             </tr>
           </thead>
           <tbody>
@@ -265,25 +265,34 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                     key={layer.key}
                     onClick={() => handleRowClick(layer.key)}
                     className={cn(
-                      "cursor-pointer transition-colors group",
-                      "hover:bg-[#F6F8FA] dark:hover:bg-[#161B22]"
+                      "cursor-pointer transition-colors group"
                     )}
                     style={{ 
-                      borderBottom: isLast && !isSelected ? 'none' : '1px solid var(--divider-subtle)',
-                      backgroundColor: isSelected ? 'var(--surface-2)' : 'transparent',
+                      borderBottom: isLast && !isSelected ? 'none' : '1px solid var(--border-subtle)',
+                      backgroundColor: isSelected ? 'var(--surface-hover)' : 'transparent',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isSelected) {
+                        e.currentTarget.style.backgroundColor = 'var(--surface-hover)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isSelected) {
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                      }
                     }}
                   >
                     {/* Layer Name with Icon */}
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
+                    <td className="px-5 py-3">
+                      <div className="flex items-center gap-2.5">
                         <div 
-                          className="w-8 h-8 rounded-lg flex items-center justify-center"
+                          className="w-7 h-7 rounded-md flex items-center justify-center"
                           style={{ backgroundColor: layer.iconBgColor }}
                         >
-                          <Icon size={16} style={{ color: layer.iconColor }} />
+                          <Icon size={14} style={{ color: layer.iconColor }} />
                         </div>
                         <span 
-                          className="text-sm font-medium"
+                          className="text-[13px] font-medium"
                           style={{ color: 'var(--text-primary)' }}
                         >
                           {layer.label}
@@ -292,9 +301,9 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                     </td>
                     
                     {/* Count */}
-                    <td className="px-6 py-4">
+                    <td className="px-5 py-3">
                       <span 
-                        className="text-sm"
+                        className="text-[13px] tabular-nums"
                         style={{ color: data.count === 0 ? 'var(--text-muted)' : 'var(--text-primary)' }}
                       >
                         {isLoading || okrLoading ? '–' : data.count}
@@ -302,11 +311,11 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                     </td>
                     
                     {/* Coverage Progress Bar */}
-                    <td className="px-6 py-4">
+                    <td className="px-5 py-3">
                       {data.count > 0 ? (
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2.5">
                           <div 
-                            className="flex-1 h-2 rounded-full overflow-hidden"
+                            className="flex-1 h-1.5 rounded-full overflow-hidden"
                             style={{ backgroundColor: 'var(--progress-bg)' }}
                           >
                             <div 
@@ -317,44 +326,44 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                               }}
                             />
                           </div>
-                          <span className="text-xs w-10" style={{ color: 'var(--text-secondary)' }}>
+                          <span className="text-[11px] tabular-nums w-8" style={{ color: 'var(--text-muted)' }}>
                             {data.coverage}%
                           </span>
                         </div>
                       ) : (
-                        <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>—</span>
+                        <span className="text-[13px]" style={{ color: 'var(--text-muted)' }}>—</span>
                       )}
                     </td>
                     
                     {/* % Aligned */}
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-5 py-3 text-right">
                       <span 
-                        className="text-sm"
-                        style={{ color: 'var(--text-secondary)' }}
+                        className="text-[13px] tabular-nums"
+                        style={{ color: 'var(--text-muted)' }}
                       >
                         {data.count > 0 ? `${data.coverage}%` : '—'}
                       </span>
                     </td>
                     
                     {/* Gap */}
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-5 py-3 text-right">
                       <span 
-                        className="text-sm"
-                        style={{ color: 'var(--text-secondary)' }}
+                        className="text-[13px] tabular-nums"
+                        style={{ color: data.gap > 0 ? 'var(--status-warning)' : 'var(--text-muted)' }}
                       >
                         {data.gap}
                       </span>
                     </td>
                     
                     {/* Chevron */}
-                    <td className="px-4 py-4">
+                    <td className="px-3 py-3">
                       <ChevronRight 
-                        size={16} 
+                        size={14} 
                         className={cn(
                           "transition-transform",
                           isSelected && "rotate-90"
                         )}
-                        style={{ color: 'var(--text-secondary)' }}
+                        style={{ color: 'var(--text-muted)' }}
                       />
                     </td>
                   </tr>
