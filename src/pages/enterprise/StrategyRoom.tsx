@@ -105,12 +105,32 @@ export default function StrategyRoomPage() {
       <PageChrome>
         <div className="px-5 py-4 pb-6 max-w-[1400px] mx-auto">
           <div className="space-y-3">
-            {/* Strategic Pulse Skeleton - 5 tiles */}
+            {/* Strategic Pulse Skeleton - Executive hierarchy */}
             <SkeletonSection>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <SkeletonTile key={i} />
-                ))}
+              <div className="flex flex-col lg:flex-row gap-3">
+                {/* Primary card skeleton */}
+                <div 
+                  className="lg:w-[240px] min-h-[120px] p-4 rounded-md flex-shrink-0"
+                  style={{ backgroundColor: 'var(--muted)', border: '1px solid var(--border)' }}
+                >
+                  <div className="h-3 w-24 rounded mb-3 animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
+                  <div className="h-7 w-20 rounded mb-2 animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
+                  <div className="h-2.5 w-28 rounded animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
+                </div>
+                {/* Secondary cards skeleton */}
+                <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-2">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div 
+                      key={i} 
+                      className="p-3 rounded-md min-h-[56px]"
+                      style={{ backgroundColor: 'var(--muted)', border: '1px solid var(--border)' }}
+                    >
+                      <div className="h-2.5 w-14 rounded mb-2 animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
+                      <div className="h-5 w-10 rounded mb-1 animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
+                      <div className="h-2 w-16 rounded animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
+                    </div>
+                  ))}
+                </div>
               </div>
             </SkeletonSection>
 

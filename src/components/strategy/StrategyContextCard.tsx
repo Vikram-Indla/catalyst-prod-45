@@ -1,6 +1,7 @@
 /**
  * StrategyContextCard — Mission, Vision, Values grid
  * Renders ONLY the 3 editable cards; parent provides accordion wrapper
+ * No duplicate headers - parent handles section title
  */
 
 import { useToast } from '@/hooks/use-toast';
@@ -73,67 +74,64 @@ export function StrategyContextCard({ snapshot, onUpdate }: StrategyContextCardP
   const contextItems = [
     {
       icon: Crosshair,
-      title: 'MISSION',
+      title: 'Mission',
       question: 'Why do we exist?',
       value: snapshot?.mission || '',
       field: 'mission' as const,
       placeholder: 'Lead the industrial and mineral ecosystem...',
       iconColor: 'var(--brand-primary)',
       iconBg: 'rgba(92, 124, 92, 0.1)',
-      labelColor: 'var(--brand-primary)',
     },
     {
       icon: Eye,
-      title: 'VISION',
+      title: 'Vision',
       question: 'What value do we provide?',
       value: snapshot?.vision || '',
       field: 'vision' as const,
       placeholder: 'Make Saudi Arabia a global magnet...',
       iconColor: 'var(--brand-primary)',
       iconBg: 'rgba(92, 124, 92, 0.1)',
-      labelColor: 'var(--brand-primary)',
     },
     {
       icon: Star,
-      title: 'VALUES',
+      title: 'Values',
       question: 'How do we behave?',
       value: valuesString,
       field: 'values' as const,
       placeholder: 'Ambition, Influence, Confidence...',
       iconColor: 'var(--secondary-bronze)',
       iconBg: 'rgba(139, 115, 85, 0.1)',
-      labelColor: 'var(--secondary-bronze)',
     },
   ];
 
   return (
-    <div className="p-4">
+    <div className="p-3">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
         {contextItems.map((item) => {
           const Icon = item.icon;
           return (
             <div 
               key={item.field}
-              className="p-3 rounded-lg transition-all duration-150"
+              className="p-3 rounded-md transition-all duration-150"
               style={{
-                backgroundColor: 'var(--surface-subtle)',
+                backgroundColor: 'var(--surface-2)',
                 border: '1px solid var(--border-subtle)',
               }}
             >
-              {/* Label with Colored Icon Background */}
-              <div className="flex items-center gap-2 mb-1.5">
+              {/* Label with Icon */}
+              <div className="flex items-center gap-2 mb-1">
                 <div 
                   className="w-5 h-5 rounded-full flex items-center justify-center"
                   style={{ backgroundColor: item.iconBg }}
                 >
                   <Icon 
-                    size={12}
+                    size={11}
                     style={{ color: item.iconColor }}
                   />
                 </div>
                 <span 
-                  className="text-[10px] font-semibold uppercase tracking-wider"
-                  style={{ color: item.labelColor }}
+                  className="text-[11px] font-semibold"
+                  style={{ color: 'var(--text-secondary)' }}
                 >
                   {item.title}
                 </span>
@@ -141,14 +139,14 @@ export function StrategyContextCard({ snapshot, onUpdate }: StrategyContextCardP
 
               {/* Question */}
               <p 
-                className="text-[11px] italic mb-1.5"
+                className="text-[10px] italic mb-1.5"
                 style={{ color: 'var(--text-muted)' }}
               >
                 {item.question}
               </p>
 
               {/* Editable Value */}
-              <div className="min-h-[36px]">
+              <div className="min-h-[32px]">
                 <InlineEditTextarea
                   value={item.value}
                   onSave={(v) => handleSave(item.field, v)}
