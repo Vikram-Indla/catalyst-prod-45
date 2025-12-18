@@ -1,16 +1,10 @@
 /**
  * =====================================================
- * Theme Details Drawer - Enterprise Strategy-Grade Editor
+ * Theme Details Drawer - Premium Enterprise Work Item Panel
  * =====================================================
  * 
- * Single-page sections layout (no tabs) for strategic theme editing.
- * Follows Business Demand Drawer shell pattern but simplified for strategy.
- * 
- * Sections:
- * 1. Strategic Context (Snapshot, State, Description)
- * 2. Objectives (linked items)
- * 3. Aligned Epics (linked items)
- * 4. Audit History (collapsible)
+ * CIO-grade detail drawer with clear header, well-spaced sections,
+ * and premium empty states. Token-based colors throughout.
  */
 
 import { useState, useEffect, useRef } from 'react';
@@ -18,13 +12,13 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { 
   Trash2, Copy, X, Pencil, Link as LinkIcon, ChevronDown, 
-  Maximize2, Minimize2, MoreVertical, Plus, ChevronRight 
+  Maximize2, Minimize2, MoreVertical, Plus, ChevronRight,
+  Target, Layers, Clock, User, FileText, History
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Dialog,
@@ -67,6 +61,8 @@ import { RichTextEditor } from '@/components/business-requests/RichTextEditor';
 import { UnifiedAuditHistoryTab } from '@/components/shared/UnifiedAuditHistoryTab';
 import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
+import { formatDistanceToNow } from 'date-fns';
 
 interface Theme {
   id: string;
@@ -80,6 +76,7 @@ interface Theme {
   owner_id?: string | null;
   snapshot_id?: string | null;
   created_at: string;
+  updated_at?: string;
 }
 
 interface ThemeDetailsDrawerProps {
@@ -90,62 +87,111 @@ interface ThemeDetailsDrawerProps {
 
 // Generate short theme ID from UUID
 function formatThemeKey(id: string): string {
-  return `TH-${id.slice(0, 4)}`;
+  return `TH-${id.slice(0, 4).toUpperCase()}`;
 }
 
-// Status badge formatter
-const STATUS_STYLES: Record<string, { label: string; className: string }> = {
-  'ON_TRACK': { 
-    label: 'On Track', 
-    className: 'bg-[rgba(92,124,92,0.1)] dark:bg-[rgba(92,124,92,0.2)] text-[#5C7C5C] dark:text-[#7DA37D] border-[rgba(92,124,92,0.3)]' 
-  },
-  'AT_RISK': { 
-    label: 'At Risk', 
-    className: 'bg-[rgba(198,156,109,0.1)] dark:bg-[rgba(198,156,109,0.2)] text-[#C69C6D] dark:text-[#D4B896] border-[rgba(198,156,109,0.3)]' 
-  },
-  'OFF_TRACK': { 
-    label: 'Off Track', 
-    className: 'bg-[rgba(184,92,92,0.1)] dark:bg-[rgba(184,92,92,0.2)] text-[#B85C5C] dark:text-[#D88888] border-[rgba(184,92,92,0.3)]' 
-  },
-  'NOT_STARTED': { 
-    label: 'Not Started', 
-    className: 'bg-[#F6F8FA] dark:bg-[#21262D] text-[#57606A] dark:text-[#8B949E] border-[#E1E4E8] dark:border-[#30363D]' 
-  },
-  'IN_PROGRESS': { 
-    label: 'In Progress', 
-    className: 'bg-[rgba(198,156,109,0.1)] dark:bg-[rgba(198,156,109,0.2)] text-[#C69C6D] dark:text-[#D4B896] border-[rgba(198,156,109,0.3)]' 
-  },
-  'ACTIVE': { 
-    label: 'Active', 
-    className: 'bg-[rgba(92,124,92,0.1)] dark:bg-[rgba(92,124,92,0.2)] text-[#5C7C5C] dark:text-[#7DA37D] border-[rgba(92,124,92,0.3)]' 
-  },
-  'DONE': { 
-    label: 'Done', 
-    className: 'bg-[rgba(92,124,92,0.1)] dark:bg-[rgba(92,124,92,0.2)] text-[#5C7C5C] dark:text-[#7DA37D] border-[rgba(92,124,92,0.3)]' 
-  },
-  'CANCELLED': { 
-    label: 'Cancelled', 
-    className: 'bg-[#F6F8FA] dark:bg-[#21262D] text-[#57606A] dark:text-[#8B949E] border-[#E1E4E8] dark:border-[#30363D]' 
-  },
+// Strategic theme states
+const THEME_STATES: Record<string, { label: string; color: string; bg: string }> = {
+  'proposed': { label: 'Draft', color: 'var(--text-muted)', bg: 'var(--surface-subtle)' },
+  'active': { label: 'Active', color: 'var(--status-success)', bg: 'var(--status-success-bg)' },
+  'done': { label: 'Retired', color: 'var(--text-muted)', bg: 'var(--surface-subtle)' },
+  'cancelled': { label: 'Cancelled', color: 'var(--status-danger)', bg: 'var(--status-danger-bg)' },
 };
 
-function StatusBadge({ status }: { status: string }) {
-  const upperStatus = status.toUpperCase().replace(/-/g, '_');
-  const { label, className } = STATUS_STYLES[upperStatus] || STATUS_STYLES['NOT_STARTED'];
+// Status chip component
+function StatusChip({ status }: { status: string }) {
+  const state = THEME_STATES[status] || THEME_STATES['proposed'];
   return (
-    <span className={`inline-flex px-2.5 py-1 rounded-md text-xs font-semibold border ${className}`}>
-      {label}
+    <span 
+      className="inline-flex px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide"
+      style={{ backgroundColor: state.bg, color: state.color }}
+    >
+      {state.label}
     </span>
   );
 }
 
-// Strategic theme states - maps DB values to strategic labels
-const THEME_STATES: Record<string, string> = {
-  'proposed': 'Draft',
-  'active': 'Active',
-  'done': 'Retired',
-  'cancelled': 'Cancelled',
-};
+// Progress indicator for objectives
+function ProgressBar({ value }: { value: number }) {
+  const percentage = Math.round(value * 100);
+  const color = percentage >= 70 ? 'var(--status-success)' : percentage >= 40 ? 'var(--status-warning)' : 'var(--status-danger)';
+  return (
+    <div className="flex items-center gap-2">
+      <div 
+        className="w-16 h-1 rounded-full overflow-hidden"
+        style={{ backgroundColor: 'var(--progress-track)' }}
+      >
+        <div 
+          className="h-full rounded-full transition-all"
+          style={{ width: `${percentage}%`, backgroundColor: color }}
+        />
+      </div>
+      <span 
+        className="text-[10px] font-mono tabular-nums"
+        style={{ color: 'var(--text-muted)' }}
+      >
+        {percentage}%
+      </span>
+    </div>
+  );
+}
+
+// Section header component
+function SectionHeader({ 
+  icon: Icon, 
+  title, 
+  count, 
+  action 
+}: { 
+  icon: React.ElementType; 
+  title: string; 
+  count?: number; 
+  action?: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-center justify-between pb-3" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+      <div className="flex items-center gap-2">
+        <div 
+          className="w-6 h-6 rounded flex items-center justify-center"
+          style={{ backgroundColor: 'var(--surface-subtle)' }}
+        >
+          <Icon size={12} style={{ color: 'var(--text-muted)' }} />
+        </div>
+        <span 
+          className="text-[11px] font-semibold uppercase tracking-wider"
+          style={{ color: 'var(--text-muted)' }}
+        >
+          {title}
+        </span>
+        {count !== undefined && count > 0 && (
+          <span 
+            className="text-[10px] font-semibold px-1.5 py-0.5 rounded"
+            style={{ backgroundColor: 'var(--brand-gold-bg)', color: 'var(--brand-gold)' }}
+          >
+            {count}
+          </span>
+        )}
+      </div>
+      {action}
+    </div>
+  );
+}
+
+// Empty state component
+function EmptyState({ icon: Icon, message, hint }: { icon: React.ElementType; message: string; hint?: string }) {
+  return (
+    <div className="py-6 flex flex-col items-center justify-center text-center">
+      <div 
+        className="w-8 h-8 rounded-lg flex items-center justify-center mb-2"
+        style={{ backgroundColor: 'var(--surface-subtle)' }}
+      >
+        <Icon size={14} style={{ color: 'var(--text-muted)' }} />
+      </div>
+      <p className="text-[12px] font-medium" style={{ color: 'var(--text-secondary)' }}>{message}</p>
+      {hint && <p className="text-[11px] mt-0.5" style={{ color: 'var(--text-muted)' }}>{hint}</p>}
+    </div>
+  );
+}
 
 export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawerProps) {
   const queryClient = useQueryClient();
@@ -176,7 +222,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
     }
   }, [theme]);
 
-  // Fetch snapshot name for read-only display
+  // Fetch snapshot name
   const { data: snapshot } = useQuery({
     queryKey: ['snapshot-name', theme?.snapshot_id],
     queryFn: async () => {
@@ -199,7 +245,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
       if (!theme?.id) return [];
       const { data, error } = await supabase
         .from('objectives')
-        .select('id, name, status, overall_progress')
+        .select('id, name, status, overall_progress, health')
         .eq('theme_id', theme.id)
         .order('name');
       if (error) throw error;
@@ -224,7 +270,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
     enabled: !!theme?.id,
   });
 
-  // Fetch available objectives for linking (not linked to THIS theme)
+  // Fetch available objectives for linking
   const { data: availableObjectives = [] } = useQuery({
     queryKey: ['available-objectives-for-theme', theme?.id],
     queryFn: async () => {
@@ -235,14 +281,12 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
         .neq('theme_id', theme.id)
         .order('name');
       if (error) throw error;
-      // Also include objectives with null theme_id
       const { data: unlinkedData } = await supabase
         .from('objectives')
         .select('id, name, status')
         .is('theme_id', null)
         .order('name');
       const combined = [...(data || []), ...(unlinkedData || [])];
-      // Remove duplicates by id
       const unique = combined.filter((item, index, self) => 
         index === self.findIndex((t) => t.id === item.id)
       );
@@ -266,7 +310,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
     enabled: showLinkEpicDialog,
   });
 
-  // Save mutation
+  // Mutations
   const saveMutation = useMutation({
     mutationFn: async (data: Partial<Theme>) => {
       if (!theme) throw new Error('No theme selected');
@@ -289,12 +333,11 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
       toast.success('Theme saved');
       setHasChanges(false);
     },
-    onError: (error) => {
+    onError: () => {
       toast.error('Failed to save theme');
     },
   });
 
-  // Save name mutation
   const saveNameMutation = useMutation({
     mutationFn: async (newName: string) => {
       if (!theme) throw new Error('No theme selected');
@@ -311,7 +354,6 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
     },
   });
 
-  // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: async () => {
       if (!theme) throw new Error('No theme selected');
@@ -329,7 +371,6 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
     },
   });
 
-  // Duplicate mutation
   const duplicateMutation = useMutation({
     mutationFn: async () => {
       if (!theme) throw new Error('No theme selected');
@@ -350,7 +391,6 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
     },
   });
 
-  // Link objective mutation
   const linkObjectiveMutation = useMutation({
     mutationFn: async (objectiveId: string) => {
       const { error } = await supabase
@@ -367,7 +407,6 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
     },
   });
 
-  // Link epic mutation
   const linkEpicMutation = useMutation({
     mutationFn: async (epicId: string) => {
       const { error } = await supabase
@@ -436,39 +475,55 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
     setHasChanges(true);
   };
 
+  const lastUpdated = theme.updated_at || theme.created_at;
+
   return (
     <>
       <Sheet open={isOpen} onOpenChange={(open) => !open && handleAttemptClose()}>
         <SheetContent
           side="right"
           hideClose
-          className={`executive-drawer ${drawerWidthClass} p-0 flex flex-col overflow-hidden bg-white dark:bg-[#161B22]`}
+          className={cn("p-0 flex flex-col overflow-hidden", drawerWidthClass)}
+          style={{ backgroundColor: 'var(--surface-bg)' }}
         >
-          {/* 🔒 GOLD VERTICAL LINE — FIXED FULL HEIGHT (uses fixed to match SheetContent positioning) */}
+          {/* Left accent bar */}
           <div
             aria-hidden
-            className="pointer-events-none fixed left-0 top-0 bottom-0 w-1 bg-brand-primary z-[201]"
+            className="pointer-events-none fixed left-0 top-0 bottom-0 w-1 z-[201]"
+            style={{ backgroundColor: 'var(--brand-primary)' }}
           />
-          <SheetHeader className="executive-drawer-header flex-col space-y-0 shrink-0 p-0 bg-white dark:bg-[#161B22]">
-            {/* Header Row - thin gold border */}
-            <div className="flex items-center justify-between px-4 md:px-5 pt-4 pb-3 border-b border-brand-primary/50">
-              {/* Left: Theme Key + Title */}
-              <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                <div className="flex items-center gap-1 shrink-0">
-                  <span className="text-sm font-medium text-brand-primary">
+          
+          <SheetHeader className="flex-col space-y-0 shrink-0 p-0">
+            {/* Header Row */}
+            <div 
+              className="px-4 md:px-5 pt-4 pb-3 flex items-start justify-between gap-4"
+              style={{ borderBottom: '1px solid var(--border-subtle)' }}
+            >
+              {/* Left: ID, Title, Meta */}
+              <div className="flex-1 min-w-0">
+                {/* ID + Link */}
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span 
+                    className="text-[11px] font-semibold px-1.5 py-0.5 rounded"
+                    style={{ backgroundColor: 'var(--secondary-green-bg)', color: 'var(--secondary-green)' }}
+                  >
                     {formatThemeKey(theme.id)}
                   </span>
                   <button
                     onClick={handleCopyLink}
-                    className="text-muted-foreground/60 hover:text-brand-primary transition-colors p-0.5"
+                    className="p-1 rounded transition-colors"
+                    style={{ color: 'var(--text-muted)' }}
+                    onMouseEnter={(e) => e.currentTarget.style.color = 'var(--brand-primary)'}
+                    onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
                     title="Copy link"
                   >
-                    <LinkIcon className="h-3 w-3" />
+                    <LinkIcon size={12} />
                   </button>
+                  <StatusChip status={formData.status || 'proposed'} />
                 </div>
 
                 {/* Editable title */}
-                <div className="flex items-center gap-1.5 flex-1 min-w-0 group">
+                <div className="flex items-center gap-1.5 group mb-2">
                   {isEditingName ? (
                     <Input
                       ref={nameInputRef}
@@ -476,36 +531,63 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                       onChange={(e) => setEditedName(e.target.value)}
                       onBlur={handleSaveName}
                       onKeyDown={handleNameKeyDown}
-                      className="text-base font-medium h-auto py-1 px-2 border-brand-primary/50 focus:border-brand-primary"
+                      className="text-[16px] font-semibold h-auto py-1 px-2"
+                      style={{ 
+                        backgroundColor: 'var(--surface-bg)', 
+                        borderColor: 'var(--brand-primary)',
+                        color: 'var(--text-primary)'
+                      }}
                     />
                   ) : (
                     <>
-                      <SheetTitle className="truncate text-base font-medium">
+                      <SheetTitle 
+                        className="truncate text-[16px] font-semibold"
+                        style={{ color: 'var(--text-primary)' }}
+                      >
                         {formData.name || theme.name}
                       </SheetTitle>
                       <button
                         onClick={handleStartEditName}
-                        className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-brand-primary transition-all p-0.5"
+                        className="opacity-0 group-hover:opacity-100 p-1 rounded transition-all"
+                        style={{ color: 'var(--text-muted)' }}
                         title="Rename"
                       >
-                        <Pencil className="h-3.5 w-3.5" />
+                        <Pencil size={12} />
                       </button>
                     </>
                   )}
                 </div>
+
+                {/* Meta row */}
+                <div className="flex items-center gap-3 text-[11px]" style={{ color: 'var(--text-muted)' }}>
+                  <div className="flex items-center gap-1">
+                    <Clock size={10} />
+                    <span>Updated {formatDistanceToNow(new Date(lastUpdated), { addSuffix: true })}</span>
+                  </div>
+                  {snapshot && (
+                    <div className="flex items-center gap-1">
+                      <Target size={10} />
+                      <span>{snapshot.name}</span>
+                    </div>
+                  )}
+                </div>
               </div>
 
-              {/* Right: Save + Actions */}
-              <div className="flex items-center gap-2 shrink-0">
+              {/* Right: Actions */}
+              <div className="flex items-center gap-1.5 shrink-0">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
                       size="sm"
-                      className="h-8 px-3 text-sm font-medium bg-brand-primary hover:bg-brand-primary-hover text-white"
+                      className="h-7 px-3 text-[12px] font-medium"
+                      style={{ 
+                        backgroundColor: 'var(--brand-primary)', 
+                        color: 'white',
+                      }}
                       disabled={saveMutation.isPending}
                     >
                       {saveMutation.isPending ? 'Saving...' : 'Save'}
-                      <ChevronDown className="h-3.5 w-3.5 ml-1" />
+                      <ChevronDown size={12} className="ml-1" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="z-[400]">
@@ -516,29 +598,46 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                      <MoreVertical className="h-4 w-4" />
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-7 w-7"
+                      style={{ color: 'var(--text-muted)' }}
+                    >
+                      <MoreVertical size={14} />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48 z-[400]">
+                  <DropdownMenuContent align="end" className="w-44 z-[400]">
                     <DropdownMenuItem onSelect={() => duplicateMutation.mutate()}>
-                      <Copy className="h-4 w-4 mr-2" />
-                      Duplicate Theme
+                      <Copy size={12} className="mr-2" />
+                      Duplicate
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onSelect={() => deleteMutation.mutate()} className="text-destructive">
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Delete Theme
+                      <Trash2 size={12} className="mr-2" />
+                      Delete
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
 
-                <Button variant="ghost" size="icon" onClick={() => setIsExpanded(!isExpanded)} className="h-8 w-8">
-                  {isExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={() => setIsExpanded(!isExpanded)} 
+                  className="h-7 w-7"
+                  style={{ color: 'var(--text-muted)' }}
+                >
+                  {isExpanded ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
                 </Button>
 
-                <Button variant="ghost" size="icon" onClick={handleAttemptClose} className="h-8 w-8">
-                  <X className="h-4 w-4" />
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={handleAttemptClose} 
+                  className="h-7 w-7"
+                  style={{ color: 'var(--text-muted)' }}
+                >
+                  <X size={14} />
                 </Button>
               </div>
             </div>
@@ -547,193 +646,329 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
 
           {/* Scrollable Content */}
           <div className="flex-1 overflow-y-auto min-h-0">
-            <div className="p-4 md:p-5 space-y-6">
+            <div className="p-4 md:p-5 space-y-4">
               
               {/* SECTION 1: Strategic Context */}
-              <section className="border border-[#E1E4E8] dark:border-[#30363D] rounded-lg bg-white dark:bg-[#0D1117] p-5 space-y-4">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-primary">
-                  Strategic Context
-                </h3>
+              <section 
+                className="rounded-lg p-4"
+                style={{ 
+                  backgroundColor: 'var(--surface-bg)',
+                  border: '1px solid var(--border-default)',
+                }}
+              >
+                <SectionHeader icon={FileText} title="Strategic Context" />
                 
-                <div className="grid grid-cols-2 gap-4">
-                  {/* Strategic Snapshot (read-only) */}
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-medium text-[#8B949E]">Strategic Snapshot</Label>
-                    <div className="h-9 px-3 flex items-center bg-[#F6F8FA] dark:bg-[#161B22] border border-[#E1E4E8] dark:border-[#30363D] rounded-md text-sm text-[#24292F] dark:text-[#E6EDF3]">
-                      {snapshot?.name || 'No snapshot assigned'}
+                <div className="pt-4 space-y-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    {/* Snapshot (read-only) */}
+                    <div className="space-y-1.5">
+                      <Label className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
+                        Snapshot
+                      </Label>
+                      <div 
+                        className="h-8 px-3 flex items-center rounded-md text-[12px]"
+                        style={{ 
+                          backgroundColor: 'var(--surface-subtle)', 
+                          border: '1px solid var(--border-subtle)',
+                          color: 'var(--text-secondary)'
+                        }}
+                      >
+                        {snapshot?.name || 'No snapshot assigned'}
+                      </div>
+                    </div>
+                    
+                    {/* State */}
+                    <div className="space-y-1.5">
+                      <Label className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
+                        State
+                      </Label>
+                      <Select 
+                        value={formData.status || 'proposed'} 
+                        onValueChange={(v) => handleFieldChange('status', v)}
+                      >
+                        <SelectTrigger 
+                          className="h-8 text-[12px]"
+                          style={{ 
+                            backgroundColor: 'var(--surface-bg)', 
+                            borderColor: 'var(--border-default)',
+                            color: 'var(--text-primary)'
+                          }}
+                        >
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="z-[400]">
+                          {Object.entries(THEME_STATES).map(([value, { label }]) => (
+                            <SelectItem key={value} value={value}>{label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
-                  
-                  {/* State */}
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-medium text-[#8B949E]">State</Label>
-                    <Select 
-                      value={formData.status || 'proposed'} 
-                      onValueChange={(v) => handleFieldChange('status', v)}
-                    >
-                      <SelectTrigger className="h-9 bg-white dark:bg-[#0D1117] border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3]">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="z-[400] bg-white dark:bg-[#161B22] border-[#E1E4E8] dark:border-[#30363D]">
-                        {Object.entries(THEME_STATES).map(([value, label]) => (
-                          <SelectItem key={value} value={value} className="text-[#24292F] dark:text-[#E6EDF3]">{label}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
 
-                {/* Description */}
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium text-[#8B949E]">Description</Label>
-                  <RichTextEditor
-                    value={formData.description || ''}
-                    onChange={(value) => handleFieldChange('description', value)}
-                    placeholder="Describe the strategic intent of this theme..."
-                  />
+                  {/* Description */}
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
+                      Description
+                    </Label>
+                    <RichTextEditor
+                      value={formData.description || ''}
+                      onChange={(value) => handleFieldChange('description', value)}
+                      placeholder="Describe the strategic intent..."
+                    />
+                  </div>
                 </div>
               </section>
 
-              {/* SECTION 2: Objectives */}
-              <section className="border border-[#E1E4E8] dark:border-[#30363D] rounded-lg bg-white dark:bg-[#0D1117] p-5 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-semibold uppercase tracking-wider text-[#8B949E]">
-                    Objectives {objectives.length > 0 && <span className="text-[#C69C6D]">({objectives.length})</span>}
-                  </h3>
-                  <Button size="sm" variant="outline" className="h-7 text-xs gap-1 bg-white dark:bg-[#21262D] border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] hover:bg-[#F6F8FA] dark:hover:bg-[#30363D]" onClick={() => setShowLinkObjectiveDialog(true)}>
-                    <Plus className="h-3 w-3" />
-                    Link Objective
-                  </Button>
-                </div>
+              {/* SECTION 2: Linked Objectives */}
+              <section 
+                className="rounded-lg p-4"
+                style={{ 
+                  backgroundColor: 'var(--surface-bg)',
+                  border: '1px solid var(--border-default)',
+                }}
+              >
+                <SectionHeader 
+                  icon={Target} 
+                  title="Linked Objectives" 
+                  count={objectives.length}
+                  action={
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      className="h-6 text-[10px] gap-1"
+                      style={{ color: 'var(--text-muted)' }}
+                      onClick={() => setShowLinkObjectiveDialog(true)}
+                    >
+                      <Plus size={10} />
+                      Link
+                    </Button>
+                  }
+                />
                 
-                {objectives.length === 0 ? (
-                  <div className="py-6 text-center text-[#8B949E] text-sm">
-                    No objectives linked to this theme
-                  </div>
-                ) : (
-                  <div className="divide-y divide-[#E1E4E8] dark:divide-[#30363D]">
-                    {objectives.map((obj) => (
-                      <div key={obj.id} className="py-2.5 flex items-center justify-between gap-3">
-                        <span className="text-sm font-medium truncate text-[#24292F] dark:text-[#E6EDF3]">{obj.name}</span>
-                        <div className="flex items-center gap-2 shrink-0">
-                          {obj.status && (
-                            <StatusBadge status={obj.status} />
-                          )}
-                          {obj.overall_progress !== null && (
-                            <span className="text-xs text-[#8B949E]">
-                              {Math.round((obj.overall_progress || 0) * 100)}%
+                <div className="pt-3">
+                  {objectives.length === 0 ? (
+                    <EmptyState 
+                      icon={Target} 
+                      message="No objectives linked" 
+                      hint="Link objectives to track strategic alignment"
+                    />
+                  ) : (
+                    <div className="space-y-1">
+                      {objectives.map((obj) => (
+                        <div 
+                          key={obj.id} 
+                          className="flex items-center justify-between gap-3 py-2 px-2 rounded-md transition-colors cursor-pointer"
+                          style={{ backgroundColor: 'transparent' }}
+                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--surface-hover)'}
+                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                        >
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span 
+                              className="text-[9px] font-semibold px-1.5 py-0.5 rounded"
+                              style={{ backgroundColor: 'var(--brand-gold-bg)', color: 'var(--brand-gold)' }}
+                            >
+                              OBJ
                             </span>
-                          )}
+                            <span 
+                              className="text-[12px] font-medium truncate"
+                              style={{ color: 'var(--text-primary)' }}
+                            >
+                              {obj.name}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            {obj.overall_progress !== null && (
+                              <ProgressBar value={obj.overall_progress || 0} />
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                      ))}
+                    </div>
+                  )}
+                </div>
               </section>
 
               {/* SECTION 3: Aligned Epics */}
-              <section className="border border-[#E1E4E8] dark:border-[#30363D] rounded-lg bg-white dark:bg-[#0D1117] p-5 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-semibold uppercase tracking-wider text-[#8B949E]">
-                    Aligned Epics {epics.length > 0 && <span className="text-[#C69C6D]">({epics.length})</span>}
-                  </h3>
-                  <Button size="sm" variant="outline" className="h-7 text-xs gap-1 bg-white dark:bg-[#21262D] border-[#E1E4E8] dark:border-[#30363D] text-[#24292F] dark:text-[#E6EDF3] hover:bg-[#F6F8FA] dark:hover:bg-[#30363D]" onClick={() => setShowLinkEpicDialog(true)}>
-                    <Plus className="h-3 w-3" />
-                    Link Epic
-                  </Button>
-                </div>
+              <section 
+                className="rounded-lg p-4"
+                style={{ 
+                  backgroundColor: 'var(--surface-bg)',
+                  border: '1px solid var(--border-default)',
+                }}
+              >
+                <SectionHeader 
+                  icon={Layers} 
+                  title="Aligned Epics" 
+                  count={epics.length}
+                  action={
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      className="h-6 text-[10px] gap-1"
+                      style={{ color: 'var(--text-muted)' }}
+                      onClick={() => setShowLinkEpicDialog(true)}
+                    >
+                      <Plus size={10} />
+                      Link
+                    </Button>
+                  }
+                />
                 
-                {epics.length === 0 ? (
-                  <div className="py-6 text-center text-[#8B949E] text-sm">
-                    No epics linked to this theme
-                  </div>
-                ) : (
-                  <div className="divide-y divide-[#E1E4E8] dark:divide-[#30363D]">
-                    {epics.map((epic) => (
-                      <div 
-                        key={epic.id} 
-                        className="py-2.5 flex items-center justify-between gap-3 cursor-pointer hover:bg-[#F6F8FA] dark:hover:bg-[#21262D] -mx-2 px-2 rounded transition-colors"
-                        onClick={() => {
-                          setSelectedEpic(epic);
-                          setSelectedEpicId(epic.id);
-                        }}
-                      >
-                        <div className="flex items-center gap-2 min-w-0">
-                          <span className="text-xs font-mono text-[#C69C6D] shrink-0">
-                            {epic.epic_key || 'E-???'}
-                          </span>
-                          <span className="text-sm font-medium truncate text-[#24292F] dark:text-[#E6EDF3]">{epic.name}</span>
+                <div className="pt-3">
+                  {epics.length === 0 ? (
+                    <EmptyState 
+                      icon={Layers} 
+                      message="No epics aligned" 
+                      hint="Link epics to show delivery alignment"
+                    />
+                  ) : (
+                    <div className="space-y-1">
+                      {epics.map((epic) => (
+                        <div 
+                          key={epic.id} 
+                          className="flex items-center justify-between gap-3 py-2 px-2 rounded-md transition-colors cursor-pointer"
+                          style={{ backgroundColor: 'transparent' }}
+                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--surface-hover)'}
+                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                          onClick={() => {
+                            setSelectedEpic(epic);
+                            setSelectedEpicId(epic.id);
+                          }}
+                        >
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span 
+                              className="text-[9px] font-mono"
+                              style={{ color: 'var(--secondary-bronze)' }}
+                            >
+                              {epic.epic_key || 'E-???'}
+                            </span>
+                            <span 
+                              className="text-[12px] font-medium truncate"
+                              style={{ color: 'var(--text-primary)' }}
+                            >
+                              {epic.name}
+                            </span>
+                          </div>
+                          {epic.state && (
+                            <StatusChip status={epic.state} />
+                          )}
                         </div>
-                        {epic.state && (
-                          <StatusBadge status={epic.state} />
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
+                      ))}
+                    </div>
+                  )}
+                </div>
               </section>
 
               {/* SECTION 4: Audit History (Collapsible) */}
               <Collapsible open={auditHistoryOpen} onOpenChange={setAuditHistoryOpen}>
                 <CollapsibleTrigger asChild>
-                  <button className="w-full flex items-center justify-between p-4 border border-[#E1E4E8] dark:border-[#30363D] rounded-lg bg-white dark:bg-[#0D1117] hover:bg-[#F6F8FA] dark:hover:bg-[#21262D] transition-colors">
-                    <h3 className="text-xs font-semibold uppercase tracking-wider text-[#8B949E]">
-                      Audit History
-                    </h3>
-                    <ChevronRight className={`h-4 w-4 text-[#8B949E] transition-transform ${auditHistoryOpen ? 'rotate-90' : ''}`} />
+                  <button 
+                    className="w-full flex items-center justify-between p-4 rounded-lg transition-colors"
+                    style={{ 
+                      backgroundColor: 'var(--surface-bg)',
+                      border: '1px solid var(--border-default)',
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--surface-hover)'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--surface-bg)'}
+                  >
+                    <div className="flex items-center gap-2">
+                      <div 
+                        className="w-6 h-6 rounded flex items-center justify-center"
+                        style={{ backgroundColor: 'var(--surface-subtle)' }}
+                      >
+                        <History size={12} style={{ color: 'var(--text-muted)' }} />
+                      </div>
+                      <span 
+                        className="text-[11px] font-semibold uppercase tracking-wider"
+                        style={{ color: 'var(--text-muted)' }}
+                      >
+                        Audit History
+                      </span>
+                    </div>
+                    <ChevronRight 
+                      size={14} 
+                      className={cn("transition-transform", auditHistoryOpen && "rotate-90")}
+                      style={{ color: 'var(--text-muted)' }}
+                    />
                   </button>
                 </CollapsibleTrigger>
                 <CollapsibleContent>
-                  <div className="border border-t-0 border-[#E1E4E8] dark:border-[#30363D] rounded-b-lg bg-white dark:bg-[#0D1117] p-4 -mt-2">
-                    <div className="h-[400px]">
+                  <div 
+                    className="rounded-b-lg p-4 -mt-1"
+                    style={{ 
+                      backgroundColor: 'var(--surface-bg)',
+                      border: '1px solid var(--border-default)',
+                      borderTop: 'none',
+                    }}
+                  >
+                    <div className="h-[360px]">
                       <UnifiedAuditHistoryTab entityType="theme" entityId={theme.id} />
                     </div>
                   </div>
                 </CollapsibleContent>
               </Collapsible>
-              </div>
             </div>
+          </div>
         </SheetContent>
       </Sheet>
 
-      {/* Link Objective Dialog - Enterprise Grade */}
+      {/* Link Objective Dialog */}
       <Dialog open={showLinkObjectiveDialog} onOpenChange={setShowLinkObjectiveDialog}>
-        <DialogContent className="sm:max-w-md bg-white dark:bg-[#161B22] border-[#E1E4E8] dark:border-[#30363D]">
-          <DialogHeader className="border-b border-[rgba(198,156,109,0.3)] pb-4">
-            <DialogTitle className="text-lg font-semibold text-[#24292F] dark:text-[#E6EDF3]">Link Objective to Theme</DialogTitle>
-            <DialogDescription className="text-[#8B949E] text-sm">
-              Select an objective to link to this strategic theme
+        <DialogContent 
+          className="sm:max-w-md"
+          style={{ backgroundColor: 'var(--surface-bg)', borderColor: 'var(--border-default)' }}
+        >
+          <DialogHeader style={{ borderBottom: '1px solid var(--border-subtle)' }} className="pb-4">
+            <DialogTitle className="text-[15px] font-semibold" style={{ color: 'var(--text-primary)' }}>
+              Link Objective
+            </DialogTitle>
+            <DialogDescription className="text-[12px]" style={{ color: 'var(--text-muted)' }}>
+              Select an objective to link to this theme
             </DialogDescription>
           </DialogHeader>
           
           <div className="py-4">
             {availableObjectives.length > 0 ? (
               <ScrollArea className="h-[280px] pr-4">
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   {availableObjectives.map((obj) => (
                     <button
                       key={obj.id}
                       onClick={() => linkObjectiveMutation.mutate(obj.id)}
-                      className="w-full text-left p-3 border border-[#E1E4E8] dark:border-[#30363D] rounded-lg hover:border-[#C69C6D] hover:bg-[rgba(198,156,109,0.05)] transition-colors text-sm group text-[#24292F] dark:text-[#E6EDF3]"
+                      className="w-full text-left p-3 rounded-lg text-[12px] transition-colors"
+                      style={{ 
+                        backgroundColor: 'var(--surface-subtle)',
+                        border: '1px solid var(--border-subtle)',
+                        color: 'var(--text-primary)'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = 'var(--brand-primary)';
+                        e.currentTarget.style.backgroundColor = 'var(--surface-hover)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = 'var(--border-subtle)';
+                        e.currentTarget.style.backgroundColor = 'var(--surface-subtle)';
+                      }}
                     >
-                      <span className="group-hover:text-[#C69C6D] transition-colors">{obj.name}</span>
+                      {obj.name}
                     </button>
                   ))}
                 </div>
               </ScrollArea>
             ) : (
-              <div className="py-8 text-center">
-                <p className="text-[#8B949E] text-sm">No unlinked objectives available</p>
-                <p className="text-xs text-[#6E7681] mt-1">Create objectives first to link them</p>
-              </div>
+              <EmptyState 
+                icon={Target} 
+                message="No unlinked objectives" 
+                hint="Create objectives first"
+              />
             )}
           </div>
 
-          <DialogFooter className="border-t border-[#E1E4E8] dark:border-[#30363D] pt-4">
+          <DialogFooter style={{ borderTop: '1px solid var(--border-subtle)' }} className="pt-4">
             <Button 
               variant="outline" 
               onClick={() => setShowLinkObjectiveDialog(false)}
-              className="border-[#E1E4E8] dark:border-[#30363D] hover:bg-[#F6F8FA] dark:hover:bg-[#21262D] text-[#24292F] dark:text-[#E6EDF3]"
+              className="text-[12px]"
             >
               Cancel
             </Button>
@@ -741,45 +976,66 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
         </DialogContent>
       </Dialog>
 
-      {/* Link Epic Dialog - Enterprise Grade */}
+      {/* Link Epic Dialog */}
       <Dialog open={showLinkEpicDialog} onOpenChange={setShowLinkEpicDialog}>
-        <DialogContent className="sm:max-w-md bg-white dark:bg-[#161B22] border-[#E1E4E8] dark:border-[#30363D]">
-          <DialogHeader className="border-b border-[rgba(198,156,109,0.3)] pb-4">
-            <DialogTitle className="text-lg font-semibold text-[#24292F] dark:text-[#E6EDF3]">Link Epic to Theme</DialogTitle>
-            <DialogDescription className="text-[#8B949E] text-sm">
-              Select an epic to align with this strategic theme
+        <DialogContent 
+          className="sm:max-w-md"
+          style={{ backgroundColor: 'var(--surface-bg)', borderColor: 'var(--border-default)' }}
+        >
+          <DialogHeader style={{ borderBottom: '1px solid var(--border-subtle)' }} className="pb-4">
+            <DialogTitle className="text-[15px] font-semibold" style={{ color: 'var(--text-primary)' }}>
+              Link Epic
+            </DialogTitle>
+            <DialogDescription className="text-[12px]" style={{ color: 'var(--text-muted)' }}>
+              Select an epic to align with this theme
             </DialogDescription>
           </DialogHeader>
           
           <div className="py-4">
             {availableEpics.length > 0 ? (
               <ScrollArea className="h-[280px] pr-4">
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   {availableEpics.map((epic) => (
                     <button
                       key={epic.id}
                       onClick={() => linkEpicMutation.mutate(epic.id)}
-                      className="w-full text-left p-3 border border-[#E1E4E8] dark:border-[#30363D] rounded-lg hover:border-[#C69C6D] hover:bg-[rgba(198,156,109,0.05)] transition-colors text-sm group text-[#24292F] dark:text-[#E6EDF3]"
+                      className="w-full text-left p-3 rounded-lg text-[12px] transition-colors"
+                      style={{ 
+                        backgroundColor: 'var(--surface-subtle)',
+                        border: '1px solid var(--border-subtle)',
+                        color: 'var(--text-primary)'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = 'var(--brand-primary)';
+                        e.currentTarget.style.backgroundColor = 'var(--surface-hover)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = 'var(--border-subtle)';
+                        e.currentTarget.style.backgroundColor = 'var(--surface-subtle)';
+                      }}
                     >
-                      <span className="font-mono text-xs text-[#C69C6D] mr-2">{epic.epic_key}</span>
-                      <span className="group-hover:text-[#C69C6D] transition-colors">{epic.name}</span>
+                      <span className="font-mono text-[10px] mr-2" style={{ color: 'var(--secondary-bronze)' }}>
+                        {epic.epic_key}
+                      </span>
+                      {epic.name}
                     </button>
                   ))}
                 </div>
               </ScrollArea>
             ) : (
-              <div className="py-8 text-center">
-                <p className="text-[#8B949E] text-sm">No unlinked epics available</p>
-                <p className="text-xs text-[#6E7681] mt-1">Create epics first to link them</p>
-              </div>
+              <EmptyState 
+                icon={Layers} 
+                message="No unlinked epics" 
+                hint="Create epics first"
+              />
             )}
           </div>
 
-          <DialogFooter className="border-t border-[#E1E4E8] dark:border-[#30363D] pt-4">
+          <DialogFooter style={{ borderTop: '1px solid var(--border-subtle)' }} className="pt-4">
             <Button 
               variant="outline" 
               onClick={() => setShowLinkEpicDialog(false)}
-              className="border-[#E1E4E8] dark:border-[#30363D] hover:bg-[#F6F8FA] dark:hover:bg-[#21262D] text-[#24292F] dark:text-[#E6EDF3]"
+              className="text-[12px]"
             >
               Cancel
             </Button>
@@ -798,10 +1054,16 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => { setShowUnsavedChangesDialog(false); onClose(); }} className="bg-destructive text-destructive-foreground">
+            <AlertDialogAction 
+              onClick={() => { setShowUnsavedChangesDialog(false); onClose(); }} 
+              className="bg-destructive text-destructive-foreground"
+            >
               Discard
             </AlertDialogAction>
-            <AlertDialogAction onClick={() => { setShowUnsavedChangesDialog(false); handleSaveAndClose(); }} className="bg-brand-primary text-white hover:bg-brand-primary-hover">
+            <AlertDialogAction 
+              onClick={() => { setShowUnsavedChangesDialog(false); handleSaveAndClose(); }} 
+              style={{ backgroundColor: 'var(--brand-primary)', color: 'white' }}
+            >
               Save & Close
             </AlertDialogAction>
           </AlertDialogFooter>
