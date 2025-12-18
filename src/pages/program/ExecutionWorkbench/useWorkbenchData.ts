@@ -85,10 +85,10 @@ export function useWorkbenchData(
           target_completion_date,
           owner_name,
           owner_id,
-          primary_program_id,
+          program_id,
           created_at
         `)
-        .eq('primary_program_id', programId)
+        .eq('program_id', programId)
         .is('deleted_at', null)
         .order('program_rank', { ascending: true, nullsFirst: false });
 
