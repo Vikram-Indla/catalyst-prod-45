@@ -94,11 +94,94 @@ export default function StrategyRoomPage() {
   if (snapshotsLoading || !effectiveSelectedSnapshotId) {
     return (
       <PageChrome>
-        <div className="flex-1 flex items-center justify-center">
-          <div 
-            className="animate-spin rounded-full h-8 w-8 border-b-2" 
-            style={{ borderColor: 'var(--brand-primary)' }}
-          />
+        <div className="px-6 py-5 space-y-5 pb-8 max-w-[1400px] mx-auto">
+          {/* Strategic Pulse Skeleton - 5 tiles */}
+          <section className="rounded-lg border border-border bg-card overflow-hidden">
+            <div className="px-4 py-2 border-b border-border">
+              <div className="h-3.5 w-24 bg-muted/50 rounded animate-pulse" />
+            </div>
+            <div className="p-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className="p-3 rounded-md border border-border bg-muted/20 animate-pulse">
+                    <div className="h-2.5 w-16 bg-muted/40 rounded mb-2" />
+                    <div className="h-6 w-12 bg-muted/50 rounded mb-1.5" />
+                    <div className="h-2 w-20 bg-muted/30 rounded" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* Exposure & Gaps Skeleton - 3 cards */}
+          <section className="rounded-lg border border-border bg-card overflow-hidden">
+            <div className="px-4 py-2 border-b border-border">
+              <div className="h-3.5 w-28 bg-muted/50 rounded animate-pulse" />
+            </div>
+            <div className="p-3">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
+                {[1, 2, 3].map((col) => (
+                  <div key={col} className="rounded-md border border-border bg-card overflow-hidden animate-pulse">
+                    <div className="px-3 py-1.5 border-b border-border bg-muted/30 flex items-center gap-1.5">
+                      <div className="h-3 w-3 bg-muted/50 rounded" />
+                      <div className="h-2.5 w-20 bg-muted/40 rounded" />
+                    </div>
+                    <div className="p-2.5 space-y-2">
+                      {[1, 2, 3].map((row) => (
+                        <div key={row} className="flex items-center justify-between">
+                          <div className="h-2.5 w-16 bg-muted/30 rounded" />
+                          <div className="h-3 w-5 bg-muted/40 rounded" />
+                        </div>
+                      ))}
+                    </div>
+                    <div className="px-2.5 pb-2">
+                      <div className="h-6 w-full bg-muted/20 rounded" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* Strategy Coverage Skeleton */}
+          <section className="rounded-lg border border-border bg-card overflow-hidden">
+            <div className="px-4 py-2.5 border-b border-border flex items-center justify-between">
+              <div className="h-4 w-36 bg-muted/50 rounded animate-pulse" />
+              <div className="h-6 w-20 bg-muted/30 rounded animate-pulse" />
+            </div>
+            <div className="p-4">
+              <div className="flex gap-4">
+                <div className="w-48 space-y-2">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="h-10 bg-muted/30 rounded animate-pulse" />
+                  ))}
+                </div>
+                <div className="flex-1 border border-border rounded-md bg-muted/10 animate-pulse min-h-[160px]" />
+              </div>
+            </div>
+          </section>
+
+          {/* OKR Tree Skeleton */}
+          <section className="rounded-lg border border-border bg-card overflow-hidden">
+            <div className="px-4 py-2.5 border-b border-border flex items-center justify-between">
+              <div className="h-4 w-20 bg-muted/50 rounded animate-pulse" />
+              <div className="flex gap-2">
+                <div className="h-7 w-32 bg-muted/30 rounded animate-pulse" />
+                <div className="h-7 w-7 bg-muted/30 rounded animate-pulse" />
+              </div>
+            </div>
+            <div className="p-4 space-y-2">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="flex items-center gap-3 p-2 rounded animate-pulse">
+                  <div className="h-4 w-4 bg-muted/40 rounded" />
+                  <div className="h-3.5 w-48 bg-muted/40 rounded" />
+                  <div className="flex-1" />
+                  <div className="h-3 w-12 bg-muted/30 rounded" />
+                  <div className="h-1.5 w-20 bg-muted/30 rounded-full" />
+                </div>
+              ))}
+            </div>
+          </section>
         </div>
       </PageChrome>
     );
