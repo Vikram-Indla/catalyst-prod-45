@@ -140,6 +140,14 @@ import RiskSeverityLevels from "./pages/admin/RiskSeverityLevels";
 import DevelopmentInventory from "./pages/admin/DevelopmentInventory";
 import RoutesComponentsRegistry from "./pages/admin/RoutesComponentsRegistry";
 import SnapshotsAdmin from "./pages/admin/SnapshotsAdmin";
+import {
+  IncidentWorkgroups,
+  IncidentFieldsConfig,
+  IncidentSLAPolicies,
+  IncidentCAPPolicy,
+  IncidentConversionRules,
+  IncidentAuditCompliance,
+} from "./pages/admin/incident";
 import UIQARoute from "./pages/UIQARoute";
 import ThemeAuditProbe from "./pages/ThemeAuditProbe";
 import ValueStreamView from "./pages/ValueStreamView";
@@ -678,6 +686,12 @@ const App = () => (
                 <Route path="developmentinventory" element={<DevelopmentInventory />} />
                 <Route path="routes-registry" element={<RoutesComponentsRegistry />} />
                 <Route path="snapshots" element={<SnapshotsAdmin />} />
+                <Route path="incidents/workgroups" element={<IncidentWorkgroups />} />
+                <Route path="incidents/fields" element={<IncidentFieldsConfig />} />
+                <Route path="incidents/sla" element={<IncidentSLAPolicies />} />
+                <Route path="incidents/cap-policy" element={<IncidentCAPPolicy />} />
+                <Route path="incidents/conversion" element={<IncidentConversionRules />} />
+                <Route path="incidents/audit" element={<IncidentAuditCompliance />} />
               </Route>
 
               <Route path="/items/epics/:epicId/status-report" element={<EpicStatusReport />} />
