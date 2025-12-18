@@ -1,6 +1,13 @@
 /**
  * StrategyStack — CIO Cockpit "Data Table Card" style
  * Enterprise list table feel with sticky header, compact rows, tighter spacing
+ * 
+ * TYPOGRAPHY LOCK (JOB-190):
+ * - Section title: text-sm font-semibold (14px)
+ * - Table headers: text-xs font-semibold uppercase (12px min)
+ * - Cell text: text-sm (14px) or text-xs (12px) minimum
+ * - NO text-[9px], text-[10px], text-[11px] - use text-xs as floor
+ * - NO text-muted - use var(--text-secondary) for readable supporting text
  */
 
 import { useState } from 'react';
@@ -8,6 +15,7 @@ import { Target, Layers, Zap, Grid3X3, ChevronRight, X, AlertTriangle, User } fr
 import { useStrategyPyramidCounts } from '@/hooks/useExecutionMetrics';
 import { useOKRv2StrategyMetrics } from '@/hooks/useOKRv2StrategyMetrics';
 import { cn } from '@/lib/utils';
+import { TYPOGRAPHY } from './strategyRoomTypography';
 
 interface StrategyStackProps {
   onLayerClick: (label: string) => void;
@@ -210,19 +218,19 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
     >
       {/* Header */}
       <div 
-        className="px-4 py-2 flex items-center justify-between"
+        className="px-4 py-2.5 flex items-center justify-between"
         style={{ borderBottom: '1px solid var(--border-subtle)' }}
       >
         <div>
           <h2 
-            className="text-[13px] font-semibold"
+            className={cn(TYPOGRAPHY.sectionTitle)}
             style={{ color: 'var(--text-primary)' }}
           >
             Strategy Coverage & Alignment
           </h2>
           <p 
-            className="text-[10px]"
-            style={{ color: 'var(--text-muted)' }}
+            className={cn(TYPOGRAPHY.microcopy)}
+            style={{ color: 'var(--text-secondary)' }}
           >
             Coverage across strategic layers • Click to expand
           </p>
@@ -248,19 +256,19 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
               borderBottom: '1px solid var(--border-default)',
             }}
           >
-            <div className="text-[9px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
+            <div className={cn(TYPOGRAPHY.tableHeader)} style={{ color: 'var(--text-secondary)' }}>
               Layer
             </div>
-            <div className="text-[9px] font-semibold uppercase tracking-wider text-center" style={{ color: 'var(--text-muted)' }}>
+            <div className={cn(TYPOGRAPHY.tableHeader, 'text-center')} style={{ color: 'var(--text-secondary)' }}>
               Count
             </div>
-            <div className="text-[9px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
+            <div className={cn(TYPOGRAPHY.tableHeader)} style={{ color: 'var(--text-secondary)' }}>
               Aligned
             </div>
-            <div className="text-[9px] font-semibold uppercase tracking-wider text-center" style={{ color: 'var(--text-muted)' }}>
+            <div className={cn(TYPOGRAPHY.tableHeader, 'text-center')} style={{ color: 'var(--text-secondary)' }}>
               Coverage
             </div>
-            <div className="text-[9px] font-semibold uppercase tracking-wider text-center" style={{ color: 'var(--text-muted)' }}>
+            <div className={cn(TYPOGRAPHY.tableHeader, 'text-center')} style={{ color: 'var(--text-secondary)' }}>
               Gap
             </div>
             <div />
@@ -308,10 +316,10 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                       className="w-5 h-5 rounded flex items-center justify-center flex-shrink-0"
                       style={{ backgroundColor: layer.iconBgColor }}
                     >
-                      <Icon size={11} style={{ color: layer.iconColor }} />
+                      <Icon size={12} style={{ color: layer.iconColor }} />
                     </div>
                     <span 
-                      className="text-[12px] font-medium truncate"
+                      className={cn(TYPOGRAPHY.tableCellEmphasis, 'truncate')}
                       style={{ color: 'var(--text-primary)' }}
                     >
                       {layer.label}
@@ -321,8 +329,8 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                   {/* Count */}
                   <div className="text-center">
                     <span 
-                      className="text-[12px] tabular-nums font-medium"
-                      style={{ color: data.count === 0 ? 'var(--text-muted)' : 'var(--text-primary)' }}
+                      className={cn(TYPOGRAPHY.tableCell, 'tabular-nums font-medium')}
+                      style={{ color: data.count === 0 ? 'var(--text-secondary)' : 'var(--text-primary)' }}
                     >
                       {isLoading || okrLoading ? '–' : data.count}
                     </span>
@@ -345,7 +353,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                           />
                         </div>
                         <span 
-                          className="text-[9px] font-semibold tabular-nums px-1 py-0.5 rounded"
+                          className={cn(TYPOGRAPHY.countBadge, 'px-1 py-0.5 rounded')}
                           style={{ 
                             backgroundColor: 'var(--surface-subtle)',
                             color: coverageStatus.color,
@@ -356,7 +364,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                         </span>
                       </>
                     ) : (
-                      <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>—</span>
+                      <span className={cn(TYPOGRAPHY.tableCellSecondary)} style={{ color: 'var(--text-secondary)' }}>—</span>
                     )}
                   </div>
                   
@@ -364,13 +372,13 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                   <div className="text-center">
                     {data.count > 0 ? (
                       <span 
-                        className="text-[9px] font-medium"
+                        className={cn(TYPOGRAPHY.statusBadge)}
                         style={{ color: coverageStatus.color }}
                       >
                         {coverageStatus.label}
                       </span>
                     ) : (
-                      <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>—</span>
+                      <span className={cn(TYPOGRAPHY.tableCellSecondary)} style={{ color: 'var(--text-secondary)' }}>—</span>
                     )}
                   </div>
                   
@@ -378,27 +386,27 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                   <div className="text-center">
                     {hasGap ? (
                       <span 
-                        className="inline-flex items-center gap-0.5 text-[10px] font-semibold tabular-nums px-1 py-0.5 rounded"
+                        className={cn(TYPOGRAPHY.countBadge, 'inline-flex items-center gap-0.5 px-1 py-0.5 rounded')}
                         style={{ 
                           backgroundColor: 'var(--status-warning-bg)',
                           color: 'var(--status-warning)',
                           border: '1px solid var(--status-warning)',
                         }}
                       >
-                        <AlertTriangle size={8} />
+                        <AlertTriangle size={10} />
                         {data.gap}
                       </span>
                     ) : (
-                      <span className="text-[11px] tabular-nums" style={{ color: 'var(--text-muted)' }}>0</span>
+                      <span className={cn(TYPOGRAPHY.tableCellSecondary, 'tabular-nums')} style={{ color: 'var(--text-secondary)' }}>0</span>
                     )}
                   </div>
                   
                   {/* Chevron */}
                   <div className="flex justify-center">
                     <ChevronRight 
-                      size={12} 
+                      size={14} 
                       className={cn("transition-transform", isSelected && "rotate-90")}
-                      style={{ color: 'var(--text-muted)' }}
+                      style={{ color: 'var(--text-secondary)' }}
                     />
                   </div>
                 </div>
@@ -415,7 +423,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
           >
             {/* Panel Header */}
             <div 
-              className="px-3 py-2 flex items-center justify-between flex-shrink-0"
+              className="px-3 py-2.5 flex items-center justify-between flex-shrink-0"
               style={{ borderBottom: '1px solid var(--border-subtle)' }}
             >
               <div className="flex items-center gap-2">
@@ -423,16 +431,16 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                   className="w-5 h-5 rounded flex items-center justify-center"
                   style={{ backgroundColor: selectedConfig.iconBgColor }}
                 >
-                  <selectedConfig.icon size={11} style={{ color: selectedConfig.iconColor }} />
+                  <selectedConfig.icon size={12} style={{ color: selectedConfig.iconColor }} />
                 </div>
                 <div>
                   <h3 
-                    className="text-[12px] font-semibold"
+                    className={cn(TYPOGRAPHY.cardLabel)}
                     style={{ color: 'var(--text-primary)' }}
                   >
                     {selectedLayerDetails.title}
                   </h3>
-                  <p className="text-[9px]" style={{ color: 'var(--text-muted)' }}>
+                  <p className={cn(TYPOGRAPHY.microcopy)} style={{ color: 'var(--text-secondary)' }}>
                     {selectedLayerData?.count} items • {selectedLayerData?.gap} gaps
                   </p>
                 </div>
@@ -443,11 +451,11 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                   setSelectedLayer(null);
                 }}
                 className="p-1 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                style={{ color: 'var(--text-muted)' }}
+                style={{ color: 'var(--text-secondary)' }}
                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--surface-hover)'}
                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               >
-                <X size={12} />
+                <X size={14} />
               </button>
             </div>
 
@@ -463,9 +471,9 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                   }}
                 >
                   <div className="flex items-center gap-1 mb-1.5">
-                    <AlertTriangle size={10} style={{ color: 'var(--status-warning)' }} />
+                    <AlertTriangle size={12} style={{ color: 'var(--status-warning)' }} />
                     <span 
-                      className="text-[9px] font-semibold uppercase tracking-wide"
+                      className={cn(TYPOGRAPHY.tableHeader)}
                       style={{ color: 'var(--status-warning)' }}
                     >
                       Gaps ({selectedLayerDetails.gapItems.length})
@@ -475,19 +483,19 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                     {selectedLayerDetails.gapItems.map((gap, i) => (
                       <div key={i} className="flex items-start gap-1.5">
                         <div 
-                          className="w-1 h-1 rounded-full mt-1 flex-shrink-0"
+                          className="w-1.5 h-1.5 rounded-full mt-1 flex-shrink-0"
                           style={{ backgroundColor: 'var(--status-warning)' }}
                         />
                         <div>
                           <span 
-                            className="text-[11px] font-medium block"
+                            className={cn(TYPOGRAPHY.tableCellEmphasis, 'block')}
                             style={{ color: 'var(--text-primary)' }}
                           >
                             {gap.name}
                           </span>
                           <span 
-                            className="text-[9px]"
-                            style={{ color: 'var(--text-muted)' }}
+                            className={cn(TYPOGRAPHY.microcopy)}
+                            style={{ color: 'var(--text-secondary)' }}
                           >
                             {gap.reason}
                           </span>
@@ -517,14 +525,14 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-1.5 mb-0.5">
                             <span 
-                              className="text-[11px] font-medium truncate"
+                              className={cn(TYPOGRAPHY.tableCellEmphasis, 'truncate')}
                               style={{ color: 'var(--text-primary)' }}
                             >
                               {item.name}
                             </span>
                             {item.status && (
                               <span 
-                                className="text-[8px] font-semibold uppercase px-1 py-0.5 rounded flex-shrink-0"
+                                className={cn(TYPOGRAPHY.statusBadge, 'uppercase px-1 py-0.5 rounded flex-shrink-0')}
                                 style={{ backgroundColor: statusColors.bg, color: statusColors.text }}
                               >
                                 {item.status}
@@ -532,7 +540,7 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                             )}
                           </div>
                           {item.linked && (
-                            <p className="text-[9px] truncate" style={{ color: 'var(--text-muted)' }}>
+                            <p className={cn(TYPOGRAPHY.microcopy, 'truncate')} style={{ color: 'var(--text-secondary)' }}>
                               → {item.linked}
                             </p>
                           )}
@@ -551,8 +559,8 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                                 />
                               </div>
                               <span 
-                                className="text-[9px] tabular-nums font-medium w-6 text-right"
-                                style={{ color: 'var(--text-muted)' }}
+                                className={cn(TYPOGRAPHY.progressPercent, 'w-7 text-right')}
+                                style={{ color: 'var(--text-secondary)' }}
                               >
                                 {item.progress}%
                               </span>
@@ -563,10 +571,10 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                               className="flex items-center gap-0.5 px-1 py-0.5 rounded"
                               style={{ backgroundColor: 'var(--surface-subtle)' }}
                             >
-                              <User size={8} style={{ color: 'var(--text-muted)' }} />
+                              <User size={10} style={{ color: 'var(--text-secondary)' }} />
                               <span 
-                                className="text-[8px] font-medium truncate max-w-[50px]"
-                                style={{ color: 'var(--text-muted)' }}
+                                className={cn(TYPOGRAPHY.microcopy, 'font-medium truncate max-w-[50px]')}
+                                style={{ color: 'var(--text-secondary)' }}
                               >
                                 {item.owner.split(' ')[0]}
                               </span>
