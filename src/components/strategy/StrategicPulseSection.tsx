@@ -2,11 +2,15 @@
  * StrategicPulseSection — Executive KPI cockpit
  * Primary: Strategy Health (large left card)
  * Secondary: Progress, At Risk, Gaps, Open Risks (compact right cards)
- * Consumes unified data from useStrategyRoomSummary to prevent UI pulsing
+ * 
+ * KEY BEHAVIOR: Never blanks out once data is loaded.
+ * - Skeleton only on first-ever load
+ * - "Updating..." indicator during refetch
+ * - Last good data persists across snapshot switches
  */
 
 import { useNavigate } from 'react-router-dom';
-import { useStrategyRoomSummary } from '@/hooks/useStrategyRoomSummary';
+import { useStrategyRoomSummary, EMPTY_SUMMARY } from '@/hooks/useStrategyRoomSummary';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -28,22 +32,10 @@ interface StrategicPulseSectionProps {
 export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps) {
   const navigate = useNavigate();
   
-  const { data, isLoading, isFetching } = useStrategyRoomSummary(snapshotId);
+  const { data, isLoading, isFetching, hasData } = useStrategyRoomSummary(snapshotId);
   
-  // Determine loading states
-  const isFirstLoad = isLoading && !data;
-  const isUpdating = isFetching && !isLoading && !!data;
-
-  // Use data or safe defaults (never undefined/null in render)
-  const displayData = data ?? {
-    avgProgress: 0,
-    objectivesCount: 0,
-    atRiskObjectives: [],
-    alignmentGaps: 0,
-    totalRisks: 0,
-    highRisks: 0,
-    overallStatus: 'at-risk' as const,
-  };
+  // Use data or safe defaults (NEVER undefined in render)
+  const displayData = data ?? EMPTY_SUMMARY;
 
   const atRiskCount = displayData.atRiskObjectives?.length ?? 0;
   const overallProgress = displayData.avgProgress;
@@ -58,8 +50,8 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
   const TrendIcon = overallProgress >= 50 ? TrendingUp : overallProgress >= 30 ? Minus : TrendingDown;
   const trendLabel = overallProgress >= 50 ? 'Ahead' : overallProgress >= 30 ? 'On pace' : 'Behind';
 
-  // Show skeleton only on true first load (no cached data at all)
-  if (isFirstLoad) {
+  // Show skeleton ONLY on true first load (never had any data)
+  if (isLoading && !hasData) {
     return (
       <section 
         className="rounded-lg overflow-hidden"
@@ -85,11 +77,11 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
               <div className="h-7 w-20 rounded mb-2 animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
               <div className="h-2.5 w-28 rounded animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
             </div>
-            {/* Secondary skeletons */}
+            {/* Secondary skeletons - stable keys */}
             <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-2">
-              {[1, 2, 3, 4].map((i) => (
+              {['skeleton-1', 'skeleton-2', 'skeleton-3', 'skeleton-4'].map((key) => (
                 <div 
-                  key={`pulse-skeleton-${i}`}
+                  key={key}
                   className="p-3 rounded-md min-h-[56px]"
                   style={{ backgroundColor: 'var(--muted)', border: '1px solid var(--border)' }}
                 >
@@ -104,6 +96,9 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
       </section>
     );
   }
+
+  // Determine if we're updating (but have data to show)
+  const isUpdating = isFetching && hasData;
 
   return (
     <section 
@@ -184,11 +179,10 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
             </div>
           </div>
 
-          {/* SECONDARY CARDS: Compact metrics */}
+          {/* SECONDARY CARDS: Compact metrics - STABLE KEYS */}
           <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-2">
             {/* Progress */}
             <CompactKPITile
-              key="pulse-progress"
               label="Progress"
               value={displayData.objectivesCount > 0 ? `${overallProgress}%` : '—'}
               subtext={`${displayData.objectivesCount} objective${displayData.objectivesCount !== 1 ? 's' : ''}`}
@@ -201,7 +195,6 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
 
             {/* At Risk */}
             <CompactKPITile
-              key="pulse-at-risk"
               label="At Risk"
               value={atRiskCount}
               subtext={atRiskCount === 0 ? 'All healthy' : 'Need attention'}
@@ -213,7 +206,6 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
 
             {/* Alignment Gaps */}
             <CompactKPITile
-              key="pulse-gaps"
               label="Alignment Gaps"
               value={displayData.alignmentGaps}
               subtext={displayData.alignmentGaps === 0 ? 'Fully aligned' : 'Unlinked items'}
@@ -225,7 +217,6 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
 
             {/* Open Risks */}
             <CompactKPITile
-              key="pulse-risks"
               label="Open Risks"
               value={displayData.totalRisks}
               subtext={displayData.highRisks > 0 ? `${displayData.highRisks} high severity` : 'No critical'}

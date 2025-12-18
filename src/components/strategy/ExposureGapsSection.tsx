@@ -1,11 +1,15 @@
 /**
  * ExposureGapsSection — Executive cockpit-style exposure surface
  * Compact rows, micro-visuals, aligned cards
- * Consumes unified data from useStrategyRoomSummary to prevent UI pulsing
+ * 
+ * KEY BEHAVIOR: Never blanks out once data is loaded.
+ * - Skeleton only on first-ever load
+ * - "Updating..." indicator during refetch
+ * - Last good data persists across snapshot switches
  */
 
 import { useNavigate } from 'react-router-dom';
-import { useStrategyRoomSummary } from '@/hooks/useStrategyRoomSummary';
+import { useStrategyRoomSummary, EMPTY_SUMMARY } from '@/hooks/useStrategyRoomSummary';
 import { 
   AlertTriangle, 
   Shield, 
@@ -17,6 +21,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { useMemo } from 'react';
 
 interface ExposureGapsSectionProps {
   snapshotId?: string;
@@ -34,64 +39,53 @@ interface AttentionItem {
 export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
   const navigate = useNavigate();
   
-  const { data, isLoading, isFetching } = useStrategyRoomSummary(snapshotId);
+  const { data, isLoading, isFetching, hasData } = useStrategyRoomSummary(snapshotId);
   
-  // Determine loading states
-  const isFirstLoad = isLoading && !data;
-  const isUpdating = isFetching && !isLoading && !!data;
+  // Use data or safe defaults (NEVER undefined in render)
+  const displayData = data ?? EMPTY_SUMMARY;
 
-  // Use data or safe defaults (never undefined/null in render)
-  const displayData = data ?? {
-    atRiskObjectives: [],
-    misalignedEpics: 0,
-    misalignedFeatures: 0,
-    alignmentGaps: 0,
-    totalRisks: 0,
-    highRisks: 0,
-    mediumRisks: 0,
-    lowRisks: 0,
-    overdueRisks: 0,
-    topRisks: [],
-  };
-
-  // Build "Needs Attention" list
-  const attentionItems: AttentionItem[] = [];
-  
-  (displayData.atRiskObjectives || []).slice(0, 2).forEach(obj => {
-    attentionItems.push({
-      id: obj.id,
-      type: 'objective',
-      title: obj.name || 'Unnamed Objective',
-      reason: 'At risk',
-      severity: 'high',
-      link: '/enterprise/okr-hub',
+  // Build "Needs Attention" list - memoized for stability
+  const attentionItems = useMemo((): AttentionItem[] => {
+    const items: AttentionItem[] = [];
+    
+    (displayData.atRiskObjectives || []).slice(0, 2).forEach(obj => {
+      items.push({
+        id: `obj-${obj.id}`,
+        type: 'objective',
+        title: obj.name || 'Unnamed Objective',
+        reason: 'At risk',
+        severity: 'high',
+        link: '/enterprise/okr-hub',
+      });
     });
-  });
 
-  (displayData.topRisks || []).slice(0, 2).forEach(risk => {
-    attentionItems.push({
-      id: risk.id,
-      type: 'risk',
-      title: risk.title || 'Unnamed Risk',
-      reason: 'High severity',
-      severity: 'critical',
-      link: '/enterprise/risks',
+    (displayData.topRisks || []).slice(0, 2).forEach(risk => {
+      items.push({
+        id: `risk-${risk.id}`,
+        type: 'risk',
+        title: risk.title || 'Unnamed Risk',
+        reason: 'High severity',
+        severity: 'critical',
+        link: '/enterprise/risks',
+      });
     });
-  });
 
-  if (displayData.alignmentGaps > 0) {
-    attentionItems.push({
-      id: 'alignment-gaps',
-      type: 'gap',
-      title: `${displayData.alignmentGaps} Alignment Gap${displayData.alignmentGaps !== 1 ? 's' : ''}`,
-      reason: `${displayData.misalignedEpics} epics, ${displayData.misalignedFeatures} features`,
-      severity: displayData.alignmentGaps > 5 ? 'high' : 'medium',
-      link: '/enterprise/backlog',
-    });
-  }
+    if (displayData.alignmentGaps > 0) {
+      items.push({
+        id: 'alignment-gaps',
+        type: 'gap',
+        title: `${displayData.alignmentGaps} Alignment Gap${displayData.alignmentGaps !== 1 ? 's' : ''}`,
+        reason: `${displayData.misalignedEpics} epics, ${displayData.misalignedFeatures} features`,
+        severity: displayData.alignmentGaps > 5 ? 'high' : 'medium',
+        link: '/enterprise/backlog',
+      });
+    }
 
-  // Show skeleton only on true first load (no cached data at all)
-  if (isFirstLoad) {
+    return items;
+  }, [displayData.atRiskObjectives, displayData.topRisks, displayData.alignmentGaps, displayData.misalignedEpics, displayData.misalignedFeatures]);
+
+  // Show skeleton ONLY on true first load (never had any data)
+  if (isLoading && !hasData) {
     return (
       <section 
         className="rounded-lg overflow-hidden"
@@ -108,9 +102,9 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
         </div>
         <div className="p-3">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
-            {[1, 2, 3].map((col) => (
+            {['col-1', 'col-2', 'col-3'].map((key) => (
               <div 
-                key={`exposure-skeleton-${col}`}
+                key={key}
                 className="rounded-md overflow-hidden min-h-[140px]"
                 style={{ 
                   backgroundColor: 'var(--muted)', 
@@ -125,8 +119,8 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
                   <div className="h-2.5 w-20 rounded animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
                 </div>
                 <div className="p-3 space-y-2">
-                  {[1, 2, 3].map((row) => (
-                    <div key={`row-${col}-${row}`} className="flex items-center justify-between">
+                  {['row-1', 'row-2', 'row-3'].map((rowKey) => (
+                    <div key={rowKey} className="flex items-center justify-between">
                       <div className="h-2.5 w-16 rounded animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
                       <div className="h-3 w-5 rounded animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
                     </div>
@@ -142,6 +136,9 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
       </section>
     );
   }
+
+  // Determine if we're updating (but have data to show)
+  const isUpdating = isFetching && hasData;
 
   return (
     <section 
@@ -174,7 +171,6 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
           {/* Risk Exposure Column */}
           <CockpitCard
-            key="exposure-risks"
             title="Risk Exposure"
             icon={<Shield size={12} />}
             iconColor="text-status-danger"
@@ -221,7 +217,6 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
 
           {/* Alignment Gaps Column */}
           <CockpitCard
-            key="exposure-alignment"
             title="Alignment Gaps"
             icon={<Target size={12} />}
             iconColor="text-secondary-bronze"
@@ -256,7 +251,6 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
 
           {/* Needs Attention Column */}
           <CockpitCard
-            key="exposure-attention"
             title="Needs Attention"
             icon={<AlertTriangle size={12} />}
             iconColor="text-status-warning"
