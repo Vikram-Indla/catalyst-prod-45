@@ -1,16 +1,18 @@
 import { useState, useEffect } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import { StrategyContextCard } from '@/components/strategy/StrategyContextCard';
-import { ExecutiveSummaryCard } from '@/components/strategy/ExecutiveSummaryCard';
+import { StrategicPulseSection } from '@/components/strategy/StrategicPulseSection';
+import { ExposureGapsSection } from '@/components/strategy/ExposureGapsSection';
 import { StrategyStack } from '@/components/strategy/StrategyStack';
 import { OkrTree } from '@/components/strategy/OkrTree';
+import { StrategyContextCard } from '@/components/strategy/StrategyContextCard';
 import { ObjectiveAnalyticsDrawer } from '@/modules/okr-v2';
 import { ThemeDetailsDrawer } from '@/components/backlog/ThemeDetailsDrawer';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { PageChrome } from '@/components/layout/PageChrome';
 import { toast } from 'sonner';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 type ObjectiveLevel = "OBJECTIVES";
 
@@ -22,6 +24,7 @@ export default function StrategyRoomPage() {
   const [snapshotSearchQuery, setSnapshotSearchQuery] = useState('');
   const [selectedTheme, setSelectedTheme] = useState<any>(null);
   const [themeDrawerOpen, setThemeDrawerOpen] = useState(false);
+  const [showContext, setShowContext] = useState(false);
 
   const { data: snapshots = [], isLoading: snapshotsLoading, refetch: refetchSnapshots } = useQuery({
     queryKey: ['strategy-snapshots'],
@@ -152,24 +155,71 @@ export default function StrategyRoomPage() {
         className="px-6 py-5 space-y-5 pb-8 max-w-[1400px] mx-auto"
         style={{ backgroundColor: 'var(--page-bg)' }}
       >
-        {/* Section 1: Strategy Context - Mission/Vision/Values */}
-        <StrategyContextCard snapshot={selectedSnapshot} onUpdate={refetchSnapshots} />
+        {/* Section 1: Strategic Pulse — "Are we winning?" */}
+        <StrategicPulseSection snapshotId={effectiveSelectedSnapshotId} />
 
-        {/* Section 2: Executive Summary - 4 unique KPI tiles */}
-        <ExecutiveSummaryCard snapshotId={effectiveSelectedSnapshotId} />
+        {/* Section 2: Exposure & Gaps — "Where could strategy fail?" */}
+        <ExposureGapsSection snapshotId={effectiveSelectedSnapshotId} />
 
-        {/* Section 3: Strategy Coverage & Alignment - drilldown table */}
+        {/* Section 3: Coverage & Alignment — "Are strategy layers connected?" */}
         <StrategyStack 
           onLayerClick={handlePyramidLayerClick} 
           snapshotId={effectiveSelectedSnapshotId}
         />
 
-        {/* Section 4: OKR Tree - hierarchical list */}
+        {/* Section 4: OKR Tree — "What drives outcomes underneath?" */}
         <OkrTree
           selectedSnapshot={effectiveSelectedSnapshotId}
           onObjectiveClick={handleObjectiveClick}
           onThemeClick={handleThemeClick}
         />
+
+        {/* Collapsible: Strategy Context (Mission/Vision/Values) */}
+        <div 
+          className="rounded-xl overflow-hidden"
+          style={{
+            backgroundColor: 'var(--surface-bg)',
+            border: '1px solid var(--border-default)',
+          }}
+        >
+          <button
+            onClick={() => setShowContext(!showContext)}
+            className="w-full px-5 py-3 flex items-center justify-between transition-colors"
+            style={{ 
+              borderBottom: showContext ? '1px solid var(--border-subtle)' : 'none',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'var(--surface-hover)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }}
+          >
+            <div>
+              <h2 
+                className="text-[14px] font-semibold"
+                style={{ color: 'var(--text-primary)' }}
+              >
+                Strategy Context
+              </h2>
+              <p 
+                className="text-[11px] mt-0.5"
+                style={{ color: 'var(--text-muted)' }}
+              >
+                Mission, vision, and values
+              </p>
+            </div>
+            {showContext ? (
+              <ChevronUp size={18} style={{ color: 'var(--text-muted)' }} />
+            ) : (
+              <ChevronDown size={18} style={{ color: 'var(--text-muted)' }} />
+            )}
+          </button>
+          
+          {showContext && (
+            <StrategyContextCard snapshot={selectedSnapshot} onUpdate={refetchSnapshots} />
+          )}
+        </div>
       </div>
 
       {/* Drawers */}
