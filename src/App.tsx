@@ -220,6 +220,8 @@ import {
   IncidentDetail,
   IncidentsDashboard,
   CreateIncident,
+  CAPCommitteeQueue,
+  IncidentReports,
   VersionsList,
   VersionDetail,
   ReleaseCalendar,
@@ -611,11 +613,13 @@ const App = () => (
               <Route path="/release/overview" element={<ReleaseOverview />} />
               <Route path="/release/incident-room" element={<IncidentRoomList />} />
               <Route path="/release/incident-room/:incidentId" element={<IncidentRoomDetail />} />
-              <Route path="/release/incidents" element={<IncidentsDashboard />} />
-              <Route path="/release/incidents/list" element={<IncidentsList />} />
+              <Route path="/release/incidents" element={<IncidentsList />} />
+              <Route path="/release/incidents/dashboard" element={<IncidentsDashboard />} />
               <Route path="/release/incidents/create" element={<CreateIncident />} />
               <Route path="/release/incident-command-center" element={<IncidentCommandCenter />} />
               <Route path="/release/incidents/:incidentId" element={<IncidentDetail />} />
+              <Route path="/release/committee-queue" element={<CAPCommitteeQueue />} />
+              <Route path="/release/incident-reports" element={<IncidentReports />} />
               <Route path="/release/versions" element={<VersionsList />} />
               <Route path="/release/versions/calendar" element={<ReleaseCalendar />} />
               <Route path="/release/versions/:id" element={<VersionDetail />} />
