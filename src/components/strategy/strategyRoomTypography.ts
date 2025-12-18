@@ -12,6 +12,14 @@
  * 5. NO greying during loading/refresh
  * 6. NO skeletons after first successful load
  * 7. NO layout shift or twitching
+ * 
+ * CROSS-PAGE CONSISTENCY (2.3):
+ * - Hover: hover:bg-accent/40 (3-4% opacity highlight)
+ * - Transition: transition-[background-color] duration-100
+ * - Focus: focus-visible:ring-2 focus-visible:ring-ring
+ * - Stale text: "Data may be stale" (EXACT wording)
+ * - Refresh text: "Refreshing…" (EXACT wording)
+ * - See src/utils/interactionPatterns.ts for full contract
  */
 
 // ─────────────────────────────────────────────────

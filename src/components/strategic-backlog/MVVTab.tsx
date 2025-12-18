@@ -152,7 +152,7 @@ export function MVVTab({ missions, visions, values, links, snapshotId, isArchive
                   {linkedItems.map((item) => (
                     <div
                       key={item.id}
-                      className="flex items-center justify-between p-3 hover:bg-muted/30 cursor-pointer transition-colors"
+                      className="flex items-center justify-between p-3 cursor-pointer transition-[background-color] duration-100 hover:bg-accent/40"
                       onClick={() => setSelectedObject({ type: section.type, data: item })}
                     >
                       <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -187,7 +187,7 @@ export function MVVTab({ missions, visions, values, links, snapshotId, isArchive
                       {unlinkedItems.map((item) => (
                         <div
                           key={item.id}
-                          className="flex items-center justify-between p-3 hover:bg-muted/30 cursor-pointer transition-colors"
+                          className="flex items-center justify-between p-3 cursor-pointer transition-[background-color] duration-100 hover:bg-accent/40"
                           onClick={() => setSelectedObject({ type: section.type, data: item })}
                         >
                           <span className="text-sm text-foreground truncate">{item.title}</span>

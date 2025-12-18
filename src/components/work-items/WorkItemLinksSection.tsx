@@ -154,8 +154,8 @@ export function WorkItemLinksSection({ workItemType, workItemId }: WorkItemLinks
                         <div
                           key={item.id}
                           className={cn(
-                            "p-2 cursor-pointer hover:bg-accent text-sm",
-                            selectedTargetId === item.id && "bg-accent"
+                            "p-2 cursor-pointer text-sm transition-[background-color] duration-100 hover:bg-accent/40",
+                            selectedTargetId === item.id && "bg-accent/60"
                           )}
                           onClick={() => setSelectedTargetId(item.id)}
                         >
@@ -187,7 +187,7 @@ export function WorkItemLinksSection({ workItemType, workItemId }: WorkItemLinks
             {links.map((link) => (
               <div
                 key={link.id}
-                className="flex items-center justify-between p-2 rounded-md border bg-background hover:bg-accent/50 transition-colors"
+                className="flex items-center justify-between p-2 rounded-md border bg-background transition-[background-color] duration-100 hover:bg-accent/40"
               >
                 <div className="flex items-center gap-2 flex-1 min-w-0">
                   <Badge 

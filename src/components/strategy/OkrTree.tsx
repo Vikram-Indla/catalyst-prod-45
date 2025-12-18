@@ -381,17 +381,17 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
           >
             OKR Tree
           </h2>
-          {/* Stale data indicator */}
+          {/* Stale data indicator - CATALYST STANDARD */}
           {showStaleIndicator && (
             <span className="text-[11px] text-muted-foreground/70 italic">
               Data may be stale
             </span>
           )}
-          {/* Refreshing indicator */}
+          {/* Refreshing indicator - CATALYST STANDARD */}
           {isRefreshing && (
-            <div className="flex items-center gap-1.5">
-              <Loader2 size={12} className="animate-spin text-muted-foreground" />
-              <span className={cn(TYPOGRAPHY.microcopy)} style={{ color: 'var(--text-secondary)' }}>Refreshing…</span>
+            <div className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+              <Loader2 size={12} className="animate-spin" />
+              <span>Refreshing…</span>
             </div>
           )}
           {/* Type legend */}

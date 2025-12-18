@@ -144,17 +144,17 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
           </h2>
         </div>
         <div className="flex items-center gap-2">
-          {/* Stale data indicator */}
+          {/* Stale data indicator - CATALYST STANDARD */}
           {showStaleIndicator && (
             <span className="text-[11px] text-muted-foreground/70 italic">
               Data may be stale
             </span>
           )}
-          {/* Refreshing indicator */}
+          {/* Refreshing indicator - CATALYST STANDARD */}
           {isUpdating && (
-            <div className="flex items-center gap-1.5">
-              <Loader2 size={12} className="animate-spin text-muted-foreground" />
-              <span className={cn(TYPOGRAPHY.subtext, TEXT_COLORS.muted)}>Refreshing…</span>
+            <div className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+              <Loader2 size={12} className="animate-spin" />
+              <span>Refreshing…</span>
             </div>
           )}
         </div>
