@@ -3,6 +3,12 @@
  * Unified design: 5 tiles feel like one cohesive system
  * Primary: Strategy Health (large left card)
  * Secondary: Progress, At Risk, Gaps, Open Risks (compact right cards)
+ * 
+ * Typography Lock Rules (Non-negotiable):
+ * - Label: text-sm font-medium text-secondary
+ * - Primary Value: text-2xl font-semibold text-primary (most dominant)
+ * - Subtext: text-sm font-normal text-secondary
+ * - NO text-muted, opacity-60, opacity-50 inside content
  */
 
 import { useNavigate } from 'react-router-dom';
@@ -20,6 +26,7 @@ import {
   Loader2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface StrategicPulseSectionProps {
   snapshotId?: string;
@@ -45,7 +52,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
   const TrendIcon = overallProgress >= 50 ? TrendingUp : overallProgress >= 30 ? Minus : TrendingDown;
   const trendLabel = overallProgress >= 50 ? 'Ahead' : overallProgress >= 30 ? 'On pace' : 'Behind';
 
-  // Skeleton only on first load
+  // Skeleton only on first load - matches final layout dimensions
   if (isLoading && !hasData) {
     return (
       <section 
@@ -57,24 +64,42 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
         }}
       >
         <div 
-          className="px-4 py-2 flex items-center justify-between"
+          className="px-4 py-2.5 flex items-center justify-between"
           style={{ borderBottom: '1px solid var(--border-subtle)' }}
         >
-          <div className="h-3 w-28 rounded animate-pulse" style={{ backgroundColor: 'var(--muted)' }} />
+          <Skeleton className="h-4 w-32" />
         </div>
-        <div className="p-2.5">
-          <div className="flex flex-col lg:flex-row gap-2">
+        <div className="p-3">
+          <div className="flex flex-col lg:flex-row gap-3">
+            {/* Primary card skeleton */}
             <div 
-              className="lg:w-[200px] min-h-[100px] p-3 rounded-md flex-shrink-0 animate-pulse"
-              style={{ backgroundColor: 'var(--muted)', border: '1px solid var(--border)' }}
-            />
-            <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-1.5">
+              className="lg:w-[220px] flex-shrink-0 p-4 rounded-md"
+              style={{ 
+                backgroundColor: 'var(--surface-2)', 
+                border: '1px solid var(--border-subtle)',
+                minHeight: '110px',
+              }}
+            >
+              <Skeleton className="h-3 w-24 mb-3" />
+              <Skeleton className="h-7 w-20 mb-2" />
+              <Skeleton className="h-3 w-28" />
+            </div>
+            {/* Secondary cards skeleton */}
+            <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-2">
               {['s1', 's2', 's3', 's4'].map((key) => (
                 <div 
                   key={key}
-                  className="p-2.5 rounded-md min-h-[52px] animate-pulse"
-                  style={{ backgroundColor: 'var(--muted)', border: '1px solid var(--border)' }}
-                />
+                  className="p-3 rounded-md"
+                  style={{ 
+                    backgroundColor: 'var(--surface-2)', 
+                    border: '1px solid var(--border-subtle)',
+                    minHeight: '88px',
+                  }}
+                >
+                  <Skeleton className="h-3 w-16 mb-2" />
+                  <Skeleton className="h-7 w-12 mb-1" />
+                  <Skeleton className="h-3 w-20" />
+                </div>
               ))}
             </div>
           </div>
@@ -94,61 +119,55 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
         boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
       }}
     >
-      {/* Section Header - Unified strip header */}
+      {/* Section Header */}
       <div 
-        className="px-4 py-1.5 flex items-center justify-between"
+        className="px-4 py-2.5 flex items-center justify-between"
         style={{ borderBottom: '1px solid var(--border-subtle)' }}
       >
         <div className="flex items-center gap-2">
-          <Activity size={12} style={{ color: 'var(--brand-primary)' }} />
-          <h2 
-            className="text-[11px] font-semibold uppercase tracking-wide"
-            style={{ color: 'var(--text-secondary)' }}
-          >
+          <Activity size={14} style={{ color: 'var(--brand-primary)' }} />
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-secondary">
             Strategic Pulse
           </h2>
         </div>
         {isUpdating && (
-          <div className="flex items-center gap-1">
-            <Loader2 size={10} className="animate-spin" style={{ color: 'var(--text-muted)' }} />
-            <span className="text-[9px]" style={{ color: 'var(--text-muted)' }}>Updating…</span>
+          <div className="flex items-center gap-1.5">
+            <Loader2 size={12} className="animate-spin text-secondary" />
+            <span className="text-xs text-secondary">Refreshing…</span>
           </div>
         )}
       </div>
 
-      <div className="p-2.5">
-        <div className="flex flex-col lg:flex-row gap-2">
-          {/* PRIMARY CARD: Strategy Health - Consistent height with secondaries */}
+      <div className="p-3">
+        <div className="flex flex-col lg:flex-row gap-3">
+          {/* PRIMARY CARD: Strategy Health */}
           <div 
-            className="lg:w-[200px] flex-shrink-0 p-3 rounded-md flex flex-col justify-between"
+            className="lg:w-[220px] flex-shrink-0 p-4 rounded-md flex flex-col justify-between"
             style={{
               backgroundColor: 'var(--surface-2)',
               border: '1px solid var(--border-subtle)',
-              borderLeft: `3px solid ${displayData.overallStatus === 'on-track' ? 'var(--status-success)' : displayData.overallStatus === 'at-risk' ? 'var(--status-warning)' : 'var(--status-danger)'}`,
-              minHeight: '88px',
+              borderLeft: `4px solid ${displayData.overallStatus === 'on-track' ? 'var(--status-success)' : displayData.overallStatus === 'at-risk' ? 'var(--status-warning)' : 'var(--status-danger)'}`,
+              minHeight: '110px',
             }}
           >
             <div>
-              <span 
-                className="text-[10px] font-semibold uppercase tracking-wide"
-                style={{ color: 'var(--text-muted)' }}
-              >
+              {/* Label: text-sm font-medium text-secondary */}
+              <span className="text-sm font-medium text-secondary">
                 Strategy Health
               </span>
               
-              <div className="flex items-center gap-2 mt-1.5">
+              {/* Primary Value: Status badge is the dominant element */}
+              <div className="flex items-center gap-2 mt-2">
                 <span className={cn(
-                  "inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold",
+                  "inline-flex items-center px-2.5 py-1 rounded text-sm font-bold",
                   config.bgClass, "text-white"
                 )}>
                   {config.label}
                 </span>
               </div>
               
-              <p 
-                className="text-[10px] mt-1 leading-tight"
-                style={{ color: 'var(--text-muted)' }}
-              >
+              {/* Subtext: text-sm font-normal text-secondary */}
+              <p className="text-sm text-secondary mt-2">
                 {displayData.overallStatus === 'on-track' 
                   ? 'Execution on track' 
                   : displayData.overallStatus === 'at-risk' 
@@ -158,21 +177,24 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
             </div>
 
             {/* Trend indicator */}
-            <div className="flex items-center gap-1 mt-2 pt-1.5" style={{ borderTop: '1px solid var(--border-subtle)' }}>
-              <TrendIcon size={10} className={config.textClass} />
-              <span className="text-[9px] font-medium" style={{ color: 'var(--text-muted)' }}>
+            <div 
+              className="flex items-center gap-1.5 mt-3 pt-2" 
+              style={{ borderTop: '1px solid var(--border-subtle)' }}
+            >
+              <TrendIcon size={14} className={config.textClass} />
+              <span className="text-sm font-medium text-secondary">
                 {overallProgress}% · {trendLabel}
               </span>
             </div>
           </div>
 
-          {/* SECONDARY CARDS: Compact metrics grid */}
-          <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-1.5">
+          {/* SECONDARY CARDS: Metrics grid */}
+          <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-2">
             <CompactKPITile
               label="Progress"
               value={displayData.objectivesCount > 0 ? `${overallProgress}%` : '—'}
               subtext={`${displayData.objectivesCount} objectives`}
-              icon={<BarChart3 size={11} />}
+              icon={<BarChart3 size={16} />}
               onClick={() => navigate('/enterprise/okr-hub')}
               accentColor="primary"
               showProgress={displayData.objectivesCount > 0}
@@ -183,7 +205,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
               label="At Risk"
               value={atRiskCount}
               subtext={atRiskCount === 0 ? 'All healthy' : 'Need attention'}
-              icon={<AlertTriangle size={11} />}
+              icon={<AlertTriangle size={16} />}
               onClick={() => navigate('/enterprise/okr-hub')}
               accentColor={atRiskCount > 0 ? 'warning' : 'muted'}
               valueColor={atRiskCount > 0 ? 'var(--status-warning)' : undefined}
@@ -193,7 +215,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
               label="Gaps"
               value={displayData.alignmentGaps}
               subtext={displayData.alignmentGaps === 0 ? 'Aligned' : 'Unlinked'}
-              icon={<Target size={11} />}
+              icon={<Target size={16} />}
               onClick={() => navigate('/enterprise/backlog')}
               accentColor={displayData.alignmentGaps > 0 ? 'bronze' : 'muted'}
               valueColor={displayData.alignmentGaps > 0 ? 'var(--secondary-bronze)' : undefined}
@@ -203,7 +225,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
               label="Risks"
               value={displayData.totalRisks}
               subtext={displayData.highRisks > 0 ? `${displayData.highRisks} high` : 'No critical'}
-              icon={<Shield size={11} />}
+              icon={<Shield size={16} />}
               onClick={() => navigate('/enterprise/risks')}
               accentColor={displayData.highRisks > 0 ? 'danger' : 'muted'}
               valueColor={displayData.highRisks > 0 ? 'var(--status-danger)' : undefined}
@@ -251,18 +273,18 @@ function CompactKPITile({
     warning: 'var(--status-warning)',
     danger: 'var(--status-danger)',
     bronze: 'var(--secondary-bronze)',
-    muted: 'var(--text-muted)',
+    muted: 'var(--text-secondary)',
   };
 
   return (
     <button
       onClick={onClick}
-      className="p-2 rounded-md text-left transition-all relative group w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+      className="p-3 rounded-md text-left transition-all relative group w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
       style={{
         backgroundColor: 'var(--surface-2)',
         border: '1px solid var(--border-subtle)',
-        borderLeft: `2px solid ${accentBorders[accentColor]}`,
-        minHeight: '52px',
+        borderLeft: `3px solid ${accentBorders[accentColor]}`,
+        minHeight: '88px',
       }}
       onMouseEnter={(e) => {
         (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--surface-hover)';
@@ -273,30 +295,30 @@ function CompactKPITile({
         (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-subtle)';
       }}
     >
-      <div className="flex items-center justify-between mb-0.5">
-        <span 
-          className="text-[9px] font-semibold uppercase tracking-wide"
-          style={{ color: 'var(--text-muted)' }}
-        >
+      {/* Label row: text-sm font-medium text-secondary */}
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-sm font-medium text-secondary">
           {label}
         </span>
         <span style={{ color: iconColors[accentColor] }}>{icon}</span>
       </div>
       
+      {/* Primary Value: text-2xl font-semibold text-primary - MOST DOMINANT */}
       <span 
-        className="text-base font-bold tabular-nums block leading-tight"
+        className="text-2xl font-semibold tabular-nums block leading-tight text-primary"
         style={{ color: valueColor || 'var(--text-primary)' }}
       >
         {value}
       </span>
       
-      <p className="text-[9px]" style={{ color: 'var(--text-muted)' }}>
+      {/* Subtext: text-sm font-normal text-secondary */}
+      <p className="text-sm text-secondary mt-0.5">
         {subtext}
       </p>
 
       {showProgress && (
         <div 
-          className="w-full h-0.5 rounded-full mt-1 overflow-hidden"
+          className="w-full h-1 rounded-full mt-2 overflow-hidden"
           style={{ backgroundColor: 'var(--border-default)' }}
         >
           <div 
@@ -310,9 +332,8 @@ function CompactKPITile({
       )}
 
       <ChevronRight 
-        size={9} 
-        className="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-40 transition-opacity" 
-        style={{ color: 'var(--text-muted)' }}
+        size={12} 
+        className="absolute top-2 right-2 opacity-0 group-hover:opacity-60 transition-opacity text-secondary" 
       />
     </button>
   );
