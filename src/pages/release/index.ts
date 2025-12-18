@@ -1,6 +1,7 @@
 export { default as IncidentsList } from './IncidentsListPage';
 export { default as IncidentDetail } from './IncidentViewPage';
 export { default as IncidentsDashboard } from './IncidentsDashboardPage';
+export { default as CreateIncident } from './CreateIncidentPage';
 export { default as VersionsList } from './VersionsList';
 export { default as VersionDetail } from './VersionDetail';
 export { default as ReleaseCalendar } from './ReleaseCalendar';
