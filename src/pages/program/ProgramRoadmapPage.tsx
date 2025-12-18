@@ -17,6 +17,7 @@ import { useParams } from 'react-router-dom';
 import { ProgramPageLayout } from '@/components/program/ProgramPageLayout';
 import { Search, Home, Filter, Info, ChevronDown, Check, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ProgramRoadmapFiltersDialog, ProgramFilters, DEFAULT_FILTERS } from '@/components/program/ProgramRoadmapFiltersDialog';
 
 // ===== TYPES =====
 interface LinkedFeature {
@@ -61,18 +62,7 @@ interface Quarter {
   end: Date;
 }
 
-interface ProgramFilters {
-  owners: string[];
-  linkedProjects: string[];
-  status: string[];
-  health: string[];
-  activeInPeriod: string | null;
-  overdueOnly: boolean;
-  hasDependencies: boolean | null;
-  blockedOrBlocking: boolean | null;
-  hasLinkedFeatures: boolean | null;
-  featureStatusOpenOnly: boolean;
-}
+// (ProgramFilters and DEFAULT_FILTERS imported from ProgramRoadmapFiltersDialog)
 
 // ===== MOCK DATA =====
 const TODAY = new Date('2025-11-15');
@@ -88,19 +78,6 @@ const OWNERS = ['Vikram Indla', 'Sarah Chen', 'Ahmed Khalid', 'Layla Hassan', 'O
 const PROGRAM_STATUSES = ['Draft', 'Active', 'Completed', 'On Hold'] as const;
 const HEALTH_STATUSES = ['On Track', 'At Risk', 'Blocked'] as const;
 const ACTIVE_IN_PERIOD_OPTIONS = ['This Quarter', 'Next Quarter', 'Custom Range'] as const;
-
-const DEFAULT_FILTERS: ProgramFilters = {
-  owners: [],
-  linkedProjects: [],
-  status: [],
-  health: [],
-  activeInPeriod: null,
-  overdueOnly: false,
-  hasDependencies: null,
-  blockedOrBlocking: null,
-  hasLinkedFeatures: null,
-  featureStatusOpenOnly: false,
-};
 
 const PROGRAMS: ProgramItem[] = [
   {
@@ -372,13 +349,12 @@ export default function ProgramRoadmapPage() {
   
   // Filter state
   const [filters, setFilters] = useState<ProgramFilters>(DEFAULT_FILTERS);
-  const [draftFilters, setDraftFilters] = useState<ProgramFilters>(DEFAULT_FILTERS);
+  const [filtersDialogOpen, setFiltersDialogOpen] = useState(false);
   
   // Dropdown states
   const [projectsMenuOpen, setProjectsMenuOpen] = useState(false);
   const [groupByMenuOpen, setGroupByMenuOpen] = useState(false);
   const [yearMenuOpen, setYearMenuOpen] = useState(false);
-  const [filtersMenuOpen, setFiltersMenuOpen] = useState(false);
   const [legendOpen, setLegendOpen] = useState(false);
   
   // Tooltip state
@@ -513,35 +489,10 @@ export default function ProgramRoadmapPage() {
     return filtered;
   }, [search, filters]);
   
-  // Handle filter apply
-  const handleApplyFilters = () => {
-    setFilters(draftFilters);
-    setFiltersMenuOpen(false);
+  // Handle filter change from dialog
+  const handleFiltersChange = (newFilters: ProgramFilters) => {
+    setFilters(newFilters);
   };
-  
-  // Handle filter reset
-  const handleResetFilters = () => {
-    setDraftFilters(DEFAULT_FILTERS);
-    setFilters(DEFAULT_FILTERS);
-  };
-  
-  // Toggle multi-select filter
-  const toggleFilterValue = (filterKey: keyof Pick<ProgramFilters, 'owners' | 'linkedProjects' | 'status' | 'health'>, value: string) => {
-    setDraftFilters(prev => {
-      const current = prev[filterKey] as string[];
-      const newValues = current.includes(value)
-        ? current.filter(v => v !== value)
-        : [...current, value];
-      return { ...prev, [filterKey]: newValues };
-    });
-  };
-  
-  // Open filter panel - sync draft with current
-  useEffect(() => {
-    if (filtersMenuOpen) {
-      setDraftFilters(filters);
-    }
-  }, [filtersMenuOpen]);
   
   // Group programs
   const groupedPrograms = useMemo(() => {
@@ -627,7 +578,6 @@ export default function ProgramRoadmapPage() {
       setProjectsMenuOpen(false);
       setGroupByMenuOpen(false);
       setYearMenuOpen(false);
-      setFiltersMenuOpen(false);
     };
     document.addEventListener('click', handleClick);
     return () => document.removeEventListener('click', handleClick);
@@ -673,7 +623,6 @@ export default function ProgramRoadmapPage() {
                 setProjectsMenuOpen(!projectsMenuOpen);
                 setGroupByMenuOpen(false);
                 setYearMenuOpen(false);
-                setFiltersMenuOpen(false);
               }}
               className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-lg bg-background hover:bg-muted transition-colors"
             >
@@ -714,7 +663,6 @@ export default function ProgramRoadmapPage() {
                 setGroupByMenuOpen(!groupByMenuOpen);
                 setProjectsMenuOpen(false);
                 setYearMenuOpen(false);
-                setFiltersMenuOpen(false);
               }}
               className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-lg bg-background hover:bg-muted transition-colors"
             >
@@ -754,255 +702,23 @@ export default function ProgramRoadmapPage() {
           </div>
           
           {/* Filters Button */}
-          <div className="relative" onClick={(e) => e.stopPropagation()}>
-            <button
-              onClick={() => {
-                setFiltersMenuOpen(!filtersMenuOpen);
-                setProjectsMenuOpen(false);
-                setGroupByMenuOpen(false);
-                setYearMenuOpen(false);
-              }}
-              className={cn(
-                "flex items-center gap-1.5 px-3 py-2 text-sm border rounded-lg transition-colors",
-                activeFilterCount > 0
-                  ? "border-brand-primary bg-brand-primary-muted text-brand-primary"
-                  : "border-border bg-background hover:bg-muted"
-              )}
-            >
-              <Filter className="h-4 w-4" />
-              <span>Filters</span>
-              {activeFilterCount > 0 && (
-                <span className="ml-1 px-1.5 py-0.5 text-[10px] font-semibold bg-brand-primary text-white rounded-full">
-                  {activeFilterCount}
-                </span>
-              )}
-            </button>
-            
-            {filtersMenuOpen && (
-              <div className="absolute top-full left-0 mt-1 w-[380px] bg-background border border-border rounded-lg shadow-lg z-50 max-h-[70vh] overflow-auto">
-                {/* Header */}
-                <div className="sticky top-0 bg-background px-4 py-3 border-b border-border flex items-center justify-between">
-                  <span className="font-semibold text-sm">Filters</span>
-                  <button
-                    onClick={() => setFiltersMenuOpen(false)}
-                    className="text-muted-foreground hover:text-foreground"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
-                
-                <div className="p-4 space-y-4">
-                  {/* Program Owner */}
-                  <div>
-                    <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                      Program Owner
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {OWNERS.map(owner => (
-                        <button
-                          key={owner}
-                          onClick={() => toggleFilterValue('owners', owner)}
-                          className={cn(
-                            "px-2.5 py-1 text-xs rounded-full border transition-colors",
-                            draftFilters.owners.includes(owner)
-                              ? "bg-brand-primary text-white border-brand-primary"
-                              : "bg-background border-border hover:bg-muted"
-                          )}
-                        >
-                          {owner.split(' ')[0]}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  {/* Linked Project */}
-                  <div>
-                    <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                      Linked Project
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {PROJECTS.map(proj => (
-                        <button
-                          key={proj.id}
-                          onClick={() => toggleFilterValue('linkedProjects', proj.id)}
-                          className={cn(
-                            "px-2.5 py-1 text-xs rounded-full border transition-colors",
-                            draftFilters.linkedProjects.includes(proj.id)
-                              ? "bg-brand-primary text-white border-brand-primary"
-                              : "bg-background border-border hover:bg-muted"
-                          )}
-                        >
-                          {proj.name}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  {/* Program Status */}
-                  <div>
-                    <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                      Program Status
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {PROGRAM_STATUSES.map(status => (
-                        <button
-                          key={status}
-                          onClick={() => toggleFilterValue('status', status)}
-                          className={cn(
-                            "px-2.5 py-1 text-xs rounded-full border transition-colors",
-                            draftFilters.status.includes(status)
-                              ? "bg-brand-primary text-white border-brand-primary"
-                              : "bg-background border-border hover:bg-muted"
-                          )}
-                        >
-                          {status}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  {/* Health Status */}
-                  <div>
-                    <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                      Health Status
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {HEALTH_STATUSES.map(health => (
-                        <button
-                          key={health}
-                          onClick={() => toggleFilterValue('health', health)}
-                          className={cn(
-                            "px-2.5 py-1 text-xs rounded-full border transition-colors flex items-center gap-1.5",
-                            draftFilters.health.includes(health)
-                              ? "bg-brand-primary text-white border-brand-primary"
-                              : "bg-background border-border hover:bg-muted"
-                          )}
-                        >
-                          <div className={cn(
-                            "w-2 h-2 rounded-full",
-                            health === 'On Track' && "bg-brand-primary",
-                            health === 'At Risk' && "bg-secondary-bronze",
-                            health === 'Blocked' && "bg-destructive",
-                            draftFilters.health.includes(health) && "bg-white"
-                          )} />
-                          {health}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  {/* Active In Period */}
-                  <div>
-                    <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                      Active In Period
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {ACTIVE_IN_PERIOD_OPTIONS.map(period => (
-                        <button
-                          key={period}
-                          onClick={() => setDraftFilters(prev => ({
-                            ...prev,
-                            activeInPeriod: prev.activeInPeriod === period ? null : period
-                          }))}
-                          className={cn(
-                            "px-2.5 py-1 text-xs rounded-full border transition-colors",
-                            draftFilters.activeInPeriod === period
-                              ? "bg-brand-primary text-white border-brand-primary"
-                              : "bg-background border-border hover:bg-muted"
-                          )}
-                        >
-                          {period}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  {/* Boolean Filters */}
-                  <div className="space-y-2 pt-2 border-t border-border">
-                    {/* Overdue Programs */}
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={draftFilters.overdueOnly}
-                        onChange={(e) => setDraftFilters(prev => ({ ...prev, overdueOnly: e.target.checked }))}
-                        className="w-4 h-4 rounded border-border text-brand-primary focus:ring-brand-primary"
-                      />
-                      <span className="text-sm">Overdue Programs</span>
-                    </label>
-                    
-                    {/* Has Dependencies */}
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={draftFilters.hasDependencies === true}
-                        onChange={(e) => setDraftFilters(prev => ({ 
-                          ...prev, 
-                          hasDependencies: e.target.checked ? true : null 
-                        }))}
-                        className="w-4 h-4 rounded border-border text-brand-primary focus:ring-brand-primary"
-                      />
-                      <span className="text-sm">Has Dependencies</span>
-                    </label>
-                    
-                    {/* Blocked / Blocking */}
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={draftFilters.blockedOrBlocking === true}
-                        onChange={(e) => setDraftFilters(prev => ({ 
-                          ...prev, 
-                          blockedOrBlocking: e.target.checked ? true : null 
-                        }))}
-                        className="w-4 h-4 rounded border-border text-brand-primary focus:ring-brand-primary"
-                      />
-                      <span className="text-sm">Blocked / Blocking Programs</span>
-                    </label>
-                    
-                    {/* Has Linked Features */}
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={draftFilters.hasLinkedFeatures === true}
-                        onChange={(e) => setDraftFilters(prev => ({ 
-                          ...prev, 
-                          hasLinkedFeatures: e.target.checked ? true : null 
-                        }))}
-                        className="w-4 h-4 rounded border-border text-brand-primary focus:ring-brand-primary"
-                      />
-                      <span className="text-sm">Has Linked Features</span>
-                    </label>
-                    
-                    {/* Feature Status (Open only) */}
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={draftFilters.featureStatusOpenOnly}
-                        onChange={(e) => setDraftFilters(prev => ({ ...prev, featureStatusOpenOnly: e.target.checked }))}
-                        className="w-4 h-4 rounded border-border text-brand-primary focus:ring-brand-primary"
-                      />
-                      <span className="text-sm">Feature Status (Open only)</span>
-                    </label>
-                  </div>
-                </div>
-                
-                {/* Footer */}
-                <div className="sticky bottom-0 bg-background px-4 py-3 border-t border-border flex items-center justify-between gap-2">
-                  <button
-                    onClick={handleResetFilters}
-                    className="px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    Reset
-                  </button>
-                  <button
-                    onClick={handleApplyFilters}
-                    className="px-4 py-1.5 text-sm bg-brand-primary text-white rounded-lg hover:bg-brand-primary/90 transition-colors"
-                  >
-                    Apply Filters
-                  </button>
-                </div>
-              </div>
+          <button
+            onClick={() => setFiltersDialogOpen(true)}
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-2 text-sm border rounded-lg transition-colors",
+              activeFilterCount > 0
+                ? "border-brand-primary bg-brand-primary-muted text-brand-primary"
+                : "border-border bg-background hover:bg-muted"
             )}
-          </div>
+          >
+            <Filter className="h-4 w-4" />
+            <span>Filters</span>
+            {activeFilterCount > 0 && (
+              <span className="ml-1 px-1.5 py-0.5 text-[10px] font-semibold bg-brand-primary text-white rounded-full">
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
           
           {/* RIGHT: Milestones toggle + Year + Info */}
           <div className="ml-auto flex items-center gap-3">
@@ -1023,14 +739,12 @@ export default function ProgramRoadmapPage() {
               </button>
             </div>
             
-            {/* Year Dropdown */}
             <div className="relative" onClick={(e) => e.stopPropagation()}>
               <button
                 onClick={() => {
                   setYearMenuOpen(!yearMenuOpen);
                   setProjectsMenuOpen(false);
                   setGroupByMenuOpen(false);
-                  setFiltersMenuOpen(false);
                 }}
                 className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-lg bg-background hover:bg-muted transition-colors"
               >
@@ -1470,6 +1184,16 @@ export default function ProgramRoadmapPage() {
             </div>
           </div>
         )}
+        
+        {/* Filters Dialog */}
+        <ProgramRoadmapFiltersDialog
+          open={filtersDialogOpen}
+          onOpenChange={setFiltersDialogOpen}
+          filters={filters}
+          onFiltersChange={handleFiltersChange}
+          owners={OWNERS}
+          projects={PROJECTS}
+        />
       </div>
     </ProgramPageLayout>
   );
