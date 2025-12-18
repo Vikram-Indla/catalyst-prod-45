@@ -178,36 +178,36 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
           className="px-4 py-2"
           style={{ borderBottom: '1px solid var(--border-subtle)' }}
         >
-          <div className="h-3.5 w-28 rounded animate-pulse" style={{ backgroundColor: 'var(--surface-3)' }} />
+          <div className="h-3.5 w-28 rounded animate-pulse" style={{ backgroundColor: 'var(--muted)' }} />
         </div>
         <div className="p-3">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
             {[1, 2, 3].map((col) => (
               <div 
                 key={col} 
-                className="rounded-md overflow-hidden animate-pulse"
+                className="rounded-md overflow-hidden min-h-[140px]"
                 style={{ 
-                  backgroundColor: 'var(--surface-2)', 
-                  border: '1px solid var(--border-subtle)' 
+                  backgroundColor: 'var(--muted)', 
+                  border: '1px solid var(--border)' 
                 }}
               >
                 <div 
                   className="px-3 py-2 flex items-center gap-2"
-                  style={{ borderBottom: '1px solid var(--border-subtle)', backgroundColor: 'var(--surface-3)' }}
+                  style={{ borderBottom: '1px solid var(--border)' }}
                 >
-                  <div className="h-3 w-3 rounded" style={{ backgroundColor: 'var(--surface-4)' }} />
-                  <div className="h-2.5 w-20 rounded" style={{ backgroundColor: 'var(--surface-4)' }} />
+                  <div className="h-3 w-3 rounded animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
+                  <div className="h-2.5 w-20 rounded animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
                 </div>
                 <div className="p-3 space-y-2">
                   {[1, 2, 3].map((row) => (
                     <div key={row} className="flex items-center justify-between">
-                      <div className="h-2.5 w-16 rounded" style={{ backgroundColor: 'var(--surface-3)' }} />
-                      <div className="h-3 w-5 rounded" style={{ backgroundColor: 'var(--surface-3)' }} />
+                      <div className="h-2.5 w-16 rounded animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
+                      <div className="h-3 w-5 rounded animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
                     </div>
                   ))}
                 </div>
                 <div className="px-3 pb-2.5">
-                  <div className="h-6 w-full rounded" style={{ backgroundColor: 'var(--surface-3)' }} />
+                  <div className="h-6 w-full rounded animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
                 </div>
               </div>
             ))}
