@@ -872,6 +872,66 @@ export type Database = {
           },
         ]
       }
+      cap_committee_default_members: {
+        Row: {
+          created_at: string
+          has_veto: boolean | null
+          id: string
+          is_active: boolean | null
+          role: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          has_veto?: boolean | null
+          id?: string
+          is_active?: boolean | null
+          role?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          has_veto?: boolean | null
+          id?: string
+          is_active?: boolean | null
+          role?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      cap_committee_policy: {
+        Row: {
+          approval_mode: string
+          created_at: string
+          id: string
+          justification_required: boolean
+          updated_at: string
+          updated_by: string | null
+          veto_enabled: boolean
+        }
+        Insert: {
+          approval_mode?: string
+          created_at?: string
+          id?: string
+          justification_required?: boolean
+          updated_at?: string
+          updated_by?: string | null
+          veto_enabled?: boolean
+        }
+        Update: {
+          approval_mode?: string
+          created_at?: string
+          id?: string
+          justification_required?: boolean
+          updated_at?: string
+          updated_by?: string | null
+          veto_enabled?: boolean
+        }
+        Relationships: []
+      }
       capacity_allocations: {
         Row: {
           actual_capacity_points: number | null
@@ -4363,6 +4423,72 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      incident_conversion_rules: {
+        Row: {
+          allowed_statuses: string[]
+          allowed_target_types: string[]
+          auto_lock_after_conversion: boolean
+          created_at: string
+          id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          allowed_statuses?: string[]
+          allowed_target_types?: string[]
+          auto_lock_after_conversion?: boolean
+          created_at?: string
+          id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          allowed_statuses?: string[]
+          allowed_target_types?: string[]
+          auto_lock_after_conversion?: boolean
+          created_at?: string
+          id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      incident_field_options: {
+        Row: {
+          color: string | null
+          created_at: string
+          field_name: string
+          id: string
+          is_active: boolean | null
+          option_label: string
+          option_value: string
+          sort_order: number | null
+          updated_at: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          field_name: string
+          id?: string
+          is_active?: boolean | null
+          option_label: string
+          option_value: string
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          field_name?: string
+          id?: string
+          is_active?: boolean | null
+          option_label?: string
+          option_value?: string
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       incident_history: {
         Row: {
@@ -9501,6 +9627,33 @@ export type Database = {
           severity?: Database["public"]["Enums"]["severity_level"]
           updated_at?: string
           updated_by?: string | null
+        }
+        Relationships: []
+      }
+      sla_pause_conditions: {
+        Row: {
+          condition_type: string
+          condition_value: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+        }
+        Insert: {
+          condition_type: string
+          condition_value: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+        }
+        Update: {
+          condition_type?: string
+          condition_value?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
         }
         Relationships: []
       }
