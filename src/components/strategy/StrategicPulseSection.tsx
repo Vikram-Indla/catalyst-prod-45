@@ -1,6 +1,6 @@
 /**
- * StrategicPulseSection — Hero section answering "Are we winning?"
- * Aggregate health status + key metrics in a glanceable format
+ * StrategicPulseSection — Signal-led cockpit row
+ * Hero: Strategy Health | Quiet metrics: Progress, At Risk, Gaps, Open Risks
  */
 
 import { useNavigate } from 'react-router-dom';
@@ -17,8 +17,10 @@ import {
   Target, 
   Shield,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  ChevronRight
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface StrategicPulseSectionProps {
   snapshotId?: string;
@@ -32,7 +34,6 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
   const { data: okrMetrics, isLoading: okrLoading } = useOKRv2StrategyMetrics(snapshotId);
   const { data: counts, isLoading: countsLoading } = useStrategyPyramidCounts(snapshotId);
 
-  // Fetch risks
   const { data: riskData, isLoading: risksLoading } = useQuery({
     queryKey: ['strategic-pulse-risks', snapshotId],
     queryFn: async () => {
@@ -53,7 +54,6 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
 
   const isLoading = okrLoading || countsLoading || risksLoading;
 
-  // Calculate metrics
   const objectivesCount = okrMetrics?.count ?? 0;
   const hasObjectives = objectivesCount > 0;
   const overallProgress = hasObjectives ? Math.round(okrMetrics?.avgProgress ?? 0) : 0;
@@ -72,7 +72,6 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
   const openRisks = riskData?.total ?? 0;
   const highRisks = riskData?.high ?? 0;
 
-  // Determine overall status
   const determineOverallStatus = (): OverallStatus => {
     if (!hasObjectives) return 'at-risk';
     if (highRisks > 2 || atRiskCount > 3 || overallProgress < 30) return 'off-track';
@@ -86,175 +85,135 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
     'on-track': {
       label: 'On Track',
       icon: CheckCircle2,
-      color: 'var(--status-success)',
-      bg: 'var(--status-success-bg)',
-      border: 'var(--status-success)',
+      description: 'Strategy execution is proceeding as planned',
+      accentClass: 'border-l-status-success',
+      textClass: 'text-status-success',
+      bgClass: 'bg-status-success/10',
     },
     'at-risk': {
       label: 'At Risk',
       icon: AlertCircle,
-      color: 'var(--status-warning)',
-      bg: 'var(--status-warning-bg)',
-      border: 'var(--status-warning)',
+      description: 'Some objectives require attention',
+      accentClass: 'border-l-status-warning',
+      textClass: 'text-status-warning',
+      bgClass: 'bg-status-warning/10',
     },
     'off-track': {
       label: 'Off Track',
       icon: AlertTriangle,
-      color: 'var(--status-danger)',
-      bg: 'var(--status-danger-bg)',
-      border: 'var(--status-danger)',
+      description: 'Critical intervention needed',
+      accentClass: 'border-l-status-danger',
+      textClass: 'text-status-danger',
+      bgClass: 'bg-status-danger/10',
     },
   };
 
   const config = statusConfig[overallStatus];
   const StatusIcon = config.icon;
 
-  // Trend indicator (placeholder - would need historical data)
   const TrendIcon = overallProgress >= 50 ? TrendingUp : overallProgress >= 30 ? Minus : TrendingDown;
-  const trendColor = overallProgress >= 50 ? 'var(--status-success)' : overallProgress >= 30 ? 'var(--text-muted)' : 'var(--status-danger)';
+  const trendClass = overallProgress >= 50 ? 'text-status-success' : overallProgress >= 30 ? 'text-muted-foreground' : 'text-status-danger';
 
   if (isLoading) {
     return (
-      <section 
-        className="rounded-xl overflow-hidden"
-        style={{
-          backgroundColor: 'var(--surface-bg)',
-          border: '1px solid var(--border-default)',
-          boxShadow: 'var(--shadow-card)',
-        }}
-      >
-        <div className="p-6 flex items-center justify-center">
-          <div 
-            className="animate-spin rounded-full h-6 w-6 border-2"
-            style={{ borderColor: 'var(--border-accent)', borderTopColor: 'transparent' }}
-          />
+      <section className="rounded-lg border border-border bg-card">
+        <div className="p-5 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-5 w-5 border-2 border-primary border-t-transparent" />
         </div>
       </section>
     );
   }
 
   return (
-    <section 
-      className="rounded-xl overflow-hidden"
-      style={{
-        backgroundColor: 'var(--surface-bg)',
-        border: '1px solid var(--border-default)',
-        boxShadow: 'var(--shadow-card)',
-      }}
-    >
-      {/* Header */}
-      <div 
-        className="px-5 py-3"
-        style={{ borderBottom: '1px solid var(--border-subtle)' }}
-      >
-        <h2 
-          className="text-[15px] font-semibold"
-          style={{ color: 'var(--text-primary)' }}
-        >
-          Strategic Pulse
-        </h2>
-        <p 
-          className="text-[12px] mt-0.5"
-          style={{ color: 'var(--text-muted)' }}
-        >
-          How healthy is the enterprise strategy right now?
-        </p>
+    <section className="rounded-lg border border-border bg-card overflow-hidden">
+      {/* Section Header */}
+      <div className="px-4 py-2.5 border-b border-border flex items-center justify-between">
+        <div>
+          <h2 className="text-sm font-semibold text-foreground">Strategic Pulse</h2>
+          <p className="text-[11px] text-muted-foreground">How healthy is the enterprise strategy?</p>
+        </div>
       </div>
 
-      <div className="p-5">
-        <div className="flex flex-col lg:flex-row gap-5">
-          {/* Left: Overall Status Hero */}
+      <div className="p-4">
+        <div className="flex flex-col lg:flex-row gap-3">
+          {/* Hero Card: Strategy Health */}
           <div 
-            className="flex-shrink-0 lg:w-[280px] p-5 rounded-xl flex flex-col items-center justify-center text-center"
-            style={{
-              backgroundColor: config.bg,
-              border: `1px solid ${config.border}`,
-            }}
+            className={cn(
+              "flex-shrink-0 lg:w-[240px] p-4 rounded-md border-l-[3px] transition-all",
+              config.accentClass,
+              config.bgClass
+            )}
           >
-            <StatusIcon 
-              size={40} 
-              style={{ color: config.color }}
-              className="mb-3"
-            />
-            <span 
-              className="text-2xl font-bold mb-1"
-              style={{ color: config.color }}
-            >
-              {config.label}
-            </span>
-            <span 
-              className="text-[12px]"
-              style={{ color: 'var(--text-muted)' }}
-            >
-              Overall Strategy Health
-            </span>
+            <div className="flex items-start gap-3">
+              <div className={cn("p-1.5 rounded", config.bgClass)}>
+                <StatusIcon size={20} className={config.textClass} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className={cn("text-lg font-bold leading-tight", config.textClass)}>
+                  {config.label}
+                </div>
+                <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug">
+                  {config.description}
+                </p>
+              </div>
+            </div>
             
             {/* Progress with trend */}
-            <div className="flex items-center gap-2 mt-4">
-              <span 
-                className="text-3xl font-bold tabular-nums"
-                style={{ color: 'var(--text-primary)' }}
-              >
-                {hasObjectives ? `${overallProgress}%` : '—'}
-              </span>
+            <div className="mt-3 pt-3 border-t border-border/50 flex items-center justify-between">
+              <div>
+                <span className="text-2xl font-bold tabular-nums text-foreground">
+                  {hasObjectives ? `${overallProgress}%` : '—'}
+                </span>
+                <span className="text-[10px] text-muted-foreground ml-1.5">progress</span>
+              </div>
               {hasObjectives && (
-                <TrendIcon size={20} style={{ color: trendColor }} />
+                <div className={cn("flex items-center gap-1", trendClass)}>
+                  <TrendIcon size={14} />
+                  <span className="text-[10px] font-medium">
+                    {overallProgress >= 50 ? 'Ahead' : overallProgress >= 30 ? 'On pace' : 'Behind'}
+                  </span>
+                </div>
               )}
             </div>
-            <span 
-              className="text-[11px]"
-              style={{ color: 'var(--text-muted)' }}
-            >
-              {hasObjectives ? `${objectivesCount} objective${objectivesCount !== 1 ? 's' : ''} tracked` : 'No objectives yet'}
-            </span>
           </div>
 
-          {/* Right: KPI Grid */}
-          <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-3">
-            {/* Progress */}
-            <KPICard
+          {/* Quiet Metric Cards Grid */}
+          <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-2">
+            <MetricCard
               label="Progress"
               value={hasObjectives ? `${overallProgress}%` : '—'}
-              subtext="Avg completion"
-              icon={<BarChart3 size={16} />}
-              iconColor="#5C7C5C"
+              subtext={`${objectivesCount} objective${objectivesCount !== 1 ? 's' : ''}`}
+              icon={<BarChart3 size={14} />}
               onClick={() => navigate('/enterprise/okr-hub')}
               showBar
               barValue={overallProgress}
-              barColor="#5C7C5C"
             />
             
-            {/* At Risk */}
-            <KPICard
+            <MetricCard
               label="At Risk"
               value={atRiskCount}
               subtext={atRiskCount === 0 ? 'All healthy' : 'Need attention'}
-              icon={<AlertTriangle size={16} />}
-              iconColor={atRiskCount > 0 ? '#B85C5C' : '#5C7C5C'}
+              icon={<AlertTriangle size={14} />}
+              iconVariant={atRiskCount > 0 ? 'warning' : 'default'}
               onClick={() => navigate('/enterprise/okr-hub')}
-              highlight={atRiskCount > 0}
             />
             
-            {/* Gaps */}
-            <KPICard
+            <MetricCard
               label="Gaps"
               value={alignmentGaps}
-              subtext={alignmentGaps === 0 ? 'Fully aligned' : 'Unaligned items'}
-              icon={<Target size={16} />}
-              iconColor={alignmentGaps > 0 ? '#8B7355' : '#5C7C5C'}
+              subtext={alignmentGaps === 0 ? 'Fully aligned' : 'Unlinked items'}
+              icon={<Target size={14} />}
+              iconVariant={alignmentGaps > 0 ? 'bronze' : 'default'}
               onClick={() => navigate('/enterprise/backlog')}
-              highlight={alignmentGaps > 0}
             />
             
-            {/* Risks */}
-            <KPICard
+            <MetricCard
               label="Open Risks"
               value={openRisks}
-              subtext={highRisks > 0 ? `${highRisks} high severity` : 'No critical risks'}
-              icon={<Shield size={16} />}
-              iconColor={highRisks > 0 ? '#B85C5C' : '#5C7C5C'}
+              subtext={highRisks > 0 ? `${highRisks} high severity` : 'No critical'}
+              icon={<Shield size={14} />}
+              iconVariant={highRisks > 0 ? 'danger' : 'default'}
               onClick={() => navigate('/enterprise/risks')}
-              highlight={highRisks > 0}
             />
           </div>
         </div>
@@ -263,86 +222,71 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
   );
 }
 
-interface KPICardProps {
+interface MetricCardProps {
   label: string;
   value: string | number;
   subtext: string;
   icon: React.ReactNode;
-  iconColor: string;
+  iconVariant?: 'default' | 'warning' | 'danger' | 'bronze';
   onClick?: () => void;
   showBar?: boolean;
   barValue?: number;
-  barColor?: string;
-  highlight?: boolean;
 }
 
-function KPICard({ 
+function MetricCard({ 
   label, 
   value, 
   subtext, 
   icon, 
-  iconColor, 
+  iconVariant = 'default',
   onClick,
   showBar,
   barValue = 0,
-  barColor,
-  highlight
-}: KPICardProps) {
+}: MetricCardProps) {
+  const iconColors = {
+    default: 'text-muted-foreground',
+    warning: 'text-status-warning',
+    danger: 'text-status-danger',
+    bronze: 'text-secondary-bronze',
+  };
+
   return (
     <button
       onClick={onClick}
-      className="p-3 rounded-lg text-left transition-all duration-150 group"
-      style={{
-        backgroundColor: highlight ? 'var(--status-warning-bg)' : 'var(--surface-subtle)',
-        border: `1px solid ${highlight ? 'var(--status-warning)' : 'var(--border-subtle)'}`,
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = 'var(--border-accent)';
-        e.currentTarget.style.transform = 'translateY(-1px)';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = highlight ? 'var(--status-warning)' : 'var(--border-subtle)';
-        e.currentTarget.style.transform = 'translateY(0)';
-      }}
+      className={cn(
+        "p-3 rounded-md text-left transition-all duration-150 group border-l-2 border-l-transparent",
+        "bg-muted/30 hover:bg-muted/50 hover:border-l-primary",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      )}
     >
-      <div className="flex items-center justify-between mb-2">
-        <span 
-          className="text-[10px] font-semibold uppercase tracking-wider"
-          style={{ color: 'var(--text-muted)' }}
-        >
+      <div className="flex items-center justify-between mb-1.5">
+        <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
           {label}
         </span>
-        <span style={{ color: iconColor }}>{icon}</span>
+        <span className={iconColors[iconVariant]}>{icon}</span>
       </div>
       
-      <span 
-        className="text-xl font-bold tabular-nums block mb-0.5"
-        style={{ color: 'var(--text-primary)' }}
-      >
+      <span className="text-lg font-bold tabular-nums text-foreground block">
         {value}
       </span>
       
-      <span 
-        className="text-[11px] block"
-        style={{ color: 'var(--text-muted)' }}
-      >
+      <span className="text-[10px] text-muted-foreground block mt-0.5">
         {subtext}
       </span>
 
       {showBar && (
-        <div 
-          className="w-full h-1 rounded-full mt-2 overflow-hidden"
-          style={{ backgroundColor: 'var(--progress-bg)' }}
-        >
+        <div className="w-full h-1 rounded-full mt-2 bg-border overflow-hidden">
           <div 
-            className="h-full rounded-full transition-all duration-300"
-            style={{ 
-              width: `${barValue}%`,
-              backgroundColor: barColor,
-            }}
+            className="h-full rounded-full transition-all duration-300 bg-primary"
+            style={{ width: `${barValue}%` }}
           />
         </div>
       )}
+
+      <ChevronRight 
+        size={12} 
+        className="absolute top-3 right-3 opacity-0 group-hover:opacity-50 transition-opacity text-muted-foreground" 
+      />
     </button>
   );
 }
