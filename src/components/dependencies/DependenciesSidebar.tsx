@@ -38,7 +38,7 @@ export function DependenciesSidebar({ className }: DependenciesSidebarProps) {
   // PIs - empty until populated from database
   const pis: { id: string; code: string; dates: string }[] = [];
 
-  const [selectedPI, setSelectedPI] = useState(pis[0].id);
+  const [selectedPI, setSelectedPI] = useState<string | undefined>(undefined);
 
   const handleNavigation = (path: string) => {
     navigate(path);
