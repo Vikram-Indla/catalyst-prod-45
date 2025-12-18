@@ -230,6 +230,7 @@ import {
 // Incident Room (New)
 import IncidentRoomList from "./pages/release/IncidentRoomList";
 import IncidentRoomDetail from "./pages/release/IncidentRoomDetail";
+import IncidentCommandCenter from "./pages/release/IncidentCommandCenter";
 
 const queryClient = new QueryClient();
 
@@ -613,6 +614,7 @@ const App = () => (
               <Route path="/release/incidents" element={<IncidentsDashboard />} />
               <Route path="/release/incidents/list" element={<IncidentsList />} />
               <Route path="/release/incidents/create" element={<CreateIncident />} />
+              <Route path="/release/incident-command-center" element={<IncidentCommandCenter />} />
               <Route path="/release/incidents/:incidentId" element={<IncidentDetail />} />
               <Route path="/release/versions" element={<VersionsList />} />
               <Route path="/release/versions/calendar" element={<ReleaseCalendar />} />
