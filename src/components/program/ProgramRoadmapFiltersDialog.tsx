@@ -248,17 +248,17 @@ export function ProgramRoadmapFiltersDialog({
               Active In Period
             </Label>
             <Select
-              value={draftFilters.activeInPeriod || ''}
+              value={draftFilters.activeInPeriod || 'any'}
               onValueChange={(value) => setDraftFilters(prev => ({ 
                 ...prev, 
-                activeInPeriod: value === '' ? null : value 
+                activeInPeriod: value === 'any' ? null : value 
               }))}
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select period..." />
               </SelectTrigger>
               <SelectContent className="z-[500]">
-                <SelectItem value="">Any Period</SelectItem>
+                <SelectItem value="any">Any Period</SelectItem>
                 {ACTIVE_IN_PERIOD_OPTIONS.map(period => (
                   <SelectItem key={period} value={period}>{period}</SelectItem>
                 ))}
