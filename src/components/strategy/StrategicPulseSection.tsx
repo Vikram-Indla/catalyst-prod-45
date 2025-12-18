@@ -116,9 +116,40 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
 
   if (isLoading) {
     return (
-      <section className="rounded-lg border border-border bg-card">
-        <div className="p-5 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-5 w-5 border-2 border-primary border-t-transparent" />
+      <section className="rounded-lg border border-border bg-card overflow-hidden">
+        <div className="px-4 py-2.5 border-b border-border">
+          <div className="h-4 w-28 bg-muted/50 rounded animate-pulse" />
+          <div className="h-3 w-48 bg-muted/30 rounded animate-pulse mt-1" />
+        </div>
+        <div className="p-4">
+          <div className="flex flex-col lg:flex-row gap-3">
+            {/* Hero skeleton */}
+            <div className="flex-shrink-0 lg:w-[240px] p-4 rounded-md bg-muted/30 border-l-[3px] border-l-muted animate-pulse">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded bg-muted/50" />
+                <div className="flex-1">
+                  <div className="h-5 w-20 bg-muted/50 rounded" />
+                  <div className="h-3 w-32 bg-muted/30 rounded mt-1.5" />
+                </div>
+              </div>
+              <div className="mt-3 pt-3 border-t border-border/30">
+                <div className="h-7 w-16 bg-muted/50 rounded" />
+              </div>
+            </div>
+            {/* Metric cards skeleton */}
+            <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-2">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="p-3 rounded-md bg-muted/30 animate-pulse">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div className="h-2.5 w-12 bg-muted/50 rounded" />
+                    <div className="h-3.5 w-3.5 bg-muted/50 rounded" />
+                  </div>
+                  <div className="h-5 w-10 bg-muted/50 rounded" />
+                  <div className="h-2.5 w-16 bg-muted/30 rounded mt-1.5" />
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
     );

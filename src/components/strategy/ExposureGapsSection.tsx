@@ -135,9 +135,33 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
 
   if (isLoading) {
     return (
-      <section className="rounded-lg border border-border bg-card">
-        <div className="p-5 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-5 w-5 border-2 border-primary border-t-transparent" />
+      <section className="rounded-lg border border-border bg-card overflow-hidden">
+        <div className="px-4 py-2.5 border-b border-border">
+          <div className="h-4 w-32 bg-muted/50 rounded animate-pulse" />
+          <div className="h-3 w-44 bg-muted/30 rounded animate-pulse mt-1" />
+        </div>
+        <div className="p-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+            {[1, 2, 3].map((col) => (
+              <div key={col} className="rounded-md border border-border bg-muted/20 overflow-hidden animate-pulse">
+                <div className="px-3 py-2 border-b border-border flex items-center gap-2">
+                  <div className="h-3.5 w-3.5 bg-muted/50 rounded" />
+                  <div className="h-3 w-24 bg-muted/50 rounded" />
+                </div>
+                <div className="p-3 space-y-2">
+                  {[1, 2, 3].map((row) => (
+                    <div key={row} className="flex items-center justify-between py-0.5">
+                      <div className="h-2.5 w-20 bg-muted/40 rounded" />
+                      <div className="h-3 w-6 bg-muted/40 rounded" />
+                    </div>
+                  ))}
+                </div>
+                <div className="px-3 pb-3">
+                  <div className="h-7 w-full bg-muted/30 rounded" />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
     );
