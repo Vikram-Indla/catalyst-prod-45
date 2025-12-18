@@ -15,9 +15,10 @@
 import React, { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { ProgramPageLayout } from '@/components/program/ProgramPageLayout';
-import { Search, Home, Filter, Info, ChevronDown, Check, X } from 'lucide-react';
+import { Search, Layers, Filter, Info, ChevronDown, Check, X, Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ProgramRoadmapFiltersDialog, ProgramFilters, DEFAULT_FILTERS, getCurrentQuarterDates, getNextQuarterDates } from '@/components/program/ProgramRoadmapFiltersDialog';
+import GlobalPageHeader from '@/components/layout/GlobalPageHeader';
 
 // ===== TYPES =====
 interface LinkedFeature {
@@ -605,197 +606,165 @@ export default function ProgramRoadmapPage() {
   return (
     <ProgramPageLayout>
       <div className="flex flex-col h-full bg-background overflow-hidden">
-        {/* Page Header */}
-        <div className="px-5 pt-3">
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-0.5">
-            <span>PROGRAM</span>
-            <span>/</span>
-          </div>
-          <h1 className="text-xl font-semibold text-foreground">Program Roadmap</h1>
-        </div>
-        
-        {/* Toolbar - Matches Image 1 layout */}
-        <div className="px-5 py-3 flex items-center gap-2.5 flex-wrap">
-          {/* LEFT: Search → My Projects → Group by → Filters */}
-          <div className="relative w-[200px]">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search programs..."
-              className="w-full pl-9 pr-3 py-2 text-sm border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary"
-            />
-          </div>
-          
-          {/* My Projects Dropdown */}
-          <div className="relative" onClick={(e) => e.stopPropagation()}>
-            <button
-              onClick={() => {
-                setProjectsMenuOpen(!projectsMenuOpen);
-                setGroupByMenuOpen(false);
-                setYearMenuOpen(false);
-              }}
-              className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-lg bg-background hover:bg-muted transition-colors"
-            >
-              <Home className="h-4 w-4 text-muted-foreground" />
-              <span>My Projects</span>
-              <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
-            </button>
-            
-            {projectsMenuOpen && (
-              <div className="absolute top-full left-0 mt-1 w-[220px] bg-background border border-border rounded-lg shadow-lg z-50 p-2">
-                {PROJECTS.map(project => (
-                  <div
-                    key={project.id}
-                    onClick={() => toggleProject(project.id)}
-                    className="flex items-center gap-2 px-2.5 py-2 rounded-md hover:bg-muted cursor-pointer"
+        {/* Canonical Header - matches Enterprise Objective Roadmap exactly */}
+        <GlobalPageHeader 
+          sectionLabel="PROGRAM" 
+          pageTitle="Program Roadmap"
+          toolbar={
+            <div className="flex items-center justify-between w-full">
+              {/* Left: Search → Group by → Filters */}
+              <div className="flex items-center gap-3">
+                {/* Search */}
+                <div className="relative">
+                  <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <input
+                    type="text"
+                    className="h-9 w-52 pl-9 pr-8 text-sm border border-border rounded-lg bg-background focus:outline-none focus:border-brand-primary"
+                    placeholder="Search programs..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+                  {search && (
+                    <button 
+                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground"
+                      onClick={() => setSearch('')}
+                    >
+                      <X size={14} />
+                    </button>
+                  )}
+                </div>
+                
+                {/* Group By */}
+                <div className="relative" onClick={(e) => e.stopPropagation()}>
+                  <button 
+                    className="h-9 px-3 flex items-center gap-2 text-sm border border-border rounded-lg bg-background hover:bg-muted"
+                    onClick={() => {
+                      setGroupByMenuOpen(!groupByMenuOpen);
+                      setProjectsMenuOpen(false);
+                      setYearMenuOpen(false);
+                    }}
+                  >
+                    <Layers size={16} />
+                    Group by
+                    <ChevronDown size={12} />
+                  </button>
+                  {groupByMenuOpen && (
+                    <div className="absolute top-full mt-1 left-0 w-40 py-1 bg-background border border-border rounded-lg shadow-lg z-50">
+                      {[
+                        { value: 'platform', label: 'Delivery Platform' },
+                        { value: 'owner', label: 'Program Owner' },
+                        { value: 'health', label: 'Health' }
+                      ].map(option => (
+                        <div
+                          key={option.value}
+                          className={cn(
+                            "flex items-center justify-between px-3 py-2 text-sm cursor-pointer hover:bg-muted",
+                            groupBy === option.value && "text-brand-primary"
+                          )}
+                          onClick={() => {
+                            setGroupBy(option.value as typeof groupBy);
+                            setCollapsedGroups(new Set());
+                            setGroupByMenuOpen(false);
+                          }}
+                        >
+                          {option.label}
+                          {groupBy === option.value && <Check size={16} className="text-brand-primary" />}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                
+                {/* Filters Button */}
+                <button 
+                  className={cn(
+                    "h-9 px-3 flex items-center gap-2 text-sm border border-border rounded-lg bg-background hover:bg-muted",
+                    activeFilterCount > 0 && "border-brand-primary text-brand-primary"
+                  )}
+                  onClick={() => setFiltersDialogOpen(true)}
+                >
+                  <Filter size={16} />
+                  Filters
+                  {activeFilterCount > 0 && (
+                    <span className="min-w-[20px] h-5 px-1.5 flex items-center justify-center text-xs font-semibold bg-brand-primary text-white rounded-full">
+                      {activeFilterCount}
+                    </span>
+                  )}
+                </button>
+              </div>
+              
+              {/* Right: Milestones toggle + Year + Info */}
+              <div className="flex items-center gap-3">
+                {/* Milestones Toggle */}
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">Milestones</span>
+                  <div 
+                    className={cn(
+                      "w-10 h-5 rounded-full cursor-pointer transition-colors relative",
+                      showMilestones ? "bg-brand-primary" : "bg-muted"
+                    )}
+                    onClick={() => setShowMilestones(!showMilestones)}
                   >
                     <div className={cn(
-                      "w-4 h-4 rounded border-2 flex items-center justify-center transition-colors",
-                      selectedProjects.has(project.id)
-                        ? "bg-brand-primary border-brand-primary"
-                        : "border-border"
-                    )}>
-                      {selectedProjects.has(project.id) && (
-                        <Check className="h-3 w-3 text-white" />
-                      )}
-                    </div>
-                    <span className="text-sm">{project.name}</span>
+                      "absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform",
+                      showMilestones ? "translate-x-5" : "translate-x-0.5"
+                    )} />
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-          
-          {/* Group by Dropdown */}
-          <div className="relative" onClick={(e) => e.stopPropagation()}>
-            <button
-              onClick={() => {
-                setGroupByMenuOpen(!groupByMenuOpen);
-                setProjectsMenuOpen(false);
-                setYearMenuOpen(false);
-              }}
-              className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-lg bg-background hover:bg-muted transition-colors"
-            >
-              <svg className="h-4 w-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M3 6h18M3 12h18M3 18h18"/>
-              </svg>
-              <span>Group by</span>
-              <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
-            </button>
-            
-            {groupByMenuOpen && (
-              <div className="absolute top-full left-0 mt-1 min-w-[160px] bg-background border border-border rounded-lg shadow-lg z-50">
-                {[
-                  { value: 'platform', label: 'Delivery Platform' },
-                  { value: 'owner', label: 'Program Owner' },
-                  { value: 'health', label: 'Health' }
-                ].map(option => (
-                  <div
-                    key={option.value}
+                </div>
+                
+                <div className="w-px h-6 bg-border" />
+                
+                {/* Year Selector */}
+                <div className="relative" onClick={(e) => e.stopPropagation()}>
+                  <button
                     onClick={() => {
-                      setGroupBy(option.value as typeof groupBy);
-                      setCollapsedGroups(new Set());
+                      setYearMenuOpen(!yearMenuOpen);
+                      setProjectsMenuOpen(false);
                       setGroupByMenuOpen(false);
                     }}
-                    className={cn(
-                      "px-3 py-2.5 text-sm cursor-pointer first:rounded-t-lg last:rounded-b-lg",
-                      groupBy === option.value
-                        ? "bg-brand-primary-muted text-brand-primary font-medium"
-                        : "hover:bg-muted"
-                    )}
+                    className="h-9 px-3 flex items-center gap-2 text-sm border border-border rounded-lg bg-background hover:bg-muted"
                   >
-                    {option.label}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-          
-          {/* Filters Button */}
-          <button
-            onClick={() => setFiltersDialogOpen(true)}
-            className={cn(
-              "flex items-center gap-1.5 px-3 py-2 text-sm border rounded-lg transition-colors",
-              activeFilterCount > 0
-                ? "border-brand-primary bg-brand-primary-muted text-brand-primary"
-                : "border-border bg-background hover:bg-muted"
-            )}
-          >
-            <Filter className="h-4 w-4" />
-            <span>Filters</span>
-            {activeFilterCount > 0 && (
-              <span className="ml-1 px-1.5 py-0.5 text-[10px] font-semibold bg-brand-primary text-white rounded-full">
-                {activeFilterCount}
-              </span>
-            )}
-          </button>
-          
-          {/* RIGHT: Milestones toggle + Year + Info */}
-          <div className="ml-auto flex items-center gap-3">
-            {/* Milestones Toggle */}
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-foreground">Milestones</span>
-              <button
-                onClick={() => setShowMilestones(!showMilestones)}
-                className={cn(
-                  "w-10 h-[22px] rounded-full relative transition-colors",
-                  showMilestones ? "bg-brand-primary" : "bg-border"
-                )}
-              >
-                <div className={cn(
-                  "absolute top-0.5 w-[18px] h-[18px] bg-white rounded-full shadow transition-transform",
-                  showMilestones ? "translate-x-[20px]" : "translate-x-0.5"
-                )} />
-              </button>
-            </div>
-            
-            <div className="relative" onClick={(e) => e.stopPropagation()}>
-              <button
-                onClick={() => {
-                  setYearMenuOpen(!yearMenuOpen);
-                  setProjectsMenuOpen(false);
-                  setGroupByMenuOpen(false);
-                }}
-                className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-lg bg-background hover:bg-muted transition-colors"
-              >
-                <span>{year}</span>
-                <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
-              </button>
-              
-              {yearMenuOpen && (
-                <div className="absolute top-full right-0 mt-1 min-w-[100px] bg-background border border-border rounded-lg shadow-lg z-50">
-                  {['2025', '2026'].map(y => (
-                    <div
-                      key={y}
-                      onClick={() => {
-                        setYear(y);
-                        setYearMenuOpen(false);
-                      }}
-                      className={cn(
-                        "px-3 py-2.5 text-sm cursor-pointer first:rounded-t-lg last:rounded-b-lg",
-                        year === y
-                          ? "bg-brand-primary-muted text-brand-primary font-medium"
-                          : "hover:bg-muted"
-                      )}
-                    >
-                      {y}
+                    <span>{year}</span>
+                    <ChevronDown size={12} />
+                  </button>
+                  {yearMenuOpen && (
+                    <div className="absolute top-full right-0 mt-1 min-w-[100px] bg-background border border-border rounded-lg shadow-lg z-50">
+                      {['2025', '2026'].map(y => (
+                        <div
+                          key={y}
+                          className={cn(
+                            "flex items-center justify-between px-3 py-2 text-sm cursor-pointer hover:bg-muted first:rounded-t-lg last:rounded-b-lg",
+                            year === y && "text-brand-primary"
+                          )}
+                          onClick={() => {
+                            setYear(y);
+                            setYearMenuOpen(false);
+                          }}
+                        >
+                          {y}
+                          {year === y && <Check size={16} className="text-brand-primary" />}
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  )}
                 </div>
-              )}
+                
+                {/* Info Button */}
+                <button
+                  className={cn(
+                    "h-9 w-9 flex items-center justify-center border border-border rounded-lg transition-colors",
+                    legendOpen 
+                      ? "bg-brand-primary text-white border-brand-primary" 
+                      : "bg-background text-muted-foreground hover:bg-muted"
+                  )}
+                  onClick={() => setLegendOpen(!legendOpen)}
+                >
+                  <Info size={16} />
+                </button>
+              </div>
             </div>
-            
-            {/* Info Button */}
-            <button
-              onClick={() => setLegendOpen(!legendOpen)}
-              className="w-9 h-9 flex items-center justify-center border border-border rounded-full bg-background hover:bg-muted transition-colors"
-            >
-              <Info className="h-4 w-4 text-muted-foreground" />
-            </button>
-          </div>
-        </div>
+          }
+        />
         
         {/* Roadmap Container */}
         <div className="flex-1 flex overflow-hidden border-t border-border">

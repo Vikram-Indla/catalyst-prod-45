@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Search, Plus, Download, MoreHorizontal, AlertTriangle, CheckCircle2, Clock, Grid3x3, GitBranch, List, Filter, Map } from 'lucide-react';
+import { Search, Plus, Download, MoreHorizontal, AlertTriangle, CheckCircle2, Clock, Grid3x3, GitBranch, List, Filter, Map, X, Layers } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { DependencyDetailsDrawer } from '@/components/dependencies/DependencyDetailsDrawer';
 import { DependencyMatrix } from '@/components/dependencies/DependencyMatrix';
@@ -18,6 +18,8 @@ import { DependenciesSidebar } from '@/components/dependencies/DependenciesSideb
 import { SegmentedTabs, SegmentedTab } from '@/components/ui/segmented-tabs';
 import { toast } from 'sonner';
 import { useNavigate, useParams } from 'react-router-dom';
+import GlobalPageHeader from '@/components/layout/GlobalPageHeader';
+import { cn } from '@/lib/utils';
 
 export default function DependenciesPage() {
   const queryClient = useQueryClient();
@@ -231,52 +233,12 @@ export default function DependenciesPage() {
       {/* Only show sidebar in standalone mode */}
       {!isEmbedded && <DependenciesSidebar />}
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-        <div className="h-full flex flex-col" style={{ padding: 'var(--s3) var(--s6)' }}>
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between" style={{ gap: 'var(--s3)', marginBottom: 'var(--s4)' }}>
-            <div className="min-w-0">
-              <div className="flex items-center gap-3">
-                <h1 className="text-lg sm:text-xl lg:text-2xl font-semibold truncate">Dependencies</h1>
-                {activeProgramId && (
-                  <Badge variant="outline" className="bg-brand-gold/10 text-brand-gold border-brand-gold/30 flex items-center gap-1.5 shrink-0">
-                    <Filter className="h-3 w-3" />
-                    Scoped to: {currentProgram?.name || 'Program'}
-                  </Badge>
-                )}
-              </div>
-              <p className="text-xs sm:text-sm text-muted-foreground">
-                {activeProgramId 
-                  ? `Dependencies involving ${currentProgram?.name || 'this program'}'s work items`
-                  : 'Manage cross-team and cross-program dependencies'
-                }
-              </p>
-            </div>
-            <div className="flex flex-wrap items-center" style={{ gap: 'var(--s2)' }}>
-              {/* Show icon toggle only in standalone mode */}
-              {!isEmbedded && (
-                <div className="flex items-center gap-1 border rounded-lg p-1">
-                  <Button
-                    variant={visualizationMode === 'list' ? 'secondary' : 'ghost'}
-                    size="sm"
-                    onClick={() => setVisualizationMode('list')}
-                  >
-                    <List className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant={visualizationMode === 'matrix' ? 'secondary' : 'ghost'}
-                    size="sm"
-                    onClick={() => setVisualizationMode('matrix')}
-                  >
-                    <Grid3x3 className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant={visualizationMode === 'wheel' ? 'secondary' : 'ghost'}
-                    size="sm"
-                    onClick={() => setVisualizationMode('wheel')}
-                  >
-                    <GitBranch className="h-4 w-4" />
-                  </Button>
-                </div>
-              )}
+        {/* Canonical Header - matches Enterprise Objective Roadmap exactly */}
+        <GlobalPageHeader 
+          sectionLabel="PROGRAM" 
+          pageTitle="Dependencies"
+          rightActions={
+            <div className="flex items-center gap-2">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm">
@@ -302,8 +264,130 @@ export default function DependenciesPage() {
                 Add Dependency
               </Button>
             </div>
-          </div>
+          }
+          toolbar={
+            <div className="flex items-center justify-between w-full">
+              {/* Left: Search → Filters */}
+              <div className="flex items-center gap-3">
+                {/* Search */}
+                <div className="relative">
+                  <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <input
+                    type="text"
+                    className="h-9 w-52 pl-9 pr-8 text-sm border border-border rounded-lg bg-background focus:outline-none focus:border-brand-primary"
+                    placeholder="Search dependencies..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                  {searchTerm && (
+                    <button 
+                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground"
+                      onClick={() => setSearchTerm('')}
+                    >
+                      <X size={14} />
+                    </button>
+                  )}
+                </div>
+                
+                {/* Quarter Filter */}
+                <Select value={quarterFilter || 'all'} onValueChange={(v) => setQuarterFilter(v === 'all' ? undefined : v)}>
+                  <SelectTrigger className="h-9 w-[140px]">
+                    <SelectValue placeholder="All Quarters" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Quarters</SelectItem>
+                    {quarterOptions.map(q => (
+                      <SelectItem key={q} value={q}>{q}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                
+                {/* Level Filter */}
+                <Select value={levelFilter || 'all'} onValueChange={(v) => setLevelFilter(v === 'all' ? undefined : v)}>
+                  <SelectTrigger className="h-9 w-[120px]">
+                    <SelectValue placeholder="All Levels" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Levels</SelectItem>
+                    <SelectItem value="team">Team</SelectItem>
+                    <SelectItem value="program">Program</SelectItem>
+                    <SelectItem value="external">External</SelectItem>
+                  </SelectContent>
+                </Select>
+                
+                {/* Type Filter */}
+                <Select value={typeFilter || 'all'} onValueChange={(v) => setTypeFilter(v === 'all' ? undefined : v)}>
+                  <SelectTrigger className="h-9 w-[120px]">
+                    <SelectValue placeholder="All Types" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Types</SelectItem>
+                    <SelectItem value="sequential">Sequential</SelectItem>
+                    <SelectItem value="concurrent">Concurrent</SelectItem>
+                  </SelectContent>
+                </Select>
+                
+                {/* Status Filter */}
+                <Select value={statusFilter || 'all'} onValueChange={(v) => setStatusFilter(v === 'all' ? undefined : v)}>
+                  <SelectTrigger className="h-9 w-[140px]">
+                    <SelectValue placeholder="All Statuses" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Statuses</SelectItem>
+                    <SelectItem value="pending_commit">Pending Commit</SelectItem>
+                    <SelectItem value="negotiation">Negotiation</SelectItem>
+                    <SelectItem value="committed">Committed</SelectItem>
+                    <SelectItem value="in_progress">In Progress</SelectItem>
+                    <SelectItem value="delivered">Delivered</SelectItem>
+                    <SelectItem value="rejected">Rejected</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {/* Right: Scoped badge (when in program context) + View toggle */}
+              <div className="flex items-center gap-3">
+                {activeProgramId && (
+                  <Badge variant="outline" className="bg-brand-gold/10 text-brand-gold border-brand-gold/30 flex items-center gap-1.5">
+                    <Filter className="h-3 w-3" />
+                    Scoped to: {currentProgram?.name || 'Program'}
+                  </Badge>
+                )}
+                
+                {!isEmbedded && (
+                  <div className="flex items-center gap-1 border rounded-lg p-0.5">
+                    <Button
+                      variant={visualizationMode === 'list' ? 'secondary' : 'ghost'}
+                      size="sm"
+                      className="h-7 w-7 p-0"
+                      onClick={() => setVisualizationMode('list')}
+                    >
+                      <List className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant={visualizationMode === 'matrix' ? 'secondary' : 'ghost'}
+                      size="sm"
+                      className="h-7 w-7 p-0"
+                      onClick={() => setVisualizationMode('matrix')}
+                    >
+                      <Grid3x3 className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant={visualizationMode === 'wheel' ? 'secondary' : 'ghost'}
+                      size="sm"
+                      className="h-7 w-7 p-0"
+                      onClick={() => setVisualizationMode('wheel')}
+                    >
+                      <GitBranch className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+          }
+        />
 
+        {/* Content area */}
+        <div className="flex-1 flex flex-col overflow-hidden px-6 py-4">
           {/* Embedded mode: Show horizontal segmented tabs for view selection */}
           {isEmbedded && (
             <div className="mb-4">
@@ -337,65 +421,6 @@ export default function DependenciesPage() {
               </SegmentedTabs>
             </div>
           )}
-
-          {/* Filters */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-2 sm:gap-3 mb-4">
-            <div className="relative sm:col-span-2 lg:col-span-3 xl:col-span-2">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search dependencies..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 w-full"
-              />
-            </div>
-            <Select value={quarterFilter} onValueChange={setQuarterFilter}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="All Quarters" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Quarters</SelectItem>
-                {quarterOptions.map(q => (
-                  <SelectItem key={q} value={q}>{q}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={levelFilter} onValueChange={setLevelFilter}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="All Levels" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Levels</SelectItem>
-                <SelectItem value="team">Team</SelectItem>
-                <SelectItem value="program">Program</SelectItem>
-                <SelectItem value="external">External</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="All Types" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="sequential">Sequential</SelectItem>
-                <SelectItem value="concurrent">Concurrent</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="All Statuses" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
-                <SelectItem value="pending_commit">Pending Commit</SelectItem>
-                <SelectItem value="negotiation">Negotiation</SelectItem>
-                <SelectItem value="committed">Committed</SelectItem>
-                <SelectItem value="in_progress">In Progress</SelectItem>
-                <SelectItem value="delivered">Delivered</SelectItem>
-                <SelectItem value="rejected">Rejected</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
 
           {/* Visualization Views */}
           {visualizationMode === 'matrix' && (
