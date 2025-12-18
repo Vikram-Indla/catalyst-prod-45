@@ -152,7 +152,7 @@ export function SnapshotHealthStrip({ snapshotId }: SnapshotHealthStripProps) {
     >
       <span 
         className="text-[11px] font-semibold uppercase tracking-wider mr-1"
-        style={{ color: 'var(--text-muted)' }}
+        style={{ color: 'var(--text-secondary)' }}
       >
         Health:
       </span>

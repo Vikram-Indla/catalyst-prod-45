@@ -73,7 +73,7 @@ function KPITile({
       <div className="flex items-start justify-between w-full mb-2">
         <span 
           className="text-[10px] font-semibold uppercase tracking-wider"
-          style={{ color: 'var(--text-muted)' }}
+          style={{ color: 'var(--text-secondary)' }}
         >
           {label}
         </span>
@@ -89,7 +89,7 @@ function KPITile({
       {isLoading ? (
         <span 
           className="text-2xl font-bold leading-none mb-0.5"
-          style={{ color: 'var(--text-muted)' }}
+          style={{ color: 'var(--text-secondary)' }}
         >
           —
         </span>
@@ -107,7 +107,7 @@ function KPITile({
       {/* Subtext */}
       <span 
         className="text-[11px] leading-snug"
-        style={{ color: 'var(--text-muted)' }}
+        style={{ color: 'var(--text-secondary)' }}
       >
         {subtext}
       </span>
@@ -239,7 +239,7 @@ export function ExecutiveSummaryCard({ snapshotId }: ExecutiveSummaryCardProps) 
         </h2>
         <p 
           className="text-[12px] mt-0.5"
-          style={{ color: 'var(--text-muted)' }}
+          style={{ color: 'var(--text-secondary)' }}
         >
           Key performance indicators at a glance
         </p>

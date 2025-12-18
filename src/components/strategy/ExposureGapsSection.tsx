@@ -146,13 +146,13 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
         <div className="flex items-center gap-2">
           {/* Stale data indicator - CATALYST STANDARD */}
           {showStaleIndicator && (
-            <span className="text-[11px] text-muted-foreground italic">
+            <span className="text-[11px] text-foreground/70 italic">
               Data may be stale
             </span>
           )}
           {/* Refreshing indicator - CATALYST STANDARD */}
           {isUpdating && (
-            <div className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+            <div className="text-[11px] text-foreground/70 flex items-center gap-1.5">
               <Loader2 size={12} className="animate-spin" />
               <span>Refreshing…</span>
             </div>
@@ -198,7 +198,7 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <Clock size={14} className="text-destructive" />
-                    <span className={cn(TYPOGRAPHY.dataRowLabel, 'text-muted-foreground')}>Overdue</span>
+                    <span className={cn(TYPOGRAPHY.dataRowLabel, 'text-foreground/80')}>Overdue</span>
                   </div>
                   <span className={cn(TYPOGRAPHY.secondaryMetric, 'text-destructive')}>
                     {displayData.overdueRisks}
@@ -231,7 +231,7 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
 
             <div className="pt-2 mt-2 border-t border-border/50">
               <div className="flex items-center justify-between">
-                <span className={cn(TYPOGRAPHY.cardLabel, 'text-muted-foreground')}>Total gaps</span>
+                <span className={cn(TYPOGRAPHY.cardLabel, 'text-foreground/80')}>Total gaps</span>
                 <span className={cn(
                   TYPOGRAPHY.secondaryMetric,
                   displayData.alignmentGaps > 0 ? 'text-secondary-bronze' : TEXT_COLORS.primary
@@ -250,8 +250,8 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
           >
             {attentionItems.length === 0 ? (
               <div className="py-4 text-center">
-                <CheckCircle2 size={20} className="mx-auto mb-1.5 text-primary/80" />
-                <span className={cn(TYPOGRAPHY.subtext, 'text-muted-foreground')}>No items need attention</span>
+                <CheckCircle2 size={20} className="mx-auto mb-1.5 text-primary" />
+                <span className={cn(TYPOGRAPHY.subtext, 'text-foreground/80')}>No items need attention</span>
               </div>
             ) : (
               <div className="space-y-1.5">
@@ -260,7 +260,7 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
                 ))}
                 {attentionItems.length > 4 && (
                   <div className="text-center pt-1.5">
-                    <span className={cn(TYPOGRAPHY.microcopy, 'text-muted-foreground')}>
+                    <span className={cn(TYPOGRAPHY.microcopy, 'text-foreground/70')}>
                       +{attentionItems.length - 4} more
                     </span>
                   </div>
@@ -287,7 +287,7 @@ function CockpitCard({ title, icon, iconColor, children, cta }: CockpitCardProps
     <div className="rounded-md overflow-hidden flex flex-col bg-muted/50 border border-border/50 min-h-[150px]">
       {/* Card header */}
       <div className="px-3 py-2.5 flex items-center gap-2 border-b border-border/50 bg-muted/70">
-        <span className={cn(iconColor, 'opacity-90')}>{icon}</span>
+        <span className={iconColor}>{icon}</span>
         <span className={cn(TYPOGRAPHY.sectionTitle, TEXT_COLORS.primary)}>
           {title}
         </span>
@@ -303,15 +303,15 @@ function CockpitCard({ title, icon, iconColor, children, cta }: CockpitCardProps
             size="sm"
             className={cn(
               TYPOGRAPHY.ctaButton, 
-              "w-full h-8 text-muted-foreground",
+              "w-full h-8 text-foreground/70",
               "transition-[background-color,color] duration-150",
-              "hover:bg-accent/50 hover:text-muted-foreground",
+              "hover:bg-accent/50 hover:text-foreground/80",
               "focus-visible:ring-1"
             )}
             onClick={cta.onClick}
           >
             {cta.label}
-            <ChevronRight size={14} className="ml-1 opacity-60" />
+            <ChevronRight size={14} className="ml-1" />
           </Button>
         </div>
       )}
@@ -336,7 +336,7 @@ function DataRow({ label, value, total = 0, variant = 'neutral', showBar }: Data
   };
 
   const barColors: Record<string, string> = {
-    neutral: 'bg-muted-foreground/50',
+    neutral: 'bg-foreground/40',
     danger: 'bg-destructive',
     warning: 'bg-status-warning',
     bronze: 'bg-secondary-bronze',
@@ -347,7 +347,7 @@ function DataRow({ label, value, total = 0, variant = 'neutral', showBar }: Data
   return (
     <div className="flex items-center gap-2 py-1.5 rounded px-2 -mx-2 transition-[background-color] duration-100 hover:bg-accent/40">
       {/* Label - readable secondary text */}
-      <span className={cn(TYPOGRAPHY.dataRowLabel, 'text-muted-foreground flex-1')}>{label}</span>
+      <span className={cn(TYPOGRAPHY.dataRowLabel, 'text-foreground/80 flex-1')}>{label}</span>
       
       {/* Bar - visually aligned with value, never overpowers */}
       {showBar && total > 0 && (
@@ -371,7 +371,7 @@ function AttentionRow({ item, onClick, index }: { item: AttentionItem; onClick: 
   const severityColors: Record<string, string> = {
     critical: 'bg-destructive',
     high: 'bg-status-warning',
-    medium: 'bg-secondary-bronze/80',
+    medium: 'bg-secondary-bronze',
   };
 
   // First two items visually prioritized, remaining de-emphasized
@@ -394,21 +394,21 @@ function AttentionRow({ item, onClick, index }: { item: AttentionItem; onClick: 
         <div className={cn(
           TYPOGRAPHY.cardLabel, 
           'truncate',
-          isPriority ? TEXT_COLORS.primary : 'text-muted-foreground'
+          isPriority ? TEXT_COLORS.primary : 'text-foreground/80'
         )}>
           {item.title}
         </div>
         {/* Reason - secondary */}
         <div className={cn(
           TYPOGRAPHY.microcopy, 
-          'leading-tight text-muted-foreground'
+          'leading-tight text-foreground/70'
         )}>
           {item.reason}
         </div>
       </div>
       <ChevronRight 
         size={14} 
-        className="opacity-0 group-hover:opacity-40 transition-opacity duration-100 flex-shrink-0 text-muted-foreground" 
+        className="opacity-0 group-hover:opacity-60 transition-opacity duration-100 flex-shrink-0 text-foreground/70" 
       />
     </button>
   );

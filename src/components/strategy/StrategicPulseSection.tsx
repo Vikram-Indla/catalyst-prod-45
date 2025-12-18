@@ -134,13 +134,13 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
         <div className="flex items-center gap-2">
           {/* Stale data indicator - CATALYST STANDARD */}
           {showStaleIndicator && (
-            <span className="text-[11px] text-muted-foreground italic">
+            <span className="text-[11px] text-foreground/70 italic">
               Data may be stale
             </span>
           )}
           {/* Refreshing indicator - CATALYST STANDARD: small spinner + text */}
           {isUpdating && (
-            <div className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+            <div className="text-[11px] text-foreground/70 flex items-center gap-1.5">
               <Loader2 size={12} className="animate-spin" />
               <span>Refreshing…</span>
             </div>
@@ -182,7 +182,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
               </div>
               
               {/* Subtext */}
-              <p className={cn(TYPOGRAPHY.subtext, 'text-muted-foreground', 'mt-2')}>
+              <p className={cn(TYPOGRAPHY.subtext, 'text-foreground/80', 'mt-2')}>
                 {displayData.overallStatus === 'on-track' 
                   ? 'Execution on track' 
                   : displayData.overallStatus === 'at-risk' 
@@ -194,7 +194,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
             {/* Trend indicator */}
             <div className="flex items-center gap-1.5 mt-3 pt-2 border-t border-border/50">
               <TrendIcon size={16} className={config.textClass} />
-              <span className={cn(TYPOGRAPHY.subtext, 'font-medium text-muted-foreground')}>
+              <span className={cn(TYPOGRAPHY.subtext, 'font-medium text-foreground/80')}>
                 {overallProgress}% · {trendLabel}
               </span>
             </div>
@@ -285,7 +285,7 @@ function CompactKPITile({
     warning: 'text-status-warning',
     danger: 'text-status-danger',
     bronze: 'text-secondary-bronze',
-    muted: 'text-muted-foreground',
+    muted: 'text-foreground/60',
   };
 
   return (
@@ -305,10 +305,10 @@ function CompactKPITile({
     >
       {/* Label row - icon supports, doesn't compete */}
       <div className="flex items-center justify-between mb-1.5">
-        <span className={cn(TYPOGRAPHY.cardLabel, TEXT_COLORS.muted)}>
+        <span className={cn(TYPOGRAPHY.cardLabel, 'text-foreground/80')}>
           {label}
         </span>
-        <span className={cn(iconColors[accentColor], 'opacity-80')}>{icon}</span>
+        <span className={iconColors[accentColor]}>{icon}</span>
       </div>
       
       {/* Primary Value - strongest visual weight */}
@@ -321,7 +321,7 @@ function CompactKPITile({
       </span>
       
       {/* Subtext - secondary but readable */}
-      <p className={cn(TYPOGRAPHY.subtext, 'text-muted-foreground mt-1')}>
+      <p className={cn(TYPOGRAPHY.subtext, 'text-foreground/70 mt-1')}>
         {subtext}
       </p>
 
@@ -338,7 +338,7 @@ function CompactKPITile({
       {/* Subtle chevron on hover - discoverable but restrained */}
       <ChevronRight 
         size={14} 
-        className="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-40 transition-opacity duration-150 text-muted-foreground" 
+        className="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-60 transition-opacity duration-150 text-foreground/70" 
       />
     </button>
   );
