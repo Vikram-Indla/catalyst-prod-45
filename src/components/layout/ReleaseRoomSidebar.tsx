@@ -11,10 +11,9 @@ const releaseSidebarConfig: SidebarConfig = {
   badge: 'RL',
   label: 'Release',
   items: [
-    { id: 'release-room', title: 'Release Room', path: '/release/overview', icon: LayoutDashboard, exact: true },
     { id: 'incident-room', title: 'Incident Room', path: '/release/incident-room', icon: AlertCircle, exact: false },
-    { id: 'incidents', title: 'Incidents (Legacy)', path: '/release/incidents', icon: AlertCircle, exact: false },
-    { id: 'dashboard', title: 'Dashboard', path: '/release/incidents/dashboard', icon: BarChart3, exact: true },
+    { id: 'incidents', title: 'Incidents', path: '/release/incidents', icon: BarChart3, exact: false },
+    { id: 'incidents-list', title: 'Incident List', path: '/release/incidents/list', icon: AlertCircle, exact: true },
     { id: 'versions', title: 'Versions', path: '/release/versions', icon: Tag, exact: false },
     { id: 'calendar', title: 'Calendar', path: '/release/calendar', icon: Calendar, exact: true },
   ],
