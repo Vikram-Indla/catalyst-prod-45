@@ -1,15 +1,24 @@
 /**
  * Unified data source for Strategy Room top gadgets.
  * Single query for all metrics used by StrategicPulseSection and ExposureGapsSection.
- * Prevents independent refetches that cause UI pulsing/twitching.
  * 
- * KEY BEHAVIOR: Never returns undefined after first successful load.
- * Uses persistent lastGoodData to bridge snapshot transitions.
+ * KEY BEHAVIORS:
+ * 1. LKG (Last Known Good) caching - persists to sessionStorage
+ * 2. Never returns undefined after first successful load
+ * 3. Concurrency control - cancels stale requests
+ * 4. Safe number handling - prevents NaN/undefined in charts
  */
 
 import { useQuery } from '@tanstack/react-query';
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { 
+  getLKGData, 
+  setLKGData, 
+  safeNumber, 
+  safePercentage, 
+  safeArray 
+} from '@/utils/strategyRoomCache';
 
 export interface StrategyRoomSummaryData {
   // OKR Metrics
@@ -71,7 +80,25 @@ export const EMPTY_SUMMARY: StrategyRoomSummaryData = {
   overallStatus: 'at-risk',
 };
 
-async function fetchSummaryData(snapshotId: string): Promise<StrategyRoomSummaryData> {
+// Request ID for concurrency control
+let globalRequestId = 0;
+
+async function fetchSummaryData(
+  snapshotId: string, 
+  requestId: number,
+  currentRequestIdRef: React.MutableRefObject<number>
+): Promise<StrategyRoomSummaryData | null> {
+  // Check if request is still current
+  const checkStale = () => {
+    if (currentRequestIdRef.current !== requestId) {
+      console.log('[Strategy Room] Request cancelled - newer request in flight');
+      return true;
+    }
+    return false;
+  };
+
+  if (checkStale()) return null;
+
   // Parallel fetch all data sources
   const [themesResult, risksResult, snapshotLinksResult, alignmentResult] = await Promise.all([
     // 1. Fetch themes for this snapshot
@@ -102,13 +129,15 @@ async function fetchSummaryData(snapshotId: string): Promise<StrategyRoomSummary
     ]),
   ]);
 
-  const themes = themesResult.data || [];
-  const risks = risksResult.data || [];
+  if (checkStale()) return null;
+
+  const themes = safeArray(themesResult.data);
+  const risks = safeArray(risksResult.data);
   const snapshotLinks = snapshotLinksResult.data;
   const [epicsCountResult, featuresCountResult] = alignmentResult;
 
   const themeIds = themes.map(t => t.id);
-  const linkedThemeIds = snapshotLinks?.theme_ids || [];
+  const linkedThemeIds = safeArray(snapshotLinks?.theme_ids);
 
   // Fetch objectives for these themes
   let objectives: any[] = [];
@@ -118,25 +147,29 @@ async function fetchSummaryData(snapshotId: string): Promise<StrategyRoomSummary
       .select('id, name, health, overall_progress, theme_id')
       .eq('is_v2', true)
       .in('theme_id', themeIds);
-    objectives = data || [];
+    objectives = safeArray(data);
   }
 
-  // Calculate OKR metrics
+  if (checkStale()) return null;
+
+  // Calculate OKR metrics with safe numbers
   const byHealth = { good: 0, fair: 0, poor: 0, at_risk: 0, unknown: 0 };
   let totalProgress = 0;
 
   objectives.forEach(obj => {
-    const health = obj.health?.toLowerCase() || 'unknown';
+    const health = (obj.health || '').toLowerCase();
     if (health === 'good') byHealth.good++;
     else if (health === 'fair') byHealth.fair++;
     else if (health === 'poor') byHealth.poor++;
     else if (health === 'at_risk') byHealth.at_risk++;
     else byHealth.unknown++;
-    totalProgress += obj.overall_progress || 0;
+    totalProgress += safeNumber(obj.overall_progress);
   });
 
   const objectivesCount = objectives.length;
-  const avgProgress = objectivesCount > 0 ? Math.round(totalProgress / objectivesCount) : 0;
+  const avgProgress = objectivesCount > 0 
+    ? safePercentage(Math.round(totalProgress / objectivesCount)) 
+    : 0;
   
   const atRiskObjectives = objectives
     .filter(obj => {
@@ -147,10 +180,10 @@ async function fetchSummaryData(snapshotId: string): Promise<StrategyRoomSummary
       id: obj.id,
       name: obj.name || 'Unnamed Objective',
       health: obj.health,
-      overall_progress: obj.overall_progress || 0,
+      overall_progress: safeNumber(obj.overall_progress),
     }));
 
-  // Calculate risk metrics
+  // Calculate risk metrics with safe numbers
   const today = new Date();
   const getSeverity = (r: { impact?: string | null }) => {
     const impact = (r.impact || '').toLowerCase();
@@ -159,18 +192,20 @@ async function fetchSummaryData(snapshotId: string): Promise<StrategyRoomSummary
     return 'low';
   };
 
-  const highRisks = risks.filter(r => getSeverity(r) === 'high').length;
-  const mediumRisks = risks.filter(r => getSeverity(r) === 'medium').length;
-  const lowRisks = risks.filter(r => getSeverity(r) === 'low').length;
-  const overdueRisks = risks.filter(r => {
+  const highRisks = safeNumber(risks.filter(r => getSeverity(r) === 'high').length);
+  const mediumRisks = safeNumber(risks.filter(r => getSeverity(r) === 'medium').length);
+  const lowRisks = safeNumber(risks.filter(r => getSeverity(r) === 'low').length);
+  const overdueRisks = safeNumber(risks.filter(r => {
     if (!r.target_resolution_date) return false;
     return new Date(r.target_resolution_date) < today;
-  }).length;
+  }).length);
   
   const topRisks = risks
     .filter(r => getSeverity(r) === 'high')
     .slice(0, 3)
     .map(r => ({ id: r.id, title: r.title || 'Unnamed Risk', impact: r.impact }));
+
+  if (checkStale()) return null;
 
   // Calculate alignment gaps
   const allLinkedThemeIds = [...new Set([...themeIds, ...linkedThemeIds])];
@@ -187,12 +222,14 @@ async function fetchSummaryData(snapshotId: string): Promise<StrategyRoomSummary
         .select('epic_id'),
     ]);
     
-    (themeEpicResult.data || []).forEach(l => alignedEpicIds.add(l.epic_id));
-    (objectiveEpicResult.data || []).forEach(l => alignedEpicIds.add(l.epic_id));
+    safeArray(themeEpicResult.data).forEach(l => alignedEpicIds.add(l.epic_id));
+    safeArray(objectiveEpicResult.data).forEach(l => alignedEpicIds.add(l.epic_id));
   }
 
-  const totalEpics = epicsCountResult.count || 0;
-  const totalFeatures = featuresCountResult.count || 0;
+  if (checkStale()) return null;
+
+  const totalEpics = safeNumber(epicsCountResult.count);
+  const totalFeatures = safeNumber(featuresCountResult.count);
   
   let alignedFeaturesCount = 0;
   if (alignedEpicIds.size > 0) {
@@ -200,12 +237,14 @@ async function fetchSummaryData(snapshotId: string): Promise<StrategyRoomSummary
       .from('features')
       .select('id', { count: 'exact', head: true })
       .in('epic_id', Array.from(alignedEpicIds));
-    alignedFeaturesCount = count || 0;
+    alignedFeaturesCount = safeNumber(count);
   }
+
+  if (checkStale()) return null;
 
   const misalignedEpics = Math.max(0, totalEpics - alignedEpicIds.size);
   const misalignedFeatures = Math.max(0, totalFeatures - alignedFeaturesCount);
-  const alignmentGaps = misalignedEpics + misalignedFeatures;
+  const alignmentGaps = safeNumber(misalignedEpics + misalignedFeatures);
 
   // Determine overall status
   const hasObjectives = objectivesCount > 0;
@@ -222,14 +261,14 @@ async function fetchSummaryData(snapshotId: string): Promise<StrategyRoomSummary
   }
 
   return {
-    objectivesCount,
+    objectivesCount: safeNumber(objectivesCount),
     avgProgress,
     atRiskObjectives,
     byHealth,
-    misalignedEpics,
-    misalignedFeatures,
+    misalignedEpics: safeNumber(misalignedEpics),
+    misalignedFeatures: safeNumber(misalignedFeatures),
     alignmentGaps,
-    totalRisks: risks.length,
+    totalRisks: safeNumber(risks.length),
     highRisks,
     mediumRisks,
     lowRisks,
@@ -240,9 +279,34 @@ async function fetchSummaryData(snapshotId: string): Promise<StrategyRoomSummary
 }
 
 export function useStrategyRoomSummary(snapshotId?: string) {
-  // Persist last successful data across snapshot changes
-  const lastGoodDataRef = useRef<StrategyRoomSummaryData | null>(null);
+  // Track request ID for concurrency control
+  const currentRequestIdRef = useRef<number>(0);
+  
+  // Track if we've ever successfully loaded
   const hasEverLoadedRef = useRef(false);
+  
+  // Track last good data in memory (fast access)
+  const lastGoodDataRef = useRef<StrategyRoomSummaryData | null>(null);
+  
+  // Track previous snapshot to detect changes
+  const prevSnapshotIdRef = useRef<string | undefined>(undefined);
+
+  // On snapshot change, try to load LKG from sessionStorage immediately
+  useEffect(() => {
+    if (snapshotId && snapshotId !== prevSnapshotIdRef.current) {
+      prevSnapshotIdRef.current = snapshotId;
+      
+      // Increment request ID to cancel any in-flight requests
+      currentRequestIdRef.current = ++globalRequestId;
+      
+      // Try to get LKG data from cache for immediate display
+      const cachedData = getLKGData<StrategyRoomSummaryData>(snapshotId, 'pulse');
+      if (cachedData) {
+        lastGoodDataRef.current = cachedData;
+        hasEverLoadedRef.current = true;
+      }
+    }
+  }, [snapshotId]);
 
   const query = useQuery({
     queryKey: ['strategy-room-summary', snapshotId],
@@ -250,10 +314,23 @@ export function useStrategyRoomSummary(snapshotId?: string) {
       if (!snapshotId) {
         return EMPTY_SUMMARY;
       }
-      const result = await fetchSummaryData(snapshotId);
-      // Store successful result
+      
+      // Increment request ID for this fetch
+      const requestId = ++globalRequestId;
+      currentRequestIdRef.current = requestId;
+      
+      const result = await fetchSummaryData(snapshotId, requestId, currentRequestIdRef);
+      
+      // If request was cancelled, return last good data or empty
+      if (result === null) {
+        return lastGoodDataRef.current || EMPTY_SUMMARY;
+      }
+      
+      // Store successful result in both memory and sessionStorage
       lastGoodDataRef.current = result;
       hasEverLoadedRef.current = true;
+      setLKGData(snapshotId, 'pulse', result);
+      
       return result;
     },
     enabled: !!snapshotId,
@@ -262,31 +339,50 @@ export function useStrategyRoomSummary(snapshotId?: string) {
     gcTime: 30 * 60 * 1000, // 30 minutes cache retention
     refetchOnWindowFocus: false, // Prevent refetch on tab switch
     refetchOnReconnect: true,
+    // Keep previous data during refetch
+    placeholderData: (previousData) => previousData,
   });
 
-  // Compute stable display data that never goes undefined after first load
+  // Compute stable display data that NEVER goes undefined after first load
   const displayData = useMemo(() => {
-    // If we have fresh data from query, use it
-    if (query.data) {
+    // Priority 1: Fresh data from current query
+    if (query.data && query.data !== EMPTY_SUMMARY) {
       return query.data;
     }
-    // If query is loading/fetching but we have last good data, keep showing it
+    
+    // Priority 2: Last good data in memory
     if (lastGoodDataRef.current) {
       return lastGoodDataRef.current;
     }
-    // First ever load - return empty (will show skeleton)
+    
+    // Priority 3: Try sessionStorage cache
+    if (snapshotId) {
+      const cached = getLKGData<StrategyRoomSummaryData>(snapshotId, 'pulse');
+      if (cached) {
+        lastGoodDataRef.current = cached;
+        return cached;
+      }
+    }
+    
+    // Priority 4: Empty data (will show skeleton on first load only)
     return null;
-  }, [query.data]);
+  }, [query.data, snapshotId]);
+
+  // Compute loading states per requirements
+  const isInitialLoading = query.isLoading && !hasEverLoadedRef.current && !lastGoodDataRef.current;
+  const isRefreshing = query.isFetching && (hasEverLoadedRef.current || !!lastGoodDataRef.current);
 
   return {
     // Return displayData which bridges snapshot transitions
     data: displayData,
-    // True only when we have NEVER loaded any data (show skeleton)
-    isLoading: query.isLoading && !hasEverLoadedRef.current && !lastGoodDataRef.current,
-    // True when actively fetching new data (show "Updating..." indicator)
-    isFetching: query.isFetching,
+    // True only when we have NEVER loaded any data AND no LKG exists (show skeleton)
+    isLoading: isInitialLoading,
+    // True when actively fetching new data with existing data shown (show "Refreshing..." indicator)
+    isFetching: isRefreshing,
     // True when we have data to show
     hasData: !!displayData,
+    // True if showing stale/cached data
+    isStale: query.isStale && !!displayData,
     // Error state
     error: query.error,
     refetch: query.refetch,

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { StrategicPulseSection } from '@/components/strategy/StrategicPulseSection';
@@ -16,8 +16,13 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 
 type ObjectiveLevel = "OBJECTIVES";
 
+// Debounce delay for snapshot changes (prevents rapid switching flicker)
+const SNAPSHOT_CHANGE_DEBOUNCE_MS = 200;
+
 export default function StrategyRoomPage() {
   const [selectedSnapshotId, setSelectedSnapshotId] = useState<string>('');
+  // Debounced snapshot ID that actually triggers data fetches
+  const [debouncedSnapshotId, setDebouncedSnapshotId] = useState<string>('');
   const [filterLevel, setFilterLevel] = useState<ObjectiveLevel | undefined>(undefined);
   const [filterPI, setFilterPI] = useState<string | undefined>(undefined);
   const [selectedObjectiveId, setSelectedObjectiveId] = useState<string | null>(null);
@@ -25,6 +30,33 @@ export default function StrategyRoomPage() {
   const [selectedTheme, setSelectedTheme] = useState<any>(null);
   const [themeDrawerOpen, setThemeDrawerOpen] = useState(false);
   const [showContext, setShowContext] = useState(false);
+
+  // Debounce timer ref
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Debounced snapshot change handler
+  const handleSnapshotChange = useCallback((newSnapshotId: string) => {
+    setSelectedSnapshotId(newSnapshotId);
+    
+    // Clear existing timer
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+    
+    // Debounce the actual data fetch
+    debounceTimerRef.current = setTimeout(() => {
+      setDebouncedSnapshotId(newSnapshotId);
+    }, SNAPSHOT_CHANGE_DEBOUNCE_MS);
+  }, []);
+
+  // Cleanup debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
 
   const { data: snapshots = [], isLoading: snapshotsLoading, isFetching: snapshotsFetching, refetch: refetchSnapshots } = useQuery({
     queryKey: ['strategy-snapshots'],
@@ -47,16 +79,15 @@ export default function StrategyRoomPage() {
       const defaultSnapshot = snapshots.find(s => s.name === 'Corporate Strategy 2025') || snapshots[0];
       if (defaultSnapshot) {
         setSelectedSnapshotId(defaultSnapshot.id);
+        setDebouncedSnapshotId(defaultSnapshot.id);
       }
     }
   }, [snapshots, selectedSnapshotId]);
 
+  // Use selectedSnapshotId for dropdown display, debouncedSnapshotId for data fetches
   const effectiveSelectedSnapshotId = selectedSnapshotId || snapshots.find(s => s.name === 'Corporate Strategy 2025')?.id || snapshots[0]?.id || '';
+  const effectiveDebouncedSnapshotId = debouncedSnapshotId || effectiveSelectedSnapshotId;
   const selectedSnapshot = snapshots.find((s) => s.id === effectiveSelectedSnapshotId);
-
-  const handleSnapshotChange = (newSnapshotId: string) => {
-    setSelectedSnapshotId(newSnapshotId);
-  };
 
   const handlePyramidLayerClick = (label: string) => {
     if (label === 'Objectives') {
@@ -250,25 +281,25 @@ export default function StrategyRoomPage() {
         style={{ backgroundColor: 'var(--page-bg)' }}
       >
         {/* Section 1: Strategic Pulse */}
-        <StrategicPulseSection snapshotId={effectiveSelectedSnapshotId} />
+        <StrategicPulseSection snapshotId={effectiveDebouncedSnapshotId} />
 
         {/* Section 2: Exposure & Gaps - 16px gap */}
         <div className="mt-4">
-          <ExposureGapsSection snapshotId={effectiveSelectedSnapshotId} />
+          <ExposureGapsSection snapshotId={effectiveDebouncedSnapshotId} />
         </div>
 
         {/* Section 3: Coverage & Alignment - 16px gap */}
         <div className="mt-4">
           <StrategyStack 
             onLayerClick={handlePyramidLayerClick} 
-            snapshotId={effectiveSelectedSnapshotId}
+            snapshotId={effectiveDebouncedSnapshotId}
           />
         </div>
 
         {/* Section 4: OKR Tree - 16px gap */}
         <div className="mt-4">
           <OkrTree
-            selectedSnapshot={effectiveSelectedSnapshotId}
+            selectedSnapshot={effectiveDebouncedSnapshotId}
             onObjectiveClick={handleObjectiveClick}
             onThemeClick={handleThemeClick}
           />

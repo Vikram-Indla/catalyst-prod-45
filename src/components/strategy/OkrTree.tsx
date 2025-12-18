@@ -9,15 +9,18 @@
  * - Row text: text-sm (14px) or text-xs (12px) minimum
  * - NO text-[7px], text-[8px], text-[9px], text-[10px], text-[11px]
  * - NO text-muted - use var(--text-secondary) for readable supporting text
+ * 
+ * LKG CACHING: Uses sessionStorage-backed caching to prevent UI flickering
  */
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Maximize2, ChevronRight, ChevronDown, X } from 'lucide-react';
+import { Search, Maximize2, ChevronRight, ChevronDown, X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useOKRTreeV2, OKRTreeV2Item } from '@/hooks/useOKRTreeV2';
 import { cn } from '@/lib/utils';
 import { TYPOGRAPHY } from './strategyRoomTypography';
+import { getLKGData, setLKGData, safeNumber, safePercentage } from '@/utils/strategyRoomCache';
 
 interface OkrTreeProps {
   selectedSnapshot: string;
@@ -26,24 +29,28 @@ interface OkrTreeProps {
 }
 
 function getHealthStatus(progress: number, health?: string): { label: string; color: string; bg: string } {
+  // Ensure progress is a safe number
+  const safeProgress = safePercentage(progress);
+  
   if (health === 'at_risk' || health === 'poor') {
     return { label: 'At Risk', color: 'var(--status-danger)', bg: 'var(--status-danger-bg)' };
   }
-  if (progress >= 70) {
+  if (safeProgress >= 70) {
     return { label: 'On Track', color: 'var(--status-success)', bg: 'var(--status-success-bg)' };
   }
-  if (progress >= 40) {
+  if (safeProgress >= 40) {
     return { label: 'In Progress', color: 'var(--status-warning)', bg: 'var(--status-warning-bg)' };
   }
-  if (progress > 0) {
+  if (safeProgress > 0) {
     return { label: 'Behind', color: 'var(--status-danger)', bg: 'var(--status-danger-bg)' };
   }
   return { label: 'Not Started', color: 'var(--text-secondary)', bg: 'var(--surface-subtle)' };
 }
 
 function getProgressBarColor(progress: number): string {
-  if (progress < 30) return 'var(--status-danger)';
-  if (progress >= 70) return 'var(--status-success)';
+  const safeProgress = safePercentage(progress);
+  if (safeProgress < 30) return 'var(--status-danger)';
+  if (safeProgress >= 70) return 'var(--status-success)';
   return 'var(--brand-primary)';
 }
 
@@ -75,7 +82,36 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   
-  const isRefreshing = isFetching && !isLoading;
+  // LKG caching for smooth transitions
+  const lkgDataRef = useRef<OKRTreeV2Item[]>([]);
+  const hasEverLoadedRef = useRef(false);
+  
+  // On snapshot change, load LKG from cache
+  useEffect(() => {
+    if (selectedSnapshot) {
+      const cached = getLKGData<OKRTreeV2Item[]>(selectedSnapshot, 'okrTree');
+      if (cached && cached.length > 0) {
+        lkgDataRef.current = cached;
+        hasEverLoadedRef.current = true;
+      }
+    }
+  }, [selectedSnapshot]);
+  
+  // Save successful data to cache
+  useEffect(() => {
+    if (treeData.length > 0 && selectedSnapshot) {
+      lkgDataRef.current = treeData;
+      hasEverLoadedRef.current = true;
+      setLKGData(selectedSnapshot, 'okrTree', treeData);
+    }
+  }, [treeData, selectedSnapshot]);
+  
+  // Determine display data: prefer fresh data, fallback to LKG
+  const displayData = treeData.length > 0 ? treeData : lkgDataRef.current;
+  
+  // Loading states
+  const isInitialLoading = isLoading && !hasEverLoadedRef.current && displayData.length === 0;
+  const isRefreshing = isFetching && displayData.length > 0;
 
   const toggleExpand = (id: string) => {
     const newExpanded = new Set(expandedIds);
@@ -273,8 +309,8 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
     );
   };
 
-  // Skeleton only on first load
-  if (isLoading && treeData.length === 0) {
+  // Skeleton only on first load when no LKG data exists
+  if (isInitialLoading) {
     return (
       <section 
         className="rounded-lg overflow-hidden"
@@ -328,7 +364,10 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
             OKR Tree
           </h2>
           {isRefreshing && (
-            <span className={cn(TYPOGRAPHY.microcopy)} style={{ color: 'var(--text-secondary)' }}>Refreshing…</span>
+            <div className="flex items-center gap-1.5">
+              <Loader2 size={12} className="animate-spin text-muted-foreground" />
+              <span className={cn(TYPOGRAPHY.microcopy)} style={{ color: 'var(--text-secondary)' }}>Refreshing…</span>
+            </div>
           )}
           {/* Type legend */}
           <div className="flex items-center gap-0.5">
