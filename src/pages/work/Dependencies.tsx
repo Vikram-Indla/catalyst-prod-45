@@ -24,7 +24,7 @@ export default function DependenciesPage() {
   const navigate = useNavigate();
   const { programId } = useParams();
   const [searchTerm, setSearchTerm] = useState('');
-  const [piFilter, setPiFilter] = useState<string | undefined>(undefined);
+  const [quarterFilter, setQuarterFilter] = useState<string | undefined>(undefined);
   const [levelFilter, setLevelFilter] = useState<string | undefined>(undefined);
   const [typeFilter, setTypeFilter] = useState<string | undefined>(undefined);
   const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
@@ -67,18 +67,18 @@ export default function DependenciesPage() {
     enabled: !!activeProgramId,
   });
 
-  // Fetch program increments for filter
-  const { data: programIncrements } = useQuery({
-    queryKey: ['program-increments'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('program_increments')
-        .select('*')
-        .order('start_date', { ascending: false });
-      if (error) throw error;
-      return data;
-    },
-  });
+  // Generate quarter options for filter
+  const generateQuarterOptions = () => {
+    const currentYear = new Date().getFullYear();
+    const quarters: string[] = [];
+    for (let year = currentYear - 1; year <= currentYear + 2; year++) {
+      for (let q = 1; q <= 4; q++) {
+        quarters.push(`Q${q} ${year}`);
+      }
+    }
+    return quarters;
+  };
+  const quarterOptions = generateQuarterOptions();
 
   // Fetch feature IDs belonging to this program (via epics)
   const { data: programFeatureIds } = useQuery({
@@ -111,7 +111,7 @@ export default function DependenciesPage() {
 
   // Fetch dependencies with filters - scoped to program if programId present
   const { data: dependencies, isLoading } = useQuery({
-    queryKey: ['dependencies-grid', activeProgramId, programFeatureIds, piFilter, levelFilter, typeFilter, statusFilter, viewMode],
+    queryKey: ['dependencies-grid', activeProgramId, programFeatureIds, quarterFilter, levelFilter, typeFilter, statusFilter, viewMode],
     queryFn: async () => {
       let query = supabase
         .from('dependencies')
@@ -126,7 +126,7 @@ export default function DependenciesPage() {
           external_entity:external_entities(id, name, entity_type)
         `);
 
-      if (piFilter && piFilter !== 'all') query = query.eq('pi_id', piFilter);
+      if (quarterFilter && quarterFilter !== 'all') query = query.eq('quarter', quarterFilter);
       if (levelFilter && levelFilter !== 'all') query = query.eq('dependency_level', levelFilter as any);
       if (typeFilter && typeFilter !== 'all') query = query.eq('type', typeFilter as any);
       if (statusFilter && statusFilter !== 'all') query = query.eq('status', statusFilter as any);
@@ -349,14 +349,14 @@ export default function DependenciesPage() {
                 className="pl-9 w-full"
               />
             </div>
-            <Select value={piFilter} onValueChange={setPiFilter}>
+            <Select value={quarterFilter} onValueChange={setQuarterFilter}>
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="All PIs" />
+                <SelectValue placeholder="All Quarters" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All PIs</SelectItem>
-                {programIncrements?.map(pi => (
-                  <SelectItem key={pi.id} value={pi.id}>{pi.name}</SelectItem>
+                <SelectItem value="all">All Quarters</SelectItem>
+                {quarterOptions.map(q => (
+                  <SelectItem key={q} value={q}>{q}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -400,14 +400,14 @@ export default function DependenciesPage() {
           {/* Visualization Views */}
           {visualizationMode === 'matrix' && (
             <DependencyMatrix 
-              piId={piFilter} 
+              quarter={quarterFilter} 
               onDependencyClick={handleRowClick}
             />
           )}
           
           {visualizationMode === 'wheel' && (
             <DependencyWheelMap 
-              piId={piFilter} 
+              quarter={quarterFilter} 
               onDependencyClick={handleRowClick}
             />
           )}

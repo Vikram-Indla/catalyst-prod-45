@@ -35,10 +35,20 @@ export function DependenciesSidebar({ className }: DependenciesSidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // PIs - empty until populated from database
-  const pis: { id: string; code: string; dates: string }[] = [];
+  // Generate quarter options
+  const generateQuarterOptions = () => {
+    const currentYear = new Date().getFullYear();
+    const quarters: string[] = [];
+    for (let year = currentYear - 1; year <= currentYear + 2; year++) {
+      for (let q = 1; q <= 4; q++) {
+        quarters.push(`Q${q} ${year}`);
+      }
+    }
+    return quarters;
+  };
+  const quarterOptions = generateQuarterOptions();
 
-  const [selectedPI, setSelectedPI] = useState<string | undefined>(undefined);
+  const [selectedQuarter, setSelectedQuarter] = useState<string | undefined>(undefined);
 
   const handleNavigation = (path: string) => {
     navigate(path);
@@ -89,19 +99,19 @@ export function DependenciesSidebar({ className }: DependenciesSidebarProps) {
                 </div>
               </div>
 
-              {/* Program Increment Filter */}
+              {/* Quarter Filter */}
               <div>
                 <label className="text-[11px] font-semibold text-muted-foreground uppercase mb-2 block tracking-wider">
-                  PROGRAM INCREMENT
+                  QUARTER
                 </label>
-                <Select value={selectedPI} onValueChange={setSelectedPI}>
+                <Select value={selectedQuarter} onValueChange={setSelectedQuarter}>
                   <SelectTrigger className="h-9 text-sm w-full bg-background border-border">
-                    <SelectValue placeholder="Select PI" />
+                    <SelectValue placeholder="All Quarters" />
                   </SelectTrigger>
                   <SelectContent className="bg-background border-border z-[100]">
-                    {pis.map(pi => (
-                      <SelectItem key={pi.id} value={pi.id}>
-                        {pi.code}
+                    {quarterOptions.map(q => (
+                      <SelectItem key={q} value={q}>
+                        {q}
                       </SelectItem>
                     ))}
                   </SelectContent>

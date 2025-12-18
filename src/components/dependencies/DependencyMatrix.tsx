@@ -12,11 +12,11 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 interface DependencyMatrixProps {
-  piId?: string;
+  quarter?: string;
   onDependencyClick?: (depId: string) => void;
 }
 
-export function DependencyMatrix({ piId, onDependencyClick }: DependencyMatrixProps) {
+export function DependencyMatrix({ quarter, onDependencyClick }: DependencyMatrixProps) {
   const [selectedCell, setSelectedCell] = useState<{ fromId: string; toId: string; fromName: string; toName: string } | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -33,7 +33,7 @@ export function DependencyMatrix({ piId, onDependencyClick }: DependencyMatrixPr
   });
 
   const { data: dependencies } = useQuery({
-    queryKey: ['dependencies-matrix', piId],
+    queryKey: ['dependencies-matrix', quarter],
     queryFn: async () => {
       let query = supabase
         .from('dependencies')
@@ -43,8 +43,8 @@ export function DependencyMatrix({ piId, onDependencyClick }: DependencyMatrixPr
           to_feature:features!dependencies_to_feature_id_fkey(id, name, program_id)
         `);
       
-      if (piId) {
-        query = query.eq('pi_id', piId);
+      if (quarter && quarter !== 'all') {
+        query = query.eq('quarter', quarter);
       }
       
       const { data, error } = await query;

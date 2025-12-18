@@ -1654,6 +1654,7 @@ export type Database = {
           notify_on_delivery: boolean | null
           owner_id: string | null
           pi_id: string | null
+          quarter: string
           rank_order: number | null
           rejection_reason: string | null
           related_stories_count: number | null
@@ -1693,6 +1694,7 @@ export type Database = {
           notify_on_delivery?: boolean | null
           owner_id?: string | null
           pi_id?: string | null
+          quarter?: string
           rank_order?: number | null
           rejection_reason?: string | null
           related_stories_count?: number | null
@@ -1732,6 +1734,7 @@ export type Database = {
           notify_on_delivery?: boolean | null
           owner_id?: string | null
           pi_id?: string | null
+          quarter?: string
           rank_order?: number | null
           rejection_reason?: string | null
           related_stories_count?: number | null
