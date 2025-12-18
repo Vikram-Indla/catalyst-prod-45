@@ -38,12 +38,16 @@ interface ProgramItem {
   owner: string;
   platform: string;
   health: 'On Track' | 'At Risk' | 'Blocked';
+  status: 'Draft' | 'Active' | 'Completed' | 'On Hold';
   startDate: string;
   endDate: string;
   progress: number;
   linkedProjects: string[];
   milestones: Milestone[];
   linkedFeatures: LinkedFeature[];
+  hasDependencies?: boolean;
+  isBlocked?: boolean;
+  isBlocking?: boolean;
 }
 
 interface Project {
@@ -57,6 +61,19 @@ interface Quarter {
   end: Date;
 }
 
+interface ProgramFilters {
+  owners: string[];
+  linkedProjects: string[];
+  status: string[];
+  health: string[];
+  activeInPeriod: string | null;
+  overdueOnly: boolean;
+  hasDependencies: boolean | null;
+  blockedOrBlocking: boolean | null;
+  hasLinkedFeatures: boolean | null;
+  featureStatusOpenOnly: boolean;
+}
+
 // ===== MOCK DATA =====
 const TODAY = new Date('2025-11-15');
 
@@ -67,12 +84,30 @@ const PROJECTS: Project[] = [
   { id: 'proj-4', name: 'Mobile App' }
 ];
 
+const OWNERS = ['Vikram Indla', 'Sarah Chen', 'Ahmed Khalid', 'Layla Hassan', 'Omar Farooq', 'Fatima Al-Rashid', 'Mohammed Al-Saud'];
+const PROGRAM_STATUSES = ['Draft', 'Active', 'Completed', 'On Hold'] as const;
+const HEALTH_STATUSES = ['On Track', 'At Risk', 'Blocked'] as const;
+const ACTIVE_IN_PERIOD_OPTIONS = ['This Quarter', 'Next Quarter', 'Custom Range'] as const;
+
+const DEFAULT_FILTERS: ProgramFilters = {
+  owners: [],
+  linkedProjects: [],
+  status: [],
+  health: [],
+  activeInPeriod: null,
+  overdueOnly: false,
+  hasDependencies: null,
+  blockedOrBlocking: null,
+  hasLinkedFeatures: null,
+  featureStatusOpenOnly: false,
+};
+
 const PROGRAMS: ProgramItem[] = [
   {
     id: 1, key: 'PRG-101', title: 'Digital Identity Verification',
-    owner: 'Vikram Indla', platform: 'Seneai Platform', health: 'On Track',
+    owner: 'Vikram Indla', platform: 'Seneai Platform', health: 'On Track', status: 'Active',
     startDate: '2025-01-15', endDate: '2025-09-30', progress: 82,
-    linkedProjects: ['proj-1', 'proj-2'],
+    linkedProjects: ['proj-1', 'proj-2'], hasDependencies: true, isBlocked: false, isBlocking: false,
     milestones: [
       { title: 'Architecture Design', date: '2025-02-28', status: 'complete' },
       { title: 'API Integration', date: '2025-05-15', status: 'complete' },
@@ -89,9 +124,9 @@ const PROGRAMS: ProgramItem[] = [
   },
   {
     id: 2, key: 'PRG-102', title: 'Investor Portal Enhancement',
-    owner: 'Sarah Chen', platform: 'Core Platform', health: 'At Risk',
+    owner: 'Sarah Chen', platform: 'Core Platform', health: 'At Risk', status: 'Active',
     startDate: '2025-01-01', endDate: '2025-12-31', progress: 48,
-    linkedProjects: ['proj-1', 'proj-4'],
+    linkedProjects: ['proj-1', 'proj-4'], hasDependencies: true, isBlocked: false, isBlocking: true,
     milestones: [
       { title: 'UX Research', date: '2025-03-15', status: 'complete' },
       { title: 'Phase 1 Launch', date: '2025-06-30', status: 'complete' },
@@ -111,9 +146,9 @@ const PROGRAMS: ProgramItem[] = [
   },
   {
     id: 3, key: 'PRG-103', title: 'Regulatory Compliance Engine',
-    owner: 'Ahmed Khalid', platform: 'Seneai Platform', health: 'On Track',
+    owner: 'Ahmed Khalid', platform: 'Seneai Platform', health: 'On Track', status: 'Completed',
     startDate: '2025-01-10', endDate: '2025-07-30', progress: 100,
-    linkedProjects: ['proj-2'],
+    linkedProjects: ['proj-2'], hasDependencies: false, isBlocked: false, isBlocking: false,
     milestones: [
       { title: 'Rules Engine', date: '2025-03-01', status: 'complete' },
       { title: 'Integration Testing', date: '2025-05-15', status: 'complete' },
@@ -128,9 +163,9 @@ const PROGRAMS: ProgramItem[] = [
   },
   {
     id: 4, key: 'PRG-104', title: 'Industrial Marketplace',
-    owner: 'Layla Hassan', platform: 'Innovation Platform', health: 'At Risk',
+    owner: 'Layla Hassan', platform: 'Innovation Platform', health: 'At Risk', status: 'Active',
     startDate: '2025-01-01', endDate: '2025-12-31', progress: 35,
-    linkedProjects: ['proj-3'],
+    linkedProjects: ['proj-3'], hasDependencies: true, isBlocked: true, isBlocking: false,
     milestones: [
       { title: 'Vendor Onboarding', date: '2025-04-30', status: 'complete' },
       { title: 'Catalog MVP', date: '2025-07-31', status: 'overdue' },
@@ -154,9 +189,9 @@ const PROGRAMS: ProgramItem[] = [
   },
   {
     id: 5, key: 'PRG-105', title: 'Smart Document Processing',
-    owner: 'Omar Farooq', platform: 'Seneai Platform', health: 'On Track',
+    owner: 'Omar Farooq', platform: 'Seneai Platform', health: 'On Track', status: 'Active',
     startDate: '2025-04-01', endDate: '2026-03-31', progress: 28,
-    linkedProjects: ['proj-1', 'proj-2', 'proj-3'],
+    linkedProjects: ['proj-1', 'proj-2', 'proj-3'], hasDependencies: false, isBlocked: false, isBlocking: false,
     milestones: [
       { title: 'OCR Engine', date: '2025-05-31', status: 'complete' },
       { title: 'ML Training', date: '2025-09-30', status: 'complete' },
@@ -172,9 +207,9 @@ const PROGRAMS: ProgramItem[] = [
   },
   {
     id: 6, key: 'PRG-106', title: 'Workflow Automation Suite',
-    owner: 'Fatima Al-Rashid', platform: 'Core Platform', health: 'On Track',
+    owner: 'Fatima Al-Rashid', platform: 'Core Platform', health: 'On Track', status: 'Active',
     startDate: '2025-03-01', endDate: '2025-11-30', progress: 70,
-    linkedProjects: ['proj-2', 'proj-3'],
+    linkedProjects: ['proj-2', 'proj-3'], hasDependencies: true, isBlocked: false, isBlocking: false,
     milestones: [
       { title: 'Process Mapping', date: '2025-04-30', status: 'complete' },
       { title: 'Automation Engine', date: '2025-07-31', status: 'complete' },
@@ -189,9 +224,9 @@ const PROGRAMS: ProgramItem[] = [
   },
   {
     id: 7, key: 'PRG-107', title: 'Investment Tracking Dashboard',
-    owner: 'Mohammed Al-Saud', platform: 'Innovation Platform', health: 'On Track',
+    owner: 'Mohammed Al-Saud', platform: 'Innovation Platform', health: 'On Track', status: 'Draft',
     startDate: '2025-06-01', endDate: '2026-02-28', progress: 22,
-    linkedProjects: ['proj-1', 'proj-3'],
+    linkedProjects: ['proj-1', 'proj-3'], hasDependencies: false, isBlocked: false, isBlocking: false,
     milestones: [
       { title: 'Requirements', date: '2025-07-15', status: 'complete' },
       { title: 'Wireframes', date: '2025-09-30', status: 'complete' },
@@ -208,9 +243,9 @@ const PROGRAMS: ProgramItem[] = [
   },
   {
     id: 8, key: 'PRG-108', title: 'Partner Integration Hub',
-    owner: 'Vikram Indla', platform: 'Core Platform', health: 'Blocked',
+    owner: 'Vikram Indla', platform: 'Core Platform', health: 'Blocked', status: 'On Hold',
     startDate: '2025-02-15', endDate: '2025-10-15', progress: 55,
-    linkedProjects: ['proj-4'],
+    linkedProjects: ['proj-4'], hasDependencies: true, isBlocked: true, isBlocking: true,
     milestones: [
       { title: 'API Spec', date: '2025-03-31', status: 'complete' },
       { title: 'Partner SDK', date: '2025-06-30', status: 'complete' },
@@ -225,9 +260,9 @@ const PROGRAMS: ProgramItem[] = [
   },
   {
     id: 9, key: 'PRG-109', title: 'Analytics & Reporting Platform',
-    owner: 'Sarah Chen', platform: 'Seneai Platform', health: 'On Track',
+    owner: 'Sarah Chen', platform: 'Seneai Platform', health: 'On Track', status: 'Active',
     startDate: '2025-07-01', endDate: '2026-06-30', progress: 8,
-    linkedProjects: ['proj-3'],
+    linkedProjects: ['proj-3'], hasDependencies: false, isBlocked: false, isBlocking: false,
     milestones: [
       { title: 'Data Model', date: '2025-09-30', status: 'complete' },
       { title: 'ETL Pipeline', date: '2025-12-31', status: 'current' },
@@ -242,9 +277,9 @@ const PROGRAMS: ProgramItem[] = [
   },
   {
     id: 10, key: 'PRG-110', title: 'Mobile App Refresh',
-    owner: 'Ahmed Khalid', platform: 'Innovation Platform', health: 'On Track',
+    owner: 'Ahmed Khalid', platform: 'Innovation Platform', health: 'On Track', status: 'Draft',
     startDate: '2025-09-01', endDate: '2026-04-30', progress: 5,
-    linkedProjects: ['proj-1', 'proj-4'],
+    linkedProjects: ['proj-1', 'proj-4'], hasDependencies: false, isBlocked: false, isBlocking: false,
     milestones: [
       { title: 'Design System', date: '2025-11-30', status: 'current' },
       { title: 'iOS Dev', date: '2026-02-28', status: 'pending' },
@@ -335,6 +370,10 @@ export default function ProgramRoadmapPage() {
   const [selectedProjects, setSelectedProjects] = useState<Set<string>>(new Set());
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
   
+  // Filter state
+  const [filters, setFilters] = useState<ProgramFilters>(DEFAULT_FILTERS);
+  const [draftFilters, setDraftFilters] = useState<ProgramFilters>(DEFAULT_FILTERS);
+  
   // Dropdown states
   const [projectsMenuOpen, setProjectsMenuOpen] = useState(false);
   const [groupByMenuOpen, setGroupByMenuOpen] = useState(false);
@@ -354,10 +393,58 @@ export default function ProgramRoadmapPage() {
   const listBodyRef = useRef<HTMLDivElement>(null);
   const timelineBodyRef = useRef<HTMLDivElement>(null);
   
+  // Helper to check if program is overdue
+  const isProgramOverdue = (program: ProgramItem): boolean => {
+    const endDate = parseDate(program.endDate);
+    return endDate < TODAY && program.progress < 100;
+  };
+  
+  // Helper to check if program is active in a period
+  const isProgramActiveInPeriod = (program: ProgramItem, period: string | null): boolean => {
+    if (!period) return true;
+    const start = parseDate(program.startDate);
+    const end = parseDate(program.endDate);
+    
+    if (period === 'This Quarter') {
+      const q4Start = new Date('2025-10-01');
+      const q4End = new Date('2025-12-31');
+      return start <= q4End && end >= q4Start;
+    }
+    if (period === 'Next Quarter') {
+      const q1Start = new Date('2026-01-01');
+      const q1End = new Date('2026-03-31');
+      return start <= q1End && end >= q1Start;
+    }
+    return true;
+  };
+  
+  // Helper to check if program has open features only
+  const hasOnlyOpenFeatures = (program: ProgramItem): boolean => {
+    const openFeatures = program.linkedFeatures.filter(f => f.status === 'Open' || f.status === 'In Progress');
+    return openFeatures.length > 0;
+  };
+  
+  // Count active filters
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (filters.owners.length > 0) count += filters.owners.length;
+    if (filters.linkedProjects.length > 0) count += filters.linkedProjects.length;
+    if (filters.status.length > 0) count += filters.status.length;
+    if (filters.health.length > 0) count += filters.health.length;
+    if (filters.activeInPeriod) count += 1;
+    if (filters.overdueOnly) count += 1;
+    if (filters.hasDependencies !== null) count += 1;
+    if (filters.blockedOrBlocking !== null) count += 1;
+    if (filters.hasLinkedFeatures !== null) count += 1;
+    if (filters.featureStatusOpenOnly) count += 1;
+    return count;
+  }, [filters]);
+  
   // Filter programs
   const filteredPrograms = useMemo(() => {
     let filtered = [...PROGRAMS];
     
+    // Text search
     if (search) {
       const s = search.toLowerCase();
       filtered = filtered.filter(p =>
@@ -367,8 +454,94 @@ export default function ProgramRoadmapPage() {
       );
     }
     
+    // Owner filter
+    if (filters.owners.length > 0) {
+      filtered = filtered.filter(p => filters.owners.includes(p.owner));
+    }
+    
+    // Linked Project filter
+    if (filters.linkedProjects.length > 0) {
+      filtered = filtered.filter(p => 
+        p.linkedProjects.some(proj => filters.linkedProjects.includes(proj))
+      );
+    }
+    
+    // Status filter
+    if (filters.status.length > 0) {
+      filtered = filtered.filter(p => filters.status.includes(p.status));
+    }
+    
+    // Health filter
+    if (filters.health.length > 0) {
+      filtered = filtered.filter(p => filters.health.includes(p.health));
+    }
+    
+    // Active in period filter
+    if (filters.activeInPeriod) {
+      filtered = filtered.filter(p => isProgramActiveInPeriod(p, filters.activeInPeriod));
+    }
+    
+    // Overdue filter
+    if (filters.overdueOnly) {
+      filtered = filtered.filter(p => isProgramOverdue(p));
+    }
+    
+    // Has Dependencies filter
+    if (filters.hasDependencies !== null) {
+      filtered = filtered.filter(p => p.hasDependencies === filters.hasDependencies);
+    }
+    
+    // Blocked / Blocking filter
+    if (filters.blockedOrBlocking !== null) {
+      filtered = filtered.filter(p => 
+        filters.blockedOrBlocking ? (p.isBlocked || p.isBlocking) : (!p.isBlocked && !p.isBlocking)
+      );
+    }
+    
+    // Has Linked Features filter
+    if (filters.hasLinkedFeatures !== null) {
+      filtered = filtered.filter(p => 
+        filters.hasLinkedFeatures ? p.linkedFeatures.length > 0 : p.linkedFeatures.length === 0
+      );
+    }
+    
+    // Feature Status (Open only) filter
+    if (filters.featureStatusOpenOnly) {
+      filtered = filtered.filter(p => hasOnlyOpenFeatures(p));
+    }
+    
     return filtered;
-  }, [search]);
+  }, [search, filters]);
+  
+  // Handle filter apply
+  const handleApplyFilters = () => {
+    setFilters(draftFilters);
+    setFiltersMenuOpen(false);
+  };
+  
+  // Handle filter reset
+  const handleResetFilters = () => {
+    setDraftFilters(DEFAULT_FILTERS);
+    setFilters(DEFAULT_FILTERS);
+  };
+  
+  // Toggle multi-select filter
+  const toggleFilterValue = (filterKey: keyof Pick<ProgramFilters, 'owners' | 'linkedProjects' | 'status' | 'health'>, value: string) => {
+    setDraftFilters(prev => {
+      const current = prev[filterKey] as string[];
+      const newValues = current.includes(value)
+        ? current.filter(v => v !== value)
+        : [...current, value];
+      return { ...prev, [filterKey]: newValues };
+    });
+  };
+  
+  // Open filter panel - sync draft with current
+  useEffect(() => {
+    if (filtersMenuOpen) {
+      setDraftFilters(filters);
+    }
+  }, [filtersMenuOpen]);
   
   // Group programs
   const groupedPrograms = useMemo(() => {
@@ -589,15 +762,244 @@ export default function ProgramRoadmapPage() {
                 setGroupByMenuOpen(false);
                 setYearMenuOpen(false);
               }}
-              className="flex items-center gap-1.5 px-3 py-2 text-sm border border-border rounded-lg bg-background hover:bg-muted transition-colors"
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-2 text-sm border rounded-lg transition-colors",
+                activeFilterCount > 0
+                  ? "border-brand-primary bg-brand-primary-muted text-brand-primary"
+                  : "border-border bg-background hover:bg-muted"
+              )}
             >
-              <Filter className="h-4 w-4 text-muted-foreground" />
+              <Filter className="h-4 w-4" />
               <span>Filters</span>
+              {activeFilterCount > 0 && (
+                <span className="ml-1 px-1.5 py-0.5 text-[10px] font-semibold bg-brand-primary text-white rounded-full">
+                  {activeFilterCount}
+                </span>
+              )}
             </button>
             
             {filtersMenuOpen && (
-              <div className="absolute top-full left-0 mt-1 w-[200px] bg-background border border-border rounded-lg shadow-lg z-50 p-4">
-                <p className="text-sm text-muted-foreground">Filters coming soon</p>
+              <div className="absolute top-full left-0 mt-1 w-[380px] bg-background border border-border rounded-lg shadow-lg z-50 max-h-[70vh] overflow-auto">
+                {/* Header */}
+                <div className="sticky top-0 bg-background px-4 py-3 border-b border-border flex items-center justify-between">
+                  <span className="font-semibold text-sm">Filters</span>
+                  <button
+                    onClick={() => setFiltersMenuOpen(false)}
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+                
+                <div className="p-4 space-y-4">
+                  {/* Program Owner */}
+                  <div>
+                    <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                      Program Owner
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {OWNERS.map(owner => (
+                        <button
+                          key={owner}
+                          onClick={() => toggleFilterValue('owners', owner)}
+                          className={cn(
+                            "px-2.5 py-1 text-xs rounded-full border transition-colors",
+                            draftFilters.owners.includes(owner)
+                              ? "bg-brand-primary text-white border-brand-primary"
+                              : "bg-background border-border hover:bg-muted"
+                          )}
+                        >
+                          {owner.split(' ')[0]}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Linked Project */}
+                  <div>
+                    <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                      Linked Project
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {PROJECTS.map(proj => (
+                        <button
+                          key={proj.id}
+                          onClick={() => toggleFilterValue('linkedProjects', proj.id)}
+                          className={cn(
+                            "px-2.5 py-1 text-xs rounded-full border transition-colors",
+                            draftFilters.linkedProjects.includes(proj.id)
+                              ? "bg-brand-primary text-white border-brand-primary"
+                              : "bg-background border-border hover:bg-muted"
+                          )}
+                        >
+                          {proj.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Program Status */}
+                  <div>
+                    <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                      Program Status
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {PROGRAM_STATUSES.map(status => (
+                        <button
+                          key={status}
+                          onClick={() => toggleFilterValue('status', status)}
+                          className={cn(
+                            "px-2.5 py-1 text-xs rounded-full border transition-colors",
+                            draftFilters.status.includes(status)
+                              ? "bg-brand-primary text-white border-brand-primary"
+                              : "bg-background border-border hover:bg-muted"
+                          )}
+                        >
+                          {status}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Health Status */}
+                  <div>
+                    <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                      Health Status
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {HEALTH_STATUSES.map(health => (
+                        <button
+                          key={health}
+                          onClick={() => toggleFilterValue('health', health)}
+                          className={cn(
+                            "px-2.5 py-1 text-xs rounded-full border transition-colors flex items-center gap-1.5",
+                            draftFilters.health.includes(health)
+                              ? "bg-brand-primary text-white border-brand-primary"
+                              : "bg-background border-border hover:bg-muted"
+                          )}
+                        >
+                          <div className={cn(
+                            "w-2 h-2 rounded-full",
+                            health === 'On Track' && "bg-brand-primary",
+                            health === 'At Risk' && "bg-secondary-bronze",
+                            health === 'Blocked' && "bg-destructive",
+                            draftFilters.health.includes(health) && "bg-white"
+                          )} />
+                          {health}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Active In Period */}
+                  <div>
+                    <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                      Active In Period
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {ACTIVE_IN_PERIOD_OPTIONS.map(period => (
+                        <button
+                          key={period}
+                          onClick={() => setDraftFilters(prev => ({
+                            ...prev,
+                            activeInPeriod: prev.activeInPeriod === period ? null : period
+                          }))}
+                          className={cn(
+                            "px-2.5 py-1 text-xs rounded-full border transition-colors",
+                            draftFilters.activeInPeriod === period
+                              ? "bg-brand-primary text-white border-brand-primary"
+                              : "bg-background border-border hover:bg-muted"
+                          )}
+                        >
+                          {period}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Boolean Filters */}
+                  <div className="space-y-2 pt-2 border-t border-border">
+                    {/* Overdue Programs */}
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={draftFilters.overdueOnly}
+                        onChange={(e) => setDraftFilters(prev => ({ ...prev, overdueOnly: e.target.checked }))}
+                        className="w-4 h-4 rounded border-border text-brand-primary focus:ring-brand-primary"
+                      />
+                      <span className="text-sm">Overdue Programs</span>
+                    </label>
+                    
+                    {/* Has Dependencies */}
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={draftFilters.hasDependencies === true}
+                        onChange={(e) => setDraftFilters(prev => ({ 
+                          ...prev, 
+                          hasDependencies: e.target.checked ? true : null 
+                        }))}
+                        className="w-4 h-4 rounded border-border text-brand-primary focus:ring-brand-primary"
+                      />
+                      <span className="text-sm">Has Dependencies</span>
+                    </label>
+                    
+                    {/* Blocked / Blocking */}
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={draftFilters.blockedOrBlocking === true}
+                        onChange={(e) => setDraftFilters(prev => ({ 
+                          ...prev, 
+                          blockedOrBlocking: e.target.checked ? true : null 
+                        }))}
+                        className="w-4 h-4 rounded border-border text-brand-primary focus:ring-brand-primary"
+                      />
+                      <span className="text-sm">Blocked / Blocking Programs</span>
+                    </label>
+                    
+                    {/* Has Linked Features */}
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={draftFilters.hasLinkedFeatures === true}
+                        onChange={(e) => setDraftFilters(prev => ({ 
+                          ...prev, 
+                          hasLinkedFeatures: e.target.checked ? true : null 
+                        }))}
+                        className="w-4 h-4 rounded border-border text-brand-primary focus:ring-brand-primary"
+                      />
+                      <span className="text-sm">Has Linked Features</span>
+                    </label>
+                    
+                    {/* Feature Status (Open only) */}
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={draftFilters.featureStatusOpenOnly}
+                        onChange={(e) => setDraftFilters(prev => ({ ...prev, featureStatusOpenOnly: e.target.checked }))}
+                        className="w-4 h-4 rounded border-border text-brand-primary focus:ring-brand-primary"
+                      />
+                      <span className="text-sm">Feature Status (Open only)</span>
+                    </label>
+                  </div>
+                </div>
+                
+                {/* Footer */}
+                <div className="sticky bottom-0 bg-background px-4 py-3 border-t border-border flex items-center justify-between gap-2">
+                  <button
+                    onClick={handleResetFilters}
+                    className="px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Reset
+                  </button>
+                  <button
+                    onClick={handleApplyFilters}
+                    className="px-4 py-1.5 text-sm bg-brand-primary text-white rounded-lg hover:bg-brand-primary/90 transition-colors"
+                  >
+                    Apply Filters
+                  </button>
+                </div>
               </div>
             )}
           </div>
@@ -1011,44 +1413,59 @@ export default function ProgramRoadmapPage() {
           </div>
         )}
         
-        {/* Legend Panel */}
+        {/* Legend Panel - Two clear sections only */}
         {legendOpen && (
-          <div className="fixed top-40 right-5 bg-background border border-border rounded-xl shadow-lg p-3.5 w-[200px] z-50">
-            <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2.5">
-              Health Status
-            </div>
-            <div className="space-y-1.5">
-              <div className="flex items-center gap-2 text-xs">
-                <div className="w-3.5 h-3.5 rounded bg-brand-primary" />
-                <span>On Track</span>
+          <div className="fixed top-40 right-5 bg-background border border-border rounded-xl shadow-lg p-4 w-[200px] z-50">
+            {/* Close button */}
+            <button
+              onClick={() => setLegendOpen(false)}
+              className="absolute top-2 right-2 text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+            
+            {/* Program Health Section */}
+            <div className="mb-4">
+              <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2.5">
+                Program Health
               </div>
-              <div className="flex items-center gap-2 text-xs">
-                <div className="w-3.5 h-3.5 rounded bg-secondary-bronze" />
-                <span>At Risk</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs">
-                <div className="w-3.5 h-3.5 rounded bg-destructive" />
-                <span>Blocked</span>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2.5 text-xs">
+                  <div className="w-3.5 h-3.5 rounded-full bg-brand-primary flex-shrink-0" />
+                  <span className="text-foreground">On Track</span>
+                </div>
+                <div className="flex items-center gap-2.5 text-xs">
+                  <div className="w-3.5 h-3.5 rounded-full bg-secondary-bronze flex-shrink-0" />
+                  <span className="text-foreground">At Risk</span>
+                </div>
+                <div className="flex items-center gap-2.5 text-xs">
+                  <div className="w-3.5 h-3.5 rounded-full bg-destructive flex-shrink-0" />
+                  <span className="text-foreground">Blocked</span>
+                </div>
               </div>
             </div>
             
-            <div className="h-2.5" />
+            {/* Divider */}
+            <div className="border-t border-border mb-4" />
             
-            <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2.5">
-              Milestones
-            </div>
-            <div className="space-y-1.5">
-              <div className="flex items-center gap-2 text-xs">
-                <div className="w-2 h-2 rotate-45 bg-brand-primary" />
-                <span>Complete</span>
+            {/* Milestones Section */}
+            <div>
+              <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2.5">
+                Milestones
               </div>
-              <div className="flex items-center gap-2 text-xs">
-                <div className="w-2 h-2 rotate-45 border-2 border-brand-gold" />
-                <span>Current</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs">
-                <div className="w-2 h-2 rotate-45 border-2 border-secondary-champagne" />
-                <span>Pending</span>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2.5 text-xs">
+                  <div className="w-3 h-3 rotate-45 bg-brand-primary flex-shrink-0" />
+                  <span className="text-foreground">Completed</span>
+                </div>
+                <div className="flex items-center gap-2.5 text-xs">
+                  <div className="w-3 h-3 rotate-45 border-2 border-brand-gold bg-background flex-shrink-0" />
+                  <span className="text-foreground">Current</span>
+                </div>
+                <div className="flex items-center gap-2.5 text-xs">
+                  <div className="w-3 h-3 rotate-45 border-2 border-secondary-champagne bg-background flex-shrink-0" />
+                  <span className="text-foreground">Pending</span>
+                </div>
               </div>
             </div>
           </div>
