@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { DependencyWheelDetailsPanel } from './DependencyWheelDetailsPanel';
 
 interface DependencyWheelMapProps {
-  piId?: string;
+  quarter?: string;
   selectedProgram?: string;
   onDependencyClick?: (depId: string) => void;
 }
@@ -31,7 +31,7 @@ interface WheelLink {
   dependency?: any;
 }
 
-export function DependencyWheelMap({ piId, selectedProgram, onDependencyClick }: DependencyWheelMapProps) {
+export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick }: DependencyWheelMapProps) {
   const [showFeatures, setShowFeatures] = useState(true);
   const [showEpics, setShowEpics] = useState(true);
   const [showCapabilities, setShowCapabilities] = useState(true);
@@ -55,7 +55,7 @@ export function DependencyWheelMap({ piId, selectedProgram, onDependencyClick }:
   });
 
   const { data: dependencies } = useQuery({
-    queryKey: ['dependencies-wheel', piId, selectedProgram],
+    queryKey: ['dependencies-wheel', quarter, selectedProgram],
     queryFn: async () => {
       let query = supabase
         .from('dependencies')
@@ -65,7 +65,7 @@ export function DependencyWheelMap({ piId, selectedProgram, onDependencyClick }:
           to_feature:features!dependencies_to_feature_id_fkey(id, name, program_id)
         `);
       
-      if (piId) query = query.eq('pi_id', piId);
+      if (quarter && quarter !== 'all') query = query.eq('quarter', quarter);
       
       const { data, error } = await query;
       if (error) throw error;

@@ -59,7 +59,7 @@ const formSchema = z.object({
   depends_on_program_id: z.string().optional(),
   external_entity_id: z.string().optional(),
   owner_id: z.string().optional(),
-  pi_id: z.string().optional(),
+  quarter: z.string().min(1, 'Quarter is required'),
   type: z.enum(['sequential', 'concurrent', 'program', 'external']),
   status: z.enum(['open', 'pending_commit', 'negotiation', 'committed', 'in_progress', 'delivered', 'done', 'no_work_done', 'rejected']),
   risk_level: z.enum(['low', 'med', 'high']),
@@ -78,6 +78,20 @@ const formSchema = z.object({
   notify_on_delivery: z.boolean().optional(),
 });
 
+// Generate quarter options (current year -1 to +2)
+const generateQuarterOptions = () => {
+  const currentYear = new Date().getFullYear();
+  const quarters: string[] = [];
+  for (let year = currentYear - 1; year <= currentYear + 2; year++) {
+    for (let q = 1; q <= 4; q++) {
+      quarters.push(`Q${q} ${year}`);
+    }
+  }
+  return quarters;
+};
+
+const QUARTER_OPTIONS = generateQuarterOptions();
+
 type FormData = z.infer<typeof formSchema>;
 
 interface DependencyDetailsDrawerProps {
@@ -94,6 +108,13 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
   const [showUnsavedChangesDialog, setShowUnsavedChangesDialog] = useState(false);
   const isEdit = !!dependencyId;
 
+  // Get current quarter as default
+  const getCurrentQuarter = () => {
+    const now = new Date();
+    const quarter = Math.ceil((now.getMonth() + 1) / 3);
+    return `Q${quarter} ${now.getFullYear()}`;
+  };
+
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -101,6 +122,7 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
       type: 'sequential',
       status: 'pending_commit',
       risk_level: 'med',
+      quarter: getCurrentQuarter(),
       blocked_requestor: false,
       blocked_respondent: false,
       no_work_required: false,
@@ -166,14 +188,7 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
     },
   });
 
-  const { data: programIncrements } = useQuery({
-    queryKey: ['program-increments-lookup'],
-    queryFn: async () => {
-      const { data, error } = await supabase.from('program_increments').select('id, name').order('start_date', { ascending: false });
-      if (error) throw error;
-      return data;
-    },
-  });
+  // Quarter options are generated statically above - no need to fetch
 
   const { data: iterations } = useQuery({
     queryKey: ['iterations-lookup'],
@@ -205,7 +220,7 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
         depends_on_program_id: existingDependency.depends_on_project_id || undefined,
         external_entity_id: existingDependency.external_entity_id || undefined,
         owner_id: existingDependency.owner_id || undefined,
-        pi_id: existingDependency.pi_id || undefined,
+        quarter: (existingDependency as any).quarter || getCurrentQuarter(),
         type: existingDependency.type as any || 'sequential',
         status: existingDependency.status as any || 'pending_commit',
         risk_level: existingDependency.risk_level || 'med',
@@ -241,7 +256,7 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
         status: data.status,
         risk_level: data.risk_level,
         description: data.description,
-        pi_id: data.pi_id || null,
+        quarter: data.quarter,
         owner_id: data.owner_id || null,
         from_feature_id: data.from_feature_id || null,
         to_feature_id: data.to_feature_id || null,
@@ -598,19 +613,19 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
 
                           <FormField
                             control={form.control}
-                            name="pi_id"
+                            name="quarter"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel className="text-[13px] font-medium">Program Increment*</FormLabel>
+                                <FormLabel className="text-[13px] font-medium">Quarter*</FormLabel>
                                 <Select onValueChange={field.onChange} value={field.value}>
                                   <FormControl>
                                     <SelectTrigger className="h-9">
-                                      <SelectValue placeholder="Select PI" />
+                                      <SelectValue placeholder="Select quarter" />
                                     </SelectTrigger>
                                   </FormControl>
                                   <SelectContent className="z-[400]">
-                                    {programIncrements?.map(pi => (
-                                      <SelectItem key={pi.id} value={pi.id}>{pi.name}</SelectItem>
+                                    {QUARTER_OPTIONS.map(q => (
+                                      <SelectItem key={q} value={q}>{q}</SelectItem>
                                     ))}
                                   </SelectContent>
                                 </Select>
