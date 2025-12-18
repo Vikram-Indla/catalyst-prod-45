@@ -3,11 +3,12 @@
  * Clean 3-column executive block with equal weight cards
  * Compact rows, thin bars, improved scannability
  * 
- * Typography Lock Rules (parity with Strategic Pulse):
- * - Section title: text-xs font-semibold text-secondary
- * - Card headings: text-xs uppercase tracking-wide text-secondary
- * - Values: text-base font-medium text-primary (or colored for warnings)
+ * TYPOGRAPHY LOCK (JOB-190):
+ * - Section title: text-sm font-semibold tracking-wide (14px min)
+ * - Card headings: text-sm font-semibold uppercase tracking-wide
+ * - Values: text-base font-medium text-primary (or colored for status)
  * - Supporting rows: text-sm text-secondary
+ * - NO text-muted, opacity-60, opacity-50 on content
  */
 
 import { useNavigate } from 'react-router-dom';
@@ -25,6 +26,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useMemo } from 'react';
+import { TYPOGRAPHY, TEXT_CLASSES } from './strategyRoomTypography';
 
 interface ExposureGapsSectionProps {
   snapshotId?: string;
@@ -111,14 +113,14 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
                 style={{ 
                   backgroundColor: 'var(--surface-2)', 
                   border: '1px solid var(--border-subtle)',
-                  minHeight: '140px',
+                  minHeight: '150px',
                 }}
               >
-                <Skeleton className="h-3 w-24 mb-4" />
+                <Skeleton className="h-4 w-28 mb-4" />
                 <div className="space-y-2">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-5 w-full" />
+                  <Skeleton className="h-5 w-full" />
+                  <Skeleton className="h-5 w-3/4" />
                 </div>
               </div>
             ))}
@@ -139,21 +141,21 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
         boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
       }}
     >
-      {/* Section Header */}
+      {/* Section Header - text-sm font-semibold tracking-wide */}
       <div 
         className="px-4 py-2.5 flex items-center justify-between"
         style={{ borderBottom: '1px solid var(--border-subtle)' }}
       >
         <div className="flex items-center gap-2">
           <Shield size={14} style={{ color: 'var(--status-danger)' }} />
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-secondary">
+          <h2 className={cn(TYPOGRAPHY.sectionTitle, TEXT_CLASSES.secondary)}>
             Exposure & Gaps
           </h2>
         </div>
         {isUpdating && (
           <div className="flex items-center gap-1.5">
-            <Loader2 size={12} className="animate-spin text-secondary" />
-            <span className="text-xs text-secondary">Refreshing…</span>
+            <Loader2 size={12} className="animate-spin" style={{ color: 'var(--text-secondary)' }} />
+            <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Refreshing…</span>
           </div>
         )}
       </div>
@@ -167,7 +169,7 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
             iconColor="text-status-danger"
             cta={{ label: 'View all', onClick: () => navigate('/enterprise/risks') }}
           >
-            <div className="space-y-1">
+            <div className="space-y-1.5">
               <DataRow 
                 label="Critical/High" 
                 value={displayData.highRisks} 
@@ -195,10 +197,10 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
               <div className="pt-2 mt-2" style={{ borderTop: '1px solid var(--border-subtle)' }}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
-                    <Clock size={12} className="text-status-danger" />
-                    <span className="text-sm text-secondary">Overdue</span>
+                    <Clock size={14} className="text-status-danger" />
+                    <span className={cn(TYPOGRAPHY.dataRowLabel, TEXT_CLASSES.secondary)}>Overdue</span>
                   </div>
-                  <span className="text-base font-semibold tabular-nums text-status-danger">
+                  <span className={cn(TYPOGRAPHY.secondaryMetric)} style={{ color: 'var(--status-danger)' }}>
                     {displayData.overdueRisks}
                   </span>
                 </div>
@@ -213,7 +215,7 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
             iconColor="text-secondary-bronze"
             cta={{ label: 'View backlog', onClick: () => navigate('/enterprise/backlog') }}
           >
-            <div className="space-y-1">
+            <div className="space-y-1.5">
               <DataRow label="Orphan Themes" value={0} variant="neutral" />
               <DataRow 
                 label="Unlinked Epics" 
@@ -229,11 +231,11 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
 
             <div className="pt-2 mt-2" style={{ borderTop: '1px solid var(--border-subtle)' }}>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-secondary">Total gaps</span>
+                <span className={cn(TYPOGRAPHY.cardLabel, TEXT_CLASSES.secondary)}>Total gaps</span>
                 <span className={cn(
-                  "text-xl font-bold tabular-nums",
-                  displayData.alignmentGaps > 0 ? "text-secondary-bronze" : "text-primary"
-                )}>
+                  TYPOGRAPHY.secondaryMetric,
+                  displayData.alignmentGaps > 0 ? "" : TEXT_CLASSES.primary
+                )} style={{ color: displayData.alignmentGaps > 0 ? 'var(--secondary-bronze)' : undefined }}>
                   {displayData.alignmentGaps}
                 </span>
               </div>
@@ -247,18 +249,18 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
             iconColor="text-status-warning"
           >
             {attentionItems.length === 0 ? (
-              <div className="py-3 text-center">
-                <CheckCircle2 size={18} className="mx-auto mb-1 text-status-success" />
-                <span className="text-sm text-secondary">No items need attention</span>
+              <div className="py-4 text-center">
+                <CheckCircle2 size={20} className="mx-auto mb-1.5 text-status-success" />
+                <span className={cn(TYPOGRAPHY.subtext, TEXT_CLASSES.secondary)}>No items need attention</span>
               </div>
             ) : (
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 {attentionItems.slice(0, 4).map((item) => (
                   <AttentionRow key={item.id} item={item} onClick={() => navigate(item.link)} />
                 ))}
                 {attentionItems.length > 4 && (
-                  <div className="text-center pt-1">
-                    <span className="text-xs text-secondary">
+                  <div className="text-center pt-1.5">
+                    <span className={cn(TYPOGRAPHY.microcopy, TEXT_CLASSES.secondary)}>
                       +{attentionItems.length - 4} more
                     </span>
                   </div>
@@ -287,19 +289,19 @@ function CockpitCard({ title, icon, iconColor, children, cta }: CockpitCardProps
       style={{ 
         backgroundColor: 'var(--surface-2)', 
         border: '1px solid var(--border-subtle)',
-        minHeight: '140px',
+        minHeight: '150px',
       }}
     >
-      {/* Card header: text-xs uppercase tracking-wide text-secondary */}
+      {/* Card header: text-sm font-semibold uppercase tracking-wide */}
       <div 
-        className="px-3 py-2 flex items-center gap-2"
+        className="px-3 py-2.5 flex items-center gap-2"
         style={{ 
           borderBottom: '1px solid var(--border-subtle)',
           backgroundColor: 'var(--surface-3)'
         }}
       >
         <span className={iconColor}>{icon}</span>
-        <span className="text-xs font-semibold uppercase tracking-wide text-secondary">
+        <span className={cn(TYPOGRAPHY.sectionTitle, TEXT_CLASSES.secondary)}>
           {title}
         </span>
       </div>
@@ -307,15 +309,16 @@ function CockpitCard({ title, icon, iconColor, children, cta }: CockpitCardProps
       <div className="p-3 flex-1">{children}</div>
 
       {cta && (
-        <div className="px-3 pb-2">
+        <div className="px-3 pb-2.5">
           <Button
             variant="ghost"
             size="sm"
-            className="w-full h-7 text-xs text-secondary hover:bg-[var(--surface-hover)] focus-visible:ring-1"
+            className={cn(TYPOGRAPHY.ctaButton, "w-full h-8 hover:bg-[var(--surface-hover)] focus-visible:ring-1")}
+            style={{ color: 'var(--text-secondary)' }}
             onClick={cta.onClick}
           >
             {cta.label}
-            <ChevronRight size={12} className="ml-1" />
+            <ChevronRight size={14} className="ml-1" />
           </Button>
         </div>
       )}
@@ -351,14 +354,14 @@ function DataRow({ label, value, total = 0, variant = 'neutral', showBar }: Data
 
   return (
     <div 
-      className="flex items-center gap-2 py-1 rounded px-1.5 -mx-1.5 transition-colors hover:bg-[var(--surface-hover)]"
+      className="flex items-center gap-2 py-1.5 rounded px-2 -mx-2 transition-colors hover:bg-[var(--surface-hover)]"
     >
       {/* Label: text-sm text-secondary */}
-      <span className="text-sm text-secondary flex-1">{label}</span>
+      <span className={cn(TYPOGRAPHY.dataRowLabel, TEXT_CLASSES.secondary, 'flex-1')}>{label}</span>
       
       {showBar && total > 0 && (
         <div 
-          className="w-12 h-1 rounded-full overflow-hidden"
+          className="w-14 h-1.5 rounded-full overflow-hidden"
           style={{ backgroundColor: 'var(--border-default)' }}
         >
           <div 
@@ -366,7 +369,7 @@ function DataRow({ label, value, total = 0, variant = 'neutral', showBar }: Data
             style={{ 
               width: `${barWidth}%`, 
               backgroundColor: barColors[variant], 
-              opacity: variant === 'neutral' ? 0.4 : 1 
+              opacity: variant === 'neutral' ? 0.5 : 1 
             }}
           />
         </div>
@@ -374,7 +377,7 @@ function DataRow({ label, value, total = 0, variant = 'neutral', showBar }: Data
       
       {/* Value: text-base font-medium */}
       <span 
-        className="text-base font-medium tabular-nums w-6 text-right"
+        className={cn(TYPOGRAPHY.dataRowValue, 'w-7 text-right')}
         style={{ color: valueColors[variant] }}
       >
         {value}
@@ -393,25 +396,26 @@ function AttentionRow({ item, onClick }: { item: AttentionItem; onClick: () => v
   return (
     <button
       onClick={onClick}
-      className="w-full px-1.5 py-1.5 rounded text-left flex items-center gap-2 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring group hover:bg-[var(--surface-hover)]"
+      className="w-full px-2 py-2 rounded text-left flex items-center gap-2.5 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring group hover:bg-[var(--surface-hover)]"
     >
       <div 
-        className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+        className="w-2 h-2 rounded-full flex-shrink-0"
         style={{ backgroundColor: severityColors[item.severity] }}
       />
       <div className="flex-1 min-w-0">
         {/* Title: text-sm font-medium text-primary */}
-        <div className="text-sm font-medium text-primary truncate group-hover:text-[var(--brand-primary)]">
+        <div className={cn(TYPOGRAPHY.cardLabel, TEXT_CLASSES.primary, 'truncate group-hover:text-[var(--brand-primary)]')}>
           {item.title}
         </div>
-        {/* Reason: text-xs text-secondary */}
-        <div className="text-xs text-secondary leading-tight">
+        {/* Reason: text-sm text-secondary */}
+        <div className={cn(TYPOGRAPHY.microcopy, TEXT_CLASSES.secondary, 'leading-tight')}>
           {item.reason}
         </div>
       </div>
       <ChevronRight 
-        size={12} 
-        className="opacity-0 group-hover:opacity-60 transition-opacity flex-shrink-0 text-secondary" 
+        size={14} 
+        className="opacity-0 group-hover:opacity-60 transition-opacity flex-shrink-0" 
+        style={{ color: 'var(--text-secondary)' }}
       />
     </button>
   );
