@@ -1,6 +1,6 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Paperclip, Clock, User, Loader2, AlertTriangle, CheckCircle, XCircle, FileText, GitBranch, Edit2, Plus, UserPlus, ArrowRightCircle, History, MessageSquare, Timer } from 'lucide-react';
+import { ArrowLeft, Paperclip, Clock, User, Loader2, AlertTriangle, CheckCircle, XCircle, FileText, GitBranch, Edit2, Plus, UserPlus, ArrowRightCircle, History, MessageSquare, Timer, ExternalLink, Activity } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -13,13 +13,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog';
-import {
   Tabs,
   TabsContent,
   TabsList,
@@ -27,9 +20,13 @@ import {
 } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { useIncident, useUpdateIncident, useReleaseVersions, useAddComment, useWorkgroups } from '@/hooks/useIncidents';
-import { format } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
-import type { IncidentStatus, SeverityLevel, SupportLevel, VoteStatus, CommitteeMember, Incident, PriorityLevel } from '@/types/incident';
+import { ConversionDialog } from '@/components/incidents/ConversionDialog';
+import { CAPGovernanceSection } from '@/components/incidents/CAPGovernanceSection';
+import { EventLogSection } from '@/components/incidents/EventLogSection';
+import { LinkedWorkItemsPicker } from '@/components/incidents/LinkedWorkItemsPicker';
+import type { IncidentStatus, SeverityLevel, SupportLevel, VoteStatus, CommitteeMember, Incident, PriorityLevel, IncidentUserProfile } from '@/types/incident';
 
 // Status options
 const STATUS_OPTIONS: { value: IncidentStatus; label: string }[] = [
@@ -42,13 +39,12 @@ const STATUS_OPTIONS: { value: IncidentStatus; label: string }[] = [
   { value: 'closed', label: 'Closed' },
 ];
 
-// Testing Status options
+// Testing Status options - Updated per requirements
 const TESTING_STATUS_OPTIONS = [
   { value: 'not_started', label: 'Not Started' },
-  { value: 'dev_test', label: 'Dev Test' },
-  { value: 'qa', label: 'QA' },
-  { value: 'uat', label: 'UAT' },
-  { value: 'prod_verified', label: 'Prod Verified' },
+  { value: 'beta_tested', label: 'Beta Tested' },
+  { value: 'production_tested', label: 'Production Tested' },
+  { value: 'closed', label: 'Closed' },
 ];
 
 // Severity badge
@@ -205,7 +201,7 @@ function EditableField({
 }: { 
   label: string; 
   value: string | undefined | null;
-  type?: 'text' | 'select' | 'textarea';
+  type?: 'text' | 'select' | 'textarea' | 'date';
   options?: { value: string; label: string }[];
   onSave: (value: string) => void;
   disabled?: boolean;
@@ -243,7 +239,7 @@ function EditableField({
             <SelectTrigger className="h-8 text-xs">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="z-[500]">
               {options.map((opt) => (
                 <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
               ))}
@@ -256,6 +252,15 @@ function EditableField({
             onBlur={handleSave}
             autoFocus
             className="text-xs min-h-[60px]"
+          />
+        ) : type === 'date' ? (
+          <Input
+            type="date"
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            onBlur={handleSave}
+            autoFocus
+            className="h-7 text-xs"
           />
         ) : (
           <Input
@@ -285,67 +290,13 @@ function EditableField({
   );
 }
 
-// Convert Incident Dialog
-function ConvertDialog({ 
-  open, 
-  onOpenChange, 
-  incident,
-  onConvert 
-}: { 
-  open: boolean; 
-  onOpenChange: (open: boolean) => void;
-  incident: Incident;
-  onConvert: (type: string, reason: string) => void;
-}) {
-  const [convertType, setConvertType] = useState<string>('story');
-  const [reason, setReason] = useState('');
-
-  const handleConvert = () => {
-    onConvert(convertType, reason);
-    onOpenChange(false);
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Convert Incident</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Convert to</label>
-            <Select value={convertType} onValueChange={setConvertType}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="story">Story</SelectItem>
-                <SelectItem value="feature">Feature</SelectItem>
-                <SelectItem value="epic">Epic</SelectItem>
-                <SelectItem value="business_request">Business Request</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Conversion Reason</label>
-            <Textarea
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              placeholder="Why is this incident being converted?"
-              rows={3}
-            />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button onClick={handleConvert} className="bg-brand-primary text-white">
-            Convert
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
+// Mock approvers for demo
+const MOCK_APPROVERS: IncidentUserProfile[] = [
+  { id: '1', full_name: 'Ahmed Al-Rashid', email: 'ahmed@company.com', avatar_initials: 'AR', incident_role: 'committee_member', has_veto_power: true },
+  { id: '2', full_name: 'Sara Hassan', email: 'sara@company.com', avatar_initials: 'SH', incident_role: 'committee_member', has_veto_power: false },
+  { id: '3', full_name: 'Mohammed Ali', email: 'mohammed@company.com', avatar_initials: 'MA', incident_role: 'committee_member', has_veto_power: false },
+  { id: '4', full_name: 'Fatima Khalid', email: 'fatima@company.com', avatar_initials: 'FK', incident_role: 'admin', has_veto_power: true },
+];
 
 export default function IncidentViewPage() {
   const { incidentId } = useParams<{ incidentId: string }>();
@@ -359,6 +310,7 @@ export default function IncidentViewPage() {
   const [showConvertDialog, setShowConvertDialog] = useState(false);
   const [newComment, setNewComment] = useState('');
   const [activeTab, setActiveTab] = useState('comments');
+  const [linkedItems, setLinkedItems] = useState<Array<{ id: string; key: string; title: string; type: 'story' | 'feature' | 'epic'; status: string }>>([]);
 
   const isConverted = incident?.status === 'converted';
   const isL3 = incident?.support_level === 'L3';
@@ -391,24 +343,60 @@ export default function IncidentViewPage() {
     }
   }, [incident?.id, updateIncident]);
 
-  const handleConvert = useCallback(async (type: string, reason: string) => {
+  const handleConvert = useCallback(async (type: string, justification: string, sendToCommittee: boolean) => {
     if (!incident?.id) return;
     
     try {
-      await updateIncident.mutateAsync({
-        id: incident.id,
-        data: {
-          status: 'converted' as IncidentStatus,
-          converted_to_type: type,
-          converted_at: new Date().toISOString(),
-          conversion_reason: reason,
-        },
-      });
-      toast.success(`Incident converted to ${type}`);
+      if (sendToCommittee) {
+        // Send to committee first
+        await updateIncident.mutateAsync({
+          id: incident.id,
+          data: {
+            status: 'to_committee' as IncidentStatus,
+            requires_committee: true,
+            conversion_reason: justification,
+            converted_to_type: type as 'story' | 'feature' | 'epic',
+          },
+        });
+        toast.success('Sent to CAP Committee for approval');
+      } else {
+        // Direct conversion
+        await updateIncident.mutateAsync({
+          id: incident.id,
+          data: {
+            status: 'converted' as IncidentStatus,
+            converted_to_type: type as 'story' | 'feature' | 'epic',
+            converted_at: new Date().toISOString(),
+            conversion_reason: justification,
+          },
+        });
+        toast.success(`Incident converted to ${type}`);
+      }
     } catch (error) {
       toast.error('Failed to convert incident');
     }
   }, [incident?.id, updateIncident]);
+
+  const handleAddApprover = useCallback(async (userId: string, hasVeto: boolean, note: string) => {
+    // In production, this would call an API to add the approver
+    toast.success('Approver added');
+  }, []);
+
+  const handleVote = useCallback(async (memberId: string, vote: VoteStatus, comment: string) => {
+    // In production, this would call an API to submit the vote
+    toast.success(`Vote recorded: ${vote}`);
+  }, []);
+
+  const handleUpdateDecisionNote = useCallback(async (note: string) => {
+    // In production, this would call an API to update the decision note
+    if (!incident?.id) return;
+    try {
+      // Would update committee decision note
+      toast.success('Decision note updated');
+    } catch (error) {
+      toast.error('Failed to update decision note');
+    }
+  }, [incident?.id]);
 
   const handleAddComment = async () => {
     if (!incident?.id || !newComment.trim()) return;
@@ -426,6 +414,16 @@ export default function IncidentViewPage() {
     }
   };
 
+  const handleLinkWorkItem = (item: { id: string; key: string; title: string; type: 'story' | 'feature' | 'epic'; status: string }) => {
+    setLinkedItems(prev => [...prev, item]);
+    toast.success(`Linked ${item.key}`);
+  };
+
+  const handleUnlinkWorkItem = (itemId: string) => {
+    setLinkedItems(prev => prev.filter(i => i.id !== itemId));
+    toast.success('Link removed');
+  };
+
   if (isLoading) {
     return (
       <div className="h-full flex items-center justify-center bg-background">
@@ -439,7 +437,7 @@ export default function IncidentViewPage() {
       <div className="h-full flex items-center justify-center bg-background">
         <div className="text-center">
           <p className="text-destructive text-lg font-medium">Incident not found</p>
-          <Link to="/release/incidents/list" className="text-brand-primary hover:underline text-sm mt-2 inline-block">
+          <Link to="/release/incidents" className="text-brand-primary hover:underline text-sm mt-2 inline-block">
             Back to Incidents
           </Link>
         </div>
@@ -452,7 +450,7 @@ export default function IncidentViewPage() {
       {/* Header */}
       <div className="h-14 border-b border-border bg-card flex-shrink-0 px-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Link to="/release/incidents/list">
+          <Link to="/release/incidents">
             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
               <ArrowLeft className="h-4 w-4" />
             </Button>
@@ -463,7 +461,7 @@ export default function IncidentViewPage() {
               <SelectTrigger className="h-7 w-auto border-0 bg-transparent p-0">
                 <StatusBadge status={incident.status} />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="z-[500]">
                 {STATUS_OPTIONS.map((opt) => (
                   <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
                 ))}
@@ -493,8 +491,24 @@ export default function IncidentViewPage() {
         </div>
       </div>
 
+      {/* Conversion Banner */}
+      {isConverted && (
+        <div className="bg-teal-50 border-b border-teal-200 px-4 py-2 flex items-center gap-3">
+          <ArrowRightCircle className="h-4 w-4 text-teal-600" />
+          <span className="text-sm text-teal-800">
+            This incident has been converted to a <span className="font-semibold capitalize">{incident.converted_to_type?.replace('_', ' ')}</span>
+          </span>
+          {incident.converted_to_id && (
+            <Button variant="ghost" size="sm" className="h-6 text-xs text-teal-700">
+              <ExternalLink className="h-3 w-3 mr-1" />
+              View Work Item
+            </Button>
+          )}
+        </div>
+      )}
+
       {/* Main Content - 70/30 Split */}
-      <div className="flex-1 overflow-hidden grid grid-cols-1 lg:grid-cols-[1fr_360px]">
+      <div className="flex-1 overflow-hidden grid grid-cols-1 lg:grid-cols-[1fr_380px]">
         {/* Left Column - Main Content */}
         <div className="overflow-y-auto p-4 space-y-4 border-r border-border">
           {/* Section 1: Incident Overview */}
@@ -678,10 +692,19 @@ export default function IncidentViewPage() {
               </div>
               <div>
                 <EditableField
+                  label="Planned Deployment"
+                  value={(incident as unknown as { planned_deployment_date?: string }).planned_deployment_date || ''}
+                  type="date"
+                  onSave={(v) => handleFieldUpdate('planned_deployment_date', v)}
+                  disabled={isConverted}
+                  renderValue={(v) => v ? format(new Date(v), 'MMM d, yyyy') : '-'}
+                />
+              </div>
+              <div>
+                <EditableField
                   label="Change Number"
                   value={(incident as unknown as { change_number?: string }).change_number || ''}
                   onSave={(v) => handleFieldUpdate('change_number', v)}
-                  disabled={isConverted}
                 />
               </div>
               <div>
@@ -749,8 +772,8 @@ export default function IncidentViewPage() {
                   History
                 </TabsTrigger>
                 <TabsTrigger value="sla_events" className="text-xs">
-                  <Timer className="h-3 w-3 mr-1" />
-                  SLA Events
+                  <Activity className="h-3 w-3 mr-1" />
+                  Events
                 </TabsTrigger>
                 <TabsTrigger value="linked" className="text-xs">
                   <GitBranch className="h-3 w-3 mr-1" />
@@ -831,23 +854,16 @@ export default function IncidentViewPage() {
               </TabsContent>
 
               <TabsContent value="sla_events" className="max-h-64 overflow-y-auto">
-                <p className="text-xs text-muted-foreground italic py-4 text-center">SLA events will appear here</p>
+                <EventLogSection incident={incident} maxHeight="240px" />
               </TabsContent>
 
-              <TabsContent value="linked" className="max-h-64 overflow-y-auto">
-                {incident.converted_to_type ? (
-                  <div className="flex items-center gap-2 p-3 bg-teal-50 rounded border border-teal-200">
-                    {incident.converted_to_type === 'story' && <FileText className="h-4 w-4 text-teal-600" />}
-                    {incident.converted_to_type === 'feature' && <GitBranch className="h-4 w-4 text-teal-600" />}
-                    {incident.converted_to_type === 'epic' && <GitBranch className="h-4 w-4 text-teal-600" />}
-                    {incident.converted_to_type === 'business_request' && <FileText className="h-4 w-4 text-teal-600" />}
-                    <span className="text-sm text-teal-800 capitalize">
-                      Converted to {incident.converted_to_type.replace('_', ' ')}
-                    </span>
-                  </div>
-                ) : (
-                  <p className="text-xs text-muted-foreground italic py-4 text-center">No linked work items</p>
-                )}
+              <TabsContent value="linked">
+                <LinkedWorkItemsPicker
+                  linkedItems={linkedItems}
+                  onLink={handleLinkWorkItem}
+                  onUnlink={handleUnlinkWorkItem}
+                  disabled={isConverted}
+                />
               </TabsContent>
             </Tabs>
           </div>
@@ -894,52 +910,38 @@ export default function IncidentViewPage() {
             </div>
           </div>
 
-          {/* CAP Committee Panel */}
-          {incident.committee && (
-            <div className="bg-card border border-border rounded-lg p-4">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">CAP Committee</h2>
-                {!isConverted && (
-                  <Button variant="ghost" size="sm" className="h-6 text-xs">
-                    <UserPlus className="h-3 w-3 mr-1" />
-                    Add
-                  </Button>
-                )}
+          {/* CAP Committee Governance Panel - Only for L3 */}
+          {isL3 && incident.committee && (
+            <CAPGovernanceSection
+              incident={incident}
+              committee={incident.committee}
+              availableApprovers={MOCK_APPROVERS}
+              isConverted={isConverted}
+              onAddApprover={handleAddApprover}
+              onVote={handleVote}
+              onUpdateDecisionNote={handleUpdateDecisionNote}
+            />
+          )}
+
+          {/* L3 Committee Prompt - When no committee yet */}
+          {isL3 && !incident.committee && !isConverted && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                <span className="text-sm font-medium text-yellow-800">L3 Incident</span>
               </div>
-              <div className="flex items-center gap-2 mb-3">
-                <Badge variant="outline" className={cn(
-                  "text-xs",
-                  incident.committee.status === 'approved' ? "bg-green-100 text-green-800" :
-                  incident.committee.status === 'rejected' ? "bg-red-100 text-red-800" :
-                  "bg-yellow-100 text-yellow-800"
-                )}>
-                  {incident.committee.status.toUpperCase()}
-                </Badge>
-                <span className="text-xs text-muted-foreground">
-                  {incident.committee.required_approvals} approvals required
-                </span>
-              </div>
-              
-              {incident.committee.members && incident.committee.members.length > 0 && (
-                <div className="space-y-2">
-                  {incident.committee.members.map((member: CommitteeMember) => (
-                    <div key={member.id} className="flex items-center justify-between py-1.5 border-b border-border/50 last:border-0">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-[10px] font-medium">
-                          {member.user?.avatar_initials || member.user?.full_name?.charAt(0) || '?'}
-                        </div>
-                        <span className="text-xs text-foreground">{member.user?.full_name}</span>
-                        {member.has_veto && (
-                          <Badge variant="outline" className="text-[9px] px-1 py-0 text-orange-700 border-orange-200 bg-orange-50">
-                            VETO
-                          </Badge>
-                        )}
-                      </div>
-                      <VoteIcon vote={member.vote?.vote || 'pending'} />
-                    </div>
-                  ))}
-                </div>
-              )}
+              <p className="text-xs text-yellow-700 mb-3">
+                This L3 incident requires CAP Committee approval before conversion to a work item.
+              </p>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setShowConvertDialog(true)}
+                className="w-full h-8 text-xs border-yellow-300 text-yellow-800 hover:bg-yellow-100"
+              >
+                <ArrowRightCircle className="h-3.5 w-3.5 mr-1" />
+                Initiate Conversion
+              </Button>
             </div>
           )}
 
@@ -955,10 +957,20 @@ export default function IncidentViewPage() {
                 <span className="text-muted-foreground">Updated:</span>
                 <span className="text-foreground">{format(new Date(incident.updated_at), 'MMM d, yyyy h:mm a')}</span>
               </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Age:</span>
+                <span className="text-foreground font-mono">{formatDistanceToNow(new Date(incident.created_at))}</span>
+              </div>
               {incident.resolved_at && (
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Resolved:</span>
                   <span className="text-foreground">{format(new Date(incident.resolved_at), 'MMM d, yyyy h:mm a')}</span>
+                </div>
+              )}
+              {incident.converted_at && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Converted:</span>
+                  <span className="text-foreground">{format(new Date(incident.converted_at), 'MMM d, yyyy h:mm a')}</span>
                 </div>
               )}
             </div>
@@ -967,7 +979,7 @@ export default function IncidentViewPage() {
       </div>
 
       {/* Convert Dialog */}
-      <ConvertDialog
+      <ConversionDialog
         open={showConvertDialog}
         onOpenChange={setShowConvertDialog}
         incident={incident}
