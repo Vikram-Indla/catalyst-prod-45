@@ -226,7 +226,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
                   toggleExpand(item.id);
                 }}
                 className="flex items-center justify-center w-4 h-4 flex-shrink-0 rounded transition-colors hover:bg-[var(--surface-hover)] focus-visible:ring-1 focus-visible:ring-ring"
-                style={{ color: 'var(--text-muted)' }}
+                style={{ color: 'var(--text-secondary)' }}
                 aria-label={isExpanded ? 'Collapse' : 'Expand'}
               >
                 {isExpanded ? (
@@ -311,13 +311,13 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
                 </div>
                 <span 
                   className="text-[10px] truncate"
-                  style={{ color: 'var(--text-muted)' }}
+                  style={{ color: 'var(--text-secondary)' }}
                 >
                   {item.owner.name.split(' ')[0]}
                 </span>
               </>
             ) : (
-              <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>—</span>
+              <span className="text-[10px]" style={{ color: 'var(--text-secondary)' }}>—</span>
             )}
           </div>
         </div>
@@ -467,31 +467,31 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
       >
         <div 
           className="text-[9px] font-semibold uppercase tracking-wider pl-3"
-          style={{ color: 'var(--text-muted)' }}
+          style={{ color: 'var(--text-secondary)' }}
         >
           Item
         </div>
         <div 
           className="text-[9px] font-semibold uppercase tracking-wider px-2"
-          style={{ color: 'var(--text-muted)' }}
+          style={{ color: 'var(--text-secondary)' }}
         >
           Progress
         </div>
         <div 
           className="text-[9px] font-semibold uppercase tracking-wider text-right pr-2"
-          style={{ color: 'var(--text-muted)' }}
+          style={{ color: 'var(--text-secondary)' }}
         >
           %
         </div>
         <div 
           className="text-[9px] font-semibold uppercase tracking-wider text-center"
-          style={{ color: 'var(--text-muted)' }}
+          style={{ color: 'var(--text-secondary)' }}
         >
           Status
         </div>
         <div 
           className="text-[9px] font-semibold uppercase tracking-wider px-2"
-          style={{ color: 'var(--text-muted)' }}
+          style={{ color: 'var(--text-secondary)' }}
         >
           Owner
         </div>
@@ -507,12 +507,12 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
               className="w-8 h-8 rounded-lg mx-auto flex items-center justify-center mb-2"
               style={{ backgroundColor: 'var(--surface-subtle)' }}
             >
-              <Search size={14} style={{ color: 'var(--text-muted)' }} />
+              <Search size={14} style={{ color: 'var(--text-secondary)' }} />
             </div>
             <p className="text-[12px] font-medium" style={{ color: 'var(--text-secondary)' }}>
               No OKRs found
             </p>
-            <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-muted)' }}>
+            <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-secondary)' }}>
               OKRs will appear here once created
             </p>
           </div>

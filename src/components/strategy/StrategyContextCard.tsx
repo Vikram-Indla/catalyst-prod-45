@@ -138,7 +138,7 @@ export function StrategyContextCard({ snapshot, onUpdate }: StrategyContextCardP
               {/* Question */}
               <p 
                 className="text-[9px] italic mb-1"
-                style={{ color: 'var(--text-muted)' }}
+                style={{ color: 'var(--text-secondary)' }}
               >
                 {item.question}
               </p>

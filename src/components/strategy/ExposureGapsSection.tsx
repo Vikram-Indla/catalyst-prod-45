@@ -139,7 +139,7 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
       <div className="px-4 py-2.5 flex items-center justify-between border-b border-border/50">
         <div className="flex items-center gap-2">
           <Shield size={14} className="text-destructive" />
-          <h2 className={cn(TYPOGRAPHY.sectionTitle, 'text-foreground/90')}>
+          <h2 className={cn(TYPOGRAPHY.sectionTitle, TEXT_COLORS.primary)}>
             Exposure & Gaps
           </h2>
         </div>
@@ -288,7 +288,7 @@ function CockpitCard({ title, icon, iconColor, children, cta }: CockpitCardProps
       {/* Card header */}
       <div className="px-3 py-2.5 flex items-center gap-2 border-b border-border/50 bg-muted/70">
         <span className={cn(iconColor, 'opacity-90')}>{icon}</span>
-        <span className={cn(TYPOGRAPHY.sectionTitle, 'text-foreground/90')}>
+        <span className={cn(TYPOGRAPHY.sectionTitle, TEXT_COLORS.primary)}>
           {title}
         </span>
       </div>
