@@ -63,7 +63,8 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
 
       return { total: riskList.length, high };
     },
-    staleTime: 30000,
+    staleTime: 60 * 1000, // 60 seconds
+    gcTime: 10 * 60 * 1000, // 10 minutes cache
   });
 
   const isInitialLoading = okrLoading || countsLoading || risksLoading;

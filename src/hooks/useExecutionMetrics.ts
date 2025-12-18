@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface ExecutionMetrics {
@@ -233,6 +233,10 @@ export function useExecutionAgainstOutcomes(snapshotId?: string) {
       return { metrics, alignedItems, misalignedItems };
     },
     enabled: !!snapshotId,
+    // Stale-while-revalidate config
+    staleTime: 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -329,6 +333,10 @@ export function useStrategyPyramidCounts(snapshotId?: string) {
       };
     },
     enabled: !!snapshotId,
+    // Stale-while-revalidate config
+    staleTime: 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -526,5 +534,9 @@ export function useThemeProgress(snapshotId?: string) {
       return themeProgressList;
     },
     enabled: !!snapshotId,
+    // Stale-while-revalidate config
+    staleTime: 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    placeholderData: keepPreviousData,
   });
 }
