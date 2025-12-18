@@ -102,17 +102,18 @@ export function useWorkbenchData(
   // Get epic IDs
   const epicIds = (epicsData || []).map((e: any) => e.id);
 
-  // Fetch features for these epics
+  // Fetch features for these epics (optionally filtered by project)
   const { data: featuresData } = useQuery({
-    queryKey: ['workbench-features', epicIds],
+    queryKey: ['workbench-features', epicIds, projectId],
     queryFn: async () => {
       if (epicIds.length === 0) return [];
 
-      const { data, error } = await supabase
+      let query = supabase
         .from('features')
         .select(`
           id,
           epic_id,
+          project_id,
           name,
           status,
           health,
@@ -125,6 +126,12 @@ export function useWorkbenchData(
         `)
         .in('epic_id', epicIds);
 
+      // Filter by project if one is selected
+      if (projectId) {
+        query = query.eq('project_id', projectId);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
       return data || [];
     },

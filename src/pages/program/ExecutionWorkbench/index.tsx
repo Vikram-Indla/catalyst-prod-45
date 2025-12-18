@@ -128,9 +128,8 @@ export default function ExecutionWorkbenchPage() {
   }, [filters]);
 
   // Filter items with proper overlap logic for "Active in Period"
+  // Project is now optional - shows all program epics by default
   const filteredItems = useMemo(() => {
-    if (!selectedProject) return [];
-    
     let items = [...allItems];
 
     // Search filter
@@ -215,7 +214,7 @@ export default function ExecutionWorkbenchPage() {
     }
 
     return items;
-  }, [selectedProject, allItems, search, filters]);
+  }, [allItems, search, filters]);
 
   const handleItemClick = (item: WorkItem) => {
     setSelectedItem(item);
@@ -223,9 +222,17 @@ export default function ExecutionWorkbenchPage() {
   };
 
   const projectOptions = [
-    { value: '', label: 'Select a project...' }, 
+    { value: '', label: 'All projects' }, 
     ...projects.map(p => ({ value: p.id, label: p.name }))
   ];
+
+  // Determine empty state message
+  const getEmptyMessage = () => {
+    if (allItems.length === 0) {
+      return 'No execution items found in this program.';
+    }
+    return 'No items match your filters.';
+  };
 
   return (
     <ProgramPageLayout>
@@ -274,9 +281,9 @@ export default function ExecutionWorkbenchPage() {
             <div className="flex items-center justify-center h-full text-destructive">
               Error loading data: {error.message}
             </div>
-          ) : !selectedProject ? (
+          ) : filteredItems.length === 0 ? (
             <div className="flex items-center justify-center h-full text-muted-foreground">
-              Select a project to load execution data
+              {getEmptyMessage()}
             </div>
           ) : (
             <>
