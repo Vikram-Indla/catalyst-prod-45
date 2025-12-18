@@ -8,13 +8,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Search, Plus, Download, MoreHorizontal, AlertTriangle, CheckCircle2, Clock, Grid3x3, GitBranch, List, Filter } from 'lucide-react';
+import { Search, Plus, Download, MoreHorizontal, AlertTriangle, CheckCircle2, Clock, Grid3x3, GitBranch, List, Filter, Map } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { DependencyDetailsDrawer } from '@/components/dependencies/DependencyDetailsDrawer';
 import { DependencyMatrix } from '@/components/dependencies/DependencyMatrix';
 import { DependencyWheelMap } from '@/components/dependencies/DependencyWheelMap';
 import { DependencyContextMenu } from '@/components/dependencies/DependencyContextMenu';
 import { DependenciesSidebar } from '@/components/dependencies/DependenciesSidebar';
+import { SegmentedTabs, SegmentedTab } from '@/components/ui/segmented-tabs';
 import { toast } from 'sonner';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -222,12 +223,16 @@ export default function DependenciesPage() {
     );
   };
 
+  // Detect embedded mode (within Program context - no sidebar needed)
+  const isEmbedded = !!programId;
+
   return (
     <div className="flex h-full overflow-hidden w-full">
-      <DependenciesSidebar />
+      {/* Only show sidebar in standalone mode */}
+      {!isEmbedded && <DependenciesSidebar />}
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         <div className="h-full flex flex-col" style={{ padding: 'var(--s3) var(--s6)' }}>
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between" style={{ gap: 'var(--s3)', marginBottom: 'var(--s6)' }}>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between" style={{ gap: 'var(--s3)', marginBottom: 'var(--s4)' }}>
             <div className="min-w-0">
               <div className="flex items-center gap-3">
                 <h1 className="text-lg sm:text-xl lg:text-2xl font-semibold truncate">Dependencies</h1>
@@ -246,29 +251,32 @@ export default function DependenciesPage() {
               </p>
             </div>
             <div className="flex flex-wrap items-center" style={{ gap: 'var(--s2)' }}>
-              <div className="flex items-center gap-1 border rounded-lg p-1">
-                <Button
-                  variant={visualizationMode === 'list' ? 'secondary' : 'ghost'}
-                  size="sm"
-                  onClick={() => setVisualizationMode('list')}
-                >
-                  <List className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant={visualizationMode === 'matrix' ? 'secondary' : 'ghost'}
-                  size="sm"
-                  onClick={() => setVisualizationMode('matrix')}
-                >
-                  <Grid3x3 className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant={visualizationMode === 'wheel' ? 'secondary' : 'ghost'}
-                  size="sm"
-                  onClick={() => setVisualizationMode('wheel')}
-                >
-                  <GitBranch className="h-4 w-4" />
-                </Button>
-              </div>
+              {/* Show icon toggle only in standalone mode */}
+              {!isEmbedded && (
+                <div className="flex items-center gap-1 border rounded-lg p-1">
+                  <Button
+                    variant={visualizationMode === 'list' ? 'secondary' : 'ghost'}
+                    size="sm"
+                    onClick={() => setVisualizationMode('list')}
+                  >
+                    <List className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant={visualizationMode === 'matrix' ? 'secondary' : 'ghost'}
+                    size="sm"
+                    onClick={() => setVisualizationMode('matrix')}
+                  >
+                    <Grid3x3 className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant={visualizationMode === 'wheel' ? 'secondary' : 'ghost'}
+                    size="sm"
+                    onClick={() => setVisualizationMode('wheel')}
+                  >
+                    <GitBranch className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm">
@@ -295,6 +303,40 @@ export default function DependenciesPage() {
               </Button>
             </div>
           </div>
+
+          {/* Embedded mode: Show horizontal segmented tabs for view selection */}
+          {isEmbedded && (
+            <div className="mb-4">
+              <SegmentedTabs 
+                value={visualizationMode} 
+                onValueChange={(v) => {
+                  if (v === 'maps') {
+                    navigate('/reports/dependencies/maps');
+                  } else {
+                    setVisualizationMode(v as 'list' | 'matrix' | 'wheel');
+                  }
+                }}
+                className="w-fit"
+              >
+                <SegmentedTab value="list">
+                  <List className="h-4 w-4 mr-2" />
+                  List
+                </SegmentedTab>
+                <SegmentedTab value="matrix">
+                  <Grid3x3 className="h-4 w-4 mr-2" />
+                  Matrix
+                </SegmentedTab>
+                <SegmentedTab value="wheel">
+                  <GitBranch className="h-4 w-4 mr-2" />
+                  Wheel
+                </SegmentedTab>
+                <SegmentedTab value="maps">
+                  <Map className="h-4 w-4 mr-2" />
+                  Maps
+                </SegmentedTab>
+              </SegmentedTabs>
+            </div>
+          )}
 
           {/* Filters */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-2 sm:gap-3 mb-4">
