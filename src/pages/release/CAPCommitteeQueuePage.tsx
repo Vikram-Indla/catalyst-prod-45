@@ -151,11 +151,15 @@ const VoteIcon = ({ vote }: { vote: VoteStatus }) => {
 };
 
 type FilterStatus = 'all' | 'pending' | 'approved' | 'rejected';
+type FilterSeverity = 'all' | 'SEV1' | 'SEV2' | 'SEV3' | 'SEV4';
+type FilterAging = 'all' | '< 1 day' | '1-3 days' | '3-7 days' | '> 7 days';
 
 export default function CAPCommitteeQueuePage() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<FilterStatus>('pending');
+  const [severityFilter, setSeverityFilter] = useState<FilterSeverity>('all');
+  const [agingFilter, setAgingFilter] = useState<FilterAging>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 20;
 
@@ -171,6 +175,12 @@ export default function CAPCommitteeQueuePage() {
     );
   }, [allIncidents]);
 
+  // Calculate aging in days
+  const getAgingDays = (createdAt: string) => {
+    const now = new Date();
+    return Math.floor((now.getTime() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24));
+  };
+
   // Apply filters
   const filteredIncidents = useMemo(() => {
     let result = committeeIncidents;
@@ -180,6 +190,25 @@ export default function CAPCommitteeQueuePage() {
       result = result.filter(i => {
         if (!i.committee) return statusFilter === 'pending';
         return i.committee.status === statusFilter;
+      });
+    }
+
+    // Severity filter
+    if (severityFilter !== 'all') {
+      result = result.filter(i => i.severity === severityFilter);
+    }
+
+    // Aging filter
+    if (agingFilter !== 'all') {
+      result = result.filter(i => {
+        const days = getAgingDays(i.created_at);
+        switch (agingFilter) {
+          case '< 1 day': return days < 1;
+          case '1-3 days': return days >= 1 && days < 3;
+          case '3-7 days': return days >= 3 && days < 7;
+          case '> 7 days': return days >= 7;
+          default: return true;
+        }
       });
     }
 
@@ -193,20 +222,20 @@ export default function CAPCommitteeQueuePage() {
     }
 
     return result;
-  }, [committeeIncidents, statusFilter, searchQuery]);
+  }, [committeeIncidents, statusFilter, severityFilter, agingFilter, searchQuery]);
 
   // Pagination
   const totalPages = Math.ceil(filteredIncidents.length / pageSize);
   const startIndex = (currentPage - 1) * pageSize;
   const paginatedIncidents = filteredIncidents.slice(startIndex, startIndex + pageSize);
 
-  // Calculate time waiting
+  // Calculate time waiting (since approver added / committee created)
   const getTimeWaiting = (incident: Incident) => {
     if (!incident.committee?.created_at) return '-';
     return formatDistanceToNow(new Date(incident.committee.created_at), { addSuffix: false });
   };
 
-  // Calculate aging
+  // Calculate aging (since incident creation)
   const getAging = (createdAt: string) => {
     return formatDistanceToNow(new Date(createdAt), { addSuffix: false });
   };
@@ -247,16 +276,42 @@ export default function CAPCommitteeQueuePage() {
             />
           </div>
 
-          {/* Status Filter */}
-          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as FilterStatus)}>
-            <SelectTrigger className="w-32 h-8 text-xs">
+          {/* Smart Filters: Status, Severity, Aging */}
+          <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v as FilterStatus); setCurrentPage(1); }}>
+            <SelectTrigger className="w-28 h-8 text-xs">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="z-50 bg-popover">
               <SelectItem value="all">All Status</SelectItem>
               <SelectItem value="pending">Pending</SelectItem>
               <SelectItem value="approved">Approved</SelectItem>
               <SelectItem value="rejected">Rejected</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={severityFilter} onValueChange={(v) => { setSeverityFilter(v as FilterSeverity); setCurrentPage(1); }}>
+            <SelectTrigger className="w-24 h-8 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="z-50 bg-popover">
+              <SelectItem value="all">All Sev</SelectItem>
+              <SelectItem value="SEV1">SEV1</SelectItem>
+              <SelectItem value="SEV2">SEV2</SelectItem>
+              <SelectItem value="SEV3">SEV3</SelectItem>
+              <SelectItem value="SEV4">SEV4</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={agingFilter} onValueChange={(v) => { setAgingFilter(v as FilterAging); setCurrentPage(1); }}>
+            <SelectTrigger className="w-28 h-8 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="z-50 bg-popover">
+              <SelectItem value="all">All Ages</SelectItem>
+              <SelectItem value="< 1 day">&lt; 1 day</SelectItem>
+              <SelectItem value="1-3 days">1-3 days</SelectItem>
+              <SelectItem value="3-7 days">3-7 days</SelectItem>
+              <SelectItem value="> 7 days">&gt; 7 days</SelectItem>
             </SelectContent>
           </Select>
 
@@ -297,11 +352,10 @@ export default function CAPCommitteeQueuePage() {
               <th className="px-3 py-2 text-left font-semibold text-muted-foreground uppercase tracking-wide w-24">Key</th>
               <th className="px-3 py-2 text-left font-semibold text-muted-foreground uppercase tracking-wide">Summary</th>
               <th className="px-3 py-2 text-left font-semibold text-muted-foreground uppercase tracking-wide w-16">Severity</th>
-              <th className="px-3 py-2 text-left font-semibold text-muted-foreground uppercase tracking-wide w-24">Linked Item</th>
-              <th className="px-3 py-2 text-left font-semibold text-muted-foreground uppercase tracking-wide w-24">Business Process</th>
               <th className="px-3 py-2 text-left font-semibold text-muted-foreground uppercase tracking-wide w-20">Testing</th>
-              <th className="px-3 py-2 text-left font-semibold text-muted-foreground uppercase tracking-wide w-24">Deploy Date</th>
-              <th className="px-3 py-2 text-left font-semibold text-muted-foreground uppercase tracking-wide w-32">Approval</th>
+              <th className="px-3 py-2 text-left font-semibold text-muted-foreground uppercase tracking-wide w-20">Deploy</th>
+              <th className="px-3 py-2 text-left font-semibold text-muted-foreground uppercase tracking-wide w-20">Change #</th>
+              <th className="px-3 py-2 text-left font-semibold text-muted-foreground uppercase tracking-wide w-28">Approval</th>
               <th className="px-3 py-2 text-left font-semibold text-muted-foreground uppercase tracking-wide w-20">Waiting</th>
               <th className="px-3 py-2 text-left font-semibold text-muted-foreground uppercase tracking-wide w-16">Aging</th>
               <th className="px-3 py-2 text-left font-semibold text-muted-foreground uppercase tracking-wide w-20">Status</th>
@@ -310,8 +364,19 @@ export default function CAPCommitteeQueuePage() {
           <tbody>
             {paginatedIncidents.length === 0 ? (
               <tr>
-                <td colSpan={11} className="px-3 py-12 text-center text-muted-foreground">
-                  No incidents pending committee approval
+                <td colSpan={10} className="px-3 py-12 text-center text-muted-foreground">
+                  <div className="flex flex-col items-center gap-2">
+                    <Users className="h-8 w-8 text-muted-foreground/30" />
+                    <span>No incidents {statusFilter === 'pending' ? 'pending committee approval' : 'found'}</span>
+                    {(statusFilter !== 'all' || severityFilter !== 'all' || agingFilter !== 'all') && (
+                      <button 
+                        onClick={() => { setStatusFilter('pending'); setSeverityFilter('all'); setAgingFilter('all'); }}
+                        className="text-xs text-brand-primary hover:underline"
+                      >
+                        Clear filters
+                      </button>
+                    )}
+                  </div>
                 </td>
               </tr>
             ) : paginatedIncidents.map((incident) => (
@@ -332,21 +397,16 @@ export default function CAPCommitteeQueuePage() {
                   <SeverityBadge severity={incident.severity} />
                 </td>
                 <td className="px-3 py-2">
-                  {incident.converted_to_type ? (
-                    <span className="font-mono text-xs text-teal-600">BAU-001</span>
-                  ) : (
-                    <span className="text-muted-foreground">-</span>
-                  )}
-                </td>
-                <td className="px-3 py-2">
-                  <span className="text-foreground text-xs truncate block max-w-[90px]">-</span>
-                </td>
-                <td className="px-3 py-2">
                   <TestingStatusBadge status={(incident as unknown as { testing_status?: string }).testing_status} />
                 </td>
                 <td className="px-3 py-2">
-                  <span className="text-muted-foreground text-xs">
+                  <span className="text-muted-foreground text-xs font-mono">
                     {incident.target_date ? format(new Date(incident.target_date), 'MMM d') : '-'}
+                  </span>
+                </td>
+                <td className="px-3 py-2">
+                  <span className="text-muted-foreground text-xs font-mono">
+                    {(incident as unknown as { change_number?: string }).change_number || '-'}
                   </span>
                 </td>
                 <td className="px-3 py-2">
@@ -361,7 +421,12 @@ export default function CAPCommitteeQueuePage() {
                   </span>
                 </td>
                 <td className="px-3 py-2">
-                  <span className="text-muted-foreground text-xs font-mono">
+                  <span className={cn(
+                    "text-xs font-mono",
+                    getAgingDays(incident.created_at) >= 7 ? "text-red-600 font-semibold" :
+                    getAgingDays(incident.created_at) >= 3 ? "text-orange-600" :
+                    "text-muted-foreground"
+                  )}>
                     {getAging(incident.created_at)}
                   </span>
                 </td>

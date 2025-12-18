@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Paperclip, X, Search, Loader2, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Paperclip, X, Search, Loader2, AlertTriangle, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,12 +21,12 @@ import type { SeverityLevel, ImpactLevel, UrgencyLevel, SupportLevel, PriorityLe
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
-// Rich Text Editor Component (JSM-style)
+// Rich Text Editor Component (JSM-style) - Enhanced for 400-500 word descriptions
 function RichTextEditor({ 
   value, 
   onChange, 
   placeholder,
-  minHeight = '200px'
+  minHeight = '280px'
 }: { 
   value: string; 
   onChange: (value: string) => void; 
@@ -34,25 +34,33 @@ function RichTextEditor({
   minHeight?: string;
 }) {
   return (
-    <div className="border border-border rounded-lg overflow-hidden bg-white focus-within:ring-2 focus-within:ring-brand-primary focus-within:border-transparent">
-      <div className="flex items-center gap-0.5 px-2 py-1.5 border-b border-border bg-muted/30">
+    <div className="border border-border rounded-lg overflow-hidden bg-white focus-within:ring-2 focus-within:ring-brand-primary focus-within:border-transparent shadow-sm">
+      <div className="flex items-center gap-0.5 px-3 py-2 border-b border-border bg-muted/30">
         <button type="button" className="p-1.5 rounded hover:bg-muted text-xs font-bold text-muted-foreground">B</button>
         <button type="button" className="p-1.5 rounded hover:bg-muted text-xs italic text-muted-foreground">I</button>
         <button type="button" className="p-1.5 rounded hover:bg-muted text-xs underline text-muted-foreground">U</button>
-        <Separator orientation="vertical" className="h-4 mx-1" />
+        <Separator orientation="vertical" className="h-4 mx-1.5" />
+        <button type="button" className="p-1.5 rounded hover:bg-muted text-xs text-muted-foreground">H1</button>
+        <button type="button" className="p-1.5 rounded hover:bg-muted text-xs text-muted-foreground">H2</button>
+        <Separator orientation="vertical" className="h-4 mx-1.5" />
         <button type="button" className="p-1.5 rounded hover:bg-muted text-xs text-muted-foreground">• List</button>
         <button type="button" className="p-1.5 rounded hover:bg-muted text-xs text-muted-foreground">1. List</button>
-        <Separator orientation="vertical" className="h-4 mx-1" />
+        <Separator orientation="vertical" className="h-4 mx-1.5" />
         <button type="button" className="p-1.5 rounded hover:bg-muted text-xs text-muted-foreground">Code</button>
         <button type="button" className="p-1.5 rounded hover:bg-muted text-xs text-muted-foreground">Link</button>
+        <button type="button" className="p-1.5 rounded hover:bg-muted text-xs text-muted-foreground">Table</button>
       </div>
       <textarea
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full p-3 text-sm resize-y focus:outline-none"
+        className="w-full p-4 text-sm resize-y focus:outline-none leading-relaxed"
         style={{ minHeight }}
       />
+      <div className="px-3 py-1.5 border-t border-border bg-muted/20 flex items-center justify-between">
+        <span className="text-[10px] text-muted-foreground">Rich text formatting supported</span>
+        <span className="text-[10px] text-muted-foreground">{value.split(/\s+/).filter(Boolean).length} words</span>
+      </div>
     </div>
   );
 }
@@ -297,29 +305,41 @@ export default function CreateIncidentPage() {
       {/* Form Content - Full width JSM style */}
       <div className="flex-1 overflow-auto">
         <form onSubmit={handleSubmit} className="max-w-5xl mx-auto p-6 space-y-6">
-          {/* Summary - Wide single line, large font */}
-          <div className="space-y-1.5">
-            <Label htmlFor="title" className="text-sm font-medium">
+          {/* Summary - Full-width Jira-style input with large font */}
+          <div className="space-y-2">
+            <Label htmlFor="title" className="text-sm font-semibold text-foreground">
               Summary <span className="text-destructive">*</span>
             </Label>
             <Input
               id="title"
               value={formData.title}
               onChange={(e) => handleChange('title', e.target.value)}
-              placeholder="Brief description of the incident"
-              className={cn("h-12 text-lg font-medium", errors.title && 'border-destructive')}
+              placeholder="Brief, clear summary of the incident (e.g., 'Payment gateway timeout affecting checkout')"
+              className={cn(
+                "h-14 text-xl font-semibold border-2 focus:border-brand-primary focus:ring-0 transition-colors",
+                errors.title ? 'border-destructive' : 'border-border'
+              )}
             />
-            {errors.title && <p className="text-xs text-destructive">{errors.title}</p>}
+            {errors.title && <p className="text-xs text-destructive mt-1">{errors.title}</p>}
           </div>
 
-          {/* Description - Large rich text */}
-          <div className="space-y-1.5">
-            <Label className="text-sm font-medium">Description</Label>
+          {/* Description - Significantly larger rich text editor for 400-500 words */}
+          <div className="space-y-2">
+            <Label className="text-sm font-semibold text-foreground">Description</Label>
+            <p className="text-xs text-muted-foreground -mt-1">Provide comprehensive details including impact, affected systems, error messages, and steps to reproduce</p>
             <RichTextEditor
               value={formData.description}
               onChange={(v) => handleChange('description', v)}
-              placeholder="Detailed description of the incident, impact, affected systems, error messages, steps to reproduce..."
-              minHeight="180px"
+              placeholder="Describe the incident in detail:
+
+• What happened?
+• When did it start?
+• Which systems or services are affected?
+• What is the business impact?
+• Are there any error messages or logs?
+• Steps to reproduce (if applicable)
+• Any workarounds currently in place?"
+              minHeight="280px"
             />
           </div>
 
@@ -530,12 +550,21 @@ export default function CreateIncidentPage() {
             />
           </div>
 
-          {/* Attachments - Drag & Drop */}
-          <div className="space-y-1.5">
-            <Label className="text-sm font-medium">Attachments</Label>
+          {/* Attachments - Compact icon + count view */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label className="text-sm font-semibold text-foreground">Attachments</Label>
+              {attachments.length > 0 && (
+                <Badge variant="secondary" className="text-xs">
+                  <Paperclip className="h-3 w-3 mr-1" />
+                  {attachments.length} file{attachments.length > 1 ? 's' : ''}
+                </Badge>
+              )}
+            </div>
             <div 
               className={cn(
-                "border-2 border-dashed rounded-lg p-6 transition-colors",
+                "border-2 border-dashed rounded-lg transition-colors",
+                attachments.length > 0 ? "p-3" : "p-4",
                 isDragging ? "border-brand-primary bg-brand-primary/5" : "border-border hover:border-muted-foreground/50"
               )}
               onDragOver={handleDragOver}
@@ -549,31 +578,45 @@ export default function CreateIncidentPage() {
                 onChange={handleFileChange}
                 className="hidden"
               />
-              <label
-                htmlFor="attachments"
-                className="flex flex-col items-center justify-center gap-2 cursor-pointer"
-              >
-                <Paperclip className={cn("h-6 w-6", isDragging ? "text-brand-primary" : "text-muted-foreground")} />
-                <span className="text-sm text-muted-foreground">
-                  {isDragging ? 'Drop files here' : 'Click to attach files or drag and drop'}
-                </span>
-                <span className="text-xs text-muted-foreground">PNG, JPG, PDF, DOC up to 10MB</span>
-              </label>
               
-              {attachments.length > 0 && (
-                <div className="mt-4 space-y-2 border-t border-border pt-4">
+              {attachments.length === 0 ? (
+                <label
+                  htmlFor="attachments"
+                  className="flex items-center justify-center gap-3 cursor-pointer py-2"
+                >
+                  <Paperclip className={cn("h-5 w-5", isDragging ? "text-brand-primary" : "text-muted-foreground")} />
+                  <span className="text-sm text-muted-foreground">
+                    {isDragging ? 'Drop files here' : 'Drop files or click to attach (PNG, JPG, PDF, DOC up to 10MB)'}
+                  </span>
+                </label>
+              ) : (
+                <div className="space-y-1.5">
                   {attachments.map((file, index) => (
-                    <div key={index} className="flex items-center gap-2 p-2 bg-muted/50 rounded">
+                    <div key={index} className="flex items-center gap-2 py-1 group">
                       <Paperclip className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-                      <span className="text-xs flex-1 truncate">{file.name}</span>
+                      <span className="text-xs flex-1 truncate text-foreground">{file.name}</span>
                       <span className="text-[10px] text-muted-foreground">
-                        {(file.size / 1024).toFixed(1)} KB
+                        {file.size >= 1024 * 1024 
+                          ? `${(file.size / (1024 * 1024)).toFixed(1)} MB`
+                          : `${(file.size / 1024).toFixed(1)} KB`
+                        }
                       </span>
-                      <button type="button" onClick={() => removeAttachment(index)} className="text-muted-foreground hover:text-destructive">
+                      <button 
+                        type="button" 
+                        onClick={() => removeAttachment(index)} 
+                        className="text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
                         <X className="h-3.5 w-3.5" />
                       </button>
                     </div>
                   ))}
+                  <label
+                    htmlFor="attachments"
+                    className="flex items-center gap-2 text-xs text-brand-primary hover:underline cursor-pointer pt-1"
+                  >
+                    <Plus className="h-3 w-3" />
+                    Add more files
+                  </label>
                 </div>
               )}
             </div>
