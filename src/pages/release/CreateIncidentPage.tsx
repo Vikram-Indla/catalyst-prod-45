@@ -61,13 +61,13 @@ function WorkItemSearch({
   onRemove: (id: string) => void;
 }) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [isSearching, setIsSearching] = useState(false);
 
   // Mock search results - in real implementation, this would query the database
   const mockResults = [
     { id: '1', type: 'story', key: 'STR-101', title: 'User authentication flow' },
     { id: '2', type: 'feature', key: 'FTR-42', title: 'Payment gateway integration' },
     { id: '3', type: 'epic', key: 'EPC-15', title: 'Mobile app redesign' },
+    { id: '4', type: 'task', key: 'TSK-89', title: 'Database migration script' },
   ].filter(item => 
     searchQuery && (
       item.key.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -82,13 +82,13 @@ function WorkItemSearch({
         <Input
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search work items by key or title..."
+          placeholder="Search work items by key or title (Story / Feature / Task)..."
           className="pl-9"
         />
       </div>
       
       {searchQuery && mockResults.length > 0 && (
-        <div className="border border-border rounded-md bg-white shadow-sm max-h-32 overflow-y-auto">
+        <div className="border border-border rounded-md bg-white shadow-sm max-h-40 overflow-y-auto">
           {mockResults.map((item) => (
             <button
               key={item.id}
@@ -123,6 +123,15 @@ function WorkItemSearch({
   );
 }
 
+// Delivery platforms (mock data)
+const DELIVERY_PLATFORMS = [
+  { id: 'web', name: 'Web Application' },
+  { id: 'mobile', name: 'Mobile Application' },
+  { id: 'api', name: 'API Services' },
+  { id: 'batch', name: 'Batch Processing' },
+  { id: 'integration', name: 'Integration Layer' },
+];
+
 export default function CreateIncidentPage() {
   const navigate = useNavigate();
   const createIncident = useCreateIncident();
@@ -141,13 +150,25 @@ export default function CreateIncidentPage() {
     release_version_id: '',
     source_department_id: '',
     business_process_id: '',
+    delivery_platform: '',
     assignee_workgroup_id: '',
+    assignee_id: '',
     is_major_incident: false,
   });
 
   const [linkedItems, setLinkedItems] = useState<{ id: string; type: string; key: string; title: string }[]>([]);
   const [attachments, setAttachments] = useState<File[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Calculate priority based on impact and urgency
+  const calculatePriority = () => {
+    const priorityMatrix: Record<string, Record<string, string>> = {
+      high: { high: 'P1', medium: 'P2', low: 'P3' },
+      medium: { high: 'P2', medium: 'P3', low: 'P4' },
+      low: { high: 'P3', medium: 'P4', low: 'P4' },
+    };
+    return priorityMatrix[formData.impact]?.[formData.urgency] || 'P3';
+  };
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -157,6 +178,12 @@ export default function CreateIncidentPage() {
     }
     if (!formData.severity) {
       newErrors.severity = 'Severity is required';
+    }
+    if (!formData.impact) {
+      newErrors.impact = 'Impact is required';
+    }
+    if (!formData.urgency) {
+      newErrors.urgency = 'Urgency is required';
     }
 
     setErrors(newErrors);
@@ -209,6 +236,19 @@ export default function CreateIncidentPage() {
     setAttachments(prev => prev.filter((_, i) => i !== index));
   };
 
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.dataTransfer.files) {
+      setAttachments(prev => [...prev, ...Array.from(e.dataTransfer.files)]);
+    }
+  };
+
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Header */}
@@ -219,11 +259,12 @@ export default function CreateIncidentPage() {
           </Button>
         </Link>
         <h1 className="text-base font-semibold text-foreground">Create Incident</h1>
+        <span className="text-xs text-muted-foreground">Environment: Production</span>
       </div>
 
       {/* Form Content */}
       <div className="flex-1 overflow-auto">
-        <form onSubmit={handleSubmit} className="max-w-4xl mx-auto p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="max-w-5xl mx-auto p-6 space-y-6">
           {/* Summary - Wide single line */}
           <div className="space-y-2">
             <Label htmlFor="title" className="text-sm font-medium">
@@ -249,158 +290,218 @@ export default function CreateIncidentPage() {
             />
           </div>
 
-          {/* Classification Row */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">
-                Severity <span className="text-destructive">*</span>
-              </Label>
-              <Select value={formData.severity} onValueChange={(v) => handleChange('severity', v)}>
-                <SelectTrigger className={errors.severity ? 'border-destructive' : ''}>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="SEV1">SEV1 - Critical</SelectItem>
-                  <SelectItem value="SEV2">SEV2 - High</SelectItem>
-                  <SelectItem value="SEV3">SEV3 - Medium</SelectItem>
-                  <SelectItem value="SEV4">SEV4 - Low</SelectItem>
-                </SelectContent>
-              </Select>
+          {/* Two Column Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Left Column - Classification */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-foreground border-b border-border pb-2">Classification</h3>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">
+                    Severity <span className="text-destructive">*</span>
+                  </Label>
+                  <Select value={formData.severity} onValueChange={(v) => handleChange('severity', v)}>
+                    <SelectTrigger className={errors.severity ? 'border-destructive' : ''}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="SEV1">SEV1 - Critical</SelectItem>
+                      <SelectItem value="SEV2">SEV2 - High</SelectItem>
+                      <SelectItem value="SEV3">SEV3 - Medium</SelectItem>
+                      <SelectItem value="SEV4">SEV4 - Low</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">
+                    Impact <span className="text-destructive">*</span>
+                  </Label>
+                  <Select value={formData.impact} onValueChange={(v) => handleChange('impact', v)}>
+                    <SelectTrigger className={errors.impact ? 'border-destructive' : ''}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="high">High</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="low">Low</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">
+                    Urgency <span className="text-destructive">*</span>
+                  </Label>
+                  <Select value={formData.urgency} onValueChange={(v) => handleChange('urgency', v)}>
+                    <SelectTrigger className={errors.urgency ? 'border-destructive' : ''}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="high">High</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="low">Low</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Priority</Label>
+                  <div className="h-10 px-3 flex items-center bg-muted/50 rounded-md text-sm border border-border">
+                    <Badge variant="outline" className={cn(
+                      "text-[10px] font-medium px-1.5 py-0",
+                      calculatePriority() === 'P1' && 'bg-red-100 text-red-800 border-red-200',
+                      calculatePriority() === 'P2' && 'bg-orange-100 text-orange-800 border-orange-200',
+                      calculatePriority() === 'P3' && 'bg-yellow-100 text-yellow-800 border-yellow-200',
+                      calculatePriority() === 'P4' && 'bg-blue-100 text-blue-800 border-blue-200',
+                    )}>
+                      {calculatePriority()}
+                    </Badge>
+                    <span className="text-muted-foreground text-xs ml-2">(Auto-calculated)</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Major Incident Toggle */}
+              <div className="flex items-center justify-between p-4 bg-red-50 border border-red-200 rounded-lg">
+                <div>
+                  <Label htmlFor="major-incident" className="text-sm font-medium text-red-900">
+                    Major Incident
+                  </Label>
+                  <p className="text-xs text-red-700 mt-0.5">
+                    Flag this as a major incident requiring immediate executive attention
+                  </p>
+                </div>
+                <Switch
+                  id="major-incident"
+                  checked={formData.is_major_incident}
+                  onCheckedChange={(v) => handleChange('is_major_incident', v)}
+                />
+              </div>
             </div>
 
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">Impact</Label>
-              <Select value={formData.impact} onValueChange={(v) => handleChange('impact', v)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="high">High</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="low">Low</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            {/* Right Column - Context */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-foreground border-b border-border pb-2">Context</h3>
+              
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Source Department</Label>
+                  <Select value={formData.source_department_id} onValueChange={(v) => handleChange('source_department_id', v)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select department" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {departments?.map((d) => (
+                        <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">Urgency</Label>
-              <Select value={formData.urgency} onValueChange={(v) => handleChange('urgency', v)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="high">High</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="low">Low</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Business Process</Label>
+                  <Select value={formData.business_process_id} onValueChange={(v) => handleChange('business_process_id', v)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select process" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {businessProcesses?.map((bp) => (
+                        <SelectItem key={bp.id} value={bp.id}>{bp.name_en}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">Priority</Label>
-              <div className="h-10 px-3 flex items-center bg-muted/50 rounded-md text-sm text-muted-foreground border border-border">
-                Auto-calculated
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Delivery Platform</Label>
+                  <Select value={formData.delivery_platform} onValueChange={(v) => handleChange('delivery_platform', v)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select platform" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {DELIVERY_PLATFORMS.map((p) => (
+                        <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Release Version</Label>
+                  <Select value={formData.release_version_id} onValueChange={(v) => handleChange('release_version_id', v)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select version" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {releaseVersions?.map((v) => (
+                        <SelectItem key={v.id} value={v.id}>{v.version}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Context Row */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">Release Version</Label>
-              <Select value={formData.release_version_id} onValueChange={(v) => handleChange('release_version_id', v)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select version" />
-                </SelectTrigger>
-                <SelectContent>
-                  {releaseVersions?.map((v) => (
-                    <SelectItem key={v.id} value={v.id}>{v.version}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          {/* Assignment Section */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold text-foreground border-b border-border pb-2">Assignment</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Reporter</Label>
+                <div className="h-10 px-3 flex items-center bg-muted/50 rounded-md text-sm border border-border text-muted-foreground">
+                  Current User (Auto-filled)
+                </div>
+              </div>
 
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">Support Level</Label>
-              <Select value={formData.support_level} onValueChange={(v) => handleChange('support_level', v)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="L1">L1 - First Line</SelectItem>
-                  <SelectItem value="L2">L2 - Second Line</SelectItem>
-                  <SelectItem value="L3">L3 - Third Line</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Work Group</Label>
+                <Select value={formData.assignee_workgroup_id} onValueChange={(v) => handleChange('assignee_workgroup_id', v)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select workgroup" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {workgroups?.map((w) => (
+                      <SelectItem key={w.id} value={w.id}>{w.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">Assigned Workgroup</Label>
-              <Select value={formData.assignee_workgroup_id} onValueChange={(v) => handleChange('assignee_workgroup_id', v)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select workgroup" />
-                </SelectTrigger>
-                <SelectContent>
-                  {workgroups?.map((w) => (
-                    <SelectItem key={w.id} value={w.id}>{w.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Assignee</Label>
+                <Select value={formData.assignee_id} onValueChange={(v) => handleChange('assignee_id', v)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select assignee" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="unassigned">Unassigned</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
 
-          {/* Source Row */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">Source Department</Label>
-              <Select value={formData.source_department_id} onValueChange={(v) => handleChange('source_department_id', v)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select department" />
-                </SelectTrigger>
-                <SelectContent>
-                  {departments?.map((d) => (
-                    <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">Business Process</Label>
-              <Select value={formData.business_process_id} onValueChange={(v) => handleChange('business_process_id', v)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select process" />
-                </SelectTrigger>
-                <SelectContent>
-                  {businessProcesses?.map((bp) => (
-                    <SelectItem key={bp.id} value={bp.id}>{bp.name_en}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          {/* Major Incident Toggle */}
-          <div className="flex items-center justify-between p-4 bg-red-50 border border-red-200 rounded-lg">
-            <div>
-              <Label htmlFor="major-incident" className="text-sm font-medium text-red-900">
-                Major Incident
-              </Label>
-              <p className="text-xs text-red-700 mt-0.5">
-                Flag this as a major incident requiring immediate executive attention
-              </p>
-            </div>
-            <Switch
-              id="major-incident"
-              checked={formData.is_major_incident}
-              onCheckedChange={(v) => handleChange('is_major_incident', v)}
+          {/* Link Work Items */}
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Linked Work Item</Label>
+            <WorkItemSearch
+              onSelect={(item) => setLinkedItems(prev => [...prev, item])}
+              selected={linkedItems}
+              onRemove={(id) => setLinkedItems(prev => prev.filter(i => i.id !== id))}
             />
           </div>
 
           {/* Attachments */}
           <div className="space-y-2">
             <Label className="text-sm font-medium">Attachments</Label>
-            <div className="border border-dashed border-border rounded-lg p-4">
+            <div 
+              className="border border-dashed border-border rounded-lg p-6"
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+            >
               <input
                 type="file"
                 id="attachments"
@@ -410,14 +511,15 @@ export default function CreateIncidentPage() {
               />
               <label
                 htmlFor="attachments"
-                className="flex items-center justify-center gap-2 cursor-pointer text-muted-foreground hover:text-foreground transition-colors"
+                className="flex flex-col items-center justify-center gap-2 cursor-pointer text-muted-foreground hover:text-foreground transition-colors"
               >
-                <Paperclip className="h-4 w-4" />
+                <Paperclip className="h-6 w-6" />
                 <span className="text-sm">Click to attach files or drag and drop</span>
+                <span className="text-xs text-muted-foreground">PNG, JPG, PDF, DOC up to 10MB</span>
               </label>
               
               {attachments.length > 0 && (
-                <div className="mt-3 space-y-2">
+                <div className="mt-4 space-y-2">
                   {attachments.map((file, index) => (
                     <div key={index} className="flex items-center gap-2 p-2 bg-muted/50 rounded">
                       <Paperclip className="h-3.5 w-3.5 text-muted-foreground" />
@@ -433,16 +535,6 @@ export default function CreateIncidentPage() {
                 </div>
               )}
             </div>
-          </div>
-
-          {/* Link Work Items */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">Link Existing Work Items</Label>
-            <WorkItemSearch
-              onSelect={(item) => setLinkedItems(prev => [...prev, item])}
-              selected={linkedItems}
-              onRemove={(id) => setLinkedItems(prev => prev.filter(i => i.id !== id))}
-            />
           </div>
 
           {/* Actions */}

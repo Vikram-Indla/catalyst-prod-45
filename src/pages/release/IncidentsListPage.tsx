@@ -1,12 +1,12 @@
 import { useState, useMemo } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Search, ChevronLeft, ChevronRight, Filter, Download, Loader2 } from 'lucide-react';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { Search, ChevronLeft, ChevronRight, Filter, Download, Loader2, Plus, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useIncidents } from '@/hooks/useIncidents';
-import type { IncidentFilters, IncidentStatus, SupportLevel, Incident } from '@/types/incident';
+import type { IncidentFilters, IncidentStatus, SupportLevel, Incident, PriorityLevel } from '@/types/incident';
 import { IncidentsFiltersDialog } from '@/components/release/IncidentsFiltersDialog';
 
 // Severity badge component
@@ -20,6 +20,22 @@ const SeverityBadge = ({ severity }: { severity: string }) => {
   return (
     <Badge variant="outline" className={cn('text-[10px] font-medium px-1.5 py-0', colors[severity] || 'bg-gray-100')}>
       {severity}
+    </Badge>
+  );
+};
+
+// Priority badge
+const PriorityBadge = ({ priority }: { priority: PriorityLevel | null | undefined }) => {
+  if (!priority) return <span className="text-muted-foreground text-xs">-</span>;
+  const colors: Record<string, string> = {
+    P1: 'bg-red-100 text-red-800 border-red-200',
+    P2: 'bg-orange-100 text-orange-800 border-orange-200',
+    P3: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+    P4: 'bg-blue-100 text-blue-800 border-blue-200',
+  };
+  return (
+    <Badge variant="outline" className={cn('text-[10px] font-medium px-1.5 py-0', colors[priority] || 'bg-gray-100')}>
+      {priority}
     </Badge>
   );
 };
@@ -58,19 +74,27 @@ const StatusBadge = ({ status }: { status: IncidentStatus }) => {
   );
 };
 
+type SortField = 'incident_key' | 'severity' | 'created_at';
+type SortDirection = 'asc' | 'desc';
+
+type QuickFilter = 'open' | 'major' | 'l3';
+
 export default function IncidentsListPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [filtersDialogOpen, setFiltersDialogOpen] = useState(false);
+  const [activeQuickFilter, setActiveQuickFilter] = useState<QuickFilter | null>('open');
+  const [sortField, setSortField] = useState<SortField>('created_at');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   
   // Parse filters from URL params
   const initialFilters = useMemo((): IncidentFilters => {
     const statusParam = searchParams.get('status');
     const supportLevelParam = searchParams.get('support_level');
     return {
-      status: statusParam ? statusParam.split(',') as IncidentStatus[] : ['open', 'triage', 'to_committee', 'in_progress'],
+      status: statusParam ? statusParam.split(',') as IncidentStatus[] : undefined,
       support_level: supportLevelParam ? supportLevelParam.split(',') as SupportLevel[] : undefined,
     };
   }, [searchParams]);
@@ -78,41 +102,88 @@ export default function IncidentsListPage() {
   const [filters, setFilters] = useState<IncidentFilters>(initialFilters);
   const pageSize = 25;
 
+  // Apply quick filters
+  const effectiveFilters = useMemo((): IncidentFilters => {
+    const baseFilters = { ...filters };
+    
+    if (activeQuickFilter === 'open') {
+      baseFilters.status = ['open', 'triage', 'to_committee', 'in_progress'];
+    } else if (activeQuickFilter === 'l3') {
+      baseFilters.support_level = ['L3'];
+    }
+    // major incidents filter is applied client-side
+    
+    return baseFilters;
+  }, [filters, activeQuickFilter]);
+
   // Fetch incidents from Supabase
-  const { data: incidents = [], isLoading, error } = useIncidents(filters);
+  const { data: incidents = [], isLoading, error } = useIncidents(effectiveFilters);
 
-  // Client-side search filter
+  // Client-side search and major incident filter
   const filteredIncidents = useMemo(() => {
-    if (!searchQuery) return incidents;
-    const q = searchQuery.toLowerCase();
-    return incidents.filter((inc: Incident) => 
-      inc.incident_key?.toLowerCase().includes(q) ||
-      inc.title?.toLowerCase().includes(q)
-    );
-  }, [incidents, searchQuery]);
+    let result = incidents;
+    
+    // Apply major incident filter
+    if (activeQuickFilter === 'major') {
+      result = result.filter((inc: Incident) => inc.is_major_incident);
+    }
+    
+    // Apply search
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter((inc: Incident) => 
+        inc.incident_key?.toLowerCase().includes(q) ||
+        inc.title?.toLowerCase().includes(q)
+      );
+    }
+    
+    return result;
+  }, [incidents, searchQuery, activeQuickFilter]);
 
-  // Calculate aging (days since created)
-  const getAgingDays = (createdAt: string) => {
+  // Sort incidents
+  const sortedIncidents = useMemo(() => {
+    return [...filteredIncidents].sort((a, b) => {
+      let comparison = 0;
+      
+      if (sortField === 'incident_key') {
+        comparison = (a.incident_key || '').localeCompare(b.incident_key || '');
+      } else if (sortField === 'severity') {
+        const severityOrder: Record<string, number> = { SEV1: 1, SEV2: 2, SEV3: 3, SEV4: 4 };
+        comparison = (severityOrder[a.severity] || 5) - (severityOrder[b.severity] || 5);
+      } else if (sortField === 'created_at') {
+        comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      }
+      
+      return sortDirection === 'asc' ? comparison : -comparison;
+    });
+  }, [filteredIncidents, sortField, sortDirection]);
+
+  // Calculate aging (time since created)
+  const getAgingTime = (createdAt: string) => {
     const created = new Date(createdAt);
     const now = new Date();
-    const diffTime = Math.abs(now.getTime() - created.getTime());
-    const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    if (days === 0) return '<1d';
-    if (days < 7) return `${days}d`;
-    if (days < 30) return `${Math.floor(days / 7)}w`;
-    return `${Math.floor(days / 30)}mo`;
+    const diffMs = now.getTime() - created.getTime();
+    const diffMins = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    
+    if (diffMins < 60) return `${diffMins}m`;
+    if (diffHours < 24) return `${diffHours}h`;
+    if (diffDays < 7) return `${diffDays}d`;
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)}w`;
+    return `${Math.floor(diffDays / 30)}mo`;
   };
 
-  // Calculate active filter count
+  // Calculate active filter count (excluding quick filters)
   const activeFilterCount = Object.entries(filters).filter(([, value]) => {
     if (Array.isArray(value)) return value.length > 0;
     return value !== undefined && value !== '' && value !== null;
   }).length;
 
-  const totalPages = Math.ceil(filteredIncidents.length / pageSize);
+  const totalPages = Math.ceil(sortedIncidents.length / pageSize);
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = startIndex + pageSize;
-  const paginatedIncidents = filteredIncidents.slice(startIndex, endIndex);
+  const paginatedIncidents = sortedIncidents.slice(startIndex, endIndex);
 
   const goToPage = (page: number) => {
     if (page >= 1 && page <= totalPages) setCurrentPage(page);
@@ -120,6 +191,31 @@ export default function IncidentsListPage() {
 
   const handleRowClick = (incident: Incident) => {
     navigate(`/release/incidents/${incident.id}`);
+  };
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  const getSortIcon = (field: SortField) => {
+    if (sortField !== field) return <ArrowUpDown className="h-3 w-3 ml-1 text-muted-foreground/50" />;
+    return sortDirection === 'asc' 
+      ? <ArrowUp className="h-3 w-3 ml-1 text-foreground" />
+      : <ArrowDown className="h-3 w-3 ml-1 text-foreground" />;
+  };
+
+  const handleQuickFilter = (filter: QuickFilter) => {
+    if (activeQuickFilter === filter) {
+      setActiveQuickFilter(null);
+    } else {
+      setActiveQuickFilter(filter);
+    }
+    setCurrentPage(1);
   };
 
   if (error) {
@@ -137,7 +233,47 @@ export default function IncidentsListPage() {
     <div className="h-full flex flex-col bg-background">
       {/* Compact Header */}
       <div className="h-12 border-b border-border bg-card flex-shrink-0 px-4 flex items-center justify-between">
-        <h1 className="text-base font-semibold text-foreground">Incidents</h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-base font-semibold text-foreground">Incidents</h1>
+          
+          {/* Quick Filters */}
+          <div className="flex items-center gap-1 ml-4">
+            <Button
+              variant={activeQuickFilter === 'open' ? 'default' : 'ghost'}
+              size="sm"
+              className={cn(
+                "h-7 text-xs px-2",
+                activeQuickFilter === 'open' && "bg-brand-primary text-white"
+              )}
+              onClick={() => handleQuickFilter('open')}
+            >
+              Open
+            </Button>
+            <Button
+              variant={activeQuickFilter === 'major' ? 'default' : 'ghost'}
+              size="sm"
+              className={cn(
+                "h-7 text-xs px-2",
+                activeQuickFilter === 'major' && "bg-red-600 text-white"
+              )}
+              onClick={() => handleQuickFilter('major')}
+            >
+              Major Incidents
+            </Button>
+            <Button
+              variant={activeQuickFilter === 'l3' ? 'default' : 'ghost'}
+              size="sm"
+              className={cn(
+                "h-7 text-xs px-2",
+                activeQuickFilter === 'l3' && "bg-purple-600 text-white"
+              )}
+              onClick={() => handleQuickFilter('l3')}
+            >
+              L3 Only
+            </Button>
+          </div>
+        </div>
+        
         <div className="flex items-center gap-2">
           {/* Search */}
           <div className="relative w-64">
@@ -172,13 +308,21 @@ export default function IncidentsListPage() {
             Export
           </Button>
 
+          {/* Create */}
+          <Link to="/release/incidents/create">
+            <Button size="sm" className="h-8 text-xs bg-brand-primary text-white hover:bg-brand-primary-hover">
+              <Plus className="h-3.5 w-3.5 mr-1.5" />
+              Create Incident
+            </Button>
+          </Link>
+
           {/* Pagination */}
           <div className="flex items-center gap-1 border border-border rounded bg-white px-1 h-8">
             <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1} className="h-6 w-6 p-0">
               <ChevronLeft className="h-3.5 w-3.5" />
             </Button>
             <span className="text-xs text-foreground px-2 whitespace-nowrap">
-              {filteredIncidents.length > 0 ? `${startIndex + 1}-${Math.min(endIndex, filteredIncidents.length)} of ${filteredIncidents.length}` : '0'}
+              {sortedIncidents.length > 0 ? `${startIndex + 1}-${Math.min(endIndex, sortedIncidents.length)} of ${sortedIncidents.length}` : '0'}
             </span>
             <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages || totalPages === 0} className="h-6 w-6 p-0">
               <ChevronRight className="h-3.5 w-3.5" />
@@ -197,19 +341,45 @@ export default function IncidentsListPage() {
           <table className="w-full text-xs">
             <thead className="sticky top-0 z-10 bg-muted/80">
               <tr>
-                <th className="px-3 py-2 text-left font-semibold text-muted-foreground uppercase tracking-wide w-28">Key</th>
+                <th 
+                  className="px-3 py-2 text-left font-semibold text-muted-foreground uppercase tracking-wide w-28 cursor-pointer select-none hover:bg-muted"
+                  onClick={() => handleSort('incident_key')}
+                >
+                  <div className="flex items-center">
+                    Key
+                    {getSortIcon('incident_key')}
+                  </div>
+                </th>
                 <th className="px-3 py-2 text-left font-semibold text-muted-foreground uppercase tracking-wide">Summary</th>
-                <th className="px-3 py-2 text-left font-semibold text-muted-foreground uppercase tracking-wide w-16">Severity</th>
-                <th className="px-3 py-2 text-left font-semibold text-muted-foreground uppercase tracking-wide w-16">Level</th>
+                <th 
+                  className="px-3 py-2 text-left font-semibold text-muted-foreground uppercase tracking-wide w-16 cursor-pointer select-none hover:bg-muted"
+                  onClick={() => handleSort('severity')}
+                >
+                  <div className="flex items-center">
+                    Severity
+                    {getSortIcon('severity')}
+                  </div>
+                </th>
+                <th className="px-3 py-2 text-left font-semibold text-muted-foreground uppercase tracking-wide w-16">Priority</th>
                 <th className="px-3 py-2 text-left font-semibold text-muted-foreground uppercase tracking-wide w-24">Status</th>
-                <th className="px-3 py-2 text-left font-semibold text-muted-foreground uppercase tracking-wide w-12">Age</th>
-                <th className="px-3 py-2 text-left font-semibold text-muted-foreground uppercase tracking-wide w-32">Workgroup</th>
+                <th className="px-3 py-2 text-left font-semibold text-muted-foreground uppercase tracking-wide w-16">Level</th>
+                <th className="px-3 py-2 text-left font-semibold text-muted-foreground uppercase tracking-wide w-28">Workgroup</th>
+                <th 
+                  className="px-3 py-2 text-left font-semibold text-muted-foreground uppercase tracking-wide w-16 cursor-pointer select-none hover:bg-muted"
+                  onClick={() => handleSort('created_at')}
+                >
+                  <div className="flex items-center">
+                    Age
+                    {getSortIcon('created_at')}
+                  </div>
+                </th>
+                <th className="px-3 py-2 text-left font-semibold text-muted-foreground uppercase tracking-wide w-32">Assignee</th>
               </tr>
             </thead>
             <tbody>
               {paginatedIncidents.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-3 py-12 text-center text-muted-foreground">
+                  <td colSpan={9} className="px-3 py-12 text-center text-muted-foreground">
                     No incidents found
                   </td>
                 </tr>
@@ -228,25 +398,33 @@ export default function IncidentsListPage() {
                     )}
                   </td>
                   <td className="px-3 py-2">
-                    <span className="text-foreground line-clamp-2">{incident.title}</span>
+                    <span className="text-foreground line-clamp-1">{incident.title}</span>
                   </td>
                   <td className="px-3 py-2">
                     <SeverityBadge severity={incident.severity} />
                   </td>
                   <td className="px-3 py-2">
-                    <SupportLevelBadge level={incident.support_level} />
+                    <PriorityBadge priority={incident.priority} />
                   </td>
                   <td className="px-3 py-2">
                     <StatusBadge status={incident.status} />
                   </td>
                   <td className="px-3 py-2">
+                    <SupportLevelBadge level={incident.support_level} />
+                  </td>
+                  <td className="px-3 py-2">
+                    <span className="text-foreground truncate block max-w-[100px]">
+                      {incident.assignee_workgroup?.name || '-'}
+                    </span>
+                  </td>
+                  <td className="px-3 py-2">
                     <span className="text-muted-foreground font-mono">
-                      {getAgingDays(incident.created_at)}
+                      {getAgingTime(incident.created_at)}
                     </span>
                   </td>
                   <td className="px-3 py-2">
                     <span className="text-foreground truncate block max-w-[120px]">
-                      {incident.assignee_workgroup?.name || '-'}
+                      {incident.assignee?.full_name || '-'}
                     </span>
                   </td>
                 </tr>
@@ -261,7 +439,10 @@ export default function IncidentsListPage() {
         open={filtersDialogOpen}
         onOpenChange={setFiltersDialogOpen}
         filters={filters}
-        onFiltersChange={setFilters}
+        onFiltersChange={(newFilters) => {
+          setFilters(newFilters);
+          setActiveQuickFilter(null);
+        }}
       />
     </div>
   );
