@@ -63,6 +63,7 @@ import QuartersPage from "./pages/program/QuartersPage";
 import CapacityWithSidebar from "./pages/program/CapacityWithSidebar";
 import BacklogWithSidebar from "./pages/program/BacklogWithSidebar";
 import RoadmapsWithSidebar from "./pages/program/RoadmapsWithSidebar";
+import ProgramRoadmapPage from "./pages/program/ProgramRoadmapPage";
 import FeaturesWithSidebar from "./pages/program/FeaturesWithSidebar";
 import PIObjectives from "./pages/PIObjectives";
 import CapacityPlanning from "./pages/CapacityPlanning";
@@ -492,6 +493,7 @@ const App = () => (
               <Route path="/programs/:programId/work-tree" element={<WorkTreePage />} />
               <Route path="/programs/:programId/backlog" element={<BacklogWithSidebar />} />
               <Route path="/programs/:programId/roadmaps" element={<RoadmapsWithSidebar />} />
+              <Route path="/programs/:programId/program-roadmap" element={<ProgramRoadmapPage />} />
               <Route path="/programs/:programId/dependencies" element={<DependenciesPage />} />
               <Route path="/programs/:programId/forecast" element={<PlaceholderPage />} />
               <Route path="/programs/:programId/capacity" element={<CapacityWithSidebar />} />
