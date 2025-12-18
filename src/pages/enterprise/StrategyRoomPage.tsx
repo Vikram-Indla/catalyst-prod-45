@@ -281,7 +281,7 @@ export default function StrategyRoomPage() {
                       <h2 className="text-xs font-semibold uppercase tracking-wide text-foreground">
                         Strategy Context
                       </h2>
-                      <p className="text-[10px] text-muted-foreground">
+                      <p className="text-[11px] text-muted-foreground">
                         Mission, vision, and values
                       </p>
                     </div>

@@ -143,6 +143,7 @@ export default {
         text: {
           primary: "var(--text-primary)",
           secondary: "var(--text-secondary)",
+          "secondary-strong": "var(--text-secondary-strong)",
           muted: "var(--text-muted)",
           faint: "var(--text-faint)",
           link: "var(--text-link)",
