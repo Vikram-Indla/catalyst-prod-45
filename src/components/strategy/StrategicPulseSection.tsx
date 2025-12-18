@@ -127,7 +127,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
       <div className="px-4 py-2.5 flex items-center justify-between border-b border-border/50">
         <div className="flex items-center gap-2">
           <Activity size={14} className="text-primary" />
-          <h2 className={cn(TYPOGRAPHY.sectionTitle, 'text-foreground/90')}>
+          <h2 className={cn(TYPOGRAPHY.sectionTitle, TEXT_COLORS.primary)}>
             Strategic Pulse
           </h2>
         </div>
@@ -165,7 +165,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
           >
             <div>
               {/* Label */}
-              <span className={cn(TYPOGRAPHY.cardLabel, 'text-foreground/80')}>
+              <span className={cn(TYPOGRAPHY.cardLabel, TEXT_COLORS.muted)}>
                 Strategy Health
               </span>
               
@@ -305,7 +305,7 @@ function CompactKPITile({
     >
       {/* Label row - icon supports, doesn't compete */}
       <div className="flex items-center justify-between mb-1.5">
-        <span className={cn(TYPOGRAPHY.cardLabel, 'text-foreground/80')}>
+        <span className={cn(TYPOGRAPHY.cardLabel, TEXT_COLORS.muted)}>
           {label}
         </span>
         <span className={cn(iconColors[accentColor], 'opacity-80')}>{icon}</span>

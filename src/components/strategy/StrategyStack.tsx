@@ -76,7 +76,7 @@ const layerConfigs: LayerConfig[] = [
     key: 'features', 
     label: 'Features', 
     icon: Grid3X3,
-    iconColor: 'var(--text-muted)',
+    iconColor: 'var(--text-secondary)',
     iconBgColor: 'var(--surface-subtle)',
     description: 'Discrete deliverables within epics',
   },
@@ -108,7 +108,7 @@ function getStatusColor(status?: string): { bg: string; text: string; border: st
     case 'Behind':
       return { bg: 'var(--status-danger-bg)', text: 'var(--status-danger)', border: 'var(--status-danger)' };
     default:
-      return { bg: 'var(--surface-subtle)', text: 'var(--text-muted)', border: 'var(--border-default)' };
+      return { bg: 'var(--surface-subtle)', text: 'var(--text-secondary)', border: 'var(--border-default)' };
   }
 }
 
