@@ -1,9 +1,14 @@
+/**
+ * OkrTree — Enterprise-grade OKR hierarchy view
+ * Jira Align-inspired: dense, crisp, scannable
+ */
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Maximize2, ChevronRight, ChevronDown, Target, ArrowRight } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { Search, Maximize2, ChevronRight, ChevronDown, Target, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useOKRTreeV2, OKRTreeV2Item } from '@/hooks/useOKRTreeV2';
+import { cn } from '@/lib/utils';
 
 interface OkrTreeProps {
   selectedSnapshot: string;
@@ -11,17 +16,57 @@ interface OkrTreeProps {
   onThemeClick?: (theme: any) => void;
 }
 
-function getProgressBarColor(progress: number): string {
-  if (progress < 30) return 'hsl(var(--destructive))';
-  if (progress >= 70) return 'hsl(var(--secondary-green))';
-  return 'hsl(var(--brand-primary))';
+// Status determination for objectives
+function getHealthStatus(progress: number, health?: string): { label: string; color: string; bg: string } {
+  if (health === 'at_risk' || health === 'poor') {
+    return { label: 'At Risk', color: 'var(--status-danger)', bg: 'var(--status-danger-bg)' };
+  }
+  if (progress >= 70) {
+    return { label: 'On Track', color: 'var(--status-success)', bg: 'var(--status-success-bg)' };
+  }
+  if (progress >= 40) {
+    return { label: 'In Progress', color: 'var(--status-warning)', bg: 'var(--status-warning-bg)' };
+  }
+  if (progress > 0) {
+    return { label: 'Behind', color: 'var(--status-danger)', bg: 'var(--status-danger-bg)' };
+  }
+  return { label: 'Not Started', color: 'var(--text-muted)', bg: 'var(--surface-subtle)' };
 }
+
+function getProgressBarColor(progress: number): string {
+  if (progress < 30) return 'var(--status-danger)';
+  if (progress >= 70) return 'var(--status-success)';
+  return 'var(--brand-primary)';
+}
+
+// Type chip colors using tokens
+const typeStyles = {
+  theme: {
+    bg: 'var(--secondary-green-bg)',
+    color: 'var(--secondary-green)',
+    label: 'THM',
+    rowBg: 'var(--surface-subtle)',
+  },
+  objective: {
+    bg: 'var(--brand-gold-bg)',
+    color: 'var(--brand-gold)',
+    label: 'OBJ',
+    rowBg: 'transparent',
+  },
+  key_result: {
+    bg: 'var(--secondary-bronze-bg)',
+    color: 'var(--secondary-bronze)',
+    label: 'KR',
+    rowBg: 'transparent',
+  },
+};
 
 export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: OkrTreeProps) {
   const navigate = useNavigate();
   const { data: treeData = [], isLoading } = useOKRTreeV2(selectedSnapshot);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const toggleExpand = (id: string) => {
     const newExpanded = new Set(expandedIds);
@@ -36,7 +81,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
   const renderTreeItem = (item: OKRTreeV2Item, depth: number = 0) => {
     const hasChildren = item.children.length > 0;
     const isExpanded = expandedIds.has(item.id);
-    const indentPx = depth * 24;
+    const isSelected = selectedId === item.id;
 
     if (searchQuery) {
       const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase());
@@ -51,17 +96,11 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
     const isObjective = item.type === 'objective';
     const isKeyResult = item.type === 'key_result';
 
-    // Badge colors per specification
-    const getBadgeStyle = () => {
-      if (isTheme) return { bg: 'rgba(92, 124, 92, 0.1)', color: '#5C7C5C', label: 'Theme' };
-      if (isObjective) return { bg: 'rgba(198, 156, 109, 0.1)', color: '#C69C6D', label: 'Objective' };
-      if (isKeyResult) return { bg: 'rgba(139, 115, 85, 0.1)', color: '#8B7355', label: 'Key Result' };
-      return { bg: 'var(--surface-3)', color: 'var(--text-2)', label: '' };
-    };
-
-    const badge = getBadgeStyle();
+    const typeStyle = typeStyles[item.type as keyof typeof typeStyles] || typeStyles.key_result;
+    const status = isObjective ? getHealthStatus(item.progress, (item as any).health) : null;
 
     const handleActivate = () => {
+      setSelectedId(item.id);
       if (isTheme && onThemeClick) {
         onThemeClick({ id: item.id, name: item.title, type: 'theme' });
       } else if (isObjective) {
@@ -71,34 +110,43 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
 
     const isClickable = isObjective || (isTheme && !!onThemeClick);
 
+    // Indentation calculation
+    const indentPx = depth * 20;
+
     return (
       <div key={item.id}>
         <div
-          className={`grid items-center py-2.5 transition-colors ${isClickable ? 'cursor-pointer' : ''}`}
+          className={cn(
+            "grid items-center transition-all duration-100",
+            isClickable && "cursor-pointer",
+            isSelected && "ring-1 ring-inset"
+          )}
           role={isClickable ? 'button' : undefined}
           tabIndex={isClickable ? 0 : -1}
           style={{
-            gridTemplateColumns: '1fr 180px 50px 120px',
+            gridTemplateColumns: '1fr 140px 52px 52px 100px',
+            minHeight: isTheme ? '40px' : '36px',
             borderBottom: '1px solid var(--border-subtle)',
-            backgroundColor: isTheme ? 'var(--surface-subtle)' : 'transparent',
+            backgroundColor: isSelected 
+              ? 'var(--surface-active)' 
+              : isTheme 
+                ? typeStyle.rowBg 
+                : 'transparent',
+            // Ring color for selected state
+            ...(isSelected ? { '--tw-ring-color': 'var(--brand-primary)' } as any : {}),
           }}
           onMouseEnter={(e) => {
-            if (isClickable) {
+            if (!isSelected) {
               e.currentTarget.style.backgroundColor = 'var(--surface-hover)';
             }
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = isTheme ? 'var(--surface-subtle)' : 'transparent';
+            if (!isSelected) {
+              e.currentTarget.style.backgroundColor = isTheme ? typeStyle.rowBg : 'transparent';
+            }
           }}
           onClick={() => {
             if (isClickable) handleActivate();
-          }}
-          onPointerUp={(e) => {
-            // Mobile/touch: make activation reliable even inside scroll containers
-            if (!isClickable) return;
-            if (e.pointerType === 'touch' || e.pointerType === 'pen') {
-              handleActivate();
-            }
           }}
           onKeyDown={(e) => {
             if (!isClickable) return;
@@ -108,19 +156,21 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
             }
           }}
         >
-          {/* Item with expand/collapse, badge, and name */}
+          {/* Item column: expand + type chip + name */}
           <div 
-            className="flex items-center gap-1.5 min-w-0 px-3"
+            className="flex items-center gap-2 min-w-0 pr-2"
             style={{ paddingLeft: `${indentPx + 12}px` }}
           >
+            {/* Expand/collapse button with better click target */}
             {hasChildren ? (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   toggleExpand(item.id);
                 }}
-                className="flex items-center justify-center w-4 h-4 flex-shrink-0 transition-transform rounded"
+                className="flex items-center justify-center w-5 h-5 flex-shrink-0 rounded transition-colors hover:bg-[var(--surface-hover)]"
                 style={{ color: 'var(--text-muted)' }}
+                aria-label={isExpanded ? 'Collapse' : 'Expand'}
               >
                 {isExpanded ? (
                   <ChevronDown className="w-3.5 h-3.5" />
@@ -129,74 +179,97 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
                 )}
               </button>
             ) : (
-              <div className="w-4 flex-shrink-0" />
+              <div className="w-5 flex-shrink-0" />
             )}
             
-            {/* Badge with proper colors */}
+            {/* Type chip - compact */}
             <span 
-              className="px-1.5 py-0.5 rounded text-[9px] font-semibold uppercase flex-shrink-0"
+              className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide flex-shrink-0"
               style={{ 
-                backgroundColor: badge.bg, 
-                color: badge.color 
+                backgroundColor: typeStyle.bg, 
+                color: typeStyle.color,
               }}
             >
-              {badge.label}
+              {typeStyle.label}
             </span>
             
             {/* Name */}
             <span 
-              className={`text-[13px] truncate ${isObjective || isTheme ? 'font-medium' : ''}`}
+              className={cn(
+                "text-[13px] truncate",
+                (isObjective || isTheme) && "font-medium"
+              )}
               style={{ color: 'var(--text-primary)' }}
             >
               {item.title}
             </span>
           </div>
 
-          {/* Progress bar */}
-          <div className="flex items-center gap-2 px-3">
+          {/* Progress bar column */}
+          <div className="flex items-center gap-2 px-2">
             <div 
-              className="flex-1 h-1 rounded-full overflow-hidden"
-              style={{ backgroundColor: 'var(--progress-bg)' }}
+              className="flex-1 h-[5px] rounded-full overflow-hidden"
+              style={{ backgroundColor: 'var(--progress-track)' }}
             >
               <div
-                className="h-full rounded-full transition-all"
+                className="h-full rounded-full transition-all duration-300"
                 style={{
-                  width: `${item.progress}%`,
-                  backgroundColor: getProgressBarColor(item.progress)
+                  width: `${Math.min(100, item.progress)}%`,
+                  backgroundColor: getProgressBarColor(item.progress),
                 }}
               />
             </div>
           </div>
 
-          {/* Percentage */}
-          <div className="text-center px-2">
+          {/* Percentage column - mono-style aligned */}
+          <div className="text-right pr-2">
             <span 
-              className="text-[12px] tabular-nums"
-              style={{ color: 'var(--text-muted)' }}
+              className="text-[11px] font-mono tabular-nums"
+              style={{ 
+                color: item.progress > 0 ? 'var(--text-secondary)' : 'var(--text-muted)',
+              }}
             >
               {item.progress > 0 ? `${Math.round(item.progress)}%` : '—'}
             </span>
           </div>
 
-          {/* Owner */}
-          <div className="flex items-center gap-1.5 px-3">
+          {/* Status chip column - only for objectives */}
+          <div className="flex items-center justify-center px-1">
+            {isObjective && status && (
+              <span 
+                className="px-1.5 py-0.5 rounded text-[9px] font-semibold whitespace-nowrap"
+                style={{ 
+                  backgroundColor: status.bg, 
+                  color: status.color,
+                }}
+              >
+                {status.label === 'On Track' ? '✓' : status.label === 'At Risk' ? '!' : status.label === 'Behind' ? '↓' : '○'}
+              </span>
+            )}
+          </div>
+
+          {/* Owner column */}
+          <div className="flex items-center gap-1.5 px-2">
             {item.owner ? (
               <>
                 <div 
-                  className="w-5 h-5 rounded-full flex items-center justify-center text-white text-[10px] font-medium"
-                  style={{ backgroundColor: 'var(--brand-primary)' }}
+                  className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-semibold flex-shrink-0"
+                  style={{ 
+                    backgroundColor: 'var(--brand-primary)',
+                    color: 'white',
+                  }}
                 >
-                  {item.owner.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                  {item.owner.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                 </div>
                 <span 
-                  className="text-[12px] truncate"
+                  className="text-[11px] truncate"
                   style={{ color: 'var(--text-muted)' }}
                 >
                   {item.owner.name.split(' ')[0]}
                 </span>
               </>
             ) : (
-              <span className="text-[12px]" style={{ color: 'var(--text-muted)' }}>—</span>
+              <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>—</span>
             )}
           </div>
         </div>
@@ -217,11 +290,11 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
         }}
       >
         <div 
-          className="px-6 py-4"
+          className="px-5 py-3"
           style={{ borderBottom: '1px solid var(--border-subtle)' }}
         >
           <h2 
-            className="text-lg font-semibold"
+            className="text-[15px] font-semibold"
             style={{ color: 'var(--text-primary)' }}
           >
             OKR Tree
@@ -229,8 +302,8 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
         </div>
         <div className="flex items-center justify-center py-12">
           <div 
-            className="animate-spin rounded-full h-6 w-6 border-b-2" 
-            style={{ borderColor: '#C69C6D' }}
+            className="animate-spin rounded-full h-5 w-5 border-2 border-t-transparent" 
+            style={{ borderColor: 'var(--brand-primary)', borderTopColor: 'transparent' }}
           />
         </div>
       </section>
@@ -239,126 +312,160 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
 
   return (
     <section 
-      className="rounded-xl overflow-hidden"
+      className="rounded-xl overflow-hidden flex flex-col"
       style={{
         backgroundColor: 'var(--surface-bg)',
         border: '1px solid var(--border-default)',
         boxShadow: 'var(--shadow-card)',
       }}
     >
-      {/* Header with section title pattern */}
+      {/* Header */}
       <div 
-        className="px-5 py-3 flex items-center justify-between"
+        className="px-4 py-3 flex items-center justify-between flex-shrink-0"
         style={{ borderBottom: '1px solid var(--border-subtle)' }}
       >
-        <div>
+        <div className="flex items-center gap-3">
           <h2 
             className="text-[15px] font-semibold"
             style={{ color: 'var(--text-primary)' }}
           >
             OKR Tree
           </h2>
-          {/* Colored breadcrumb per specification */}
-          <div 
-            className="flex items-center gap-1.5 mt-0.5 text-[11px]"
-            style={{ color: 'var(--text-muted)' }}
-          >
-            <span className="font-medium" style={{ color: 'var(--secondary-green)' }}>Theme</span>
-            <ArrowRight size={10} style={{ color: 'var(--text-muted)' }} />
-            <span className="font-medium" style={{ color: 'var(--brand-gold)' }}>Objective</span>
-            <ArrowRight size={10} style={{ color: 'var(--text-muted)' }} />
-            <span className="font-medium" style={{ color: 'var(--secondary-bronze)' }}>Key Results</span>
+          {/* Type legend - compact pills */}
+          <div className="flex items-center gap-1">
+            {Object.entries(typeStyles).map(([key, style]) => (
+              <span 
+                key={key}
+                className="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase"
+                style={{ backgroundColor: style.bg, color: style.color }}
+              >
+                {style.label}
+              </span>
+            ))}
           </div>
         </div>
+        
+        {/* Search + expand */}
         <div className="flex items-center gap-2">
-          <div className="relative w-52">
+          {/* Premium search input */}
+          <div className="relative w-48">
             <Search 
-              className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5" 
+              className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 pointer-events-none" 
               style={{ color: 'var(--text-muted)' }} 
             />
-            <Input
-              placeholder="Search..."
+            <input
+              type="text"
+              placeholder="Search OKRs..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 h-8 text-[12px]"
+              className="w-full h-7 pl-8 pr-7 text-[12px] rounded-md transition-all outline-none"
               style={{ 
-                backgroundColor: 'var(--surface-bg)', 
-                borderColor: 'var(--border-default)',
-                color: 'var(--text-primary)'
+                backgroundColor: 'var(--surface-subtle)', 
+                border: '1px solid var(--border-subtle)',
+                color: 'var(--text-primary)',
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = 'var(--brand-primary)';
+                e.currentTarget.style.boxShadow = '0 0 0 2px var(--ring-primary)';
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = 'var(--border-subtle)';
+                e.currentTarget.style.boxShadow = 'none';
               }}
             />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-[var(--surface-hover)] transition-colors"
+                style={{ color: 'var(--text-muted)' }}
+                aria-label="Clear search"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            )}
           </div>
+          
           <Button 
             variant="ghost" 
             size="icon" 
-            className="h-8 w-8"
+            className="h-7 w-7 rounded-md"
             onClick={() => navigate('/enterprise/okr-hub')}
-            title="Expand to OKR Hub"
-            style={{ color: 'var(--text-muted)' }}
+            title="Open OKR Hub"
+            style={{ 
+              color: 'var(--text-muted)',
+              backgroundColor: 'var(--surface-subtle)',
+              border: '1px solid var(--border-subtle)',
+            }}
           >
             <Maximize2 className="h-3.5 w-3.5" />
           </Button>
         </div>
       </div>
 
-      {/* Column Headers */}
+      {/* Sticky Column Headers */}
       <div
-        className="grid items-center py-2.5"
+        className="grid items-center py-2 sticky top-0 z-10 flex-shrink-0"
         style={{
-          gridTemplateColumns: '1fr 180px 50px 120px',
+          gridTemplateColumns: '1fr 140px 52px 52px 100px',
           backgroundColor: 'var(--surface-subtle)',
           borderBottom: '1px solid var(--border-default)',
         }}
       >
         <div 
-          className="text-[10px] font-semibold uppercase tracking-wider px-5"
+          className="text-[10px] font-semibold uppercase tracking-wider pl-4"
           style={{ color: 'var(--text-muted)' }}
         >
           Item
         </div>
         <div 
-          className="text-[10px] font-semibold uppercase tracking-wider px-3"
+          className="text-[10px] font-semibold uppercase tracking-wider px-2"
           style={{ color: 'var(--text-muted)' }}
         >
           Progress
         </div>
         <div 
-          className="text-[10px] font-semibold uppercase tracking-wider text-center px-2"
+          className="text-[10px] font-semibold uppercase tracking-wider text-right pr-2"
           style={{ color: 'var(--text-muted)' }}
         >
           %
         </div>
         <div 
-          className="text-[10px] font-semibold uppercase tracking-wider px-3"
+          className="text-[10px] font-semibold uppercase tracking-wider text-center"
+          style={{ color: 'var(--text-muted)' }}
+        >
+          Status
+        </div>
+        <div 
+          className="text-[10px] font-semibold uppercase tracking-wider px-2"
           style={{ color: 'var(--text-muted)' }}
         >
           Owner
         </div>
       </div>
 
-      {/* Tree Content */}
-      <div style={{ maxHeight: '360px', overflowY: 'auto' }}>
+      {/* Tree Content - scrollable */}
+      <div className="flex-1 overflow-y-auto" style={{ maxHeight: '380px' }}>
         {treeData.length > 0 ? (
           treeData.map((item) => renderTreeItem(item, 0))
         ) : (
           <div className="py-10 px-5 text-center">
             <div 
-              className="w-12 h-12 rounded-xl mx-auto flex items-center justify-center mb-3"
+              className="w-10 h-10 rounded-lg mx-auto flex items-center justify-center mb-3"
               style={{ backgroundColor: 'var(--surface-subtle)' }}
             >
-              <Target className="w-5 h-5" style={{ color: 'var(--text-muted)' }} />
+              <Target className="w-4 h-4" style={{ color: 'var(--text-muted)' }} />
             </div>
             <p 
-              className="text-[14px] font-medium mb-1"
+              className="text-[13px] font-medium mb-1"
               style={{ color: 'var(--text-primary)' }}
             >
-              No OKRs linked to this snapshot
+              No OKRs linked
             </p>
             <p 
-              className="text-[12px] max-w-[280px] mx-auto"
+              className="text-[11px] max-w-[240px] mx-auto"
               style={{ color: 'var(--text-muted)' }}
             >
-              Create objectives to start tracking progress, alignment, and risk.
+              Create objectives to track progress and alignment.
             </p>
           </div>
         )}

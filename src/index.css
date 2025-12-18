@@ -297,9 +297,18 @@
   /* Additional surface tokens */
   --surface-3: #F0F2F5;
   --surface-champagne: #F9F6F2;
+  --surface-active: rgba(92, 124, 92, 0.08);
   
   /* Gold accent tokens */
   --border-gold: rgba(198, 156, 109, 0.3);
+  
+  /* Type chip backgrounds (for OKR Tree etc.) */
+  --secondary-green-bg: rgba(92, 124, 92, 0.1);
+  --brand-gold-bg: rgba(198, 156, 109, 0.1);
+  --secondary-bronze-bg: rgba(139, 115, 85, 0.1);
+  
+  /* Focus ring for inputs */
+  --ring-primary: rgba(92, 124, 92, 0.25);
   
   /* Warning token */
   --warning: 35 70% 50%;
@@ -430,9 +439,18 @@
   --surface-elevated: #151B23;
   --surface-subtle: #151B23;
   --surface-hover: #1C232D;
+  --surface-active: rgba(107, 142, 107, 0.12);
   --surface-tinted: rgba(107, 142, 107, 0.05);
   --surface-gold-tint: rgba(212, 168, 85, 0.06);
   --surface-champagne: #1A1D20;
+  
+  /* Type chip backgrounds (for OKR Tree etc.) */
+  --secondary-green-bg: rgba(107, 142, 107, 0.15);
+  --brand-gold-bg: rgba(212, 168, 85, 0.15);
+  --secondary-bronze-bg: rgba(196, 165, 116, 0.15);
+  
+  /* Focus ring for inputs */
+  --ring-primary: rgba(107, 142, 107, 0.35);
   
   /* Gold accent tokens */
   --border-gold: rgba(212, 168, 85, 0.3);
