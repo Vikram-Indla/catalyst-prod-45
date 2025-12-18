@@ -3,12 +3,12 @@
  * Clean 3-column executive block with equal weight cards
  * Compact rows, thin bars, improved scannability
  * 
- * TYPOGRAPHY LOCK (JOB-190):
- * - Section title: text-sm font-semibold tracking-wide (14px min)
- * - Card headings: text-sm font-semibold uppercase tracking-wide
- * - Values: text-base font-medium text-primary (or colored for status)
- * - Supporting rows: text-sm text-secondary
- * - NO text-muted, opacity-60, opacity-50 on content
+ * TYPOGRAPHY LOCK:
+ * - Section title: text-[12px] font-semibold tracking-[0.08em] uppercase text-muted-foreground
+ * - Card label: text-[12px] font-medium text-muted-foreground
+ * - Data row label: text-[12px] text-muted-foreground
+ * - Data row value: text-[14px] font-medium text-foreground
+ * - NO opacity-*, NO text-white/* on content text
  */
 
 import { useNavigate } from 'react-router-dom';
@@ -26,7 +26,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useMemo } from 'react';
-import { TYPOGRAPHY, TEXT_CLASSES } from './strategyRoomTypography';
+import { TYPOGRAPHY, TEXT_COLORS } from './strategyRoomTypography';
 
 interface ExposureGapsSectionProps {
   snapshotId?: string;
@@ -87,35 +87,20 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
     return items;
   }, [displayData.atRiskObjectives, displayData.topRisks, displayData.alignmentGaps, displayData.misalignedEpics, displayData.misalignedFeatures]);
 
-  // Skeleton only on first load - matches final layout dimensions
+  // Skeleton only on first load
   if (isLoading && !hasData) {
     return (
       <section 
-        className="rounded-lg overflow-hidden"
-        style={{ 
-          backgroundColor: 'var(--surface-bg)', 
-          border: '1px solid var(--border-default)',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-        }}
+        className="rounded-lg overflow-hidden bg-card border border-border"
+        style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
       >
-        <div 
-          className="px-4 py-2.5"
-          style={{ borderBottom: '1px solid var(--border-subtle)' }}
-        >
+        <div className="px-4 py-2.5 border-b border-border/50">
           <Skeleton className="h-4 w-32" />
         </div>
         <div className="p-3">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
             {['c1', 'c2', 'c3'].map((key) => (
-              <div 
-                key={key}
-                className="rounded-md p-3"
-                style={{ 
-                  backgroundColor: 'var(--surface-2)', 
-                  border: '1px solid var(--border-subtle)',
-                  minHeight: '150px',
-                }}
-              >
+              <div key={key} className="rounded-md p-3 bg-muted border border-border/50 min-h-[150px]">
                 <Skeleton className="h-4 w-28 mb-4" />
                 <div className="space-y-2">
                   <Skeleton className="h-5 w-full" />
@@ -134,28 +119,21 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
 
   return (
     <section 
-      className="rounded-lg overflow-hidden"
-      style={{ 
-        backgroundColor: 'var(--surface-bg)', 
-        border: '1px solid var(--border-default)',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-      }}
+      className="rounded-lg overflow-hidden bg-card border border-border"
+      style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
     >
-      {/* Section Header - text-sm font-semibold tracking-wide */}
-      <div 
-        className="px-4 py-2.5 flex items-center justify-between"
-        style={{ borderBottom: '1px solid var(--border-subtle)' }}
-      >
+      {/* Section Header */}
+      <div className="px-4 py-2.5 flex items-center justify-between border-b border-border/50">
         <div className="flex items-center gap-2">
-          <Shield size={14} style={{ color: 'var(--status-danger)' }} />
-          <h2 className={cn(TYPOGRAPHY.sectionTitle, TEXT_CLASSES.secondary)}>
+          <Shield size={14} className="text-destructive" />
+          <h2 className={cn(TYPOGRAPHY.sectionTitle, TEXT_COLORS.muted)}>
             Exposure & Gaps
           </h2>
         </div>
         {isUpdating && (
           <div className="flex items-center gap-1.5">
-            <Loader2 size={12} className="animate-spin" style={{ color: 'var(--text-secondary)' }} />
-            <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Refreshing…</span>
+            <Loader2 size={12} className="animate-spin text-muted-foreground" />
+            <span className={cn(TYPOGRAPHY.subtext, TEXT_COLORS.muted)}>Refreshing…</span>
           </div>
         )}
       </div>
@@ -166,7 +144,7 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
           <CockpitCard
             title="Risk Exposure"
             icon={<Shield size={14} />}
-            iconColor="text-status-danger"
+            iconColor="text-destructive"
             cta={{ label: 'View all', onClick: () => navigate('/enterprise/risks') }}
           >
             <div className="space-y-1.5">
@@ -194,13 +172,13 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
             </div>
 
             {displayData.overdueRisks > 0 && (
-              <div className="pt-2 mt-2" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+              <div className="pt-2 mt-2 border-t border-border/50">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
-                    <Clock size={14} className="text-status-danger" />
-                    <span className={cn(TYPOGRAPHY.dataRowLabel, TEXT_CLASSES.secondary)}>Overdue</span>
+                    <Clock size={14} className="text-destructive" />
+                    <span className={cn(TYPOGRAPHY.dataRowLabel, TEXT_COLORS.muted)}>Overdue</span>
                   </div>
-                  <span className={cn(TYPOGRAPHY.secondaryMetric)} style={{ color: 'var(--status-danger)' }}>
+                  <span className={cn(TYPOGRAPHY.secondaryMetric, 'text-destructive')}>
                     {displayData.overdueRisks}
                   </span>
                 </div>
@@ -229,13 +207,13 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
               />
             </div>
 
-            <div className="pt-2 mt-2" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+            <div className="pt-2 mt-2 border-t border-border/50">
               <div className="flex items-center justify-between">
-                <span className={cn(TYPOGRAPHY.cardLabel, TEXT_CLASSES.secondary)}>Total gaps</span>
+                <span className={cn(TYPOGRAPHY.cardLabel, TEXT_COLORS.muted)}>Total gaps</span>
                 <span className={cn(
                   TYPOGRAPHY.secondaryMetric,
-                  displayData.alignmentGaps > 0 ? "" : TEXT_CLASSES.primary
-                )} style={{ color: displayData.alignmentGaps > 0 ? 'var(--secondary-bronze)' : undefined }}>
+                  displayData.alignmentGaps > 0 ? 'text-secondary-bronze' : TEXT_COLORS.primary
+                )}>
                   {displayData.alignmentGaps}
                 </span>
               </div>
@@ -250,8 +228,8 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
           >
             {attentionItems.length === 0 ? (
               <div className="py-4 text-center">
-                <CheckCircle2 size={20} className="mx-auto mb-1.5 text-status-success" />
-                <span className={cn(TYPOGRAPHY.subtext, TEXT_CLASSES.secondary)}>No items need attention</span>
+                <CheckCircle2 size={20} className="mx-auto mb-1.5 text-primary" />
+                <span className={cn(TYPOGRAPHY.subtext, TEXT_COLORS.muted)}>No items need attention</span>
               </div>
             ) : (
               <div className="space-y-1.5">
@@ -260,7 +238,7 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
                 ))}
                 {attentionItems.length > 4 && (
                   <div className="text-center pt-1.5">
-                    <span className={cn(TYPOGRAPHY.microcopy, TEXT_CLASSES.secondary)}>
+                    <span className={cn(TYPOGRAPHY.microcopy, TEXT_COLORS.muted)}>
                       +{attentionItems.length - 4} more
                     </span>
                   </div>
@@ -284,24 +262,11 @@ interface CockpitCardProps {
 
 function CockpitCard({ title, icon, iconColor, children, cta }: CockpitCardProps) {
   return (
-    <div 
-      className="rounded-md overflow-hidden flex flex-col"
-      style={{ 
-        backgroundColor: 'var(--surface-2)', 
-        border: '1px solid var(--border-subtle)',
-        minHeight: '150px',
-      }}
-    >
-      {/* Card header: text-sm font-semibold uppercase tracking-wide */}
-      <div 
-        className="px-3 py-2.5 flex items-center gap-2"
-        style={{ 
-          borderBottom: '1px solid var(--border-subtle)',
-          backgroundColor: 'var(--surface-3)'
-        }}
-      >
+    <div className="rounded-md overflow-hidden flex flex-col bg-muted/50 border border-border/50 min-h-[150px]">
+      {/* Card header */}
+      <div className="px-3 py-2.5 flex items-center gap-2 border-b border-border/50 bg-muted/70">
         <span className={iconColor}>{icon}</span>
-        <span className={cn(TYPOGRAPHY.sectionTitle, TEXT_CLASSES.secondary)}>
+        <span className={cn(TYPOGRAPHY.sectionTitle, TEXT_COLORS.muted)}>
           {title}
         </span>
       </div>
@@ -313,8 +278,7 @@ function CockpitCard({ title, icon, iconColor, children, cta }: CockpitCardProps
           <Button
             variant="ghost"
             size="sm"
-            className={cn(TYPOGRAPHY.ctaButton, "w-full h-8 hover:bg-[var(--surface-hover)] focus-visible:ring-1")}
-            style={{ color: 'var(--text-secondary)' }}
+            className={cn(TYPOGRAPHY.ctaButton, "w-full h-8 hover:bg-accent focus-visible:ring-1 text-muted-foreground")}
             onClick={cta.onClick}
           >
             {cta.label}
@@ -335,51 +299,38 @@ interface DataRowProps {
 }
 
 function DataRow({ label, value, total = 0, variant = 'neutral', showBar }: DataRowProps) {
-  // Values use text-primary for neutral, colored for status variants
   const valueColors: Record<string, string> = {
-    neutral: 'var(--text-primary)',
-    danger: 'var(--status-danger)',
-    warning: 'var(--status-warning)',
-    bronze: 'var(--secondary-bronze)',
+    neutral: TEXT_COLORS.primary,
+    danger: 'text-destructive',
+    warning: 'text-status-warning',
+    bronze: 'text-secondary-bronze',
   };
 
   const barColors: Record<string, string> = {
-    neutral: 'var(--text-secondary)',
-    danger: 'var(--status-danger)',
-    warning: 'var(--status-warning)',
-    bronze: 'var(--secondary-bronze)',
+    neutral: 'bg-muted-foreground/50',
+    danger: 'bg-destructive',
+    warning: 'bg-status-warning',
+    bronze: 'bg-secondary-bronze',
   };
 
   const barWidth = total > 0 ? Math.round((value / total) * 100) : 0;
 
   return (
-    <div 
-      className="flex items-center gap-2 py-1.5 rounded px-2 -mx-2 transition-colors hover:bg-[var(--surface-hover)]"
-    >
-      {/* Label: text-sm text-secondary */}
-      <span className={cn(TYPOGRAPHY.dataRowLabel, TEXT_CLASSES.secondary, 'flex-1')}>{label}</span>
+    <div className="flex items-center gap-2 py-1.5 rounded px-2 -mx-2 transition-colors hover:bg-accent">
+      {/* Label */}
+      <span className={cn(TYPOGRAPHY.dataRowLabel, TEXT_COLORS.muted, 'flex-1')}>{label}</span>
       
       {showBar && total > 0 && (
-        <div 
-          className="w-14 h-1.5 rounded-full overflow-hidden"
-          style={{ backgroundColor: 'var(--border-default)' }}
-        >
+        <div className="w-14 h-1.5 rounded-full overflow-hidden bg-border">
           <div 
-            className="h-full rounded-full transition-all"
-            style={{ 
-              width: `${barWidth}%`, 
-              backgroundColor: barColors[variant], 
-              opacity: variant === 'neutral' ? 0.5 : 1 
-            }}
+            className={cn("h-full rounded-full transition-all", barColors[variant])}
+            style={{ width: `${barWidth}%` }}
           />
         </div>
       )}
       
-      {/* Value: text-base font-medium */}
-      <span 
-        className={cn(TYPOGRAPHY.dataRowValue, 'w-7 text-right')}
-        style={{ color: valueColors[variant] }}
-      >
+      {/* Value */}
+      <span className={cn(TYPOGRAPHY.dataRowValue, 'w-7 text-right', valueColors[variant])}>
         {value}
       </span>
     </div>
@@ -388,34 +339,30 @@ function DataRow({ label, value, total = 0, variant = 'neutral', showBar }: Data
 
 function AttentionRow({ item, onClick }: { item: AttentionItem; onClick: () => void }) {
   const severityColors: Record<string, string> = {
-    critical: 'var(--status-danger)',
-    high: 'var(--status-warning)',
-    medium: 'var(--secondary-bronze)',
+    critical: 'bg-destructive',
+    high: 'bg-status-warning',
+    medium: 'bg-secondary-bronze',
   };
 
   return (
     <button
       onClick={onClick}
-      className="w-full px-2 py-2 rounded text-left flex items-center gap-2.5 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring group hover:bg-[var(--surface-hover)]"
+      className="w-full px-2 py-2 rounded text-left flex items-center gap-2.5 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring group hover:bg-accent"
     >
-      <div 
-        className="w-2 h-2 rounded-full flex-shrink-0"
-        style={{ backgroundColor: severityColors[item.severity] }}
-      />
+      <div className={cn("w-2 h-2 rounded-full flex-shrink-0", severityColors[item.severity])} />
       <div className="flex-1 min-w-0">
-        {/* Title: text-sm font-medium text-primary */}
-        <div className={cn(TYPOGRAPHY.cardLabel, TEXT_CLASSES.primary, 'truncate group-hover:text-[var(--brand-primary)]')}>
+        {/* Title */}
+        <div className={cn(TYPOGRAPHY.cardLabel, TEXT_COLORS.primary, 'truncate group-hover:text-primary')}>
           {item.title}
         </div>
-        {/* Reason: text-sm text-secondary */}
-        <div className={cn(TYPOGRAPHY.microcopy, TEXT_CLASSES.secondary, 'leading-tight')}>
+        {/* Reason */}
+        <div className={cn(TYPOGRAPHY.microcopy, TEXT_COLORS.muted, 'leading-tight')}>
           {item.reason}
         </div>
       </div>
       <ChevronRight 
         size={14} 
-        className="opacity-0 group-hover:opacity-60 transition-opacity flex-shrink-0" 
-        style={{ color: 'var(--text-secondary)' }}
+        className="opacity-0 group-hover:opacity-60 transition-opacity flex-shrink-0 text-muted-foreground" 
       />
     </button>
   );

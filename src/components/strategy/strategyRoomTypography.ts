@@ -4,124 +4,102 @@
  * Do NOT change these values unless the entire Strategy Room is being redesigned.
  * 
  * HARD RULES:
- * - No text-muted, opacity-60, opacity-50 inside content areas
- * - All text must use theme tokens (var(--text-*))
- * - Section titles never smaller than 12px (use text-xs minimum)
- * - Primary metrics always visually dominant (28-32px)
- * - Never use text-[9px], text-[10px], text-[11px], etc.
- * - Use text-xs (12px) as the minimum readable size
+ * - ALL text uses Tailwind semantic tokens: text-foreground, text-muted-foreground
+ * - NO opacity-*, text-white, text-black, or custom color vars on text
+ * - Section titles: 12px minimum
+ * - Primary metrics: 28px (numbers), 18px (status words)
+ * - Supporting text: 12px minimum, always readable
  */
 
-// CSS class strings for consistent application
-export const TYPOGRAPHY = {
-  // ─────────────────────────────────────────────────
-  // SECTION HEADERS
-  // ─────────────────────────────────────────────────
-  
-  // Section title (e.g., "STRATEGIC PULSE", "EXPOSURE & GAPS", "OKR Tree")
-  // text-sm = 14px, font-semibold, tracking-wide
-  sectionTitle: 'text-sm font-semibold uppercase tracking-wide',
-  
-  // Section subtitle / description
-  sectionSubtitle: 'text-xs',
+// ─────────────────────────────────────────────────
+// TYPOGRAPHY CLASSES (Exact pixel sizes as specified)
+// ─────────────────────────────────────────────────
 
-  // ─────────────────────────────────────────────────
-  // CARD CONTENT
-  // ─────────────────────────────────────────────────
+export const TYPOGRAPHY = {
+  // Section header (e.g., "STRATEGIC PULSE", "EXPOSURE & GAPS")
+  // 12px, semibold, uppercase, 0.08em tracking
+  sectionTitle: 'text-[12px] font-semibold tracking-[0.08em] uppercase',
   
-  // Card label (e.g., "Strategy Health", "Progress", "At Risk")
-  // text-sm = 14px on desktop, font-medium (min 12px)
-  cardLabel: 'text-sm font-medium',
+  // Card label (e.g., "Progress", "At Risk", "Strategy Health")
+  // 12px, medium weight
+  cardLabel: 'text-[12px] font-medium',
   
-  // Primary metric value (e.g., "2%", "10", "2")
-  // text-3xl = 30px, font-semibold, leading-none - MOST DOMINANT
-  primaryMetric: 'text-3xl font-semibold leading-none tabular-nums',
+  // Primary metric - numbers (e.g., "2%", "25", "10")
+  // 28px, semibold, tight leading
+  primaryMetric: 'text-[28px] leading-[32px] font-semibold tabular-nums',
   
-  // Secondary metric (e.g., within cards, smaller values)
-  // text-xl = 20px, font-bold
-  secondaryMetric: 'text-xl font-bold tabular-nums',
+  // Primary metric - status words (e.g., "On Track", "Off Track")
+  // 18px, semibold
+  primaryMetricStatus: 'text-[18px] leading-[24px] font-semibold',
   
-  // Subtext/qualifier (e.g., "4 objectives", "Need attention")
-  // text-sm = 14px, normal weight, readable (NOT muted into invisibility)
-  subtext: 'text-sm',
+  // Card supporting line (e.g., "4 objectives", "Need attention")
+  // 12px, regular leading
+  subtext: 'text-[12px] leading-[16px]',
   
-  // ─────────────────────────────────────────────────
-  // DATA ROWS & TABLES
-  // ─────────────────────────────────────────────────
+  // Secondary metric (e.g., smaller values in cards)
+  // 16px, bold
+  secondaryMetric: 'text-[16px] font-bold tabular-nums',
   
-  // Data row label (inside cards like Risk Exposure, Alignment Gaps)
-  // text-sm, readable secondary color
-  dataRowLabel: 'text-sm',
+  // Data row label (inside cards like Risk Exposure)
+  // 12px, regular
+  dataRowLabel: 'text-[12px]',
   
   // Data row value
-  // text-base = 16px, font-medium
-  dataRowValue: 'text-base font-medium tabular-nums',
+  // 14px, medium
+  dataRowValue: 'text-[14px] font-medium tabular-nums',
   
-  // Table header (column headers in grids)
-  // text-xs = 12px, font-semibold, uppercase
-  tableHeader: 'text-xs font-semibold uppercase tracking-wider',
+  // Table header row (Coverage + OKR table headers)
+  // 11px, semibold, uppercase, 0.06em tracking
+  tableHeader: 'text-[11px] font-semibold tracking-[0.06em] uppercase',
   
-  // Table cell - primary content
-  // text-sm = 14px, font-medium for emphasis
-  tableCell: 'text-sm',
-  tableCellEmphasis: 'text-sm font-medium',
+  // Table body rows
+  // 13px, medium weight
+  tableCell: 'text-[13px] leading-[18px]',
+  tableCellEmphasis: 'text-[13px] leading-[18px] font-medium',
+  tableCellSecondary: 'text-[12px] leading-[16px]',
   
-  // Table cell - secondary/supporting
-  // text-xs = 12px minimum
-  tableCellSecondary: 'text-xs',
+  // Badges and chips
+  typeBadge: 'text-[11px] font-bold uppercase tracking-wide',
+  statusBadge: 'text-[11px] font-semibold',
   
-  // ─────────────────────────────────────────────────
-  // BADGES, CHIPS & SMALL TEXT
-  // ─────────────────────────────────────────────────
-  
-  // Type badge (e.g., "THM", "OBJ", "KR")
-  // text-xs = 12px, font-bold, uppercase - minimum readable size
-  typeBadge: 'text-xs font-bold uppercase tracking-wide',
-  
-  // Status badge (e.g., "On Track", "At Risk")
-  statusBadge: 'text-xs font-semibold',
-  
-  // Microcopy (e.g., "Intervention needed", "2 high severity")
-  // text-xs = 12px, readable (NOT muted)
-  microcopy: 'text-xs',
+  // Microcopy (e.g., "+4 more", "2 high severity")
+  // 12px, readable
+  microcopy: 'text-[12px]',
   
   // CTA buttons inside cards
-  ctaButton: 'text-sm font-medium',
+  ctaButton: 'text-[12px] font-medium',
   
   // Progress percentage
-  progressPercent: 'text-xs font-medium tabular-nums',
+  progressPercent: 'text-[12px] font-medium tabular-nums',
   
   // Count badges
-  countBadge: 'text-xs font-semibold tabular-nums',
+  countBadge: 'text-[11px] font-semibold tabular-nums',
 } as const;
 
-// Color tokens - NEVER use opacity modifiers on text
+// ─────────────────────────────────────────────────
+// COLOR CLASSES — Use ONLY these Tailwind classes
+// NO opacity-*, NO text-white/*, NO inline color vars
+// ─────────────────────────────────────────────────
+
 export const TEXT_COLORS = {
   // Primary content - highest contrast, always readable
-  primary: 'var(--text-primary)',
+  // Maps to --foreground in both light and dark themes
+  primary: 'text-foreground',
   
-  // Secondary content - supporting text, still clearly readable
-  secondary: 'var(--text-secondary)',
-  
-  // Status colors for metrics
-  success: 'var(--status-success)',
-  warning: 'var(--status-warning)',
-  danger: 'var(--status-danger)',
-  bronze: 'var(--secondary-bronze)',
-} as const;
-
-// Tailwind text color classes (for className usage)
-export const TEXT_CLASSES = {
-  primary: 'text-primary',
-  secondary: 'text-secondary',
+  // Secondary/muted content - supporting text, still clearly readable
+  // Maps to --muted-foreground in both light and dark themes
+  muted: 'text-muted-foreground',
 } as const;
 
 // ─────────────────────────────────────────────────
 // FORBIDDEN PATTERNS (for code review)
 // ─────────────────────────────────────────────────
 // DO NOT USE in Strategy Room components:
-// - text-[8px], text-[9px], text-[10px], text-[11px] - too small
-// - opacity-30, opacity-40, opacity-50 on text
-// - text-muted without explicit readable styling
+// - text-[8px], text-[9px], text-[10px] - too small
+// - opacity-30, opacity-40, opacity-50, opacity-60 on text
+// - text-white, text-white/*, text-black/*
+// - fill-white, stroke-white on icons (except status badges)
+// - style={{ color: 'var(--text-muted)' }} - use Tailwind class instead
+// - text-secondary (ambiguous) - use text-muted-foreground instead
 // - grayscale, blur on content containers
 // - pointer-events-none on visible content
