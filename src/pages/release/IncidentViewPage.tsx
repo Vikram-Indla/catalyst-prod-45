@@ -447,18 +447,28 @@ export default function IncidentViewPage() {
 
   return (
     <div className="h-full flex flex-col bg-background">
-      {/* Header */}
-      <div className="h-14 border-b border-border bg-card flex-shrink-0 px-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      {/* Header - Clean separation, scannable in < 3 seconds */}
+      <div className="h-16 border-b border-border bg-card flex-shrink-0 px-4 flex items-center justify-between">
+        <div className="flex items-center gap-4">
           <Link to="/release/incidents">
             <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
+          
+          {/* Key & Summary - Clear hierarchy */}
+          <div className="flex items-center gap-3">
+            <span className="font-mono text-base font-bold text-brand-primary">{incident.incident_key}</span>
+            <div className="h-5 w-px bg-border" />
+            <h1 className="text-sm font-medium text-foreground max-w-md truncate">{incident.title}</h1>
+          </div>
+        </div>
+        
+        {/* Status Badges - Scannable */}
+        <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <span className="font-mono text-sm font-semibold text-brand-primary">{incident.incident_key}</span>
             <Select value={incident.status} onValueChange={handleStatusChange} disabled={isConverted}>
-              <SelectTrigger className="h-7 w-auto border-0 bg-transparent p-0">
+              <SelectTrigger className="h-7 w-auto border-0 bg-transparent p-0 hover:bg-muted/50 rounded px-1">
                 <StatusBadge status={incident.status} />
               </SelectTrigger>
               <SelectContent className="z-[500]">
@@ -468,15 +478,22 @@ export default function IncidentViewPage() {
               </SelectContent>
             </Select>
             <SeverityBadge severity={incident.severity} />
-            <PriorityBadge priority={incident.priority} />
+            {incident.support_level && (
+              <Badge variant="outline" className={cn(
+                "text-xs font-medium",
+                incident.support_level === 'L3' ? 'bg-purple-100 text-purple-800 border-purple-200' :
+                incident.support_level === 'L2' ? 'bg-blue-100 text-blue-800 border-blue-200' :
+                'bg-green-100 text-green-800 border-green-200'
+              )}>
+                {incident.support_level}
+              </Badge>
+            )}
             {incident.is_major_incident && (
-              <Badge variant="destructive" className="text-[10px]">Major Incident</Badge>
+              <Badge variant="destructive" className="text-[10px] font-semibold animate-pulse">MAJOR</Badge>
             )}
           </div>
-        </div>
-        
-        {/* Actions */}
-        <div className="flex items-center gap-2">
+          
+          {/* Actions */}
           {isL3 && !isConverted && (
             <Button 
               variant="outline" 
@@ -782,47 +799,59 @@ export default function IncidentViewPage() {
               </TabsList>
 
               <TabsContent value="comments" className="space-y-3">
-                {/* Add Comment */}
+                {/* Add Comment - Optimized for high-volume usage */}
                 <div className="flex gap-2">
-                  <Input
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    placeholder="Add a comment..."
-                    className="text-sm"
-                    onKeyDown={(e) => e.key === 'Enter' && handleAddComment()}
-                  />
+                  <div className="flex-1 relative">
+                    <Input
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      placeholder="Add a comment... (Enter to submit)"
+                      className="text-sm pr-16"
+                      onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleAddComment()}
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">
+                      ⏎ Enter
+                    </span>
+                  </div>
                   <Button 
                     size="sm" 
                     onClick={handleAddComment}
                     disabled={!newComment.trim() || addComment.isPending}
-                    className="bg-brand-primary text-white"
+                    className="bg-brand-primary text-white h-9"
                   >
-                    Add
+                    {addComment.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : 'Add'}
                   </Button>
                 </div>
 
                 {incident.comments && incident.comments.length > 0 ? (
-                  <div className="space-y-3 max-h-64 overflow-y-auto">
+                  <div className="space-y-2 max-h-80 overflow-y-auto">
                     {incident.comments.map((comment) => (
-                      <div key={comment.id} className="border-b border-border/50 pb-3 last:border-0 last:pb-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-[10px] font-medium">
-                            {comment.author?.avatar_initials || comment.author?.full_name?.charAt(0) || 'S'}
-                          </div>
-                          <span className="text-xs font-medium text-foreground">
-                            {comment.author?.full_name || 'System'}
-                          </span>
-                          <span className="text-[10px] text-muted-foreground">
-                            {format(new Date(comment.created_at), 'MMM d, h:mm a')}
-                          </span>
-                          <Badge variant="outline" className="text-[9px] px-1 py-0">{comment.comment_type}</Badge>
+                      <div key={comment.id} className="flex gap-2 py-2 border-b border-border/30 last:border-0">
+                        <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-[10px] font-semibold flex-shrink-0">
+                          {comment.author?.avatar_initials || comment.author?.full_name?.charAt(0) || 'S'}
                         </div>
-                        <div className="text-xs text-foreground ml-8">{comment.content}</div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-0.5">
+                            <span className="text-xs font-medium text-foreground truncate">
+                              {comment.author?.full_name || 'System'}
+                            </span>
+                            <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+                              {format(new Date(comment.created_at), 'MMM d, h:mm a')}
+                            </span>
+                            {comment.comment_type !== 'update' && (
+                              <Badge variant="outline" className="text-[9px] px-1 py-0 capitalize">{comment.comment_type}</Badge>
+                            )}
+                          </div>
+                          <div className="text-xs text-foreground leading-relaxed">{comment.content}</div>
+                        </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-xs text-muted-foreground italic py-4 text-center">No comments yet</p>
+                  <div className="py-8 text-center">
+                    <MessageSquare className="h-8 w-8 text-muted-foreground/30 mx-auto mb-2" />
+                    <p className="text-xs text-muted-foreground">No comments yet. Be the first to add one.</p>
+                  </div>
                 )}
               </TabsContent>
 
@@ -868,19 +897,27 @@ export default function IncidentViewPage() {
             </Tabs>
           </div>
 
-          {/* Attachments */}
+          {/* Attachments - Compact one-line list */}
           <div className="bg-card border border-border rounded-lg p-4">
-            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
-              Attachments ({incident.attachments?.length || 0})
-            </h2>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                Attachments
+              </h2>
+              {incident.attachments && incident.attachments.length > 0 && (
+                <Badge variant="secondary" className="text-[10px]">{incident.attachments.length}</Badge>
+              )}
+            </div>
             {incident.attachments && incident.attachments.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+              <div className="space-y-1">
                 {incident.attachments.map((att) => (
-                  <div key={att.id} className="flex items-center gap-2 p-2 bg-muted/30 rounded hover:bg-muted/50 cursor-pointer">
+                  <div key={att.id} className="flex items-center gap-2 py-1.5 hover:bg-muted/30 rounded px-2 -mx-2 cursor-pointer group">
                     <Paperclip className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-                    <span className="text-xs text-foreground flex-1 truncate">{att.file_name}</span>
-                    <span className="text-[10px] text-muted-foreground">
-                      {(att.file_size / 1024).toFixed(1)} KB
+                    <span className="text-xs text-foreground flex-1 truncate group-hover:text-brand-primary">{att.file_name}</span>
+                    <span className="text-[10px] text-muted-foreground font-mono">
+                      {att.file_size >= 1024 * 1024 
+                        ? `${(att.file_size / (1024 * 1024)).toFixed(1)}MB`
+                        : `${(att.file_size / 1024).toFixed(1)}KB`
+                      }
                     </span>
                   </div>
                 ))}
