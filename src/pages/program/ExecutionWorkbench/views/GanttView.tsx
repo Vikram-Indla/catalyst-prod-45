@@ -2,6 +2,7 @@
  * WorkBench views: Table/Gantt/Roadmap/Board/Swimlane
  * 
  * Variant B: Gantt View - Timeline layout with rows = Epics (expandable to Features)
+ * Timeline is derived from data (min/max dates) or current year if no dates
  */
 
 import React, { useState, useMemo } from 'react';
@@ -9,18 +10,14 @@ import { WorkItem, HealthStatus } from '../types';
 import { Badge } from '@/components/ui/badge';
 import { ChevronRight, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { format, differenceInDays, startOfYear, endOfYear, eachMonthOfInterval, addDays } from 'date-fns';
+import { format, differenceInDays, startOfYear, endOfYear, eachMonthOfInterval, startOfMonth, endOfMonth, addMonths, subMonths } from 'date-fns';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface GanttViewProps {
   items: WorkItem[];
   onItemClick: (item: WorkItem) => void;
+  selectedYear?: number;
 }
-
-const YEAR = 2025;
-const TIMELINE_START = startOfYear(new Date(YEAR, 0, 1));
-const TIMELINE_END = endOfYear(new Date(YEAR, 0, 1));
-const TOTAL_DAYS = differenceInDays(TIMELINE_END, TIMELINE_START);
 
 function getHealthColor(health: HealthStatus): string {
   switch (health) {
@@ -31,28 +28,30 @@ function getHealthColor(health: HealthStatus): string {
   }
 }
 
-function dateToPercent(date: Date): number {
-  const days = differenceInDays(date, TIMELINE_START);
-  return Math.max(0, Math.min(100, (days / TOTAL_DAYS) * 100));
-}
-
 interface GanttRowProps {
   item: WorkItem;
   depth: number;
   onItemClick: (item: WorkItem) => void;
   expandedIds: Set<string>;
   toggleExpand: (id: string) => void;
+  timelineStart: Date;
+  totalDays: number;
 }
 
-function GanttRow({ item, depth, onItemClick, expandedIds, toggleExpand }: GanttRowProps) {
+function dateToPercent(date: Date, timelineStart: Date, totalDays: number): number {
+  const days = differenceInDays(date, timelineStart);
+  return Math.max(0, Math.min(100, (days / totalDays) * 100));
+}
+
+function GanttRow({ item, depth, onItemClick, expandedIds, toggleExpand, timelineStart, totalDays }: GanttRowProps) {
   const hasChildren = item.children && item.children.length > 0;
   const isExpanded = expandedIds.has(item.id);
 
   const startDate = item.startDate ? new Date(item.startDate) : null;
   const endDate = item.endDate ? new Date(item.endDate) : null;
 
-  const barStart = startDate ? dateToPercent(startDate) : 0;
-  const barEnd = endDate ? dateToPercent(endDate) : 0;
+  const barStart = startDate ? dateToPercent(startDate, timelineStart, totalDays) : 0;
+  const barEnd = endDate ? dateToPercent(endDate, timelineStart, totalDays) : 0;
   const barWidth = Math.max(2, barEnd - barStart);
 
   const hasValidDates = startDate && endDate;
@@ -150,13 +149,15 @@ function GanttRow({ item, depth, onItemClick, expandedIds, toggleExpand }: Gantt
           onItemClick={onItemClick}
           expandedIds={expandedIds}
           toggleExpand={toggleExpand}
+          timelineStart={timelineStart}
+          totalDays={totalDays}
         />
       ))}
     </>
   );
 }
 
-export function GanttView({ items, onItemClick }: GanttViewProps) {
+export function GanttView({ items, onItemClick, selectedYear }: GanttViewProps) {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
   const toggleExpand = (id: string) => {
@@ -171,11 +172,54 @@ export function GanttView({ items, onItemClick }: GanttViewProps) {
     });
   };
 
-  const months = useMemo(() => {
-    return eachMonthOfInterval({ start: TIMELINE_START, end: TIMELINE_END });
-  }, []);
+  // Derive timeline from data or use selected year / current year
+  const { timelineStart, timelineEnd, totalDays } = useMemo(() => {
+    // Collect all dates from items
+    const allDates: Date[] = [];
+    const collectDates = (workItems: WorkItem[]) => {
+      workItems.forEach(item => {
+        if (item.startDate) allDates.push(new Date(item.startDate));
+        if (item.endDate) allDates.push(new Date(item.endDate));
+        if (item.children) collectDates(item.children);
+      });
+    };
+    collectDates(items);
 
-  const todayPercent = dateToPercent(new Date());
+    let start: Date;
+    let end: Date;
+
+    if (selectedYear) {
+      // Use selected year
+      start = startOfYear(new Date(selectedYear, 0, 1));
+      end = endOfYear(new Date(selectedYear, 0, 1));
+    } else if (allDates.length > 0) {
+      // Derive from data with padding
+      const minDate = new Date(Math.min(...allDates.map(d => d.getTime())));
+      const maxDate = new Date(Math.max(...allDates.map(d => d.getTime())));
+      start = startOfMonth(subMonths(minDate, 1));
+      end = endOfMonth(addMonths(maxDate, 1));
+    } else {
+      // Default to current year
+      const now = new Date();
+      start = startOfYear(now);
+      end = endOfYear(now);
+    }
+
+    return {
+      timelineStart: start,
+      timelineEnd: end,
+      totalDays: differenceInDays(end, start),
+    };
+  }, [items, selectedYear]);
+
+  const months = useMemo(() => {
+    return eachMonthOfInterval({ start: timelineStart, end: timelineEnd });
+  }, [timelineStart, timelineEnd]);
+
+  // Today line position - actual current date
+  const today = new Date();
+  const todayPercent = dateToPercent(today, timelineStart, totalDays);
+  const showTodayLine = today >= timelineStart && today <= timelineEnd;
 
   if (items.length === 0) {
     return (
@@ -201,7 +245,7 @@ export function GanttView({ items, onItemClick }: GanttViewProps) {
               className="flex-1 py-2 px-2 text-center border-r border-border/30 last:border-r-0"
             >
               <span className="text-xs font-medium text-muted-foreground">
-                {format(month, 'MMM')}
+                {format(month, 'MMM yyyy')}
               </span>
             </div>
           ))}
@@ -211,10 +255,12 @@ export function GanttView({ items, onItemClick }: GanttViewProps) {
       {/* Body */}
       <div className="flex-1 overflow-auto relative">
         {/* Today line */}
-        <div 
-          className="absolute top-0 bottom-0 w-px bg-destructive/60 z-20"
-          style={{ left: `calc(300px + ${todayPercent}% * (100% - 300px) / 100)` }}
-        />
+        {showTodayLine && (
+          <div 
+            className="absolute top-0 bottom-0 w-px bg-destructive/60 z-20"
+            style={{ left: `calc(300px + ${todayPercent}% * (100% - 300px) / 100)` }}
+          />
+        )}
 
         {/* Rows */}
         {items.map(item => (
@@ -225,6 +271,8 @@ export function GanttView({ items, onItemClick }: GanttViewProps) {
             onItemClick={onItemClick}
             expandedIds={expandedIds}
             toggleExpand={toggleExpand}
+            timelineStart={timelineStart}
+            totalDays={totalDays}
           />
         ))}
       </div>

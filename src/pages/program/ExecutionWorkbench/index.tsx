@@ -7,9 +7,9 @@
 import React, { useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { ProgramPageLayout } from '@/components/program/ProgramPageLayout';
-import { Search, Filter, ChevronDown, Check } from 'lucide-react';
+import { Search, Filter, ChevronDown, Check, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { WorkItem, WorkbenchView, WorkbenchFilters, DEFAULT_WORKBENCH_FILTERS, VIEW_OPTIONS, Project } from './types';
+import { WorkItem, WorkbenchView, WorkbenchFilters, DEFAULT_WORKBENCH_FILTERS, VIEW_OPTIONS } from './types';
 import { WorkbenchFiltersDialog } from './WorkbenchFiltersDialog';
 import { WorkbenchDetailsDrawer } from './WorkbenchDetailsDrawer';
 import { TableView } from './views/TableView';
@@ -18,54 +18,8 @@ import { RoadmapView } from './views/RoadmapView';
 import { BoardView } from './views/BoardView';
 import { SwimlaneView } from './views/SwimlaneView';
 import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
-
-// Mock data - replace with real data hooks
-const MOCK_PROJECTS: Project[] = [
-  { id: 'proj-1', name: 'Investor Portal' },
-  { id: 'proj-2', name: 'Licensing System' },
-  { id: 'proj-3', name: 'Analytics Hub' },
-];
-
-const MOCK_OWNERS = ['Vikram Indla', 'Sarah Chen', 'Ahmed Khalid', 'Layla Hassan'];
-
-const MOCK_ITEMS: WorkItem[] = [
-  {
-    id: 'epic-1', key: 'EPC-101', title: 'Digital Identity Verification', type: 'epic',
-    status: 'In Progress', health: 'On Track', owner: 'Vikram Indla', ownerInitials: 'VI',
-    startDate: '2025-01-15', endDate: '2025-09-30', progress: 65, projectId: 'proj-1', projectName: 'Investor Portal',
-    dependencyCount: 2,
-    children: [
-      { id: 'feat-1', key: 'FTR-201', title: 'Biometric Auth Module', type: 'feature', status: 'In Progress', health: 'On Track', owner: 'Sarah Chen', progress: 70, dependencyCount: 1, startDate: '2025-02-01', endDate: '2025-06-30', children: [
-        { id: 'story-1', key: 'STR-301', title: 'Face recognition API', type: 'story', status: 'Done', health: 'On Track', progress: 100, dependencyCount: 0 },
-        { id: 'story-2', key: 'STR-302', title: 'Fingerprint scanner integration', type: 'story', status: 'In Progress', health: 'On Track', progress: 50, dependencyCount: 0 },
-      ]},
-      { id: 'feat-2', key: 'FTR-202', title: 'Document Verification API', type: 'feature', status: 'To Do', health: 'At Risk', owner: 'Ahmed Khalid', progress: 20, dependencyCount: 0, startDate: '2025-05-01', endDate: '2025-08-31' },
-    ]
-  },
-  {
-    id: 'epic-2', key: 'EPC-102', title: 'Investor Portal Enhancement', type: 'epic',
-    status: 'In Progress', health: 'At Risk', owner: 'Sarah Chen', ownerInitials: 'SC',
-    startDate: '2025-01-01', endDate: '2025-12-31', progress: 48, projectId: 'proj-1', projectName: 'Investor Portal',
-    dependencyCount: 3,
-    children: [
-      { id: 'feat-3', key: 'FTR-301', title: 'Portfolio Dashboard Redesign', type: 'feature', status: 'In Progress', health: 'At Risk', owner: 'Layla Hassan', progress: 45, dependencyCount: 1, startDate: '2025-03-01', endDate: '2025-07-31' },
-    ]
-  },
-  {
-    id: 'epic-3', key: 'EPC-103', title: 'Regulatory Compliance Engine', type: 'epic',
-    status: 'Done', health: 'On Track', owner: 'Ahmed Khalid', ownerInitials: 'AK',
-    startDate: '2025-01-10', endDate: '2025-07-30', progress: 100, projectId: 'proj-2', projectName: 'Licensing System',
-    dependencyCount: 0,
-    children: []
-  },
-  {
-    id: 'epic-4', key: 'EPC-104', title: 'Analytics Dashboard Suite', type: 'epic',
-    status: 'Blocked', health: 'Blocked', owner: 'Layla Hassan', ownerInitials: 'LH',
-    startDate: '2025-04-01', endDate: '2025-11-30', progress: 25, projectId: 'proj-3', projectName: 'Analytics Hub',
-    dependencyCount: 4,
-    children: []
-  },
-];
+import { useWorkbenchData } from './useWorkbenchData';
+import { startOfQuarter, endOfQuarter, addQuarters } from 'date-fns';
 
 // Dropdown component
 function Dropdown({ label, value, options, onChange, className }: {
@@ -111,6 +65,43 @@ function Dropdown({ label, value, options, onChange, className }: {
   );
 }
 
+// Get quarter date range helpers
+function getCurrentQuarterDates(): { start: Date; end: Date } {
+  const now = new Date();
+  return { start: startOfQuarter(now), end: endOfQuarter(now) };
+}
+
+function getNextQuarterDates(): { start: Date; end: Date } {
+  const now = new Date();
+  const nextQ = addQuarters(now, 1);
+  return { start: startOfQuarter(nextQ), end: endOfQuarter(nextQ) };
+}
+
+// Check if item is active in period (overlap logic)
+function isActiveInPeriod(item: WorkItem, periodStart: Date, periodEnd: Date): boolean {
+  // If item has no dates, include it (conservative approach)
+  if (!item.startDate && !item.endDate) return true;
+  
+  const itemStart = item.startDate ? new Date(item.startDate) : null;
+  const itemEnd = item.endDate ? new Date(item.endDate) : null;
+  
+  // Overlap logic: item.startDate <= periodEnd AND item.endDate >= periodStart
+  // Handle missing dates gracefully
+  if (itemStart && itemEnd) {
+    return itemStart <= periodEnd && itemEnd >= periodStart;
+  }
+  if (itemStart && !itemEnd) {
+    // Open-ended item - check if start is before period end
+    return itemStart <= periodEnd;
+  }
+  if (!itemStart && itemEnd) {
+    // Item with only end date - check if end is after period start
+    return itemEnd >= periodStart;
+  }
+  
+  return true;
+}
+
 export default function ExecutionWorkbenchPage() {
   const { programId } = useParams<{ programId: string }>();
   
@@ -121,6 +112,9 @@ export default function ExecutionWorkbenchPage() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<WorkItem | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  // Fetch real data
+  const { items: allItems, projects, owners, isLoading, error } = useWorkbenchData(programId, selectedProject);
 
   // Count active filters
   const activeFilterCount = useMemo(() => {
@@ -133,39 +127,105 @@ export default function ExecutionWorkbenchPage() {
     return count;
   }, [filters]);
 
-  // Filter items
+  // Filter items with proper overlap logic for "Active in Period"
   const filteredItems = useMemo(() => {
     if (!selectedProject) return [];
     
-    let items = MOCK_ITEMS.filter(item => item.projectId === selectedProject);
+    let items = [...allItems];
 
+    // Search filter
     if (search) {
       const q = search.toLowerCase();
+      const matchesSearch = (item: WorkItem): boolean => {
+        if (item.key.toLowerCase().includes(q) || item.title.toLowerCase().includes(q)) {
+          return true;
+        }
+        // Also search children
+        if (item.children) {
+          return item.children.some(matchesSearch);
+        }
+        return false;
+      };
+      items = items.filter(matchesSearch);
+    }
+
+    // Owner filter
+    if (filters.owners.length > 0) {
+      const matchesOwner = (item: WorkItem): boolean => {
+        if (item.owner && filters.owners.includes(item.owner)) return true;
+        if (item.children) return item.children.some(matchesOwner);
+        return false;
+      };
+      items = items.filter(matchesOwner);
+    }
+
+    // Health filter
+    if (filters.health.length > 0) {
+      const matchesHealth = (item: WorkItem): boolean => {
+        if (filters.health.includes(item.health)) return true;
+        if (item.children) return item.children.some(matchesHealth);
+        return false;
+      };
+      items = items.filter(matchesHealth);
+    }
+
+    // Status filter
+    if (filters.status.length > 0) {
+      const matchesStatus = (item: WorkItem): boolean => {
+        if (filters.status.includes(item.status)) return true;
+        if (item.children) return item.children.some(matchesStatus);
+        return false;
+      };
+      items = items.filter(matchesStatus);
+    }
+
+    // Active in Period filter with overlap logic
+    if (filters.activeInPeriod !== 'any') {
+      let periodStart: Date | null = null;
+      let periodEnd: Date | null = null;
+
+      if (filters.activeInPeriod === 'this-quarter') {
+        const { start, end } = getCurrentQuarterDates();
+        periodStart = start;
+        periodEnd = end;
+      } else if (filters.activeInPeriod === 'next-quarter') {
+        const { start, end } = getNextQuarterDates();
+        periodStart = start;
+        periodEnd = end;
+      } else if (filters.activeInPeriod === 'custom') {
+        // Only apply custom range if both dates are set
+        if (filters.customRangeStart && filters.customRangeEnd) {
+          periodStart = filters.customRangeStart;
+          periodEnd = filters.customRangeEnd;
+        }
+        // If custom range dates are missing, don't filter (default to 'any')
+      }
+
+      if (periodStart && periodEnd) {
+        items = items.filter(item => isActiveInPeriod(item, periodStart!, periodEnd!));
+      }
+    }
+
+    // Has Dependencies filter (TODO: wire to real dependency data when available)
+    // Currently all items have dependencyCount: 0 as placeholder
+    if (filters.hasDependencies !== null) {
       items = items.filter(item => 
-        item.key.toLowerCase().includes(q) || 
-        item.title.toLowerCase().includes(q)
+        filters.hasDependencies ? item.dependencyCount > 0 : item.dependencyCount === 0
       );
     }
 
-    if (filters.owners.length > 0) {
-      items = items.filter(item => item.owner && filters.owners.includes(item.owner));
-    }
-    if (filters.health.length > 0) {
-      items = items.filter(item => filters.health.includes(item.health));
-    }
-    if (filters.status.length > 0) {
-      items = items.filter(item => filters.status.includes(item.status));
-    }
-
     return items;
-  }, [selectedProject, search, filters]);
+  }, [selectedProject, allItems, search, filters]);
 
   const handleItemClick = (item: WorkItem) => {
     setSelectedItem(item);
     setDrawerOpen(true);
   };
 
-  const projectOptions = [{ value: '', label: 'Select a project...' }, ...MOCK_PROJECTS.map(p => ({ value: p.id, label: p.name }))];
+  const projectOptions = [
+    { value: '', label: 'Select a project...' }, 
+    ...projects.map(p => ({ value: p.id, label: p.name }))
+  ];
 
   return (
     <ProgramPageLayout>
@@ -205,7 +265,16 @@ export default function ExecutionWorkbenchPage() {
 
         {/* Content */}
         <div className="flex-1 overflow-hidden">
-          {!selectedProject ? (
+          {isLoading ? (
+            <div className="flex items-center justify-center h-full gap-2 text-muted-foreground">
+              <Loader2 className="h-5 w-5 animate-spin" />
+              <span>Loading...</span>
+            </div>
+          ) : error ? (
+            <div className="flex items-center justify-center h-full text-destructive">
+              Error loading data: {error.message}
+            </div>
+          ) : !selectedProject ? (
             <div className="flex items-center justify-center h-full text-muted-foreground">
               Select a project to load execution data
             </div>
@@ -226,7 +295,7 @@ export default function ExecutionWorkbenchPage() {
         onOpenChange={setFiltersOpen}
         filters={filters}
         onFiltersChange={setFilters}
-        owners={MOCK_OWNERS}
+        owners={owners}
       />
 
       <WorkbenchDetailsDrawer
