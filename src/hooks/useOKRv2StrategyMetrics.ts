@@ -1,8 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
 // OKR v2 Strategy Metrics Hook
 // Fetches objectives (is_v2=true) linked to themes under a snapshot
+// Uses stale-while-revalidate to prevent blanking on snapshot switch
 export interface ObjectiveV2Metrics {
   count: number;
   byHealth: {
@@ -27,17 +28,19 @@ export interface ObjectiveV2Summary {
   status: string;
 }
 
+const EMPTY_METRICS: ObjectiveV2Metrics = {
+  count: 0,
+  byHealth: { good: 0, fair: 0, poor: 0, at_risk: 0, unknown: 0 },
+  avgProgress: 0,
+  objectives: [],
+};
+
 export function useOKRv2StrategyMetrics(snapshotId?: string) {
   return useQuery({
     queryKey: ['okr-v2-strategy-metrics', snapshotId],
     queryFn: async (): Promise<ObjectiveV2Metrics> => {
       if (!snapshotId) {
-        return {
-          count: 0,
-          byHealth: { good: 0, fair: 0, poor: 0, at_risk: 0, unknown: 0 },
-          avgProgress: 0,
-          objectives: [],
-        };
+        return EMPTY_METRICS;
       }
 
       // Step 1: Get themes for this snapshot
@@ -52,12 +55,7 @@ export function useOKRv2StrategyMetrics(snapshotId?: string) {
       const themeMap = new Map(themes?.map(t => [t.id, t.name]) || []);
 
       if (themeIds.length === 0) {
-        return {
-          count: 0,
-          byHealth: { good: 0, fair: 0, poor: 0, at_risk: 0, unknown: 0 },
-          avgProgress: 0,
-          objectives: [],
-        };
+        return EMPTY_METRICS;
       }
 
       // Step 2: Get OKR v2 objectives linked to these themes
@@ -116,6 +114,10 @@ export function useOKRv2StrategyMetrics(snapshotId?: string) {
       };
     },
     enabled: !!snapshotId,
+    // Stale-while-revalidate config
+    staleTime: 60 * 1000, // 60 seconds
+    gcTime: 10 * 60 * 1000, // 10 minutes cache
+    placeholderData: keepPreviousData, // Keep previous data during refetch
   });
 }
 
@@ -217,5 +219,9 @@ export function useOKRv2ObjectivesByTheme(snapshotId?: string) {
       };
     },
     enabled: !!snapshotId,
+    // Stale-while-revalidate config
+    staleTime: 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    placeholderData: keepPreviousData,
   });
 }

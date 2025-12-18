@@ -8,7 +8,7 @@ import { OkrTree } from '@/components/strategy/OkrTree';
 import { StrategyContextCard } from '@/components/strategy/StrategyContextCard';
 import { ObjectiveAnalyticsDrawer } from '@/modules/okr-v2';
 import { ThemeDetailsDrawer } from '@/components/backlog/ThemeDetailsDrawer';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { PageChrome } from '@/components/layout/PageChrome';
 import { toast } from 'sonner';
@@ -26,7 +26,7 @@ export default function StrategyRoomPage() {
   const [themeDrawerOpen, setThemeDrawerOpen] = useState(false);
   const [showContext, setShowContext] = useState(false);
 
-  const { data: snapshots = [], isLoading: snapshotsLoading, refetch: refetchSnapshots } = useQuery({
+  const { data: snapshots = [], isLoading: snapshotsLoading, isFetching: snapshotsFetching, refetch: refetchSnapshots } = useQuery({
     queryKey: ['strategy-snapshots'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -37,6 +37,10 @@ export default function StrategyRoomPage() {
       if (error) throw error;
       return data || [];
     },
+    // Stale-while-revalidate config
+    staleTime: 60 * 1000, // 60 seconds
+    gcTime: 10 * 60 * 1000, // 10 minutes cache
+    placeholderData: keepPreviousData,
   });
 
   useEffect(() => {
@@ -91,7 +95,10 @@ export default function StrategyRoomPage() {
     s.name.toLowerCase().includes(snapshotSearchQuery.toLowerCase())
   );
 
-  if (snapshotsLoading || !effectiveSelectedSnapshotId) {
+  // Only show full-page skeleton on true initial load with no data
+  const showInitialSkeleton = snapshotsLoading && snapshots.length === 0;
+
+  if (showInitialSkeleton) {
     return (
       <PageChrome>
         <div className="px-6 py-5 space-y-5 pb-8 max-w-[1400px] mx-auto">
@@ -101,14 +108,23 @@ export default function StrategyRoomPage() {
               <div className="h-3.5 w-24 bg-muted/50 rounded animate-pulse" />
             </div>
             <div className="p-3">
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <div key={i} className="p-3 rounded-md border border-border bg-muted/20 animate-pulse">
-                    <div className="h-2.5 w-16 bg-muted/40 rounded mb-2" />
-                    <div className="h-6 w-12 bg-muted/50 rounded mb-1.5" />
-                    <div className="h-2 w-20 bg-muted/30 rounded" />
-                  </div>
-                ))}
+              <div className="flex flex-col lg:flex-row gap-3">
+                {/* Primary card skeleton */}
+                <div className="lg:w-[240px] min-h-[120px] p-4 rounded-md border border-border bg-muted/20 animate-pulse flex-shrink-0">
+                  <div className="h-3 w-24 bg-muted/40 rounded mb-3" />
+                  <div className="h-7 w-20 bg-muted/40 rounded mb-2" />
+                  <div className="h-2.5 w-28 bg-muted/40 rounded" />
+                </div>
+                {/* Secondary card skeletons */}
+                <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-2">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="p-3 rounded-md border border-border bg-muted/20 animate-pulse min-h-[56px]">
+                      <div className="h-2.5 w-14 bg-muted/40 rounded mb-2" />
+                      <div className="h-5 w-10 bg-muted/40 rounded mb-1" />
+                      <div className="h-2 w-16 bg-muted/40 rounded" />
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </section>
@@ -121,7 +137,7 @@ export default function StrategyRoomPage() {
             <div className="p-3">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
                 {[1, 2, 3].map((col) => (
-                  <div key={col} className="rounded-md border border-border bg-card overflow-hidden animate-pulse">
+                  <div key={col} className="rounded-md border border-border bg-muted/20 overflow-hidden animate-pulse min-h-[140px]">
                     <div className="px-3 py-1.5 border-b border-border bg-muted/30 flex items-center gap-1.5">
                       <div className="h-3 w-3 bg-muted/50 rounded" />
                       <div className="h-2.5 w-20 bg-muted/40 rounded" />
@@ -182,6 +198,17 @@ export default function StrategyRoomPage() {
               ))}
             </div>
           </section>
+        </div>
+      </PageChrome>
+    );
+  }
+
+  // If we have snapshots but no effective ID yet, don't show skeleton - data is cached
+  if (!effectiveSelectedSnapshotId && snapshots.length === 0) {
+    return (
+      <PageChrome>
+        <div className="px-6 py-8 text-center" style={{ color: 'var(--text-muted)' }}>
+          No strategic snapshots found. Create one to get started.
         </div>
       </PageChrome>
     );

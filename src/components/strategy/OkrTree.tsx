@@ -63,10 +63,12 @@ const typeStyles = {
 
 export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: OkrTreeProps) {
   const navigate = useNavigate();
-  const { data: treeData = [], isLoading } = useOKRTreeV2(selectedSnapshot);
+  const { data: treeData = [], isLoading, isFetching } = useOKRTreeV2(selectedSnapshot);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  
+  const isRefreshing = isFetching && !isLoading;
 
   const toggleExpand = (id: string) => {
     const newExpanded = new Set(expandedIds);
@@ -279,7 +281,8 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
     );
   };
 
-  if (isLoading) {
+  // Only show skeleton on true initial load with no data
+  if (isLoading && treeData.length === 0) {
     return (
       <section 
         className="rounded-xl overflow-hidden"
@@ -290,21 +293,38 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
         }}
       >
         <div 
-          className="px-5 py-3"
+          className="px-5 py-3 flex items-center justify-between"
           style={{ borderBottom: '1px solid var(--border-subtle)' }}
         >
-          <h2 
-            className="text-[15px] font-semibold"
-            style={{ color: 'var(--text-primary)' }}
-          >
-            OKR Tree
-          </h2>
+          <div className="h-4 w-20 rounded animate-pulse" style={{ backgroundColor: 'var(--muted)' }} />
+          <div className="flex gap-2">
+            <div className="h-7 w-32 rounded animate-pulse" style={{ backgroundColor: 'var(--muted)' }} />
+            <div className="h-7 w-7 rounded animate-pulse" style={{ backgroundColor: 'var(--muted)' }} />
+          </div>
         </div>
-        <div className="flex items-center justify-center py-12">
-          <div 
-            className="animate-spin rounded-full h-5 w-5 border-2 border-t-transparent" 
-            style={{ borderColor: 'var(--brand-primary)', borderTopColor: 'transparent' }}
-          />
+        {/* Column header skeleton */}
+        <div className="py-2 px-4 animate-pulse" style={{ backgroundColor: 'var(--surface-subtle)' }}>
+          <div className="grid" style={{ gridTemplateColumns: '1fr 140px 52px 52px 100px' }}>
+            {[1, 2, 3, 4, 5].map(i => (
+              <div key={i} className="h-2.5 w-12 rounded" style={{ backgroundColor: 'var(--muted)' }} />
+            ))}
+          </div>
+        </div>
+        {/* Row skeletons */}
+        <div className="p-2">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div 
+              key={i} 
+              className="flex items-center gap-3 p-2 rounded mb-1 animate-pulse"
+              style={{ paddingLeft: i % 2 === 0 ? '32px' : '12px' }}
+            >
+              <div className="h-4 w-4 rounded" style={{ backgroundColor: 'var(--muted)' }} />
+              <div className="h-3.5 rounded" style={{ backgroundColor: 'var(--muted)', width: `${120 + (i * 20)}px` }} />
+              <div className="flex-1" />
+              <div className="h-3 w-12 rounded" style={{ backgroundColor: 'var(--muted)' }} />
+              <div className="h-1.5 w-20 rounded-full" style={{ backgroundColor: 'var(--muted)' }} />
+            </div>
+          ))}
         </div>
       </section>
     );
@@ -331,6 +351,9 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
           >
             OKR Tree
           </h2>
+          {isRefreshing && (
+            <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>Refreshing…</span>
+          )}
           {/* Type legend - compact pills */}
           <div className="flex items-center gap-1">
             {Object.entries(typeStyles).map(([key, style]) => (

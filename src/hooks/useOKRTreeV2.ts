@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
 // OKR v2 Tree Structure: Theme → Objective → Key Results
@@ -188,6 +188,10 @@ export function useOKRTreeV2(snapshotId?: string) {
       return treeNodes;
     },
     enabled: !!snapshotId,
+    // Stale-while-revalidate config
+    staleTime: 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    placeholderData: keepPreviousData,
   });
 }
 
