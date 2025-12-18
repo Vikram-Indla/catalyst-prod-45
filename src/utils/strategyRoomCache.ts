@@ -2,6 +2,13 @@
  * Strategy Room LKG (Last Known Good) Cache
  * Provides sessionStorage-backed caching per snapshot and section
  * Prevents UI twitching during data refreshes
+ * 
+ * LKG CACHE IMPLEMENTATION:
+ * - Each section maintains its own cache keyed by snapshotId
+ * - On mount: hydrate lkgData from sessionStorage
+ * - On fetch start: if no data, render lkgData immediately
+ * - On fetch success: update both data and lkgData, persist to sessionStorage
+ * - On fetch failure: keep showing lkgData with stale indicator
  */
 
 // Cache key pattern: strategyRoom:lkg:${snapshotId}:${section}
@@ -15,7 +22,7 @@ interface CacheEntry<T> {
   snapshotId: string;
 }
 
-// In-memory cache for fast access
+// In-memory cache for fast access (avoids sessionStorage parsing overhead)
 const memoryCache = new Map<string, CacheEntry<unknown>>();
 
 // Max age for cached data (30 minutes)
@@ -27,6 +34,7 @@ function getCacheKey(snapshotId: string, section: CacheSection): string {
 
 /**
  * Get data from LKG cache (memory first, then sessionStorage)
+ * Returns null if no cached data exists or data is expired
  */
 export function getLKGData<T>(snapshotId: string, section: CacheSection): T | null {
   if (!snapshotId) return null;
@@ -45,7 +53,7 @@ export function getLKGData<T>(snapshotId: string, section: CacheSection): T | nu
     if (stored) {
       const entry = JSON.parse(stored) as CacheEntry<T>;
       if (Date.now() - entry.timestamp < CACHE_MAX_AGE) {
-        // Restore to memory cache
+        // Restore to memory cache for faster future access
         memoryCache.set(key, entry);
         return entry.data;
       } else {
@@ -62,6 +70,7 @@ export function getLKGData<T>(snapshotId: string, section: CacheSection): T | nu
 
 /**
  * Store data in LKG cache (both memory and sessionStorage)
+ * Called on successful data fetch
  */
 export function setLKGData<T>(snapshotId: string, section: CacheSection, data: T): void {
   if (!snapshotId || data === null || data === undefined) return;
@@ -73,7 +82,7 @@ export function setLKGData<T>(snapshotId: string, section: CacheSection, data: T
     snapshotId,
   };
   
-  // Store in memory
+  // Store in memory (always fast)
   memoryCache.set(key, entry);
   
   // Persist to sessionStorage
@@ -115,6 +124,7 @@ export function clearLKGCache(snapshotId?: string): void {
 
 /**
  * Safe number helper - ensures values never become NaN or undefined
+ * Critical for preventing "empty circles" in charts during transitions
  */
 export function safeNumber(value: unknown, fallback: number = 0): number {
   if (value === null || value === undefined) return fallback;
@@ -124,6 +134,7 @@ export function safeNumber(value: unknown, fallback: number = 0): number {
 
 /**
  * Safe percentage helper - clamps to 0-100 range
+ * Prevents invalid progress values in bars and charts
  */
 export function safePercentage(value: unknown, fallback: number = 0): number {
   const num = safeNumber(value, fallback);
@@ -132,7 +143,16 @@ export function safePercentage(value: unknown, fallback: number = 0): number {
 
 /**
  * Safe array helper - ensures always returns an array
+ * Prevents "undefined.map" errors during data transitions
  */
 export function safeArray<T>(value: T[] | null | undefined): T[] {
   return Array.isArray(value) ? value : [];
+}
+
+/**
+ * Create a stable empty fallback that matches a data shape
+ * Prevents chart glitches by maintaining consistent data structure
+ */
+export function createEmptyFallback<T extends object>(shape: T): T {
+  return { ...shape };
 }

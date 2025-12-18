@@ -8,14 +8,21 @@
  * - Cell text: text-sm (14px) or text-xs (12px) minimum
  * - NO text-[9px], text-[10px], text-[11px] - use text-xs as floor
  * - NO text-muted - use var(--text-secondary) for readable supporting text
+ * 
+ * LKG CACHING: Uses sessionStorage-backed caching to prevent UI flickering
+ * - On snapshot change: loads cached data immediately
+ * - During refresh: shows existing data with subtle "Refreshing..." indicator
+ * - Never blanks the table after first successful load
  */
 
 import { useState } from 'react';
-import { Target, Layers, Zap, Grid3X3, ChevronRight, X, AlertTriangle, User } from 'lucide-react';
-import { useStrategyPyramidCounts } from '@/hooks/useExecutionMetrics';
+import { Target, Layers, Zap, Grid3X3, ChevronRight, X, AlertTriangle, User, Loader2 } from 'lucide-react';
+import { useStrategyCoverageData, EMPTY_COVERAGE } from '@/hooks/useStrategyCoverageData';
 import { useOKRv2StrategyMetrics } from '@/hooks/useOKRv2StrategyMetrics';
 import { cn } from '@/lib/utils';
 import { TYPOGRAPHY } from './strategyRoomTypography';
+import { Skeleton } from '@/components/ui/skeleton';
+import { safeNumber, safePercentage } from '@/utils/strategyRoomCache';
 
 interface StrategyStackProps {
   onLayerClick: (label: string) => void;
@@ -99,19 +106,27 @@ function getStatusColor(status?: string): { bg: string; text: string; border: st
 }
 
 function getCoverageStatus(coverage: number): { color: string; label: string } {
-  if (coverage >= 80) return { color: 'var(--status-success)', label: 'Healthy' };
-  if (coverage >= 50) return { color: 'var(--status-warning)', label: 'At Risk' };
+  // Use safePercentage to prevent NaN issues
+  const safeCoverage = safePercentage(coverage);
+  if (safeCoverage >= 80) return { color: 'var(--status-success)', label: 'Healthy' };
+  if (safeCoverage >= 50) return { color: 'var(--status-warning)', label: 'At Risk' };
   return { color: 'var(--status-danger)', label: 'Critical' };
 }
 
 export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) {
   const [selectedLayer, setSelectedLayer] = useState<LayerKey | null>(null);
   
-  const { data: counts, isLoading } = useStrategyPyramidCounts(snapshotId);
-  const { data: okrMetrics, isLoading: okrLoading } = useOKRv2StrategyMetrics(snapshotId);
+  // Use LKG-enabled hook for coverage data
+  const { data: counts, isLoading, isFetching, hasData } = useStrategyCoverageData(snapshotId);
+  const { data: okrMetrics, isLoading: okrLoading, isFetching: okrFetching } = useOKRv2StrategyMetrics(snapshotId);
+  
+  // Use safe fallbacks - never show undefined/NaN
+  const displayCounts = counts ?? EMPTY_COVERAGE;
 
-  const objectivesCount = okrMetrics?.count || 0;
+  // Use safe number conversion - prevents NaN in charts
+  const objectivesCount = safeNumber(okrMetrics?.count);
 
+  // LKG-aware getLayerData - uses displayCounts to prevent empty states
   const getLayerData = (key: LayerKey) => {
     switch (key) {
       case 'objectives':
@@ -119,29 +134,37 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
           count: objectivesCount, 
           aligned: objectivesCount > 0 ? Math.round(objectivesCount * 0.67) : 0, 
           gap: objectivesCount > 0 ? 1 : 0,
-          coverage: 67,
+          coverage: safePercentage(67),
         };
       case 'themes':
         return { 
-          count: counts?.themes || 0, 
-          aligned: counts?.themes || 0, 
+          count: safeNumber(displayCounts.themes), 
+          aligned: safeNumber(displayCounts.themes), 
           gap: 0,
-          coverage: 100,
+          coverage: safePercentage(100),
         };
-      case 'epics':
+      case 'epics': {
+        const epics = safeNumber(displayCounts.epics);
+        const aligned = safeNumber(displayCounts.alignedEpics);
+        const coverage = epics > 0 ? safePercentage(Math.round((aligned / epics) * 100)) : 0;
         return { 
-          count: counts?.epics || 0, 
-          aligned: counts?.alignedEpics || 0, 
-          gap: counts?.misalignedEpics || 0,
-          coverage: counts?.alignedEpics && counts?.epics ? Math.round((counts.alignedEpics / counts.epics) * 100) : 0,
+          count: epics, 
+          aligned: aligned, 
+          gap: safeNumber(displayCounts.misalignedEpics),
+          coverage,
         };
-      case 'features':
+      }
+      case 'features': {
+        const features = safeNumber(displayCounts.features);
+        const aligned = safeNumber(displayCounts.alignedFeatures);
+        const coverage = features > 0 ? safePercentage(Math.round((aligned / features) * 100)) : 0;
         return { 
-          count: counts?.features || 0, 
-          aligned: counts?.alignedFeatures || 0, 
-          gap: counts?.misalignedFeatures || 0,
-          coverage: counts?.alignedFeatures && counts?.features ? Math.round((counts.alignedFeatures / counts.features) * 100) : 0,
+          count: features, 
+          aligned: aligned, 
+          gap: safeNumber(displayCounts.misalignedFeatures),
+          coverage,
         };
+      }
       default:
         return { count: 0, aligned: 0, gap: 0, coverage: 0 };
     }
@@ -207,6 +230,37 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
   const selectedLayerDetails = selectedLayer ? getLayerDetails(selectedLayer) : null;
   const selectedConfig = selectedLayer ? layerConfigs.find(l => l.key === selectedLayer) : null;
 
+  // Show skeleton only during initial load when no LKG data exists
+  if (isLoading && !hasData) {
+    return (
+      <section 
+        className="rounded-lg overflow-hidden"
+        style={{
+          backgroundColor: 'var(--surface-bg)',
+          border: '1px solid var(--border-default)',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+        }}
+      >
+        <div className="px-4 py-2.5" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+          <Skeleton className="h-4 w-48" />
+          <Skeleton className="h-3 w-64 mt-1" />
+        </div>
+        <div className="py-1.5 px-3" style={{ backgroundColor: 'var(--surface-subtle)' }}>
+          <div className="grid animate-pulse" style={{ gridTemplateColumns: '1fr 50px 120px 70px 50px 20px' }}>
+            {[1, 2, 3, 4, 5, 6].map(i => (
+              <div key={i} className="h-2.5 w-10 rounded" style={{ backgroundColor: 'var(--muted)' }} />
+            ))}
+          </div>
+        </div>
+        <div className="p-2 space-y-1">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-9 rounded animate-pulse" style={{ backgroundColor: 'var(--muted)' }} />
+          ))}
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section 
       className="rounded-lg overflow-hidden"
@@ -216,25 +270,34 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
         boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
       }}
     >
-      {/* Header */}
+      {/* Header with Refreshing indicator */}
       <div 
         className="px-4 py-2.5 flex items-center justify-between"
         style={{ borderBottom: '1px solid var(--border-subtle)' }}
       >
-        <div>
-          <h2 
-            className={cn(TYPOGRAPHY.sectionTitle)}
-            style={{ color: 'var(--text-primary)' }}
-          >
-            Strategy Coverage & Alignment
-          </h2>
-          <p 
-            className={cn(TYPOGRAPHY.microcopy)}
-            style={{ color: 'var(--text-secondary)' }}
-          >
-            Coverage across strategic layers • Click to expand
-          </p>
+        <div className="flex items-center gap-2">
+          <div>
+            <h2 
+              className={cn(TYPOGRAPHY.sectionTitle)}
+              style={{ color: 'var(--text-primary)' }}
+            >
+              Strategy Coverage & Alignment
+            </h2>
+            <p 
+              className={cn(TYPOGRAPHY.microcopy)}
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              Coverage across strategic layers • Click to expand
+            </p>
+          </div>
         </div>
+        {/* Refreshing indicator - shows during background fetch, not initial load */}
+        {(isFetching || okrFetching) && hasData && (
+          <div className="flex items-center gap-1.5">
+            <Loader2 size={12} className="animate-spin text-muted-foreground" />
+            <span className={cn(TYPOGRAPHY.microcopy)} style={{ color: 'var(--text-secondary)' }}>Refreshing…</span>
+          </div>
+        )}
       </div>
 
       {/* Two-part layout */}
