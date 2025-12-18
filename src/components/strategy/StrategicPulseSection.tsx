@@ -291,22 +291,27 @@ function CompactKPITile({
   return (
     <button
       onClick={onClick}
-      className="p-3 rounded-md text-left transition-all relative group w-full bg-muted/50 border border-border/50 hover:bg-accent hover:border-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+      className={cn(
+        "p-3 rounded-md text-left relative group w-full bg-muted/50 border border-border/50",
+        "transition-[background-color,border-color] duration-150 ease-out",
+        "hover:bg-accent/60 hover:border-border",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+      )}
       style={{
         borderLeftWidth: '3px',
         borderLeftColor: accentBorders[accentColor],
         minHeight: '100px',
       }}
     >
-      {/* Label row */}
+      {/* Label row - icon supports, doesn't compete */}
       <div className="flex items-center justify-between mb-1.5">
-        <span className={cn(TYPOGRAPHY.cardLabel, TEXT_COLORS.muted)}>
+        <span className={cn(TYPOGRAPHY.cardLabel, 'text-muted-foreground/80')}>
           {label}
         </span>
-        <span className={iconColors[accentColor]}>{icon}</span>
+        <span className={cn(iconColors[accentColor], 'opacity-70')}>{icon}</span>
       </div>
       
-      {/* Primary Value */}
+      {/* Primary Value - strongest visual weight */}
       <span className={cn(
         TYPOGRAPHY.primaryMetric, 
         'block',
@@ -315,23 +320,25 @@ function CompactKPITile({
         {value}
       </span>
       
-      {/* Subtext */}
-      <p className={cn(TYPOGRAPHY.subtext, TEXT_COLORS.muted, 'mt-1')}>
+      {/* Subtext - slightly muted from primary */}
+      <p className={cn(TYPOGRAPHY.subtext, 'text-muted-foreground/70 mt-1')}>
         {subtext}
       </p>
 
+      {/* Progress bar - secondary signal */}
       {showProgress && (
-        <div className="w-full h-1.5 rounded-full mt-2.5 overflow-hidden bg-border">
+        <div className="w-full h-1.5 rounded-full mt-2.5 overflow-hidden bg-border/60">
           <div 
-            className="h-full rounded-full transition-all bg-primary"
+            className="h-full rounded-full bg-primary/80"
             style={{ width: `${progressValue}%` }}
           />
         </div>
       )}
 
+      {/* Subtle chevron on hover - discoverable but restrained */}
       <ChevronRight 
         size={14} 
-        className="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-60 transition-opacity text-muted-foreground" 
+        className="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-40 transition-opacity duration-150 text-muted-foreground" 
       />
     </button>
   );

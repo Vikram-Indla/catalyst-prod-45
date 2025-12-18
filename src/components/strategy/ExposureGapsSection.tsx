@@ -250,13 +250,13 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
           >
             {attentionItems.length === 0 ? (
               <div className="py-4 text-center">
-                <CheckCircle2 size={20} className="mx-auto mb-1.5 text-primary" />
-                <span className={cn(TYPOGRAPHY.subtext, TEXT_COLORS.muted)}>No items need attention</span>
+                <CheckCircle2 size={20} className="mx-auto mb-1.5 text-primary/70" />
+                <span className={cn(TYPOGRAPHY.subtext, 'text-muted-foreground/70')}>No items need attention</span>
               </div>
             ) : (
               <div className="space-y-1.5">
-                {attentionItems.slice(0, 4).map((item) => (
-                  <AttentionRow key={item.id} item={item} onClick={() => navigate(item.link)} />
+                {attentionItems.slice(0, 4).map((item, index) => (
+                  <AttentionRow key={item.id} item={item} onClick={() => navigate(item.link)} index={index} />
                 ))}
                 {attentionItems.length > 4 && (
                   <div className="text-center pt-1.5">
@@ -287,7 +287,7 @@ function CockpitCard({ title, icon, iconColor, children, cta }: CockpitCardProps
     <div className="rounded-md overflow-hidden flex flex-col bg-muted/50 border border-border/50 min-h-[150px]">
       {/* Card header */}
       <div className="px-3 py-2.5 flex items-center gap-2 border-b border-border/50 bg-muted/70">
-        <span className={iconColor}>{icon}</span>
+        <span className={cn(iconColor, 'opacity-80')}>{icon}</span>
         <span className={cn(TYPOGRAPHY.sectionTitle, TEXT_COLORS.muted)}>
           {title}
         </span>
@@ -295,16 +295,23 @@ function CockpitCard({ title, icon, iconColor, children, cta }: CockpitCardProps
       
       <div className="p-3 flex-1">{children}</div>
 
+      {/* CTA - secondary but discoverable */}
       {cta && (
         <div className="px-3 pb-2.5">
           <Button
             variant="ghost"
             size="sm"
-            className={cn(TYPOGRAPHY.ctaButton, "w-full h-8 hover:bg-accent focus-visible:ring-1 text-muted-foreground")}
+            className={cn(
+              TYPOGRAPHY.ctaButton, 
+              "w-full h-8 text-muted-foreground/70",
+              "transition-[background-color,color] duration-150",
+              "hover:bg-accent/50 hover:text-muted-foreground",
+              "focus-visible:ring-1"
+            )}
             onClick={cta.onClick}
           >
             {cta.label}
-            <ChevronRight size={14} className="ml-1" />
+            <ChevronRight size={14} className="ml-1 opacity-60" />
           </Button>
         </div>
       )}
@@ -338,53 +345,71 @@ function DataRow({ label, value, total = 0, variant = 'neutral', showBar }: Data
   const barWidth = total > 0 ? Math.round((value / total) * 100) : 0;
 
   return (
-    <div className="flex items-center gap-2 py-1.5 rounded px-2 -mx-2 transition-colors hover:bg-accent">
-      {/* Label */}
-      <span className={cn(TYPOGRAPHY.dataRowLabel, TEXT_COLORS.muted, 'flex-1')}>{label}</span>
+    <div className="flex items-center gap-2 py-1.5 rounded px-2 -mx-2 transition-[background-color] duration-100 hover:bg-accent/40">
+      {/* Label - secondary to value */}
+      <span className={cn(TYPOGRAPHY.dataRowLabel, 'text-muted-foreground/70 flex-1')}>{label}</span>
       
+      {/* Bar - visually aligned with value, never overpowers */}
       {showBar && total > 0 && (
-        <div className="w-14 h-1.5 rounded-full overflow-hidden bg-border">
+        <div className="w-14 h-1.5 rounded-full overflow-hidden bg-border/60">
           <div 
-            className={cn("h-full rounded-full transition-all", barColors[variant])}
+            className={cn("h-full rounded-full", barColors[variant], variant !== 'neutral' ? 'opacity-80' : '')}
             style={{ width: `${barWidth}%` }}
           />
         </div>
       )}
       
-      {/* Value */}
-      <span className={cn(TYPOGRAPHY.dataRowValue, 'w-7 text-right', valueColors[variant])}>
+      {/* Value - primary anchor for the eye */}
+      <span className={cn(TYPOGRAPHY.dataRowValue, 'w-7 text-right font-medium', valueColors[variant])}>
         {value}
       </span>
     </div>
   );
 }
 
-function AttentionRow({ item, onClick }: { item: AttentionItem; onClick: () => void }) {
+function AttentionRow({ item, onClick, index }: { item: AttentionItem; onClick: () => void; index: number }) {
   const severityColors: Record<string, string> = {
-    critical: 'bg-destructive',
-    high: 'bg-status-warning',
-    medium: 'bg-secondary-bronze',
+    critical: 'bg-destructive/80',
+    high: 'bg-status-warning/80',
+    medium: 'bg-secondary-bronze/60',
   };
+
+  // First two items visually prioritized, remaining de-emphasized
+  const isPriority = index < 2;
 
   return (
     <button
       onClick={onClick}
-      className="w-full px-2 py-2 rounded text-left flex items-center gap-2.5 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring group hover:bg-accent"
+      className={cn(
+        "w-full px-2 py-2 rounded text-left flex items-center gap-2.5",
+        "transition-[background-color] duration-100",
+        "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
+        "group hover:bg-accent/40"
+      )}
     >
+      {/* Severity dot - calm, not alarming */}
       <div className={cn("w-2 h-2 rounded-full flex-shrink-0", severityColors[item.severity])} />
       <div className="flex-1 min-w-0">
-        {/* Title */}
-        <div className={cn(TYPOGRAPHY.cardLabel, TEXT_COLORS.primary, 'truncate group-hover:text-primary')}>
+        {/* Title - priority items have stronger weight */}
+        <div className={cn(
+          TYPOGRAPHY.cardLabel, 
+          'truncate',
+          isPriority ? TEXT_COLORS.primary : 'text-muted-foreground/90'
+        )}>
           {item.title}
         </div>
-        {/* Reason */}
-        <div className={cn(TYPOGRAPHY.microcopy, TEXT_COLORS.muted, 'leading-tight')}>
+        {/* Reason - secondary */}
+        <div className={cn(
+          TYPOGRAPHY.microcopy, 
+          'leading-tight',
+          isPriority ? 'text-muted-foreground/70' : 'text-muted-foreground/50'
+        )}>
           {item.reason}
         </div>
       </div>
       <ChevronRight 
         size={14} 
-        className="opacity-0 group-hover:opacity-60 transition-opacity flex-shrink-0 text-muted-foreground" 
+        className="opacity-0 group-hover:opacity-40 transition-opacity duration-100 flex-shrink-0 text-muted-foreground" 
       />
     </button>
   );
