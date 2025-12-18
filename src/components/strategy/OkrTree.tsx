@@ -413,7 +413,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
           <div className="relative w-40">
             <Search 
               className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 pointer-events-none" 
-              style={{ color: 'var(--text-muted)' }} 
+              style={{ color: 'var(--text-secondary)' }} 
             />
             <input
               type="text"
@@ -431,7 +431,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
               <button
                 onClick={() => setSearchQuery('')}
                 className="absolute right-1.5 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-[var(--surface-hover)] transition-colors"
-                style={{ color: 'var(--text-muted)' }}
+                style={{ color: 'var(--text-secondary)' }}
                 aria-label="Clear search"
               >
                 <X className="h-2.5 w-2.5" />
@@ -446,7 +446,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
             onClick={() => navigate('/enterprise/okr-hub')}
             title="Open OKR Hub"
             style={{ 
-              color: 'var(--text-muted)',
+              color: 'var(--text-secondary)',
               backgroundColor: 'var(--surface-subtle)',
               border: '1px solid var(--border-subtle)',
             }}

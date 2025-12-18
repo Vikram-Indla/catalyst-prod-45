@@ -160,10 +160,10 @@ export default function StrategyRoomPage() {
   // Snapshot selector for PageChrome rightActions
   const snapshotSelector = (
     <div className="flex items-center gap-3">
-      <Calendar size={14} style={{ color: 'var(--text-muted)' }} />
+      <Calendar size={14} style={{ color: 'var(--text-secondary)' }} />
       <span 
         className="text-[11px] font-medium uppercase tracking-wide"
-        style={{ color: 'var(--text-muted)' }}
+        style={{ color: 'var(--text-secondary)' }}
       >
         Snapshot
       </span>
@@ -250,7 +250,7 @@ export default function StrategyRoomPage() {
                       >
                         Strategy Context
                       </h2>
-                      <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
+                      <p className="text-[10px]" style={{ color: 'var(--text-secondary)' }}>
                         Mission, vision, and values
                       </p>
                     </div>
@@ -261,7 +261,7 @@ export default function StrategyRoomPage() {
                       "transition-transform duration-200",
                       contextOpen && "rotate-180"
                     )}
-                    style={{ color: 'var(--text-muted)' }}
+                    style={{ color: 'var(--text-secondary)' }}
                   />
                 </button>
               </CollapsibleTrigger>
