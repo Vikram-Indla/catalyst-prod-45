@@ -1,11 +1,19 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AlertCircle, AlertTriangle, Clock, TrendingUp, Users, Timer, ChevronRight, Zap } from 'lucide-react';
+import { 
+  AlertCircle, AlertTriangle, Clock, TrendingUp, Users, Timer, ChevronRight, Zap, 
+  CheckCircle2, XCircle, FileText, Download, Calendar, ArrowRight, GitBranch,
+  Shield, Vote, Ban, TimerOff
+} from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { useIncidents } from '@/hooks/useIncidents';
 import type { Incident, SupportLevel } from '@/types/incident';
+import { format, subDays, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
 
 interface DashboardWidget {
   id: string;
@@ -44,6 +52,38 @@ function StatCard({ widget, onClick }: { widget: DashboardWidget; onClick: () =>
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+function SmallStatCard({ 
+  title, 
+  value, 
+  icon: Icon, 
+  color, 
+  onClick 
+}: { 
+  title: string; 
+  value: number; 
+  icon: React.ElementType; 
+  color: string;
+  onClick: () => void;
+}) {
+  return (
+    <div 
+      className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/50 cursor-pointer transition-colors"
+      onClick={onClick}
+    >
+      <div className="flex items-center gap-2">
+        <div className={cn("p-1.5 rounded", color.replace('text-', 'bg-').replace('-600', '-100'))}>
+          <Icon className={cn("h-4 w-4", color)} />
+        </div>
+        <span className="text-xs text-muted-foreground">{title}</span>
+      </div>
+      <div className="flex items-center gap-1">
+        <span className={cn("text-lg font-bold", color)}>{value}</span>
+        <ChevronRight className="h-3 w-3 text-muted-foreground" />
+      </div>
+    </div>
   );
 }
 
@@ -101,7 +141,7 @@ function AgingBucketsCard({
         <CardTitle className="text-sm font-semibold text-foreground">Aging Buckets</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-5 gap-2">
+        <div className="grid grid-cols-4 gap-2">
           {data.map((item) => (
             <div 
               key={item.bucket}
@@ -121,6 +161,141 @@ function AgingBucketsCard({
   );
 }
 
+function ReportsSection({ 
+  incidents, 
+  onExport 
+}: { 
+  incidents: Incident[];
+  onExport: (reportType: string) => void;
+}) {
+  const [reportPeriod, setReportPeriod] = useState<'daily' | 'weekly' | 'monthly'>('daily');
+  
+  const reportMetrics = useMemo(() => {
+    const now = new Date();
+    let startDate: Date;
+    let endDate: Date;
+    
+    switch (reportPeriod) {
+      case 'daily':
+        startDate = startOfDay(now);
+        endDate = endOfDay(now);
+        break;
+      case 'weekly':
+        startDate = startOfWeek(now, { weekStartsOn: 0 });
+        endDate = endOfWeek(now, { weekStartsOn: 0 });
+        break;
+      case 'monthly':
+        startDate = startOfMonth(now);
+        endDate = endOfMonth(now);
+        break;
+    }
+    
+    const periodIncidents = incidents.filter(i => {
+      const created = new Date(i.created_at);
+      return created >= startDate && created <= endDate;
+    });
+    
+    const closedIncidents = periodIncidents.filter(i => i.status === 'closed' || i.status === 'resolved');
+    const majorIncidents = periodIncidents.filter(i => i.is_major_incident);
+    const slaBreaches = periodIncidents.filter(i => i.sla?.response_breached || i.sla?.resolution_breached);
+    const l1Count = periodIncidents.filter(i => i.support_level === 'L1').length;
+    const l2Count = periodIncidents.filter(i => i.support_level === 'L2').length;
+    const l3Count = periodIncidents.filter(i => i.support_level === 'L3').length;
+    const convertedIncidents = periodIncidents.filter(i => i.status === 'converted');
+    
+    return {
+      total: periodIncidents.length,
+      closed: closedIncidents.length,
+      major: majorIncidents.length,
+      slaBreaches: slaBreaches.length,
+      l1Count,
+      l2Count,
+      l3Count,
+      converted: convertedIncidents.length,
+      startDate,
+      endDate,
+    };
+  }, [incidents, reportPeriod]);
+
+  const reportTitle = {
+    daily: 'Daily Incident Report',
+    weekly: 'Weekly Incident Report',
+    monthly: 'Monthly Incident Report',
+  }[reportPeriod];
+
+  return (
+    <Card className="border-border">
+      <CardHeader className="pb-2">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
+            <FileText className="h-4 w-4" />
+            Reports
+          </CardTitle>
+          <div className="flex items-center gap-2">
+            <Tabs value={reportPeriod} onValueChange={(v) => setReportPeriod(v as typeof reportPeriod)}>
+              <TabsList className="h-7">
+                <TabsTrigger value="daily" className="text-xs px-2 h-5">Daily</TabsTrigger>
+                <TabsTrigger value="weekly" className="text-xs px-2 h-5">Weekly</TabsTrigger>
+                <TabsTrigger value="monthly" className="text-xs px-2 h-5">Monthly</TabsTrigger>
+              </TabsList>
+            </Tabs>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="h-7 text-xs"
+              onClick={() => onExport(reportPeriod)}
+            >
+              <Download className="h-3 w-3 mr-1" />
+              PDF
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="text-xs text-muted-foreground mb-3">
+          {format(reportMetrics.startDate, 'MMM d, yyyy')} - {format(reportMetrics.endDate, 'MMM d, yyyy')}
+        </div>
+        <div className="grid grid-cols-4 gap-3">
+          <div className="p-3 bg-muted/30 rounded-lg">
+            <p className="text-2xl font-bold text-foreground">{reportMetrics.total}</p>
+            <p className="text-[10px] text-muted-foreground uppercase">Total Logged</p>
+          </div>
+          <div className="p-3 bg-muted/30 rounded-lg">
+            <p className="text-2xl font-bold text-green-600">{reportMetrics.closed}</p>
+            <p className="text-[10px] text-muted-foreground uppercase">Closed</p>
+          </div>
+          <div className="p-3 bg-muted/30 rounded-lg">
+            <p className="text-2xl font-bold text-red-600">{reportMetrics.major}</p>
+            <p className="text-[10px] text-muted-foreground uppercase">Major</p>
+          </div>
+          <div className="p-3 bg-muted/30 rounded-lg">
+            <p className="text-2xl font-bold text-orange-600">{reportMetrics.slaBreaches}</p>
+            <p className="text-[10px] text-muted-foreground uppercase">SLA Breaches</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-4 gap-3 mt-3">
+          <div className="p-3 bg-muted/30 rounded-lg">
+            <p className="text-lg font-bold text-green-600">{reportMetrics.l1Count}</p>
+            <p className="text-[10px] text-muted-foreground uppercase">L1</p>
+          </div>
+          <div className="p-3 bg-muted/30 rounded-lg">
+            <p className="text-lg font-bold text-blue-600">{reportMetrics.l2Count}</p>
+            <p className="text-[10px] text-muted-foreground uppercase">L2</p>
+          </div>
+          <div className="p-3 bg-muted/30 rounded-lg">
+            <p className="text-lg font-bold text-purple-600">{reportMetrics.l3Count}</p>
+            <p className="text-[10px] text-muted-foreground uppercase">L3</p>
+          </div>
+          <div className="p-3 bg-muted/30 rounded-lg">
+            <p className="text-lg font-bold text-teal-600">{reportMetrics.converted}</p>
+            <p className="text-[10px] text-muted-foreground uppercase">Converted</p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function IncidentDashboardPage() {
   const navigate = useNavigate();
   const { data: incidents = [], isLoading } = useIncidents();
@@ -128,19 +303,23 @@ export default function IncidentDashboardPage() {
   // Calculate metrics
   const metrics = useMemo(() => {
     const now = new Date();
-    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
     const openStatuses = ['open', 'triage', 'to_committee', 'in_progress'];
     const openIncidents = incidents.filter(i => openStatuses.includes(i.status));
     const newToday = incidents.filter(i => new Date(i.created_at) >= today);
+    const closedToday = incidents.filter(i => 
+      (i.status === 'closed' || i.status === 'resolved') && 
+      i.updated_at && new Date(i.updated_at) >= today
+    );
     const majorActive = incidents.filter(i => i.is_major_incident && openStatuses.includes(i.status));
     
-    // SLA breaches
-    const slaBreaches = incidents.filter(i => 
-      openStatuses.includes(i.status) && 
-      i.sla && 
-      (i.sla.response_breached || i.sla.resolution_breached)
+    // SLA breaches - separate response and resolution
+    const responseSlaBreaches = incidents.filter(i => 
+      openStatuses.includes(i.status) && i.sla?.response_breached
+    );
+    const resolutionSlaBreaches = incidents.filter(i => 
+      openStatuses.includes(i.status) && i.sla?.resolution_breached
     );
 
     // Support level distribution
@@ -148,22 +327,72 @@ export default function IncidentDashboardPage() {
     const l2Count = openIncidents.filter(i => i.support_level === 'L2').length;
     const l3Count = openIncidents.filter(i => i.support_level === 'L3').length;
 
+    // Workgroup distribution
+    const operationsCount = openIncidents.filter(i => i.assignee_workgroup?.name === 'Operations').length;
+    const deliveryCount = openIncidents.filter(i => i.assignee_workgroup?.name === 'Delivery').length;
+
     // Aging buckets
     const getAgingDays = (createdAt: string) => {
       return Math.floor((now.getTime() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24));
     };
 
     const agingBuckets = [
-      { bucket: '< 1 day', count: openIncidents.filter(i => getAgingDays(i.created_at) < 1).length, color: 'bg-green-500' },
+      { bucket: '< 24h', count: openIncidents.filter(i => getAgingDays(i.created_at) < 1).length, color: 'bg-green-500' },
       { bucket: '1-3 days', count: openIncidents.filter(i => { const d = getAgingDays(i.created_at); return d >= 1 && d < 3; }).length, color: 'bg-blue-500' },
       { bucket: '3-7 days', count: openIncidents.filter(i => { const d = getAgingDays(i.created_at); return d >= 3 && d < 7; }).length, color: 'bg-yellow-500' },
-      { bucket: '7-14 days', count: openIncidents.filter(i => { const d = getAgingDays(i.created_at); return d >= 7 && d < 14; }).length, color: 'bg-orange-500' },
-      { bucket: '> 14 days', count: openIncidents.filter(i => getAgingDays(i.created_at) >= 14).length, color: 'bg-red-500' },
+      { bucket: '> 7 days', count: openIncidents.filter(i => getAgingDays(i.created_at) >= 7).length, color: 'bg-red-500' },
     ];
 
-    // By business process (mock - would need actual data)
+    // Delivery stage distribution (using lowercase values as per type)
+    const stageCount = openIncidents.filter(i => i.delivery_stage === 'stage').length;
+    const qaCount = openIncidents.filter(i => i.delivery_stage === 'qa').length;
+    const betaCount = openIncidents.filter(i => i.delivery_stage === 'beta').length;
+    const productionCount = openIncidents.filter(i => i.delivery_stage === 'prod').length;
+
+    // Conversion analytics (using lowercase values as per type)
+    const convertedToStory = incidents.filter(i => 
+      i.status === 'converted' && i.converted_to_type === 'story'
+    ).length;
+    const convertedToFeature = incidents.filter(i => 
+      i.status === 'converted' && i.converted_to_type === 'feature'
+    ).length;
+    const convertedToEpic = incidents.filter(i => 
+      i.status === 'converted' && i.converted_to_type === 'epic'
+    ).length;
+
+    // Committee governance insights
+    const pendingApprovals = incidents.filter(i => 
+      i.support_level === 'L3' && 
+      i.committee && 
+      i.committee.votes?.some(v => v.vote === 'pending')
+    ).length;
+    
+    const approvedToday = incidents.filter(i => {
+      if (!i.committee?.votes) return false;
+      return i.committee.votes.some(v => 
+        v.vote === 'approved' && 
+        v.voted_at && 
+        new Date(v.voted_at) >= today
+      );
+    }).length;
+    
+    const vetoedDecisions = incidents.filter(i => 
+      i.committee?.votes?.some(v => v.vote === 'vetoed')
+    ).length;
+
+    // Average approval time (mock calculation - would need actual data)
+    const avgApprovalTimeHours = 24; // Placeholder
+
+    // By work group
     const byWorkgroup = openIncidents.reduce((acc, i) => {
       const name = i.assignee_workgroup?.name || 'Unassigned';
+      acc[name] = (acc[name] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    // By business process (using description field or workgroup name as proxy)
+    const byBusinessProcess = openIncidents.reduce((acc, i) => {
+      const name = i.assignee_workgroup?.description || i.assignee_workgroup?.name || 'Unassigned';
       acc[name] = (acc[name] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
@@ -171,25 +400,45 @@ export default function IncidentDashboardPage() {
     return {
       openCount: openIncidents.length,
       newToday: newToday.length,
+      closedToday: closedToday.length,
       majorActive: majorActive.length,
-      slaBreaches: slaBreaches.length,
+      responseSlaBreaches: responseSlaBreaches.length,
+      resolutionSlaBreaches: resolutionSlaBreaches.length,
       l1Count,
       l2Count,
       l3Count,
+      operationsCount,
+      deliveryCount,
       agingBuckets,
+      stageCount,
+      qaCount,
+      betaCount,
+      productionCount,
+      convertedToStory,
+      convertedToFeature,
+      convertedToEpic,
+      pendingApprovals,
+      approvedToday,
+      vetoedDecisions,
+      avgApprovalTimeHours,
       byWorkgroup: Object.entries(byWorkgroup).map(([name, count], idx) => ({
         label: name,
         count,
         color: ['bg-blue-500', 'bg-green-500', 'bg-purple-500', 'bg-orange-500'][idx % 4],
       })),
+      byBusinessProcess: Object.entries(byBusinessProcess).slice(0, 5).map(([name, count], idx) => ({
+        label: name,
+        count,
+        color: ['bg-indigo-500', 'bg-pink-500', 'bg-cyan-500', 'bg-amber-500', 'bg-lime-500'][idx % 5],
+      })),
     };
   }, [incidents]);
 
-  const widgets: DashboardWidget[] = [
-    { id: 'open', title: 'Open Incidents', value: metrics.openCount, delta: 3, icon: AlertCircle, color: 'text-blue-600' },
+  const coreWidgets: DashboardWidget[] = [
+    { id: 'open', title: 'Total Open', value: metrics.openCount, delta: 3, icon: AlertCircle, color: 'text-blue-600' },
     { id: 'new', title: 'New Today', value: metrics.newToday, icon: TrendingUp, color: 'text-green-600' },
-    { id: 'major', title: 'Major Incidents', value: metrics.majorActive, icon: Zap, color: 'text-red-600' },
-    { id: 'sla', title: 'SLA Breaches', value: metrics.slaBreaches, delta: -1, icon: Timer, color: 'text-orange-600' },
+    { id: 'closed', title: 'Closed Today', value: metrics.closedToday, icon: CheckCircle2, color: 'text-emerald-600' },
+    { id: 'major', title: 'Major Active', value: metrics.majorActive, icon: Zap, color: 'text-red-600' },
   ];
 
   const supportLevelData = [
@@ -198,11 +447,26 @@ export default function IncidentDashboardPage() {
     { label: 'L3 - Third Line', count: metrics.l3Count, color: 'bg-purple-500' },
   ];
 
+  const workgroupData = [
+    { label: 'Operations', count: metrics.operationsCount, color: 'bg-blue-500' },
+    { label: 'Delivery', count: metrics.deliveryCount, color: 'bg-green-500' },
+  ];
+
+  const deliveryStageData = [
+    { label: 'Stage', count: metrics.stageCount, color: 'bg-gray-500', value: 'stage' },
+    { label: 'QA', count: metrics.qaCount, color: 'bg-yellow-500', value: 'qa' },
+    { label: 'Beta', count: metrics.betaCount, color: 'bg-blue-500', value: 'beta' },
+    { label: 'Production', count: metrics.productionCount, color: 'bg-green-500', value: 'prod' },
+  ];
+
   const handleWidgetClick = (widgetId: string) => {
     const params = new URLSearchParams();
     if (widgetId === 'open') params.set('status', 'open,triage,to_committee,in_progress');
+    if (widgetId === 'new') params.set('created_today', 'true');
+    if (widgetId === 'closed') params.set('status', 'closed,resolved');
     if (widgetId === 'major') params.set('major', 'true');
-    if (widgetId === 'sla') params.set('sla_breach', 'true');
+    if (widgetId === 'response_sla') params.set('sla_response_breach', 'true');
+    if (widgetId === 'resolution_sla') params.set('sla_resolution_breach', 'true');
     navigate(`/release/incidents?${params.toString()}`);
   };
 
@@ -219,6 +483,35 @@ export default function IncidentDashboardPage() {
     navigate(`/release/incidents?aging=${encodeURIComponent(bucket)}`);
   };
 
+  const handleDeliveryStageClick = (label: string) => {
+    const stageItem = deliveryStageData.find(d => d.label === label);
+    navigate(`/release/incidents?delivery_stage=${encodeURIComponent(stageItem?.value || label.toLowerCase())}`);
+  };
+
+  const handleConversionClick = (type: string) => {
+    navigate(`/release/incidents?status=converted&converted_to=${type.toLowerCase()}`);
+  };
+
+  const handleGovernanceClick = (type: string) => {
+    if (type === 'pending') {
+      navigate(`/release/committee-queue?status=pending`);
+    } else if (type === 'approved') {
+      navigate(`/release/committee-queue?status=approved&today=true`);
+    } else if (type === 'vetoed') {
+      navigate(`/release/committee-queue?status=vetoed`);
+    }
+  };
+
+  const handleBusinessProcessClick = (label: string) => {
+    navigate(`/release/incidents?business_process=${encodeURIComponent(label)}`);
+  };
+
+  const handleExportReport = (reportType: string) => {
+    // PDF export would be implemented here
+    console.log(`Exporting ${reportType} report as PDF`);
+    // In a real implementation, this would generate and download a PDF
+  };
+
   if (isLoading) {
     return (
       <div className="h-full flex items-center justify-center">
@@ -230,15 +523,26 @@ export default function IncidentDashboardPage() {
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Header */}
-      <div className="h-12 border-b border-border bg-card flex-shrink-0 px-4 flex items-center">
+      <div className="h-12 border-b border-border bg-card flex-shrink-0 px-4 flex items-center justify-between">
         <h1 className="text-base font-semibold text-foreground">Incident Dashboard</h1>
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="h-7 text-xs"
+            onClick={() => navigate('/release/incidents')}
+          >
+            View All Incidents
+            <ArrowRight className="h-3 w-3 ml-1" />
+          </Button>
+        </div>
       </div>
 
       {/* Content */}
       <div className="flex-1 overflow-auto p-4 space-y-4">
-        {/* Top Stats Row */}
+        {/* Core Metrics Row */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {widgets.map((widget) => (
+          {coreWidgets.map((widget) => (
             <StatCard 
               key={widget.id} 
               widget={widget} 
@@ -247,19 +551,55 @@ export default function IncidentDashboardPage() {
           ))}
         </div>
 
-        {/* Second Row */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* SLA Breaches Row */}
+        <div className="grid grid-cols-2 gap-4">
+          <Card 
+            className="cursor-pointer hover:shadow-md transition-shadow border-border"
+            onClick={() => handleWidgetClick('response_sla')}
+          >
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Response SLA Breaches</p>
+                  <p className="text-3xl font-bold text-orange-600 mt-1">{metrics.responseSlaBreaches}</p>
+                </div>
+                <div className="p-2 rounded-lg bg-orange-100">
+                  <Timer className="h-5 w-5 text-orange-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card 
+            className="cursor-pointer hover:shadow-md transition-shadow border-border"
+            onClick={() => handleWidgetClick('resolution_sla')}
+          >
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Resolution SLA Breaches</p>
+                  <p className="text-3xl font-bold text-red-600 mt-1">{metrics.resolutionSlaBreaches}</p>
+                </div>
+                <div className="p-2 rounded-lg bg-red-100">
+                  <TimerOff className="h-5 w-5 text-red-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Distribution Row */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
           {/* Support Level Distribution */}
           <DistributionCard
-            title="L1 / L2 / L3 Distribution"
+            title="Support Level Distribution"
             data={supportLevelData}
             onItemClick={handleSupportLevelClick}
           />
 
-          {/* By Work Group */}
+          {/* Workgroup Distribution */}
           <DistributionCard
-            title="By Work Group"
-            data={metrics.byWorkgroup}
+            title="Workgroup Distribution"
+            data={workgroupData}
             onItemClick={handleWorkgroupClick}
           />
 
@@ -267,6 +607,107 @@ export default function IncidentDashboardPage() {
           <AgingBucketsCard
             data={metrics.agingBuckets}
             onBucketClick={handleAgingClick}
+          />
+
+          {/* Delivery Stage Distribution */}
+          <DistributionCard
+            title="Delivery Stage"
+            data={deliveryStageData}
+            onItemClick={handleDeliveryStageClick}
+          />
+        </div>
+
+        {/* Conversion & Governance Row */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Conversion Analytics */}
+          <Card className="border-border">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <GitBranch className="h-4 w-4" />
+                Conversion Analytics
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <SmallStatCard
+                title="Converted to Story"
+                value={metrics.convertedToStory}
+                icon={FileText}
+                color="text-blue-600"
+                onClick={() => handleConversionClick('Story')}
+              />
+              <SmallStatCard
+                title="Converted to Feature"
+                value={metrics.convertedToFeature}
+                icon={FileText}
+                color="text-purple-600"
+                onClick={() => handleConversionClick('Feature')}
+              />
+              <SmallStatCard
+                title="Converted to Epic"
+                value={metrics.convertedToEpic}
+                icon={FileText}
+                color="text-orange-600"
+                onClick={() => handleConversionClick('Epic')}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Committee Governance Insights */}
+          <Card className="border-border">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <Shield className="h-4 w-4" />
+                Committee Governance
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <SmallStatCard
+                title="Pending CAP Approvals"
+                value={metrics.pendingApprovals}
+                icon={Clock}
+                color="text-yellow-600"
+                onClick={() => handleGovernanceClick('pending')}
+              />
+              <SmallStatCard
+                title="Approved Today"
+                value={metrics.approvedToday}
+                icon={Vote}
+                color="text-green-600"
+                onClick={() => handleGovernanceClick('approved')}
+              />
+              <SmallStatCard
+                title="Vetoed Decisions"
+                value={metrics.vetoedDecisions}
+                icon={Ban}
+                color="text-red-600"
+                onClick={() => handleGovernanceClick('vetoed')}
+              />
+              <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-muted/30">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 rounded bg-blue-100">
+                    <Timer className="h-4 w-4 text-blue-600" />
+                  </div>
+                  <span className="text-xs text-muted-foreground">Avg. Approval Time</span>
+                </div>
+                <span className="text-lg font-bold text-blue-600">{metrics.avgApprovalTimeHours}h</span>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Business Process & Reports Row */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* By Business Process */}
+          <DistributionCard
+            title="By Business Process"
+            data={metrics.byBusinessProcess}
+            onItemClick={handleBusinessProcessClick}
+          />
+
+          {/* Reports Section */}
+          <ReportsSection 
+            incidents={incidents} 
+            onExport={handleExportReport}
           />
         </div>
 
