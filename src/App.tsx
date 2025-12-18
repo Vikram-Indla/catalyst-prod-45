@@ -64,6 +64,7 @@ import CapacityWithSidebar from "./pages/program/CapacityWithSidebar";
 import BacklogWithSidebar from "./pages/program/BacklogWithSidebar";
 import RoadmapsWithSidebar from "./pages/program/RoadmapsWithSidebar";
 import ProgramRoadmapPage from "./pages/program/ProgramRoadmapPage";
+import ExecutionWorkbenchPage from "./pages/program/ExecutionWorkbench";
 import FeaturesWithSidebar from "./pages/program/FeaturesWithSidebar";
 import PIObjectives from "./pages/PIObjectives";
 import CapacityPlanning from "./pages/CapacityPlanning";
@@ -304,6 +305,7 @@ const App = () => (
               <Route path="/program/:programId/capacity" element={<CapacityWithSidebar />} />
               <Route path="/program/:programId/quarters" element={<QuartersPage />} />
               <Route path="/program/:programId/epic-balancing" element={<EpicBalancingPage />} />
+              <Route path="/program/:programId/execution-workbench" element={<ExecutionWorkbenchPage />} />
               <Route path="/program/:programId/reports" element={<PlaceholderPage />} />
               <Route path="/team/:teamId/okr-hub" element={<OKRHub />} />
               <Route path="/enterprise/roadmaps" element={<ObjectiveRoadmapPage />} />

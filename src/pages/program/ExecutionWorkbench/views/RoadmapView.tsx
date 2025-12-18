@@ -2,18 +2,20 @@
  * WorkBench views: Table/Gantt/Roadmap/Board/Swimlane
  * 
  * Variant C: Roadmap View - Simplified time-phased view (quarter/year)
+ * Timeline is derived from data or current year if no dates
  */
 
 import React, { useMemo } from 'react';
 import { WorkItem, HealthStatus } from '../types';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { format, startOfQuarter, endOfQuarter, addMonths, differenceInDays, isWithinInterval } from 'date-fns';
+import { format, startOfQuarter, endOfQuarter, differenceInDays, addQuarters, subQuarters, getQuarter, getYear } from 'date-fns';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface RoadmapViewProps {
   items: WorkItem[];
   onItemClick: (item: WorkItem) => void;
+  selectedYear?: number;
 }
 
 interface Quarter {
@@ -21,19 +23,6 @@ interface Quarter {
   start: Date;
   end: Date;
 }
-
-const YEAR = 2025;
-const QUARTERS: Quarter[] = [
-  { label: 'Q1 2025', start: new Date(2025, 0, 1), end: new Date(2025, 2, 31) },
-  { label: 'Q2 2025', start: new Date(2025, 3, 1), end: new Date(2025, 5, 30) },
-  { label: 'Q3 2025', start: new Date(2025, 6, 1), end: new Date(2025, 8, 30) },
-  { label: 'Q4 2025', start: new Date(2025, 9, 1), end: new Date(2025, 11, 31) },
-  { label: 'Q1 2026', start: new Date(2026, 0, 1), end: new Date(2026, 2, 31) },
-];
-
-const TIMELINE_START = QUARTERS[0].start;
-const TIMELINE_END = QUARTERS[QUARTERS.length - 1].end;
-const TOTAL_DAYS = differenceInDays(TIMELINE_END, TIMELINE_START);
 
 function getHealthColor(health: HealthStatus): string {
   switch (health) {
@@ -53,22 +42,24 @@ function getHealthBorder(health: HealthStatus): string {
   }
 }
 
-function dateToPercent(date: Date): number {
-  const days = differenceInDays(date, TIMELINE_START);
-  return Math.max(0, Math.min(100, (days / TOTAL_DAYS) * 100));
-}
-
 interface RoadmapRowProps {
   item: WorkItem;
   onItemClick: (item: WorkItem) => void;
+  timelineStart: Date;
+  totalDays: number;
 }
 
-function RoadmapRow({ item, onItemClick }: RoadmapRowProps) {
+function dateToPercent(date: Date, timelineStart: Date, totalDays: number): number {
+  const days = differenceInDays(date, timelineStart);
+  return Math.max(0, Math.min(100, (days / totalDays) * 100));
+}
+
+function RoadmapRow({ item, onItemClick, timelineStart, totalDays }: RoadmapRowProps) {
   const startDate = item.startDate ? new Date(item.startDate) : null;
   const endDate = item.endDate ? new Date(item.endDate) : null;
 
-  const barStart = startDate ? dateToPercent(startDate) : 0;
-  const barEnd = endDate ? dateToPercent(endDate) : 0;
+  const barStart = startDate ? dateToPercent(startDate, timelineStart, totalDays) : 0;
+  const barEnd = endDate ? dateToPercent(endDate, timelineStart, totalDays) : 0;
   const barWidth = Math.max(2, barEnd - barStart);
 
   const hasValidDates = startDate && endDate;
@@ -78,9 +69,9 @@ function RoadmapRow({ item, onItemClick }: RoadmapRowProps) {
     if (!item.children || item.type !== 'epic') return [];
     return item.children.filter(child => child.endDate).map(child => ({
       ...child,
-      position: dateToPercent(new Date(child.endDate!))
+      position: dateToPercent(new Date(child.endDate!), timelineStart, totalDays)
     }));
-  }, [item.children, item.type]);
+  }, [item.children, item.type, timelineStart, totalDays]);
 
   return (
     <div className="flex items-stretch border-b border-border/50 hover:bg-muted/30 transition-colors min-h-[56px]">
@@ -189,8 +180,63 @@ function RoadmapRow({ item, onItemClick }: RoadmapRowProps) {
   );
 }
 
-export function RoadmapView({ items, onItemClick }: RoadmapViewProps) {
-  const todayPercent = dateToPercent(new Date());
+export function RoadmapView({ items, onItemClick, selectedYear }: RoadmapViewProps) {
+  // Derive quarters and timeline from data or selected year
+  const { quarters, timelineStart, timelineEnd, totalDays } = useMemo(() => {
+    // Collect all dates from items
+    const allDates: Date[] = [];
+    items.forEach(item => {
+      if (item.startDate) allDates.push(new Date(item.startDate));
+      if (item.endDate) allDates.push(new Date(item.endDate));
+    });
+
+    let start: Date;
+    let end: Date;
+
+    if (selectedYear) {
+      // Use selected year + buffer
+      start = new Date(selectedYear, 0, 1);
+      end = new Date(selectedYear, 11, 31);
+    } else if (allDates.length > 0) {
+      // Derive from data
+      const minDate = new Date(Math.min(...allDates.map(d => d.getTime())));
+      const maxDate = new Date(Math.max(...allDates.map(d => d.getTime())));
+      start = startOfQuarter(subQuarters(minDate, 1));
+      end = endOfQuarter(addQuarters(maxDate, 1));
+    } else {
+      // Default to current year
+      const now = new Date();
+      start = new Date(getYear(now), 0, 1);
+      end = new Date(getYear(now), 11, 31);
+    }
+
+    // Generate quarters
+    const quartersList: Quarter[] = [];
+    let current = startOfQuarter(start);
+    const finalEnd = endOfQuarter(end);
+    
+    while (current <= finalEnd) {
+      const qEnd = endOfQuarter(current);
+      quartersList.push({
+        label: `Q${getQuarter(current)} ${getYear(current)}`,
+        start: current,
+        end: qEnd,
+      });
+      current = addQuarters(current, 1);
+    }
+
+    return {
+      quarters: quartersList,
+      timelineStart: quartersList[0]?.start || start,
+      timelineEnd: quartersList[quartersList.length - 1]?.end || end,
+      totalDays: differenceInDays(quartersList[quartersList.length - 1]?.end || end, quartersList[0]?.start || start),
+    };
+  }, [items, selectedYear]);
+
+  // Today line position - actual current date
+  const today = new Date();
+  const todayPercent = dateToPercent(today, timelineStart, totalDays);
+  const showTodayLine = today >= timelineStart && today <= timelineEnd;
 
   // Filter to show only epics in roadmap view
   const epics = useMemo(() => items.filter(item => item.type === 'epic'), [items]);
@@ -213,7 +259,7 @@ export function RoadmapView({ items, onItemClick }: RoadmapViewProps) {
           </span>
         </div>
         <div className="flex-1 flex">
-          {QUARTERS.map((quarter, i) => (
+          {quarters.map((quarter, i) => (
             <div 
               key={i}
               className="flex-1 py-3 px-2 text-center border-r border-border/30 last:border-r-0"
@@ -230,20 +276,28 @@ export function RoadmapView({ items, onItemClick }: RoadmapViewProps) {
       <div className="flex-1 overflow-auto relative">
         {/* Quarter grid lines */}
         <div className="absolute inset-0 flex pointer-events-none" style={{ left: '280px', right: 0 }}>
-          {QUARTERS.map((_, i) => (
+          {quarters.map((_, i) => (
             <div key={i} className="flex-1 border-r border-border/20 last:border-r-0" />
           ))}
         </div>
 
         {/* Today line */}
-        <div 
-          className="absolute top-0 bottom-0 w-0.5 bg-destructive/60 z-20"
-          style={{ left: `calc(280px + ${todayPercent}% * (100% - 280px) / 100)` }}
-        />
+        {showTodayLine && (
+          <div 
+            className="absolute top-0 bottom-0 w-0.5 bg-destructive/60 z-20"
+            style={{ left: `calc(280px + ${todayPercent}% * (100% - 280px) / 100)` }}
+          />
+        )}
 
         {/* Rows */}
         {epics.map(item => (
-          <RoadmapRow key={item.id} item={item} onItemClick={onItemClick} />
+          <RoadmapRow 
+            key={item.id} 
+            item={item} 
+            onItemClick={onItemClick} 
+            timelineStart={timelineStart}
+            totalDays={totalDays}
+          />
         ))}
       </div>
     </div>
