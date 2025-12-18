@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Plus, Search, AlertCircle, Clock, Users, ChevronRight } from 'lucide-react';
+import { Plus, Search, AlertCircle, Clock, Users, ChevronRight, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -131,13 +131,21 @@ export default function IncidentRoomList() {
         sectionLabel="RELEASE"
         pageTitle="Incident Room"
         rightActions={
-          <Button 
-            className="bg-brand-primary hover:bg-brand-primary-hover text-white"
-            onClick={() => setCreateDialogOpen(true)}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Create Incident
-          </Button>
+          <div className="flex items-center gap-2">
+            <Link to="/release/incident-command-center">
+              <Button variant="outline">
+                <BarChart3 className="h-4 w-4 mr-2" />
+                Command Center
+              </Button>
+            </Link>
+            <Button 
+              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
+              onClick={() => setCreateDialogOpen(true)}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Create Incident
+            </Button>
+          </div>
         }
         toolbar={
           <div className="flex items-center gap-3">
