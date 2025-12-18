@@ -4,8 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ChevronDown, Check, X } from 'lucide-react';
+import { ChevronDown, Check, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
+import { format, startOfQuarter, endOfQuarter, addMonths } from 'date-fns';
 
 // ===== TYPES =====
 export interface ProgramFilters {
@@ -13,7 +15,9 @@ export interface ProgramFilters {
   linkedProjects: string[];
   status: string[];
   health: string[];
-  activeInPeriod: string | null;
+  activeInPeriod: 'any' | 'this-quarter' | 'next-quarter' | 'custom';
+  customRangeStart: Date | null;
+  customRangeEnd: Date | null;
   overdueOnly: boolean;
   hasDependencies: boolean | null;
   blockedOrBlocking: boolean | null;
@@ -26,13 +30,34 @@ export const DEFAULT_FILTERS: ProgramFilters = {
   linkedProjects: [],
   status: [],
   health: [],
-  activeInPeriod: null,
+  activeInPeriod: 'any',
+  customRangeStart: null,
+  customRangeEnd: null,
   overdueOnly: false,
   hasDependencies: null,
   blockedOrBlocking: null,
   hasLinkedFeatures: null,
   featureStatusOpenOnly: false,
 };
+
+// Helper to get current quarter dates
+export function getCurrentQuarterDates(): { start: Date; end: Date } {
+  const now = new Date();
+  return {
+    start: startOfQuarter(now),
+    end: endOfQuarter(now)
+  };
+}
+
+// Helper to get next quarter dates
+export function getNextQuarterDates(): { start: Date; end: Date } {
+  const now = new Date();
+  const nextQuarterStart = startOfQuarter(addMonths(now, 3));
+  return {
+    start: nextQuarterStart,
+    end: endOfQuarter(nextQuarterStart)
+  };
+}
 
 interface Project {
   id: string;
@@ -146,7 +171,6 @@ function MultiSelectDropdown({
 
 const PROGRAM_STATUSES = ['Draft', 'Active', 'Completed', 'On Hold'];
 const HEALTH_STATUSES = ['On Track', 'At Risk', 'Blocked'];
-const ACTIVE_IN_PERIOD_OPTIONS = ['This Quarter', 'Next Quarter', 'Custom Range'];
 
 export function ProgramRoadmapFiltersDialog({
   open,
@@ -157,27 +181,68 @@ export function ProgramRoadmapFiltersDialog({
   projects,
 }: ProgramRoadmapFiltersDialogProps) {
   const [draftFilters, setDraftFilters] = useState<ProgramFilters>(filters);
+  const [dateValidationError, setDateValidationError] = useState<string | null>(null);
 
   // Sync draft with filters when dialog opens
   useEffect(() => {
     if (open) {
       setDraftFilters(filters);
+      setDateValidationError(null);
     }
   }, [open, filters]);
 
+  // Validate custom date range
+  useEffect(() => {
+    if (draftFilters.activeInPeriod === 'custom') {
+      if (draftFilters.customRangeStart && draftFilters.customRangeEnd) {
+        if (draftFilters.customRangeEnd < draftFilters.customRangeStart) {
+          setDateValidationError('End date must be on or after start date');
+        } else {
+          setDateValidationError(null);
+        }
+      } else {
+        setDateValidationError(null);
+      }
+    } else {
+      setDateValidationError(null);
+    }
+  }, [draftFilters.activeInPeriod, draftFilters.customRangeStart, draftFilters.customRangeEnd]);
+
   const handleApply = () => {
-    onFiltersChange(draftFilters);
+    // Block apply if there's a validation error
+    if (dateValidationError) return;
+    
+    // If custom range selected but dates not set, treat as "any"
+    if (draftFilters.activeInPeriod === 'custom' && 
+        (!draftFilters.customRangeStart || !draftFilters.customRangeEnd)) {
+      onFiltersChange({ ...draftFilters, activeInPeriod: 'any' });
+    } else {
+      onFiltersChange(draftFilters);
+    }
     onOpenChange(false);
   };
 
   const handleReset = () => {
     setDraftFilters(DEFAULT_FILTERS);
+    setDateValidationError(null);
     onFiltersChange(DEFAULT_FILTERS);
   };
 
   const handleCancel = () => {
     setDraftFilters(filters);
+    setDateValidationError(null);
     onOpenChange(false);
+  };
+
+  const handlePeriodChange = (value: string) => {
+    const periodValue = value as 'any' | 'this-quarter' | 'next-quarter' | 'custom';
+    setDraftFilters(prev => ({
+      ...prev,
+      activeInPeriod: periodValue,
+      // Clear custom dates if not custom
+      customRangeStart: periodValue === 'custom' ? prev.customRangeStart : null,
+      customRangeEnd: periodValue === 'custom' ? prev.customRangeEnd : null,
+    }));
   };
 
   return (
@@ -248,23 +313,53 @@ export function ProgramRoadmapFiltersDialog({
               Active In Period
             </Label>
             <Select
-              value={draftFilters.activeInPeriod || 'any'}
-              onValueChange={(value) => setDraftFilters(prev => ({ 
-                ...prev, 
-                activeInPeriod: value === 'any' ? null : value 
-              }))}
+              value={draftFilters.activeInPeriod}
+              onValueChange={handlePeriodChange}
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select period..." />
               </SelectTrigger>
               <SelectContent className="z-[500]">
                 <SelectItem value="any">Any Period</SelectItem>
-                {ACTIVE_IN_PERIOD_OPTIONS.map(period => (
-                  <SelectItem key={period} value={period}>{period}</SelectItem>
-                ))}
+                <SelectItem value="this-quarter">This Quarter</SelectItem>
+                <SelectItem value="next-quarter">Next Quarter</SelectItem>
+                <SelectItem value="custom">Custom Range</SelectItem>
               </SelectContent>
             </Select>
           </div>
+
+          {/* Custom Range Date Pickers - Only shown when "Custom Range" is selected */}
+          {draftFilters.activeInPeriod === 'custom' && (
+            <div className="grid grid-cols-2 gap-4 pl-4 border-l-2 border-brand-primary/30">
+              <div className="space-y-2">
+                <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+                  <Calendar className="h-3 w-3" />
+                  Start Date
+                </Label>
+                <CatalystDatePicker
+                  value={draftFilters.customRangeStart}
+                  onChange={(date) => setDraftFilters(prev => ({ ...prev, customRangeStart: date }))}
+                  placeholder="Select start date..."
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+                  <Calendar className="h-3 w-3" />
+                  End Date
+                </Label>
+                <CatalystDatePicker
+                  value={draftFilters.customRangeEnd}
+                  onChange={(date) => setDraftFilters(prev => ({ ...prev, customRangeEnd: date }))}
+                  placeholder="Select end date..."
+                />
+              </div>
+              {dateValidationError && (
+                <div className="col-span-2 text-xs text-destructive">
+                  {dateValidationError}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Boolean Filters Section */}
           <div className="pt-2 border-t border-border">
@@ -358,7 +453,11 @@ export function ProgramRoadmapFiltersDialog({
           <Button variant="outline" onClick={handleCancel}>
             Cancel
           </Button>
-          <Button onClick={handleApply} className="bg-brand-primary hover:bg-brand-primary-hover text-white">
+          <Button 
+            onClick={handleApply} 
+            className="bg-brand-primary hover:bg-brand-primary-hover text-white"
+            disabled={!!dateValidationError}
+          >
             Apply Filters
           </Button>
         </DialogFooter>
