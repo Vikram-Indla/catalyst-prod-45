@@ -40,8 +40,7 @@ const menuConfigs: Record<WorkspaceType, Array<{ id: string; label: string; icon
   program: [
     { id: 'room', label: 'Program Room', icon: LayoutDashboard, pathTemplate: '/program/:id/room' },
     { id: 'epic-backlog', label: 'Epic Backlog', icon: Square, pathTemplate: '/program/:id/epic-backlog' },
-    { id: 'work-tree', label: 'Work tree', icon: Network, pathTemplate: '/program/:id/work-tree' },
-    { id: 'workbench', label: 'Execution Workbench', icon: Grid3x3, pathTemplate: '/program/:id/workbench' },
+    { id: 'work-tree', label: 'Work Tree', icon: Network, pathTemplate: '/program/:id/work-tree' },
     { id: 'dependencies', label: 'Dependencies', icon: GitBranch, pathTemplate: '/program/:id/dependencies' },
     { id: 'roadmaps', label: 'Roadmaps', icon: Map, pathTemplate: '/program/:id/roadmaps' },
     { id: 'epic-balancing', label: 'Epic Balancing', icon: Grid3x3, pathTemplate: '/program/:id/epic-balancing' },

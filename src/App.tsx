@@ -292,7 +292,7 @@ const App = () => (
               <Route path="/enterprise/okr-hub" element={<OKRHub />} />
               <Route path="/portfolio/:portfolioId/okr-hub" element={<OKRHub />} />
               <Route path="/program/:programId/okr-hub" element={<OKRHub />} />
-              <Route path="/program/:programId/work-tree" element={<WorkTreePage />} />
+              <Route path="/program/:programId/work-tree" element={<ExecutionWorkbenchPage />} />
               <Route path="/program/:programId/room" element={<ProgramRoom />} />
               <Route path="/program/:programId/epics" element={<ProgramEpicsPage />} />
               <Route path="/program/:programId/epic-backlog" element={<EpicBacklogWithSidebar />} />
@@ -305,7 +305,7 @@ const App = () => (
               <Route path="/program/:programId/capacity" element={<CapacityWithSidebar />} />
               <Route path="/program/:programId/quarters" element={<QuartersPage />} />
               <Route path="/program/:programId/epic-balancing" element={<EpicBalancingPage />} />
-              <Route path="/program/:programId/execution-workbench" element={<ExecutionWorkbenchPage />} />
+              {/* Execution Workbench now at /program/:programId/work-tree */}
               <Route path="/program/:programId/reports" element={<PlaceholderPage />} />
               <Route path="/team/:teamId/okr-hub" element={<OKRHub />} />
               <Route path="/enterprise/roadmaps" element={<ObjectiveRoadmapPage />} />

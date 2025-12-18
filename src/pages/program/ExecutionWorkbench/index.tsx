@@ -230,7 +230,7 @@ export default function ExecutionWorkbenchPage() {
   return (
     <ProgramPageLayout>
       <div className="flex flex-col h-full">
-        <GlobalPageHeader sectionLabel="PROGRAM" pageTitle="Execution Workbench" />
+        <GlobalPageHeader sectionLabel="PROGRAM" pageTitle="Program Execution Workbench" />
 
         {/* Toolbar */}
         <div className="flex items-center justify-between gap-4 px-4 py-3 border-b border-border bg-background">
