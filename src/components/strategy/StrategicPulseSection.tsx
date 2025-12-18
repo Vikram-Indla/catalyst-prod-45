@@ -147,24 +147,24 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
           className="px-4 py-2 flex items-center justify-between"
           style={{ borderBottom: '1px solid var(--border-subtle)' }}
         >
-          <div className="h-3.5 w-24 rounded animate-pulse" style={{ backgroundColor: 'var(--surface-3)' }} />
+          <div className="h-3.5 w-24 rounded animate-pulse" style={{ backgroundColor: 'var(--muted)' }} />
         </div>
         <div className="p-3">
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
             {[1, 2, 3, 4, 5].map((i) => (
               <div 
                 key={i} 
-                className="p-3 rounded-md animate-pulse"
+                className="p-3 rounded-md min-h-[88px]"
                 style={{ 
-                  backgroundColor: 'var(--surface-2)', 
-                  border: '1px solid var(--border-subtle)',
-                  borderLeft: '2px solid var(--border-default)'
+                  backgroundColor: 'var(--muted)', 
+                  border: '1px solid var(--border)',
+                  borderLeft: '2px solid var(--border)'
                 }}
               >
-                <div className="h-2.5 w-16 rounded mb-2.5" style={{ backgroundColor: 'var(--surface-3)' }} />
-                <div className="h-6 w-12 rounded mb-2" style={{ backgroundColor: 'var(--surface-3)' }} />
-                <div className="h-2 w-20 rounded mb-2" style={{ backgroundColor: 'var(--surface-3)' }} />
-                <div className="h-1 w-full rounded-full" style={{ backgroundColor: 'var(--surface-3)' }} />
+                <div className="h-2.5 w-16 rounded mb-2.5 animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
+                <div className="h-6 w-12 rounded mb-2 animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
+                <div className="h-2 w-20 rounded mb-2 animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
+                <div className="h-1 w-full rounded-full animate-pulse" style={{ backgroundColor: 'var(--muted-foreground)', opacity: 0.15 }} />
               </div>
             ))}
           </div>
@@ -356,7 +356,7 @@ function KPITile({ label, icon, children, onClick, accentColor = 'muted' }: KPIT
     <Wrapper
       onClick={onClick}
       className={cn(
-        "p-3 rounded-md text-left transition-all relative group",
+        "p-3 rounded-md text-left transition-all relative group min-h-[88px]",
         onClick && "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
       )}
       style={{
