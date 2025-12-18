@@ -290,9 +290,9 @@ export default function SearchPage() {
 
   function getTypeBadgeColor(type: WorkItemType) {
     switch (type) {
-      case 'epic': return 'bg-purple-100 text-purple-800';
-      case 'feature': return 'bg-blue-100 text-blue-800';
-      case 'story': return 'bg-green-100 text-green-800';
+      case 'epic': return 'bg-workitem-epic/20 text-workitem-epic';
+      case 'feature': return 'bg-workitem-feature/20 text-workitem-feature';
+      case 'story': return 'bg-workitem-story/20 text-workitem-story';
       case 'subtask': return 'bg-cyan-100 text-cyan-800';
       case 'demand': return 'bg-amber-100 text-amber-800';
       default: return 'bg-gray-100 text-gray-800';

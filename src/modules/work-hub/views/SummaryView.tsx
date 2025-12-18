@@ -5,8 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
-import { Filter, CheckCircle, Edit, Plus, Calendar, Maximize2, ExternalLink } from 'lucide-react';
+import { Filter, CheckCircle, Edit, Plus, Calendar, Maximize2, ExternalLink, Square, FileText, CheckSquare } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
 
 // Metric Card Component
 function MetricCard({ 
@@ -238,11 +239,11 @@ function PriorityBreakdown() {
 // Types of Work Distribution
 function TypesOfWork() {
   const types = [
-    { type: 'Epic', icon: '◇', count: 47, percentage: 47 },
-    { type: 'Task', icon: '☑', count: 16, percentage: 16 },
-    { type: 'Story', icon: '▢', count: 12, percentage: 12 },
-    { type: 'Backend', icon: '●', count: 8, percentage: 8 },
-    { type: 'Production Incident', icon: '⊙', count: 5, percentage: 5 },
+    { type: 'Epic', Icon: Square, colorClass: 'text-workitem-epic', count: 47, percentage: 47 },
+    { type: 'Task', Icon: CheckSquare, colorClass: 'text-muted-foreground', count: 16, percentage: 16 },
+    { type: 'Story', Icon: FileText, colorClass: 'text-workitem-story', count: 12, percentage: 12 },
+    { type: 'Backend', Icon: null, colorClass: '', count: 8, percentage: 8 },
+    { type: 'Production Incident', Icon: null, colorClass: '', count: 5, percentage: 5 },
   ];
 
   return (
@@ -263,7 +264,7 @@ function TypesOfWork() {
           {types.map((t) => (
             <div key={t.type} className="grid grid-cols-2 gap-4 items-center">
               <div className="flex items-center gap-2 text-sm">
-                <span>{t.icon}</span>
+                {t.Icon ? <t.Icon className={cn("h-4 w-4", t.colorClass)} /> : <span className="w-4 h-4 rounded-full bg-muted-foreground/30" />}
                 <span>{t.type}</span>
               </div>
               <div className="flex items-center gap-2">
@@ -377,7 +378,7 @@ function EpicProgress() {
           {epics.map((epic) => (
             <div key={epic.key}>
               <div className="flex items-center gap-2 mb-1 text-sm">
-                <span className="text-purple-600">◇</span>
+                <Square className="h-4 w-4 text-workitem-epic" />
                 <span className="text-primary">{epic.key}</span>
                 <span className="text-muted-foreground truncate">{epic.name}</span>
               </div>

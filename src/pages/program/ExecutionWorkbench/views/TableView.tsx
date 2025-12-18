@@ -7,7 +7,7 @@
 import React, { useState } from 'react';
 import { WorkItem, HealthStatus, ItemStatus } from '../types';
 import { Badge } from '@/components/ui/badge';
-import { ChevronRight, ChevronDown, User } from 'lucide-react';
+import { ChevronRight, ChevronDown, Square, Gem, FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 
@@ -35,12 +35,12 @@ function getStatusColor(status: ItemStatus): string {
   }
 }
 
-function getTypeIcon(type: string): { color: string; letter: string } {
+function getTypeIcon(type: string): { icon: React.ElementType; colorClass: string } {
   switch (type) {
-    case 'epic': return { color: 'bg-brand-primary text-white', letter: 'E' };
-    case 'feature': return { color: 'bg-secondary-bronze text-white', letter: 'F' };
-    case 'story': return { color: 'bg-brand-gold text-white', letter: 'S' };
-    default: return { color: 'bg-muted text-muted-foreground', letter: '?' };
+    case 'epic': return { icon: Square, colorClass: 'text-workitem-epic' };
+    case 'feature': return { icon: Gem, colorClass: 'text-workitem-feature' };
+    case 'story': return { icon: FileText, colorClass: 'text-workitem-story' };
+    default: return { icon: FileText, colorClass: 'text-muted-foreground' };
   }
 }
 
@@ -80,9 +80,7 @@ function TableRow({ item, depth, onItemClick, expandedIds, toggleExpand }: Table
             ) : (
               <span className="w-5" />
             )}
-            <div className={cn("h-5 w-5 rounded text-[10px] font-bold flex items-center justify-center", typeIcon.color)}>
-              {typeIcon.letter}
-            </div>
+            <typeIcon.icon className={cn("h-4 w-4", typeIcon.colorClass)} />
             <span className="font-mono text-xs text-muted-foreground">{item.key}</span>
             <span className="text-sm truncate max-w-[300px]">{item.title}</span>
           </div>

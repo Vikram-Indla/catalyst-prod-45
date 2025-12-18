@@ -3,7 +3,7 @@
  * Enterprise-grade selector with brand tokens
  */
 import { cn } from '@/lib/utils';
-import { Palette, Target, Boxes } from 'lucide-react';
+import { Palette, Target, Square } from 'lucide-react';
 
 type SubSection = 'themes' | 'objectives' | 'epics';
 
@@ -20,7 +20,7 @@ interface SegmentedControlProps {
 const SEGMENTS: { id: SubSection; label: string; icon: React.ElementType }[] = [
   { id: 'themes', label: 'Themes', icon: Palette },
   { id: 'objectives', label: 'Objectives', icon: Target },
-  { id: 'epics', label: 'Epics', icon: Boxes },
+  { id: 'epics', label: 'Epics', icon: Square },
 ];
 
 export function StrategicBacklogSegmentedControl({

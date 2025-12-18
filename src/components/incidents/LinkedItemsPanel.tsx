@@ -22,10 +22,10 @@ const getTypeIcon = (type: string) => {
 
 const getTypeColor = (type: string) => {
   switch (type) {
-    case 'story': return 'bg-green-100 text-green-700';
-    case 'defect': return 'bg-red-100 text-red-700';
+    case 'story': return 'bg-workitem-story/20 text-workitem-story';
+    case 'defect': return 'bg-destructive/20 text-destructive';
     case 'task': return 'bg-blue-100 text-blue-700';
-    case 'epic': return 'bg-purple-100 text-purple-700';
+    case 'epic': return 'bg-workitem-epic/20 text-workitem-epic';
     default: return 'bg-gray-100 text-gray-700';
   }
 };
