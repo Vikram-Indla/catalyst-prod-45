@@ -351,11 +351,12 @@ export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                             >
-                              {/* Theme Row - Match Epic row structure exactly */}
+                              {/* Theme Row - CATALYST STANDARD: hover:bg-accent/40 */}
                               <div
                                 className={cn(
-                                  'flex items-center gap-3 px-4 py-2.5 hover:bg-muted/50 cursor-pointer transition-colors',
-                                  isSelected && 'bg-muted',
+                                  'flex items-center gap-3 px-4 py-2.5 cursor-pointer',
+                                  'transition-[background-color] duration-100 hover:bg-accent/40',
+                                  isSelected && 'bg-accent/60',
                                   snapshot.isDragging && 'opacity-50 bg-muted'
                                 )}
                                 onClick={() => handleThemeClick(theme)}
@@ -382,7 +383,7 @@ export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
                                     e.stopPropagation();
                                     toggleRowExpand(theme.id);
                                   }}
-                                  className="w-6 flex items-center justify-center hover:bg-muted rounded"
+                                  className="w-6 flex items-center justify-center hover:bg-accent/40 rounded transition-[background-color] duration-100"
                                 >
                                   {isExpanded ? (
                                     <ChevronDown className="h-4 w-4 text-muted-foreground" />
