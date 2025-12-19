@@ -254,6 +254,16 @@ export default function ExecutionWorkbenchPage() {
   }, [allItems, search, filters]);
 
   const handleItemClick = (item: WorkItem) => {
+    // For epics and features, open full drawer directly
+    if (item.type === 'epic') {
+      setSelectedEpicId(item.id);
+      return;
+    }
+    if (item.type === 'feature') {
+      handleOpenFullDrawer(item);
+      return;
+    }
+    // For other types, open QuickView
     setSelectedItem(item);
     setDrawerOpen(true);
   };
