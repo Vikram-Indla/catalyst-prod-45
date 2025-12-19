@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import {
@@ -20,110 +20,153 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
+import { AlertTriangle } from 'lucide-react';
+import type { WorkItemDependencyType, DependencyTypeV2, RiskLevel, DependencyLevelV2 } from '@/lib/dependencies/types';
+import { DEPENDENCY_TYPE_LABELS, DEPENDENCY_LEVEL_LABELS } from '@/lib/dependencies/types';
 
 interface CreateDependencyDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   teamId?: string;
+  // New props for work-item-centric model
+  defaultRequestingWorkItemId?: string;
+  defaultRequestingWorkItemType?: WorkItemDependencyType;
 }
+
+// Generate quarter options
+const generateQuarterOptions = () => {
+  const currentYear = new Date().getFullYear();
+  const quarters: string[] = [];
+  for (let year = currentYear - 1; year <= currentYear + 2; year++) {
+    for (let q = 1; q <= 4; q++) {
+      quarters.push(`Q${q} ${year}`);
+    }
+  }
+  return quarters;
+};
+
+const QUARTER_OPTIONS = generateQuarterOptions();
+
+// Get current quarter
+const getCurrentQuarter = () => {
+  const now = new Date();
+  const quarter = Math.ceil((now.getMonth() + 1) / 3);
+  return `Q${quarter} ${now.getFullYear()}`;
+};
 
 export function CreateDependencyDialog({
   open,
   onOpenChange,
   teamId,
+  defaultRequestingWorkItemId,
+  defaultRequestingWorkItemType,
 }: CreateDependencyDialogProps) {
   const queryClient = useQueryClient();
-  const [description, setDescription] = useState('');
-  const [fromWorkItemType, setFromWorkItemType] = useState<'feature' | 'story'>('feature');
-  const [toWorkItemType, setToWorkItemType] = useState<'feature' | 'story'>('feature');
-  const [fromFeatureId, setFromFeatureId] = useState('');
-  const [toFeatureId, setToFeatureId] = useState('');
-  const [riskLevel, setRiskLevel] = useState<'low' | 'med' | 'high'>('low');
+  
+  // Form state
+  const [requestingWorkItemType, setRequestingWorkItemType] = useState<WorkItemDependencyType>('feature');
+  const [requestingWorkItemId, setRequestingWorkItemId] = useState('');
+  const [dependsOnWorkItemType, setDependsOnWorkItemType] = useState<WorkItemDependencyType>('feature');
+  const [dependsOnWorkItemId, setDependsOnWorkItemId] = useState('');
+  const [dependencyType, setDependencyType] = useState<DependencyTypeV2>('blocks');
+  const [riskLevel, setRiskLevel] = useState<RiskLevel>('med');
   const [neededByDate, setNeededByDate] = useState('');
-  const [dependsOnTeamId, setDependsOnTeamId] = useState('');
+  const [quarter, setQuarter] = useState(getCurrentQuarter());
+  const [description, setDescription] = useState('');
+  
+  // Set defaults when dialog opens with context
+  useEffect(() => {
+    if (open && defaultRequestingWorkItemId && defaultRequestingWorkItemType) {
+      setRequestingWorkItemType(defaultRequestingWorkItemType);
+      setRequestingWorkItemId(defaultRequestingWorkItemId);
+      // Default target to same type for same-level dependency
+      setDependsOnWorkItemType(defaultRequestingWorkItemType);
+    }
+  }, [open, defaultRequestingWorkItemId, defaultRequestingWorkItemType]);
+  
+  // Derive dependency level
+  const derivedLevel: DependencyLevelV2 = 
+    requestingWorkItemType === 'epic' && dependsOnWorkItemType === 'epic' ? 'execution' :
+    requestingWorkItemType === 'feature' && dependsOnWorkItemType === 'feature' ? 'delivery' :
+    'cross_level';
+  
+  const isCrossLevel = derivedLevel === 'cross_level';
 
-  // Fetch work items for the requesting team (features or stories)
-  const { data: requestingWorkItems } = useQuery({
-    queryKey: ['team-work-items', teamId, fromWorkItemType],
-    queryFn: async () => {
-      if (!teamId) return [];
-      
-      if (fromWorkItemType === 'feature') {
-        const { data, error } = await supabase
-          .from('features')
-          .select('id, name, display_id')
-          .eq('team_id', teamId)
-          .order('name');
-        if (error) throw error;
-        return data.map(item => ({ ...item, display: `${item.display_id || item.id.slice(0, 8)} - ${item.name}` }));
-      } else {
-        const { data, error } = await supabase
-          .from('stories')
-          .select('id, name')
-          .eq('team_id', teamId)
-          .order('name');
-        if (error) throw error;
-        return data.map(item => ({ ...item, display: `Story - ${item.name}` }));
-      }
-    },
-    enabled: !!teamId && open,
-  });
-
-  // Fetch all teams for dependency target
-  const { data: teams } = useQuery({
-    queryKey: ['teams'],
+  // Fetch epics for picker
+  const { data: epics } = useQuery({
+    queryKey: ['epics-lookup'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('teams')
-        .select('id, name')
+        .from('epics')
+        .select('id, name, epic_key, program_id')
+        .is('deleted_at', null)
         .order('name');
       if (error) throw error;
       return data;
     },
-    enabled: open,
+    enabled: open && (requestingWorkItemType === 'epic' || dependsOnWorkItemType === 'epic'),
   });
 
-  // Fetch work items for the dependent team (features or stories)
-  const { data: dependentWorkItems } = useQuery({
-    queryKey: ['team-work-items', dependsOnTeamId, toWorkItemType],
+  // Fetch features for picker
+  const { data: features } = useQuery({
+    queryKey: ['features-lookup'],
     queryFn: async () => {
-      if (!dependsOnTeamId) return [];
-      
-      if (toWorkItemType === 'feature') {
-        const { data, error } = await supabase
-          .from('features')
-          .select('id, name, display_id')
-          .eq('team_id', dependsOnTeamId)
-          .order('name');
-        if (error) throw error;
-        return data.map(item => ({ ...item, display: `${item.display_id || item.id.slice(0, 8)} - ${item.name}` }));
-      } else {
-        const { data, error } = await supabase
-          .from('stories')
-          .select('id, name')
-          .eq('team_id', dependsOnTeamId)
-          .order('name');
-        if (error) throw error;
-        return data.map(item => ({ ...item, display: `Story - ${item.name}` }));
-      }
+      const { data, error } = await supabase
+        .from('features')
+        .select('id, name, display_id, team_id, epic_id')
+        .order('name');
+      if (error) throw error;
+      return data;
     },
-    enabled: !!dependsOnTeamId && open,
+    enabled: open && (requestingWorkItemType === 'feature' || dependsOnWorkItemType === 'feature'),
   });
+
+  // Get work items for requesting picker
+  const requestingWorkItems = requestingWorkItemType === 'epic' 
+    ? epics?.map(e => ({ id: e.id, display: `${e.epic_key || e.id.slice(0, 8)} - ${e.name}` })) || []
+    : features?.map(f => ({ id: f.id, display: `${f.display_id || f.id.slice(0, 8)} - ${f.name}` })) || [];
+
+  // Get work items for depends-on picker (exclude requesting item)
+  const dependsOnWorkItems = (dependsOnWorkItemType === 'epic' 
+    ? epics?.map(e => ({ id: e.id, display: `${e.epic_key || e.id.slice(0, 8)} - ${e.name}` })) || []
+    : features?.map(f => ({ id: f.id, display: `${f.display_id || f.id.slice(0, 8)} - ${f.name}` })) || []
+  ).filter(item => item.id !== requestingWorkItemId);
 
   const createMutation = useMutation({
-    mutationFn: async (newDependency: any) => {
+    mutationFn: async () => {
+      // Build payload with new model fields
+      const payload: any = {
+        requesting_work_item_id: requestingWorkItemId,
+        requesting_work_item_type: requestingWorkItemType,
+        depends_on_work_item_id: dependsOnWorkItemId,
+        depends_on_work_item_type: dependsOnWorkItemType,
+        dependency_level_v2: derivedLevel,
+        is_cross_level_exception: isCrossLevel,
+        type: dependencyType,
+        risk_level: riskLevel,
+        needed_by_date: neededByDate || null,
+        quarter,
+        description: description || null,
+        status: 'draft',
+        // Legacy fields for backwards compatibility
+        from_feature_id: requestingWorkItemType === 'feature' ? requestingWorkItemId : dependsOnWorkItemId,
+        to_feature_id: dependsOnWorkItemType === 'feature' ? dependsOnWorkItemId : requestingWorkItemId,
+      };
+
       const { data, error } = await supabase
         .from('dependencies')
-        .insert([newDependency])
+        .insert([payload])
         .select()
         .single();
       if (error) throw error;
       return data;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['work-item-dependencies'] });
+      queryClient.invalidateQueries({ queryKey: ['dependencies-grid'] });
       queryClient.invalidateQueries({ queryKey: ['team-dependencies'] });
-      queryClient.invalidateQueries({ queryKey: ['dependencies'] });
       toast.success('Dependency created successfully');
       handleClose();
     },
@@ -135,145 +178,172 @@ export function CreateDependencyDialog({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!fromFeatureId || !toFeatureId) {
-      toast.error('Please select both requesting and dependent features');
+    if (!requestingWorkItemId || !dependsOnWorkItemId) {
+      toast.error('Please select both requesting and dependent work items');
       return;
     }
 
-    createMutation.mutate({
-      from_feature_id: fromFeatureId,
-      to_feature_id: toFeatureId,
-      requesting_team_id: teamId,
-      depends_on_team_id: dependsOnTeamId || null,
-      description,
-      risk_level: riskLevel,
-      needed_by_date: neededByDate || null,
-      status: 'open',
-    });
+    if (!neededByDate) {
+      toast.error('Please specify a needed-by date');
+      return;
+    }
+
+    createMutation.mutate();
   };
 
   const handleClose = () => {
-    setDescription('');
-    setFromWorkItemType('feature');
-    setToWorkItemType('feature');
-    setFromFeatureId('');
-    setToFeatureId('');
-    setRiskLevel('low');
+    setRequestingWorkItemType(defaultRequestingWorkItemType || 'feature');
+    setRequestingWorkItemId(defaultRequestingWorkItemId || '');
+    setDependsOnWorkItemType(defaultRequestingWorkItemType || 'feature');
+    setDependsOnWorkItemId('');
+    setDependencyType('blocks');
+    setRiskLevel('med');
     setNeededByDate('');
-    setDependsOnTeamId('');
+    setQuarter(getCurrentQuarter());
+    setDescription('');
     onOpenChange(false);
   };
 
+  // Check if requesting item is pre-set (read-only)
+  const hasDefaultContext = !!defaultRequestingWorkItemId;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[650px]">
         <DialogHeader>
-          <DialogTitle>Create New Dependency</DialogTitle>
+          <DialogTitle>Create Dependency</DialogTitle>
           <DialogDescription>
-            Define a dependency between features across teams
+            Define a dependency between work items (Epic ↔ Epic or Feature ↔ Feature)
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="from-type">Requesting Type *</Label>
-                <Select value={fromWorkItemType} onValueChange={(v: any) => setFromWorkItemType(v)}>
-                  <SelectTrigger id="from-type">
+            {/* Dependency Level Indicator */}
+            <div className="flex items-center gap-2 p-2 rounded-md bg-muted/50">
+              <span className="text-sm text-muted-foreground">Dependency Level:</span>
+              <Badge variant={isCrossLevel ? 'destructive' : 'secondary'}>
+                {DEPENDENCY_LEVEL_LABELS[derivedLevel]}
+              </Badge>
+              {isCrossLevel && (
+                <div className="flex items-center gap-1 text-xs text-warning">
+                  <AlertTriangle className="h-3 w-3" />
+                  Cross-level dependencies require explicit approval
+                </div>
+              )}
+            </div>
+
+            {/* Requesting Work Item */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Requesting Work Item (Source)</Label>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label htmlFor="req-type" className="text-xs text-muted-foreground">Type</Label>
+                  <Select 
+                    value={requestingWorkItemType} 
+                    onValueChange={(v: WorkItemDependencyType) => {
+                      setRequestingWorkItemType(v);
+                      if (!hasDefaultContext) setRequestingWorkItemId('');
+                    }}
+                    disabled={hasDefaultContext}
+                  >
+                    <SelectTrigger id="req-type">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="epic">Epic</SelectItem>
+                      <SelectItem value="feature">Feature</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="req-item" className="text-xs text-muted-foreground">Work Item *</Label>
+                  <Select 
+                    value={requestingWorkItemId} 
+                    onValueChange={setRequestingWorkItemId}
+                    disabled={hasDefaultContext}
+                    required
+                  >
+                    <SelectTrigger id="req-item">
+                      <SelectValue placeholder={`Select ${requestingWorkItemType}`} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {requestingWorkItems.map((item) => (
+                        <SelectItem key={item.id} value={item.id}>
+                          {item.display}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
+            {/* Depends On Work Item */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Depends On (Target)</Label>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label htmlFor="dep-type" className="text-xs text-muted-foreground">Type</Label>
+                  <Select 
+                    value={dependsOnWorkItemType} 
+                    onValueChange={(v: WorkItemDependencyType) => {
+                      setDependsOnWorkItemType(v);
+                      setDependsOnWorkItemId('');
+                    }}
+                  >
+                    <SelectTrigger id="dep-type">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="epic">Epic</SelectItem>
+                      <SelectItem value="feature">Feature</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="dep-item" className="text-xs text-muted-foreground">Work Item *</Label>
+                  <Select 
+                    value={dependsOnWorkItemId} 
+                    onValueChange={setDependsOnWorkItemId}
+                    required
+                  >
+                    <SelectTrigger id="dep-item">
+                      <SelectValue placeholder={`Select ${dependsOnWorkItemType}`} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {dependsOnWorkItems.map((item) => (
+                        <SelectItem key={item.id} value={item.id}>
+                          {item.display}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
+            {/* Dependency Type + Risk */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="dep-type-select" className="text-xs text-muted-foreground">Dependency Type *</Label>
+                <Select value={dependencyType} onValueChange={(v: DependencyTypeV2) => setDependencyType(v)}>
+                  <SelectTrigger id="dep-type-select">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="feature">Feature</SelectItem>
-                    <SelectItem value="story">Story</SelectItem>
+                    <SelectItem value="blocks">Blocks</SelectItem>
+                    <SelectItem value="is_blocked_by">Is Blocked By</SelectItem>
+                    <SelectItem value="enables">Enables</SelectItem>
+                    <SelectItem value="provides_input">Provides Input</SelectItem>
+                    <SelectItem value="approves">Approves</SelectItem>
+                    <SelectItem value="governs">Governs</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-              
-              <div className="grid gap-2">
-                <Label htmlFor="from-work-item">Requesting Work Item *</Label>
-                <Select value={fromFeatureId} onValueChange={setFromFeatureId} required>
-                  <SelectTrigger id="from-work-item">
-                    <SelectValue placeholder={`Select ${fromWorkItemType}`} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {requestingWorkItems?.map((item) => (
-                      <SelectItem key={item.id} value={item.id}>
-                        {item.display}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="depends-on-team">Depends On Team</Label>
-              <Select value={dependsOnTeamId} onValueChange={setDependsOnTeamId}>
-                <SelectTrigger id="depends-on-team">
-                  <SelectValue placeholder="Select team" />
-                </SelectTrigger>
-                <SelectContent>
-                  {teams?.map((team) => (
-                    <SelectItem key={team.id} value={team.id}>
-                      {team.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="to-type">Dependent Type *</Label>
-                <Select value={toWorkItemType} onValueChange={(v: any) => setToWorkItemType(v)}>
-                  <SelectTrigger id="to-type">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="feature">Feature</SelectItem>
-                    <SelectItem value="story">Story</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="grid gap-2">
-                <Label htmlFor="to-work-item">Dependent Work Item *</Label>
-                <Select
-                  value={toFeatureId}
-                  onValueChange={setToFeatureId}
-                  disabled={!dependsOnTeamId}
-                  required
-                >
-                  <SelectTrigger id="to-work-item">
-                    <SelectValue placeholder={`Select ${toWorkItemType}`} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {dependentWorkItems?.map((item) => (
-                      <SelectItem key={item.id} value={item.id}>
-                        {item.display}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Describe the dependency..."
-                rows={3}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="risk-level">Risk Level</Label>
-                <Select value={riskLevel} onValueChange={(v: any) => setRiskLevel(v)}>
-                  <SelectTrigger id="risk-level">
+              <div>
+                <Label htmlFor="risk" className="text-xs text-muted-foreground">Risk Level</Label>
+                <Select value={riskLevel} onValueChange={(v: RiskLevel) => setRiskLevel(v)}>
+                  <SelectTrigger id="risk">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -283,16 +353,45 @@ export function CreateDependencyDialog({
                   </SelectContent>
                 </Select>
               </div>
+            </div>
 
-              <div className="grid gap-2">
-                <Label htmlFor="needed-by">Needed By Date</Label>
+            {/* Scheduling */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="needed-by" className="text-xs text-muted-foreground">Needed By Date *</Label>
                 <Input
                   id="needed-by"
                   type="date"
                   value={neededByDate}
                   onChange={(e) => setNeededByDate(e.target.value)}
+                  required
                 />
               </div>
+              <div>
+                <Label htmlFor="quarter" className="text-xs text-muted-foreground">Quarter</Label>
+                <Select value={quarter} onValueChange={setQuarter}>
+                  <SelectTrigger id="quarter">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {QUARTER_OPTIONS.map(q => (
+                      <SelectItem key={q} value={q}>{q}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Description */}
+            <div>
+              <Label htmlFor="description" className="text-xs text-muted-foreground">Description</Label>
+              <Textarea
+                id="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Describe what is needed and why..."
+                rows={3}
+              />
             </div>
           </div>
           <DialogFooter>
