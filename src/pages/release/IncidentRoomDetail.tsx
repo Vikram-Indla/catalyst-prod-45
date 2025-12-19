@@ -13,9 +13,12 @@ import { useIsWatching, useWatcherCount, useToggleWatch } from '@/hooks/useIncid
 import { useAvailableApprovers } from '@/hooks/useIncidentUserProfiles';
 import { useIncidentCommittee } from '@/hooks/useIncidentCommittee';
 import { useProjects } from '@/hooks/useProjects';
+import { useIncidentWorkItems, useUnlinkWorkItem } from '@/hooks/useIncidentWorkItems';
 import { IncidentStickyHeader } from '@/components/incidents/detail/IncidentStickyHeader';
 import { IncidentWorkArea } from '@/components/incidents/detail/IncidentWorkArea';
 import { IncidentContextRail } from '@/components/incidents/detail/IncidentContextRail';
+import { LinkWorkItemModal } from '@/components/incidents/detail/LinkWorkItemModal';
+import { ResolutionModal } from '@/components/incidents/detail/ResolutionModal';
 
 import { supabase } from '@/integrations/supabase/client';
 import type { IncidentStatus, CommentType } from '@/types/incident';
@@ -40,6 +43,8 @@ export default function IncidentRoomDetail() {
   const { data: availableApprovers = [] } = useAvailableApprovers();
   const { data: committeeRecord = null } = useIncidentCommittee(incidentId || '');
   const { data: projects = [] } = useProjects();
+  const { data: linkedWorkItems = [] } = useIncidentWorkItems(incidentId || '');
+  const unlinkWorkItem = useUnlinkWorkItem();
 
   const queryClient = useQueryClient();
 
@@ -47,6 +52,8 @@ export default function IncidentRoomDetail() {
   const [convertDialogOpen, setConvertDialogOpen] = useState(false);
   const [committeeDialogOpen, setCommitteeDialogOpen] = useState(false);
   const [linkWorkItemOpen, setLinkWorkItemOpen] = useState(false);
+  const [resolutionModalOpen, setResolutionModalOpen] = useState(false);
+  const [pendingStatus, setPendingStatus] = useState<'resolved' | 'closed' | null>(null);
   const [convertType, setConvertType] = useState<'epic' | 'feature' | 'story'>('story');
   const [convertReason, setConvertReason] = useState('');
 
@@ -76,10 +83,69 @@ export default function IncidentRoomDetail() {
       return;
     }
     
+    // If resolving or closing, require resolution modal
+    if (status === 'resolved' || status === 'closed') {
+      setPendingStatus(status);
+      setResolutionModalOpen(true);
+      return;
+    }
+    
     updateIncident.mutate({ id: incidentId, data: { status } }, {
       onSuccess: () => toast.success('Status updated'),
       onError: () => toast.error('Failed to update status'),
     });
+  };
+
+  const handleResolutionSubmit = async (resolution: {
+    resolution_summary: string;
+    resolution_type: string;
+    root_cause?: string;
+  }) => {
+    if (!incidentId || !pendingStatus) return;
+    setIsSubmitting(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      await updateIncident.mutateAsync({ 
+        id: incidentId, 
+        data: { 
+          status: pendingStatus,
+          resolution_summary: resolution.resolution_summary,
+          resolution_type: resolution.resolution_type,
+          root_cause: resolution.root_cause || null,
+          ...(pendingStatus === 'resolved' && { resolved_at: new Date().toISOString() }),
+          ...(pendingStatus === 'closed' && { closed_at: new Date().toISOString() }),
+        } 
+      });
+      
+      // Log to audit
+      await supabase.from('incident_history').insert({
+        incident_id: incidentId,
+        field_name: 'resolution',
+        old_value: null,
+        new_value: `Incident ${pendingStatus} with resolution: ${resolution.resolution_type}`,
+        changed_by: user?.id,
+      });
+      
+      toast.success(`Incident ${pendingStatus}`);
+      setResolutionModalOpen(false);
+      setPendingStatus(null);
+      queryClient.invalidateQueries({ queryKey: ['incident', incidentId] });
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to update');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleUnlinkWorkItem = async (linkId: string, key: string, type: string) => {
+    if (!incidentId) return;
+    try {
+      await unlinkWorkItem.mutateAsync({ incidentId, linkId, workItemKey: key, workItemType: type });
+      toast.success('Work item unlinked');
+    } catch (error: any) {
+      toast.error('Failed to unlink');
+    }
   };
 
   const handleFieldChange = async (field: string, value: string) => {
@@ -536,6 +602,27 @@ export default function IncidentRoomDetail() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Link Work Item Modal */}
+      <LinkWorkItemModal
+        open={linkWorkItemOpen}
+        onOpenChange={setLinkWorkItemOpen}
+        incidentId={incidentId || ''}
+        incidentKey={incident.incident_key}
+      />
+
+      {/* Resolution Modal */}
+      <ResolutionModal
+        open={resolutionModalOpen}
+        onOpenChange={(open) => {
+          setResolutionModalOpen(open);
+          if (!open) setPendingStatus(null);
+        }}
+        incidentKey={incident.incident_key}
+        targetStatus={pendingStatus || 'resolved'}
+        onSubmit={handleResolutionSubmit}
+        isSubmitting={isSubmitting}
+      />
     </div>
   );
 }

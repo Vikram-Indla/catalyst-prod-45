@@ -4746,6 +4746,47 @@ export type Database = {
           },
         ]
       }
+      incident_work_items: {
+        Row: {
+          id: string
+          incident_id: string
+          linked_at: string
+          linked_by: string | null
+          work_item_id: string
+          work_item_key: string
+          work_item_title: string | null
+          work_item_type: string
+        }
+        Insert: {
+          id?: string
+          incident_id: string
+          linked_at?: string
+          linked_by?: string | null
+          work_item_id: string
+          work_item_key: string
+          work_item_title?: string | null
+          work_item_type: string
+        }
+        Update: {
+          id?: string
+          incident_id?: string
+          linked_at?: string
+          linked_by?: string | null
+          work_item_id?: string
+          work_item_key?: string
+          work_item_title?: string | null
+          work_item_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incident_work_items_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incidents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       incidents: {
         Row: {
           assignee_id: string | null
