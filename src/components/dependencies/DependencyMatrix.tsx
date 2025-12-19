@@ -1,4 +1,13 @@
-import { useState } from 'react';
+/**
+ * DependencyMatrix - Program x Program dependency matrix
+ * 
+ * Uses Epic container logic to build the matrix:
+ * - Only Epic↔Epic dependencies show in Program matrix
+ * - Derives program IDs from Epic's program_id
+ * - Uses resolveWorkItem helpers for consistency
+ */
+
+import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
@@ -10,6 +19,9 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { WorkItemIcon } from './WorkItemIcon';
+import { DEPENDENCY_TYPE_LABELS, DEPENDENCY_LEVEL_LABELS } from '@/lib/dependencies/types';
+import { buildWorkItemMaps, resolveDependencyWorkItems, extractProgramIdsFromDep } from '@/lib/dependencies/resolveWorkItem';
 
 interface DependencyMatrixProps {
   quarter?: string;
@@ -20,6 +32,7 @@ export function DependencyMatrix({ quarter, onDependencyClick }: DependencyMatri
   const [selectedCell, setSelectedCell] = useState<{ fromId: string; toId: string; fromName: string; toName: string } | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
+  // Fetch programs
   const { data: programs } = useQuery({
     queryKey: ['programs'],
     queryFn: async () => {
@@ -32,6 +45,32 @@ export function DependencyMatrix({ quarter, onDependencyClick }: DependencyMatri
     },
   });
 
+  // Fetch epics with program_id for container resolution
+  const { data: epics } = useQuery({
+    queryKey: ['epics-for-matrix'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('epics')
+        .select('id, name, epic_key, program_id')
+        .is('deleted_at', null);
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Fetch features for legacy resolution
+  const { data: features } = useQuery({
+    queryKey: ['features-for-matrix'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('features')
+        .select('id, name, display_id, project_id');
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Fetch dependencies - only get Epic↔Epic dependencies for program matrix
   const { data: dependencies } = useQuery({
     queryKey: ['dependencies-matrix', quarter],
     queryFn: async () => {
@@ -39,8 +78,8 @@ export function DependencyMatrix({ quarter, onDependencyClick }: DependencyMatri
         .from('dependencies')
         .select(`
           *,
-          from_feature:features!dependencies_from_feature_id_fkey(id, name, program_id),
-          to_feature:features!dependencies_to_feature_id_fkey(id, name, program_id)
+          from_feature:features!dependencies_from_feature_id_fkey(id, name, display_id, epic_id),
+          to_feature:features!dependencies_to_feature_id_fkey(id, name, display_id, epic_id)
         `);
       
       if (quarter && quarter !== 'all') {
@@ -53,21 +92,38 @@ export function DependencyMatrix({ quarter, onDependencyClick }: DependencyMatri
     },
   });
 
+  // Build work item maps for resolution
+  const workItemMaps = useMemo(() => {
+    return buildWorkItemMaps(epics, features);
+  }, [epics, features]);
+
+  // Process dependencies to extract program-to-program relationships
+  const programDependencies = useMemo(() => {
+    if (!dependencies || !workItemMaps.epics.size) return [];
+
+    return dependencies.map(dep => {
+      const { sourceProgramId, targetProgramId } = extractProgramIdsFromDep(dep, workItemMaps);
+      const { source, target } = resolveDependencyWorkItems(dep, workItemMaps);
+      
+      return {
+        ...dep,
+        sourceProgramId,
+        targetProgramId,
+        resolvedSource: source,
+        resolvedTarget: target,
+      };
+    }).filter(dep => dep.sourceProgramId && dep.targetProgramId);
+  }, [dependencies, workItemMaps]);
+
   const getDependencyCount = (fromProgramId: string, toProgramId: string) => {
-    if (!dependencies) return 0;
-    return dependencies.filter(
-      (dep: any) =>
-        dep.from_feature?.program_id === fromProgramId &&
-        dep.to_feature?.program_id === toProgramId
+    return programDependencies.filter(
+      dep => dep.sourceProgramId === fromProgramId && dep.targetProgramId === toProgramId
     ).length;
   };
 
   const getCellDependencies = (fromProgramId: string, toProgramId: string) => {
-    if (!dependencies) return [];
-    return dependencies.filter(
-      (dep: any) =>
-        dep.from_feature?.program_id === fromProgramId &&
-        dep.to_feature?.program_id === toProgramId
+    return programDependencies.filter(
+      dep => dep.sourceProgramId === fromProgramId && dep.targetProgramId === toProgramId
     );
   };
 
@@ -94,7 +150,7 @@ export function DependencyMatrix({ quarter, onDependencyClick }: DependencyMatri
 
   return (
     <div className="space-y-4">
-      <Card className="overflow-x-auto bg-white">
+      <Card className="overflow-x-auto bg-card">
         <div className="min-w-min">
           <table className="w-full border-collapse">
             <thead>
@@ -174,15 +230,15 @@ export function DependencyMatrix({ quarter, onDependencyClick }: DependencyMatri
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Action Required</TableHead>
-                    <TableHead>Requested For</TableHead>
+                    <TableHead>Source</TableHead>
+                    <TableHead>Target</TableHead>
                     <TableHead>Level</TableHead>
                     <TableHead>Need By</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Risk</TableHead>
                   </TableRow>
                 </TableHeader>
-                                 <TableBody>
+                <TableBody>
                   {getCellDependencies(selectedCell.fromId, selectedCell.toId).map((dep: any) => (
                     <TableRow 
                       key={dep.id}
@@ -195,12 +251,32 @@ export function DependencyMatrix({ quarter, onDependencyClick }: DependencyMatri
                       }}
                     >
                       <TableCell className="font-medium">
-                        {dep.from_feature?.name || '-'}
+                        <div className="flex items-center gap-2">
+                          <WorkItemIcon type={dep.resolvedSource?.type || 'epic'} className="h-4 w-4" />
+                          <span className="text-xs font-mono text-muted-foreground">
+                            {dep.resolvedSource?.displayId || '-'}
+                          </span>
+                          <span className="truncate max-w-[150px]">
+                            {dep.resolvedSource?.name || '-'}
+                          </span>
+                        </div>
                       </TableCell>
-                      <TableCell>{dep.to_feature?.name || '-'}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <WorkItemIcon type={dep.resolvedTarget?.type || 'epic'} className="h-4 w-4" />
+                          <span className="text-xs font-mono text-muted-foreground">
+                            {dep.resolvedTarget?.displayId || '-'}
+                          </span>
+                          <span className="truncate max-w-[150px]">
+                            {dep.resolvedTarget?.name || '-'}
+                          </span>
+                        </div>
+                      </TableCell>
                       <TableCell>
                         <Badge variant="outline" className="text-xs capitalize">
-                          {dep.dependency_level || dep.type}
+                          {dep.dependency_level_v2 
+                            ? DEPENDENCY_LEVEL_LABELS[dep.dependency_level_v2 as keyof typeof DEPENDENCY_LEVEL_LABELS]?.split(' ')[0] 
+                            : dep.type || 'Epic'}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-sm">

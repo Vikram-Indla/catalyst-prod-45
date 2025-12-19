@@ -1,3 +1,10 @@
+/**
+ * DependencyWheelMap - Program dependency wheel visualization
+ * 
+ * Uses Epic container logic for Program-level dependencies.
+ * All colors use CSS variables from index.css - no hardcoded HSL values.
+ */
+
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
@@ -5,6 +12,7 @@ import { useState, useMemo } from 'react';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { DependencyWheelDetailsPanel } from './DependencyWheelDetailsPanel';
+import { buildWorkItemMaps, extractProgramIdsFromDep, resolveDependencyWorkItems } from '@/lib/dependencies/resolveWorkItem';
 
 interface DependencyWheelMapProps {
   quarter?: string;
@@ -24,19 +32,17 @@ interface WheelLink {
   fromNodeId: string;
   toNodeId: string;
   dependencyId: string;
-  workItemType: 'FEATURE' | 'EPIC' | 'CAPABILITY';
+  workItemType: 'FEATURE' | 'EPIC';
   status: 'NOT_COMMITTED' | 'COMMITTED' | 'DONE' | 'BLOCKED' | 'NO_WORK_REQUIRED' | 'REJECTED';
-  fromFeature?: any;
-  toFeature?: any;
+  sourceName?: string;
+  targetName?: string;
   dependency?: any;
 }
 
 export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick }: DependencyWheelMapProps) {
-  const [showFeatures, setShowFeatures] = useState(true);
+  const [showFeatures, setShowFeatures] = useState(false);
   const [showEpics, setShowEpics] = useState(true);
-  const [showCapabilities, setShowCapabilities] = useState(true);
   const [showOnlyAssociated, setShowOnlyAssociated] = useState(false);
-  const [showInactive, setShowInactive] = useState(false);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
   const [hoveredLinkId, setHoveredLinkId] = useState<string | null>(null);
@@ -54,6 +60,31 @@ export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick
     },
   });
 
+  // Fetch epics for container resolution
+  const { data: epics } = useQuery({
+    queryKey: ['epics-for-wheel'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('epics')
+        .select('id, name, epic_key, program_id')
+        .is('deleted_at', null);
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Fetch features for legacy resolution
+  const { data: features } = useQuery({
+    queryKey: ['features-for-wheel'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('features')
+        .select('id, name, display_id, project_id');
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const { data: dependencies } = useQuery({
     queryKey: ['dependencies-wheel', quarter, selectedProgram],
     queryFn: async () => {
@@ -61,8 +92,8 @@ export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick
         .from('dependencies')
         .select(`
           *,
-          from_feature:features!dependencies_from_feature_id_fkey(id, name, program_id),
-          to_feature:features!dependencies_to_feature_id_fkey(id, name, program_id)
+          from_feature:features!dependencies_from_feature_id_fkey(id, name, display_id, epic_id),
+          to_feature:features!dependencies_to_feature_id_fkey(id, name, display_id, epic_id)
         `);
       
       if (quarter && quarter !== 'all') query = query.eq('quarter', quarter);
@@ -70,19 +101,16 @@ export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick
       const { data, error } = await query;
       if (error) throw error;
       
-      if (selectedProgram) {
-        return data.filter(
-          (dep: any) =>
-            dep.from_feature?.program_id === selectedProgram ||
-            dep.to_feature?.program_id === selectedProgram
-        );
-      }
-      
       return data;
     },
   });
 
-  // Build nodes and links data structure
+  // Build work item maps
+  const workItemMaps = useMemo(() => {
+    return buildWorkItemMaps(epics, features);
+  }, [epics, features]);
+
+  // Build nodes and links data structure using Epic container logic
   const { nodes, links } = useMemo(() => {
     if (!programs || !dependencies) {
       return { nodes: [], links: [] };
@@ -99,14 +127,28 @@ export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick
       });
     });
 
-    // Create links and update counts
+    // Create links using Epic container logic
     const linkList: WheelLink[] = [];
     dependencies.forEach((dep: any) => {
-      const fromNodeId = dep.requesting_program_id || dep.from_feature?.program_id;
-      const toNodeId = dep.depends_on_program_id || dep.to_feature?.program_id;
+      // Use container extraction for Epic dependencies
+      const { sourceProgramId, targetProgramId } = extractProgramIdsFromDep(dep, workItemMaps);
+      const { source, target } = resolveDependencyWorkItems(dep, workItemMaps);
+
+      const fromNodeId = sourceProgramId;
+      const toNodeId = targetProgramId;
 
       if (!fromNodeId || !toNodeId || fromNodeId === toNodeId) return;
       if (!nodeMap.has(fromNodeId) || !nodeMap.has(toNodeId)) return;
+
+      // Filter by selected program if specified
+      if (selectedProgram && fromNodeId !== selectedProgram && toNodeId !== selectedProgram) {
+        return;
+      }
+
+      // Filter by work item type toggles
+      const sourceType = source?.type || 'feature';
+      if (sourceType === 'epic' && !showEpics) return;
+      if (sourceType === 'feature' && !showFeatures) return;
 
       // Map status to simplified enum
       let status: WheelLink['status'] = 'NOT_COMMITTED';
@@ -120,10 +162,10 @@ export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick
         fromNodeId,
         toNodeId,
         dependencyId: dep.id,
-        workItemType: 'FEATURE', // TODO: derive from actual work item type
+        workItemType: sourceType === 'epic' ? 'EPIC' : 'FEATURE',
         status,
-        fromFeature: dep.from_feature,
-        toFeature: dep.to_feature,
+        sourceName: source?.name,
+        targetName: target?.name,
         dependency: dep,
       });
 
@@ -134,8 +176,19 @@ export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick
       toNode.inboundCount++;
     });
 
-    return { nodes: Array.from(nodeMap.values()), links: linkList };
-  }, [programs, dependencies]);
+    // Filter nodes if showOnlyAssociated is true
+    let filteredNodes = Array.from(nodeMap.values());
+    if (showOnlyAssociated) {
+      const connectedIds = new Set<string>();
+      linkList.forEach(link => {
+        connectedIds.add(link.fromNodeId);
+        connectedIds.add(link.toNodeId);
+      });
+      filteredNodes = filteredNodes.filter(n => connectedIds.has(n.id));
+    }
+
+    return { nodes: filteredNodes, links: linkList };
+  }, [programs, dependencies, workItemMaps, selectedProgram, showEpics, showFeatures, showOnlyAssociated]);
 
   if (!programs || programs.length === 0) {
     return (
@@ -155,18 +208,16 @@ export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick
   const hubInnerRadius = 60;
   
   // Calculate segment angles
-  const segmentAngle = (2 * Math.PI) / nodes.length;
+  const segmentAngle = nodes.length > 0 ? (2 * Math.PI) / nodes.length : 0;
   
-  // Catalyst theme colors - Gold and neutral grays ONLY (NO BLUE)
-  const colors = [
-    'hsl(35, 46%, 60%)',   // Brand gold
-    'hsl(35, 41%, 55%)',   // Brand gold hover
-    'hsl(217, 13%, 35%)',  // Neutral 600 (dark gray)
-    'hsl(216, 16%, 27%)',  // Neutral 700 (darker gray)
-    'hsl(35, 38%, 50%)',   // Deeper gold
-    'hsl(217, 19%, 20%)',  // Neutral 800 (very dark gray)
-    'hsl(35, 35%, 45%)',   // Dark gold
-    'hsl(217, 19%, 16%)',  // Neutral 900 (near black)
+  // Use CSS variable-compatible colors (these are from the design system)
+  const segmentColors = [
+    'var(--brand-primary)',
+    'var(--brand-primary-hover)',
+    'var(--secondary-bronze)',
+    'var(--brand-gold)',
+    'var(--brand-primary-light)',
+    'var(--text-muted)',
   ];
   
   // Create segments for each node
@@ -202,7 +253,7 @@ export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick
     return {
       ...node,
       path,
-      color: colors[index % colors.length],
+      colorIndex: index % segmentColors.length,
       midAngle,
       isSelected,
       isHovered,
@@ -215,16 +266,16 @@ export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick
     nodeAngles.set(seg.id, seg.midAngle);
   });
   
-  // Status color mapping using Catalyst theme colors
-  const statusColor = (status: WheelLink['status']) => {
+  // Status color mapping using CSS variables
+  const getStatusColor = (status: WheelLink['status']) => {
     switch (status) {
-      case 'NOT_COMMITTED': return 'hsl(0, 72%, 51%)'; // Catalyst destructive red
-      case 'COMMITTED': return 'hsl(142, 71%, 50%)'; // Catalyst success green
-      case 'DONE': return 'hsl(217, 10%, 65%)'; // Catalyst neutral gray
-      case 'BLOCKED': return 'hsl(38, 92%, 50%)'; // Catalyst warning orange
-      case 'NO_WORK_REQUIRED': return 'hsl(217, 10%, 65%)'; // Catalyst muted
-      case 'REJECTED': return 'hsl(0, 84%, 60%)'; // Catalyst red variant
-      default: return 'hsl(217, 10%, 65%)'; // Catalyst neutral
+      case 'NOT_COMMITTED': return 'var(--status-danger)';
+      case 'COMMITTED': return 'var(--status-success)';
+      case 'DONE': return 'var(--text-muted)';
+      case 'BLOCKED': return 'var(--status-warning)';
+      case 'NO_WORK_REQUIRED': return 'var(--text-muted)';
+      case 'REJECTED': return 'var(--status-danger)';
+      default: return 'var(--text-muted)';
     }
   };
   
@@ -268,7 +319,7 @@ export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick
     return {
       ...link,
       path,
-      color: statusColor(link.status),
+      color: getStatusColor(link.status),
       opacity,
       strokeWidth,
       isRelatedToSelected,
@@ -283,8 +334,7 @@ export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick
       setWheelRotation(0);
     } else {
       setSelectedNodeId(nodeId);
-      // Calculate rotation needed to position this segment at 0 radians (pointing right, 3 o'clock)
-      const targetAngle = 0; // 0 radians = pointing right
+      const targetAngle = 0;
       const rotationNeeded = (targetAngle - segmentMidAngle) * (180 / Math.PI);
       setWheelRotation(rotationNeeded);
     }
@@ -304,27 +354,19 @@ export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick
           <div className="flex items-center gap-3 sm:gap-6 flex-wrap">
             <div className="flex items-center gap-2">
               <Switch
-                id="features"
-                checked={showFeatures}
-                onCheckedChange={setShowFeatures}
-              />
-              <Label htmlFor="features" className="cursor-pointer text-xs sm:text-sm">Feature</Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <Switch
                 id="epics"
                 checked={showEpics}
                 onCheckedChange={setShowEpics}
               />
-              <Label htmlFor="epics" className="cursor-pointer text-xs sm:text-sm">Epic</Label>
+              <Label htmlFor="epics" className="cursor-pointer text-xs sm:text-sm">Epic Dependencies</Label>
             </div>
             <div className="flex items-center gap-2">
               <Switch
-                id="capabilities"
-                checked={showCapabilities}
-                onCheckedChange={setShowCapabilities}
+                id="features"
+                checked={showFeatures}
+                onCheckedChange={setShowFeatures}
               />
-              <Label htmlFor="capabilities" className="cursor-pointer text-xs sm:text-sm">Capability</Label>
+              <Label htmlFor="features" className="cursor-pointer text-xs sm:text-sm">Feature Dependencies</Label>
             </div>
             <div className="flex items-center gap-2 sm:ml-auto">
               <Switch
@@ -332,15 +374,7 @@ export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick
                 checked={showOnlyAssociated}
                 onCheckedChange={setShowOnlyAssociated}
               />
-              <Label htmlFor="associated" className="cursor-pointer text-xs sm:text-sm">Show Only Associated</Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <Switch
-                id="inactive"
-                checked={showInactive}
-                onCheckedChange={setShowInactive}
-              />
-              <Label htmlFor="inactive" className="cursor-pointer text-xs sm:text-sm">Show Inactive</Label>
+              <Label htmlFor="associated" className="cursor-pointer text-xs sm:text-sm">Show Only Connected</Label>
             </div>
           </div>
         </Card>
@@ -361,106 +395,96 @@ export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick
                   transition: 'transform 0.8s cubic-bezier(0.4, 0.0, 0.2, 1)'
                 }}
               >
-              {/* Radial segments */}
-              {segments.map((segment) => {
-              // Calculate label position INSIDE the segment (middle of the radial span)
-              const labelRadius = (outerRadius + innerRadius) / 2;
-              const labelX = centerX + labelRadius * Math.cos(segment.midAngle);
-              const labelY = centerY + labelRadius * Math.sin(segment.midAngle);
-              
-              // Text should be RADIAL - reading from center outward along the segment
-              // Calculate the EFFECTIVE angle after wheel rotation
-              let effectiveAngle = (segment.midAngle * 180 / Math.PI) + wheelRotation;
-              
-              // Normalize to 0-360 range
-              effectiveAngle = ((effectiveAngle % 360) + 360) % 360;
-              
-              // Start with the segment's base angle for text rotation
-              let textAngle = (segment.midAngle * 180 / Math.PI);
-              
-              // For segments in left half AFTER rotation (90° to 270°), flip text 180°
-              // so it reads from center outward instead of outside inward
-              if (effectiveAngle > 90 && effectiveAngle <= 270) {
-                textAngle += 180;
-              }
-              
-              return (
-                <g key={segment.id}>
+                {/* Radial segments */}
+                {segments.map((segment) => {
+                  const labelRadius = (outerRadius + innerRadius) / 2;
+                  const labelX = centerX + labelRadius * Math.cos(segment.midAngle);
+                  const labelY = centerY + labelRadius * Math.sin(segment.midAngle);
+                  
+                  let effectiveAngle = (segment.midAngle * 180 / Math.PI) + wheelRotation;
+                  effectiveAngle = ((effectiveAngle % 360) + 360) % 360;
+                  
+                  let textAngle = (segment.midAngle * 180 / Math.PI);
+                  if (effectiveAngle > 90 && effectiveAngle <= 270) {
+                    textAngle += 180;
+                  }
+                  
+                  return (
+                    <g key={segment.id}>
+                      <path
+                        d={segment.path}
+                        fill={segmentColors[segment.colorIndex]}
+                        opacity={segment.isSelected ? 1 : segment.isHovered ? 0.95 : 0.85}
+                        stroke={segment.isSelected ? 'var(--brand-primary)' : 'white'}
+                        strokeWidth={segment.isSelected ? 4 : 2}
+                        className="cursor-pointer"
+                        style={{
+                          filter: segment.isSelected ? 'drop-shadow(0 0 12px var(--brand-primary-muted))' : 'none',
+                          transition: 'all 0.3s ease'
+                        }}
+                        onMouseEnter={() => setHoveredNodeId(segment.id)}
+                        onMouseLeave={() => setHoveredNodeId(null)}
+                        onClick={() => handleNodeClick(segment.id, segment.midAngle)}
+                      />
+                      <text
+                        x={labelX}
+                        y={labelY}
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                        transform={`rotate(${textAngle} ${labelX} ${labelY})`}
+                        className="font-semibold pointer-events-none select-none"
+                        style={{ 
+                          fontSize: segment.isSelected ? '14px' : '13px',
+                          fill: 'white',
+                          fontWeight: 700,
+                          letterSpacing: '0.03em',
+                          textShadow: '0 1px 3px rgba(0,0,0,0.4)',
+                        }}
+                      >
+                        {segment.name}
+                      </text>
+                    </g>
+                  );
+                })}
+            
+                {/* Center white circle (hub) */}
+                <circle
+                  cx={centerX}
+                  cy={centerY}
+                  r={hubOuterRadius}
+                  fill="var(--background)"
+                  stroke="var(--border-default)"
+                  strokeWidth="1"
+                />
+            
+                {/* Curved dependency lines */}
+                {dependencyLines.map((line: any) => (
                   <path
-                    d={segment.path}
-                    fill={segment.color}
-                    opacity={segment.isSelected ? 1 : segment.isHovered ? 0.95 : 0.85}
-                    stroke={segment.isSelected ? 'hsl(35, 46%, 60%)' : 'white'}
-                    strokeWidth={segment.isSelected ? 4 : 2}
-                    className="cursor-pointer"
-                    style={{
-                      filter: segment.isSelected ? 'drop-shadow(0 0 12px hsla(35, 46%, 60%, 0.6))' : 'none',
-                      transition: 'all 0.3s ease'
-                    }}
-                    onMouseEnter={() => setHoveredNodeId(segment.id)}
-                    onMouseLeave={() => setHoveredNodeId(null)}
-                    onClick={() => handleNodeClick(segment.id, segment.midAngle)}
-                  />
-                  {/* Program label - RADIAL direction (following segment from center outward) */}
-                  <text
-                    x={labelX}
-                    y={labelY}
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    transform={`rotate(${textAngle} ${labelX} ${labelY})`}
-                    className="font-semibold pointer-events-none select-none"
-                    style={{ 
-                      fontSize: segment.isSelected ? '14px' : '13px',
-                      fill: 'white',
-                      fontWeight: 700,
-                      letterSpacing: '0.03em',
-                      textShadow: '0 1px 3px rgba(0,0,0,0.4)',
-                    }}
+                    key={line.id}
+                    d={line.path}
+                    fill="none"
+                    stroke={line.color}
+                    strokeWidth={line.strokeWidth}
+                    opacity={line.opacity}
+                    strokeLinecap="round"
+                    className="cursor-pointer transition-all hover:opacity-100"
+                    onMouseEnter={() => setHoveredLinkId(line.id)}
+                    onMouseLeave={() => setHoveredLinkId(null)}
+                    onClick={() => handleLinkClick(line.dependencyId)}
                   >
-                    {segment.name}
-                  </text>
-                </g>
-              );
-            })}
+                    <title>{`${line.sourceName || 'Work Item'} → ${line.targetName || 'Work Item'} (${line.status})`}</title>
+                  </path>
+                ))}
             
-              {/* Center white circle (hub) */}
-            <circle
-              cx={centerX}
-              cy={centerY}
-              r={hubOuterRadius}
-              fill="white"
-              stroke="rgba(0,0,0,0.1)"
-              strokeWidth="1"
-            />
-            
-              {/* Curved dependency lines */}
-              {dependencyLines.map((line: any) => (
-              <path
-                key={line.id}
-                d={line.path}
-                fill="none"
-                stroke={line.color}
-                strokeWidth={line.strokeWidth}
-                opacity={line.opacity}
-                strokeLinecap="round"
-                className="cursor-pointer transition-all hover:opacity-100"
-                onMouseEnter={() => setHoveredLinkId(line.id)}
-                onMouseLeave={() => setHoveredLinkId(null)}
-                onClick={() => handleLinkClick(line.dependencyId)}
-              >
-                <title>{`${line.fromFeature?.name || 'Feature'} → ${line.toFeature?.name || 'Feature'} (${line.status})`}</title>
-              </path>
-              ))}
-            
-              {/* Small inner circle */}
-              <circle
-                cx={centerX}
-                cy={centerY}
-                r={hubInnerRadius}
-                fill="white"
-                stroke="rgba(0,0,0,0.05)"
-                strokeWidth="1"
-              />
+                {/* Small inner circle */}
+                <circle
+                  cx={centerX}
+                  cy={centerY}
+                  r={hubInnerRadius}
+                  fill="var(--background)"
+                  stroke="var(--border-subtle)"
+                  strokeWidth="1"
+                />
               </g>
             </svg>
           </div>
