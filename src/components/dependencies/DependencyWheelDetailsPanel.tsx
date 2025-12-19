@@ -45,14 +45,20 @@ export function DependencyWheelDetailsPanel({
     );
   }
 
-  // Filter incoming (work that others need from selected node)
+  // Outgoing: work that this program needs FROM others (excludes internal)
+  const outgoing = links.filter(
+    (l) => l.fromNodeId === selectedNode.id && l.toNodeId !== selectedNode.id
+  );
+
+  // Incoming: work that others need FROM this program (excludes internal)
   const incoming = links.filter(
     (l) => l.toNodeId === selectedNode.id && l.fromNodeId !== selectedNode.id
   );
 
-  // Filter outgoing (work that selected node needs from others)
-  // Includes self-dependencies
-  const outgoing = links.filter((l) => l.fromNodeId === selectedNode.id);
+  // Internal: dependencies within the same program
+  const internal = links.filter(
+    (l) => l.fromNodeId === selectedNode.id && l.toNodeId === selectedNode.id
+  );
 
   // Calculate metrics
   const calculateMetrics = (linkSet: WheelLink[]) => {
@@ -70,6 +76,7 @@ export function DependencyWheelDetailsPanel({
 
   const incomingMetrics = calculateMetrics(incoming);
   const outgoingMetrics = calculateMetrics(outgoing);
+  const internalMetrics = calculateMetrics(internal);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -216,6 +223,11 @@ export function DependencyWheelDetailsPanel({
     </Card>
   );
 
+  // Compute total counts for header (incoming + outgoing + internal)
+  const totalIncoming = incoming.length;
+  const totalOutgoing = outgoing.length;
+  const totalInternal = internal.length;
+
   return (
     <div className="w-[400px] flex-shrink-0 space-y-4">
       <Card className="border-2 border-warning bg-warning/10 dark:bg-warning/5 shadow-lg shadow-warning/20 dark:shadow-warning/10 transition-all">
@@ -224,10 +236,16 @@ export function DependencyWheelDetailsPanel({
             <div className="h-3 w-3 rounded-full bg-warning animate-pulse" />
             {selectedNode.name}
           </CardTitle>
-          <div className="flex gap-2 text-sm text-muted-foreground">
-            <span className="font-semibold">{selectedNode.inboundCount} Incoming</span>
+          <div className="flex gap-2 text-sm text-muted-foreground flex-wrap">
+            <span className="font-semibold">{totalIncoming} Incoming</span>
             <span>•</span>
-            <span className="font-semibold">{selectedNode.outboundCount} Outgoing</span>
+            <span className="font-semibold">{totalOutgoing} Outgoing</span>
+            {totalInternal > 0 && (
+              <>
+                <span>•</span>
+                <span className="font-semibold">{totalInternal} Internal</span>
+              </>
+            )}
           </div>
         </CardHeader>
       </Card>
@@ -242,6 +260,12 @@ export function DependencyWheelDetailsPanel({
         outgoing,
         `Work That ${selectedNode.name} Needs From Others`,
         outgoingMetrics
+      )}
+
+      {internal.length > 0 && renderDependencyList(
+        internal,
+        `Work Within ${selectedNode.name}`,
+        internalMetrics
       )}
     </div>
   );
