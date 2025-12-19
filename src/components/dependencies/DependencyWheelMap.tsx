@@ -452,11 +452,12 @@ export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick
                         d={segment.path}
                         fill={segmentColors[segment.colorIndex]}
                         opacity={segment.isSelected ? 1 : segment.isHovered ? 0.95 : 0.85}
-                        stroke={segment.isSelected ? 'var(--border-default)' : 'white'}
+                        stroke="white"
                         strokeWidth={segment.isSelected ? 3 : 2}
                         className="cursor-pointer"
                         style={{
-                          transition: 'all 0.3s ease'
+                          transition: 'all 0.3s ease',
+                          filter: segment.isSelected ? 'brightness(1.1)' : undefined
                         }}
                         onMouseEnter={() => setHoveredNodeId(segment.id)}
                         onMouseLeave={() => setHoveredNodeId(null)}
@@ -527,24 +528,30 @@ export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick
         </Card>
       </div>
 
-      {/* Details Panel - Hidden on mobile, shown on lg+ */}
-      <div className="hidden lg:block">
-        <DependencyWheelDetailsPanel
-          selectedNode={selectedNode}
-          links={links}
-          onDependencyClick={handleLinkClick}
-        />
-      </div>
-      
-      {/* Mobile Details - Show below wheel on mobile */}
-      {selectedNode && (
-        <div className="lg:hidden">
-          <DependencyWheelDetailsPanel
-            selectedNode={selectedNode}
-            links={links}
-            onDependencyClick={handleLinkClick}
-          />
-        </div>
+      {/* Details Panel - Only show if analytics drawer is NOT being used (controlled mode) */}
+      {/* When onProgramSelect is passed, the parent controls selection and shows AnalyticsDrawer instead */}
+      {!onProgramSelect && (
+        <>
+          {/* Details Panel - Hidden on mobile, shown on lg+ */}
+          <div className="hidden lg:block">
+            <DependencyWheelDetailsPanel
+              selectedNode={selectedNode}
+              links={links}
+              onDependencyClick={handleLinkClick}
+            />
+          </div>
+          
+          {/* Mobile Details - Show below wheel on mobile */}
+          {selectedNode && (
+            <div className="lg:hidden">
+              <DependencyWheelDetailsPanel
+                selectedNode={selectedNode}
+                links={links}
+                onDependencyClick={handleLinkClick}
+              />
+            </div>
+          )}
+        </>
       )}
     </div>
   );
