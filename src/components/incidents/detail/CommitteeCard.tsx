@@ -28,7 +28,6 @@ interface Committee {
 
 interface CommitteeCardProps {
   committee: Committee | null;
-  requiresCommittee: boolean;
   isConverted: boolean;
   availableApprovers: IncidentUserProfile[];
   onVote: (vote: 'approved' | 'rejected', isVeto?: boolean, note?: string) => void;
@@ -40,7 +39,6 @@ interface CommitteeCardProps {
 
 export function CommitteeCard({
   committee,
-  requiresCommittee,
   isConverted,
   availableApprovers,
   onVote,
@@ -52,37 +50,8 @@ export function CommitteeCard({
   const [decisionNote, setDecisionNote] = useState('');
   const [showAddApprover, setShowAddApprover] = useState(false);
 
-  // No committee and not required
-  if (!committee && !requiresCommittee) {
-    return (
-      <div className="flex items-start justify-between gap-3 p-4 rounded-lg border border-border bg-background">
-        <div className="flex items-start gap-2.5">
-          <div className="h-9 w-9 rounded-full bg-muted flex items-center justify-center mt-0.5">
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </div>
-          <div>
-            <p className="text-sm font-medium text-foreground">No committee required</p>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              This incident does not require committee approval.
-            </p>
-          </div>
-        </div>
-        {onCreateCommittee && !isConverted && (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 px-3 text-xs"
-            onClick={onCreateCommittee}
-          >
-            Create anyway
-          </Button>
-        )}
-      </div>
-    );
-  }
-
-  // Committee required but missing
-  if (!committee && requiresCommittee) {
+  // Committee not yet created - show empty state with Add Approver (every incident needs committee)
+  if (!committee) {
     return (
       <div className="space-y-4">
         <div className="flex flex-col items-center justify-center py-8 text-center">
@@ -342,29 +311,25 @@ export function CommitteeCard({
   );
 }
 
-// Compact summary for right rail
+// Compact summary for right rail (always shows - every incident has committee)
 export function CommitteeSummary({ 
   committee, 
-  requiresCommittee,
   onClick 
 }: { 
   committee: Committee | null; 
-  requiresCommittee: boolean;
   onClick?: () => void;
 }) {
-  if (!committee && !requiresCommittee) return null;
-
   const members = committee?.members || [];
   const approvedCount = members.filter(m => m.vote?.vote === 'approved').length;
   const totalMembers = members.length;
   const status = committee?.status || 'pending';
 
   const getStatusInfo = () => {
-    if (!committee) return { label: 'Required', variant: 'warning' as const };
+    if (!committee) return { label: 'Setup', variant: 'warning' as const };
     switch (status) {
       case 'approved': return { label: 'Approved', variant: 'success' as const };
       case 'rejected': return { label: 'Rejected', variant: 'destructive' as const };
-      default: return { label: `${approvedCount}/${totalMembers}`, variant: 'default' as const };
+      default: return { label: totalMembers > 0 ? `${approvedCount}/${totalMembers}` : 'Pending', variant: 'default' as const };
     }
   };
 

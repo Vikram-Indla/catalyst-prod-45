@@ -74,7 +74,6 @@ interface IncidentMainContentProps {
   committee: Committee | null;
   convertedToId: string | null;
   convertedToType: string | null;
-  requiresCommittee: boolean;
   isConverted: boolean;
   // Resolution fields
   status: string;
@@ -138,7 +137,6 @@ export function IncidentMainContent({
   committee,
   convertedToId,
   convertedToType,
-  requiresCommittee,
   isConverted,
   status,
   resolutionSummary,
@@ -352,19 +350,17 @@ export function IncidentMainContent({
             <TabsTrigger value="committee" className="text-sm h-8 px-3 data-[state=active]:bg-background">
               <Users className="h-3.5 w-3.5 mr-1.5" />
               Committee
-              {(committee || requiresCommittee) && (
-                <Badge 
-                  variant="secondary" 
-                  className={cn(
-                    "ml-1.5 text-[10px] px-1 py-0 h-4",
-                    committee?.status === 'approved' && "bg-emerald-100 text-emerald-700",
-                    committee?.status === 'rejected' && "bg-rose-100 text-rose-700",
-                    committee?.status === 'pending' && "bg-violet-100 text-violet-700"
-                  )}
-                >
-                  {committee?.members?.length || 0}
-                </Badge>
-              )}
+              <Badge 
+                variant="secondary" 
+                className={cn(
+                  "ml-1.5 text-[10px] px-1 py-0 h-4",
+                  committee?.status === 'approved' && "bg-emerald-100 text-emerald-700",
+                  committee?.status === 'rejected' && "bg-rose-100 text-rose-700",
+                  (!committee || committee?.status === 'pending') && "bg-violet-100 text-violet-700"
+                )}
+              >
+                {committee?.members?.length || 0}
+              </Badge>
             </TabsTrigger>
             <TabsTrigger value="audit-log" className="text-sm h-8 px-3 data-[state=active]:bg-background">
               <History className="h-3.5 w-3.5 mr-1.5" />
@@ -486,11 +482,10 @@ export function IncidentMainContent({
             )}
           </TabsContent>
 
-          {/* Committee Tab */}
+          {/* Committee Tab - Always visible, every incident has committee */}
           <TabsContent value="committee" className="p-4">
             <CommitteeCard
               committee={committee}
-              requiresCommittee={requiresCommittee}
               isConverted={isConverted}
               availableApprovers={availableApprovers}
               onVote={onVote}

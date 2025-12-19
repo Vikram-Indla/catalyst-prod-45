@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useSearchParams } from 'react-router-dom';
-import { Eye, EyeOff, Plus, AlertTriangle, CheckCircle2, X, UserPlus, Play } from 'lucide-react';
+import { Eye, EyeOff, Plus, AlertTriangle, CheckCircle2, X, UserPlus, Play, Pencil, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -49,6 +50,10 @@ export default function IncidentRoomDetail() {
   const [convertType, setConvertType] = useState<'epic' | 'feature' | 'story'>('story');
   const [convertReason, setConvertReason] = useState('');
   const [showCreatedBanner, setShowCreatedBanner] = useState(false);
+  
+  // Inline title editing state
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [editedTitle, setEditedTitle] = useState('');
 
   // Handle ?created=true query param for post-create banner
   useEffect(() => {
@@ -81,10 +86,29 @@ export default function IncidentRoomDetail() {
     });
   };
 
-  const handleFieldChange = (field: string, value: string) => {
+  const handleFieldChange = async (field: string, value: string) => {
     if (!incidentId) return;
+    
+    // Get old value for audit logging
+    const oldValue = incident ? (incident as any)[field] : null;
+    
     updateIncident.mutate({ id: incidentId, data: { [field]: value } }, {
-      onSuccess: () => toast.success('Updated'),
+      onSuccess: async () => {
+        toast.success('Updated');
+        
+        // Add audit log entry for title changes
+        if (field === 'title') {
+          const { data: { user } } = await supabase.auth.getUser();
+          await supabase.from('incident_history').insert({
+            incident_id: incidentId,
+            field_name: 'title',
+            old_value: oldValue || null,
+            new_value: value,
+            changed_by: user?.id,
+          });
+          queryClient.invalidateQueries({ queryKey: ['incident', incidentId] });
+        }
+      },
       onError: () => toast.error('Failed to update'),
     });
   };
@@ -354,13 +378,66 @@ export default function IncidentRoomDetail() {
 
         {/* Title + Pills + Actions */}
         <div className="flex items-center justify-between gap-4">
-          {/* Left: Key + Summary */}
+          {/* Left: Key + Summary (inline editable) */}
           <div className="flex items-center gap-3 min-w-0 flex-1">
-            <h1 className="text-base font-semibold text-foreground truncate">
-              <span className="text-primary">{incident.incident_key}</span>
-              <span className="mx-2 text-muted-foreground/60">—</span>
-              {incident.title}
-            </h1>
+            <span className="text-base font-semibold text-primary flex-shrink-0">{incident.incident_key}</span>
+            <span className="text-muted-foreground/60 flex-shrink-0">—</span>
+            {isEditingTitle ? (
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <Input
+                  value={editedTitle}
+                  onChange={(e) => setEditedTitle(e.target.value)}
+                  className="h-8 text-base font-semibold flex-1"
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleFieldChange('title', editedTitle);
+                      setIsEditingTitle(false);
+                    } else if (e.key === 'Escape') {
+                      setIsEditingTitle(false);
+                      setEditedTitle(incident.title);
+                    }
+                  }}
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 w-7 p-0"
+                  onClick={() => {
+                    handleFieldChange('title', editedTitle);
+                    setIsEditingTitle(false);
+                  }}
+                >
+                  <Check className="h-4 w-4 text-emerald-600" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 w-7 p-0"
+                  onClick={() => {
+                    setIsEditingTitle(false);
+                    setEditedTitle(incident.title);
+                  }}
+                >
+                  <X className="h-4 w-4 text-muted-foreground" />
+                </Button>
+              </div>
+            ) : (
+              <div 
+                className="flex items-center gap-2 min-w-0 flex-1 group cursor-pointer"
+                onClick={() => {
+                  if (!isConverted) {
+                    setEditedTitle(incident.title);
+                    setIsEditingTitle(true);
+                  }
+                }}
+              >
+                <h1 className="text-base font-semibold text-foreground truncate">{incident.title}</h1>
+                {!isConverted && (
+                  <Pencil className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                )}
+              </div>
+            )}
           </div>
 
           {/* Center: Status Badges */}
@@ -573,10 +650,9 @@ export default function IncidentRoomDetail() {
           comments={incident.comments || []}
           history={incident.history || []}
           sla={incident.sla}
-          committee={incident.committee}
+          committee={committeeRecord || incident.committee}
           convertedToId={incident.converted_to_id}
           convertedToType={incident.converted_to_type}
-          requiresCommittee={incident.requires_committee || false}
           isConverted={isConverted}
           status={incident.status}
           resolutionSummary={incident.resolution_summary || null}
@@ -592,6 +668,7 @@ export default function IncidentRoomDetail() {
           onVote={handleVote}
           onAddApprover={handleAddApprover}
           onInitiateCommittee={handleInitiateCommittee}
+          onCreateCommittee={handleCreateCommittee}
           onResolutionChange={(field, value) => handleFieldChange(field, value)}
           availableApprovers={availableApprovers}
           isUploadPending={uploadAttachment.isPending}
