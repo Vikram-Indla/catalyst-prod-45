@@ -151,17 +151,46 @@ export default function IncidentRoomDetail() {
     );
   }
 
-  // Error - show backend error message
+  // Error - show backend error message with better UX
   if (error || !incident) {
     const errorMessage = error instanceof Error ? error.message : 'Incident not found';
+    const isDev = import.meta.env.DEV;
+    
     return (
-      <div className="flex flex-col items-center justify-center h-full gap-3">
-        <AlertTriangle className="h-10 w-10 text-destructive" />
-        <h2 className="text-base font-medium">{errorMessage}</h2>
-        <p className="text-sm text-muted-foreground">Unable to load incident data from the server</p>
-        <Link to="/release/incidents">
-          <Button variant="outline" size="sm">Back to Incidents</Button>
-        </Link>
+      <div className="flex flex-col items-center justify-center h-full gap-4 p-6">
+        <div className="flex flex-col items-center gap-2">
+          <div className="h-12 w-12 rounded-full bg-destructive/10 flex items-center justify-center">
+            <AlertTriangle className="h-6 w-6 text-destructive" />
+          </div>
+          <h2 className="text-base font-semibold text-foreground">Unable to Load Incident</h2>
+          <p className="text-sm text-muted-foreground text-center max-w-md">
+            The incident you're looking for could not be found or there was an error loading it.
+          </p>
+        </div>
+        
+        {isDev && (
+          <div className="bg-muted/50 border border-border rounded-md px-3 py-2 text-xs text-muted-foreground font-mono max-w-md">
+            <span className="text-destructive font-medium">Debug:</span> {errorMessage}
+            <br />
+            <span className="text-muted-foreground">ID: {id || 'undefined'}</span>
+          </div>
+        )}
+        
+        <div className="flex items-center gap-2 mt-2">
+          <Link to="/release/incidents">
+            <Button variant="default" size="sm" className="h-8 text-xs">
+              Back to Incidents
+            </Button>
+          </Link>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="h-8 text-xs"
+            onClick={() => window.location.reload()}
+          >
+            Try Reload
+          </Button>
+        </div>
       </div>
     );
   }

@@ -1,8 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Plus, Search, AlertCircle, Clock, Users, BarChart3, LayoutDashboard, Filter } from 'lucide-react';
+import { Plus, Search, AlertCircle, BarChart3, LayoutDashboard, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
 import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
 import { useIncidents } from '@/hooks/useIncidents';
 import { CreateIncidentDialog } from '@/components/incidents/CreateIncidentDialog';
@@ -10,17 +11,20 @@ import { IncidentFiltersDialog } from '@/components/incidents/IncidentFiltersDia
 import { IncidentListTable } from '@/components/incidents/IncidentListTable';
 import type { IncidentFilters } from '@/types/incident';
 
+const PAGE_SIZE = 25;
+
 export default function IncidentRoomList() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [page, setPage] = useState(1);
   const [filters, setFilters] = useState<IncidentFilters>({
     status: [],
     severity: [],
     support_level: [],
     delivery_stage: [],
   });
-  const { data: incidents, isLoading, error } = useIncidents(filters);
+  const { data: incidents, isLoading, error, refetch } = useIncidents(filters);
 
   // Handle ?create=true query param
   useEffect(() => {
@@ -42,6 +46,17 @@ export default function IncidentRoomList() {
     );
   }, [incidents, searchQuery]);
 
+  // Paginate
+  const paginatedIncidents = useMemo(() => {
+    const start = (page - 1) * PAGE_SIZE;
+    return filteredIncidents.slice(start, start + PAGE_SIZE);
+  }, [filteredIncidents, page]);
+
+  // Reset page when filters/search change
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery, filters]);
+
   // Summary counts from backend data
   const stats = useMemo(() => ({
     critical: incidents?.filter(i => i.severity === 'SEV1' && !['resolved', 'closed', 'converted'].includes(i.status)).length || 0,
@@ -57,90 +72,108 @@ export default function IncidentRoomList() {
   ].reduce((a, b) => a + b, 0);
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-background">
       <GlobalPageHeader
         sectionLabel="RELEASE"
         pageTitle="Incident Room"
         rightActions={
           <div className="flex items-center gap-2">
             <Link to="/release/incidents/dashboard">
-              <Button variant="outline" size="sm">
-                <LayoutDashboard className="h-4 w-4 mr-1.5" />
+              <Button variant="outline" size="sm" className="h-8">
+                <LayoutDashboard className="h-3.5 w-3.5 mr-1.5" />
                 Dashboard
               </Button>
             </Link>
             <Link to="/release/incident-command-center">
-              <Button variant="outline" size="sm">
-                <BarChart3 className="h-4 w-4 mr-1.5" />
+              <Button variant="outline" size="sm" className="h-8">
+                <BarChart3 className="h-3.5 w-3.5 mr-1.5" />
                 Command Center
               </Button>
             </Link>
             <Button 
               size="sm"
+              className="h-8"
               onClick={() => setCreateDialogOpen(true)}
             >
-              <Plus className="h-4 w-4 mr-1.5" />
+              <Plus className="h-3.5 w-3.5 mr-1.5" />
               Create Incident
             </Button>
           </div>
         }
       />
 
-      {/* Search & Filter Bar */}
-      <div className="flex items-center justify-between gap-4 px-4 py-3 border-b border-border">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search by key or title..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-8 h-8 text-sm"
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <IncidentFiltersDialog filters={filters} onFiltersChange={setFilters} />
-          {activeFilterCount > 0 && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => setFilters({ status: [], severity: [], support_level: [], delivery_stage: [] })}
-              className="text-xs h-7 px-2"
+      {/* Search & Filter Bar - with proper spacing */}
+      <div className="px-4 py-3 space-y-3 bg-background">
+        <div className="flex items-center justify-between gap-4">
+          <div className="relative flex-1 max-w-sm">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              placeholder="Search by key or title..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-8 h-8 text-xs"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 px-2"
+              onClick={() => refetch()}
             >
-              Clear filters ({activeFilterCount})
+              <RefreshCw className="h-3.5 w-3.5" />
             </Button>
-          )}
+            <IncidentFiltersDialog filters={filters} onFiltersChange={setFilters} />
+            {activeFilterCount > 0 && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setFilters({ status: [], severity: [], support_level: [], delivery_stage: [] })}
+                className="text-xs h-8 px-2"
+              >
+                Clear ({activeFilterCount})
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* Summary Counts Row */}
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-1.5">
+            <div className="h-2 w-2 rounded-full bg-rose-500" />
+            <span className="text-xs font-medium">{stats.critical} Critical</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="h-2 w-2 rounded-full bg-blue-500" />
+            <span className="text-xs text-muted-foreground">{stats.open} Open</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="h-2 w-2 rounded-full bg-purple-500" />
+            <span className="text-xs text-muted-foreground">{stats.toCommittee} Committee</span>
+          </div>
+          <div className="ml-auto text-xs text-muted-foreground">
+            {filteredIncidents.length} total
+            {searchQuery && ` • matching "${searchQuery}"`}
+          </div>
         </div>
       </div>
 
-      {/* Summary Counts Row */}
-      <div className="flex items-center gap-6 px-4 py-2.5 border-b border-border bg-muted/20">
-        <div className="flex items-center gap-1.5">
-          <AlertCircle className="h-3.5 w-3.5 text-rose-500" />
-          <span className="text-xs font-medium">{stats.critical} Critical</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <div className="h-2 w-2 rounded-full bg-blue-500" />
-          <span className="text-xs text-muted-foreground">{stats.open} Open</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <div className="h-2 w-2 rounded-full bg-purple-500" />
-          <span className="text-xs text-muted-foreground">{stats.toCommittee} Awaiting Committee</span>
-        </div>
-        <div className="ml-auto text-xs text-muted-foreground">
-          {filteredIncidents.length} incident{filteredIncidents.length !== 1 ? 's' : ''}
-          {searchQuery && ` matching "${searchQuery}"`}
-        </div>
-      </div>
+      {/* Divider between filters and table */}
+      <Separator />
 
       {/* Table Content */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-hidden">
         {error ? (
           <div className="flex flex-col items-center justify-center h-64 text-center">
             <AlertCircle className="h-8 w-8 text-destructive mb-2" />
             <p className="text-sm font-medium text-destructive mb-1">Failed to load incidents</p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground mb-3">
               {error instanceof Error ? error.message : 'Unable to fetch data from the server'}
             </p>
+            <Button variant="outline" size="sm" onClick={() => refetch()}>
+              <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
+              Retry
+            </Button>
           </div>
         ) : filteredIncidents.length === 0 && !isLoading ? (
           <div className="flex flex-col items-center justify-center h-64 text-center">
@@ -155,13 +188,20 @@ export default function IncidentRoomList() {
                 className="mt-4"
                 onClick={() => setCreateDialogOpen(true)}
               >
-                <Plus className="h-4 w-4 mr-1.5" />
+                <Plus className="h-3.5 w-3.5 mr-1.5" />
                 Create First Incident
               </Button>
             )}
           </div>
         ) : (
-          <IncidentListTable incidents={filteredIncidents} isLoading={isLoading} />
+          <IncidentListTable 
+            incidents={paginatedIncidents} 
+            isLoading={isLoading}
+            page={page}
+            pageSize={PAGE_SIZE}
+            totalCount={filteredIncidents.length}
+            onPageChange={setPage}
+          />
         )}
       </div>
 
