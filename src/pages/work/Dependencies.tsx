@@ -544,10 +544,17 @@ export default function DependenciesPage() {
                               className="cursor-pointer hover:bg-muted/50"
                               onClick={() => handleRowClick(dep.id)}
                             >
-                              {/* Source (Requesting) */}
+                              {/* Source (Requesting) - Clickable to open drawer */}
                               <TableCell>
                                 {dep.resolvedSource ? (
-                                  <div className="flex items-center gap-2">
+                                  <button
+                                    type="button"
+                                    className="flex items-center gap-2 text-left hover:bg-muted/50 rounded px-1 -mx-1 py-0.5 transition-colors group"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleRowClick(dep.id);
+                                    }}
+                                  >
                                     <WorkItemIcon 
                                       type={dep.resolvedSource.type === 'epic' ? 'epic' : 'feature'} 
                                       size="sm" 
@@ -556,20 +563,27 @@ export default function DependenciesPage() {
                                       <span className="text-xs font-mono text-muted-foreground block">
                                         {dep.resolvedSource.displayId}
                                       </span>
-                                      <span className="text-sm font-medium truncate block">
+                                      <span className="text-sm font-medium truncate block group-hover:text-primary group-hover:underline">
                                         {dep.resolvedSource.name}
                                       </span>
                                     </div>
-                                  </div>
+                                  </button>
                                 ) : (
                                   <span className="text-muted-foreground">-</span>
                                 )}
                               </TableCell>
 
-                              {/* Target (Depends On) */}
+                              {/* Target (Depends On) - Clickable to open drawer */}
                               <TableCell>
                                 {dep.resolvedTarget ? (
-                                  <div className="flex items-center gap-2">
+                                  <button
+                                    type="button"
+                                    className="flex items-center gap-2 text-left hover:bg-muted/50 rounded px-1 -mx-1 py-0.5 transition-colors group"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleRowClick(dep.id);
+                                    }}
+                                  >
                                     <WorkItemIcon 
                                       type={dep.resolvedTarget.type === 'epic' ? 'epic' : 'feature'} 
                                       size="sm" 
@@ -578,11 +592,11 @@ export default function DependenciesPage() {
                                       <span className="text-xs font-mono text-muted-foreground block">
                                         {dep.resolvedTarget.displayId}
                                       </span>
-                                      <span className="text-sm font-medium truncate block">
+                                      <span className="text-sm font-medium truncate block group-hover:text-primary group-hover:underline">
                                         {dep.resolvedTarget.name}
                                       </span>
                                     </div>
-                                  </div>
+                                  </button>
                                 ) : (
                                   <span className="text-muted-foreground">-</span>
                                 )}
