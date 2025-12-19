@@ -465,43 +465,14 @@ export function IncidentContextRail({
             )}
           </AccordionSection>
 
-          {/* ========== SECTION 2: IMPACT & CLASSIFICATION ========== */}
+          {/* ========== SECTION 2: CLASSIFICATION ========== */}
           <AccordionSection 
             id="impact"
-            title="Impact & Classification" 
+            title="Classification" 
             icon={AlertTriangle}
             isOpen={sections.impact}
             onToggle={toggleSection}
           >
-            {/* Impact & Urgency side by side */}
-            <div className="grid grid-cols-2 gap-2">
-              <FieldRow label="Impact">
-                <Select value={impact} onValueChange={onImpactChange} disabled={isConverted}>
-                  <SelectTrigger className="h-7 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="high" className="text-xs">High</SelectItem>
-                    <SelectItem value="medium" className="text-xs">Medium</SelectItem>
-                    <SelectItem value="low" className="text-xs">Low</SelectItem>
-                  </SelectContent>
-                </Select>
-              </FieldRow>
-
-              <FieldRow label="Urgency">
-                <Select value={urgency} onValueChange={onUrgencyChange} disabled={isConverted}>
-                  <SelectTrigger className="h-7 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="high" className="text-xs">High</SelectItem>
-                    <SelectItem value="medium" className="text-xs">Medium</SelectItem>
-                    <SelectItem value="low" className="text-xs">Low</SelectItem>
-                  </SelectContent>
-                </Select>
-              </FieldRow>
-            </div>
-
             {/* Environment */}
             <FieldRow label="Environment">
               <Select 
@@ -544,61 +515,6 @@ export function IncidentContextRail({
                 </span>
               </div>
             </FieldRow>
-          </AccordionSection>
-
-          {/* ========== SECTION 3: PROJECT & RELEASE ========== */}
-          <AccordionSection 
-            id="project"
-            title="Project & Release" 
-            icon={FolderKanban}
-            isOpen={sections.project}
-            onToggle={toggleSection}
-          >
-            {/* Project */}
-            <FieldRow label="Project">
-              <Select 
-                value={projectId || 'default'} 
-                onValueChange={(v) => onProjectChange(v === 'default' ? '' : v)}
-                disabled={isConverted}
-              >
-                <SelectTrigger className="h-7 text-xs">
-                  <SelectValue placeholder="Select project" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="default" className="text-xs">
-                    Default
-                  </SelectItem>
-                  {availableProjects.map(project => (
-                    <SelectItem key={project.id} value={project.id} className="text-xs">
-                      {project.name} ({project.key})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </FieldRow>
-
-            {/* Release Version */}
-            <FieldRow label="Release Version">
-              <Select 
-                value={releaseVersionId || 'none'} 
-                onValueChange={(v) => onReleaseVersionChange(v === 'none' ? '' : v)}
-                disabled={isConverted}
-              >
-                <SelectTrigger className="h-7 text-xs">
-                  <SelectValue placeholder="Select version" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none" className="text-xs text-muted-foreground">
-                    Not specified
-                  </SelectItem>
-                  {availableReleaseVersions.map(version => (
-                    <SelectItem key={version.id} value={version.id} className="text-xs">
-                      {version.version}{version.name ? ` — ${version.name}` : ''}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </FieldRow>
 
             {/* Owning Team */}
             <FieldRow label="Owning Team">
@@ -625,61 +541,6 @@ export function IncidentContextRail({
                 </SelectContent>
               </Select>
             </FieldRow>
-          </AccordionSection>
-
-          {/* ========== SECTION 4: REPORTER & METADATA (collapsed by default) ========== */}
-          <AccordionSection 
-            id="reporter"
-            title="Reporter & Metadata" 
-            icon={User}
-            isOpen={sections.reporter}
-            onToggle={toggleSection}
-          >
-            {/* Reporter */}
-            <FieldRow label="Reporter">
-              <Select 
-                value={reporter?.id || 'unassigned'} 
-                onValueChange={(v) => onReporterChange(v === 'unassigned' ? '' : v)}
-                disabled={isConverted}
-              >
-                <SelectTrigger className="h-7 text-xs">
-                  <SelectValue placeholder="Select reporter" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="unassigned" className="text-xs text-muted-foreground">
-                    Unknown
-                  </SelectItem>
-                  {availableUsers.map(user => (
-                    <SelectItem key={user.id} value={user.id} className="text-xs">
-                      <div className="flex items-center gap-1.5">
-                        <Avatar className="h-4 w-4">
-                          <AvatarFallback className="text-[8px] bg-primary text-primary-foreground">
-                            {user.avatar_initials || user.full_name?.slice(0, 2)}
-                          </AvatarFallback>
-                        </Avatar>
-                        {user.full_name}
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </FieldRow>
-
-            {/* Created & Updated */}
-            <div className="grid grid-cols-2 gap-2">
-              <FieldRow label="Created">
-                <div className="flex items-center gap-1 text-xs text-foreground">
-                  <Calendar className="h-3 w-3 text-muted-foreground" />
-                  {formatDate(createdAt)}
-                </div>
-              </FieldRow>
-              <FieldRow label="Updated">
-                <div className="flex items-center gap-1 text-xs text-foreground">
-                  <Clock className="h-3 w-3 text-muted-foreground" />
-                  {formatDate(updatedAt)}
-                </div>
-              </FieldRow>
-            </div>
           </AccordionSection>
 
           {/* Support Level (if present) */}

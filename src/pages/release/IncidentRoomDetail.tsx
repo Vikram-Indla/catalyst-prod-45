@@ -432,8 +432,11 @@ export default function IncidentRoomDetail() {
         priority={incident.priority}
         supportLevel={incident.support_level}
         assignee={incident.assignee}
+        reporter={incident.reporter}
         projectId={incident.project_id}
         projectName={projectName}
+        releaseVersionId={incident.release_version_id || null}
+        releaseVersionName={incident.release_version?.version || null}
         createdAt={incident.created_at}
         updatedAt={incident.updated_at}
         lastUpdatedBy={null}
@@ -445,11 +448,14 @@ export default function IncidentRoomDetail() {
         conversionReason={conversionCheck.reason}
         availableProjects={projects}
         availableUsers={availableApprovers}
+        availableReleaseVersions={releaseVersions as any}
         onTitleChange={(title) => handleFieldChange('title', title)}
         onStatusChange={handleStatusChange}
         onSeverityChange={(v) => handleFieldChange('severity', v)}
         onAssigneeChange={(userId) => handleFieldChange('assignee_id', userId)}
+        onReporterChange={(userId) => handleFieldChange('reporter_id', userId)}
         onProjectChange={(projectId) => handleFieldChange('project_id', projectId)}
+        onReleaseVersionChange={(versionId) => handleFieldChange('release_version_id', versionId)}
         onToggleWatch={() => toggleWatch.mutate(isWatching)}
         onOpenCommittee={() => setCommitteeDialogOpen(true)}
         onOpenConvertDialog={() => setConvertDialogOpen(true)}
