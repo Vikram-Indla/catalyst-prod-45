@@ -242,7 +242,7 @@ export default function CreateIncidentPage() {
       toast.success('Incident created successfully');
       
       if (result?.id) {
-        navigate(`/release/incidents/${result.id}`);
+        navigate(`/release/incident-room/${result.id}`);
       } else {
         navigate('/release/incidents');
       }

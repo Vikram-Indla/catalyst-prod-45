@@ -241,7 +241,7 @@ export default function CAPCommitteeQueuePage() {
   };
 
   const handleRowClick = (incident: Incident) => {
-    navigate(`/release/incidents/${incident.id}`);
+    navigate(`/release/incident-room/${incident.id}`);
   };
 
   if (isLoading) {

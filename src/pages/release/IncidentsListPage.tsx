@@ -246,7 +246,7 @@ export default function IncidentsListPage() {
   };
 
   const handleRowClick = (incident: Incident) => {
-    navigate(`/release/incidents/${incident.id}`);
+    navigate(`/release/incident-room/${incident.id}`);
   };
 
   const handleSort = (field: SortField) => {
