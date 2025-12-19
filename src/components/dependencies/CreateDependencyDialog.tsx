@@ -72,10 +72,14 @@ export function CreateDependencyDialog({
 }: CreateDependencyDialogProps) {
   const queryClient = useQueryClient();
   
-  // Form state
-  const [requestingWorkItemType, setRequestingWorkItemType] = useState<WorkItemDependencyType>('feature');
-  const [requestingWorkItemId, setRequestingWorkItemId] = useState('');
-  const [dependsOnWorkItemType, setDependsOnWorkItemType] = useState<WorkItemDependencyType>('feature');
+  // Form state - initialize from props to avoid race condition
+  const [requestingWorkItemType, setRequestingWorkItemType] = useState<WorkItemDependencyType>(
+    defaultRequestingWorkItemType || 'feature'
+  );
+  const [requestingWorkItemId, setRequestingWorkItemId] = useState(defaultRequestingWorkItemId || '');
+  const [dependsOnWorkItemType, setDependsOnWorkItemType] = useState<WorkItemDependencyType>(
+    defaultRequestingWorkItemType || 'feature'
+  );
   const [dependsOnWorkItemId, setDependsOnWorkItemId] = useState('');
   const [dependencyType, setDependencyType] = useState<DependencyTypeV2>('blocks');
   const [riskLevel, setRiskLevel] = useState<RiskLevel>('med');
@@ -83,13 +87,26 @@ export function CreateDependencyDialog({
   const [quarter, setQuarter] = useState(getCurrentQuarter());
   const [description, setDescription] = useState('');
   
-  // Set defaults when dialog opens with context
+  // Sync state when props change (e.g., dialog reopens with different context)
   useEffect(() => {
-    if (open && defaultRequestingWorkItemId && defaultRequestingWorkItemType) {
-      setRequestingWorkItemType(defaultRequestingWorkItemType);
-      setRequestingWorkItemId(defaultRequestingWorkItemId);
-      // Default target to same type for same-level dependency
-      setDependsOnWorkItemType(defaultRequestingWorkItemType);
+    if (open) {
+      if (defaultRequestingWorkItemId && defaultRequestingWorkItemType) {
+        setRequestingWorkItemType(defaultRequestingWorkItemType);
+        setRequestingWorkItemId(defaultRequestingWorkItemId);
+        setDependsOnWorkItemType(defaultRequestingWorkItemType);
+      } else {
+        // Reset to defaults if no context provided
+        setRequestingWorkItemType('feature');
+        setRequestingWorkItemId('');
+        setDependsOnWorkItemType('feature');
+      }
+      // Always reset target and other fields when dialog opens
+      setDependsOnWorkItemId('');
+      setDependencyType('blocks');
+      setRiskLevel('med');
+      setNeededByDate('');
+      setQuarter(getCurrentQuarter());
+      setDescription('');
     }
   }, [open, defaultRequestingWorkItemId, defaultRequestingWorkItemType]);
   
@@ -101,7 +118,7 @@ export function CreateDependencyDialog({
   
   const isCrossLevel = derivedLevel === 'cross_level';
 
-  // Fetch epics for picker
+  // Fetch epics for picker - also check defaultRequestingWorkItemType to enable immediately
   const { data: epics } = useQuery({
     queryKey: ['epics-lookup'],
     queryFn: async () => {
@@ -113,7 +130,7 @@ export function CreateDependencyDialog({
       if (error) throw error;
       return data;
     },
-    enabled: open && (requestingWorkItemType === 'epic' || dependsOnWorkItemType === 'epic'),
+    enabled: open && (requestingWorkItemType === 'epic' || dependsOnWorkItemType === 'epic' || defaultRequestingWorkItemType === 'epic'),
   });
 
   // Fetch features for picker
