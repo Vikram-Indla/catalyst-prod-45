@@ -20,6 +20,10 @@ import { SwimlaneView } from './views/SwimlaneView';
 import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
 import { useWorkbenchData } from './useWorkbenchData';
 import { startOfQuarter, endOfQuarter, addQuarters } from 'date-fns';
+import { EpicDrawer } from '@/components/items/epics/EpicDrawer';
+import { FeatureDetailsPanel } from '@/components/items/features/FeatureDetailsPanel';
+import { supabase } from '@/integrations/supabase/client';
+import type { Feature } from '@/types/feature.types';
 
 // View configuration with icons
 const VIEW_CONFIG: { id: WorkbenchView; label: string; icon: React.ElementType }[] = [
@@ -152,6 +156,10 @@ export default function ExecutionWorkbenchPage() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<WorkItem | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  
+  // Full drawer states for Epic and Feature
+  const [selectedEpicId, setSelectedEpicId] = useState<string | null>(null);
+  const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
 
   // Fetch real data
   const { items: allItems, projects, owners, isLoading, error } = useWorkbenchData(programId, selectedProject);
@@ -248,6 +256,25 @@ export default function ExecutionWorkbenchPage() {
   const handleItemClick = (item: WorkItem) => {
     setSelectedItem(item);
     setDrawerOpen(true);
+  };
+
+  // Open full drawer for epic or feature
+  const handleOpenFullDrawer = async (item: WorkItem) => {
+    setDrawerOpen(false); // Close QuickView first
+    
+    if (item.type === 'epic') {
+      setSelectedEpicId(item.id);
+    } else if (item.type === 'feature') {
+      // Fetch feature data for the panel
+      const { data: feature } = await supabase
+        .from('features')
+        .select('*')
+        .eq('id', item.id)
+        .single();
+      if (feature) {
+        setSelectedFeature(feature as Feature);
+      }
+    }
   };
 
   const projectOptions = [
@@ -347,6 +374,21 @@ export default function ExecutionWorkbenchPage() {
         item={selectedItem}
         open={drawerOpen}
         onOpenChange={setDrawerOpen}
+        onOpenFullDrawer={handleOpenFullDrawer}
+      />
+
+      {/* Epic Drawer */}
+      <EpicDrawer
+        isOpen={!!selectedEpicId}
+        onClose={() => setSelectedEpicId(null)}
+        epicId={selectedEpicId}
+      />
+
+      {/* Feature Details Panel */}
+      <FeatureDetailsPanel
+        feature={selectedFeature || undefined}
+        open={!!selectedFeature}
+        onClose={() => setSelectedFeature(null)}
       />
     </ProgramPageLayout>
   );
