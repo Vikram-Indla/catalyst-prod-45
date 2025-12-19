@@ -285,13 +285,12 @@ export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick
   
   // Create curved dependency lines
   const dependencyLines = links
+    .filter((link) => link.fromNodeId !== link.toNodeId) // Skip self-dependencies (internal) - they don't render as chords
     .map((link) => {
       const fromAngle = nodeAngles.get(link.fromNodeId);
       const toAngle = nodeAngles.get(link.toNodeId);
 
       if (fromAngle === undefined || toAngle === undefined) return null;
-
-      const isSelf = link.fromNodeId === link.toNodeId;
 
       // Determine visibility and emphasis
       const isRelatedToSelected = selectedNodeId
@@ -300,43 +299,28 @@ export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick
 
       const isHovered = hoveredLinkId === link.id;
 
-      let opacity = isRelatedToSelected ? (isSelf ? 0.85 : 0.7) : 0.15;
-      let strokeWidth = isHovered ? (isSelf ? 5 : 3) : isSelf ? 4 : 2;
+      let opacity = isRelatedToSelected ? 0.7 : 0.15;
+      let strokeWidth = isHovered ? 3 : 2;
 
       if (!isRelatedToSelected && !isHovered) {
         opacity = 0.1;
       }
 
-      let path = '';
+      // Calculate connection points on hub outer radius
+      const fromX = centerX + hubOuterRadius * Math.cos(fromAngle);
+      const fromY = centerY + hubOuterRadius * Math.sin(fromAngle);
+      const toX = centerX + hubOuterRadius * Math.cos(toAngle);
+      const toY = centerY + hubOuterRadius * Math.sin(toAngle);
 
-      if (isSelf) {
-        // Self-dependency loop: render as a short arc around the hub
-        const loopRadius = hubOuterRadius + 28;
-        const delta = 0.35; // radians
-        const startA = fromAngle - delta;
-        const endA = fromAngle + delta;
-        const startX = centerX + loopRadius * Math.cos(startA);
-        const startY = centerY + loopRadius * Math.sin(startA);
-        const endX = centerX + loopRadius * Math.cos(endA);
-        const endY = centerY + loopRadius * Math.sin(endA);
-        path = `M ${startX} ${startY} A ${loopRadius} ${loopRadius} 0 1 1 ${endX} ${endY}`;
-      } else {
-        // Calculate connection points on hub outer radius
-        const fromX = centerX + hubOuterRadius * Math.cos(fromAngle);
-        const fromY = centerY + hubOuterRadius * Math.sin(fromAngle);
-        const toX = centerX + hubOuterRadius * Math.cos(toAngle);
-        const toY = centerY + hubOuterRadius * Math.sin(toAngle);
+      // Create cubic Bezier curve with control points pulled toward center
+      const midX = (fromX + toX) / 2;
+      const midY = (fromY + toY) / 2;
+      const c1X = (fromX + midX) / 2;
+      const c1Y = (fromY + midY) / 2;
+      const c2X = (toX + midX) / 2;
+      const c2Y = (toY + midY) / 2;
 
-        // Create cubic Bezier curve with control points pulled toward center
-        const midX = (fromX + toX) / 2;
-        const midY = (fromY + toY) / 2;
-        const c1X = (fromX + midX) / 2;
-        const c1Y = (fromY + midY) / 2;
-        const c2X = (toX + midX) / 2;
-        const c2Y = (toY + midY) / 2;
-
-        path = `M ${fromX} ${fromY} C ${c1X} ${c1Y}, ${c2X} ${c2Y}, ${toX} ${toY}`;
-      }
+      const path = `M ${fromX} ${fromY} C ${c1X} ${c1Y}, ${c2X} ${c2Y}, ${toX} ${toY}`;
 
       return {
         ...link,
