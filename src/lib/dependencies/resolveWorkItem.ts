@@ -220,20 +220,20 @@ export function extractProgramIdsFromDep(
   let sourceProgramId: string | null = null;
   let targetProgramId: string | null = null;
 
-  // Source program (only if epic)
-  if (dep.requesting_work_item_type === 'epic' && dep.requesting_work_item_id) {
+  // Source program - prioritize derived container from DB, then lookup from epic
+  if (dep.derived_requesting_container_type === 'program' && dep.derived_requesting_container_id) {
+    sourceProgramId = dep.derived_requesting_container_id;
+  } else if (dep.requesting_work_item_type === 'epic' && dep.requesting_work_item_id) {
     const epic = maps.epics.get(dep.requesting_work_item_id);
     sourceProgramId = epic?.program_id || null;
-  } else if (dep.derived_requesting_container_type === 'program') {
-    sourceProgramId = dep.derived_requesting_container_id;
   }
 
-  // Target program (only if epic)
-  if (dep.depends_on_work_item_type === 'epic' && dep.depends_on_work_item_id) {
+  // Target program - prioritize derived container from DB, then lookup from epic
+  if (dep.derived_respondent_container_type === 'program' && dep.derived_respondent_container_id) {
+    targetProgramId = dep.derived_respondent_container_id;
+  } else if (dep.depends_on_work_item_type === 'epic' && dep.depends_on_work_item_id) {
     const epic = maps.epics.get(dep.depends_on_work_item_id);
     targetProgramId = epic?.program_id || null;
-  } else if (dep.derived_respondent_container_type === 'program') {
-    targetProgramId = dep.derived_respondent_container_id;
   }
 
   return { sourceProgramId, targetProgramId };
