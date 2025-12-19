@@ -156,7 +156,7 @@ export function CreateDependencyDialog({
         needed_by_date: neededByDate || null,
         quarter,
         description: description || null,
-        status: 'draft',
+        status: 'open',
         // Legacy fields for backwards compatibility
         from_feature_id: requestingWorkItemType === 'feature' ? requestingWorkItemId : dependsOnWorkItemId,
         to_feature_id: dependsOnWorkItemType === 'feature' ? dependsOnWorkItemId : requestingWorkItemId,
