@@ -23,6 +23,7 @@ interface WorkTreeHierarchyProps {
   data: any;
   isLoading: boolean;
   narrowToProgram: boolean;
+  onItemClick?: (id: string, type: string) => void;
 }
 
 interface TreeNode {
@@ -93,9 +94,10 @@ interface WorkTreeRowProps {
   level: number;
   expandedIds: Set<string>;
   onToggleExpand: (id: string) => void;
+  onItemClick?: (id: string, type: string) => void;
 }
 
-function WorkTreeRowComponent({ node, level, expandedIds, onToggleExpand }: WorkTreeRowProps) {
+function WorkTreeRowComponent({ node, level, expandedIds, onToggleExpand, onItemClick }: WorkTreeRowProps) {
   const isExpanded = expandedIds.has(node.id);
   const hasChildren = node.children && node.children.length > 0;
   const indentPx = level * 24;
@@ -114,6 +116,12 @@ function WorkTreeRowComponent({ node, level, expandedIds, onToggleExpand }: Work
                         node.health === 'yellow' ? 'at-risk' : 
                         node.health === 'red' ? 'off-track' : 'none';
 
+  const handleRowClick = () => {
+    if (node.type === 'epic' || node.type === 'feature') {
+      onItemClick?.(node.id, node.type);
+    }
+  };
+
   return (
     <>
       <tr
@@ -121,6 +129,7 @@ function WorkTreeRowComponent({ node, level, expandedIds, onToggleExpand }: Work
           'group cursor-pointer transition-colors hover:bg-muted/50 dark:hover:bg-muted/30 border-b border-border/40',
           level > 0 && 'bg-muted/20'
         )}
+        onClick={handleRowClick}
       >
         {/* Type Column */}
         <td className="py-3 px-4" style={{ width: COLUMN_CONFIG.type.width }}>
@@ -223,6 +232,7 @@ function WorkTreeRowComponent({ node, level, expandedIds, onToggleExpand }: Work
           level={level + 1}
           expandedIds={expandedIds}
           onToggleExpand={onToggleExpand}
+          onItemClick={onItemClick}
         />
       ))}
     </>
@@ -233,7 +243,7 @@ function WorkTreeRowComponent({ node, level, expandedIds, onToggleExpand }: Work
 // MAIN COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────────
 
-export function WorkTreeHierarchy({ view, data, isLoading, narrowToProgram }: WorkTreeHierarchyProps) {
+export function WorkTreeHierarchy({ view, data, isLoading, narrowToProgram, onItemClick }: WorkTreeHierarchyProps) {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
   const handleToggle = (id: string) => {
@@ -293,6 +303,7 @@ export function WorkTreeHierarchy({ view, data, isLoading, narrowToProgram }: Wo
             level={0}
             expandedIds={expandedIds}
             onToggleExpand={handleToggle}
+            onItemClick={onItemClick}
           />
         ))}
       </TableBody>
