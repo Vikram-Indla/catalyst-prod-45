@@ -162,7 +162,11 @@ export default function IncidentRoomDetail() {
         toast.success('Updated');
         
         // Add audit log entry for important field changes
-        if (['title', 'project_id', 'assignee_id'].includes(field)) {
+        const auditableFields = [
+          'title', 'project_id', 'assignee_id', 'reporter_id', 'team_id', 
+          'severity', 'status', 'release_version_id', 'impact', 'urgency', 'delivery_stage'
+        ];
+        if (auditableFields.includes(field)) {
           const { data: { user } } = await supabase.auth.getUser();
           await supabase.from('incident_history').insert({
             incident_id: incidentId,
