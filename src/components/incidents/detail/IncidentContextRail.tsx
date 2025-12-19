@@ -110,6 +110,7 @@ interface IncidentContextRailProps {
   onProjectChange: (projectId: string) => void;
   onTeamChange: (teamId: string) => void;
   onAssigneeChange: (userId: string) => void;
+  onReporterChange: (userId: string) => void;
   onReleaseVersionChange: (versionId: string) => void;
   onAssignToMe: () => void;
   onToggleCollapse: () => void;
@@ -214,6 +215,7 @@ export function IncidentContextRail({
   onProjectChange,
   onTeamChange,
   onAssigneeChange,
+  onReporterChange,
   onReleaseVersionChange,
   onAssignToMe,
   onToggleCollapse,
@@ -429,19 +431,32 @@ export function IncidentContextRail({
 
             {/* Reporter */}
             <FieldRow label="Reporter">
-              <div className="flex items-center gap-2 p-2 bg-muted/30 rounded-md">
-                <Avatar className="h-6 w-6">
-                  <AvatarFallback className="text-[10px] bg-muted text-muted-foreground">
-                    {reporter?.avatar_initials || 
-                     reporter?.full_name?.slice(0, 2) ||
-                     reporterName?.charAt(0) || 
-                     'U'}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="text-sm font-medium truncate">
-                  {reporter?.full_name || reporterName || 'Unknown'}
-                </span>
-              </div>
+              <Select 
+                value={reporter?.id || 'unassigned'} 
+                onValueChange={(v) => onReporterChange(v === 'unassigned' ? '' : v)}
+                disabled={isConverted}
+              >
+                <SelectTrigger className="h-8 text-sm">
+                  <SelectValue placeholder="Select reporter" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="unassigned" className="text-sm text-muted-foreground">
+                    Unknown
+                  </SelectItem>
+                  {availableUsers.map(user => (
+                    <SelectItem key={user.id} value={user.id} className="text-sm">
+                      <div className="flex items-center gap-2">
+                        <Avatar className="h-5 w-5">
+                          <AvatarFallback className="text-[9px] bg-primary text-primary-foreground">
+                            {user.avatar_initials || user.full_name?.slice(0, 2)}
+                          </AvatarFallback>
+                        </Avatar>
+                        {user.full_name}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </FieldRow>
 
             {/* Created & Updated */}

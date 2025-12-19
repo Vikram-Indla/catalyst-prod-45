@@ -527,6 +527,7 @@ export default function IncidentRoomDetail() {
           onProjectChange={(projectId) => handleFieldChange('project_id', projectId)}
           onTeamChange={(teamId) => handleFieldChange('team_id', teamId)}
           onAssigneeChange={(userId) => handleFieldChange('assignee_id', userId)}
+          onReporterChange={(userId) => handleFieldChange('reporter_id', userId)}
           onReleaseVersionChange={(versionId) => handleFieldChange('release_version_id', versionId)}
           onAssignToMe={handleAssignToMe}
           onToggleCollapse={() => setRailCollapsed(!railCollapsed)}
