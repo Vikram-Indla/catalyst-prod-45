@@ -1,57 +1,143 @@
 /**
- * WorkBench views: Table/Gantt/Roadmap/Board/Swimlane
+ * WorkBench views: Table View
  * 
- * Variant A: Table View - Hierarchical expandable table (Epic → Feature → Story)
- * Enhanced with Claude Variant A styling - denser rows, better hierarchy cues
+ * Executive-grade hierarchical table (Epic → Feature → Story)
+ * Columns: Work Item, Health, Progress, Owner, Target Date, Dependencies
+ * Uses semantic tokens from index.css for dark/light mode support
  */
 
 import React, { useState } from 'react';
 import { WorkItem, HealthStatus, ItemStatus } from '../types';
-import { Badge } from '@/components/ui/badge';
-import { ChevronRight, ChevronDown, Square, Gem, FileText, Calendar, Link2 } from 'lucide-react';
+import { ChevronRight, ChevronDown, MoreHorizontal, Link2, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface TableViewProps {
   items: WorkItem[];
   onItemClick: (item: WorkItem) => void;
 }
 
-function getHealthBadgeStyle(health: HealthStatus): string {
-  switch (health) {
-    case 'On Track': return 'bg-secondary-green/15 text-secondary-green border-secondary-green/30';
-    case 'At Risk': return 'bg-brand-gold/15 text-brand-gold border-brand-gold/30';
-    case 'Blocked': return 'bg-destructive/15 text-destructive border-destructive/30';
-    default: return 'bg-muted text-muted-foreground';
-  }
+// Type badge component - E/F/S colored circles
+function TypeBadge({ type }: { type: string }) {
+  const config: Record<string, { label: string; bgClass: string; textClass: string }> = {
+    epic: { label: 'E', bgClass: 'bg-workitem-epic/20', textClass: 'text-workitem-epic' },
+    feature: { label: 'F', bgClass: 'bg-workitem-feature/20', textClass: 'text-workitem-feature' },
+    story: { label: 'S', bgClass: 'bg-muted', textClass: 'text-muted-foreground' },
+  };
+  const { label, bgClass, textClass } = config[type] || config.story;
+  
+  return (
+    <span className={cn(
+      "inline-flex items-center justify-center w-5 h-5 rounded text-[10px] font-bold flex-shrink-0",
+      bgClass, textClass
+    )}>
+      {label}
+    </span>
+  );
 }
 
-function getStatusBadgeStyle(status: ItemStatus): string {
-  switch (status) {
-    case 'Done': return 'bg-secondary-green/15 text-secondary-green';
-    case 'In Progress': return 'bg-brand-gold/15 text-brand-gold';
-    case 'To Do': return 'bg-muted text-muted-foreground';
-    case 'Blocked': return 'bg-destructive/15 text-destructive';
-    default: return 'bg-muted text-muted-foreground';
-  }
+// Owner avatar with initials
+function OwnerAvatar({ name, initials }: { name?: string; initials?: string }) {
+  if (!name) return <span className="text-muted-foreground/50 text-xs">—</span>;
+  
+  const displayInitials = initials || name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  
+  return (
+    <div className="flex items-center gap-2">
+      <div className="h-6 w-6 rounded-full bg-gradient-to-br from-secondary-bronze to-brand-primary flex items-center justify-center text-[10px] font-semibold text-white flex-shrink-0">
+        {displayInitials}
+      </div>
+      <span className="text-xs truncate max-w-[80px]">{name.split(' ')[0]}</span>
+    </div>
+  );
 }
 
-function getTypeIcon(type: string): { icon: React.ElementType; colorClass: string } {
-  switch (type) {
-    case 'epic': return { icon: Square, colorClass: 'text-workitem-epic' };
-    case 'feature': return { icon: Gem, colorClass: 'text-workitem-feature' };
-    case 'story': return { icon: FileText, colorClass: 'text-workitem-story' };
-    default: return { icon: FileText, colorClass: 'text-muted-foreground' };
-  }
+// Health status pill
+function HealthPill({ health }: { health: HealthStatus }) {
+  const styles: Record<HealthStatus, string> = {
+    'On Track': 'bg-secondary-green/15 text-secondary-green border-secondary-green/30',
+    'At Risk': 'bg-brand-gold/15 text-brand-gold border-brand-gold/30',
+    'Blocked': 'bg-destructive/15 text-destructive border-destructive/30',
+  };
+  
+  return (
+    <div className={cn(
+      "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium border",
+      styles[health] || 'bg-muted text-muted-foreground'
+    )}>
+      <span className="w-1.5 h-1.5 rounded-full bg-current" />
+      {health}
+    </div>
+  );
 }
 
-function getProgressBarColor(health: HealthStatus): string {
-  switch (health) {
-    case 'On Track': return 'bg-secondary-green';
-    case 'At Risk': return 'bg-brand-gold';
-    case 'Blocked': return 'bg-destructive';
-    default: return 'bg-brand-primary';
-  }
+// Progress bar colored by health
+function ProgressBar({ progress, health }: { progress: number; health: HealthStatus }) {
+  const colorClass: Record<HealthStatus, string> = {
+    'On Track': 'bg-secondary-green',
+    'At Risk': 'bg-brand-gold',
+    'Blocked': 'bg-destructive',
+  };
+  
+  return (
+    <div className="flex items-center gap-2 min-w-[100px]">
+      <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
+        <div 
+          className={cn("h-full rounded-full transition-all", colorClass[health] || 'bg-brand-primary')}
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+      <span className="text-[11px] text-muted-foreground w-8 text-right tabular-nums font-medium">
+        {progress}%
+      </span>
+    </div>
+  );
+}
+
+// Dependency chip/badge
+function DependencyBadge({ count, type }: { count: number; type: 'blocking' | 'blocked-by' }) {
+  if (count === 0) return <span className="text-muted-foreground/50 text-xs">—</span>;
+  
+  const isBlocking = type === 'blocking';
+  
+  return (
+    <div className={cn(
+      "inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium",
+      isBlocking 
+        ? "bg-destructive/15 text-destructive" 
+        : "bg-brand-gold/15 text-brand-gold"
+    )}>
+      {isBlocking ? <AlertTriangle className="h-3 w-3" /> : <Link2 className="h-3 w-3" />}
+      {isBlocking ? `${count} blocking` : `blocked by ${count}`}
+    </div>
+  );
+}
+
+// Row actions menu
+function RowActions({ item, onItemClick }: { item: WorkItem; onItemClick: (item: WorkItem) => void }) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button 
+          className="p-1 hover:bg-muted rounded opacity-0 group-hover:opacity-100 transition-opacity"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-40">
+        <DropdownMenuItem onClick={() => onItemClick(item)}>View Details</DropdownMenuItem>
+        <DropdownMenuItem>Edit</DropdownMenuItem>
+        <DropdownMenuItem>View Dependencies</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
 }
 
 interface TableRowProps {
@@ -65,28 +151,30 @@ interface TableRowProps {
 function TableRow({ item, depth, onItemClick, expandedIds, toggleExpand }: TableRowProps) {
   const hasChildren = item.children && item.children.length > 0;
   const isExpanded = expandedIds.has(item.id);
-  const typeIcon = getTypeIcon(item.type);
-  const TypeIcon = typeIcon.icon;
 
-  // Row styling based on depth/type
+  // Subtle row differentiation by depth
   const rowBgClass = depth === 0 
-    ? 'bg-brand-gold/[0.03]' 
+    ? 'bg-surface-tinted' 
     : depth === 1 
       ? 'bg-transparent' 
-      : 'bg-muted/20';
+      : 'bg-muted/10';
+
+  // Determine dependency display
+  const blockingCount = item.dependencyCount || 0;
+  const blockedByCount = (item as any).blockedByCount || 0;
 
   return (
     <>
       <tr 
         className={cn(
-          "border-b border-border/40 hover:bg-muted/40 cursor-pointer transition-colors",
+          "border-b border-border/40 hover:bg-muted/40 cursor-pointer transition-colors group",
           rowBgClass
         )}
         onClick={() => onItemClick(item)}
       >
-        {/* Title/Hierarchy */}
+        {/* Work Item - Type + Key + Title */}
         <td className="py-2.5 px-3">
-          <div className="flex items-center gap-1.5" style={{ paddingLeft: `${depth * 20}px` }}>
+          <div className="flex items-center gap-2" style={{ paddingLeft: `${depth * 20}px` }}>
             {/* Expand/Collapse */}
             {hasChildren ? (
               <button 
@@ -103,13 +191,13 @@ function TableRow({ item, depth, onItemClick, expandedIds, toggleExpand }: Table
               <span className="w-5 flex-shrink-0" />
             )}
             
-            {/* Depth indicator line for children */}
+            {/* Hierarchy connector for children */}
             {depth > 0 && (
-              <div className="w-px h-4 bg-border/60 -ml-1 mr-1 flex-shrink-0" />
+              <div className="w-px h-4 bg-border/60 -ml-2 mr-0 flex-shrink-0" />
             )}
             
-            {/* Type Icon */}
-            <TypeIcon className={cn("h-4 w-4 flex-shrink-0", typeIcon.colorClass)} />
+            {/* Type Badge */}
+            <TypeBadge type={item.type} />
             
             {/* Key */}
             <span className="font-mono text-[11px] text-muted-foreground flex-shrink-0">{item.key}</span>
@@ -117,82 +205,57 @@ function TableRow({ item, depth, onItemClick, expandedIds, toggleExpand }: Table
             {/* Title */}
             <span className={cn(
               "text-sm truncate",
-              depth === 0 ? "font-medium" : depth === 1 ? "font-normal" : "text-muted-foreground"
+              depth === 0 ? "font-semibold" : depth === 1 ? "font-medium" : "text-muted-foreground"
             )}>
               {item.title}
             </span>
           </div>
         </td>
 
-        {/* Owner */}
-        <td className="py-2.5 px-3">
-          {item.owner ? (
-            <div className="flex items-center gap-1.5">
-              <div className="h-5 w-5 rounded-full bg-gradient-to-br from-secondary-bronze to-brand-primary text-white flex items-center justify-center text-[9px] font-semibold flex-shrink-0">
-                {item.ownerInitials || item.owner.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
-              </div>
-              <span className="text-xs text-muted-foreground truncate max-w-[100px]">{item.owner}</span>
-            </div>
-          ) : (
-            <span className="text-xs text-muted-foreground/50">—</span>
-          )}
-        </td>
-
         {/* Health */}
         <td className="py-2.5 px-3">
-          <div className={cn(
-            "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border",
-            getHealthBadgeStyle(item.health)
-          )}>
-            <span className="w-1.5 h-1.5 rounded-full bg-current" />
-            {item.health}
-          </div>
-        </td>
-
-        {/* Status */}
-        <td className="py-2.5 px-3">
-          <span className={cn(
-            "inline-block px-2 py-0.5 rounded text-[10px] font-medium",
-            getStatusBadgeStyle(item.status)
-          )}>
-            {item.status}
-          </span>
+          <HealthPill health={item.health} />
         </td>
 
         {/* Progress */}
         <td className="py-2.5 px-3">
-          <div className="flex items-center gap-2 min-w-[90px]">
-            <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
-              <div 
-                className={cn("h-full rounded-full transition-all", getProgressBarColor(item.health))}
-                style={{ width: `${item.progress}%` }}
-              />
-            </div>
-            <span className="text-[10px] text-muted-foreground w-7 text-right tabular-nums">{item.progress}%</span>
-          </div>
+          <ProgressBar progress={item.progress} health={item.health} />
         </td>
 
-        {/* Dates */}
+        {/* Owner */}
         <td className="py-2.5 px-3">
-          <span className="text-[11px] text-muted-foreground">
-            {item.startDate && item.endDate ? (
-              `${format(new Date(item.startDate), 'MMM d')} – ${format(new Date(item.endDate), 'MMM d')}`
-            ) : (
-              <span className="text-muted-foreground/50">No dates</span>
-            )}
-          </span>
+          <OwnerAvatar name={item.owner} initials={item.ownerInitials} />
+        </td>
+
+        {/* Target Date */}
+        <td className="py-2.5 px-3">
+          {item.endDate ? (
+            <span className={cn(
+              "text-xs font-medium",
+              item.health === 'At Risk' && "text-brand-gold",
+              item.health === 'Blocked' && "text-destructive"
+            )}>
+              {format(new Date(item.endDate), 'MMM d')}
+            </span>
+          ) : (
+            <span className="text-muted-foreground/50 text-xs">No date</span>
+          )}
         </td>
 
         {/* Dependencies */}
-        <td className="py-2.5 px-3 text-center">
-          {item.dependencyCount > 0 ? (
-            <span className="inline-flex items-center gap-0.5 text-[10px] text-destructive bg-destructive/10 px-1.5 py-0.5 rounded">
-              <Link2 className="h-3 w-3" />
-              {item.dependencyCount}
-            </span>
+        <td className="py-2.5 px-3">
+          {blockingCount > 0 ? (
+            <DependencyBadge count={blockingCount} type="blocking" />
+          ) : blockedByCount > 0 ? (
+            <DependencyBadge count={blockedByCount} type="blocked-by" />
           ) : (
-            <span className="text-[10px] text-muted-foreground/50">—</span>
+            <span className="text-muted-foreground/50 text-xs">—</span>
           )}
+        </td>
+
+        {/* Actions */}
+        <td className="py-2.5 px-2 w-10">
+          <RowActions item={item} onItemClick={onItemClick} />
         </td>
       </tr>
 
@@ -227,36 +290,34 @@ export function TableView({ items, onItemClick }: TableViewProps) {
   };
 
   if (items.length === 0) {
-    return null; // Empty state handled by parent
+    return null;
   }
 
   return (
     <div className="overflow-auto flex-1 p-3">
       <div className="rounded-lg border border-border overflow-hidden bg-card">
-        <table className="w-full table-fixed">
+        <table className="w-full">
           <thead>
             <tr className="bg-muted/60 border-b border-border">
-              <th className="py-2.5 px-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-[40%]">
+              <th className="py-3 px-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-[38%]">
                 Work Item
               </th>
-              <th className="py-2.5 px-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-[14%]">
-                Owner
-              </th>
-              <th className="py-2.5 px-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-[10%]">
+              <th className="py-3 px-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-[10%]">
                 Health
               </th>
-              <th className="py-2.5 px-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-[10%]">
-                Status
-              </th>
-              <th className="py-2.5 px-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-[12%]">
+              <th className="py-3 px-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-[14%]">
                 Progress
               </th>
-              <th className="py-2.5 px-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-[10%]">
-                Dates
+              <th className="py-3 px-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-[14%]">
+                Owner
               </th>
-              <th className="py-2.5 px-3 text-center text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-[6%]">
-                Deps
+              <th className="py-3 px-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-[10%]">
+                Target Date
               </th>
+              <th className="py-3 px-3 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground w-[12%]">
+                Dependencies
+              </th>
+              <th className="py-3 px-2 w-10"></th>
             </tr>
           </thead>
           <tbody>
