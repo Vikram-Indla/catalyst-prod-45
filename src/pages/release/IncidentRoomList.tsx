@@ -322,8 +322,8 @@ export default function IncidentRoomList() {
         </div>
       </TooltipProvider>
 
-      {/* ========== TABLE CONTENT - with clear gutter from sidebar ========== */}
-      <div className="flex-1 overflow-hidden px-5 py-4">
+      {/* ========== TABLE CONTENT - clear gutter from sidebar for visual separation ========== */}
+      <div className="flex-1 overflow-hidden px-6 py-4">
         {error ? (
           <div className="flex flex-col items-center justify-center h-64 text-center">
             <AlertCircle className="h-8 w-8 text-destructive mb-3" />
