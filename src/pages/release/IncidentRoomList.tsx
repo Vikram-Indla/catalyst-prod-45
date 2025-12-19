@@ -1,28 +1,58 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Plus, Search, AlertCircle, BarChart3, LayoutDashboard, RefreshCw } from 'lucide-react';
+import { Plus, Search, AlertCircle, LayoutDashboard, RefreshCw, SlidersHorizontal, ArrowUpDown, Columns3, LayoutGrid, LayoutList } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
 import { useIncidents } from '@/hooks/useIncidents';
+import { useIncidentColumns, TableDensity } from '@/hooks/useIncidentColumns';
 import { CreateIncidentDialog } from '@/components/incidents/CreateIncidentDialog';
 import { IncidentFiltersDialog } from '@/components/incidents/IncidentFiltersDialog';
 import { IncidentListTable } from '@/components/incidents/IncidentListTable';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuCheckboxItem,
+  DropdownMenuLabel,
+} from '@/components/ui/dropdown-menu';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import type { IncidentFilters } from '@/types/incident';
 
 const PAGE_SIZE = 40;
+
+type SortField = 'created_at' | 'severity' | 'priority' | 'status';
+type SortOrder = 'asc' | 'desc';
+
+const SORT_OPTIONS: { field: SortField; label: string }[] = [
+  { field: 'created_at', label: 'Created (newest)' },
+  { field: 'severity', label: 'Severity' },
+  { field: 'priority', label: 'Priority' },
+  { field: 'status', label: 'Status' },
+];
 
 export default function IncidentRoomList() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [page, setPage] = useState(1);
+  const [sortField, setSortField] = useState<SortField>('created_at');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
   const [filters, setFilters] = useState<IncidentFilters>({
     status: [],
     severity: [],
     support_level: [],
     delivery_stage: [],
   });
+  
+  const { columns, visibleColumns, toggleColumn, resetColumns, density, setDensity } = useIncidentColumns();
   const { data: incidents, isLoading, error, refetch } = useIncidents(filters);
 
   // Handle ?create=true query param
@@ -33,28 +63,56 @@ export default function IncidentRoomList() {
     }
   }, [searchParams, setSearchParams]);
 
-  // Client-side search filter
-  const filteredIncidents = useMemo(() => {
+  // Client-side search + sort
+  const processedIncidents = useMemo(() => {
     if (!incidents) return [];
-    if (!searchQuery.trim()) return incidents;
     
-    const query = searchQuery.toLowerCase();
-    return incidents.filter(incident =>
-      incident.title.toLowerCase().includes(query) ||
-      incident.incident_key.toLowerCase().includes(query)
-    );
-  }, [incidents, searchQuery]);
+    let result = [...incidents];
+    
+    // Search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(incident =>
+        incident.title.toLowerCase().includes(query) ||
+        incident.incident_key.toLowerCase().includes(query)
+      );
+    }
+    
+    // Sort
+    result.sort((a, b) => {
+      let comparison = 0;
+      switch (sortField) {
+        case 'created_at':
+          comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+          break;
+        case 'severity':
+          const sevOrder = { SEV1: 1, SEV2: 2, SEV3: 3, SEV4: 4 };
+          comparison = (sevOrder[a.severity as keyof typeof sevOrder] || 5) - (sevOrder[b.severity as keyof typeof sevOrder] || 5);
+          break;
+        case 'priority':
+          const priOrder = { P1: 1, P2: 2, P3: 3, P4: 4 };
+          comparison = (priOrder[a.priority as keyof typeof priOrder] || 5) - (priOrder[b.priority as keyof typeof priOrder] || 5);
+          break;
+        case 'status':
+          comparison = (a.status || '').localeCompare(b.status || '');
+          break;
+      }
+      return sortOrder === 'desc' ? -comparison : comparison;
+    });
+    
+    return result;
+  }, [incidents, searchQuery, sortField, sortOrder]);
 
   // Paginate
   const paginatedIncidents = useMemo(() => {
     const start = (page - 1) * PAGE_SIZE;
-    return filteredIncidents.slice(start, start + PAGE_SIZE);
-  }, [filteredIncidents, page]);
+    return processedIncidents.slice(start, start + PAGE_SIZE);
+  }, [processedIncidents, page]);
 
   // Reset page when filters/search change
   useEffect(() => {
     setPage(1);
-  }, [searchQuery, filters]);
+  }, [searchQuery, filters, sortField, sortOrder]);
 
   // Summary counts from backend data
   const stats = useMemo(() => ({
@@ -74,19 +132,13 @@ export default function IncidentRoomList() {
     <div className="flex flex-col h-full bg-background">
       <GlobalPageHeader
         sectionLabel="RELEASE"
-        pageTitle="Incident Room"
+        pageTitle="Incident List"
         rightActions={
           <div className="flex items-center gap-2">
             <Link to="/release/incidents/dashboard">
               <Button variant="ghost" size="sm" className="h-7 px-2 text-[11px]">
                 <LayoutDashboard className="h-3 w-3 mr-1" />
                 Dashboard
-              </Button>
-            </Link>
-            <Link to="/release/incident-command-center">
-              <Button variant="ghost" size="sm" className="h-7 px-2 text-[11px]">
-                <BarChart3 className="h-3 w-3 mr-1" />
-                Command
               </Button>
             </Link>
             <Button 
@@ -101,47 +153,42 @@ export default function IncidentRoomList() {
         }
       />
 
-      {/* Search & Filter Bar */}
-      <div className="px-4 py-2.5 border-b border-border bg-background">
-        <div className="flex items-center justify-between gap-4">
-          <div className="relative flex-1 max-w-xs">
-            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground" />
-            <Input
-              placeholder="Search key or title..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-7 h-7 text-[11px]"
-            />
-          </div>
-          
-          <div className="flex items-center gap-3">
-            {/* Summary Counts - inline, subtle */}
-            <div className="flex items-center gap-4 text-[10px] text-muted-foreground">
-              <span className="flex items-center gap-1">
-                <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
-                <span className="font-medium text-foreground">{stats.critical}</span> critical
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
-                {stats.open} open
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="h-1.5 w-1.5 rounded-full bg-violet-500" />
-                {stats.toCommittee} committee
-              </span>
+      {/* ========== TOOLBAR ========== */}
+      <TooltipProvider delayDuration={300}>
+        <div className="px-4 py-2 border-b border-border bg-muted/30">
+          <div className="flex items-center justify-between gap-4">
+            {/* Left: Search */}
+            <div className="relative flex-1 max-w-sm">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <Input
+                placeholder="Search incidents by key or summary..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-8 h-8 text-xs"
+              />
             </div>
+            
+            {/* Right: Controls */}
+            <div className="flex items-center gap-2">
+              {/* Summary Counts - Subtle */}
+              <div className="hidden md:flex items-center gap-3 text-[10px] text-muted-foreground mr-2">
+                <span className="flex items-center gap-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
+                  <span className="font-medium text-foreground">{stats.critical}</span> critical
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+                  {stats.open} open
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-violet-500" />
+                  {stats.toCommittee} committee
+                </span>
+              </div>
 
-            <div className="h-4 w-px bg-border" />
+              <div className="h-4 w-px bg-border hidden md:block" />
 
-            <div className="flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 w-7 p-0"
-                onClick={() => refetch()}
-              >
-                <RefreshCw className="h-3 w-3" />
-              </Button>
+              {/* Filters */}
               <IncidentFiltersDialog filters={filters} onFiltersChange={setFilters} />
               {activeFilterCount > 0 && (
                 <Button 
@@ -153,12 +200,129 @@ export default function IncidentRoomList() {
                   Clear ({activeFilterCount})
                 </Button>
               )}
+
+              {/* Sort */}
+              <DropdownMenu>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
+                        <ArrowUpDown className="h-3.5 w-3.5" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="text-[10px]">Sort</TooltipContent>
+                </Tooltip>
+                <DropdownMenuContent align="end" className="w-40">
+                  <DropdownMenuLabel className="text-[10px] text-muted-foreground">Sort by</DropdownMenuLabel>
+                  {SORT_OPTIONS.map(opt => (
+                    <DropdownMenuItem 
+                      key={opt.field}
+                      className="text-[11px]"
+                      onClick={() => {
+                        if (sortField === opt.field) {
+                          setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
+                        } else {
+                          setSortField(opt.field);
+                          setSortOrder('desc');
+                        }
+                      }}
+                    >
+                      {opt.label}
+                      {sortField === opt.field && (
+                        <span className="ml-auto text-[9px] text-muted-foreground">
+                          {sortOrder === 'asc' ? '↑' : '↓'}
+                        </span>
+                      )}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Columns */}
+              <DropdownMenu>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
+                        <Columns3 className="h-3.5 w-3.5" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="text-[10px]">Columns</TooltipContent>
+                </Tooltip>
+                <DropdownMenuContent align="end" className="w-40">
+                  <DropdownMenuLabel className="text-[10px] text-muted-foreground">Show columns</DropdownMenuLabel>
+                  {columns.map(col => (
+                    <DropdownMenuCheckboxItem 
+                      key={col.id}
+                      className="text-[11px]"
+                      checked={col.visible}
+                      disabled={col.required}
+                      onCheckedChange={() => toggleColumn(col.id)}
+                    >
+                      {col.label}
+                    </DropdownMenuCheckboxItem>
+                  ))}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="text-[10px] text-muted-foreground" onClick={resetColumns}>
+                    Reset to default
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Density */}
+              <DropdownMenu>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
+                        {density === 'compact' ? <LayoutList className="h-3.5 w-3.5" /> : <LayoutGrid className="h-3.5 w-3.5" />}
+                      </Button>
+                    </DropdownMenuTrigger>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="text-[10px]">Density</TooltipContent>
+                </Tooltip>
+                <DropdownMenuContent align="end" className="w-32">
+                  <DropdownMenuItem 
+                    className="text-[11px]"
+                    onClick={() => setDensity('comfortable')}
+                  >
+                    <LayoutGrid className="h-3 w-3 mr-2" />
+                    Comfortable
+                    {density === 'comfortable' && <span className="ml-auto">✓</span>}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className="text-[11px]"
+                    onClick={() => setDensity('compact')}
+                  >
+                    <LayoutList className="h-3 w-3 mr-2" />
+                    Compact
+                    {density === 'compact' && <span className="ml-auto">✓</span>}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Refresh */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 w-7 p-0"
+                    onClick={() => refetch()}
+                  >
+                    <RefreshCw className="h-3.5 w-3.5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="text-[10px]">Refresh</TooltipContent>
+              </Tooltip>
             </div>
           </div>
         </div>
-      </div>
+      </TooltipProvider>
 
-      {/* Table Content */}
+      {/* ========== TABLE CONTENT ========== */}
       <div className="flex-1 overflow-hidden">
         {error ? (
           <div className="flex flex-col items-center justify-center h-64 text-center">
@@ -172,7 +336,7 @@ export default function IncidentRoomList() {
               Retry
             </Button>
           </div>
-        ) : filteredIncidents.length === 0 && !isLoading ? (
+        ) : processedIncidents.length === 0 && !isLoading ? (
           <div className="flex flex-col items-center justify-center h-64 text-center">
             <AlertCircle className="h-6 w-6 text-muted-foreground mb-2" />
             <p className="text-xs text-muted-foreground">
@@ -196,8 +360,10 @@ export default function IncidentRoomList() {
             isLoading={isLoading}
             page={page}
             pageSize={PAGE_SIZE}
-            totalCount={filteredIncidents.length}
+            totalCount={processedIncidents.length}
             onPageChange={setPage}
+            visibleColumns={visibleColumns}
+            density={density}
           />
         )}
       </div>
