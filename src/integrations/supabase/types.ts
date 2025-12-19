@@ -1717,7 +1717,7 @@ export type Database = {
           description: string | null
           due_iteration_id: string | null
           external_entity_id: string | null
-          from_feature_id: string
+          from_feature_id: string | null
           id: string
           is_cross_level_exception: boolean | null
           needed_by_date: string | null
@@ -1752,7 +1752,7 @@ export type Database = {
           target_delayed_at: string | null
           target_delayed_by: string | null
           target_delayed_reason: string | null
-          to_feature_id: string
+          to_feature_id: string | null
           type: Database["public"]["Enums"]["dependency_type"] | null
           updated_at: string | null
         }
@@ -1785,7 +1785,7 @@ export type Database = {
           description?: string | null
           due_iteration_id?: string | null
           external_entity_id?: string | null
-          from_feature_id: string
+          from_feature_id?: string | null
           id?: string
           is_cross_level_exception?: boolean | null
           needed_by_date?: string | null
@@ -1820,7 +1820,7 @@ export type Database = {
           target_delayed_at?: string | null
           target_delayed_by?: string | null
           target_delayed_reason?: string | null
-          to_feature_id: string
+          to_feature_id?: string | null
           type?: Database["public"]["Enums"]["dependency_type"] | null
           updated_at?: string | null
         }
@@ -1853,7 +1853,7 @@ export type Database = {
           description?: string | null
           due_iteration_id?: string | null
           external_entity_id?: string | null
-          from_feature_id?: string
+          from_feature_id?: string | null
           id?: string
           is_cross_level_exception?: boolean | null
           needed_by_date?: string | null
@@ -1888,7 +1888,7 @@ export type Database = {
           target_delayed_at?: string | null
           target_delayed_by?: string | null
           target_delayed_reason?: string | null
-          to_feature_id?: string
+          to_feature_id?: string | null
           type?: Database["public"]["Enums"]["dependency_type"] | null
           updated_at?: string | null
         }
