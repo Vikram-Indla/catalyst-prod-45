@@ -151,41 +151,35 @@ export default function IncidentRoomDetail() {
     );
   }
 
-  // Error - show backend error message with better UX
+  // Error - clean, production-ready error state
   if (error || !incident) {
-    const errorMessage = error instanceof Error ? error.message : 'Incident not found';
-    const isDev = import.meta.env.DEV;
+    // Try to determine incident key from URL or error context
+    const displayId = id?.startsWith('INC-') ? id : id ? `ID ${id.slice(0, 8)}...` : null;
     
     return (
       <div className="flex flex-col items-center justify-center h-full gap-4 p-6">
-        <div className="flex flex-col items-center gap-2">
+        <div className="flex flex-col items-center gap-3">
           <div className="h-12 w-12 rounded-full bg-destructive/10 flex items-center justify-center">
             <AlertTriangle className="h-6 w-6 text-destructive" />
           </div>
-          <h2 className="text-base font-semibold text-foreground">Unable to Load Incident</h2>
+          <h2 className="text-base font-semibold text-foreground">
+            Unable to Load Incident{displayId ? ` ${displayId}` : ''}
+          </h2>
           <p className="text-sm text-muted-foreground text-center max-w-md">
-            The incident you're looking for could not be found or there was an error loading it.
+            The incident could not be found or there was an error loading it. It may have been deleted or you may not have access.
           </p>
         </div>
         
-        {isDev && (
-          <div className="bg-muted/50 border border-border rounded-md px-3 py-2 text-xs text-muted-foreground font-mono max-w-md">
-            <span className="text-destructive font-medium">Debug:</span> {errorMessage}
-            <br />
-            <span className="text-muted-foreground">ID: {id || 'undefined'}</span>
-          </div>
-        )}
-        
         <div className="flex items-center gap-2 mt-2">
           <Link to="/release/incidents">
-            <Button variant="default" size="sm" className="h-8 text-xs">
-              Back to Incidents
+            <Button variant="default" size="sm" className="h-8 text-sm">
+              Back to Incident List
             </Button>
           </Link>
           <Button 
             variant="outline" 
             size="sm" 
-            className="h-8 text-xs"
+            className="h-8 text-sm"
             onClick={() => window.location.reload()}
           >
             Try Reload
