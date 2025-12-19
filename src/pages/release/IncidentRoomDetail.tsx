@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useIncident, useUpdateIncident, useAddComment } from '@/hooks/useIncidents';
+import { useIncident, useUpdateIncident, useAddComment, useReleaseVersions } from '@/hooks/useIncidents';
 import { useUploadIncidentAttachment, useDeleteIncidentAttachment, useDownloadIncidentAttachment } from '@/hooks/useIncidentAttachments';
 import { useIsWatching, useWatcherCount, useToggleWatch } from '@/hooks/useIncidentWatchers';
 import { useAvailableApprovers } from '@/hooks/useIncidentUserProfiles';
@@ -47,6 +47,7 @@ export default function IncidentRoomDetail() {
   const { data: linkedWorkItems = [] } = useIncidentWorkItems(incidentId || '');
   const unlinkWorkItem = useUnlinkWorkItem();
   const { data: incidentTeams = [] } = useIncidentTeams();
+  const { data: releaseVersions = [] } = useReleaseVersions();
 
   const queryClient = useQueryClient();
   const [railCollapsed, setRailCollapsed] = useState(false);
@@ -504,6 +505,7 @@ export default function IncidentRoomDetail() {
           reporterName={incident.reporter_name}
           deliveryStage={incident.delivery_stage}
           releaseVersion={incident.release_version}
+          releaseVersionId={incident.release_version_id || null}
           businessProcess={incident.business_process}
           serviceComponent={incident.service_component}
           projectId={incident.project_id}
@@ -516,6 +518,7 @@ export default function IncidentRoomDetail() {
           availableProjects={projects}
           availableTeams={incidentTeams}
           availableUsers={availableApprovers}
+          availableReleaseVersions={releaseVersions as any}
           onStatusChange={handleStatusChange}
           onSeverityChange={(v) => handleFieldChange('severity', v)}
           onImpactChange={(v) => handleFieldChange('impact', v)}
@@ -524,6 +527,7 @@ export default function IncidentRoomDetail() {
           onProjectChange={(projectId) => handleFieldChange('project_id', projectId)}
           onTeamChange={(teamId) => handleFieldChange('team_id', teamId)}
           onAssigneeChange={(userId) => handleFieldChange('assignee_id', userId)}
+          onReleaseVersionChange={(versionId) => handleFieldChange('release_version_id', versionId)}
           onAssignToMe={handleAssignToMe}
           onToggleCollapse={() => setRailCollapsed(!railCollapsed)}
           isSubmitting={isSubmitting}
