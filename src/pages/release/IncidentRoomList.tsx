@@ -24,7 +24,7 @@ function IncidentRow({ incident }: { incident: Incident }) {
 
   return (
     <Link
-      to={`/release/incident-room/${incident.id}`}
+      to={`/release/incidents/${incident.id}`}
       className="flex items-center gap-4 px-4 py-3 border-b border-border hover:bg-muted/50 transition-colors group"
     >
       <div className="flex-1 min-w-0">
@@ -175,7 +175,8 @@ export default function IncidentRoomList() {
         ) : error ? (
           <div className="flex flex-col items-center justify-center h-64 text-center">
             <AlertCircle className="h-8 w-8 text-destructive mb-2" />
-            <p className="text-sm text-muted-foreground">Failed to load incidents</p>
+            <p className="text-sm font-medium text-destructive mb-1">Failed to load incidents</p>
+            <p className="text-xs text-muted-foreground">{error instanceof Error ? error.message : 'Unable to fetch data from the server'}</p>
           </div>
         ) : filteredIncidents?.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 text-center">

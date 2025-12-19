@@ -81,12 +81,14 @@ export function CreateIncidentDialog({ open, onOpenChange }: CreateIncidentDialo
       toast.success('Incident created successfully');
       onOpenChange(false);
       
-      // Navigate to the new incident
+      // Redirect to detail page - incident immediately appears in list via query invalidation
       if (result?.id) {
-        navigate(`/release/incident-room/${result.id}`);
+        navigate(`/release/incidents/${result.id}`);
       }
-    } catch (error) {
-      toast.error('Failed to create incident');
+    } catch (error: any) {
+      // Show backend error message if available
+      const errorMsg = error?.message || 'Failed to create incident';
+      toast.error(errorMsg);
       console.error('Create incident error:', error);
     }
   };

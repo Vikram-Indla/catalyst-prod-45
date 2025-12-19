@@ -241,13 +241,16 @@ export default function CreateIncidentPage() {
 
       toast.success('Incident created successfully');
       
+      // Redirect to detail page - incident immediately appears in list via query invalidation
       if (result?.id) {
-        navigate(`/release/incident-room/${result.id}`);
+        navigate(`/release/incidents/${result.id}`);
       } else {
         navigate('/release/incidents');
       }
-    } catch (error) {
-      toast.error('Failed to create incident');
+    } catch (error: any) {
+      // Show backend error message if available
+      const errorMsg = error?.message || 'Failed to create incident';
+      toast.error(errorMsg);
       console.error('Create incident error:', error);
     }
   };
