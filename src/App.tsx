@@ -414,6 +414,7 @@ const App = () => (
           <Route path="/portfolio-roadmap" element={<PortfolioRoadmap />} />
           <Route path="/roadmaps" element={<Roadmaps />} />
               <Route path="/dependencies" element={<DependenciesPage />} />
+              <Route path="/reports/dependencies/maps" element={<DependencyMapsPage />} />
               <Route path="/work-spend-grid" element={<WorkSpendGrid />} />
               <Route path="/portfolio-insights" element={<EnterpriseComingSoon />} />
               <Route path="/programs/:programId/room" element={<ProgramRoom />} />
