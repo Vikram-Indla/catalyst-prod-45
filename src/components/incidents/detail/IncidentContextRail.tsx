@@ -86,6 +86,7 @@ interface IncidentContextRailProps {
   reporterName: string | null;
   deliveryStage: DeliveryStage | null;
   releaseVersion: ReleaseVersion | null;
+  releaseVersionId: string | null;
   businessProcess: BusinessProcess | null;
   serviceComponent: string | null;
   projectId: string | null;
@@ -99,6 +100,7 @@ interface IncidentContextRailProps {
   availableProjects: Project[];
   availableTeams: IncidentTeam[];
   availableUsers: IncidentUserProfile[];
+  availableReleaseVersions: ReleaseVersion[];
   // Handlers
   onStatusChange: (status: IncidentStatus) => void;
   onSeverityChange: (severity: string) => void;
@@ -108,6 +110,7 @@ interface IncidentContextRailProps {
   onProjectChange: (projectId: string) => void;
   onTeamChange: (teamId: string) => void;
   onAssigneeChange: (userId: string) => void;
+  onReleaseVersionChange: (versionId: string) => void;
   onAssignToMe: () => void;
   onToggleCollapse: () => void;
   isSubmitting: boolean;
@@ -189,6 +192,7 @@ export function IncidentContextRail({
   reporterName,
   deliveryStage,
   releaseVersion,
+  releaseVersionId,
   businessProcess,
   serviceComponent,
   projectId,
@@ -201,6 +205,7 @@ export function IncidentContextRail({
   availableProjects,
   availableTeams,
   availableUsers,
+  availableReleaseVersions,
   onStatusChange,
   onSeverityChange,
   onImpactChange,
@@ -209,6 +214,7 @@ export function IncidentContextRail({
   onProjectChange,
   onTeamChange,
   onAssigneeChange,
+  onReleaseVersionChange,
   onAssignToMe,
   onToggleCollapse,
   isSubmitting,
@@ -420,6 +426,39 @@ export function IncidentContextRail({
                 </SelectContent>
               </Select>
             </FieldRow>
+
+            {/* Reporter */}
+            <FieldRow label="Reporter">
+              <div className="flex items-center gap-2 p-2 bg-muted/30 rounded-md">
+                <Avatar className="h-6 w-6">
+                  <AvatarFallback className="text-[10px] bg-muted text-muted-foreground">
+                    {reporter?.avatar_initials || 
+                     reporter?.full_name?.slice(0, 2) ||
+                     reporterName?.charAt(0) || 
+                     'U'}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="text-sm font-medium truncate">
+                  {reporter?.full_name || reporterName || 'Unknown'}
+                </span>
+              </div>
+            </FieldRow>
+
+            {/* Created & Updated */}
+            <div className="grid grid-cols-2 gap-3">
+              <FieldRow label="Created">
+                <div className="flex items-center gap-1.5 text-sm">
+                  <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+                  {formatDate(createdAt)}
+                </div>
+              </FieldRow>
+              <FieldRow label="Updated">
+                <div className="flex items-center gap-1.5 text-sm">
+                  <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                  {formatDate(updatedAt)}
+                </div>
+              </FieldRow>
+            </div>
           </AccordionSection>
 
           {/* ========== SECTION 2: SLA HEALTH (expanded by default) ========== */}
@@ -633,64 +672,39 @@ export function IncidentContextRail({
 
             {/* Release Version */}
             <FieldRow label="Release Version">
-              <div className="flex items-center gap-2 p-2 bg-muted/30 rounded-md">
-                <Cog className="h-3.5 w-3.5 text-muted-foreground" />
-                {releaseVersion ? (
-                  <span className="text-sm font-medium">
-                    {releaseVersion.version}
-                    {releaseVersion.name && ` — ${releaseVersion.name}`}
-                  </span>
-                ) : (
-                  <span className="text-sm text-muted-foreground">Not specified</span>
-                )}
-              </div>
+              <Select 
+                value={releaseVersionId || 'none'} 
+                onValueChange={(v) => onReleaseVersionChange(v === 'none' ? '' : v)}
+                disabled={isConverted}
+              >
+                <SelectTrigger className="h-8 text-sm">
+                  <SelectValue placeholder="Select version" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none" className="text-sm text-muted-foreground">
+                    Not specified
+                  </SelectItem>
+                  {availableReleaseVersions.map(version => (
+                    <SelectItem key={version.id} value={version.id} className="text-sm">
+                      {version.version}{version.name ? ` — ${version.name}` : ''}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </FieldRow>
           </AccordionSection>
 
-          {/* ========== SECTION 5: REPORTER & METADATA ========== */}
-          <AccordionSection title="Reporter & Metadata" icon={Calendar}>
-            {/* Reporter */}
-            <FieldRow label="Reporter">
-              <div className="flex items-center gap-2 p-2 bg-muted/30 rounded-md">
-                <Avatar className="h-6 w-6">
-                  <AvatarFallback className="text-[10px] bg-muted text-muted-foreground">
-                    {reporter?.avatar_initials || 
-                     reporter?.full_name?.slice(0, 2) ||
-                     reporterName?.charAt(0) || 
-                     'U'}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="text-sm font-medium truncate">
-                  {reporter?.full_name || reporterName || 'Unknown'}
-                </span>
-              </div>
-            </FieldRow>
-
-            {/* Dates */}
-            <div className="grid grid-cols-2 gap-3">
-              <FieldRow label="Created">
-                <div className="flex items-center gap-1.5 text-sm">
-                  <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
-                  {formatDate(createdAt)}
-                </div>
-              </FieldRow>
-              <FieldRow label="Updated">
-                <div className="flex items-center gap-1.5 text-sm">
-                  <Clock className="h-3.5 w-3.5 text-muted-foreground" />
-                  {formatDate(updatedAt)}
-                </div>
-              </FieldRow>
-            </div>
-
-            {/* Support Level */}
-            {supportLevel && (
-              <FieldRow label="Support Level">
-                <Badge variant="outline" className="text-sm px-2 py-1">
+          {/* Support Level (if present) */}
+          {supportLevel && (
+            <div className="px-3 py-2 border border-border rounded-lg bg-background">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">Support Level</span>
+                <Badge variant="outline" className="text-xs px-2 py-0.5">
                   {supportLevel} — {supportLevel === 'L1' ? 'Frontline' : supportLevel === 'L2' ? 'Technical' : 'Specialist'}
                 </Badge>
-              </FieldRow>
-            )}
-          </AccordionSection>
+              </div>
+            </div>
+          )}
         </div>
       </aside>
     </TooltipProvider>
