@@ -20,24 +20,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { canConvertIncident } from '@/utils/incidentLifecycle';
-
-// Status pills configuration
-const STATUS_CONFIG: Record<IncidentStatus, { label: string; className: string }> = {
-  open: { label: 'New', className: 'bg-blue-100 text-blue-800' },
-  triage: { label: 'Triage', className: 'bg-yellow-100 text-yellow-800' },
-  to_committee: { label: 'To Committee', className: 'bg-purple-100 text-purple-800' },
-  in_progress: { label: 'In Progress', className: 'bg-cyan-100 text-cyan-800' },
-  resolved: { label: 'Resolved', className: 'bg-green-100 text-green-800' },
-  converted: { label: 'Converted', className: 'bg-secondary-green/20 text-secondary-green' },
-  closed: { label: 'Closed', className: 'bg-muted text-muted-foreground' },
-};
-
-const SEVERITY_CONFIG = {
-  SEV1: { label: 'SEV1', className: 'bg-red-100 text-red-800 border-red-200' },
-  SEV2: { label: 'SEV2', className: 'bg-orange-100 text-orange-800 border-orange-200' },
-  SEV3: { label: 'SEV3', className: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
-  SEV4: { label: 'SEV4', className: 'bg-blue-100 text-blue-800 border-blue-200' },
-};
+import { STATUS_CONFIG, SEVERITY_CONFIG } from '@/components/incidents/badges/IncidentBadges';
 
 export default function IncidentRoomDetail() {
   const { id } = useParams<{ id: string }>();

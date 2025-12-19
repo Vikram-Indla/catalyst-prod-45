@@ -12,3 +12,4 @@ export { IncidentTimeline } from './IncidentTimeline';
 export { IncidentAttachments } from './IncidentAttachments';
 export { SlaStatusCard } from './SlaStatusCard';
 export { default as IncidentDetailModal } from './modal/IncidentDetailModal';
+export * from './badges/IncidentBadges';

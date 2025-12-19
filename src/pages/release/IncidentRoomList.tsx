@@ -9,25 +9,14 @@ import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
 import { useIncidents } from '@/hooks/useIncidents';
 import { CreateIncidentDialog } from '@/components/incidents/CreateIncidentDialog';
 import { IncidentFiltersDialog } from '@/components/incidents/IncidentFiltersDialog';
-import type { Incident, IncidentStatus, SeverityLevel, IncidentFilters } from '@/types/incident';
+import type { Incident, IncidentFilters } from '@/types/incident';
 import { cn } from '@/lib/utils';
-
-const STATUS_CONFIG: Record<IncidentStatus, { label: string; className: string }> = {
-  open: { label: 'Open', className: 'bg-blue-100 text-blue-800 border-blue-200' },
-  triage: { label: 'Triage', className: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
-  to_committee: { label: 'To Committee', className: 'bg-purple-100 text-purple-800 border-purple-200' },
-  in_progress: { label: 'In Progress', className: 'bg-cyan-100 text-cyan-800 border-cyan-200' },
-  resolved: { label: 'Resolved', className: 'bg-green-100 text-green-800 border-green-200' },
-  converted: { label: 'Converted', className: 'bg-secondary-green/20 text-secondary-green border-secondary-green/30' },
-  closed: { label: 'Closed', className: 'bg-muted text-muted-foreground border-border' },
-};
-
-const SEVERITY_CONFIG: Record<SeverityLevel, { label: string; className: string }> = {
-  SEV1: { label: 'SEV1', className: 'bg-red-100 text-red-800 border-red-200' },
-  SEV2: { label: 'SEV2', className: 'bg-orange-100 text-orange-800 border-orange-200' },
-  SEV3: { label: 'SEV3', className: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
-  SEV4: { label: 'SEV4', className: 'bg-blue-100 text-blue-800 border-blue-200' },
-};
+import { 
+  STATUS_CONFIG, 
+  SEVERITY_CONFIG,
+  StatusBadge,
+  SeverityBadge 
+} from '@/components/incidents/badges/IncidentBadges';
 
 function IncidentRow({ incident }: { incident: Incident }) {
   const statusConfig = STATUS_CONFIG[incident.status];
