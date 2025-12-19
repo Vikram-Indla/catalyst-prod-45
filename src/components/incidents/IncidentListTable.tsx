@@ -42,7 +42,7 @@ interface IncidentListTableProps {
   density?: TableDensity;
 }
 
-// Enterprise-grade MUTED badge configs — text-first, color-secondary
+// Status: The ONLY element that gets a pill treatment
 const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
   open: { label: 'Open', className: 'bg-muted text-foreground border-border' },
   triage: { label: 'Triage', className: 'bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800' },
@@ -53,80 +53,80 @@ const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
   closed: { label: 'Closed', className: 'bg-muted text-muted-foreground border-border' },
 };
 
-// Severity: Calm, not alarming. Use subtle tints.
-const SEVERITY_CONFIG: Record<string, { label: string; className: string; tooltip: string }> = {
-  SEV1: { label: 'SEV1', className: 'bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800', tooltip: 'Critical' },
-  SEV2: { label: 'SEV2', className: 'bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800', tooltip: 'High' },
-  SEV3: { label: 'SEV3', className: 'bg-muted text-muted-foreground border-border', tooltip: 'Medium' },
-  SEV4: { label: 'SEV4', className: 'bg-muted text-muted-foreground border-border', tooltip: 'Low' },
+// Severity: Dot + text, NOT a pill
+const SEVERITY_CONFIG: Record<string, { label: string; dotClass: string; tooltip: string }> = {
+  SEV1: { label: 'SEV1', dotClass: 'bg-rose-500', tooltip: 'Critical' },
+  SEV2: { label: 'SEV2', dotClass: 'bg-amber-500', tooltip: 'High' },
+  SEV3: { label: 'SEV3', dotClass: 'bg-muted-foreground', tooltip: 'Medium' },
+  SEV4: { label: 'SEV4', dotClass: 'bg-muted-foreground/50', tooltip: 'Low' },
 };
 
-// Priority: Minimal visual weight
+// Priority: Simple text with subtle color
 const PRIORITY_CONFIG: Record<string, { label: string; className: string; tooltip: string }> = {
-  P1: { label: 'P1', className: 'bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800', tooltip: 'Highest' },
-  P2: { label: 'P2', className: 'bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800', tooltip: 'High' },
-  P3: { label: 'P3', className: 'bg-muted text-muted-foreground border-border', tooltip: 'Medium' },
-  P4: { label: 'P4', className: 'bg-muted text-muted-foreground border-border', tooltip: 'Low' },
+  P1: { label: 'P1', className: 'text-rose-600 dark:text-rose-400 font-semibold', tooltip: 'Highest' },
+  P2: { label: 'P2', className: 'text-amber-600 dark:text-amber-400 font-medium', tooltip: 'High' },
+  P3: { label: 'P3', className: 'text-muted-foreground', tooltip: 'Medium' },
+  P4: { label: 'P4', className: 'text-muted-foreground/70', tooltip: 'Low' },
 };
 
-// Support Level: Purely informational
+// Support Level: Plain text
 const SUPPORT_CONFIG: Record<string, { label: string; tooltip: string }> = {
   L1: { label: 'L1', tooltip: 'Frontline Support' },
   L2: { label: 'L2', tooltip: 'Technical Support' },
   L3: { label: 'L3', tooltip: 'Specialist / CAP' },
 };
 
-// SLA config with proper states
+// SLA states
 const SLA_CONFIG = {
-  breached: { label: 'Breached', className: 'text-rose-600 dark:text-rose-400', tooltip: 'SLA breached - response or resolution time exceeded' },
+  breached: { label: 'Breached', className: 'text-rose-600 dark:text-rose-400 font-medium', tooltip: 'SLA breached - response or resolution time exceeded' },
   at_risk: { label: 'At risk', className: 'text-amber-600 dark:text-amber-400', tooltip: 'SLA at risk - approaching deadline' },
   on_track: { label: 'On track', className: 'text-emerald-600 dark:text-emerald-400', tooltip: 'SLA on track - within acceptable timeframe' },
 };
 
-// Default columns if not provided
+// Default columns
 const DEFAULT_VISIBLE_COLUMNS: ColumnConfig[] = [
-  { id: 'key', label: 'Key', visible: true, minWidth: '100px', required: true },
+  { id: 'key', label: 'Key', visible: true, minWidth: '110px', required: true },
   { id: 'summary', label: 'Summary', visible: true, required: true },
-  { id: 'severity', label: 'Sev', visible: true, width: '52px' },
-  { id: 'priority', label: 'Pri', visible: true, width: '44px' },
-  { id: 'level', label: 'Lvl', visible: true, width: '40px' },
-  { id: 'status', label: 'Status', visible: true, minWidth: '90px' },
-  { id: 'assignee', label: 'Assignee', visible: true, width: '120px' },
-  { id: 'age', label: 'Age', visible: true, width: '52px' },
-  { id: 'sla', label: 'SLA', visible: true, width: '70px' },
+  { id: 'severity', label: 'Sev', visible: true, width: '60px' },
+  { id: 'priority', label: 'Pri', visible: true, width: '40px' },
+  { id: 'level', label: 'Lvl', visible: true, width: '36px' },
+  { id: 'status', label: 'Status', visible: true, minWidth: '100px' },
+  { id: 'assignee', label: 'Assignee', visible: true, width: '140px' },
+  { id: 'age', label: 'Age', visible: true, width: '56px' },
+  { id: 'sla', label: 'SLA', visible: true, width: '80px' },
 ];
 
 function LoadingSkeleton({ density }: { density: TableDensity }) {
-  const py = density === 'compact' ? 'py-1' : 'py-1.5';
+  const py = density === 'compact' ? 'py-2' : 'py-2.5';
   return (
     <Table>
       <TableHeader className="sticky top-0 bg-background z-10 border-b">
         <TableRow className="hover:bg-transparent">
-          <TableHead className="w-[100px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Key</TableHead>
-          <TableHead className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Summary</TableHead>
-          <TableHead className="w-[52px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Sev</TableHead>
-          <TableHead className="w-[44px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Pri</TableHead>
-          <TableHead className="w-[40px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Lvl</TableHead>
-          <TableHead className="w-[90px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Status</TableHead>
-          <TableHead className="w-[120px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Assignee</TableHead>
-          <TableHead className="w-[52px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Age</TableHead>
-          <TableHead className="w-[70px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">SLA</TableHead>
-          <TableHead className="w-[36px] h-8"></TableHead>
+          <TableHead className="w-[110px] text-xs font-medium uppercase tracking-wide text-muted-foreground h-9 px-3">Key</TableHead>
+          <TableHead className="text-xs font-medium uppercase tracking-wide text-muted-foreground h-9 px-3">Summary</TableHead>
+          <TableHead className="w-[60px] text-xs font-medium uppercase tracking-wide text-muted-foreground h-9 px-3">Sev</TableHead>
+          <TableHead className="w-[40px] text-xs font-medium uppercase tracking-wide text-muted-foreground h-9 px-3">Pri</TableHead>
+          <TableHead className="w-[36px] text-xs font-medium uppercase tracking-wide text-muted-foreground h-9 px-3">Lvl</TableHead>
+          <TableHead className="w-[100px] text-xs font-medium uppercase tracking-wide text-muted-foreground h-9 px-3">Status</TableHead>
+          <TableHead className="w-[140px] text-xs font-medium uppercase tracking-wide text-muted-foreground h-9 px-3">Assignee</TableHead>
+          <TableHead className="w-[56px] text-xs font-medium uppercase tracking-wide text-muted-foreground h-9 px-3">Age</TableHead>
+          <TableHead className="w-[80px] text-xs font-medium uppercase tracking-wide text-muted-foreground h-9 px-3">SLA</TableHead>
+          <TableHead className="w-[40px] h-9"></TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {[...Array(12)].map((_, i) => (
-          <TableRow key={i} className="border-b border-border/40">
-            <TableCell className={cn(py, "px-3")}><Skeleton className="h-3.5 w-14" /></TableCell>
-            <TableCell className={cn(py, "px-3")}><Skeleton className="h-3.5 w-full max-w-sm" /></TableCell>
-            <TableCell className={cn(py, "px-3")}><Skeleton className="h-4 w-10" /></TableCell>
-            <TableCell className={cn(py, "px-3")}><Skeleton className="h-4 w-7" /></TableCell>
-            <TableCell className={cn(py, "px-3")}><Skeleton className="h-3.5 w-5" /></TableCell>
+        {[...Array(15)].map((_, i) => (
+          <TableRow key={i} className="border-b border-border/50">
             <TableCell className={cn(py, "px-3")}><Skeleton className="h-4 w-16" /></TableCell>
-            <TableCell className={cn(py, "px-3")}><Skeleton className="h-3.5 w-20" /></TableCell>
-            <TableCell className={cn(py, "px-3")}><Skeleton className="h-3.5 w-8" /></TableCell>
-            <TableCell className={cn(py, "px-3")}><Skeleton className="h-3.5 w-12" /></TableCell>
-            <TableCell className={cn(py, "px-3")}><Skeleton className="h-3.5 w-4" /></TableCell>
+            <TableCell className={cn(py, "px-3")}><Skeleton className="h-4 w-full max-w-md" /></TableCell>
+            <TableCell className={cn(py, "px-3")}><Skeleton className="h-4 w-10" /></TableCell>
+            <TableCell className={cn(py, "px-3")}><Skeleton className="h-4 w-6" /></TableCell>
+            <TableCell className={cn(py, "px-3")}><Skeleton className="h-4 w-5" /></TableCell>
+            <TableCell className={cn(py, "px-3")}><Skeleton className="h-5 w-20" /></TableCell>
+            <TableCell className={cn(py, "px-3")}><Skeleton className="h-4 w-24" /></TableCell>
+            <TableCell className={cn(py, "px-3")}><Skeleton className="h-4 w-8" /></TableCell>
+            <TableCell className={cn(py, "px-3")}><Skeleton className="h-4 w-14" /></TableCell>
+            <TableCell className={cn(py, "px-3")}><Skeleton className="h-4 w-4" /></TableCell>
           </TableRow>
         ))}
       </TableBody>
@@ -147,8 +147,9 @@ export function IncidentListTable({
   const navigate = useNavigate();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   
-  const py = density === 'compact' ? 'py-1' : 'py-1.5';
-  const textSize = density === 'compact' ? 'text-[10px]' : 'text-[11px]';
+  // Typography: Match Catalyst shell (text-sm = 14px for body)
+  const py = density === 'compact' ? 'py-2' : 'py-2.5';
+  const textSize = density === 'compact' ? 'text-xs' : 'text-sm';
   
   if (isLoading) {
     return <LoadingSkeleton density={density} />;
@@ -159,6 +160,10 @@ export function IncidentListTable({
   const handleRowClick = (incidentId: string, e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
     if (target.closest('button') || target.closest('a') || target.closest('[role="menu"]')) {
+      return;
+    }
+    if (!incidentId) {
+      toast.error('Cannot open incident: missing identifier');
       return;
     }
     navigate(`/release/incidents/${incidentId}`);
@@ -173,8 +178,6 @@ export function IncidentListTable({
   const getSlaStatus = (incident: Incident) => {
     const breached = incident.sla?.response_breached || incident.sla?.resolution_breached;
     if (breached) return 'breached';
-    // Simple at-risk logic: if SLA exists and not breached
-    // In a real app, this would check proximity to deadline
     if (incident.sla) return 'on_track';
     return null;
   };
@@ -187,42 +190,42 @@ export function IncidentListTable({
             <TableHeader className="sticky top-0 bg-background z-10 border-b">
               <TableRow className="hover:bg-transparent">
                 {isColumnVisible('key') && (
-                  <TableHead className="w-[100px] min-w-[100px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Key</TableHead>
+                  <TableHead className="w-[110px] min-w-[110px] text-xs font-medium uppercase tracking-wide text-muted-foreground h-9 px-3">Key</TableHead>
                 )}
                 {isColumnVisible('summary') && (
-                  <TableHead className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Summary</TableHead>
+                  <TableHead className="text-xs font-medium uppercase tracking-wide text-muted-foreground h-9 px-3">Summary</TableHead>
                 )}
                 {isColumnVisible('severity') && (
-                  <TableHead className="w-[52px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Sev</TableHead>
+                  <TableHead className="w-[60px] text-xs font-medium uppercase tracking-wide text-muted-foreground h-9 px-3">Sev</TableHead>
                 )}
                 {isColumnVisible('priority') && (
-                  <TableHead className="w-[44px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Pri</TableHead>
+                  <TableHead className="w-[40px] text-xs font-medium uppercase tracking-wide text-muted-foreground h-9 px-3">Pri</TableHead>
                 )}
                 {isColumnVisible('level') && (
-                  <TableHead className="w-[40px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Lvl</TableHead>
+                  <TableHead className="w-[36px] text-xs font-medium uppercase tracking-wide text-muted-foreground h-9 px-3">Lvl</TableHead>
                 )}
                 {isColumnVisible('status') && (
-                  <TableHead className="w-[90px] min-w-[90px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Status</TableHead>
+                  <TableHead className="w-[100px] min-w-[100px] text-xs font-medium uppercase tracking-wide text-muted-foreground h-9 px-3">Status</TableHead>
                 )}
                 {isColumnVisible('assignee') && (
-                  <TableHead className="w-[120px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Assignee</TableHead>
+                  <TableHead className="w-[140px] text-xs font-medium uppercase tracking-wide text-muted-foreground h-9 px-3">Assignee</TableHead>
                 )}
                 {isColumnVisible('age') && (
-                  <TableHead className="w-[52px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3 text-right">Age</TableHead>
+                  <TableHead className="w-[56px] text-xs font-medium uppercase tracking-wide text-muted-foreground h-9 px-3 text-right">Age</TableHead>
                 )}
                 {isColumnVisible('sla') && (
-                  <TableHead className="w-[70px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">SLA</TableHead>
+                  <TableHead className="w-[80px] text-xs font-medium uppercase tracking-wide text-muted-foreground h-9 px-3">SLA</TableHead>
                 )}
                 {isColumnVisible('releaseVersion') && (
-                  <TableHead className="w-[100px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Release</TableHead>
+                  <TableHead className="w-[100px] text-xs font-medium uppercase tracking-wide text-muted-foreground h-9 px-3">Release</TableHead>
                 )}
                 {isColumnVisible('major') && (
-                  <TableHead className="w-[56px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Major</TableHead>
+                  <TableHead className="w-[56px] text-xs font-medium uppercase tracking-wide text-muted-foreground h-9 px-3">Major</TableHead>
                 )}
                 {isColumnVisible('committee') && (
-                  <TableHead className="w-[80px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Committee</TableHead>
+                  <TableHead className="w-[80px] text-xs font-medium uppercase tracking-wide text-muted-foreground h-9 px-3">Committee</TableHead>
                 )}
-                <TableHead className="w-[36px] h-8"></TableHead>
+                <TableHead className="w-[40px] h-9"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -240,20 +243,20 @@ export function IncidentListTable({
                   <TableRow 
                     key={incident.id} 
                     className={cn(
-                      'group cursor-pointer border-b border-border/40 transition-colors',
-                      'hover:bg-muted/40',
-                      isSelected && 'bg-muted/60'
+                      'group cursor-pointer border-b border-border/50 transition-colors',
+                      'hover:bg-muted/50',
+                      isSelected && 'bg-muted/70'
                     )}
                     onClick={(e) => handleRowClick(incident.id, e)}
                     tabIndex={0}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') navigate(`/release/incidents/${incident.id}`);
+                      if (e.key === 'Enter' && incident.id) navigate(`/release/incidents/${incident.id}`);
                     }}
                   >
                     {/* Key - Never wrap */}
                     {isColumnVisible('key') && (
                       <TableCell className={cn(py, "px-3 whitespace-nowrap")}>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1.5">
                           <Link 
                             to={`/release/incidents/${incident.id}`} 
                             className={cn(textSize, "font-medium text-primary hover:underline")}
@@ -264,9 +267,9 @@ export function IncidentListTable({
                           {incident.is_major_incident && (
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <AlertTriangle className="h-3 w-3 text-amber-500 flex-shrink-0" />
+                                <AlertTriangle className="h-3.5 w-3.5 text-amber-500 flex-shrink-0" />
                               </TooltipTrigger>
-                              <TooltipContent side="right" className="text-[10px]">
+                              <TooltipContent side="right" className="text-xs">
                                 Major Incident
                               </TooltipContent>
                             </Tooltip>
@@ -282,73 +285,68 @@ export function IncidentListTable({
                           <TooltipTrigger asChild>
                             <span className={cn(textSize, "text-foreground line-clamp-1 cursor-default")}>{incident.title}</span>
                           </TooltipTrigger>
-                          <TooltipContent side="top" className="text-[10px] max-w-sm">{incident.title}</TooltipContent>
+                          <TooltipContent side="top" className="text-xs max-w-md">{incident.title}</TooltipContent>
                         </Tooltip>
                       </TableCell>
                     )}
                     
-                    {/* Severity */}
+                    {/* Severity - Dot + text, NOT a pill */}
                     {isColumnVisible('severity') && (
                       <TableCell className={cn(py, "px-3")}>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Badge 
-                              variant="outline" 
-                              className={cn('text-[9px] px-1 py-0 h-4 font-medium border', severityConfig.className)}
-                            >
-                              {severityConfig.label}
-                            </Badge>
+                            <div className="flex items-center gap-1.5 cursor-default">
+                              <span className={cn('h-2 w-2 rounded-full flex-shrink-0', severityConfig.dotClass)} />
+                              <span className="text-xs text-muted-foreground">{severityConfig.label}</span>
+                            </div>
                           </TooltipTrigger>
-                          <TooltipContent side="top" className="text-[10px]">Severity: {severityConfig.tooltip}</TooltipContent>
+                          <TooltipContent side="top" className="text-xs">Severity: {severityConfig.tooltip}</TooltipContent>
                         </Tooltip>
                       </TableCell>
                     )}
                     
-                    {/* Priority */}
+                    {/* Priority - Plain text with color */}
                     {isColumnVisible('priority') && (
                       <TableCell className={cn(py, "px-3")}>
                         {priorityConfig ? (
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <Badge 
-                                variant="outline" 
-                                className={cn('text-[9px] px-1 py-0 h-4 font-medium border', priorityConfig.className)}
-                              >
+                              <span className={cn('text-xs cursor-default', priorityConfig.className)}>
                                 {priorityConfig.label}
-                              </Badge>
+                              </span>
                             </TooltipTrigger>
-                            <TooltipContent side="top" className="text-[10px]">Priority: {priorityConfig.tooltip}</TooltipContent>
+                            <TooltipContent side="top" className="text-xs">Priority: {priorityConfig.tooltip}</TooltipContent>
                           </Tooltip>
                         ) : (
-                          <span className="text-[9px] text-muted-foreground">—</span>
+                          <span className="text-xs text-muted-foreground/50">—</span>
                         )}
                       </TableCell>
                     )}
                     
-                    {/* Support Level - Text only */}
+                    {/* Support Level - Plain text */}
                     {isColumnVisible('level') && (
                       <TableCell className={cn(py, "px-3")}>
                         {supportConfig ? (
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <span className="text-[10px] font-medium text-muted-foreground cursor-default">
+                              <span className="text-xs text-muted-foreground cursor-default">
                                 {supportConfig.label}
                               </span>
                             </TooltipTrigger>
-                            <TooltipContent side="top" className="text-[10px]">Support Level: {supportConfig.tooltip}</TooltipContent>
+                            <TooltipContent side="top" className="text-xs">Support Level: {supportConfig.tooltip}</TooltipContent>
                           </Tooltip>
                         ) : (
-                          <span className="text-[9px] text-muted-foreground">—</span>
+                          <span className="text-xs text-muted-foreground/50">—</span>
                         )}
                       </TableCell>
                     )}
                     
-                    {/* Status - Primary badge, never wrap */}
+                    {/* Status - Primary badge (ONLY pill in the row) */}
                     {isColumnVisible('status') && (
                       <TableCell className={cn(py, "px-3 whitespace-nowrap")}>
                         <Badge 
                           variant="outline" 
-                          className={cn('text-[9px] px-1.5 py-0 h-4 font-medium border whitespace-nowrap', statusConfig.className)}
+                          className={cn('text-xs px-2 py-0.5 h-5 font-medium border whitespace-nowrap', statusConfig.className)}
                         >
                           {statusConfig.label}
                         </Badge>
@@ -359,18 +357,18 @@ export function IncidentListTable({
                     {isColumnVisible('assignee') && (
                       <TableCell className={cn(py, "px-3")}>
                         {incident.assignee ? (
-                          <div className="flex items-center gap-1.5">
-                            <div className="h-4 w-4 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
-                              <span className="text-[8px] font-medium text-muted-foreground">
+                          <div className="flex items-center gap-2">
+                            <div className="h-5 w-5 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+                              <span className="text-[10px] font-medium text-muted-foreground">
                                 {incident.assignee.avatar_initials || incident.assignee.full_name?.charAt(0) || 'U'}
                               </span>
                             </div>
-                            <span className={cn(textSize, "text-foreground truncate max-w-[80px]")}>
+                            <span className={cn(textSize, "text-foreground truncate max-w-[100px]")}>
                               {incident.assignee.full_name}
                             </span>
                           </div>
                         ) : (
-                          <span className="text-[10px] text-muted-foreground">Unassigned</span>
+                          <span className="text-xs text-muted-foreground/70">Unassigned</span>
                         )}
                       </TableCell>
                     )}
@@ -378,27 +376,27 @@ export function IncidentListTable({
                     {/* Age - Right aligned */}
                     {isColumnVisible('age') && (
                       <TableCell className={cn(py, "px-3 text-right")}>
-                        <div className="flex items-center justify-end gap-0.5 text-[10px] text-muted-foreground">
-                          <Clock className="h-2.5 w-2.5" />
+                        <div className="flex items-center justify-end gap-1 text-xs text-muted-foreground">
+                          <Clock className="h-3 w-3" />
                           {age}
                         </div>
                       </TableCell>
                     )}
                     
-                    {/* SLA - With proper states */}
+                    {/* SLA */}
                     {isColumnVisible('sla') && (
                       <TableCell className={cn(py, "px-3")}>
                         {slaConfig ? (
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <span className={cn('text-[9px] font-medium cursor-default', slaConfig.className)}>
+                              <span className={cn('text-xs cursor-default', slaConfig.className)}>
                                 {slaConfig.label}
                               </span>
                             </TooltipTrigger>
-                            <TooltipContent side="top" className="text-[10px]">{slaConfig.tooltip}</TooltipContent>
+                            <TooltipContent side="top" className="text-xs max-w-xs">{slaConfig.tooltip}</TooltipContent>
                           </Tooltip>
                         ) : (
-                          <span className="text-[9px] text-muted-foreground">—</span>
+                          <span className="text-xs text-muted-foreground/50">—</span>
                         )}
                       </TableCell>
                     )}
@@ -406,7 +404,7 @@ export function IncidentListTable({
                     {/* Optional: Release Version */}
                     {isColumnVisible('releaseVersion') && (
                       <TableCell className={cn(py, "px-3")}>
-                        <span className="text-[10px] text-muted-foreground truncate">
+                        <span className="text-xs text-muted-foreground truncate">
                           {incident.release_version?.version || '—'}
                         </span>
                       </TableCell>
@@ -416,11 +414,9 @@ export function IncidentListTable({
                     {isColumnVisible('major') && (
                       <TableCell className={cn(py, "px-3")}>
                         {incident.is_major_incident ? (
-                          <Badge variant="outline" className="text-[9px] px-1 py-0 h-4 bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800">
-                            Yes
-                          </Badge>
+                          <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">Yes</span>
                         ) : (
-                          <span className="text-[9px] text-muted-foreground">—</span>
+                          <span className="text-xs text-muted-foreground/50">—</span>
                         )}
                       </TableCell>
                     )}
@@ -429,11 +425,11 @@ export function IncidentListTable({
                     {isColumnVisible('committee') && (
                       <TableCell className={cn(py, "px-3")}>
                         {incident.committee ? (
-                          <span className="text-[10px] text-muted-foreground capitalize">
+                          <span className="text-xs text-muted-foreground capitalize">
                             {incident.committee.status}
                           </span>
                         ) : (
-                          <span className="text-[9px] text-muted-foreground">—</span>
+                          <span className="text-xs text-muted-foreground/50">—</span>
                         )}
                       </TableCell>
                     )}
@@ -445,60 +441,60 @@ export function IncidentListTable({
                           <Button 
                             variant="ghost" 
                             size="sm" 
-                            className="h-5 w-5 p-0 opacity-0 group-hover:opacity-100 focus:opacity-100 data-[state=open]:opacity-100"
+                            className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 focus:opacity-100 data-[state=open]:opacity-100"
                           >
-                            <MoreHorizontal className="h-3 w-3" />
+                            <MoreHorizontal className="h-3.5 w-3.5" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-32">
+                        <DropdownMenuContent align="end" className="w-36">
                           <DropdownMenuItem 
-                            className="text-[11px] cursor-pointer"
+                            className="text-xs cursor-pointer"
                             onClick={(e) => {
                               e.stopPropagation();
                               navigate(`/release/incidents/${incident.id}`);
                             }}
                           >
-                            <Eye className="h-3 w-3 mr-2" />
+                            <Eye className="h-3.5 w-3.5 mr-2" />
                             View
                           </DropdownMenuItem>
                           <DropdownMenuItem 
-                            className="text-[11px] cursor-pointer"
+                            className="text-xs cursor-pointer"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleCopyLink(incident.id, incident.incident_key);
                             }}
                           >
-                            <Copy className="h-3 w-3 mr-2" />
+                            <Copy className="h-3.5 w-3.5 mr-2" />
                             Copy link
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <DropdownMenuItem 
-                                className="text-[11px] cursor-not-allowed opacity-50"
+                                className="text-xs cursor-not-allowed opacity-50"
                                 disabled
                                 onClick={(e) => e.stopPropagation()}
                               >
-                                <Pencil className="h-3 w-3 mr-2" />
+                                <Pencil className="h-3.5 w-3.5 mr-2" />
                                 Edit
                               </DropdownMenuItem>
                             </TooltipTrigger>
-                            <TooltipContent side="left" className="text-[10px]">
+                            <TooltipContent side="left" className="text-xs">
                               Insufficient permissions
                             </TooltipContent>
                           </Tooltip>
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <DropdownMenuItem 
-                                className="text-[11px] text-destructive cursor-not-allowed opacity-50"
+                                className="text-xs text-destructive cursor-not-allowed opacity-50"
                                 disabled
                                 onClick={(e) => e.stopPropagation()}
                               >
-                                <Trash2 className="h-3 w-3 mr-2" />
+                                <Trash2 className="h-3.5 w-3.5 mr-2" />
                                 Delete
                               </DropdownMenuItem>
                             </TooltipTrigger>
-                            <TooltipContent side="left" className="text-[10px]">
+                            <TooltipContent side="left" className="text-xs">
                               Insufficient permissions
                             </TooltipContent>
                           </Tooltip>
@@ -514,8 +510,8 @@ export function IncidentListTable({
 
         {/* Pagination Footer */}
         {totalCount !== undefined && totalCount > 0 && (
-          <div className="flex items-center justify-between px-3 py-1.5 border-t border-border bg-muted/30 flex-shrink-0">
-            <span className="text-[10px] text-muted-foreground">
+          <div className="flex items-center justify-between px-3 py-2 border-t border-border bg-muted/30 flex-shrink-0">
+            <span className="text-xs text-muted-foreground">
               {totalCount > pageSize 
                 ? `${((page - 1) * pageSize) + 1}–${Math.min(page * pageSize, totalCount)} of ${totalCount}`
                 : `${totalCount} incident${totalCount !== 1 ? 's' : ''}`
@@ -526,19 +522,19 @@ export function IncidentListTable({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-6 px-2 text-[10px]"
+                  className="h-7 px-3 text-xs"
                   disabled={page <= 1}
                   onClick={() => onPageChange(page - 1)}
                 >
                   Prev
                 </Button>
-                <span className="text-[10px] text-muted-foreground px-1">
-                  {page}/{Math.ceil(totalCount / pageSize)}
+                <span className="text-xs text-muted-foreground px-2">
+                  {page} / {Math.ceil(totalCount / pageSize)}
                 </span>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-6 px-2 text-[10px]"
+                  className="h-7 px-3 text-xs"
                   disabled={page * pageSize >= totalCount}
                   onClick={() => onPageChange(page + 1)}
                 >

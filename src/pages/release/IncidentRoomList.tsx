@@ -136,17 +136,17 @@ export default function IncidentRoomList() {
         rightActions={
           <div className="flex items-center gap-2">
             <Link to="/release/incidents/dashboard">
-              <Button variant="ghost" size="sm" className="h-7 px-2 text-[11px]">
-                <LayoutDashboard className="h-3 w-3 mr-1" />
+              <Button variant="ghost" size="sm" className="h-8 px-3 text-sm">
+                <LayoutDashboard className="h-4 w-4 mr-1.5" />
                 Dashboard
               </Button>
             </Link>
             <Button 
               size="sm"
-              className="h-7 px-3 text-[11px]"
+              className="h-8 px-4 text-sm"
               onClick={() => setCreateDialogOpen(true)}
             >
-              <Plus className="h-3 w-3 mr-1" />
+              <Plus className="h-4 w-4 mr-1.5" />
               Create
             </Button>
           </div>
@@ -155,38 +155,38 @@ export default function IncidentRoomList() {
 
       {/* ========== TOOLBAR ========== */}
       <TooltipProvider delayDuration={300}>
-        <div className="px-4 py-2 border-b border-border bg-muted/30">
+        <div className="px-4 py-3 border-b border-border bg-muted/20">
           <div className="flex items-center justify-between gap-4">
             {/* Left: Search */}
-            <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search incidents by key or summary..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8 h-8 text-xs"
+                className="pl-9 h-9 text-sm"
               />
             </div>
             
             {/* Right: Controls */}
             <div className="flex items-center gap-2">
-              {/* Summary Counts - Subtle */}
-              <div className="hidden md:flex items-center gap-3 text-[10px] text-muted-foreground mr-2">
-                <span className="flex items-center gap-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
+              {/* Summary Counts - Subtle chips */}
+              <div className="hidden lg:flex items-center gap-3 text-xs text-muted-foreground mr-3">
+                <span className="flex items-center gap-1.5">
+                  <span className="h-2 w-2 rounded-full bg-rose-500" />
                   <span className="font-medium text-foreground">{stats.critical}</span> critical
                 </span>
-                <span className="flex items-center gap-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+                <span className="flex items-center gap-1.5">
+                  <span className="h-2 w-2 rounded-full bg-sky-500" />
                   {stats.open} open
                 </span>
-                <span className="flex items-center gap-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-violet-500" />
+                <span className="flex items-center gap-1.5">
+                  <span className="h-2 w-2 rounded-full bg-violet-500" />
                   {stats.toCommittee} committee
                 </span>
               </div>
 
-              <div className="h-4 w-px bg-border hidden md:block" />
+              <div className="h-5 w-px bg-border hidden lg:block" />
 
               {/* Filters */}
               <IncidentFiltersDialog filters={filters} onFiltersChange={setFilters} />
@@ -195,7 +195,7 @@ export default function IncidentRoomList() {
                   variant="ghost" 
                   size="sm" 
                   onClick={() => setFilters({ status: [], severity: [], support_level: [], delivery_stage: [] })}
-                  className="text-[10px] h-7 px-2"
+                  className="text-xs h-8 px-2"
                 >
                   Clear ({activeFilterCount})
                 </Button>
@@ -206,19 +206,19 @@ export default function IncidentRoomList() {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
-                        <ArrowUpDown className="h-3.5 w-3.5" />
+                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                        <ArrowUpDown className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
                   </TooltipTrigger>
-                  <TooltipContent side="bottom" className="text-[10px]">Sort</TooltipContent>
+                  <TooltipContent side="bottom" className="text-xs">Sort</TooltipContent>
                 </Tooltip>
-                <DropdownMenuContent align="end" className="w-40">
-                  <DropdownMenuLabel className="text-[10px] text-muted-foreground">Sort by</DropdownMenuLabel>
+                <DropdownMenuContent align="end" className="w-44">
+                  <DropdownMenuLabel className="text-xs text-muted-foreground">Sort by</DropdownMenuLabel>
                   {SORT_OPTIONS.map(opt => (
                     <DropdownMenuItem 
                       key={opt.field}
-                      className="text-[11px]"
+                      className="text-sm"
                       onClick={() => {
                         if (sortField === opt.field) {
                           setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
@@ -230,7 +230,7 @@ export default function IncidentRoomList() {
                     >
                       {opt.label}
                       {sortField === opt.field && (
-                        <span className="ml-auto text-[9px] text-muted-foreground">
+                        <span className="ml-auto text-xs text-muted-foreground">
                           {sortOrder === 'asc' ? '↑' : '↓'}
                         </span>
                       )}
@@ -244,19 +244,19 @@ export default function IncidentRoomList() {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
-                        <Columns3 className="h-3.5 w-3.5" />
+                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                        <Columns3 className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
                   </TooltipTrigger>
-                  <TooltipContent side="bottom" className="text-[10px]">Columns</TooltipContent>
+                  <TooltipContent side="bottom" className="text-xs">Columns</TooltipContent>
                 </Tooltip>
-                <DropdownMenuContent align="end" className="w-40">
-                  <DropdownMenuLabel className="text-[10px] text-muted-foreground">Show columns</DropdownMenuLabel>
+                <DropdownMenuContent align="end" className="w-44">
+                  <DropdownMenuLabel className="text-xs text-muted-foreground">Show columns</DropdownMenuLabel>
                   {columns.map(col => (
                     <DropdownMenuCheckboxItem 
                       key={col.id}
-                      className="text-[11px]"
+                      className="text-sm"
                       checked={col.visible}
                       disabled={col.required}
                       onCheckedChange={() => toggleColumn(col.id)}
@@ -265,7 +265,7 @@ export default function IncidentRoomList() {
                     </DropdownMenuCheckboxItem>
                   ))}
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="text-[10px] text-muted-foreground" onClick={resetColumns}>
+                  <DropdownMenuItem className="text-xs text-muted-foreground" onClick={resetColumns}>
                     Reset to default
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -276,27 +276,27 @@ export default function IncidentRoomList() {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
-                        {density === 'compact' ? <LayoutList className="h-3.5 w-3.5" /> : <LayoutGrid className="h-3.5 w-3.5" />}
+                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                        {density === 'compact' ? <LayoutList className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />}
                       </Button>
                     </DropdownMenuTrigger>
                   </TooltipTrigger>
-                  <TooltipContent side="bottom" className="text-[10px]">Density</TooltipContent>
+                  <TooltipContent side="bottom" className="text-xs">Density</TooltipContent>
                 </Tooltip>
-                <DropdownMenuContent align="end" className="w-32">
+                <DropdownMenuContent align="end" className="w-36">
                   <DropdownMenuItem 
-                    className="text-[11px]"
+                    className="text-sm"
                     onClick={() => setDensity('comfortable')}
                   >
-                    <LayoutGrid className="h-3 w-3 mr-2" />
+                    <LayoutGrid className="h-4 w-4 mr-2" />
                     Comfortable
                     {density === 'comfortable' && <span className="ml-auto">✓</span>}
                   </DropdownMenuItem>
                   <DropdownMenuItem 
-                    className="text-[11px]"
+                    className="text-sm"
                     onClick={() => setDensity('compact')}
                   >
-                    <LayoutList className="h-3 w-3 mr-2" />
+                    <LayoutList className="h-4 w-4 mr-2" />
                     Compact
                     {density === 'compact' && <span className="ml-auto">✓</span>}
                   </DropdownMenuItem>
@@ -309,13 +309,13 @@ export default function IncidentRoomList() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-7 w-7 p-0"
+                    className="h-8 w-8 p-0"
                     onClick={() => refetch()}
                   >
-                    <RefreshCw className="h-3.5 w-3.5" />
+                    <RefreshCw className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom" className="text-[10px]">Refresh</TooltipContent>
+                <TooltipContent side="bottom" className="text-xs">Refresh</TooltipContent>
               </Tooltip>
             </div>
           </div>
@@ -326,30 +326,30 @@ export default function IncidentRoomList() {
       <div className="flex-1 overflow-hidden">
         {error ? (
           <div className="flex flex-col items-center justify-center h-64 text-center">
-            <AlertCircle className="h-6 w-6 text-destructive mb-2" />
-            <p className="text-xs font-medium text-destructive mb-1">Failed to load incidents</p>
-            <p className="text-[10px] text-muted-foreground mb-3">
+            <AlertCircle className="h-8 w-8 text-destructive mb-3" />
+            <p className="text-sm font-medium text-destructive mb-1">Failed to load incidents</p>
+            <p className="text-xs text-muted-foreground mb-4">
               {error instanceof Error ? error.message : 'Unable to fetch data'}
             </p>
-            <Button variant="outline" size="sm" className="h-7 text-[10px]" onClick={() => refetch()}>
-              <RefreshCw className="h-3 w-3 mr-1" />
+            <Button variant="outline" size="sm" className="h-8 text-sm" onClick={() => refetch()}>
+              <RefreshCw className="h-4 w-4 mr-1.5" />
               Retry
             </Button>
           </div>
         ) : processedIncidents.length === 0 && !isLoading ? (
           <div className="flex flex-col items-center justify-center h-64 text-center">
-            <AlertCircle className="h-6 w-6 text-muted-foreground mb-2" />
-            <p className="text-xs text-muted-foreground">
+            <AlertCircle className="h-8 w-8 text-muted-foreground mb-3" />
+            <p className="text-sm text-muted-foreground">
               {searchQuery ? `No incidents match "${searchQuery}"` : 'No incidents found'}
             </p>
             {!searchQuery && (
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="mt-3 h-7 text-[10px]"
+                className="mt-4 h-8 text-sm"
                 onClick={() => setCreateDialogOpen(true)}
               >
-                <Plus className="h-3 w-3 mr-1" />
+                <Plus className="h-4 w-4 mr-1.5" />
                 Create First Incident
               </Button>
             )}
