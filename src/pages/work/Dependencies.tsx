@@ -425,7 +425,7 @@ export default function DependenciesPage() {
         />
 
         {/* Content area */}
-        <div className="flex-1 flex flex-col overflow-hidden px-6 py-4">
+        <div className="flex-1 flex flex-col overflow-auto px-6 py-4">
           {/* Embedded mode: Show horizontal segmented tabs for view selection */}
           {isEmbedded && (
             <div className="mb-4">

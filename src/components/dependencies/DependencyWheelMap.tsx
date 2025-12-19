@@ -347,8 +347,8 @@ export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-4">
-      <div className="flex-1 space-y-4 min-w-0">
+    <div className="flex flex-col lg:flex-row gap-4 overflow-auto max-h-full">
+      <div className="flex-1 space-y-4 min-w-0 overflow-visible">
         {/* Controls */}
         <Card className="p-3 sm:p-4">
           <div className="flex items-center gap-3 sm:gap-6 flex-wrap">
