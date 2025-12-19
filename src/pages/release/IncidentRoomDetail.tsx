@@ -431,12 +431,19 @@ export default function IncidentRoomDetail() {
           convertedToType={incident.converted_to_type}
           requiresCommittee={incident.requires_committee || false}
           isConverted={isConverted}
+          status={incident.status}
+          resolutionSummary={incident.resolution_summary || null}
+          resolutionType={incident.resolution_type || null}
+          rootCause={incident.root_cause || null}
+          resolvedAt={incident.resolved_at || null}
+          closedAt={incident.closed_at || null}
           onDescriptionChange={(desc) => handleFieldChange('description', desc)}
           onPostComment={handlePostComment}
           onUploadFile={(file) => uploadAttachment.mutate({ incidentId: incidentId!, file })}
           onDownloadFile={(path, name) => downloadAttachment.mutate({ storagePath: path, fileName: name })}
           onDeleteFile={(attId, path) => deleteAttachment.mutate({ attachmentId: attId, incidentId: incidentId!, storagePath: path })}
           onVote={handleVote}
+          onResolutionChange={(field, value) => handleFieldChange(field, value)}
           isUploadPending={uploadAttachment.isPending}
           isCommentPending={addComment.isPending}
           isVotePending={isSubmitting}
@@ -457,6 +464,8 @@ export default function IncidentRoomDetail() {
           reporterName={incident.reporter_name}
           deliveryStage={incident.delivery_stage}
           releaseVersion={incident.release_version}
+          businessProcess={incident.business_process}
+          serviceComponent={incident.service_component}
           sla={incident.sla}
           createdAt={incident.created_at}
           updatedAt={incident.updated_at}

@@ -236,7 +236,11 @@ export default function CreateIncidentPage() {
         severity: formData.severity,
         impact: formData.impact,
         urgency: formData.urgency,
+        support_level: formData.support_level,
         is_major_incident: formData.is_major_incident,
+        business_process_id: formData.business_process_id || undefined,
+        service_component: formData.delivery_platform || undefined,
+        assignee_workgroup_id: formData.assignee_workgroup_id || undefined,
       });
 
       toast.success('Incident created successfully');

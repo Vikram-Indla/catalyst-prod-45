@@ -4750,6 +4750,8 @@ export type Database = {
         Row: {
           assignee_id: string | null
           assignee_workgroup_id: string | null
+          business_process_id: string | null
+          closed_at: string | null
           committee_id: string | null
           conversion_reason: string | null
           converted_at: string | null
@@ -4763,13 +4765,18 @@ export type Database = {
           id: string
           impact: Database["public"]["Enums"]["impact_level"] | null
           incident_key: string | null
+          incident_type: string | null
           is_major_incident: boolean | null
           priority: Database["public"]["Enums"]["priority_level"] | null
           release_version_id: string | null
           reporter_id: string | null
           reporter_name: string | null
           requires_committee: boolean | null
+          resolution_summary: string | null
+          resolution_type: string | null
           resolved_at: string | null
+          root_cause: string | null
+          service_component: string | null
           severity: Database["public"]["Enums"]["severity_level"]
           status: Database["public"]["Enums"]["incident_status"]
           support_level: Database["public"]["Enums"]["support_level"] | null
@@ -4782,6 +4789,8 @@ export type Database = {
         Insert: {
           assignee_id?: string | null
           assignee_workgroup_id?: string | null
+          business_process_id?: string | null
+          closed_at?: string | null
           committee_id?: string | null
           conversion_reason?: string | null
           converted_at?: string | null
@@ -4795,13 +4804,18 @@ export type Database = {
           id?: string
           impact?: Database["public"]["Enums"]["impact_level"] | null
           incident_key?: string | null
+          incident_type?: string | null
           is_major_incident?: boolean | null
           priority?: Database["public"]["Enums"]["priority_level"] | null
           release_version_id?: string | null
           reporter_id?: string | null
           reporter_name?: string | null
           requires_committee?: boolean | null
+          resolution_summary?: string | null
+          resolution_type?: string | null
           resolved_at?: string | null
+          root_cause?: string | null
+          service_component?: string | null
           severity: Database["public"]["Enums"]["severity_level"]
           status?: Database["public"]["Enums"]["incident_status"]
           support_level?: Database["public"]["Enums"]["support_level"] | null
@@ -4814,6 +4828,8 @@ export type Database = {
         Update: {
           assignee_id?: string | null
           assignee_workgroup_id?: string | null
+          business_process_id?: string | null
+          closed_at?: string | null
           committee_id?: string | null
           conversion_reason?: string | null
           converted_at?: string | null
@@ -4827,13 +4843,18 @@ export type Database = {
           id?: string
           impact?: Database["public"]["Enums"]["impact_level"] | null
           incident_key?: string | null
+          incident_type?: string | null
           is_major_incident?: boolean | null
           priority?: Database["public"]["Enums"]["priority_level"] | null
           release_version_id?: string | null
           reporter_id?: string | null
           reporter_name?: string | null
           requires_committee?: boolean | null
+          resolution_summary?: string | null
+          resolution_type?: string | null
           resolved_at?: string | null
+          root_cause?: string | null
+          service_component?: string | null
           severity?: Database["public"]["Enums"]["severity_level"]
           status?: Database["public"]["Enums"]["incident_status"]
           support_level?: Database["public"]["Enums"]["support_level"] | null
@@ -4856,6 +4877,13 @@ export type Database = {
             columns: ["assignee_workgroup_id"]
             isOneToOne: false
             referencedRelation: "workgroups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_business_process_id_fkey"
+            columns: ["business_process_id"]
+            isOneToOne: false
+            referencedRelation: "business_processes"
             referencedColumns: ["id"]
           },
           {

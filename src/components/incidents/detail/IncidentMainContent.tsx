@@ -74,12 +74,20 @@ interface IncidentMainContentProps {
   convertedToType: string | null;
   requiresCommittee: boolean;
   isConverted: boolean;
+  // Resolution fields
+  status: string;
+  resolutionSummary: string | null;
+  resolutionType: string | null;
+  rootCause: string | null;
+  resolvedAt: string | null;
+  closedAt: string | null;
   onDescriptionChange: (description: string) => void;
   onPostComment: (content: string, type: CommentType) => void;
   onUploadFile: (file: File) => void;
   onDownloadFile: (storagePath: string, fileName: string) => void;
   onDeleteFile: (attachmentId: string, storagePath: string) => void;
   onVote: (vote: 'approved' | 'rejected', isVeto?: boolean) => void;
+  onResolutionChange: (field: string, value: string) => void;
   isUploadPending: boolean;
   isCommentPending: boolean;
   isVotePending: boolean;
@@ -124,12 +132,19 @@ export function IncidentMainContent({
   convertedToType,
   requiresCommittee,
   isConverted,
+  status,
+  resolutionSummary,
+  resolutionType,
+  rootCause,
+  resolvedAt,
+  closedAt,
   onDescriptionChange,
   onPostComment,
   onUploadFile,
   onDownloadFile,
   onDeleteFile,
   onVote,
+  onResolutionChange,
   isUploadPending,
   isCommentPending,
   isVotePending,
@@ -311,6 +326,10 @@ export function IncidentMainContent({
               <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
               Activity
             </TabsTrigger>
+            <TabsTrigger value="resolution" className="text-sm h-8 px-3 data-[state=active]:bg-background">
+              <Check className="h-3.5 w-3.5 mr-1.5" />
+              Resolution
+            </TabsTrigger>
             <TabsTrigger value="sla-history" className="text-sm h-8 px-3 data-[state=active]:bg-background">
               <Clock className="h-3.5 w-3.5 mr-1.5" />
               SLA History
@@ -336,6 +355,72 @@ export function IncidentMainContent({
               ))}
               {comments.length === 0 && (
                 <p className="text-sm text-muted-foreground p-4">No activity yet.</p>
+              )}
+            </div>
+          </TabsContent>
+
+          {/* Resolution Tab */}
+          <TabsContent value="resolution" className="p-4 space-y-4">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  Resolution Summary {(status === 'resolved' || status === 'closed') && <span className="text-destructive">*</span>}
+                </label>
+                <Textarea
+                  value={resolutionSummary || ''}
+                  onChange={(e) => onResolutionChange('resolution_summary', e.target.value)}
+                  placeholder="Describe how the incident was resolved..."
+                  className="min-h-[100px] text-sm"
+                  disabled={isConverted}
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Resolution Type</label>
+                  <Select 
+                    value={resolutionType || ''} 
+                    onValueChange={(v) => onResolutionChange('resolution_type', v)}
+                    disabled={isConverted}
+                  >
+                    <SelectTrigger className="h-9 text-sm">
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="fix">Permanent Fix</SelectItem>
+                      <SelectItem value="workaround">Workaround</SelectItem>
+                      <SelectItem value="rollback">Rollback</SelectItem>
+                      <SelectItem value="config">Configuration Change</SelectItem>
+                      <SelectItem value="duplicate">Duplicate</SelectItem>
+                      <SelectItem value="wont_fix">Won't Fix</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Resolved At</label>
+                  <div className="h-9 px-3 flex items-center bg-muted/50 rounded-md border border-border text-sm">
+                    {resolvedAt ? new Date(resolvedAt).toLocaleString() : 'Not resolved'}
+                  </div>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Root Cause (optional)</label>
+                <Textarea
+                  value={rootCause || ''}
+                  onChange={(e) => onResolutionChange('root_cause', e.target.value)}
+                  placeholder="Document the root cause analysis..."
+                  className="min-h-[80px] text-sm"
+                  disabled={isConverted}
+                />
+              </div>
+              
+              {closedAt && (
+                <div className="p-3 bg-muted/30 rounded-lg">
+                  <span className="text-xs text-muted-foreground">Closed at: </span>
+                  <span className="text-sm font-medium">{new Date(closedAt).toLocaleString()}</span>
+                </div>
               )}
             </div>
           </TabsContent>

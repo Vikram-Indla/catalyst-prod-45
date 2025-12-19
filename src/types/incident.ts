@@ -152,8 +152,18 @@ export interface Incident {
   assignee?: IncidentUserProfile;
   assignee_workgroup_id?: string;
   assignee_workgroup?: Workgroup;
+  // Impact Context
+  business_process_id?: string;
+  business_process?: BusinessProcess;
+  service_component?: string;
+  incident_type?: string;
   target_date?: string;
   resolved_at?: string;
+  // Resolution fields
+  resolution_summary?: string;
+  resolution_type?: string;
+  root_cause?: string;
+  closed_at?: string;
   requires_committee: boolean;
   committee_id?: string;
   committee?: IncidentCommittee;
@@ -172,6 +182,13 @@ export interface Incident {
   updated_by?: string;
 }
 
+export interface BusinessProcess {
+  id: string;
+  name_en: string;
+  name_ar?: string;
+  active: boolean;
+}
+
 // Form data for creating/updating incidents
 export interface IncidentFormData {
   title: string;
@@ -179,11 +196,20 @@ export interface IncidentFormData {
   severity: SeverityLevel;
   impact?: ImpactLevel;
   urgency?: UrgencyLevel;
+  support_level?: SupportLevel;
   release_version_id?: string;
   delivery_stage?: DeliveryStage;
   assignee_id?: string;
+  assignee_workgroup_id?: string;
+  business_process_id?: string;
+  service_component?: string;
+  incident_type?: string;
   target_date?: string;
   is_major_incident?: boolean;
+  // Resolution fields
+  resolution_summary?: string;
+  resolution_type?: string;
+  root_cause?: string;
 }
 
 // Filter options for incident list
