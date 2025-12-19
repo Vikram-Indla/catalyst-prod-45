@@ -34,8 +34,8 @@ interface Comment {
 interface HistoryItem {
   id: string;
   field_name: string;
-  old_value: string | null;
-  new_value: string;
+  old_value?: string;
+  new_value?: string;
   changed_at: string;
 }
 
@@ -127,22 +127,23 @@ export function IncidentMainContent({
   };
 
   return (
-    <div className="flex-1 overflow-auto p-6 space-y-6">
-      {/* 1. Description */}
+    <main className="flex-[7] overflow-auto p-4 space-y-4 min-w-0">
+      {/* 1. Description - High-density, Jira-style */}
       <section className="border border-border rounded-lg overflow-hidden">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-muted/30">
-          <h2 className="font-medium text-sm">Description</h2>
+        <div className="flex items-center justify-between px-3 py-2 border-b border-border bg-muted/30">
+          <h2 className="font-medium text-xs uppercase tracking-wide text-muted-foreground">Description</h2>
           {isEditingDescription ? (
-            <div className="flex gap-2">
-              <Button variant="ghost" size="sm" onClick={() => setIsEditingDescription(false)}>
+            <div className="flex gap-1">
+              <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={() => setIsEditingDescription(false)}>
                 Cancel
               </Button>
-              <Button size="sm" onClick={handleSaveDescription}>Save</Button>
+              <Button size="sm" className="h-6 px-2 text-xs" onClick={handleSaveDescription}>Save</Button>
             </div>
           ) : (
             <Button 
               variant="ghost" 
-              size="sm" 
+              size="sm"
+              className="h-6 px-2 text-xs"
               disabled={isConverted} 
               onClick={() => {
                 setEditedDescription(description || '');
@@ -153,33 +154,36 @@ export function IncidentMainContent({
             </Button>
           )}
         </div>
-        <div className="p-4">
+        <div className="p-3">
           {isEditingDescription ? (
             <Textarea
               value={editedDescription}
               onChange={(e) => setEditedDescription(e.target.value)}
-              className="min-h-[120px] resize-y"
-              placeholder="Describe the incident..."
+              className="min-h-[200px] resize-y text-sm leading-relaxed"
+              placeholder="Describe the incident in detail..."
             />
           ) : (
-            <p className="text-sm text-foreground whitespace-pre-wrap">
+            <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed min-h-[80px]">
               {description || 'No description provided.'}
             </p>
           )}
         </div>
       </section>
 
-      {/* 2. Attachments */}
+      {/* 2. Attachments - Compact file list */}
       <section className="border border-border rounded-lg overflow-hidden">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-muted/30">
-          <h2 className="font-medium text-sm">Attachments ({attachments.length})</h2>
+        <div className="flex items-center justify-between px-3 py-2 border-b border-border bg-muted/30">
+          <h2 className="font-medium text-xs uppercase tracking-wide text-muted-foreground">
+            Attachments ({attachments.length})
+          </h2>
           <Button 
             variant="ghost" 
-            size="sm" 
+            size="sm"
+            className="h-6 px-2 text-xs"
             disabled={isConverted || isUploadPending}
             onClick={() => fileInputRef.current?.click()}
           >
-            <Upload className="h-4 w-4 mr-1" />
+            <Upload className="h-3 w-3 mr-1" />
             {isUploadPending ? 'Uploading...' : 'Upload'}
           </Button>
           <input
@@ -195,40 +199,40 @@ export function IncidentMainContent({
             }}
           />
         </div>
-        <div className="p-4">
+        <div className="p-2">
           {attachments.length > 0 ? (
-            <div className="space-y-2">
+            <div className="space-y-1">
               {attachments.map(att => (
-                <div key={att.id} className="flex items-center gap-3 p-2 rounded hover:bg-muted/50 group">
-                  <Paperclip className="h-4 w-4 text-muted-foreground" />
+                <div key={att.id} className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-muted/50 group">
+                  <Paperclip className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p 
-                      className="text-sm font-medium truncate text-brand-primary hover:underline cursor-pointer"
+                      className="text-xs font-medium truncate text-brand-primary hover:underline cursor-pointer"
                       onClick={() => onDownloadFile(att.storage_path, att.file_name)}
                     >
                       {att.file_name}
                     </p>
-                    <p className="text-xs text-muted-foreground">
-                      {(att.file_size / 1024).toFixed(1)} KB • {new Date(att.created_at).toLocaleDateString()}
-                    </p>
                   </div>
-                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+                    {(att.file_size / 1024).toFixed(0)} KB
+                  </span>
+                  <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-7 w-7 p-0"
+                      className="h-5 w-5 p-0"
                       onClick={() => onDownloadFile(att.storage_path, att.file_name)}
                     >
-                      <Download className="h-3.5 w-3.5 text-muted-foreground" />
+                      <Download className="h-3 w-3 text-muted-foreground" />
                     </Button>
                     {!isConverted && (
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-7 w-7 p-0 hover:text-destructive"
+                        className="h-5 w-5 p-0 hover:text-destructive"
                         onClick={() => onDeleteFile(att.id, att.storage_path)}
                       >
-                        <Trash2 className="h-3.5 w-3.5" />
+                        <Trash2 className="h-3 w-3" />
                       </Button>
                     )}
                   </div>
@@ -236,41 +240,40 @@ export function IncidentMainContent({
               ))}
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground">No attachments yet.</p>
+            <p className="text-xs text-muted-foreground px-2 py-1">No attachments</p>
           )}
         </div>
       </section>
 
-      {/* 3. Linked Work Items */}
+      {/* 3. Linked Work Items - Compact */}
       <section className="border border-border rounded-lg overflow-hidden">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-muted/30">
-          <h2 className="font-medium text-sm">Linked Work Items</h2>
-          <Button variant="ghost" size="sm" disabled={!isConverted}>
-            <LinkIcon className="h-4 w-4 mr-1" />
+        <div className="flex items-center justify-between px-3 py-2 border-b border-border bg-muted/30">
+          <h2 className="font-medium text-xs uppercase tracking-wide text-muted-foreground">Linked Work Items</h2>
+          <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" disabled={!isConverted}>
+            <LinkIcon className="h-3 w-3 mr-1" />
             Link
           </Button>
         </div>
-        <div className="p-4">
+        <div className="p-2">
           {convertedToId ? (
-            <p className="text-sm">
-              Converted to {convertedToType}: <span className="font-medium text-brand-primary">{convertedToId}</span>
+            <p className="text-xs px-2 py-1">
+              Converted to <span className="font-medium">{convertedToType}</span>: 
+              <span className="font-medium text-brand-primary ml-1">{convertedToId}</span>
             </p>
           ) : (
-            <p className="text-sm text-muted-foreground">
-              No linked work items. This incident has not been converted.
-            </p>
+            <p className="text-xs text-muted-foreground px-2 py-1">No linked work items</p>
           )}
         </div>
       </section>
 
-      {/* 4. Activity Tabs */}
-      <section className="border border-border rounded-lg overflow-hidden flex-1 flex flex-col">
+      {/* 4. Activity Tabs - Compact headers */}
+      <section className="border border-border rounded-lg overflow-hidden flex-1 flex flex-col min-h-[300px]">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
-          <TabsList className="w-full justify-start rounded-none border-b border-border bg-muted/30 px-2 h-auto py-1">
-            <TabsTrigger value="activity" className="text-sm">Activity</TabsTrigger>
-            <TabsTrigger value="sla-history" className="text-sm">SLA History</TabsTrigger>
-            <TabsTrigger value="approvals" className="text-sm">Approvals</TabsTrigger>
-            <TabsTrigger value="audit-log" className="text-sm">Audit Log</TabsTrigger>
+          <TabsList className="w-full justify-start rounded-none border-b border-border bg-muted/30 px-1 h-8">
+            <TabsTrigger value="activity" className="text-xs h-6 px-2">Activity</TabsTrigger>
+            <TabsTrigger value="sla-history" className="text-xs h-6 px-2">SLA History</TabsTrigger>
+            <TabsTrigger value="approvals" className="text-xs h-6 px-2">Approvals</TabsTrigger>
+            <TabsTrigger value="audit-log" className="text-xs h-6 px-2">Audit Log</TabsTrigger>
           </TabsList>
 
           {/* Activity Tab */}
@@ -421,7 +424,7 @@ export function IncidentMainContent({
                     <p className="text-sm">
                       <span className="font-medium">{h.field_name}</span> changed from{' '}
                       <span className="text-muted-foreground">{h.old_value || 'empty'}</span> to{' '}
-                      <span className="font-medium">{h.new_value}</span>
+                      <span className="font-medium">{h.new_value || 'empty'}</span>
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {new Date(h.changed_at).toLocaleString()}
@@ -475,7 +478,7 @@ export function IncidentMainContent({
           </div>
         </div>
       </section>
-    </div>
+    </main>
   );
 }
 
