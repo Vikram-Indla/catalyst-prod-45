@@ -157,9 +157,9 @@ export function CreateDependencyDialog({
         quarter,
         description: description || null,
         status: 'open',
-        // Legacy fields for backwards compatibility
-        from_feature_id: requestingWorkItemType === 'feature' ? requestingWorkItemId : dependsOnWorkItemId,
-        to_feature_id: dependsOnWorkItemType === 'feature' ? dependsOnWorkItemId : requestingWorkItemId,
+        // Legacy fields for backwards compatibility - only set for feature dependencies
+        from_feature_id: requestingWorkItemType === 'feature' ? requestingWorkItemId : null,
+        to_feature_id: dependsOnWorkItemType === 'feature' ? dependsOnWorkItemId : null,
       };
 
       const { data, error } = await supabase
