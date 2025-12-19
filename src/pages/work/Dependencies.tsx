@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Search, Plus, Download, MoreHorizontal, AlertTriangle, CheckCircle2, Clock, Grid3x3, GitBranch, List, Filter, Map as MapIcon, X, Layers } from 'lucide-react';
+import { Search, Plus, Download, MoreHorizontal, AlertTriangle, CheckCircle2, Clock, Grid3x3, GitBranch, List, Filter, X, Layers } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { DependencyDetailsDrawer } from '@/components/dependencies/DependencyDetailsDrawer';
 import { DependencyAnalyticsDrawer } from '@/components/dependencies/DependencyAnalyticsDrawer';
@@ -450,13 +450,7 @@ export default function DependenciesPage() {
             <div className="mb-4">
               <SegmentedTabs 
                 value={visualizationMode} 
-                onValueChange={(v) => {
-                  if (v === 'maps') {
-                    navigate('/reports/dependencies/maps');
-                  } else {
-                    setVisualizationMode(v as 'list' | 'matrix' | 'wheel');
-                  }
-                }}
+                onValueChange={(v) => setVisualizationMode(v as 'list' | 'matrix' | 'wheel')}
                 className="w-fit"
               >
                 <SegmentedTab value="list">
@@ -470,10 +464,6 @@ export default function DependenciesPage() {
                 <SegmentedTab value="wheel">
                   <GitBranch className="h-4 w-4 mr-2" />
                   Wheel
-                </SegmentedTab>
-                <SegmentedTab value="maps">
-                  <MapIcon className="h-4 w-4 mr-2" />
-                  Maps
                 </SegmentedTab>
               </SegmentedTabs>
             </div>
