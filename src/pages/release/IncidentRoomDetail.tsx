@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useSearchParams } from 'react-router-dom';
-import { Eye, EyeOff, Plus, AlertTriangle, CheckCircle2, X, UserPlus, Play, LayoutDashboard } from 'lucide-react';
+import { Eye, EyeOff, Plus, AlertTriangle, CheckCircle2, X, UserPlus, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
@@ -199,14 +199,12 @@ export default function IncidentRoomDetail() {
 
   return (
     <div className="flex flex-col h-full overflow-hidden bg-background">
-      {/* ========== HEADER - Compact, single-row ========== */}
+      {/* ========== HEADER - Compact, JSM-style ========== */}
       <header className="flex-shrink-0 border-b border-border px-4 py-2">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-1 text-[10px] text-muted-foreground mb-1">
-          <Link to="/release/incidents" className="hover:text-foreground">RELEASE</Link>
-          <span>/</span>
-          <Link to="/release/incidents" className="hover:text-foreground">Incidents</Link>
-          <span>/</span>
+          <Link to="/release/incidents" className="hover:text-foreground transition-colors">Incidents</Link>
+          <span className="text-muted-foreground/60">/</span>
           <span className="text-foreground font-medium">{incident.incident_key}</span>
         </nav>
 
@@ -214,40 +212,36 @@ export default function IncidentRoomDetail() {
         <div className="flex items-center justify-between gap-3">
           {/* Left: Key + Summary */}
           <div className="flex items-center gap-2 min-w-0 flex-1">
-            <h1 className="text-sm font-semibold text-foreground whitespace-nowrap">
-              <span className="text-brand-primary">{incident.incident_key}</span>
-              <span className="mx-1.5 text-muted-foreground">—</span>
-              <span className="truncate">{incident.title}</span>
+            <h1 className="text-sm font-semibold text-foreground truncate">
+              <span className="text-primary">{incident.incident_key}</span>
+              <span className="mx-1.5 text-muted-foreground/60">—</span>
+              {incident.title}
             </h1>
           </div>
 
-          {/* Center: Status Pills - Enterprise muted tones */}
+          {/* Center: Status Pills - Muted, text-first */}
           <div className="flex items-center gap-1 flex-shrink-0">
-            {/* Major Incident */}
             {incident.is_major_incident && (
-              <Badge variant="outline" className="text-[9px] px-1.5 py-0 h-5 bg-rose-50 text-rose-700 border-rose-200 font-medium">
+              <Badge variant="outline" className="text-[9px] px-1.5 py-0 h-4 bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800 font-medium">
                 Major
               </Badge>
             )}
-            {/* Severity */}
-            <Badge variant="outline" className={cn('text-[9px] px-1.5 py-0 h-5 border font-medium', severityConfig.className)}>
+            <Badge variant="outline" className={cn('text-[9px] px-1.5 py-0 h-4 border font-medium', severityConfig.className)}>
               {severityConfig.label}
             </Badge>
-            {/* Support Level */}
             {incident.support_level && (
-              <Badge variant="outline" className="text-[9px] px-1.5 py-0 h-5 bg-slate-50 text-slate-600 border-slate-200 font-medium">
+              <span className="text-[10px] font-medium text-muted-foreground px-1">
                 {incident.support_level}
-              </Badge>
+              </span>
             )}
-            {/* Committee Status */}
             {incident.committee && (
               <Badge 
                 variant="outline" 
                 className={cn(
-                  'text-[9px] px-1.5 py-0 h-5 font-medium',
-                  incident.committee.status === 'approved' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                  incident.committee.status === 'rejected' ? 'bg-rose-50 text-rose-700 border-rose-200' :
-                  'bg-violet-50 text-violet-700 border-violet-200'
+                  'text-[9px] px-1.5 py-0 h-4 font-medium',
+                  incident.committee.status === 'approved' ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800' :
+                  incident.committee.status === 'rejected' ? 'bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800' :
+                  'bg-violet-50 dark:bg-violet-950/30 text-violet-700 dark:text-violet-400 border-violet-200 dark:border-violet-800'
                 )}
               >
                 {incident.committee.status === 'pending' ? 'In Review' : 
@@ -256,14 +250,14 @@ export default function IncidentRoomDetail() {
             )}
           </div>
 
-          {/* Right: Actions (Watch | Convert only) */}
-          <div className="flex items-center gap-1.5 flex-shrink-0">
+          {/* Right: Actions */}
+          <div className="flex items-center gap-1 flex-shrink-0">
             <Button 
-              variant={isWatching ? 'secondary' : 'ghost'} 
+              variant="ghost" 
               size="sm"
               onClick={() => toggleWatch.mutate(isWatching)}
               disabled={toggleWatch.isPending}
-              className="h-7 px-2 text-[10px]"
+              className="h-6 px-2 text-[10px]"
             >
               {isWatching ? <EyeOff className="h-3 w-3 mr-1" /> : <Eye className="h-3 w-3 mr-1" />}
               {isWatching ? 'Unwatch' : 'Watch'}
@@ -278,7 +272,7 @@ export default function IncidentRoomDetail() {
                       size="sm"
                       onClick={() => setConvertDialogOpen(true)}
                       disabled={!canConvert || isSubmitting}
-                      className="h-7 px-2 text-[10px] bg-brand-primary hover:bg-brand-primary-hover text-white"
+                      className="h-6 px-2 text-[10px]"
                     >
                       <Plus className="h-3 w-3 mr-1" />
                       Convert
@@ -286,7 +280,7 @@ export default function IncidentRoomDetail() {
                   </div>
                 </TooltipTrigger>
                 {!canConvert && conversionCheck.reason && (
-                  <TooltipContent side="bottom" className="text-xs">
+                  <TooltipContent side="bottom" className="text-[10px]">
                     {conversionCheck.reason}
                   </TooltipContent>
                 )}
@@ -298,48 +292,42 @@ export default function IncidentRoomDetail() {
 
       {/* ========== POST-CREATE SUCCESS BANNER ========== */}
       {showCreatedBanner && incident && (
-        <div className="mx-4 mt-3 p-3 rounded-md border border-emerald-200 bg-emerald-50 flex items-start justify-between gap-3">
-          <div className="flex items-start gap-2.5">
-            <CheckCircle2 className="h-4 w-4 text-emerald-600 mt-0.5 flex-shrink-0" />
+        <div className="mx-4 mt-2 p-2.5 rounded-md border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/30 flex items-start justify-between gap-3">
+          <div className="flex items-start gap-2">
+            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 mt-0.5 flex-shrink-0" />
             <div>
-              <p className="text-xs font-medium text-emerald-800">
-                Incident {incident.incident_key} created successfully
+              <p className="text-[11px] font-medium text-emerald-800 dark:text-emerald-300">
+                {incident.incident_key} created
               </p>
-              <div className="flex items-center gap-2 mt-2">
+              <div className="flex items-center gap-1.5 mt-1.5">
                 <Button
                   variant="outline"
                   size="sm"
-                  className="h-6 px-2 text-[10px] bg-white"
-                  onClick={() => {/* TODO: Open assign dialog */}}
-                >
-                  <UserPlus className="h-3 w-3 mr-1" />
-                  Assign Incident
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-6 px-2 text-[10px] bg-white"
+                  className="h-5 px-1.5 text-[9px] bg-white dark:bg-background"
                   onClick={() => handleStatusChange('triage')}
                 >
-                  <Play className="h-3 w-3 mr-1" />
-                  Start Triage
+                  <Play className="h-2.5 w-2.5 mr-0.5" />
+                  Triage
                 </Button>
-                <Link to="/release/incidents/dashboard">
-                  <Button variant="outline" size="sm" className="h-6 px-2 text-[10px] bg-white">
-                    <LayoutDashboard className="h-3 w-3 mr-1" />
-                    Dashboard
-                  </Button>
-                </Link>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-5 px-1.5 text-[9px] bg-white dark:bg-background"
+                  onClick={() => {/* TODO: Open assign dialog */}}
+                >
+                  <UserPlus className="h-2.5 w-2.5 mr-0.5" />
+                  Assign
+                </Button>
               </div>
             </div>
           </div>
           <Button
             variant="ghost"
             size="sm"
-            className="h-6 w-6 p-0"
+            className="h-5 w-5 p-0"
             onClick={() => setShowCreatedBanner(false)}
           >
-            <X className="h-3.5 w-3.5 text-emerald-600" />
+            <X className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
           </Button>
         </div>
       )}

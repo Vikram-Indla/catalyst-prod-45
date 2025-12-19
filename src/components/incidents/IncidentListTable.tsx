@@ -39,67 +39,70 @@ interface IncidentListTableProps {
   onPageChange?: (page: number) => void;
 }
 
-// Enterprise-grade compact badge configs - NO redundant labels
+// Enterprise-grade MUTED badge configs — text-first, color-secondary
 const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
-  open: { label: 'Open', className: 'bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/30' },
-  triage: { label: 'Triage', className: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30' },
-  to_committee: { label: 'Committee', className: 'bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/30' },
-  in_progress: { label: 'In Progress', className: 'bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-500/30' },
-  resolved: { label: 'Resolved', className: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30' },
-  converted: { label: 'Converted', className: 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/30' },
-  closed: { label: 'Closed', className: 'bg-slate-400/10 text-slate-500 dark:text-slate-400 border-slate-400/30' },
+  open: { label: 'Open', className: 'bg-muted text-foreground border-border' },
+  triage: { label: 'Triage', className: 'bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800' },
+  to_committee: { label: 'Committee', className: 'bg-violet-50 dark:bg-violet-950/30 text-violet-700 dark:text-violet-400 border-violet-200 dark:border-violet-800' },
+  in_progress: { label: 'In Progress', className: 'bg-sky-50 dark:bg-sky-950/30 text-sky-700 dark:text-sky-400 border-sky-200 dark:border-sky-800' },
+  resolved: { label: 'Resolved', className: 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800' },
+  converted: { label: 'Converted', className: 'bg-muted text-muted-foreground border-border' },
+  closed: { label: 'Closed', className: 'bg-muted text-muted-foreground border-border' },
 };
 
+// Severity: Calm, not alarming. Use subtle tints.
 const SEVERITY_CONFIG: Record<string, { label: string; className: string; tooltip: string }> = {
-  SEV1: { label: 'SEV1', className: 'bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/30', tooltip: 'Severity: Critical' },
-  SEV2: { label: 'SEV2', className: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30', tooltip: 'Severity: High' },
-  SEV3: { label: 'SEV3', className: 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/30', tooltip: 'Severity: Medium' },
-  SEV4: { label: 'SEV4', className: 'bg-slate-400/10 text-slate-500 dark:text-slate-400 border-slate-400/30', tooltip: 'Severity: Low' },
+  SEV1: { label: 'SEV1', className: 'bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800', tooltip: 'Critical' },
+  SEV2: { label: 'SEV2', className: 'bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800', tooltip: 'High' },
+  SEV3: { label: 'SEV3', className: 'bg-muted text-muted-foreground border-border', tooltip: 'Medium' },
+  SEV4: { label: 'SEV4', className: 'bg-muted text-muted-foreground border-border', tooltip: 'Low' },
 };
 
+// Priority: Minimal visual weight
 const PRIORITY_CONFIG: Record<string, { label: string; className: string; tooltip: string }> = {
-  P1: { label: 'P1', className: 'bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/30', tooltip: 'Priority: Highest' },
-  P2: { label: 'P2', className: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30', tooltip: 'Priority: High' },
-  P3: { label: 'P3', className: 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/30', tooltip: 'Priority: Medium' },
-  P4: { label: 'P4', className: 'bg-slate-400/10 text-slate-500 dark:text-slate-400 border-slate-400/30', tooltip: 'Priority: Low' },
+  P1: { label: 'P1', className: 'bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800', tooltip: 'Highest' },
+  P2: { label: 'P2', className: 'bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800', tooltip: 'High' },
+  P3: { label: 'P3', className: 'bg-muted text-muted-foreground border-border', tooltip: 'Medium' },
+  P4: { label: 'P4', className: 'bg-muted text-muted-foreground border-border', tooltip: 'Low' },
 };
 
-const SUPPORT_CONFIG: Record<string, { label: string; className: string; tooltip: string }> = {
-  L1: { label: 'L1', className: 'bg-slate-400/10 text-slate-600 dark:text-slate-400 border-slate-400/30', tooltip: 'Support Level: Frontline' },
-  L2: { label: 'L2', className: 'bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/30', tooltip: 'Support Level: Technical' },
-  L3: { label: 'L3', className: 'bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/30', tooltip: 'Support Level: Specialist' },
+// Support Level: Purely informational
+const SUPPORT_CONFIG: Record<string, { label: string; tooltip: string }> = {
+  L1: { label: 'L1', tooltip: 'Frontline Support' },
+  L2: { label: 'L2', tooltip: 'Technical Support' },
+  L3: { label: 'L3', tooltip: 'Specialist / CAP' },
 };
 
 function LoadingSkeleton() {
   return (
     <Table>
-      <TableHeader className="sticky top-0 bg-background z-10">
-        <TableRow className="hover:bg-transparent border-b border-border">
-          <TableHead className="w-[90px] text-[11px] font-semibold uppercase tracking-wide text-muted-foreground h-9">Key</TableHead>
-          <TableHead className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground h-9">Summary</TableHead>
-          <TableHead className="w-[55px] text-[11px] font-semibold uppercase tracking-wide text-muted-foreground h-9">Sev</TableHead>
-          <TableHead className="w-[45px] text-[11px] font-semibold uppercase tracking-wide text-muted-foreground h-9">Pri</TableHead>
-          <TableHead className="w-[45px] text-[11px] font-semibold uppercase tracking-wide text-muted-foreground h-9">Lvl</TableHead>
-          <TableHead className="w-[85px] text-[11px] font-semibold uppercase tracking-wide text-muted-foreground h-9">Status</TableHead>
-          <TableHead className="w-[110px] text-[11px] font-semibold uppercase tracking-wide text-muted-foreground h-9">Assignee</TableHead>
-          <TableHead className="w-[50px] text-[11px] font-semibold uppercase tracking-wide text-muted-foreground h-9">Age</TableHead>
-          <TableHead className="w-[70px] text-[11px] font-semibold uppercase tracking-wide text-muted-foreground h-9">SLA</TableHead>
-          <TableHead className="w-[36px] h-9"></TableHead>
+      <TableHeader className="sticky top-0 bg-background z-10 border-b">
+        <TableRow className="hover:bg-transparent">
+          <TableHead className="w-[80px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Key</TableHead>
+          <TableHead className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Summary</TableHead>
+          <TableHead className="w-[48px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Sev</TableHead>
+          <TableHead className="w-[40px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Pri</TableHead>
+          <TableHead className="w-[36px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Lvl</TableHead>
+          <TableHead className="w-[80px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Status</TableHead>
+          <TableHead className="w-[100px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Assignee</TableHead>
+          <TableHead className="w-[48px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Age</TableHead>
+          <TableHead className="w-[56px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">SLA</TableHead>
+          <TableHead className="w-[32px] h-8"></TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {[...Array(10)].map((_, i) => (
-          <TableRow key={i} className="border-b border-border/50">
-            <TableCell className="py-1.5"><Skeleton className="h-4 w-14" /></TableCell>
-            <TableCell className="py-1.5"><Skeleton className="h-4 w-full max-w-md" /></TableCell>
-            <TableCell className="py-1.5"><Skeleton className="h-5 w-10" /></TableCell>
-            <TableCell className="py-1.5"><Skeleton className="h-5 w-7" /></TableCell>
-            <TableCell className="py-1.5"><Skeleton className="h-5 w-7" /></TableCell>
-            <TableCell className="py-1.5"><Skeleton className="h-5 w-14" /></TableCell>
-            <TableCell className="py-1.5"><Skeleton className="h-4 w-20" /></TableCell>
-            <TableCell className="py-1.5"><Skeleton className="h-4 w-8" /></TableCell>
-            <TableCell className="py-1.5"><Skeleton className="h-5 w-12" /></TableCell>
-            <TableCell className="py-1.5"><Skeleton className="h-4 w-4" /></TableCell>
+        {[...Array(12)].map((_, i) => (
+          <TableRow key={i} className="border-b border-border/40">
+            <TableCell className="py-2 px-3"><Skeleton className="h-3.5 w-12" /></TableCell>
+            <TableCell className="py-2 px-3"><Skeleton className="h-3.5 w-full max-w-sm" /></TableCell>
+            <TableCell className="py-2 px-3"><Skeleton className="h-4 w-9" /></TableCell>
+            <TableCell className="py-2 px-3"><Skeleton className="h-4 w-6" /></TableCell>
+            <TableCell className="py-2 px-3"><Skeleton className="h-3.5 w-5" /></TableCell>
+            <TableCell className="py-2 px-3"><Skeleton className="h-4 w-14" /></TableCell>
+            <TableCell className="py-2 px-3"><Skeleton className="h-3.5 w-16" /></TableCell>
+            <TableCell className="py-2 px-3"><Skeleton className="h-3.5 w-6" /></TableCell>
+            <TableCell className="py-2 px-3"><Skeleton className="h-4 w-8" /></TableCell>
+            <TableCell className="py-2 px-3"><Skeleton className="h-3.5 w-3.5" /></TableCell>
           </TableRow>
         ))}
       </TableBody>
@@ -111,7 +114,7 @@ export function IncidentListTable({
   incidents, 
   isLoading,
   page = 1,
-  pageSize = 25,
+  pageSize = 40,
   totalCount,
   onPageChange,
 }: IncidentListTableProps) {
@@ -137,22 +140,22 @@ export function IncidentListTable({
   };
 
   return (
-    <TooltipProvider delayDuration={200}>
+    <TooltipProvider delayDuration={300}>
       <div className="flex flex-col h-full">
         <div className="flex-1 overflow-auto">
           <Table>
-            <TableHeader className="sticky top-0 bg-background z-10">
-              <TableRow className="hover:bg-transparent border-b border-border">
-                <TableHead className="w-[90px] text-[11px] font-semibold uppercase tracking-wide text-muted-foreground h-9">Key</TableHead>
-                <TableHead className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground h-9">Summary</TableHead>
-                <TableHead className="w-[55px] text-[11px] font-semibold uppercase tracking-wide text-muted-foreground h-9">Sev</TableHead>
-                <TableHead className="w-[45px] text-[11px] font-semibold uppercase tracking-wide text-muted-foreground h-9">Pri</TableHead>
-                <TableHead className="w-[45px] text-[11px] font-semibold uppercase tracking-wide text-muted-foreground h-9">Lvl</TableHead>
-                <TableHead className="w-[85px] text-[11px] font-semibold uppercase tracking-wide text-muted-foreground h-9">Status</TableHead>
-                <TableHead className="w-[110px] text-[11px] font-semibold uppercase tracking-wide text-muted-foreground h-9">Assignee</TableHead>
-                <TableHead className="w-[50px] text-[11px] font-semibold uppercase tracking-wide text-muted-foreground h-9">Age</TableHead>
-                <TableHead className="w-[70px] text-[11px] font-semibold uppercase tracking-wide text-muted-foreground h-9">SLA</TableHead>
-                <TableHead className="w-[36px] h-9"></TableHead>
+            <TableHeader className="sticky top-0 bg-background z-10 border-b">
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="w-[80px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Key</TableHead>
+                <TableHead className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Summary</TableHead>
+                <TableHead className="w-[48px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Sev</TableHead>
+                <TableHead className="w-[40px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Pri</TableHead>
+                <TableHead className="w-[36px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Lvl</TableHead>
+                <TableHead className="w-[80px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Status</TableHead>
+                <TableHead className="w-[100px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Assignee</TableHead>
+                <TableHead className="w-[48px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">Age</TableHead>
+                <TableHead className="w-[56px] text-[10px] font-semibold uppercase tracking-wider text-muted-foreground h-8 px-3">SLA</TableHead>
+                <TableHead className="w-[32px] h-8"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -169,9 +172,9 @@ export function IncidentListTable({
                   <TableRow 
                     key={incident.id} 
                     className={cn(
-                      'group cursor-pointer border-b border-border/50 transition-colors',
-                      'hover:bg-muted/50',
-                      isSelected && 'bg-muted/70'
+                      'group cursor-pointer border-b border-border/40 transition-colors',
+                      'hover:bg-muted/40',
+                      isSelected && 'bg-muted/60'
                     )}
                     onClick={(e) => handleRowClick(incident.id, e)}
                     tabIndex={0}
@@ -180,11 +183,11 @@ export function IncidentListTable({
                     }}
                   >
                     {/* Key */}
-                    <TableCell className="py-1.5">
+                    <TableCell className="py-1.5 px-3">
                       <div className="flex items-center gap-1">
                         <Link 
                           to={`/release/incidents/${incident.id}`} 
-                          className="text-xs font-medium text-primary hover:underline"
+                          className="text-[11px] font-medium text-primary hover:underline"
                           onClick={(e) => e.stopPropagation()}
                         >
                           {incident.incident_key}
@@ -194,7 +197,7 @@ export function IncidentListTable({
                             <TooltipTrigger asChild>
                               <AlertTriangle className="h-3 w-3 text-amber-500 flex-shrink-0" />
                             </TooltipTrigger>
-                            <TooltipContent side="right" className="text-xs">
+                            <TooltipContent side="right" className="text-[10px]">
                               Major Incident
                             </TooltipContent>
                           </Tooltip>
@@ -203,181 +206,168 @@ export function IncidentListTable({
                     </TableCell>
                     
                     {/* Summary */}
-                    <TableCell className="py-1.5">
-                      <span className="text-xs text-foreground line-clamp-1">{incident.title}</span>
+                    <TableCell className="py-1.5 px-3">
+                      <span className="text-[11px] text-foreground line-clamp-1">{incident.title}</span>
                     </TableCell>
                     
                     {/* Severity */}
-                    <TableCell className="py-1.5">
+                    <TableCell className="py-1.5 px-3">
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Badge 
                             variant="outline" 
-                            className={cn('text-[10px] px-1.5 py-0 h-5 font-medium border', severityConfig.className)}
+                            className={cn('text-[9px] px-1 py-0 h-4 font-medium border', severityConfig.className)}
                           >
                             {severityConfig.label}
                           </Badge>
                         </TooltipTrigger>
-                        <TooltipContent side="top" className="text-xs">{severityConfig.tooltip}</TooltipContent>
+                        <TooltipContent side="top" className="text-[10px]">{severityConfig.tooltip}</TooltipContent>
                       </Tooltip>
                     </TableCell>
                     
                     {/* Priority */}
-                    <TableCell className="py-1.5">
+                    <TableCell className="py-1.5 px-3">
                       {priorityConfig ? (
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Badge 
                               variant="outline" 
-                              className={cn('text-[10px] px-1.5 py-0 h-5 font-medium border', priorityConfig.className)}
+                              className={cn('text-[9px] px-1 py-0 h-4 font-medium border', priorityConfig.className)}
                             >
                               {priorityConfig.label}
                             </Badge>
                           </TooltipTrigger>
-                          <TooltipContent side="top" className="text-xs">{priorityConfig.tooltip}</TooltipContent>
+                          <TooltipContent side="top" className="text-[10px]">{priorityConfig.tooltip}</TooltipContent>
                         </Tooltip>
                       ) : (
-                        <span className="text-[10px] text-muted-foreground">—</span>
+                        <span className="text-[9px] text-muted-foreground">—</span>
                       )}
                     </TableCell>
                     
-                    {/* Support Level */}
-                    <TableCell className="py-1.5">
+                    {/* Support Level - Text only, no badge */}
+                    <TableCell className="py-1.5 px-3">
                       {supportConfig ? (
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Badge 
-                              variant="outline" 
-                              className={cn('text-[10px] px-1.5 py-0 h-5 font-medium border', supportConfig.className)}
-                            >
+                            <span className="text-[10px] font-medium text-muted-foreground cursor-default">
                               {supportConfig.label}
-                            </Badge>
+                            </span>
                           </TooltipTrigger>
-                          <TooltipContent side="top" className="text-xs">{supportConfig.tooltip}</TooltipContent>
+                          <TooltipContent side="top" className="text-[10px]">{supportConfig.tooltip}</TooltipContent>
                         </Tooltip>
                       ) : (
-                        <span className="text-[10px] text-muted-foreground">—</span>
+                        <span className="text-[9px] text-muted-foreground">—</span>
                       )}
                     </TableCell>
                     
-                    {/* Status */}
-                    <TableCell className="py-1.5">
+                    {/* Status - Primary badge */}
+                    <TableCell className="py-1.5 px-3">
                       <Badge 
                         variant="outline" 
-                        className={cn('text-[10px] px-1.5 py-0 h-5 font-medium border', statusConfig.className)}
+                        className={cn('text-[9px] px-1.5 py-0 h-4 font-medium border', statusConfig.className)}
                       >
                         {statusConfig.label}
                       </Badge>
                     </TableCell>
                     
                     {/* Assignee */}
-                    <TableCell className="py-1.5">
+                    <TableCell className="py-1.5 px-3">
                       {incident.assignee ? (
                         <div className="flex items-center gap-1.5">
-                          <div className="h-5 w-5 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
-                            <span className="text-[9px] font-medium text-muted-foreground">
+                          <div className="h-4 w-4 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+                            <span className="text-[8px] font-medium text-muted-foreground">
                               {incident.assignee.avatar_initials || incident.assignee.full_name?.charAt(0) || 'U'}
                             </span>
                           </div>
-                          <span className="text-xs text-foreground truncate max-w-[70px]">
+                          <span className="text-[10px] text-foreground truncate max-w-[60px]">
                             {incident.assignee.full_name}
                           </span>
                         </div>
                       ) : (
-                        <span className="text-[10px] text-muted-foreground">Unassigned</span>
+                        <span className="text-[9px] text-muted-foreground">Unassigned</span>
                       )}
                     </TableCell>
                     
                     {/* Age */}
-                    <TableCell className="py-1.5">
-                      <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-                        <Clock className="h-3 w-3" />
+                    <TableCell className="py-1.5 px-3">
+                      <div className="flex items-center gap-0.5 text-[10px] text-muted-foreground">
+                        <Clock className="h-2.5 w-2.5" />
                         {age}
                       </div>
                     </TableCell>
                     
                     {/* SLA */}
-                    <TableCell className="py-1.5">
+                    <TableCell className="py-1.5 px-3">
                       {slaBreached ? (
-                        <Badge 
-                          variant="outline" 
-                          className="text-[10px] px-1.5 py-0 h-5 font-medium border bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/30"
-                        >
-                          Breach
-                        </Badge>
+                        <span className="text-[9px] font-medium text-rose-600 dark:text-rose-400">Breach</span>
                       ) : incident.sla ? (
-                        <Badge 
-                          variant="outline" 
-                          className="text-[10px] px-1.5 py-0 h-5 font-medium border bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30"
-                        >
-                          OK
-                        </Badge>
+                        <span className="text-[9px] font-medium text-emerald-600 dark:text-emerald-400">OK</span>
                       ) : (
-                        <span className="text-[10px] text-muted-foreground">—</span>
+                        <span className="text-[9px] text-muted-foreground">—</span>
                       )}
                     </TableCell>
 
                     {/* Actions */}
-                    <TableCell className="py-1.5">
+                    <TableCell className="py-1.5 px-3">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                           <Button 
                             variant="ghost" 
                             size="sm" 
-                            className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 focus:opacity-100 data-[state=open]:opacity-100"
+                            className="h-5 w-5 p-0 opacity-0 group-hover:opacity-100 focus:opacity-100 data-[state=open]:opacity-100"
                           >
-                            <MoreHorizontal className="h-3.5 w-3.5" />
+                            <MoreHorizontal className="h-3 w-3" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-36">
+                        <DropdownMenuContent align="end" className="w-32">
                           <DropdownMenuItem 
-                            className="text-xs cursor-pointer"
+                            className="text-[11px] cursor-pointer"
                             onClick={(e) => {
                               e.stopPropagation();
                               navigate(`/release/incidents/${incident.id}`);
                             }}
                           >
-                            <Eye className="h-3.5 w-3.5 mr-2" />
+                            <Eye className="h-3 w-3 mr-2" />
                             View
                           </DropdownMenuItem>
                           <DropdownMenuItem 
-                            className="text-xs cursor-pointer"
+                            className="text-[11px] cursor-pointer"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleCopyLink(incident.id, incident.incident_key);
                             }}
                           >
-                            <Copy className="h-3.5 w-3.5 mr-2" />
+                            <Copy className="h-3 w-3 mr-2" />
                             Copy link
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <DropdownMenuItem 
-                                className="text-xs cursor-not-allowed opacity-50"
+                                className="text-[11px] cursor-not-allowed opacity-50"
                                 disabled
                                 onClick={(e) => e.stopPropagation()}
                               >
-                                <Pencil className="h-3.5 w-3.5 mr-2" />
+                                <Pencil className="h-3 w-3 mr-2" />
                                 Edit
                               </DropdownMenuItem>
                             </TooltipTrigger>
-                            <TooltipContent side="left" className="text-xs">
+                            <TooltipContent side="left" className="text-[10px]">
                               Insufficient permissions
                             </TooltipContent>
                           </Tooltip>
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <DropdownMenuItem 
-                                className="text-xs text-destructive cursor-not-allowed opacity-50"
+                                className="text-[11px] text-destructive cursor-not-allowed opacity-50"
                                 disabled
                                 onClick={(e) => e.stopPropagation()}
                               >
-                                <Trash2 className="h-3.5 w-3.5 mr-2" />
+                                <Trash2 className="h-3 w-3 mr-2" />
                                 Delete
                               </DropdownMenuItem>
                             </TooltipTrigger>
-                            <TooltipContent side="left" className="text-xs">
+                            <TooltipContent side="left" className="text-[10px]">
                               Insufficient permissions
                             </TooltipContent>
                           </Tooltip>
@@ -393,31 +383,31 @@ export function IncidentListTable({
 
         {/* Pagination Footer */}
         {totalCount !== undefined && totalCount > 0 && (
-          <div className="flex items-center justify-between px-4 py-2 border-t border-border bg-muted/20">
-            <div className="text-xs text-muted-foreground">
+          <div className="flex items-center justify-between px-3 py-1.5 border-t border-border bg-muted/30 flex-shrink-0">
+            <span className="text-[10px] text-muted-foreground">
               {totalCount > pageSize 
-                ? `Showing ${((page - 1) * pageSize) + 1}–${Math.min(page * pageSize, totalCount)} of ${totalCount}`
+                ? `${((page - 1) * pageSize) + 1}–${Math.min(page * pageSize, totalCount)} of ${totalCount}`
                 : `${totalCount} incident${totalCount !== 1 ? 's' : ''}`
               }
-            </div>
+            </span>
             {totalCount > pageSize && onPageChange && (
               <div className="flex items-center gap-1">
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
-                  className="h-7 px-2.5 text-xs"
+                  className="h-6 px-2 text-[10px]"
                   disabled={page <= 1}
                   onClick={() => onPageChange(page - 1)}
                 >
-                  Previous
+                  Prev
                 </Button>
-                <span className="text-xs text-muted-foreground px-2">
-                  Page {page} of {Math.ceil(totalCount / pageSize)}
+                <span className="text-[10px] text-muted-foreground px-1">
+                  {page}/{Math.ceil(totalCount / pageSize)}
                 </span>
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
-                  className="h-7 px-2.5 text-xs"
+                  className="h-6 px-2 text-[10px]"
                   disabled={page * pageSize >= totalCount}
                   onClick={() => onPageChange(page + 1)}
                 >

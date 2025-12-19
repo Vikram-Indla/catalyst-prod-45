@@ -3,7 +3,6 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { Plus, Search, AlertCircle, BarChart3, LayoutDashboard, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
 import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
 import { useIncidents } from '@/hooks/useIncidents';
 import { CreateIncidentDialog } from '@/components/incidents/CreateIncidentDialog';
@@ -11,7 +10,7 @@ import { IncidentFiltersDialog } from '@/components/incidents/IncidentFiltersDia
 import { IncidentListTable } from '@/components/incidents/IncidentListTable';
 import type { IncidentFilters } from '@/types/incident';
 
-const PAGE_SIZE = 25;
+const PAGE_SIZE = 40;
 
 export default function IncidentRoomList() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -79,116 +78,114 @@ export default function IncidentRoomList() {
         rightActions={
           <div className="flex items-center gap-2">
             <Link to="/release/incidents/dashboard">
-              <Button variant="outline" size="sm" className="h-8">
-                <LayoutDashboard className="h-3.5 w-3.5 mr-1.5" />
+              <Button variant="ghost" size="sm" className="h-7 px-2 text-[11px]">
+                <LayoutDashboard className="h-3 w-3 mr-1" />
                 Dashboard
               </Button>
             </Link>
             <Link to="/release/incident-command-center">
-              <Button variant="outline" size="sm" className="h-8">
-                <BarChart3 className="h-3.5 w-3.5 mr-1.5" />
-                Command Center
+              <Button variant="ghost" size="sm" className="h-7 px-2 text-[11px]">
+                <BarChart3 className="h-3 w-3 mr-1" />
+                Command
               </Button>
             </Link>
             <Button 
               size="sm"
-              className="h-8"
+              className="h-7 px-3 text-[11px]"
               onClick={() => setCreateDialogOpen(true)}
             >
-              <Plus className="h-3.5 w-3.5 mr-1.5" />
-              Create Incident
+              <Plus className="h-3 w-3 mr-1" />
+              Create
             </Button>
           </div>
         }
       />
 
-      {/* Search & Filter Bar - with proper spacing */}
-      <div className="px-4 py-3 space-y-3 bg-background">
+      {/* Search & Filter Bar */}
+      <div className="px-4 py-2.5 border-b border-border bg-background">
         <div className="flex items-center justify-between gap-4">
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+          <div className="relative flex-1 max-w-xs">
+            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground" />
             <Input
-              placeholder="Search by key or title..."
+              placeholder="Search key or title..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 h-8 text-xs"
+              className="pl-7 h-7 text-[11px]"
             />
           </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 px-2"
-              onClick={() => refetch()}
-            >
-              <RefreshCw className="h-3.5 w-3.5" />
-            </Button>
-            <IncidentFiltersDialog filters={filters} onFiltersChange={setFilters} />
-            {activeFilterCount > 0 && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => setFilters({ status: [], severity: [], support_level: [], delivery_stage: [] })}
-                className="text-xs h-8 px-2"
-              >
-                Clear ({activeFilterCount})
-              </Button>
-            )}
-          </div>
-        </div>
+          
+          <div className="flex items-center gap-3">
+            {/* Summary Counts - inline, subtle */}
+            <div className="flex items-center gap-4 text-[10px] text-muted-foreground">
+              <span className="flex items-center gap-1">
+                <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
+                <span className="font-medium text-foreground">{stats.critical}</span> critical
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+                {stats.open} open
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="h-1.5 w-1.5 rounded-full bg-violet-500" />
+                {stats.toCommittee} committee
+              </span>
+            </div>
 
-        {/* Summary Counts Row */}
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-1.5">
-            <div className="h-2 w-2 rounded-full bg-rose-500" />
-            <span className="text-xs font-medium">{stats.critical} Critical</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="h-2 w-2 rounded-full bg-blue-500" />
-            <span className="text-xs text-muted-foreground">{stats.open} Open</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="h-2 w-2 rounded-full bg-purple-500" />
-            <span className="text-xs text-muted-foreground">{stats.toCommittee} Committee</span>
-          </div>
-          <div className="ml-auto text-xs text-muted-foreground">
-            {filteredIncidents.length} total
-            {searchQuery && ` • matching "${searchQuery}"`}
+            <div className="h-4 w-px bg-border" />
+
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 w-7 p-0"
+                onClick={() => refetch()}
+              >
+                <RefreshCw className="h-3 w-3" />
+              </Button>
+              <IncidentFiltersDialog filters={filters} onFiltersChange={setFilters} />
+              {activeFilterCount > 0 && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setFilters({ status: [], severity: [], support_level: [], delivery_stage: [] })}
+                  className="text-[10px] h-7 px-2"
+                >
+                  Clear ({activeFilterCount})
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </div>
-
-      {/* Divider between filters and table */}
-      <Separator />
 
       {/* Table Content */}
       <div className="flex-1 overflow-hidden">
         {error ? (
           <div className="flex flex-col items-center justify-center h-64 text-center">
-            <AlertCircle className="h-8 w-8 text-destructive mb-2" />
-            <p className="text-sm font-medium text-destructive mb-1">Failed to load incidents</p>
-            <p className="text-xs text-muted-foreground mb-3">
-              {error instanceof Error ? error.message : 'Unable to fetch data from the server'}
+            <AlertCircle className="h-6 w-6 text-destructive mb-2" />
+            <p className="text-xs font-medium text-destructive mb-1">Failed to load incidents</p>
+            <p className="text-[10px] text-muted-foreground mb-3">
+              {error instanceof Error ? error.message : 'Unable to fetch data'}
             </p>
-            <Button variant="outline" size="sm" onClick={() => refetch()}>
-              <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
+            <Button variant="outline" size="sm" className="h-7 text-[10px]" onClick={() => refetch()}>
+              <RefreshCw className="h-3 w-3 mr-1" />
               Retry
             </Button>
           </div>
         ) : filteredIncidents.length === 0 && !isLoading ? (
           <div className="flex flex-col items-center justify-center h-64 text-center">
-            <AlertCircle className="h-8 w-8 text-muted-foreground mb-2" />
-            <p className="text-sm text-muted-foreground">
+            <AlertCircle className="h-6 w-6 text-muted-foreground mb-2" />
+            <p className="text-xs text-muted-foreground">
               {searchQuery ? `No incidents match "${searchQuery}"` : 'No incidents found'}
             </p>
             {!searchQuery && (
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="mt-4"
+                className="mt-3 h-7 text-[10px]"
                 onClick={() => setCreateDialogOpen(true)}
               >
-                <Plus className="h-3.5 w-3.5 mr-1.5" />
+                <Plus className="h-3 w-3 mr-1" />
                 Create First Incident
               </Button>
             )}
