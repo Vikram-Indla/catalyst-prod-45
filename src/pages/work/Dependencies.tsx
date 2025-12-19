@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Search, Plus, Download, MoreHorizontal, AlertTriangle, CheckCircle2, Clock, Grid3x3, GitBranch, List, Filter, Map as MapIcon, X, Layers } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { DependencyDetailsDrawer } from '@/components/dependencies/DependencyDetailsDrawer';
+import { DependencyAnalyticsDrawer } from '@/components/dependencies/DependencyAnalyticsDrawer';
 import { DependencyMatrix } from '@/components/dependencies/DependencyMatrix';
 import { DependencyWheelMap } from '@/components/dependencies/DependencyWheelMap';
 import { DependencyContextMenu } from '@/components/dependencies/DependencyContextMenu';
@@ -41,6 +42,11 @@ export default function DependenciesPage() {
   const [visualizationMode, setVisualizationMode] = useState<'list' | 'matrix' | 'wheel'>('list');
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedDependencyId, setSelectedDependencyId] = useState<string | undefined>();
+  
+  // Analytics drawer state (for wheel)
+  const [analyticsDrawerOpen, setAnalyticsDrawerOpen] = useState(false);
+  const [selectedWheelProgramId, setSelectedWheelProgramId] = useState<string | null>(null);
+  const [selectedWheelProgramName, setSelectedWheelProgramName] = useState<string | undefined>();
 
   // Get first program as default if no programId in params
   const { data: defaultProgram } = useQuery({
@@ -126,6 +132,19 @@ export default function DependenciesPage() {
       const { data, error } = await supabase
         .from('features')
         .select('id, name, display_id, project_id, projects(name)');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Fetch all programs for analytics drawer
+  const { data: programs } = useQuery({
+    queryKey: ['all-programs'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('programs')
+        .select('id, name')
+        .order('name');
       if (error) throw error;
       return data || [];
     },
@@ -472,6 +491,12 @@ export default function DependenciesPage() {
             <DependencyWheelMap 
               quarter={quarterFilter} 
               onDependencyClick={handleRowClick}
+              selectedProgramId={selectedWheelProgramId}
+              onProgramSelect={(id, name) => {
+                setSelectedWheelProgramId(id);
+                setSelectedWheelProgramName(name);
+                setAnalyticsDrawerOpen(true);
+              }}
             />
           )}
 
@@ -668,6 +693,28 @@ export default function DependenciesPage() {
               setSelectedDependencyId(undefined);
             }}
             dependencyId={selectedDependencyId}
+          />
+
+          {/* Analytics Drawer for Wheel */}
+          <DependencyAnalyticsDrawer
+            open={analyticsDrawerOpen}
+            onOpenChange={(open) => {
+              setAnalyticsDrawerOpen(open);
+              if (!open) {
+                setSelectedWheelProgramId(null);
+                setSelectedWheelProgramName(undefined);
+              }
+            }}
+            selectedProgramId={selectedWheelProgramId}
+            selectedProgramName={selectedWheelProgramName}
+            dependencies={resolvedDependencies}
+            programs={programs || []}
+            workItemMaps={workItemMaps}
+            initialQuarter={quarterFilter}
+            onDependencyClick={(depId) => {
+              setSelectedDependencyId(depId);
+              setDrawerOpen(true);
+            }}
           />
         </div>
       </div>
