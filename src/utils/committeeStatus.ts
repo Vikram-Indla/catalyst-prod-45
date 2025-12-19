@@ -34,8 +34,17 @@ export interface CommitteeStatusResult {
 }
 
 export function getCommitteeDisplayStatus(committee: Committee | null | undefined): CommitteeStatusResult {
-  // No committee or no members = Not started
-  if (!committee || !committee.members || committee.members.length === 0) {
+  // No committee = N/A
+  if (!committee) {
+    return {
+      status: 'not_applicable',
+      label: 'N/A',
+      className: 'text-[var(--text-3)]',
+    };
+  }
+  
+  // Committee exists but no members = Not started
+  if (!committee.members || committee.members.length === 0) {
     return {
       status: 'not_applicable',
       label: 'Not started',
@@ -96,11 +105,11 @@ export function getCommitteeDisplayStatus(committee: Committee | null | undefine
     };
   }
 
-  // Still pending votes
+  // Still pending votes - show "In progress"
   if (pendingCount > 0) {
     return {
       status: 'in_progress',
-      label: `${approvedCount}/${totalMembers}`,
+      label: 'In progress',
       className: 'text-violet-600 dark:text-violet-400',
     };
   }
@@ -108,7 +117,7 @@ export function getCommitteeDisplayStatus(committee: Committee | null | undefine
   // Fallback
   return {
     status: 'in_progress',
-    label: 'Pending',
+    label: 'In progress',
     className: 'text-violet-600 dark:text-violet-400',
   };
 }
