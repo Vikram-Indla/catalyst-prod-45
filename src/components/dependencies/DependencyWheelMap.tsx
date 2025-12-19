@@ -9,6 +9,8 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { useState, useMemo } from 'react';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { DependencyWheelDetailsPanel } from './DependencyWheelDetailsPanel';
 import { buildWorkItemMaps, extractProgramIdsFromDep, resolveDependencyWorkItems } from '@/lib/dependencies/resolveWorkItem';
 
@@ -16,9 +18,6 @@ interface DependencyWheelMapProps {
   quarter?: string;
   selectedProgram?: string;
   onDependencyClick?: (depId: string) => void;
-  showEpics?: boolean;
-  showFeatures?: boolean;
-  showOnlyConnected?: boolean;
 }
 
 interface WheelNode {
@@ -40,14 +39,10 @@ interface WheelLink {
   dependency?: any;
 }
 
-export function DependencyWheelMap({ 
-  quarter, 
-  selectedProgram, 
-  onDependencyClick,
-  showEpics = true,
-  showFeatures = false,
-  showOnlyConnected = false,
-}: DependencyWheelMapProps) {
+export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick }: DependencyWheelMapProps) {
+  const [showFeatures, setShowFeatures] = useState(false);
+  const [showEpics, setShowEpics] = useState(true);
+  const [showOnlyAssociated, setShowOnlyAssociated] = useState(false);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
   const [hoveredLinkId, setHoveredLinkId] = useState<string | null>(null);
@@ -181,9 +176,9 @@ export function DependencyWheelMap({
       toNode.inboundCount++;
     });
 
-    // Filter nodes if showOnlyConnected is true
+    // Filter nodes if showOnlyAssociated is true
     let filteredNodes = Array.from(nodeMap.values());
-    if (showOnlyConnected) {
+    if (showOnlyAssociated) {
       const connectedIds = new Set<string>();
       linkList.forEach(link => {
         connectedIds.add(link.fromNodeId);
@@ -193,7 +188,7 @@ export function DependencyWheelMap({
     }
 
     return { nodes: filteredNodes, links: linkList };
-  }, [programs, dependencies, workItemMaps, selectedProgram, showEpics, showFeatures, showOnlyConnected]);
+  }, [programs, dependencies, workItemMaps, selectedProgram, showEpics, showFeatures, showOnlyAssociated]);
 
   if (!programs || programs.length === 0) {
     return (
@@ -380,6 +375,35 @@ export function DependencyWheelMap({
   return (
     <div className="flex flex-col lg:flex-row gap-4 overflow-auto max-h-full">
       <div className="flex-1 space-y-4 min-w-0 overflow-visible">
+        {/* Controls */}
+        <Card className="p-3 sm:p-4">
+          <div className="flex items-center gap-3 sm:gap-6 flex-wrap">
+            <div className="flex items-center gap-2">
+              <Switch
+                id="epics"
+                checked={showEpics}
+                onCheckedChange={setShowEpics}
+              />
+              <Label htmlFor="epics" className="cursor-pointer text-xs sm:text-sm">Epic Dependencies</Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <Switch
+                id="features"
+                checked={showFeatures}
+                onCheckedChange={setShowFeatures}
+              />
+              <Label htmlFor="features" className="cursor-pointer text-xs sm:text-sm">Feature Dependencies</Label>
+            </div>
+            <div className="flex items-center gap-2 sm:ml-auto">
+              <Switch
+                id="associated"
+                checked={showOnlyAssociated}
+                onCheckedChange={setShowOnlyAssociated}
+              />
+              <Label htmlFor="associated" className="cursor-pointer text-xs sm:text-sm">Show Only Connected</Label>
+            </div>
+          </div>
+        </Card>
 
         {/* Wheel Map */}
         <Card className="p-2 sm:p-4 bg-background overflow-hidden">
