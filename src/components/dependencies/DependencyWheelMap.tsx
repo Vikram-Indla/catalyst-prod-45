@@ -18,6 +18,8 @@ interface DependencyWheelMapProps {
   quarter?: string;
   selectedProgram?: string;
   onDependencyClick?: (depId: string) => void;
+  selectedProgramId?: string | null;
+  onProgramSelect?: (programId: string | null, programName?: string) => void;
 }
 
 interface WheelNode {
@@ -39,11 +41,13 @@ interface WheelLink {
   dependency?: any;
 }
 
-export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick }: DependencyWheelMapProps) {
+export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick, selectedProgramId, onProgramSelect }: DependencyWheelMapProps) {
   const [showFeatures, setShowFeatures] = useState(false);
   const [showEpics, setShowEpics] = useState(true);
   const [showOnlyAssociated, setShowOnlyAssociated] = useState(false);
-  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  // Use controlled selection if provided, otherwise internal state
+  const [internalSelectedNodeId, setInternalSelectedNodeId] = useState<string | null>(null);
+  const selectedNodeId = selectedProgramId !== undefined ? selectedProgramId : internalSelectedNodeId;
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
   const [hoveredLinkId, setHoveredLinkId] = useState<string | null>(null);
   const [wheelRotation, setWheelRotation] = useState(0);
@@ -348,22 +352,29 @@ export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick
   const selectedNode = selectedNodeId ? nodes.find(n => n.id === selectedNodeId) || null : null;
 
   const handleNodeClick = (nodeId: string, segmentMidAngle: number) => {
+    const node = nodes.find(n => n.id === nodeId);
+    
     if (nodeId === selectedNodeId) {
-      setSelectedNodeId(null);
+      // Deselect
+      if (onProgramSelect) {
+        onProgramSelect(null);
+      } else {
+        setInternalSelectedNodeId(null);
+      }
       setWheelRotation(0);
       return;
     }
 
-    setSelectedNodeId(nodeId);
+    // Select and rotate
+    if (onProgramSelect) {
+      onProgramSelect(nodeId, node?.name);
+    } else {
+      setInternalSelectedNodeId(nodeId);
+    }
+    
     const targetAngle = 0;
     const rotationNeeded = (targetAngle - segmentMidAngle) * (180 / Math.PI);
     setWheelRotation(rotationNeeded);
-
-    // If this program only has a single dependency in view, open it directly.
-    const related = links.filter((l) => l.fromNodeId === nodeId || l.toNodeId === nodeId);
-    if (related.length === 1 && onDependencyClick) {
-      onDependencyClick(related[0].dependencyId);
-    }
   };
 
   const handleLinkClick = (depId: string) => {
@@ -441,11 +452,10 @@ export function DependencyWheelMap({ quarter, selectedProgram, onDependencyClick
                         d={segment.path}
                         fill={segmentColors[segment.colorIndex]}
                         opacity={segment.isSelected ? 1 : segment.isHovered ? 0.95 : 0.85}
-                        stroke={segment.isSelected ? 'var(--brand-primary)' : 'white'}
-                        strokeWidth={segment.isSelected ? 4 : 2}
+                        stroke={segment.isSelected ? 'var(--border-default)' : 'white'}
+                        strokeWidth={segment.isSelected ? 3 : 2}
                         className="cursor-pointer"
                         style={{
-                          filter: segment.isSelected ? 'drop-shadow(0 0 12px var(--brand-primary-muted))' : 'none',
                           transition: 'all 0.3s ease'
                         }}
                         onMouseEnter={() => setHoveredNodeId(segment.id)}
