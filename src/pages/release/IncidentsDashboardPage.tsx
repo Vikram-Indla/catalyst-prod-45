@@ -229,7 +229,7 @@ export default function IncidentsDashboardPage() {
                     <tr 
                       key={inc.id} 
                       className="hover:bg-red-50/50 cursor-pointer border-t border-red-100"
-                      onClick={() => navigate(`/release/incidents/${inc.id}`)}
+                      onClick={() => navigate(`/release/incident-room/${inc.id}`)}
                     >
                       <td className="px-3 py-2 font-mono font-medium text-red-700">{inc.incident_key}</td>
                       <td className="px-3 py-2 text-foreground">{inc.title}</td>
