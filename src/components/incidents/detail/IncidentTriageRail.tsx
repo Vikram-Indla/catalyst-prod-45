@@ -51,6 +51,12 @@ interface SlaRecord {
   resolution_breached: boolean;
 }
 
+interface BusinessProcess {
+  id: string;
+  name_en: string;
+  name_ar?: string;
+}
+
 interface IncidentTriageRailProps {
   incidentId: string;
   status: IncidentStatus;
@@ -65,6 +71,8 @@ interface IncidentTriageRailProps {
   reporterName: string | null;
   deliveryStage: DeliveryStage | null;
   releaseVersion: ReleaseVersion | null;
+  businessProcess: BusinessProcess | null;
+  serviceComponent: string | null;
   sla: SlaRecord | null;
   createdAt: string;
   updatedAt: string;
@@ -117,6 +125,8 @@ export function IncidentTriageRail({
   reporterName,
   deliveryStage,
   releaseVersion,
+  businessProcess,
+  serviceComponent,
   sla,
   createdAt,
   updatedAt,
@@ -369,11 +379,27 @@ export function IncidentTriageRail({
                 </div>
               </FieldRow>
 
-              {/* Business Process - Placeholder (needs DB field) */}
+              {/* Business Process */}
               <FieldRow label="Business Process">
                 <div className="flex items-center gap-2 p-2.5 bg-background rounded-md border border-border">
                   <Building2 className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">Not specified</span>
+                  {businessProcess ? (
+                    <span className="text-sm font-medium">{businessProcess.name_en}</span>
+                  ) : (
+                    <span className="text-sm text-muted-foreground">Not specified</span>
+                  )}
+                </div>
+              </FieldRow>
+
+              {/* Affected Service/System */}
+              <FieldRow label="Affected Service/System">
+                <div className="flex items-center gap-2 p-2.5 bg-background rounded-md border border-border">
+                  <Cog className="h-3.5 w-3.5 text-muted-foreground" />
+                  {serviceComponent ? (
+                    <span className="text-sm font-medium">{serviceComponent}</span>
+                  ) : (
+                    <span className="text-sm text-muted-foreground">Not specified</span>
+                  )}
                 </div>
               </FieldRow>
 
