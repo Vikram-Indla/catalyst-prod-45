@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { format } from 'date-fns';
 import {
   Dialog,
   DialogContent,
@@ -10,7 +11,6 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -21,8 +21,15 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { Calendar } from '@/components/ui/calendar';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { toast } from 'sonner';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, CalendarIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import type { WorkItemDependencyType, DependencyTypeV2, RiskLevel, DependencyLevelV2 } from '@/lib/dependencies/types';
 import { DEPENDENCY_TYPE_LABELS, DEPENDENCY_LEVEL_LABELS } from '@/lib/dependencies/types';
 
@@ -359,13 +366,29 @@ export function CreateDependencyDialog({
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label htmlFor="needed-by" className="text-xs text-muted-foreground">Needed By Date *</Label>
-                <Input
-                  id="needed-by"
-                  type="date"
-                  value={neededByDate}
-                  onChange={(e) => setNeededByDate(e.target.value)}
-                  required
-                />
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !neededByDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {neededByDate ? format(new Date(neededByDate), "PPP") : <span>Pick a date</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={neededByDate ? new Date(neededByDate) : undefined}
+                      onSelect={(date) => setNeededByDate(date ? format(date, 'yyyy-MM-dd') : '')}
+                      initialFocus
+                      className={cn("p-3 pointer-events-auto")}
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
               <div>
                 <Label htmlFor="quarter" className="text-xs text-muted-foreground">Quarter</Label>
