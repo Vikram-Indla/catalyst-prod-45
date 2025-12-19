@@ -92,6 +92,7 @@ interface IncidentMainContentProps {
   onVote: (vote: 'approved' | 'rejected', isVeto?: boolean, note?: string) => void;
   onAddApprover: (userId: string, hasVeto: boolean, note: string) => void;
   onInitiateCommittee?: () => void;
+  onCreateCommittee?: () => void;
   onResolutionChange: (field: string, value: string) => void;
   // Available approvers for Add Approver dialog
   availableApprovers: IncidentUserProfile[];
@@ -153,6 +154,7 @@ export function IncidentMainContent({
   onVote,
   onAddApprover,
   onInitiateCommittee,
+  onCreateCommittee,
   onResolutionChange,
   availableApprovers,
   isUploadPending,
@@ -494,6 +496,7 @@ export function IncidentMainContent({
               onVote={onVote}
               onAddApprover={onAddApprover}
               onInitiateCommittee={onInitiateCommittee}
+              onCreateCommittee={onCreateCommittee}
               isVotePending={isVotePending}
             />
           </TabsContent>

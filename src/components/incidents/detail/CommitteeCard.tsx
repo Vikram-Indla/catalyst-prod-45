@@ -34,6 +34,7 @@ interface CommitteeCardProps {
   onVote: (vote: 'approved' | 'rejected', isVeto?: boolean, note?: string) => void;
   onAddApprover: (userId: string, hasVeto: boolean, note: string) => void;
   onInitiateCommittee?: () => void;
+  onCreateCommittee?: () => void;
   isVotePending: boolean;
 }
 
@@ -45,6 +46,7 @@ export function CommitteeCard({
   onVote,
   onAddApprover,
   onInitiateCommittee,
+  onCreateCommittee,
   isVotePending,
 }: CommitteeCardProps) {
   const [decisionNote, setDecisionNote] = useState('');
@@ -53,47 +55,80 @@ export function CommitteeCard({
   // No committee and not required
   if (!committee && !requiresCommittee) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-center">
-        <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center mb-3">
-          <Users className="h-6 w-6 text-muted-foreground" />
+      <div className="flex items-start justify-between gap-3 p-4 rounded-lg border border-border bg-background">
+        <div className="flex items-start gap-2.5">
+          <div className="h-9 w-9 rounded-full bg-muted flex items-center justify-center mt-0.5">
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </div>
+          <div>
+            <p className="text-sm font-medium text-foreground">No committee required</p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              This incident does not require committee approval.
+            </p>
+          </div>
         </div>
-        <p className="text-sm font-medium text-foreground mb-1">Committee Not Required</p>
-        <p className="text-xs text-muted-foreground max-w-xs">
-          This incident does not require committee approval based on its classification.
-        </p>
+        {onCreateCommittee && !isConverted && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 px-3 text-xs"
+            onClick={onCreateCommittee}
+          >
+            Create anyway
+          </Button>
+        )}
       </div>
     );
   }
 
-  // Committee required but not yet initiated - allow adding approvers directly
+  // Committee required but missing
   if (!committee && requiresCommittee) {
     return (
       <div className="space-y-4">
         <div className="flex flex-col items-center justify-center py-8 text-center">
-          <div className="h-12 w-12 rounded-full bg-amber-100 dark:bg-amber-950/30 flex items-center justify-center mb-3">
-            <AlertTriangle className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+          <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center mb-3">
+            <AlertTriangle className="h-6 w-6 text-muted-foreground" />
           </div>
-          <p className="text-sm font-medium text-foreground mb-1">Committee Review Required</p>
+          <p className="text-sm font-medium text-foreground mb-1">Committee approval required</p>
           <p className="text-xs text-muted-foreground max-w-xs mb-4">
-            This incident requires committee approval before it can be converted.
+            Create a committee to start collecting approvals for this incident.
           </p>
           {!isConverted && (
             <div className="flex flex-col gap-2 w-full max-w-xs">
-              <Button size="sm" onClick={() => setShowAddApprover(true)} className="h-8 text-xs">
+              <Button
+                size="sm"
+                className="h-8 text-xs"
+                onClick={() => (onCreateCommittee ? onCreateCommittee() : setShowAddApprover(true))}
+                disabled={isVotePending}
+              >
+                <Users className="h-3.5 w-3.5 mr-1.5" />
+                Create Committee
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-8 text-xs"
+                onClick={() => setShowAddApprover(true)}
+                disabled={isVotePending}
+              >
                 <UserPlus className="h-3.5 w-3.5 mr-1.5" />
-                Add First Approver
+                Add first approver
               </Button>
               {onInitiateCommittee && (
-                <Button size="sm" variant="outline" onClick={onInitiateCommittee} className="h-8 text-xs">
-                  <Users className="h-3.5 w-3.5 mr-1.5" />
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-8 text-xs"
+                  onClick={onInitiateCommittee}
+                  disabled={isVotePending}
+                >
                   Use Default Approvers
                 </Button>
               )}
             </div>
           )}
         </div>
-        
-        {/* Add Approver Dialog - works even without committee */}
+
         <AddApproverDialog
           open={showAddApprover}
           onOpenChange={setShowAddApprover}
