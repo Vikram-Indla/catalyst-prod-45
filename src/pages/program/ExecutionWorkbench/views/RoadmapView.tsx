@@ -1,17 +1,20 @@
 /**
- * WorkBench views: Table/Gantt/Roadmap/Board/Swimlane
+ * WorkBench views: Roadmap View
  * 
- * Variant C: Roadmap View - Simplified time-phased view (quarter/year)
- * Enhanced with Claude Variant A styling
+ * Executive-grade quarterly roadmap with:
+ * - Epic rows with type badge + health + title + owner
+ * - Feature health dots summary row
+ * - Progress bars with date range
+ * - Today marker
+ * No checkboxes - clean executive presentation
+ * Uses semantic tokens from index.css for dark/light mode support
  */
 
 import React, { useMemo } from 'react';
 import { WorkItem, HealthStatus } from '../types';
-import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { format, startOfQuarter, endOfQuarter, differenceInDays, addQuarters, subQuarters, getQuarter, getYear } from 'date-fns';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Square } from 'lucide-react';
 
 interface RoadmapViewProps {
   items: WorkItem[];
@@ -25,6 +28,73 @@ interface Quarter {
   end: Date;
 }
 
+// Type badge for epics
+function TypeBadge({ type }: { type: string }) {
+  const config: Record<string, { label: string; bgClass: string; textClass: string }> = {
+    epic: { label: 'E', bgClass: 'bg-workitem-epic/20', textClass: 'text-workitem-epic' },
+    feature: { label: 'F', bgClass: 'bg-workitem-feature/20', textClass: 'text-workitem-feature' },
+    story: { label: 'S', bgClass: 'bg-muted', textClass: 'text-muted-foreground' },
+  };
+  const { label, bgClass, textClass } = config[type] || config.story;
+  
+  return (
+    <span className={cn(
+      "inline-flex items-center justify-center w-5 h-5 rounded text-[10px] font-bold flex-shrink-0",
+      bgClass, textClass
+    )}>
+      {label}
+    </span>
+  );
+}
+
+// Health dot (small indicator)
+function HealthDot({ health, size = 'sm' }: { health: HealthStatus; size?: 'sm' | 'md' }) {
+  const colorClass: Record<HealthStatus, string> = {
+    'On Track': 'bg-secondary-green',
+    'At Risk': 'bg-brand-gold',
+    'Blocked': 'bg-destructive',
+  };
+  
+  return (
+    <span className={cn(
+      "rounded-full flex-shrink-0",
+      colorClass[health] || 'bg-muted',
+      size === 'sm' ? 'w-2 h-2' : 'w-2.5 h-2.5'
+    )} />
+  );
+}
+
+// Feature health dots row - shows health of all child features
+function FeatureHealthDots({ features }: { features: WorkItem[] }) {
+  if (!features || features.length === 0) return null;
+  
+  // Take first 6 features for display
+  const displayFeatures = features.slice(0, 6);
+  const remaining = features.length - 6;
+  
+  return (
+    <div className="flex items-center gap-1 mt-1">
+      {displayFeatures.map((feature, i) => (
+        <TooltipProvider key={i}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span>
+                <HealthDot health={feature.health} />
+              </span>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="text-[10px]">
+              {feature.key}: {feature.title} ({feature.health})
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      ))}
+      {remaining > 0 && (
+        <span className="text-[9px] text-muted-foreground ml-0.5">+{remaining}</span>
+      )}
+    </div>
+  );
+}
+
 function getHealthBarColor(health: HealthStatus): string {
   switch (health) {
     case 'On Track': return 'bg-secondary-green';
@@ -34,21 +104,21 @@ function getHealthBarColor(health: HealthStatus): string {
   }
 }
 
-function getHealthBorderColor(health: HealthStatus): string {
+function getHealthBarBg(health: HealthStatus): string {
   switch (health) {
-    case 'On Track': return 'border-secondary-green';
-    case 'At Risk': return 'border-brand-gold';
-    case 'Blocked': return 'border-destructive';
-    default: return 'border-muted';
+    case 'On Track': return 'bg-secondary-green/25';
+    case 'At Risk': return 'bg-brand-gold/25';
+    case 'Blocked': return 'bg-destructive/25';
+    default: return 'bg-muted/25';
   }
 }
 
-function getHealthBadgeStyle(health: HealthStatus): string {
+function getHealthBorderColor(health: HealthStatus): string {
   switch (health) {
-    case 'On Track': return 'bg-secondary-green/15 text-secondary-green';
-    case 'At Risk': return 'bg-brand-gold/15 text-brand-gold';
-    case 'Blocked': return 'bg-destructive/15 text-destructive';
-    default: return 'bg-muted text-muted-foreground';
+    case 'On Track': return 'border-secondary-green/50';
+    case 'At Risk': return 'border-brand-gold/50';
+    case 'Blocked': return 'border-destructive/50';
+    default: return 'border-muted/50';
   }
 }
 
@@ -74,68 +144,69 @@ function RoadmapRow({ item, onItemClick, timelineStart, totalDays }: RoadmapRowP
 
   const hasValidDates = startDate && endDate;
 
-  // Get features as markers
-  const featureMarkers = useMemo(() => {
+  // Get child features for health dots
+  const childFeatures = useMemo(() => {
     if (!item.children || item.type !== 'epic') return [];
-    return item.children.filter(child => child.endDate).map(child => ({
-      ...child,
-      position: dateToPercent(new Date(child.endDate!), timelineStart, totalDays)
-    }));
-  }, [item.children, item.type, timelineStart, totalDays]);
+    return item.children.filter(child => child.type === 'feature');
+  }, [item.children, item.type]);
 
   return (
-    <div className="flex items-stretch border-b border-border/40 hover:bg-muted/30 transition-colors min-h-[52px]">
-      {/* Left panel - Epic info */}
+    <div className="flex items-stretch border-b border-border/40 hover:bg-muted/30 transition-colors min-h-[64px]">
+      {/* Left panel - Epic info (no checkbox) */}
       <div 
-        className="w-[220px] flex-shrink-0 py-2.5 px-3 flex items-center gap-2.5 cursor-pointer border-r border-border/40"
+        className="w-[240px] flex-shrink-0 py-3 px-4 flex items-start gap-3 cursor-pointer border-r border-border/40"
         onClick={() => onItemClick(item)}
       >
-        <Square className="h-4 w-4 text-workitem-epic flex-shrink-0" />
+        <TypeBadge type={item.type} />
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-2 mb-0.5">
+            <HealthDot health={item.health} size="md" />
             <span className="font-mono text-[10px] text-brand-gold">{item.key}</span>
-            <span className={cn(
-              "inline-block px-1.5 py-0.5 rounded text-[9px] font-medium",
-              getHealthBadgeStyle(item.health)
-            )}>
-              {item.health}
-            </span>
           </div>
-          <p className="text-xs font-medium truncate">{item.title}</p>
+          <p className="text-sm font-semibold truncate leading-tight">{item.title}</p>
           {item.owner && (
-            <p className="text-[10px] text-muted-foreground truncate">{item.owner}</p>
+            <p className="text-[10px] text-muted-foreground truncate mt-0.5">{item.owner}</p>
           )}
+          {/* Feature health dots */}
+          <FeatureHealthDots features={childFeatures} />
         </div>
       </div>
 
       {/* Timeline area */}
-      <div className="flex-1 relative py-2.5 px-2">
+      <div className="flex-1 relative py-3 px-2">
         {hasValidDates ? (
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <div
                   className={cn(
-                    "absolute top-1/2 -translate-y-1/2 h-8 rounded-md cursor-pointer transition-all border-2",
-                    "bg-gradient-to-r from-brand-gold/20 to-secondary-bronze/20 border-brand-gold"
+                    "absolute top-1/2 -translate-y-1/2 h-9 rounded-md cursor-pointer transition-all border",
+                    getHealthBarBg(item.health),
+                    getHealthBorderColor(item.health)
                   )}
                   style={{
                     left: `${barStart}%`,
                     width: `${barWidth}%`,
-                    minWidth: '16px'
+                    minWidth: '60px'
                   }}
                   onClick={() => onItemClick(item)}
                 >
                   {/* Progress fill */}
                   <div 
-                    className="absolute left-0 top-0 bottom-0 bg-gradient-to-r from-brand-gold to-secondary-bronze rounded-l opacity-70"
+                    className={cn(
+                      "absolute left-0 top-0 bottom-0 rounded-l-md",
+                      getHealthBarColor(item.health)
+                    )}
                     style={{ width: `${item.progress}%` }}
                   />
                   
-                  {/* Label inside bar */}
-                  <span className="absolute inset-0 flex items-center justify-center text-[10px] font-semibold text-foreground truncate px-1.5">
-                    {item.progress}%
-                  </span>
+                  {/* Bar content: progress % on left, date range on right */}
+                  <div className="absolute inset-0 flex items-center justify-between px-3 text-[10px] font-semibold text-foreground">
+                    <span>{item.progress}%</span>
+                    <span className="text-[9px] text-muted-foreground">
+                      {format(startDate!, 'MMM d')} - {format(endDate!, 'MMM d')}
+                    </span>
+                  </div>
                 </div>
               </TooltipTrigger>
               <TooltipContent className="max-w-[320px]">
@@ -147,20 +218,25 @@ function RoadmapRow({ item, onItemClick, timelineStart, totalDays }: RoadmapRowP
                     </p>
                   </div>
                   <div className="flex items-center gap-2 text-[10px]">
-                    <Badge variant="outline" className="text-[9px] py-0">{item.health}</Badge>
+                    <span className={cn(
+                      "px-1.5 py-0.5 rounded text-[9px]",
+                      item.health === 'On Track' && "bg-secondary-green/20 text-secondary-green",
+                      item.health === 'At Risk' && "bg-brand-gold/20 text-brand-gold",
+                      item.health === 'Blocked' && "bg-destructive/20 text-destructive"
+                    )}>{item.health}</span>
+                    <span>•</span>
                     <span>{item.progress}% complete</span>
                   </div>
-                  {item.children && item.children.length > 0 && (
+                  {item.owner && <p className="text-[10px]">Owner: {item.owner}</p>}
+                  {childFeatures.length > 0 && (
                     <div className="pt-1 border-t border-border">
-                      <p className="text-[10px] font-medium mb-1">{item.children.length} Features:</p>
-                      <div className="space-y-0.5 max-h-[80px] overflow-y-auto">
-                        {item.children.slice(0, 4).map(child => (
-                          <p key={child.id} className="text-[10px] text-muted-foreground truncate">
-                            {child.key}: {child.title}
-                          </p>
+                      <p className="text-[10px] font-medium mb-1">{childFeatures.length} Features:</p>
+                      <div className="flex gap-1">
+                        {childFeatures.slice(0, 8).map((f, i) => (
+                          <HealthDot key={i} health={f.health} />
                         ))}
-                        {item.children.length > 4 && (
-                          <p className="text-[10px] text-muted-foreground">+{item.children.length - 4} more</p>
+                        {childFeatures.length > 8 && (
+                          <span className="text-[9px] text-muted-foreground">+{childFeatures.length - 8}</span>
                         )}
                       </div>
                     </div>
@@ -177,16 +253,6 @@ function RoadmapRow({ item, onItemClick, timelineStart, totalDays }: RoadmapRowP
             No dates set
           </div>
         )}
-
-        {/* Feature markers */}
-        {hasValidDates && featureMarkers.slice(0, 4).map((feature, i) => (
-          <div
-            key={feature.id}
-            className="absolute bottom-1.5 w-2 h-2 rounded-sm bg-secondary-bronze border border-background"
-            style={{ left: `${feature.position}%`, transform: 'translateX(-50%)' }}
-            title={`${feature.key}: ${feature.title}`}
-          />
-        ))}
       </div>
     </div>
   );
@@ -257,7 +323,7 @@ export function RoadmapView({ items, onItemClick, selectedYear }: RoadmapViewPro
     <div className="flex flex-col flex-1 overflow-hidden">
       {/* Header */}
       <div className="flex items-stretch border-b border-border bg-muted/50 sticky top-0 z-10">
-        <div className="w-[220px] flex-shrink-0 py-2.5 px-3 border-r border-border/40">
+        <div className="w-[240px] flex-shrink-0 py-3 px-4 border-r border-border/40">
           <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
             Epics
           </span>
@@ -269,7 +335,7 @@ export function RoadmapView({ items, onItemClick, selectedYear }: RoadmapViewPro
               <div 
                 key={i}
                 className={cn(
-                  "flex-1 py-2.5 px-2 text-center border-r border-border/30 last:border-r-0",
+                  "flex-1 py-3 px-2 text-center border-r border-border/30 last:border-r-0",
                   isCurrentQuarter && "bg-brand-gold/10"
                 )}
               >
@@ -288,7 +354,7 @@ export function RoadmapView({ items, onItemClick, selectedYear }: RoadmapViewPro
       {/* Body */}
       <div className="flex-1 overflow-auto relative">
         {/* Quarter grid lines */}
-        <div className="absolute inset-0 flex pointer-events-none" style={{ left: '220px', right: 0 }}>
+        <div className="absolute inset-0 flex pointer-events-none" style={{ left: '240px', right: 0 }}>
           {quarters.map((_, i) => (
             <div key={i} className="flex-1 border-r border-border/20 last:border-r-0" />
           ))}
@@ -297,8 +363,8 @@ export function RoadmapView({ items, onItemClick, selectedYear }: RoadmapViewPro
         {/* Today line */}
         {showTodayLine && (
           <div 
-            className="absolute top-0 bottom-0 w-0.5 bg-brand-gold z-20"
-            style={{ left: `calc(220px + ${todayPercent}% * (100% - 220px) / 100)` }}
+            className="absolute top-0 bottom-0 w-0.5 bg-brand-gold z-20 pointer-events-none"
+            style={{ left: `calc(240px + (100% - 240px) * ${todayPercent / 100})` }}
           />
         )}
 
