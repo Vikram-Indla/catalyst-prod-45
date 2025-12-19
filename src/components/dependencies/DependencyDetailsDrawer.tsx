@@ -85,6 +85,81 @@ const deriveQuarterFromDate = (dateStr: string): string => {
   return `Q${q} ${date.getFullYear()}`;
 };
 
+// Audit Log Content Component
+function AuditLogContent({ dependencyId }: { dependencyId?: string }) {
+  const { data: auditLogs, isLoading } = useQuery({
+    queryKey: ['dependency-audit-log', dependencyId],
+    queryFn: async () => {
+      if (!dependencyId) return [];
+      const { data, error } = await supabase
+        .from('dependency_audit_log')
+        .select('*')
+        .eq('dependency_id', dependencyId)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!dependencyId,
+  });
+
+  if (!dependencyId) {
+    return (
+      <div className="text-center text-sm py-12 text-muted-foreground">
+        Save the dependency to see audit history
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="text-center text-sm py-12 text-muted-foreground">
+        Loading audit log...
+      </div>
+    );
+  }
+
+  if (!auditLogs?.length) {
+    return (
+      <div className="text-center text-sm py-12 text-muted-foreground">
+        No audit entries yet
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {auditLogs.map((log: any) => (
+        <div 
+          key={log.id} 
+          className="p-3 rounded-md border bg-muted/30 space-y-1"
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium capitalize">{log.action}</span>
+            <span className="text-xs text-muted-foreground">
+              {format(new Date(log.created_at), 'MMM d, yyyy h:mm a')}
+            </span>
+          </div>
+          {log.field_changed && (
+            <div className="text-xs text-muted-foreground">
+              Field: <span className="font-medium">{log.field_changed}</span>
+            </div>
+          )}
+          {(log.old_value || log.new_value) && (
+            <div className="text-xs text-muted-foreground flex gap-2">
+              {log.old_value && <span className="line-through">{log.old_value}</span>}
+              {log.old_value && log.new_value && <span>→</span>}
+              {log.new_value && <span className="font-medium">{log.new_value}</span>}
+            </div>
+          )}
+          {log.notes && (
+            <div className="text-xs text-muted-foreground">{log.notes}</div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 interface DependencyDetailsDrawerProps {
   open: boolean;
   onClose: () => void;
@@ -1048,9 +1123,7 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
 
               {/* Audit Tab */}
               <TabsContent value="audit" className="m-0 focus-visible:outline-none p-5 pb-8">
-                <div className="text-center text-sm py-12 text-muted-foreground">
-                  Audit log will appear here
-                </div>
+                <AuditLogContent dependencyId={dependencyId} />
               </TabsContent>
             </div>
 
