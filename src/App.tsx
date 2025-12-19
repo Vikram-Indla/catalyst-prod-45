@@ -221,7 +221,7 @@ import {
   IncidentDetail,
   IncidentsDashboard,
   CreateIncident,
-  CAPCommitteeQueue,
+  CommitteeQueue,
   IncidentReports,
   VersionsList,
   VersionDetail,
@@ -628,7 +628,7 @@ const App = () => (
               
               {/* Incident Support Routes */}
               <Route path="/release/incident-command-center" element={<IncidentCommandCenter />} />
-              <Route path="/release/committee-queue" element={<CAPCommitteeQueue />} />
+              <Route path="/release/committee-queue" element={<CommitteeQueue />} />
               <Route path="/release/versions" element={<VersionsList />} />
               <Route path="/release/versions/calendar" element={<ReleaseCalendar />} />
               <Route path="/release/versions/:id" element={<VersionDetail />} />

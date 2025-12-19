@@ -18,7 +18,7 @@ export function ReleaseRoomSidebar({ expanded, onToggle, className }: ReleaseRoo
       { id: 'incidents-dashboard', title: 'Incident Dashboard', path: '/release/incidents/dashboard', icon: LayoutDashboard, exact: true },
       { id: 'incidents', title: 'Incident List', path: '/release/incidents', icon: List, exact: true, badge: openIncidentCount },
       { id: 'incident-reports', title: 'Incident Reports', path: '/release/incident-reports', icon: FileText, exact: true },
-      { id: 'committee-queue', title: 'CAP Committee Queue', path: '/release/committee-queue', icon: Users, exact: true },
+      { id: 'committee-queue', title: 'Committee Queue', path: '/release/committee-queue', icon: Users, exact: true },
       { id: 'versions', title: 'Versions', path: '/release/versions', icon: Tag, exact: false },
       { id: 'calendar', title: 'Calendar', path: '/release/calendar', icon: Calendar, exact: true },
     ],
