@@ -111,7 +111,7 @@ export function InlineEditCell({
       );
     }
     
-    // Editing mode - show switch
+    // Editing mode - show switch with neutral styling (no green outline)
     return (
       <div 
         className="flex items-center gap-2" 
@@ -129,7 +129,7 @@ export function InlineEditCell({
             }
           }}
           disabled={isSaving}
-          className="data-[state=checked]:bg-amber-500 data-[state=unchecked]:bg-[var(--surface-3)] border-0 focus-visible:ring-[var(--focus-ring)]"
+          className="data-[state=checked]:bg-amber-500 data-[state=unchecked]:bg-[var(--surface-3)] border-[var(--border-color)] focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-0"
         />
         <button
           onClick={() => setIsEditing(false)}

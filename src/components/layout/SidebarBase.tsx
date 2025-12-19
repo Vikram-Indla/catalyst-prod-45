@@ -152,7 +152,7 @@ export function SidebarBase({
         </div>
 
         {/* Navigation Menu */}
-        <nav style={{ flex: 1, overflowY: 'auto', padding: '4px 8px' }}>
+        <nav style={{ flex: 1, overflowY: 'auto', padding: '4px 6px' }}>
           {config.items.map((item) => {
             const active = isActive(item.path, item.exact);
             const CustomIcon = iconResolver?.(item.id) || item.icon;
@@ -162,75 +162,85 @@ export function SidebarBase({
                 onClick={() => handleNavigation(item.path)}
                 style={{
                   width: '100%',
-                  height: '40px',
-                  padding: expanded ? '0 12px' : '0',
+                  height: '44px',
+                  padding: '0',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '12px',
                   borderRadius: '6px',
                   border: 'none',
                   cursor: 'pointer',
                   transition: 'background 0.15s ease, color 0.15s ease',
                   marginBottom: '2px',
                   position: 'relative',
-                  justifyContent: expanded ? 'flex-start' : 'center',
-                  background: active ? 'var(--nav-active-bg)' : 'transparent',
+                  background: active ? 'rgba(92,124,92,0.12)' : 'transparent',
                   color: active ? 'var(--text-1)' : 'var(--text-2)',
                   fontWeight: active ? 600 : 500,
-                  fontSize: '14px',
+                  fontSize: '13px',
                   fontFamily: 'inherit',
                   outline: 'none',
                 }}
                 onMouseEnter={(e) => { 
-                  if (!active) e.currentTarget.style.background = 'var(--nav-hover-bg)'; 
+                  if (!active) e.currentTarget.style.background = 'rgba(92,124,92,0.08)'; 
                 }}
                 onMouseLeave={(e) => { 
-                  e.currentTarget.style.background = active ? 'var(--nav-active-bg)' : 'transparent'; 
+                  e.currentTarget.style.background = active ? 'rgba(92,124,92,0.12)' : 'transparent'; 
                 }}
               >
-                {/* Left indicator bar for active state */}
+                {/* Left indicator bar for active state - vertically centered, matches row height */}
                 {active && (
                   <span 
                     style={{
                       position: 'absolute',
                       left: 0,
-                      top: '8px',
-                      bottom: '8px',
-                      width: '2px',
+                      top: '6px',
+                      bottom: '6px',
+                      width: '3px',
                       background: 'var(--brand-active)',
-                      borderRadius: '0 1px 1px 0',
+                      borderRadius: '0 2px 2px 0',
                     }}
                   />
                 )}
-                {CustomIcon && (
-                  <span style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    color: active ? 'var(--text-1)' : 'var(--icon-default)',
-                    flexShrink: 0,
-                  }}>
-                    <CustomIcon className="h-5 w-5" />
-                  </span>
-                )}
+                {/* Icon container - fixed 32px width, centered */}
+                <span style={{ 
+                  width: '32px',
+                  height: '44px',
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                  marginLeft: expanded ? '8px' : '14px',
+                }}>
+                  {CustomIcon && (
+                    <CustomIcon 
+                      className="h-[18px] w-[18px]" 
+                      style={{ color: active ? 'var(--text-1)' : 'var(--icon-default)' }}
+                    />
+                  )}
+                </span>
                 {expanded && (
-                  <span style={{ fontSize: '13px', flex: 1 }}>{item.title}</span>
+                  <span style={{ 
+                    flex: 1, 
+                    textAlign: 'left',
+                    display: 'flex',
+                    alignItems: 'center',
+                    height: '44px',
+                  }}>{item.title}</span>
                 )}
                 {item.badge !== undefined && item.badge > 0 && (
                   <span 
                     style={{
                       fontSize: '10px',
                       fontWeight: 600,
-                      padding: expanded ? '2px 6px' : '2px 4px',
+                      padding: '2px 6px',
                       borderRadius: '9999px',
                       background: 'var(--brand-active)',
                       color: 'var(--text-inverse, #ffffff)',
                       minWidth: '18px',
                       textAlign: 'center',
-                      marginLeft: expanded ? '8px' : '0',
+                      marginRight: expanded ? '10px' : '0',
                       position: expanded ? 'relative' : 'absolute',
-                      top: expanded ? 'auto' : '4px',
-                      right: expanded ? 'auto' : '4px',
+                      top: expanded ? 'auto' : '6px',
+                      right: expanded ? 'auto' : '6px',
                     }}
                   >
                     {item.badge > 99 ? '99+' : item.badge}
@@ -265,7 +275,7 @@ export function SidebarBase({
 
         {/* Footer Item (e.g., Settings) */}
         {config.footerItem && (
-          <div style={{ borderTop: '1px solid var(--divider)', padding: '8px' }}>
+          <div style={{ borderTop: '1px solid var(--divider)', padding: '6px' }}>
             {(() => {
               const item = config.footerItem;
               const active = isActive(item.path, item.exact);
@@ -276,29 +286,27 @@ export function SidebarBase({
                   onClick={() => handleNavigation(item.path)}
                   style={{
                     width: '100%',
-                    height: '40px',
-                    padding: expanded ? '0 12px' : '0',
+                    height: '44px',
+                    padding: '0',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '12px',
                     borderRadius: '6px',
                     border: 'none',
                     cursor: 'pointer',
                     transition: 'background 0.15s ease, color 0.15s ease',
                     position: 'relative',
-                    justifyContent: expanded ? 'flex-start' : 'center',
-                    background: active ? 'var(--nav-active-bg)' : 'transparent',
+                    background: active ? 'rgba(92,124,92,0.12)' : 'transparent',
                     color: active ? 'var(--text-1)' : 'var(--text-2)',
                     fontWeight: active ? 600 : 500,
-                    fontSize: '14px',
+                    fontSize: '13px',
                     fontFamily: 'inherit',
                     outline: 'none',
                   }}
                   onMouseEnter={(e) => { 
-                    if (!active) e.currentTarget.style.background = 'var(--nav-hover-bg)'; 
+                    if (!active) e.currentTarget.style.background = 'rgba(92,124,92,0.08)'; 
                   }}
                   onMouseLeave={(e) => { 
-                    e.currentTarget.style.background = active ? 'var(--nav-active-bg)' : 'transparent'; 
+                    e.currentTarget.style.background = active ? 'rgba(92,124,92,0.12)' : 'transparent'; 
                   }}
                 >
                   {active && (
@@ -306,27 +314,39 @@ export function SidebarBase({
                       style={{
                         position: 'absolute',
                         left: 0,
-                        top: '8px',
-                        bottom: '8px',
-                        width: '2px',
+                        top: '6px',
+                        bottom: '6px',
+                        width: '3px',
                         background: 'var(--brand-active)',
-                        borderRadius: '0 1px 1px 0',
+                        borderRadius: '0 2px 2px 0',
                       }}
                     />
                   )}
-                  {CustomIcon && (
-                    <span style={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      justifyContent: 'center',
-                      color: active ? 'var(--text-1)' : 'var(--icon-muted)',
-                      flexShrink: 0,
-                    }}>
-                      <CustomIcon className="h-5 w-5" />
-                    </span>
-                  )}
+                  {/* Icon container - fixed 32px width, centered */}
+                  <span style={{ 
+                    width: '32px',
+                    height: '44px',
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                    marginLeft: expanded ? '8px' : '14px',
+                  }}>
+                    {CustomIcon && (
+                      <CustomIcon 
+                        className="h-[18px] w-[18px]" 
+                        style={{ color: active ? 'var(--text-1)' : 'var(--icon-muted)' }}
+                      />
+                    )}
+                  </span>
                   {expanded && (
-                    <span style={{ fontSize: '13px' }}>{item.title}</span>
+                    <span style={{ 
+                      flex: 1, 
+                      textAlign: 'left',
+                      display: 'flex',
+                      alignItems: 'center',
+                      height: '44px',
+                    }}>{item.title}</span>
                   )}
                 </button>
               );
