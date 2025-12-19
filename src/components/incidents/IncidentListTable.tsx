@@ -3,7 +3,8 @@
  * 
  * Design: Matches Home "Your Work" table quality with operational enhancements
  * Features:
- * - Horizontal scroll with pinned Key+Summary columns
+ * - Resizable columns with localStorage persistence
+ * - Horizontal scroll with future scaling (15+ columns)
  * - Inline editing with DB persistence (optimistic + rollback)
  * - Committee computed status
  * - Premium hover/focus states
@@ -31,6 +32,8 @@ import {
 } from '@/components/ui/tooltip';
 import { InlineEditCell } from './InlineEditCell';
 import { DeleteIncidentDialog } from './DeleteIncidentDialog';
+import { ResizableHeader } from './ResizableHeader';
+import { useIncidentColumnWidths, MIN_COLUMN_WIDTHS } from './useIncidentColumnWidths';
 import { toast } from '@/components/ui/catalyst-toast';
 import { getCommitteeDisplayStatus } from '@/utils/committeeStatus';
 import { useUpdateIncident } from '@/hooks/useIncidents';
@@ -174,6 +177,9 @@ export function IncidentListTable({
     key: '' 
   });
   
+  // Column widths with persistence
+  const { columnWidths, handleColumnResize } = useIncidentColumnWidths();
+  
   // Row height: 44px compact, 52px comfortable
   const rowHeight = density === 'compact' ? 'h-[44px]' : 'h-[52px]';
   const textBase = density === 'compact' ? 'text-[13px]' : 'text-sm';
@@ -222,6 +228,23 @@ export function IncidentListTable({
     return null;
   };
 
+  // Calculate minimum table width based on visible columns
+  const getMinTableWidth = () => {
+    let width = 32; // Actions column
+    if (isColumnVisible('key')) width += columnWidths.key;
+    if (isColumnVisible('summary')) width += columnWidths.summary;
+    if (isColumnVisible('severity')) width += columnWidths.severity;
+    if (isColumnVisible('level')) width += columnWidths.level;
+    if (isColumnVisible('status')) width += columnWidths.status;
+    if (isColumnVisible('assignee')) width += columnWidths.assignee;
+    if (isColumnVisible('age')) width += columnWidths.age;
+    if (isColumnVisible('sla')) width += columnWidths.sla;
+    if (isColumnVisible('releaseVersion')) width += columnWidths.releaseVersion;
+    if (isColumnVisible('major')) width += columnWidths.major;
+    if (isColumnVisible('committee')) width += columnWidths.committee;
+    return Math.max(width + 32, 900); // 32px padding
+  };
+
   return (
     <TooltipProvider delayDuration={300}>
       <div className="flex flex-col h-full">
@@ -229,33 +252,138 @@ export function IncidentListTable({
         <div className="rounded-lg border border-[var(--border-color)] overflow-hidden bg-[var(--surface-1)] flex-1 shadow-sm">
           {/* Horizontal scroll wrapper */}
           <div className="overflow-x-auto">
-            <div className="min-w-[920px]">
-              {/* Sticky Header - 40px height */}
+            <div style={{ minWidth: `${getMinTableWidth()}px` }}>
+              {/* Sticky Header - 40px height with resizable columns */}
               <div 
                 className="flex items-center h-10 px-4 text-[11px] font-semibold uppercase tracking-wider sticky top-0 z-20"
                 style={{ backgroundColor: 'var(--surface-2)', borderBottom: '1px solid var(--divider)' }}
               >
-                {/* Key - tighter width */}
+                {/* Key - resizable */}
                 {isColumnVisible('key') && (
-                  <div className="w-[80px] shrink-0 pr-2 text-[var(--text-2)]">Key</div>
+                  <ResizableHeader
+                    columnId="key"
+                    width={columnWidths.key}
+                    minWidth={MIN_COLUMN_WIDTHS.key}
+                    onResize={handleColumnResize}
+                    className="pr-2 text-[var(--text-2)]"
+                  >
+                    Key
+                  </ResizableHeader>
                 )}
-                {/* Summary - flex grow, dominant column */}
+                {/* Summary - flexible but resizable */}
                 {isColumnVisible('summary') && (
-                  <div className="flex-1 min-w-[220px] text-[var(--text-2)]">Summary</div>
+                  <ResizableHeader
+                    columnId="summary"
+                    width={columnWidths.summary}
+                    minWidth={MIN_COLUMN_WIDTHS.summary}
+                    onResize={handleColumnResize}
+                    className="text-[var(--text-2)]"
+                    isFlexible
+                  >
+                    Summary
+                  </ResizableHeader>
                 )}
-                {/* Compact columns - tightened spacing */}
-                <div className="shrink-0 flex items-center">
-                  {isColumnVisible('severity') && <div className="w-[68px] shrink-0 px-2 text-[var(--text-2)]">Sev</div>}
-                  {isColumnVisible('level') && <div className="w-[48px] shrink-0 px-2 text-[var(--text-2)]">Lvl</div>}
-                  {isColumnVisible('status') && <div className="w-[96px] shrink-0 px-2 text-[var(--text-2)]">Status</div>}
-                  {isColumnVisible('assignee') && <div className="w-[120px] shrink-0 px-2 text-[var(--text-2)]">Assignee</div>}
-                  {/* Age + SLA visually grouped with tighter spacing */}
-                  {isColumnVisible('age') && <div className="w-[48px] shrink-0 px-1 text-right text-[var(--text-2)]">Age</div>}
-                  {isColumnVisible('sla') && <div className="w-[56px] shrink-0 px-1 text-[var(--text-2)]">SLA</div>}
-                  {isColumnVisible('releaseVersion') && <div className="w-[76px] shrink-0 px-2 text-[var(--text-2)]">Release</div>}
-                  {isColumnVisible('major') && <div className="w-[52px] shrink-0 px-2 text-[var(--text-2)]">Major</div>}
-                  {isColumnVisible('committee') && <div className="w-[88px] shrink-0 px-2 text-[var(--text-2)]">Committee</div>}
-                </div>
+                {/* Compact columns */}
+                {isColumnVisible('severity') && (
+                  <ResizableHeader
+                    columnId="severity"
+                    width={columnWidths.severity}
+                    minWidth={MIN_COLUMN_WIDTHS.severity}
+                    onResize={handleColumnResize}
+                    className="px-2 text-[var(--text-2)]"
+                  >
+                    Sev
+                  </ResizableHeader>
+                )}
+                {isColumnVisible('level') && (
+                  <ResizableHeader
+                    columnId="level"
+                    width={columnWidths.level}
+                    minWidth={MIN_COLUMN_WIDTHS.level}
+                    onResize={handleColumnResize}
+                    className="px-2 text-[var(--text-2)]"
+                  >
+                    Lvl
+                  </ResizableHeader>
+                )}
+                {isColumnVisible('status') && (
+                  <ResizableHeader
+                    columnId="status"
+                    width={columnWidths.status}
+                    minWidth={MIN_COLUMN_WIDTHS.status}
+                    onResize={handleColumnResize}
+                    className="px-2 text-[var(--text-2)]"
+                  >
+                    Status
+                  </ResizableHeader>
+                )}
+                {isColumnVisible('assignee') && (
+                  <ResizableHeader
+                    columnId="assignee"
+                    width={columnWidths.assignee}
+                    minWidth={MIN_COLUMN_WIDTHS.assignee}
+                    onResize={handleColumnResize}
+                    className="px-2 text-[var(--text-2)]"
+                  >
+                    Assignee
+                  </ResizableHeader>
+                )}
+                {/* Age + SLA visually grouped */}
+                {isColumnVisible('age') && (
+                  <ResizableHeader
+                    columnId="age"
+                    width={columnWidths.age}
+                    minWidth={MIN_COLUMN_WIDTHS.age}
+                    onResize={handleColumnResize}
+                    className="px-1 text-right text-[var(--text-2)]"
+                  >
+                    Age
+                  </ResizableHeader>
+                )}
+                {isColumnVisible('sla') && (
+                  <ResizableHeader
+                    columnId="sla"
+                    width={columnWidths.sla}
+                    minWidth={MIN_COLUMN_WIDTHS.sla}
+                    onResize={handleColumnResize}
+                    className="px-1 text-[var(--text-2)]"
+                  >
+                    SLA
+                  </ResizableHeader>
+                )}
+                {isColumnVisible('releaseVersion') && (
+                  <ResizableHeader
+                    columnId="releaseVersion"
+                    width={columnWidths.releaseVersion}
+                    minWidth={MIN_COLUMN_WIDTHS.releaseVersion}
+                    onResize={handleColumnResize}
+                    className="px-2 text-[var(--text-2)]"
+                  >
+                    Release
+                  </ResizableHeader>
+                )}
+                {isColumnVisible('major') && (
+                  <ResizableHeader
+                    columnId="major"
+                    width={columnWidths.major}
+                    minWidth={MIN_COLUMN_WIDTHS.major}
+                    onResize={handleColumnResize}
+                    className="px-2 text-[var(--text-2)]"
+                  >
+                    Major
+                  </ResizableHeader>
+                )}
+                {isColumnVisible('committee') && (
+                  <ResizableHeader
+                    columnId="committee"
+                    width={columnWidths.committee}
+                    minWidth={MIN_COLUMN_WIDTHS.committee}
+                    onResize={handleColumnResize}
+                    className="px-2 text-[var(--text-2)]"
+                  >
+                    Committee
+                  </ResizableHeader>
+                )}
                 {/* Actions spacer */}
                 <div className="w-8 shrink-0"></div>
               </div>
@@ -295,9 +423,12 @@ export function IncidentListTable({
                         if (e.key === 'Enter' && incident.id) navigate(`/release/incidents/${incident.id}`);
                       }}
                     >
-                      {/* Key - tighter, with right padding for separation */}
+                      {/* Key - matches header width */}
                       {isColumnVisible('key') && (
-                        <div className="w-[80px] shrink-0 pr-2 flex items-center gap-1">
+                        <div 
+                          className="shrink-0 pr-2 flex items-center gap-1"
+                          style={{ width: `${columnWidths.key}px` }}
+                        >
                           <Link 
                             to={`/release/incidents/${incident.id}`} 
                             className={cn(textSmall, "font-medium text-[var(--brand-primary)] hover:underline focus:outline-none focus:ring-2 focus:ring-[var(--focus-ring)] rounded-sm")}
@@ -316,9 +447,13 @@ export function IncidentListTable({
                         </div>
                       )}
                       
-                      {/* Summary - flex grow, dominant column, inline editable */}
+                      {/* Summary - flexible, matches header */}
                       {isColumnVisible('summary') && (
-                        <div className="flex-1 min-w-[220px] pr-2" data-inline-edit>
+                        <div 
+                          className="flex-1 pr-2" 
+                          style={{ minWidth: `${columnWidths.summary}px` }}
+                          data-inline-edit
+                        >
                           <InlineEditCell
                             type="text"
                             value={incident.title}
@@ -337,168 +472,197 @@ export function IncidentListTable({
                         </div>
                       )}
                       
-                      {/* Compact columns - tightened widths */}
-                      <div className="shrink-0 flex items-center">
-                        {/* Severity - small dot + label */}
-                        {isColumnVisible('severity') && (
-                          <div className="w-[68px] shrink-0 px-2" data-inline-edit>
-                            <InlineEditCell
-                              type="select"
-                              value={incident.severity}
-                              options={SEVERITY_OPTIONS}
-                              displayValue={
+                      {/* Severity - matches header width */}
+                      {isColumnVisible('severity') && (
+                        <div 
+                          className="shrink-0 px-2" 
+                          style={{ width: `${columnWidths.severity}px` }}
+                          data-inline-edit
+                        >
+                          <InlineEditCell
+                            type="select"
+                            value={incident.severity}
+                            options={SEVERITY_OPTIONS}
+                            displayValue={
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="flex items-center gap-1.5 cursor-pointer">
+                                    <span className={cn('h-2 w-2 rounded-full flex-shrink-0', severityConfig.dot)} />
+                                    <span className={cn(textSmall, "text-[var(--text-2)]")}>{severityConfig.label}</span>
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent side="top" className="text-xs">{severityConfig.description}</TooltipContent>
+                              </Tooltip>
+                            }
+                            onSave={(val) => handleInlineUpdate(incident.id, 'severity', val)}
+                            disabled={isConverted}
+                            textSize={textSmall}
+                          />
+                        </div>
+                      )}
+                      
+                      {/* Level */}
+                      {isColumnVisible('level') && (
+                        <div 
+                          className="shrink-0 px-2" 
+                          style={{ width: `${columnWidths.level}px` }}
+                          data-inline-edit
+                        >
+                          <InlineEditCell
+                            type="select"
+                            value={incident.support_level || ''}
+                            options={SUPPORT_OPTIONS}
+                            displayValue={
+                              supportConfig ? (
                                 <Tooltip>
                                   <TooltipTrigger asChild>
-                                    <div className="flex items-center gap-1.5 cursor-pointer">
-                                      <span className={cn('h-2 w-2 rounded-full flex-shrink-0', severityConfig.dot)} />
-                                      <span className={cn(textSmall, "text-[var(--text-2)]")}>{severityConfig.label}</span>
-                                    </div>
+                                    <span className={cn(textSmall, "text-[var(--text-2)] cursor-pointer")}>{supportConfig.label}</span>
                                   </TooltipTrigger>
-                                  <TooltipContent side="top" className="text-xs">{severityConfig.description}</TooltipContent>
+                                  <TooltipContent side="top" className="text-xs">{supportConfig.description}</TooltipContent>
                                 </Tooltip>
-                              }
-                              onSave={(val) => handleInlineUpdate(incident.id, 'severity', val)}
-                              disabled={isConverted}
-                              textSize={textSmall}
-                            />
-                          </div>
-                        )}
-                        
-                        {/* Level */}
-                        {isColumnVisible('level') && (
-                          <div className="w-[48px] shrink-0 px-2" data-inline-edit>
-                            <InlineEditCell
-                              type="select"
-                              value={incident.support_level || ''}
-                              options={SUPPORT_OPTIONS}
-                              displayValue={
-                                supportConfig ? (
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <span className={cn(textSmall, "text-[var(--text-2)] cursor-pointer")}>{supportConfig.label}</span>
-                                    </TooltipTrigger>
-                                    <TooltipContent side="top" className="text-xs">{supportConfig.description}</TooltipContent>
-                                  </Tooltip>
-                                ) : (
-                                  <span className={cn(textSmall, "text-[var(--text-3)]")}>—</span>
-                                )
-                              }
-                              onSave={(val) => handleInlineUpdate(incident.id, 'support_level', val)}
-                              disabled={isConverted}
-                              textSize={textSmall}
-                            />
-                          </div>
-                        )}
-                        
-                        {/* Status - compact chip */}
-                        {isColumnVisible('status') && (
-                          <div className="w-[96px] shrink-0 px-2" data-inline-edit>
-                            <InlineEditCell
-                              type="select"
-                              value={incident.status}
-                              options={STATUS_OPTIONS}
-                              displayValue={
-                                <span 
-                                  className={cn(
-                                    'inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium',
-                                    statusConfig.bg, statusConfig.text
-                                  )}
-                                >
-                                  {statusConfig.dot && <span className={cn('h-1.5 w-1.5 rounded-full', statusConfig.dot)} />}
-                                  {statusConfig.label}
-                                </span>
-                              }
-                              onSave={(val) => handleInlineUpdate(incident.id, 'status', val)}
-                              disabled={isConverted}
-                              textSize={textSmall}
-                            />
-                          </div>
-                        )}
-                        
-                        {/* Assignee - tighter avatar/name spacing */}
-                        {isColumnVisible('assignee') && (
-                          <div className="w-[120px] shrink-0 px-2">
-                            {incident.assignee ? (
-                              <div className="flex items-center gap-1.5">
-                                <div className="h-5 w-5 rounded-full bg-[var(--surface-3)] flex items-center justify-center flex-shrink-0">
-                                  <span className="text-[9px] font-medium text-[var(--text-2)]">
-                                    {incident.assignee.avatar_initials || incident.assignee.full_name?.charAt(0) || 'U'}
-                                  </span>
-                                </div>
-                                <span className={cn(textSmall, "text-[var(--text-1)] truncate")}>
-                                  {incident.assignee.full_name}
+                              ) : (
+                                <span className={cn(textSmall, "text-[var(--text-3)]")}>—</span>
+                              )
+                            }
+                            onSave={(val) => handleInlineUpdate(incident.id, 'support_level', val)}
+                            disabled={isConverted}
+                            textSize={textSmall}
+                          />
+                        </div>
+                      )}
+                      
+                      {/* Status - compact chip */}
+                      {isColumnVisible('status') && (
+                        <div 
+                          className="shrink-0 px-2" 
+                          style={{ width: `${columnWidths.status}px` }}
+                          data-inline-edit
+                        >
+                          <InlineEditCell
+                            type="select"
+                            value={incident.status}
+                            options={STATUS_OPTIONS}
+                            displayValue={
+                              <span 
+                                className={cn(
+                                  'inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium',
+                                  statusConfig.bg, statusConfig.text
+                                )}
+                              >
+                                {statusConfig.dot && <span className={cn('h-1.5 w-1.5 rounded-full', statusConfig.dot)} />}
+                                {statusConfig.label}
+                              </span>
+                            }
+                            onSave={(val) => handleInlineUpdate(incident.id, 'status', val)}
+                            disabled={isConverted}
+                            textSize={textSmall}
+                          />
+                        </div>
+                      )}
+                      
+                      {/* Assignee */}
+                      {isColumnVisible('assignee') && (
+                        <div 
+                          className="shrink-0 px-2"
+                          style={{ width: `${columnWidths.assignee}px` }}
+                        >
+                          {incident.assignee ? (
+                            <div className="flex items-center gap-1.5">
+                              <div className="h-5 w-5 rounded-full bg-[var(--surface-3)] flex items-center justify-center flex-shrink-0">
+                                <span className="text-[9px] font-medium text-[var(--text-2)]">
+                                  {incident.assignee.avatar_initials || incident.assignee.full_name?.charAt(0) || 'U'}
                                 </span>
                               </div>
-                            ) : (
-                              <span className={cn(textSmall, "text-[var(--text-3)]")}>Unassigned</span>
-                            )}
-                          </div>
-                        )}
-                        
-                        {/* Age + SLA grouped with tighter spacing */}
-                        {isColumnVisible('age') && (
-                          <div className="w-[48px] shrink-0 px-1 text-right">
-                            <span className={cn(textSmall, "tabular-nums text-[var(--text-2)]")}>{age}</span>
-                          </div>
-                        )}
-                        
-                        {isColumnVisible('sla') && (
-                          <div className="w-[56px] shrink-0 px-1">
-                            {slaConfig ? (
-                              <span className={cn(textSmall, slaConfig.className)}>{slaConfig.label}</span>
-                            ) : (
-                              <span className={cn(textSmall, "text-[var(--text-3)]")}>—</span>
-                            )}
-                          </div>
-                        )}
+                              <span className={cn(textSmall, "text-[var(--text-1)] truncate")}>
+                                {incident.assignee.full_name}
+                              </span>
+                            </div>
+                          ) : (
+                            <span className={cn(textSmall, "text-[var(--text-3)]")}>Unassigned</span>
+                          )}
+                        </div>
+                      )}
+                      
+                      {/* Age */}
+                      {isColumnVisible('age') && (
+                        <div 
+                          className="shrink-0 px-1 text-right"
+                          style={{ width: `${columnWidths.age}px` }}
+                        >
+                          <span className={cn(textSmall, "tabular-nums text-[var(--text-2)]")}>{age}</span>
+                        </div>
+                      )}
+                      
+                      {/* SLA */}
+                      {isColumnVisible('sla') && (
+                        <div 
+                          className="shrink-0 px-1"
+                          style={{ width: `${columnWidths.sla}px` }}
+                        >
+                          {slaConfig ? (
+                            <span className={cn(textSmall, slaConfig.className)}>{slaConfig.label}</span>
+                          ) : (
+                            <span className={cn(textSmall, "text-[var(--text-3)]")}>—</span>
+                          )}
+                        </div>
+                      )}
 
-                        {/* Release */}
-                        {isColumnVisible('releaseVersion') && (
-                          <div className="w-[76px] shrink-0 px-2">
-                            <span className={cn(textSmall, "text-[var(--text-2)] truncate block")}>
-                              {incident.release_version?.version || '—'}
-                            </span>
-                          </div>
-                        )}
+                      {/* Release */}
+                      {isColumnVisible('releaseVersion') && (
+                        <div 
+                          className="shrink-0 px-2"
+                          style={{ width: `${columnWidths.releaseVersion}px` }}
+                        >
+                          <span className={cn(textSmall, "text-[var(--text-2)] truncate block")}>
+                            {incident.release_version?.version || '—'}
+                          </span>
+                        </div>
+                      )}
 
-                        {/* Major - state display only, toggle on edit */}
-                        {isColumnVisible('major') && (
-                          <div className="w-[52px] shrink-0 px-2" data-inline-edit>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <div>
-                                  <InlineEditCell
-                                    type="toggle"
-                                    value={incident.is_major_incident || false}
-                                    displayValue={
-                                      incident.is_major_incident ? (
-                                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400">
-                                          Major
-                                        </span>
-                                      ) : (
-                                        <span className={cn(textSmall, "text-[var(--text-3)]")}>Normal</span>
-                                      )
-                                    }
-                                    onSave={(val) => handleInlineUpdate(incident.id, 'is_major_incident', val)}
-                                    disabled={isConverted}
-                                    textSize={textSmall}
-                                  />
-                                </div>
-                              </TooltipTrigger>
-                              <TooltipContent side="top" className="text-xs max-w-[200px]">Major incident — elevated visibility & escalation rules</TooltipContent>
-                            </Tooltip>
-                          </div>
-                        )}
+                      {/* Major - state display only, toggle on edit */}
+                      {isColumnVisible('major') && (
+                        <div 
+                          className="shrink-0 px-2" 
+                          style={{ width: `${columnWidths.major}px` }}
+                          data-inline-edit
+                        >
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div>
+                                <InlineEditCell
+                                  type="toggle"
+                                  value={incident.is_major_incident || false}
+                                  displayValue={
+                                    incident.is_major_incident ? (
+                                      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400">
+                                        Major
+                                      </span>
+                                    ) : (
+                                      <span className={cn(textSmall, "text-[var(--text-3)]")}>Normal</span>
+                                    )
+                                  }
+                                  onSave={(val) => handleInlineUpdate(incident.id, 'is_major_incident', val)}
+                                  disabled={isConverted}
+                                  textSize={textSmall}
+                                />
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="text-xs max-w-[200px]">Major incident — elevated visibility & escalation rules</TooltipContent>
+                          </Tooltip>
+                        </div>
+                      )}
 
-                        {/* Committee - state only */}
-                        {isColumnVisible('committee') && (
-                          <div className="w-[88px] shrink-0 px-2">
-                            <span className={cn(textSmall, 'font-medium', committeeStyle)}>
-                              {committeeStatus.label}
-                            </span>
-                          </div>
-                        )}
-                      </div>
+                      {/* Committee - state only */}
+                      {isColumnVisible('committee') && (
+                        <div 
+                          className="shrink-0 px-2"
+                          style={{ width: `${columnWidths.committee}px` }}
+                        >
+                          <span className={cn(textSmall, 'font-medium', committeeStyle)}>
+                            {committeeStatus.label}
+                          </span>
+                        </div>
+                      )}
 
                       {/* Actions */}
                       <div className="w-8 shrink-0 flex items-center justify-end">
