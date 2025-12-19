@@ -22,6 +22,8 @@ export interface SidebarMenuItem {
   path: string;
   icon?: LucideIcon | React.ComponentType<{ className?: string }>;
   exact?: boolean;
+  /** Optional badge count to display */
+  badge?: number;
 }
 
 export interface SidebarConfig {
@@ -212,7 +214,27 @@ export function SidebarBase({
                   </span>
                 )}
                 {expanded && (
-                  <span style={{ fontSize: '13px' }}>{item.title}</span>
+                  <span style={{ fontSize: '13px', flex: 1 }}>{item.title}</span>
+                )}
+                {item.badge !== undefined && item.badge > 0 && (
+                  <span 
+                    style={{
+                      fontSize: '10px',
+                      fontWeight: 600,
+                      padding: expanded ? '2px 6px' : '2px 4px',
+                      borderRadius: '9999px',
+                      background: 'var(--brand-active)',
+                      color: 'var(--text-inverse, #ffffff)',
+                      minWidth: '18px',
+                      textAlign: 'center',
+                      marginLeft: expanded ? '8px' : '0',
+                      position: expanded ? 'relative' : 'absolute',
+                      top: expanded ? 'auto' : '4px',
+                      right: expanded ? 'auto' : '4px',
+                    }}
+                  >
+                    {item.badge > 99 ? '99+' : item.badge}
+                  </span>
                 )}
               </button>
             );
