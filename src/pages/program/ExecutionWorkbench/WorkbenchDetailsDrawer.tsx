@@ -22,6 +22,7 @@ interface WorkbenchDetailsDrawerProps {
   item: WorkItem | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onOpenFullDrawer?: (item: WorkItem) => void;
 }
 
 function getHealthColor(health: HealthStatus): string {
@@ -52,8 +53,10 @@ function getTypeColor(type: string): string {
   }
 }
 
-export function WorkbenchDetailsDrawer({ item, open, onOpenChange }: WorkbenchDetailsDrawerProps) {
+export function WorkbenchDetailsDrawer({ item, open, onOpenChange, onOpenFullDrawer }: WorkbenchDetailsDrawerProps) {
   if (!item) return null;
+
+  const canOpenFullDrawer = item.type === 'epic' || item.type === 'feature';
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -197,7 +200,12 @@ export function WorkbenchDetailsDrawer({ item, open, onOpenChange }: WorkbenchDe
 
         {/* Footer Actions */}
         <div className="border-t border-border pt-4 mt-auto">
-          <Button variant="outline" className="w-full gap-2">
+          <Button 
+            variant="outline" 
+            className="w-full gap-2"
+            onClick={() => canOpenFullDrawer && onOpenFullDrawer?.(item)}
+            disabled={!canOpenFullDrawer}
+          >
             <ExternalLink className="h-4 w-4" />
             Open Item
           </Button>
