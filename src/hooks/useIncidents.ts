@@ -63,6 +63,7 @@ export function useIncident(id: string) {
           reporter:incident_user_profiles!incidents_reporter_id_fkey(*),
           assignee_workgroup:workgroups(*),
           business_process:business_processes(*),
+          project:projects!incidents_project_id_fkey(id, name, key),
           committee:incident_committees!incidents_committee_id_fkey(
             *,
             members:committee_members(
