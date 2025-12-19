@@ -4768,6 +4768,7 @@ export type Database = {
           incident_type: string | null
           is_major_incident: boolean | null
           priority: Database["public"]["Enums"]["priority_level"] | null
+          project_id: string | null
           release_version_id: string | null
           reporter_id: string | null
           reporter_name: string | null
@@ -4807,6 +4808,7 @@ export type Database = {
           incident_type?: string | null
           is_major_incident?: boolean | null
           priority?: Database["public"]["Enums"]["priority_level"] | null
+          project_id?: string | null
           release_version_id?: string | null
           reporter_id?: string | null
           reporter_name?: string | null
@@ -4846,6 +4848,7 @@ export type Database = {
           incident_type?: string | null
           is_major_incident?: boolean | null
           priority?: Database["public"]["Enums"]["priority_level"] | null
+          project_id?: string | null
           release_version_id?: string | null
           reporter_id?: string | null
           reporter_name?: string | null
@@ -4891,6 +4894,13 @@ export type Database = {
             columns: ["committee_id"]
             isOneToOne: false
             referencedRelation: "incident_committees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
           {
