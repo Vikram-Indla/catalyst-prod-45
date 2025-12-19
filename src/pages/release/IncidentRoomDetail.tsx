@@ -134,26 +134,90 @@ export default function IncidentRoomDetail() {
   };
 
   const handleAddApprover = async (userId: string, hasVeto: boolean, note: string) => {
-    if (!incident?.committee?.id) {
-      toast.error('Committee not initialized');
-      return;
-    }
+    if (!incidentId) return;
     setIsSubmitting(true);
+    
     try {
+      let committeeId = incident?.committee?.id;
+      
+      // If no committee exists, create one first
+      if (!committeeId) {
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        // Create the committee
+        const { data: newCommittee, error: createError } = await supabase
+          .from('incident_committees')
+          .insert({
+            incident_id: incidentId,
+            status: 'pending',
+            required_approvals: 2, // Default majority
+            created_by: user?.id,
+          })
+          .select()
+          .single();
+        
+        if (createError) throw createError;
+        committeeId = newCommittee.id;
+        
+        // Link committee to incident
+        await supabase
+          .from('incidents')
+          .update({ 
+            committee_id: committeeId,
+            requires_committee: true,
+          })
+          .eq('id', incidentId);
+        
+        // Log committee creation
+        await supabase.from('incident_history').insert({
+          incident_id: incidentId,
+          field_name: 'committee',
+          old_value: null,
+          new_value: 'Committee initiated',
+          changed_by: user?.id,
+        });
+      }
+      
       // Add committee member
-      const { error } = await supabase
+      const { error: memberError } = await supabase
         .from('committee_members')
         .insert({
-          committee_id: incident.committee.id,
+          committee_id: committeeId,
           user_id: userId,
           has_veto: hasVeto,
           role: note || null,
         });
       
-      if (error) throw error;
-      toast.success('Approver added');
+      if (memberError) throw memberError;
+      
+      // Create pending vote record for the new member
+      const { data: newMember } = await supabase
+        .from('committee_members')
+        .select('id')
+        .eq('committee_id', committeeId)
+        .eq('user_id', userId)
+        .single();
+      
+      if (newMember) {
+        await supabase.from('committee_votes').insert({
+          committee_id: committeeId,
+          member_id: newMember.id,
+          vote: 'pending',
+        });
+      }
+      
+      // Log the approver addition
+      await supabase.from('incident_history').insert({
+        incident_id: incidentId,
+        field_name: 'committee_member',
+        old_value: null,
+        new_value: `Approver added${hasVeto ? ' (veto power)' : ''}`,
+      });
+      
+      toast.success('Approver added successfully');
       queryClient.invalidateQueries({ queryKey: ['incident', incidentId] });
     } catch (error: any) {
+      console.error('Failed to add approver:', error);
       toast.error(error.message || 'Failed to add approver');
     } finally {
       setIsSubmitting(false);
