@@ -1,9 +1,7 @@
-import { useEffect, useState, useRef } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { useEffect, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { format } from 'date-fns';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import {
   DropdownMenu,
@@ -30,55 +28,36 @@ import {
   Trash2, 
   RefreshCw, 
   X, 
-  Pencil, 
   Link as LinkIcon,
   ChevronDown,
   Maximize2,
   Minimize2,
-  Users,
-  Calendar
+  Layers,
+  Calendar,
+  CalendarIcon,
+  AlertTriangle
 } from 'lucide-react';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import type { WorkItemDependencyType, DependencyTypeV2, RiskLevel, DependencyLevelV2, DependencyStatus } from '@/lib/dependencies/types';
+import { DEPENDENCY_TYPE_LABELS, DEPENDENCY_LEVEL_LABELS, DEPENDENCY_STATUS_LABELS } from '@/lib/dependencies/types';
 
-const formSchema = z.object({
-  dependency_level: z.enum(['team', 'program', 'external']),
-  from_feature_id: z.string().optional(),
-  to_feature_id: z.string().optional(),
-  requesting_team_id: z.string().optional(),
-  requesting_program_id: z.string().optional(),
-  depends_on_team_id: z.string().optional(),
-  depends_on_program_id: z.string().optional(),
-  external_entity_id: z.string().optional(),
-  owner_id: z.string().optional(),
-  quarter: z.string().min(1, 'Quarter is required'),
-  type: z.enum(['sequential', 'concurrent', 'program', 'external']),
-  status: z.enum(['open', 'pending_commit', 'negotiation', 'committed', 'in_progress', 'delivered', 'done', 'no_work_done', 'rejected']),
-  risk_level: z.enum(['low', 'med', 'high']),
-  needed_by_date: z.string().optional(),
-  needed_by_sprint_id: z.string().optional(),
-  committed_by_date: z.string().optional(),
-  committed_by_sprint_id: z.string().optional(),
-  description: z.string().optional(),
-  blocked_requestor: z.boolean().optional(),
-  blocked_respondent: z.boolean().optional(),
-  blocked_reason_requestor: z.string().optional(),
-  blocked_reason_respondent: z.string().optional(),
-  no_work_required: z.boolean().optional(),
-  rejection_reason: z.string().optional(),
-  notify_on_commit: z.boolean().optional(),
-  notify_on_delivery: z.boolean().optional(),
-});
-
-// Generate quarter options (current year -1 to +2)
+// Generate quarter options
 const generateQuarterOptions = () => {
   const currentYear = new Date().getFullYear();
   const quarters: string[] = [];
@@ -92,7 +71,19 @@ const generateQuarterOptions = () => {
 
 const QUARTER_OPTIONS = generateQuarterOptions();
 
-type FormData = z.infer<typeof formSchema>;
+const getCurrentQuarter = () => {
+  const now = new Date();
+  const quarter = Math.ceil((now.getMonth() + 1) / 3);
+  return `Q${quarter} ${now.getFullYear()}`;
+};
+
+// Derive quarter from a date
+const deriveQuarterFromDate = (dateStr: string): string => {
+  if (!dateStr) return getCurrentQuarter();
+  const date = new Date(dateStr);
+  const q = Math.ceil((date.getMonth() + 1) / 3);
+  return `Q${q} ${date.getFullYear()}`;
+};
 
 interface DependencyDetailsDrawerProps {
   open: boolean;
@@ -108,45 +99,49 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
   const [showUnsavedChangesDialog, setShowUnsavedChangesDialog] = useState(false);
   const isEdit = !!dependencyId;
 
-  // Get current quarter as default
-  const getCurrentQuarter = () => {
-    const now = new Date();
-    const quarter = Math.ceil((now.getMonth() + 1) / 3);
-    return `Q${quarter} ${now.getFullYear()}`;
-  };
+  // Form state (work-item-centric model)
+  const [requestingWorkItemType, setRequestingWorkItemType] = useState<WorkItemDependencyType>('epic');
+  const [requestingWorkItemId, setRequestingWorkItemId] = useState('');
+  const [dependsOnWorkItemType, setDependsOnWorkItemType] = useState<WorkItemDependencyType>('epic');
+  const [dependsOnWorkItemId, setDependsOnWorkItemId] = useState('');
+  const [dependencyType, setDependencyType] = useState<DependencyTypeV2>('blocks');
+  const [riskLevel, setRiskLevel] = useState<RiskLevel>('med');
+  const [status, setStatus] = useState<DependencyStatus>('open');
+  const [neededByDate, setNeededByDate] = useState('');
+  const [committedByDate, setCommittedByDate] = useState('');
+  const [neededBySprint, setNeededBySprint] = useState('');
+  const [committedBySprint, setCommittedBySprint] = useState('');
+  const [description, setDescription] = useState('');
+  const [sourceBlocked, setSourceBlocked] = useState(false);
+  const [sourceBlockedReason, setSourceBlockedReason] = useState('');
+  const [targetDelayed, setTargetDelayed] = useState(false);
+  const [targetDelayedReason, setTargetDelayedReason] = useState('');
+  const [noWorkRequired, setNoWorkRequired] = useState(false);
+  
+  // Track initial values for dirty checking
+  const [initialValues, setInitialValues] = useState<Record<string, any> | null>(null);
 
-  const form = useForm<FormData>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      dependency_level: 'team',
-      type: 'sequential',
-      status: 'pending_commit',
-      risk_level: 'med',
-      quarter: getCurrentQuarter(),
-      blocked_requestor: false,
-      blocked_respondent: false,
-      no_work_required: false,
-      notify_on_commit: true,
-      notify_on_delivery: true,
-    },
-  });
-
-  const hasChanges = form.formState.isDirty;
+  // Derived values
+  const derivedLevel: DependencyLevelV2 = 
+    requestingWorkItemType === 'epic' && dependsOnWorkItemType === 'epic' ? 'execution' :
+    requestingWorkItemType === 'feature' && dependsOnWorkItemType === 'feature' ? 'delivery' :
+    'cross_level';
+  
+  const isCrossLevel = derivedLevel === 'cross_level';
+  const derivedQuarter = neededByDate ? deriveQuarterFromDate(neededByDate) : getCurrentQuarter();
 
   // Fetch existing dependency
-  const { data: existingDependency } = useQuery({
+  const { data: existingDependency, isLoading: isLoadingDep } = useQuery({
     queryKey: ['dependency', dependencyId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('dependencies')
         .select(`
           *,
-          from_feature:features!dependencies_from_feature_id_fkey(id, name),
-          to_feature:features!dependencies_to_feature_id_fkey(id, name),
+          from_feature:features!dependencies_from_feature_id_fkey(id, name, display_id),
+          to_feature:features!dependencies_to_feature_id_fkey(id, name, display_id),
           requesting_team:teams!dependencies_requesting_team_id_fkey(id, name),
           depends_on_team:teams!dependencies_depends_on_team_id_fkey(id, name),
-          requesting_program:programs!dependencies_requesting_program_id_fkey(id, name),
-          depends_on_program:programs!dependencies_depends_on_program_id_fkey(id, name),
           external_entity:external_entities(id, name)
         `)
         .eq('id', dependencyId!)
@@ -154,42 +149,46 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
       if (error) throw error;
       return data;
     },
-    enabled: isEdit,
+    enabled: isEdit && open,
   });
 
-  // Fetch lookup data
+  // Check if this is a legacy team-based dependency
+  const isLegacyDependency = !!(
+    existingDependency &&
+    !existingDependency.requesting_work_item_id &&
+    (existingDependency.requesting_team_id || existingDependency.depends_on_team_id)
+  );
+
+  // Fetch epics for picker
+  const { data: epics } = useQuery({
+    queryKey: ['epics-lookup'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('epics')
+        .select('id, name, epic_key, program_id')
+        .is('deleted_at', null)
+        .order('name');
+      if (error) throw error;
+      return data;
+    },
+    enabled: open && (requestingWorkItemType === 'epic' || dependsOnWorkItemType === 'epic'),
+  });
+
+  // Fetch features for picker
   const { data: features } = useQuery({
     queryKey: ['features-lookup'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('features')
-        .select('id, name, display_id, team_id, project_id')
+        .select('id, name, display_id, team_id, epic_id')
         .order('name');
       if (error) throw error;
       return data;
     },
+    enabled: open && (requestingWorkItemType === 'feature' || dependsOnWorkItemType === 'feature'),
   });
 
-  const { data: teams } = useQuery({
-    queryKey: ['teams-lookup'],
-    queryFn: async () => {
-      const { data, error } = await supabase.from('teams').select('id, name').order('name');
-      if (error) throw error;
-      return data;
-    },
-  });
-
-  const { data: programs } = useQuery({
-    queryKey: ['programs-lookup'],
-    queryFn: async () => {
-      const { data, error } = await supabase.from('programs').select('id, name').order('name');
-      if (error) throw error;
-      return data;
-    },
-  });
-
-  // Quarter options are generated statically above - no need to fetch
-
+  // Fetch iterations (sprints) for conditional sprint picker
   const { data: iterations } = useQuery({
     queryKey: ['iterations-lookup'],
     queryFn: async () => {
@@ -197,8 +196,10 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
       if (error) throw error;
       return data;
     },
+    enabled: open,
   });
 
+  // External entities for legacy view
   const { data: externalEntities } = useQuery({
     queryKey: ['external-entities-lookup'],
     queryFn: async () => {
@@ -206,40 +207,64 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
       if (error) throw error;
       return data;
     },
+    enabled: open && isLegacyDependency,
   });
 
+  // Populate form when dependency loads
   useEffect(() => {
-    if (existingDependency) {
-      form.reset({
-        dependency_level: existingDependency.dependency_level as any || 'team',
-        from_feature_id: existingDependency.from_feature_id || undefined,
-        to_feature_id: existingDependency.to_feature_id || undefined,
-        requesting_team_id: existingDependency.requesting_team_id || undefined,
-        requesting_program_id: existingDependency.requesting_project_id || undefined,
-        depends_on_team_id: existingDependency.depends_on_team_id || undefined,
-        depends_on_program_id: existingDependency.depends_on_project_id || undefined,
-        external_entity_id: existingDependency.external_entity_id || undefined,
-        owner_id: existingDependency.owner_id || undefined,
-        quarter: (existingDependency as any).quarter || getCurrentQuarter(),
-        type: existingDependency.type as any || 'sequential',
-        status: existingDependency.status as any || 'pending_commit',
-        risk_level: existingDependency.risk_level || 'med',
-        needed_by_date: existingDependency.needed_by_date || undefined,
-        needed_by_sprint_id: existingDependency.needed_by_sprint_id || undefined,
-        committed_by_date: existingDependency.committed_by_date || undefined,
-        committed_by_sprint_id: existingDependency.committed_by_sprint_id || undefined,
-        description: existingDependency.description || undefined,
-        blocked_requestor: existingDependency.blocked_requestor || false,
-        blocked_respondent: existingDependency.blocked_respondent || false,
-        blocked_reason_requestor: existingDependency.blocked_reason_requestor || undefined,
-        blocked_reason_respondent: existingDependency.blocked_reason_respondent || undefined,
-        no_work_required: existingDependency.no_work_required || false,
-        rejection_reason: existingDependency.rejection_reason || undefined,
-        notify_on_commit: existingDependency.notify_on_commit ?? true,
-        notify_on_delivery: existingDependency.notify_on_delivery ?? true,
+    if (existingDependency && open) {
+      const dep = existingDependency as any;
+      
+      // Work item fields (new model) - or derive from legacy fields
+      const reqType: WorkItemDependencyType = dep.requesting_work_item_type || 
+        (dep.from_feature_id ? 'feature' : 'epic');
+      const reqId = dep.requesting_work_item_id || dep.from_feature_id || '';
+      const depType: WorkItemDependencyType = dep.depends_on_work_item_type || 
+        (dep.to_feature_id ? 'feature' : 'epic');
+      const depId = dep.depends_on_work_item_id || dep.to_feature_id || '';
+      
+      setRequestingWorkItemType(reqType);
+      setRequestingWorkItemId(reqId);
+      setDependsOnWorkItemType(depType);
+      setDependsOnWorkItemId(depId);
+      setDependencyType(dep.type || 'blocks');
+      setRiskLevel(dep.risk_level || 'med');
+      setStatus(dep.status || 'open');
+      setNeededByDate(dep.needed_by_date || '');
+      setCommittedByDate(dep.committed_by_date || '');
+      setNeededBySprint(dep.needed_by_sprint_id || '');
+      setCommittedBySprint(dep.committed_by_sprint_id || '');
+      setDescription(dep.description || '');
+      setSourceBlocked(dep.source_blocked || dep.blocked_requestor || false);
+      setSourceBlockedReason(dep.source_blocked_reason || dep.blocked_reason_requestor || '');
+      setTargetDelayed(dep.target_delayed || dep.blocked_respondent || false);
+      setTargetDelayedReason(dep.target_delayed_reason || dep.blocked_reason_respondent || '');
+      setNoWorkRequired(dep.no_work_required || false);
+      
+      // Store initial values for dirty checking
+      setInitialValues({
+        requestingWorkItemType: reqType,
+        requestingWorkItemId: reqId,
+        dependsOnWorkItemType: depType,
+        dependsOnWorkItemId: depId,
+        dependencyType: dep.type || 'blocks',
+        riskLevel: dep.risk_level || 'med',
+        status: dep.status || 'open',
+        neededByDate: dep.needed_by_date || '',
+        committedByDate: dep.committed_by_date || '',
+        description: dep.description || '',
+        sourceBlocked: dep.source_blocked || dep.blocked_requestor || false,
+        sourceBlockedReason: dep.source_blocked_reason || dep.blocked_reason_requestor || '',
+        targetDelayed: dep.target_delayed || dep.blocked_respondent || false,
+        targetDelayedReason: dep.target_delayed_reason || dep.blocked_reason_respondent || '',
+        noWorkRequired: dep.no_work_required || false,
       });
+    } else if (!isEdit && open) {
+      // Reset for new creation
+      resetForm();
+      setInitialValues(null);
     }
-  }, [existingDependency, form]);
+  }, [existingDependency, open, isEdit]);
 
   // Reset to default tab when drawer opens
   useEffect(() => {
@@ -248,35 +273,92 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
     }
   }, [open]);
 
+  const resetForm = () => {
+    setRequestingWorkItemType('epic');
+    setRequestingWorkItemId('');
+    setDependsOnWorkItemType('epic');
+    setDependsOnWorkItemId('');
+    setDependencyType('blocks');
+    setRiskLevel('med');
+    setStatus('open');
+    setNeededByDate('');
+    setCommittedByDate('');
+    setNeededBySprint('');
+    setCommittedBySprint('');
+    setDescription('');
+    setSourceBlocked(false);
+    setSourceBlockedReason('');
+    setTargetDelayed(false);
+    setTargetDelayedReason('');
+    setNoWorkRequired(false);
+    setInitialValues(null);
+  };
+
+  // Check for unsaved changes
+  const hasChanges = initialValues ? (
+    requestingWorkItemType !== initialValues.requestingWorkItemType ||
+    requestingWorkItemId !== initialValues.requestingWorkItemId ||
+    dependsOnWorkItemType !== initialValues.dependsOnWorkItemType ||
+    dependsOnWorkItemId !== initialValues.dependsOnWorkItemId ||
+    dependencyType !== initialValues.dependencyType ||
+    riskLevel !== initialValues.riskLevel ||
+    status !== initialValues.status ||
+    neededByDate !== initialValues.neededByDate ||
+    committedByDate !== initialValues.committedByDate ||
+    description !== initialValues.description ||
+    sourceBlocked !== initialValues.sourceBlocked ||
+    sourceBlockedReason !== initialValues.sourceBlockedReason ||
+    targetDelayed !== initialValues.targetDelayed ||
+    targetDelayedReason !== initialValues.targetDelayedReason ||
+    noWorkRequired !== initialValues.noWorkRequired
+  ) : (requestingWorkItemId !== '' || dependsOnWorkItemId !== '');
+
+  // Get work items for pickers
+  const requestingWorkItems = requestingWorkItemType === 'epic' 
+    ? epics?.map(e => ({ id: e.id, display: `${e.epic_key || e.id.slice(0, 8)} - ${e.name}` })) || []
+    : features?.map(f => ({ id: f.id, display: `${f.display_id || f.id.slice(0, 8)} - ${f.name}` })) || [];
+
+  const dependsOnWorkItems = (dependsOnWorkItemType === 'epic' 
+    ? epics?.map(e => ({ id: e.id, display: `${e.epic_key || e.id.slice(0, 8)} - ${e.name}` })) || []
+    : features?.map(f => ({ id: f.id, display: `${f.display_id || f.id.slice(0, 8)} - ${f.name}` })) || []
+  ).filter(item => item.id !== requestingWorkItemId);
+
+  // Save mutation
   const mutation = useMutation({
-    mutationFn: async (data: FormData) => {
+    mutationFn: async () => {
       const payload: any = {
-        dependency_level: data.dependency_level,
-        type: data.type,
-        status: data.status,
-        risk_level: data.risk_level,
-        description: data.description,
-        quarter: data.quarter,
-        owner_id: data.owner_id || null,
-        from_feature_id: data.from_feature_id || null,
-        to_feature_id: data.to_feature_id || null,
-        requesting_team_id: data.requesting_team_id || null,
-        requesting_program_id: data.requesting_program_id || null,
-        depends_on_team_id: data.depends_on_team_id || null,
-        depends_on_program_id: data.depends_on_program_id || null,
-        external_entity_id: data.external_entity_id || null,
-        needed_by_date: data.needed_by_date || null,
-        needed_by_sprint_id: data.needed_by_sprint_id || null,
-        committed_by_date: data.committed_by_date || null,
-        committed_by_sprint_id: data.committed_by_sprint_id || null,
-        blocked_requestor: data.blocked_requestor || false,
-        blocked_respondent: data.blocked_respondent || false,
-        blocked_reason_requestor: data.blocked_reason_requestor || null,
-        blocked_reason_respondent: data.blocked_reason_respondent || null,
-        no_work_required: data.no_work_required || false,
-        rejection_reason: data.rejection_reason || null,
-        notify_on_commit: data.notify_on_commit ?? true,
-        notify_on_delivery: data.notify_on_delivery ?? true,
+        // New work-item-centric fields
+        requesting_work_item_id: requestingWorkItemId || null,
+        requesting_work_item_type: requestingWorkItemType,
+        depends_on_work_item_id: dependsOnWorkItemId || null,
+        depends_on_work_item_type: dependsOnWorkItemType,
+        dependency_level_v2: derivedLevel,
+        is_cross_level_exception: isCrossLevel,
+        type: dependencyType,
+        risk_level: riskLevel,
+        status,
+        needed_by_date: neededByDate || null,
+        committed_by_date: committedByDate || null,
+        needed_by_sprint_id: neededBySprint || null,
+        committed_by_sprint_id: committedBySprint || null,
+        quarter: derivedQuarter,
+        quarter_derived_from_date: !!neededByDate,
+        description: description || null,
+        source_blocked: sourceBlocked,
+        source_blocked_reason: sourceBlocked ? sourceBlockedReason : null,
+        target_delayed: targetDelayed,
+        target_delayed_reason: targetDelayed ? targetDelayedReason : null,
+        no_work_required: noWorkRequired,
+        // Legacy fields for backwards compatibility
+        from_feature_id: requestingWorkItemType === 'feature' ? requestingWorkItemId : null,
+        to_feature_id: dependsOnWorkItemType === 'feature' ? dependsOnWorkItemId : null,
+        // Clear legacy team fields for new model
+        requesting_team_id: null,
+        depends_on_team_id: null,
+        blocked_requestor: sourceBlocked,
+        blocked_respondent: targetDelayed,
+        blocked_reason_requestor: sourceBlocked ? sourceBlockedReason : null,
+        blocked_reason_respondent: targetDelayed ? targetDelayedReason : null,
       };
 
       if (isEdit) {
@@ -292,12 +374,30 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['dependencies-grid'] });
+      queryClient.invalidateQueries({ queryKey: ['work-item-dependencies'] });
       queryClient.invalidateQueries({ queryKey: ['dependency', dependencyId] });
       toast.success(isEdit ? 'Dependency updated' : 'Dependency created');
       handleClose();
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast.error(`Failed to ${isEdit ? 'update' : 'create'} dependency: ${error.message}`);
+    },
+  });
+
+  // Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from('dependencies').delete().eq('id', dependencyId!);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['dependencies-grid'] });
+      queryClient.invalidateQueries({ queryKey: ['work-item-dependencies'] });
+      toast.success('Dependency deleted');
+      handleClose();
+    },
+    onError: (error: any) => {
+      toast.error(`Failed to delete dependency: ${error.message}`);
     },
   });
 
@@ -310,25 +410,31 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
   };
 
   const handleClose = () => {
-    form.reset();
+    resetForm();
     setShowUnsavedChangesDialog(false);
     onClose();
   };
 
   const handleDiscardAndClose = () => {
-    form.reset();
+    resetForm();
     setShowUnsavedChangesDialog(false);
     onClose();
   };
 
   const handleSave = () => {
-    form.handleSubmit((data) => mutation.mutate(data))();
+    if (!requestingWorkItemId || !dependsOnWorkItemId) {
+      toast.error('Please select both requesting and dependent work items');
+      return;
+    }
+    if (!neededByDate) {
+      toast.error('Please specify a needed-by date');
+      return;
+    }
+    mutation.mutate();
   };
 
   const handleSaveAndClose = () => {
-    form.handleSubmit((data) => {
-      mutation.mutate(data);
-    })();
+    handleSave();
   };
 
   const handleCopyLink = () => {
@@ -341,14 +447,101 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
     setIsExpanded(!isExpanded);
   };
 
-  const dependencyLevel = form.watch('dependency_level');
-
-  // Drawer width classes matching Business Drawer
+  // Drawer width classes
   const drawerWidthClass = isExpanded 
     ? 'w-screen sm:w-[70vw] sm:max-w-[1120px]' 
     : 'w-screen sm:w-[65vw] sm:max-w-[980px]';
 
   if (!open) return null;
+
+  // Legacy dependency read-only view
+  const renderLegacyView = () => {
+    const dep = existingDependency as any;
+    return (
+      <div className="p-5 space-y-6">
+        <div className="p-4 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
+          <div className="flex items-center gap-2 mb-2">
+            <AlertTriangle className="h-4 w-4 text-amber-600" />
+            <span className="text-sm font-medium text-amber-800 dark:text-amber-200">Legacy Team-Based Dependency</span>
+          </div>
+          <p className="text-xs text-amber-700 dark:text-amber-300">
+            This dependency uses the legacy team-based model. It is displayed in read-only mode.
+            To edit, the dependency would need to be converted to the work-item model.
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label className="text-xs text-muted-foreground">Dependency Level</Label>
+              <p className="text-sm font-medium">{dep.dependency_level || 'Team'}</p>
+            </div>
+            <div>
+              <Label className="text-xs text-muted-foreground">Quarter</Label>
+              <p className="text-sm font-medium">{dep.quarter || '-'}</p>
+            </div>
+          </div>
+
+          {dep.requesting_team && (
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-xs text-muted-foreground">Requesting Team</Label>
+                <p className="text-sm font-medium">{dep.requesting_team.name}</p>
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground">Depends On Team</Label>
+                <p className="text-sm font-medium">{dep.depends_on_team?.name || '-'}</p>
+              </div>
+            </div>
+          )}
+
+          {(dep.from_feature || dep.to_feature) && (
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-xs text-muted-foreground">From Feature</Label>
+                <p className="text-sm font-medium">{dep.from_feature?.name || '-'}</p>
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground">To Feature</Label>
+                <p className="text-sm font-medium">{dep.to_feature?.name || '-'}</p>
+              </div>
+            </div>
+          )}
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label className="text-xs text-muted-foreground">Type</Label>
+              <p className="text-sm font-medium">{dep.type || '-'}</p>
+            </div>
+            <div>
+              <Label className="text-xs text-muted-foreground">Status</Label>
+              <Badge variant="outline">{dep.status || 'open'}</Badge>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label className="text-xs text-muted-foreground">Risk Level</Label>
+              <Badge variant={dep.risk_level === 'high' ? 'destructive' : dep.risk_level === 'med' ? 'secondary' : 'outline'}>
+                {dep.risk_level?.toUpperCase() || 'MED'}
+              </Badge>
+            </div>
+            <div>
+              <Label className="text-xs text-muted-foreground">Needed By</Label>
+              <p className="text-sm font-medium">{dep.needed_by_date || '-'}</p>
+            </div>
+          </div>
+
+          {dep.description && (
+            <div>
+              <Label className="text-xs text-muted-foreground">Description</Label>
+              <p className="text-sm">{dep.description}</p>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <>
@@ -363,32 +556,22 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
           }}
         >
           <SheetHeader className="flex-col space-y-0 shrink-0 p-0">
-            
-            {/* ═══════════════════════════════════════════════════════════
-                BREADCRUMB ROW
-                ═══════════════════════════════════════════════════════════ */}
+            {/* Breadcrumb Row */}
             <div 
               className="px-5 pt-2.5 pb-1.5 flex items-center gap-1.5"
               style={{ borderBottom: '1px solid var(--border-subtle, hsl(var(--border)/0.5))' }}
             >
-              <span 
-                className="text-[10px] font-medium uppercase tracking-[0.5px]"
-                style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
-              >
+              <span className="text-[10px] font-medium uppercase tracking-[0.5px] text-muted-foreground">
                 Dependencies
               </span>
-              <span className="text-[10px]" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>/</span>
-              <span 
-                className="text-[11px] font-semibold font-mono"
-                style={{ color: '#8B7355' }}
-              >
+              <span className="text-[10px] text-muted-foreground">/</span>
+              <span className="text-[11px] font-semibold font-mono" style={{ color: '#8B7355' }}>
                 {isEdit ? `DEP-${dependencyId?.slice(0, 4).toUpperCase()}` : 'New'}
               </span>
               {isEdit && (
                 <button
                   onClick={handleCopyLink}
-                  className="p-1 rounded hover:bg-[var(--surface-hover,hsl(var(--muted)))] transition-colors"
-                  style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
+                  className="p-1 rounded hover:bg-muted transition-colors text-muted-foreground"
                   title="Copy link"
                 >
                   <LinkIcon className="h-3 w-3" />
@@ -396,83 +579,57 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
               )}
             </div>
 
-            {/* ═══════════════════════════════════════════════════════════
-                HERO ROW: Title + Actions
-                ═══════════════════════════════════════════════════════════ */}
+            {/* Hero Row */}
             <div className="flex items-start justify-between px-5 py-3 gap-4">
-              
-              {/* Left Side: Title + Subtitle */}
               <div className="flex-1 min-w-0 space-y-1">
-                <SheetTitle 
-                  className="text-[18px] font-semibold tracking-[-0.3px] leading-tight"
-                  style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}
-                >
+                <SheetTitle className="text-[18px] font-semibold tracking-[-0.3px] leading-tight">
                   {isEdit ? 'Edit Dependency' : 'Create Dependency'}
                 </SheetTitle>
-                <SheetDescription 
-                  className="text-[13px]"
-                  style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
-                >
+                <SheetDescription className="text-[13px] text-muted-foreground">
                   {isEdit && existingDependency ? (
-                    `${existingDependency.from_feature?.name || 'Unknown'} → ${existingDependency.to_feature?.name || 'Unknown'}`
+                    isLegacyDependency ? 'Legacy team-based dependency (read-only)' :
+                    `Work Item ↔ Work Item Dependency`
                   ) : (
-                    'Define a new dependency relationship'
+                    'Define a dependency between work items'
                   )}
                 </SheetDescription>
               </div>
 
-              {/* Right Side: Action Buttons */}
+              {/* Action Buttons */}
               <div className="flex items-center gap-1.5 shrink-0">
-                
-                {/* Save Dropdown */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      size="sm"
-                      className="h-8 px-3 text-[13px] font-medium text-white"
-                      style={{ 
-                        background: '#5C7C5C',
-                        boxShadow: '0 2px 4px rgba(92, 124, 92, 0.25)'
-                      }}
-                      onMouseEnter={(e) => e.currentTarget.style.background = '#4A6A4A'}
-                      onMouseLeave={(e) => e.currentTarget.style.background = '#5C7C5C'}
-                    >
-                      {isEdit ? 'Save' : 'Create'}
-                      <ChevronDown className="h-3.5 w-3.5 ml-1" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent 
-                    align="end" 
-                    className="z-[400] w-40"
-                    style={{ background: 'var(--surface-bg, hsl(var(--background)))', borderColor: 'var(--border-default, hsl(var(--border)))' }}
-                  >
-                    <DropdownMenuItem onSelect={handleSave}>
-                      {isEdit ? 'Save' : 'Create'}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onSelect={handleSaveAndClose}>
-                      {isEdit ? 'Save & Close' : 'Create & Close'}
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                {!isLegacyDependency && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        size="sm"
+                        className="h-8 px-3 text-[13px] font-medium text-white"
+                        style={{ background: '#5C7C5C', boxShadow: '0 2px 4px rgba(92, 124, 92, 0.25)' }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = '#4A6A4A'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = '#5C7C5C'}
+                      >
+                        {isEdit ? 'Save' : 'Create'}
+                        <ChevronDown className="h-3.5 w-3.5 ml-1" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="z-[400] w-40">
+                      <DropdownMenuItem onSelect={handleSave}>
+                        {isEdit ? 'Save' : 'Create'}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onSelect={handleSaveAndClose}>
+                        {isEdit ? 'Save & Close' : 'Create & Close'}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
 
-                {/* More Options (Edit mode only) */}
                 {isEdit && (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-8 w-8 hover:bg-[var(--surface-hover,hsl(var(--muted)))]"
-                        style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
-                      >
+                      <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-muted text-muted-foreground">
                         <MoreVertical className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent 
-                      align="end" 
-                      className="w-48 z-[400]"
-                      style={{ background: 'var(--surface-bg, hsl(var(--background)))', borderColor: 'var(--border-default, hsl(var(--border)))' }}
-                    >
+                    <DropdownMenuContent align="end" className="w-48 z-[400]">
                       <DropdownMenuItem onSelect={() => toast.info('Subscribe to dependency updates')}>
                         <Bell className="h-4 w-4 mr-2" />
                         Subscribe
@@ -502,679 +659,457 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                   </DropdownMenu>
                 )}
 
-                {/* Expand/Collapse */}
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={toggleExpand}
-                  className="h-8 w-8 hover:bg-[var(--surface-hover,hsl(var(--muted)))]"
-                  style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
+                  className="h-8 w-8 hover:bg-muted text-muted-foreground"
                   title={isExpanded ? 'Collapse' : 'Expand'}
                 >
                   {isExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
                 </Button>
 
-                {/* Close */}
                 <Button 
                   variant="ghost" 
                   size="icon" 
                   onClick={handleAttemptClose}
-                  className="h-8 w-8 hover:bg-[var(--surface-hover,hsl(var(--muted)))]"
-                  style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
+                  className="h-8 w-8 hover:bg-muted text-muted-foreground"
                 >
                   <X className="h-4 w-4" />
                 </Button>
               </div>
             </div>
 
-            {/* Bottom Border */}
             <div style={{ borderBottom: '1px solid var(--border-default, hsl(var(--border)))' }} />
           </SheetHeader>
 
-          {/* ═══════════════════════════════════════════════════════════
-              TABS - Matching Business Drawer Pattern
-              ═══════════════════════════════════════════════════════════ */}
+          {/* Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
             <TabsList 
               className="w-full justify-start rounded-none h-10 shrink-0 overflow-x-auto flex-nowrap px-5 bg-transparent"
               style={{ borderBottom: '1px solid var(--border-default, hsl(var(--border)))' }}
             >
-              <TabsTrigger
-                value="details"
-                className="relative px-3.5 py-2.5 text-[13px] font-medium whitespace-nowrap bg-transparent border-none rounded-none data-[state=inactive]:text-muted-foreground data-[state=active]:text-foreground"
-              >
+              <TabsTrigger value="details" className="relative px-3.5 py-2.5 text-[13px] font-medium whitespace-nowrap bg-transparent border-none rounded-none data-[state=inactive]:text-muted-foreground data-[state=active]:text-foreground">
                 Details
               </TabsTrigger>
-              <TabsTrigger
-                value="negotiation"
-                className="relative px-3.5 py-2.5 text-[13px] font-medium whitespace-nowrap bg-transparent border-none rounded-none data-[state=inactive]:text-muted-foreground data-[state=active]:text-foreground"
-              >
+              <TabsTrigger value="negotiation" className="relative px-3.5 py-2.5 text-[13px] font-medium whitespace-nowrap bg-transparent border-none rounded-none data-[state=inactive]:text-muted-foreground data-[state=active]:text-foreground">
                 Negotiation
               </TabsTrigger>
-              <TabsTrigger
-                value="stories"
-                className="relative px-3.5 py-2.5 text-[13px] font-medium whitespace-nowrap bg-transparent border-none rounded-none data-[state=inactive]:text-muted-foreground data-[state=active]:text-foreground"
-              >
-                Stories
-              </TabsTrigger>
-              <TabsTrigger
-                value="audit"
-                className="relative px-3.5 py-2.5 text-[13px] font-medium whitespace-nowrap bg-transparent border-none rounded-none data-[state=inactive]:text-muted-foreground data-[state=active]:text-foreground"
-              >
+              <TabsTrigger value="audit" className="relative px-3.5 py-2.5 text-[13px] font-medium whitespace-nowrap bg-transparent border-none rounded-none data-[state=inactive]:text-muted-foreground data-[state=active]:text-foreground">
                 Audit
               </TabsTrigger>
             </TabsList>
 
-            {/* ═══════════════════════════════════════════════════════════
-                DRAWER BODY
-                ═══════════════════════════════════════════════════════════ */}
-            <div 
-              className="flex-1 min-h-0 overflow-y-auto"
-              style={{ background: 'var(--surface-subtle, hsl(var(--muted)/0.3))' }}
-            >
-              <Form {...form}>
-                <form className="h-full flex flex-col">
-                  
-                  {/* Details Tab */}
-                  <TabsContent value="details" className="m-0 focus-visible:outline-none p-5 pb-8">
-                    <div className="space-y-6">
-                      
-                      {/* Core Information Section */}
-                      <div className="space-y-4">
-                        <h3 className="text-[13px] font-semibold flex items-center gap-2" style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}>
-                          <Users className="h-4 w-4" />
-                          Core Information
-                        </h3>
-
-                        {/* Row 1: Dependency Level | Program Increment */}
-                        <div className="grid grid-cols-2 gap-4">
-                          <FormField
-                            control={form.control}
-                            name="dependency_level"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-[13px] font-medium">Dependency Level*</FormLabel>
-                                <Select onValueChange={field.onChange} value={field.value}>
-                                  <FormControl>
-                                    <SelectTrigger className="h-9">
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent className="z-[400]">
-                                    <SelectItem value="team">Team Dependency</SelectItem>
-                                    <SelectItem value="program">Program Dependency</SelectItem>
-                                    <SelectItem value="external">External Dependency</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-
-                          <FormField
-                            control={form.control}
-                            name="quarter"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-[13px] font-medium">Quarter*</FormLabel>
-                                <Select onValueChange={field.onChange} value={field.value}>
-                                  <FormControl>
-                                    <SelectTrigger className="h-9">
-                                      <SelectValue placeholder="Select quarter" />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent className="z-[400]">
-                                    {QUARTER_OPTIONS.map(q => (
-                                      <SelectItem key={q} value={q}>{q}</SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
+            {/* Body */}
+            <div className="flex-1 min-h-0 overflow-y-auto" style={{ background: 'var(--surface-subtle, hsl(var(--muted)/0.3))' }}>
+              
+              {/* Details Tab */}
+              <TabsContent value="details" className="m-0 focus-visible:outline-none p-5 pb-8">
+                {isLoadingDep ? (
+                  <div className="text-center text-sm py-12 text-muted-foreground">Loading...</div>
+                ) : isLegacyDependency ? (
+                  renderLegacyView()
+                ) : (
+                  <div className="space-y-6">
+                    {/* Dependency Level Indicator */}
+                    <div className="flex items-center gap-2 p-3 rounded-md bg-muted/50">
+                      <Layers className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">Dependency Level:</span>
+                      <Badge variant={isCrossLevel ? 'destructive' : 'secondary'}>
+                        {DEPENDENCY_LEVEL_LABELS[derivedLevel]}
+                      </Badge>
+                      {isCrossLevel && (
+                        <div className="flex items-center gap-1 text-xs text-amber-600">
+                          <AlertTriangle className="h-3 w-3" />
+                          Cross-level dependencies require explicit approval
                         </div>
-
-                        {/* Row 2: Requesting Team | Depends On Team (Team level) */}
-                        {dependencyLevel === 'team' && (
-                          <>
-                            <div className="grid grid-cols-2 gap-4">
-                              <FormField
-                                control={form.control}
-                                name="requesting_team_id"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel className="text-[13px] font-medium">Requesting Team*</FormLabel>
-                                    <Select onValueChange={field.onChange} value={field.value}>
-                                      <FormControl>
-                                        <SelectTrigger className="h-9">
-                                          <SelectValue placeholder="Select team" />
-                                        </SelectTrigger>
-                                      </FormControl>
-                                      <SelectContent className="z-[400]">
-                                        {teams?.map(team => (
-                                          <SelectItem key={team.id} value={team.id}>{team.name}</SelectItem>
-                                        ))}
-                                      </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-
-                              <FormField
-                                control={form.control}
-                                name="depends_on_team_id"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel className="text-[13px] font-medium">Depends On Team*</FormLabel>
-                                    <Select onValueChange={field.onChange} value={field.value}>
-                                      <FormControl>
-                                        <SelectTrigger className="h-9">
-                                          <SelectValue placeholder="Select team" />
-                                        </SelectTrigger>
-                                      </FormControl>
-                                      <SelectContent className="z-[400]">
-                                        {teams?.map(team => (
-                                          <SelectItem key={team.id} value={team.id}>{team.name}</SelectItem>
-                                        ))}
-                                      </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            </div>
-
-                            {/* Row 3: Work Item (Requesting) */}
-                            <FormField
-                              control={form.control}
-                              name="from_feature_id"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel className="text-[13px] font-medium">Work Item (Requesting)*</FormLabel>
-                                  <Select onValueChange={field.onChange} value={field.value}>
-                                    <FormControl>
-                                      <SelectTrigger className="h-9">
-                                        <SelectValue placeholder="Select feature" />
-                                      </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent className="z-[400]">
-                                      {features?.map(feature => (
-                                        <SelectItem key={feature.id} value={feature.id}>
-                                          {feature.display_id}: {feature.name}
-                                        </SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </>
-                        )}
-
-                        {/* Program Level Fields */}
-                        {dependencyLevel === 'program' && (
-                          <div className="grid grid-cols-2 gap-4">
-                            <FormField
-                              control={form.control}
-                              name="requesting_program_id"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel className="text-[13px] font-medium">Requesting Program*</FormLabel>
-                                  <Select onValueChange={field.onChange} value={field.value}>
-                                    <FormControl>
-                                      <SelectTrigger className="h-9">
-                                        <SelectValue placeholder="Select program" />
-                                      </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent className="z-[400]">
-                                      {programs?.map(program => (
-                                        <SelectItem key={program.id} value={program.id}>{program.name}</SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-
-                            <FormField
-                              control={form.control}
-                              name="depends_on_program_id"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel className="text-[13px] font-medium">Depends On Program*</FormLabel>
-                                  <Select onValueChange={field.onChange} value={field.value}>
-                                    <FormControl>
-                                      <SelectTrigger className="h-9">
-                                        <SelectValue placeholder="Select program" />
-                                      </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent className="z-[400]">
-                                      {programs?.map(program => (
-                                        <SelectItem key={program.id} value={program.id}>{program.name}</SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-                        )}
-
-                        {/* External Entity Field */}
-                        {dependencyLevel === 'external' && (
-                          <FormField
-                            control={form.control}
-                            name="external_entity_id"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-[13px] font-medium">External Entity*</FormLabel>
-                                <Select onValueChange={field.onChange} value={field.value}>
-                                  <FormControl>
-                                    <SelectTrigger className="h-9">
-                                      <SelectValue placeholder="Select external entity" />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent className="z-[400]">
-                                    {externalEntities?.map(entity => (
-                                      <SelectItem key={entity.id} value={entity.id}>
-                                        {entity.name} ({entity.entity_type})
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        )}
-
-                        {/* Description - Full Width */}
-                        <FormField
-                          control={form.control}
-                          name="description"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-[13px] font-medium">Description</FormLabel>
-                              <FormControl>
-                                <Textarea
-                                  placeholder="Describe what needs to be delivered..."
-                                  className="min-h-[100px] resize-y"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        {/* Row 4: Type | Risk Level */}
-                        <div className="grid grid-cols-2 gap-4">
-                          <FormField
-                            control={form.control}
-                            name="type"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-[13px] font-medium">Type*</FormLabel>
-                                <Select onValueChange={field.onChange} value={field.value}>
-                                  <FormControl>
-                                    <SelectTrigger className="h-9">
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent className="z-[400]">
-                                    <SelectItem value="sequential">Sequential</SelectItem>
-                                    <SelectItem value="concurrent">Concurrent</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-
-                          <FormField
-                            control={form.control}
-                            name="risk_level"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-[13px] font-medium">Risk Level*</FormLabel>
-                                <Select onValueChange={field.onChange} value={field.value}>
-                                  <FormControl>
-                                    <SelectTrigger className="h-9">
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent className="z-[400]">
-                                    <SelectItem value="low">Low</SelectItem>
-                                    <SelectItem value="med">Medium</SelectItem>
-                                    <SelectItem value="high">High</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-
-                        {/* Needed By Sprint | Needed By Date */}
-                        <div className="grid grid-cols-2 gap-4">
-                          <FormField
-                            control={form.control}
-                            name="needed_by_sprint_id"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-[13px] font-medium">Needed By Sprint</FormLabel>
-                                <Select onValueChange={field.onChange} value={field.value}>
-                                  <FormControl>
-                                    <SelectTrigger className="h-9">
-                                      <SelectValue placeholder="Select sprint" />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent className="z-[400]">
-                                    {iterations?.map(sprint => (
-                                      <SelectItem key={sprint.id} value={sprint.id}>{sprint.name}</SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-
-                          <FormField
-                            control={form.control}
-                            name="needed_by_date"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-[13px] font-medium">Or Needed By Date</FormLabel>
-                                <FormControl>
-                                  <Input type="date" className="h-9" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </TabsContent>
-
-                  {/* Negotiation Tab */}
-                  <TabsContent value="negotiation" className="m-0 focus-visible:outline-none p-5 pb-8">
-                    <div className="space-y-6">
-                      <h3 className="text-[13px] font-semibold flex items-center gap-2" style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}>
-                        <Calendar className="h-4 w-4" />
-                        Negotiation & Commitment
-                      </h3>
-
-                      <FormField
-                        control={form.control}
-                        name="status"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-[13px] font-medium">Status*</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
-                              <FormControl>
-                                <SelectTrigger className="h-9">
-                                  <SelectValue />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent className="z-[400]">
-                                <SelectItem value="pending_commit">Pending Commit</SelectItem>
-                                <SelectItem value="negotiation">Negotiation</SelectItem>
-                                <SelectItem value="committed">Committed</SelectItem>
-                                <SelectItem value="in_progress">In Progress</SelectItem>
-                                <SelectItem value="delivered">Delivered</SelectItem>
-                                <SelectItem value="done">Done</SelectItem>
-                                <SelectItem value="no_work_done">No Work Done</SelectItem>
-                                <SelectItem value="rejected">Rejected</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <FormField
-                          control={form.control}
-                          name="committed_by_sprint_id"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-[13px] font-medium">Committed By Sprint</FormLabel>
-                              <Select onValueChange={field.onChange} value={field.value}>
-                                <FormControl>
-                                  <SelectTrigger className="h-9">
-                                    <SelectValue placeholder="Select sprint" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent className="z-[400]">
-                                  {iterations?.map(sprint => (
-                                    <SelectItem key={sprint.id} value={sprint.id}>{sprint.name}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name="committed_by_date"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-[13px] font-medium">Or Committed By Date</FormLabel>
-                              <FormControl>
-                                <Input type="date" className="h-9" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      <Separator />
-
-                      <div className="space-y-3">
-                        <FormField
-                          control={form.control}
-                          name="blocked_requestor"
-                          render={({ field }) => (
-                            <FormItem className="flex items-center gap-2 space-y-0">
-                              <FormControl>
-                                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                              </FormControl>
-                              <FormLabel className="!mt-0 font-normal text-[13px]">
-                                Blocked (Requestor): Is this work still blocked?
-                              </FormLabel>
-                            </FormItem>
-                          )}
-                        />
-
-                        {form.watch('blocked_requestor') && (
-                          <FormField
-                            control={form.control}
-                            name="blocked_reason_requestor"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-[13px] font-medium">Blocked Reason (Requestor)</FormLabel>
-                                <FormControl>
-                                  <Textarea placeholder="Why is the requesting party blocked?" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        )}
-
-                        <FormField
-                          control={form.control}
-                          name="blocked_respondent"
-                          render={({ field }) => (
-                            <FormItem className="flex items-center gap-2 space-y-0">
-                              <FormControl>
-                                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                              </FormControl>
-                              <FormLabel className="!mt-0 font-normal text-[13px]">
-                                Blocked (Respondent): Is this work still blocked?
-                              </FormLabel>
-                            </FormItem>
-                          )}
-                        />
-
-                        {form.watch('blocked_respondent') && (
-                          <FormField
-                            control={form.control}
-                            name="blocked_reason_respondent"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-[13px] font-medium">Blocked Reason (Respondent)</FormLabel>
-                                <FormControl>
-                                  <Textarea placeholder="Why is the responding party blocked?" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        )}
-
-                        <FormField
-                          control={form.control}
-                          name="no_work_required"
-                          render={({ field }) => (
-                            <FormItem className="flex items-center gap-2 space-y-0">
-                              <FormControl>
-                                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                              </FormControl>
-                              <FormLabel className="!mt-0 font-normal text-[13px]">
-                                No Work Required
-                              </FormLabel>
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      {form.watch('status') === 'rejected' && (
-                        <FormField
-                          control={form.control}
-                          name="rejection_reason"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-[13px] font-medium">Rejection Reason*</FormLabel>
-                              <FormControl>
-                                <Textarea placeholder="Explain why this dependency was rejected..." {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
                       )}
                     </div>
-                  </TabsContent>
 
-                  {/* Stories Tab */}
-                  <TabsContent value="stories" className="m-0 focus-visible:outline-none p-5 pb-8">
-                    <div className="text-center text-sm py-12" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>
-                      Related stories will appear here
+                    {/* Requesting Work Item */}
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">Requesting Work Item (Source)</Label>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <Label htmlFor="req-type" className="text-xs text-muted-foreground">Type</Label>
+                          <Select 
+                            value={requestingWorkItemType} 
+                            onValueChange={(v: WorkItemDependencyType) => {
+                              setRequestingWorkItemType(v);
+                              setRequestingWorkItemId('');
+                            }}
+                          >
+                            <SelectTrigger id="req-type" className="h-9">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="z-[400]">
+                              <SelectItem value="epic">Epic</SelectItem>
+                              <SelectItem value="feature">Feature</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label htmlFor="req-item" className="text-xs text-muted-foreground">Work Item *</Label>
+                          <Select value={requestingWorkItemId} onValueChange={setRequestingWorkItemId}>
+                            <SelectTrigger id="req-item" className="h-9">
+                              <SelectValue placeholder={`Select ${requestingWorkItemType}`} />
+                            </SelectTrigger>
+                            <SelectContent className="z-[400]">
+                              {requestingWorkItems.map((item) => (
+                                <SelectItem key={item.id} value={item.id}>{item.display}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
                     </div>
-                  </TabsContent>
 
-                  {/* Audit Tab */}
-                  <TabsContent value="audit" className="m-0 focus-visible:outline-none p-5 pb-8">
-                    <div className="text-center text-sm py-12" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>
-                      Audit log will appear here
+                    {/* Depends On Work Item */}
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">Depends On (Target)</Label>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <Label htmlFor="dep-type" className="text-xs text-muted-foreground">Type</Label>
+                          <Select 
+                            value={dependsOnWorkItemType} 
+                            onValueChange={(v: WorkItemDependencyType) => {
+                              setDependsOnWorkItemType(v);
+                              setDependsOnWorkItemId('');
+                            }}
+                          >
+                            <SelectTrigger id="dep-type" className="h-9">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="z-[400]">
+                              <SelectItem value="epic">Epic</SelectItem>
+                              <SelectItem value="feature">Feature</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label htmlFor="dep-item" className="text-xs text-muted-foreground">Work Item *</Label>
+                          <Select value={dependsOnWorkItemId} onValueChange={setDependsOnWorkItemId}>
+                            <SelectTrigger id="dep-item" className="h-9">
+                              <SelectValue placeholder={`Select ${dependsOnWorkItemType}`} />
+                            </SelectTrigger>
+                            <SelectContent className="z-[400]">
+                              {dependsOnWorkItems.map((item) => (
+                                <SelectItem key={item.id} value={item.id}>{item.display}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
                     </div>
-                  </TabsContent>
-                </form>
-              </Form>
+
+                    {/* Dependency Type + Risk */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label className="text-xs text-muted-foreground">Dependency Type *</Label>
+                        <Select value={dependencyType} onValueChange={(v: DependencyTypeV2) => setDependencyType(v)}>
+                          <SelectTrigger className="h-9">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="z-[400]">
+                            <SelectItem value="blocks">Blocks</SelectItem>
+                            <SelectItem value="is_blocked_by">Is Blocked By</SelectItem>
+                            <SelectItem value="enables">Enables</SelectItem>
+                            <SelectItem value="provides_input">Provides Input</SelectItem>
+                            <SelectItem value="approves">Approves</SelectItem>
+                            <SelectItem value="governs">Governs</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label className="text-xs text-muted-foreground">Risk Level</Label>
+                        <Select value={riskLevel} onValueChange={(v: RiskLevel) => setRiskLevel(v)}>
+                          <SelectTrigger className="h-9">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="z-[400]">
+                            <SelectItem value="low">Low</SelectItem>
+                            <SelectItem value="med">Medium</SelectItem>
+                            <SelectItem value="high">High</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    {/* Scheduling */}
+                    <div className="space-y-3">
+                      <Label className="text-sm font-medium flex items-center gap-2">
+                        <Calendar className="h-4 w-4" />
+                        Scheduling
+                      </Label>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <Label className="text-xs text-muted-foreground">Needed By Date *</Label>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                className={cn(
+                                  "w-full h-9 justify-start text-left font-normal",
+                                  !neededByDate && "text-muted-foreground"
+                                )}
+                              >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {neededByDate ? format(new Date(neededByDate), "PPP") : <span>Pick a date</span>}
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0 z-[400]" align="start">
+                              <CalendarComponent
+                                mode="single"
+                                selected={neededByDate ? new Date(neededByDate) : undefined}
+                                onSelect={(date) => setNeededByDate(date ? format(date, 'yyyy-MM-dd') : '')}
+                                initialFocus
+                                className="p-3 pointer-events-auto"
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        </div>
+                        <div>
+                          <Label className="text-xs text-muted-foreground">Quarter (derived)</Label>
+                          <Input 
+                            value={derivedQuarter} 
+                            readOnly 
+                            className="h-9 bg-muted/50" 
+                          />
+                        </div>
+                      </div>
+
+                      {/* Optional sprint fields */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <Label className="text-xs text-muted-foreground">Needed By Sprint (optional)</Label>
+                          <Select value={neededBySprint} onValueChange={setNeededBySprint}>
+                            <SelectTrigger className="h-9">
+                              <SelectValue placeholder="Select sprint" />
+                            </SelectTrigger>
+                            <SelectContent className="z-[400]">
+                              <SelectItem value="">None</SelectItem>
+                              {iterations?.map(sprint => (
+                                <SelectItem key={sprint.id} value={sprint.id}>{sprint.name}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label className="text-xs text-muted-foreground">Committed By Sprint (optional)</Label>
+                          <Select value={committedBySprint} onValueChange={setCommittedBySprint}>
+                            <SelectTrigger className="h-9">
+                              <SelectValue placeholder="Select sprint" />
+                            </SelectTrigger>
+                            <SelectContent className="z-[400]">
+                              <SelectItem value="">None</SelectItem>
+                              {iterations?.map(sprint => (
+                                <SelectItem key={sprint.id} value={sprint.id}>{sprint.name}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Description */}
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Description</Label>
+                      <Textarea
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        placeholder="Describe what is needed and why..."
+                        rows={3}
+                      />
+                    </div>
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* Negotiation Tab */}
+              <TabsContent value="negotiation" className="m-0 focus-visible:outline-none p-5 pb-8">
+                {isLegacyDependency ? (
+                  <div className="text-center text-sm py-12 text-muted-foreground">
+                    Legacy dependencies cannot be edited. View details in the Details tab.
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    <h3 className="text-[13px] font-semibold flex items-center gap-2">
+                      <Calendar className="h-4 w-4" />
+                      Negotiation & Commitment
+                    </h3>
+
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Status *</Label>
+                      <Select value={status} onValueChange={(v: DependencyStatus) => setStatus(v)}>
+                        <SelectTrigger className="h-9">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="z-[400]">
+                          <SelectItem value="draft">Draft</SelectItem>
+                          <SelectItem value="open">Open</SelectItem>
+                          <SelectItem value="pending_commit">Pending Commit</SelectItem>
+                          <SelectItem value="committed">Committed</SelectItem>
+                          <SelectItem value="in_progress">In Progress</SelectItem>
+                          <SelectItem value="delivered">Delivered</SelectItem>
+                          <SelectItem value="cancelled">Cancelled</SelectItem>
+                          <SelectItem value="not_required">Not Required</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Committed By Date</Label>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full h-9 justify-start text-left font-normal",
+                              !committedByDate && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {committedByDate ? format(new Date(committedByDate), "PPP") : <span>Pick a date</span>}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0 z-[400]" align="start">
+                          <CalendarComponent
+                            mode="single"
+                            selected={committedByDate ? new Date(committedByDate) : undefined}
+                            onSelect={(date) => setCommittedByDate(date ? format(date, 'yyyy-MM-dd') : '')}
+                            initialFocus
+                            className="p-3 pointer-events-auto"
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+
+                    <Separator />
+
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Checkbox 
+                          id="source-blocked"
+                          checked={sourceBlocked} 
+                          onCheckedChange={(checked) => setSourceBlocked(checked === true)} 
+                        />
+                        <Label htmlFor="source-blocked" className="font-normal text-[13px]">
+                          Source Blocked: Is the requesting party blocked?
+                        </Label>
+                      </div>
+
+                      {sourceBlocked && (
+                        <div>
+                          <Label className="text-xs text-muted-foreground">Blocked Reason</Label>
+                          <Textarea 
+                            value={sourceBlockedReason}
+                            onChange={(e) => setSourceBlockedReason(e.target.value)}
+                            placeholder="Why is the requesting party blocked?" 
+                          />
+                        </div>
+                      )}
+
+                      <div className="flex items-center gap-2">
+                        <Checkbox 
+                          id="target-delayed"
+                          checked={targetDelayed} 
+                          onCheckedChange={(checked) => setTargetDelayed(checked === true)} 
+                        />
+                        <Label htmlFor="target-delayed" className="font-normal text-[13px]">
+                          Target Delayed: Is the responding party delayed?
+                        </Label>
+                      </div>
+
+                      {targetDelayed && (
+                        <div>
+                          <Label className="text-xs text-muted-foreground">Delayed Reason</Label>
+                          <Textarea 
+                            value={targetDelayedReason}
+                            onChange={(e) => setTargetDelayedReason(e.target.value)}
+                            placeholder="Why is the responding party delayed?" 
+                          />
+                        </div>
+                      )}
+
+                      <div className="flex items-center gap-2">
+                        <Checkbox 
+                          id="no-work"
+                          checked={noWorkRequired} 
+                          onCheckedChange={(checked) => setNoWorkRequired(checked === true)} 
+                        />
+                        <Label htmlFor="no-work" className="font-normal text-[13px]">
+                          No Work Required
+                        </Label>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* Audit Tab */}
+              <TabsContent value="audit" className="m-0 focus-visible:outline-none p-5 pb-8">
+                <div className="text-center text-sm py-12 text-muted-foreground">
+                  Audit log will appear here
+                </div>
+              </TabsContent>
             </div>
 
-            {/* ═══════════════════════════════════════════════════════════
-                STICKY FOOTER
-                ═══════════════════════════════════════════════════════════ */}
-            <div 
-              className="flex justify-end gap-3 px-5 py-4 border-t shrink-0"
-              style={{ 
-                background: 'var(--surface-bg, hsl(var(--background)))',
-                borderColor: 'var(--border-default, hsl(var(--border)))'
-              }}
-            >
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={handleAttemptClose}
-                className="h-9 px-4 text-[13px]"
+            {/* Sticky Footer */}
+            {!isLegacyDependency && (
+              <div 
+                className="flex justify-end gap-3 px-5 py-4 border-t shrink-0"
+                style={{ background: 'var(--surface-bg, hsl(var(--background)))' }}
               >
-                Cancel
-              </Button>
-              <Button 
-                type="button"
-                onClick={handleSave}
-                disabled={mutation.isPending} 
-                className="h-9 px-4 text-[13px] text-white"
-                style={{ background: '#5C7C5C' }}
-                onMouseEnter={(e) => e.currentTarget.style.background = '#4A6A4A'}
-                onMouseLeave={(e) => e.currentTarget.style.background = '#5C7C5C'}
-              >
-                {mutation.isPending ? 'Saving...' : isEdit ? 'Save' : 'Create'}
-              </Button>
-            </div>
+                <Button type="button" variant="outline" onClick={handleAttemptClose} className="h-9 px-4 text-[13px]">
+                  Cancel
+                </Button>
+                <Button 
+                  type="button"
+                  onClick={handleSave}
+                  disabled={mutation.isPending} 
+                  className="h-9 px-4 text-[13px] text-white"
+                  style={{ background: '#5C7C5C' }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#4A6A4A'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = '#5C7C5C'}
+                >
+                  {mutation.isPending ? 'Saving...' : isEdit ? 'Save' : 'Create'}
+                </Button>
+              </div>
+            )}
           </Tabs>
         </SheetContent>
       </Sheet>
 
       {/* Unsaved Changes Dialog */}
       <AlertDialog open={showUnsavedChangesDialog} onOpenChange={setShowUnsavedChangesDialog}>
-        <AlertDialogContent style={{ background: 'var(--surface-bg, hsl(var(--background)))', borderColor: 'var(--border-default, hsl(var(--border)))' }}>
+        <AlertDialogContent className="z-[500]">
           <AlertDialogHeader>
-            <AlertDialogTitle style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}>Unsaved Changes</AlertDialogTitle>
-            <AlertDialogDescription style={{ color: 'var(--text-secondary, hsl(var(--muted-foreground)))' }}>
-              You have unsaved changes. Are you sure you want to leave? Your changes will be lost.
+            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
+            <AlertDialogDescription>
+              You have unsaved changes. Are you sure you want to close without saving?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowUnsavedChangesDialog(false)}>
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={handleDiscardAndClose}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Discard Changes
-            </AlertDialogAction>
-            <AlertDialogAction 
-              onClick={handleSaveAndClose}
-              className="text-white"
-              style={{ background: '#5C7C5C' }}
-            >
-              Save & Close
-            </AlertDialogAction>
+            <AlertDialogCancel>Continue Editing</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDiscardAndClose}>Discard Changes</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <AlertDialogContent style={{ background: 'var(--surface-bg, hsl(var(--background)))', borderColor: 'var(--border-default, hsl(var(--border)))' }}>
+        <AlertDialogContent className="z-[500]">
           <AlertDialogHeader>
-            <AlertDialogTitle style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}>Delete Dependency</AlertDialogTitle>
-            <AlertDialogDescription style={{ color: 'var(--text-secondary, hsl(var(--muted-foreground)))' }}>
+            <AlertDialogTitle>Delete Dependency</AlertDialogTitle>
+            <AlertDialogDescription>
               Are you sure you want to delete this dependency? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction 
-              onClick={() => {
-                toast.info('Delete functionality coming soon');
-                setShowDeleteConfirm(false);
-              }}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => deleteMutation.mutate()}
+              className="bg-red-600 hover:bg-red-700"
             >
               Delete
             </AlertDialogAction>
