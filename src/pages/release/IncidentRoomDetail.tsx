@@ -12,6 +12,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { useIncident, useUpdateIncident, useAddComment } from '@/hooks/useIncidents';
 import { useUploadIncidentAttachment, useDeleteIncidentAttachment, useDownloadIncidentAttachment } from '@/hooks/useIncidentAttachments';
 import { useIsWatching, useWatcherCount, useToggleWatch } from '@/hooks/useIncidentWatchers';
+import { useAvailableApprovers } from '@/hooks/useIncidentUserProfiles';
 import { IncidentMainContent } from '@/components/incidents/detail/IncidentMainContent';
 import { IncidentTriageRail } from '@/components/incidents/detail/IncidentTriageRail';
 
@@ -37,6 +38,7 @@ export default function IncidentRoomDetail() {
   const { data: isWatching = false } = useIsWatching(incidentId || '');
   const { data: watcherCount = 0 } = useWatcherCount(incidentId || '');
   const toggleWatch = useToggleWatch(incidentId || '');
+  const { data: availableApprovers = [] } = useAvailableApprovers();
 
   const queryClient = useQueryClient();
 
@@ -113,12 +115,12 @@ export default function IncidentRoomDetail() {
     }
   };
 
-  const handleVote = async (vote: 'approved' | 'rejected') => {
+  const handleVote = async (vote: 'approved' | 'rejected', isVeto?: boolean, note?: string) => {
     if (!incident?.committee?.id) return;
     setIsSubmitting(true);
     try {
       const { data, error } = await supabase.functions.invoke('submit-vote', {
-        body: { committee_id: incident.committee.id, vote },
+        body: { committee_id: incident.committee.id, vote, is_veto: isVeto, note },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
@@ -126,6 +128,51 @@ export default function IncidentRoomDetail() {
       queryClient.invalidateQueries({ queryKey: ['incident', incidentId] });
     } catch (error: any) {
       toast.error(error.message || 'Failed to submit vote');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleAddApprover = async (userId: string, hasVeto: boolean, note: string) => {
+    if (!incident?.committee?.id) {
+      toast.error('Committee not initialized');
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      // Add committee member
+      const { error } = await supabase
+        .from('committee_members')
+        .insert({
+          committee_id: incident.committee.id,
+          user_id: userId,
+          has_veto: hasVeto,
+          role: note || null,
+        });
+      
+      if (error) throw error;
+      toast.success('Approver added');
+      queryClient.invalidateQueries({ queryKey: ['incident', incidentId] });
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to add approver');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleInitiateCommittee = async () => {
+    if (!incidentId) return;
+    setIsSubmitting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('send-to-committee', {
+        body: { incident_id: incidentId },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      toast.success('Committee review initiated');
+      queryClient.invalidateQueries({ queryKey: ['incident', incidentId] });
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to initiate committee');
     } finally {
       setIsSubmitting(false);
     }
@@ -443,7 +490,10 @@ export default function IncidentRoomDetail() {
           onDownloadFile={(path, name) => downloadAttachment.mutate({ storagePath: path, fileName: name })}
           onDeleteFile={(attId, path) => deleteAttachment.mutate({ attachmentId: attId, incidentId: incidentId!, storagePath: path })}
           onVote={handleVote}
+          onAddApprover={handleAddApprover}
+          onInitiateCommittee={handleInitiateCommittee}
           onResolutionChange={(field, value) => handleFieldChange(field, value)}
+          availableApprovers={availableApprovers}
           isUploadPending={uploadAttachment.isPending}
           isCommentPending={addComment.isPending}
           isVotePending={isSubmitting}

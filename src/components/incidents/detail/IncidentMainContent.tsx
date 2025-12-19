@@ -10,7 +10,8 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
-import type { CommentType } from '@/types/incident';
+import { CommitteeCard } from './CommitteeCard';
+import type { CommentType, IncidentUserProfile } from '@/types/incident';
 
 interface Attachment {
   id: string;
@@ -48,7 +49,7 @@ interface SlaRecord {
 
 interface CommitteeMember {
   id: string;
-  user?: { full_name: string; avatar_initials?: string };
+  user?: { id: string; full_name: string; avatar_initials?: string };
   role?: string;
   has_veto: boolean;
   vote?: { vote: string };
@@ -58,8 +59,9 @@ interface Committee {
   id: string;
   status: string;
   decision_note?: string;
+  required_approvals?: number;
+  assignment_strategy?: 'manual' | 'round_robin';
   members?: CommitteeMember[];
-  votes?: { member_id: string; vote: string }[];
 }
 
 interface IncidentMainContentProps {
@@ -81,13 +83,18 @@ interface IncidentMainContentProps {
   rootCause: string | null;
   resolvedAt: string | null;
   closedAt: string | null;
+  // Handlers
   onDescriptionChange: (description: string) => void;
   onPostComment: (content: string, type: CommentType) => void;
   onUploadFile: (file: File) => void;
   onDownloadFile: (storagePath: string, fileName: string) => void;
   onDeleteFile: (attachmentId: string, storagePath: string) => void;
-  onVote: (vote: 'approved' | 'rejected', isVeto?: boolean) => void;
+  onVote: (vote: 'approved' | 'rejected', isVeto?: boolean, note?: string) => void;
+  onAddApprover: (userId: string, hasVeto: boolean, note: string) => void;
+  onInitiateCommittee?: () => void;
   onResolutionChange: (field: string, value: string) => void;
+  // Available approvers for Add Approver dialog
+  availableApprovers: IncidentUserProfile[];
   isUploadPending: boolean;
   isCommentPending: boolean;
   isVotePending: boolean;
@@ -144,7 +151,10 @@ export function IncidentMainContent({
   onDownloadFile,
   onDeleteFile,
   onVote,
+  onAddApprover,
+  onInitiateCommittee,
   onResolutionChange,
+  availableApprovers,
   isUploadPending,
   isCommentPending,
   isVotePending,
@@ -325,6 +335,9 @@ export function IncidentMainContent({
             <TabsTrigger value="activity" className="text-sm h-8 px-3 data-[state=active]:bg-background">
               <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
               Activity
+              {comments.length > 0 && (
+                <Badge variant="secondary" className="ml-1.5 text-[10px] px-1 py-0 h-4">{comments.length}</Badge>
+              )}
             </TabsTrigger>
             <TabsTrigger value="resolution" className="text-sm h-8 px-3 data-[state=active]:bg-background">
               <Check className="h-3.5 w-3.5 mr-1.5" />
@@ -334,13 +347,29 @@ export function IncidentMainContent({
               <Clock className="h-3.5 w-3.5 mr-1.5" />
               SLA History
             </TabsTrigger>
-            <TabsTrigger value="approvals" className="text-sm h-8 px-3 data-[state=active]:bg-background">
+            <TabsTrigger value="committee" className="text-sm h-8 px-3 data-[state=active]:bg-background">
               <Users className="h-3.5 w-3.5 mr-1.5" />
               Committee
+              {(committee || requiresCommittee) && (
+                <Badge 
+                  variant="secondary" 
+                  className={cn(
+                    "ml-1.5 text-[10px] px-1 py-0 h-4",
+                    committee?.status === 'approved' && "bg-emerald-100 text-emerald-700",
+                    committee?.status === 'rejected' && "bg-rose-100 text-rose-700",
+                    committee?.status === 'pending' && "bg-violet-100 text-violet-700"
+                  )}
+                >
+                  {committee?.members?.length || 0}
+                </Badge>
+              )}
             </TabsTrigger>
             <TabsTrigger value="audit-log" className="text-sm h-8 px-3 data-[state=active]:bg-background">
               <History className="h-3.5 w-3.5 mr-1.5" />
               Audit Log
+              {history.length > 0 && (
+                <Badge variant="secondary" className="ml-1.5 text-[10px] px-1 py-0 h-4">{history.length}</Badge>
+              )}
             </TabsTrigger>
           </TabsList>
 
@@ -455,97 +484,18 @@ export function IncidentMainContent({
             )}
           </TabsContent>
 
-          {/* Committee Tab (renamed from Approvals) */}
-          <TabsContent value="approvals" className="p-4">
-            {committee ? (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                  <span className="text-sm font-medium">Committee Status</span>
-                  <Badge variant={
-                    committee.status === 'approved' ? 'default' : 
-                    committee.status === 'rejected' ? 'destructive' : 'secondary'
-                  } className={cn('text-sm', committee.status === 'approved' && 'bg-emerald-600')}>
-                    {committee.status.charAt(0).toUpperCase() + committee.status.slice(1)}
-                  </Badge>
-                </div>
-
-                <div className="space-y-2">
-                  <h4 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Members</h4>
-                  {committee.members?.map(member => {
-                    const vote = committee.votes?.find(v => v.member_id === member.id);
-                    return (
-                      <div key={member.id} className="flex items-center justify-between p-3 border border-border rounded-lg">
-                        <div className="flex items-center gap-3">
-                          <Avatar className="h-8 w-8">
-                            <AvatarFallback className="text-xs bg-primary text-primary-foreground">
-                              {member.user?.full_name?.split(' ').map(n => n[0]).join('').slice(0, 2) || '??'}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <p className="text-sm font-medium">{member.user?.full_name || 'Unknown'}</p>
-                            {member.has_veto && (
-                              <span className="text-xs text-muted-foreground">Has veto power</span>
-                            )}
-                          </div>
-                        </div>
-                        <div>
-                          {vote ? (
-                            <Badge variant={
-                              vote.vote === 'approved' ? 'default' : 
-                              vote.vote === 'rejected' || vote.vote === 'vetoed' ? 'destructive' : 'secondary'
-                            } className={cn('text-sm', vote.vote === 'approved' && 'bg-emerald-600')}>
-                              {vote.vote === 'vetoed' ? 'Vetoed' : vote.vote.charAt(0).toUpperCase() + vote.vote.slice(1)}
-                            </Badge>
-                          ) : (
-                            <span className="text-sm text-muted-foreground">Pending</span>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {committee.status === 'pending' && (
-                  <div className="flex gap-2 pt-2">
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      className="flex-1 h-9 text-sm"
-                      onClick={() => onVote('rejected')}
-                      disabled={isVotePending}
-                    >
-                      <X className="h-4 w-4 mr-1.5" />
-                      Reject
-                    </Button>
-                    <Button 
-                      size="sm"
-                      className="flex-1 h-9 text-sm bg-emerald-600 hover:bg-emerald-700"
-                      onClick={() => onVote('approved')}
-                      disabled={isVotePending}
-                    >
-                      <Check className="h-4 w-4 mr-1.5" />
-                      Approve
-                    </Button>
-                  </div>
-                )}
-
-                {committee.decision_note && (
-                  <div className="p-3 bg-muted/30 rounded-lg">
-                    <p className="text-xs text-muted-foreground mb-1">Decision Note</p>
-                    <p className="text-sm">{committee.decision_note}</p>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <Users className="h-10 w-10 text-muted-foreground mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">
-                  {requiresCommittee 
-                    ? 'Committee review not initiated'
-                    : 'Committee approval not required'}
-                </p>
-              </div>
-            )}
+          {/* Committee Tab */}
+          <TabsContent value="committee" className="p-4">
+            <CommitteeCard
+              committee={committee}
+              requiresCommittee={requiresCommittee}
+              isConverted={isConverted}
+              availableApprovers={availableApprovers}
+              onVote={onVote}
+              onAddApprover={onAddApprover}
+              onInitiateCommittee={onInitiateCommittee}
+              isVotePending={isVotePending}
+            />
           </TabsContent>
 
           {/* Audit Log Tab */}
