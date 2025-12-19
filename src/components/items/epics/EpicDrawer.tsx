@@ -52,6 +52,7 @@ import { EpicLinksViewTab } from './drawer-tabs/EpicLinksViewTab';
 import { EpicFeaturesViewTab } from './drawer-tabs/EpicFeaturesViewTab';
 import { EpicDiscussionsViewTab } from './drawer-tabs/EpicDiscussionsViewTab';
 import { EpicAuditHistoryTab } from './drawer-tabs/EpicAuditHistoryTab';
+import { EpicDependenciesTab } from './drawer-tabs/EpicDependenciesTab';
 import { EpicStatusModal } from './EpicStatusModal';
 
 // Epic status options (replacing BusinessRequest process_step)
@@ -72,6 +73,7 @@ const EPIC_TABS = [
   { value: 'technical-score', label: 'Technical Score' },
   { value: 'budget', label: 'Budget' },
   { value: 'risks', label: 'Risks' },
+  { value: 'dependencies', label: 'Dependencies' },
   { value: 'links', label: 'Links' },
   { value: 'features', label: 'Features' },
   { value: 'discussions', label: 'Discussions' },
@@ -516,6 +518,9 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
               </TabsContent>
               <TabsContent value="risks" className="m-0 focus-visible:outline-none flex-1 p-4 md:p-5 pb-6">
                 {epicId && <EpicRisksViewTab epicId={epicId} />}
+              </TabsContent>
+              <TabsContent value="dependencies" className="m-0 focus-visible:outline-none flex-1 p-4 md:p-5 pb-6">
+                {epicId && <EpicDependenciesTab epicId={epicId} epicName={epic?.name} />}
               </TabsContent>
               <TabsContent value="links" className="m-0 focus-visible:outline-none">
                 {epicId && <EpicLinksViewTab epicId={epicId} />}

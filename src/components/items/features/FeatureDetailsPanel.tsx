@@ -22,6 +22,7 @@ import { FeatureAttachmentsTab } from './tabs/FeatureAttachmentsTab';
 import { FeatureDiscussionsTab } from './tabs/FeatureDiscussionsTab';
 import { FeatureLinksTab } from './tabs/FeatureLinksTab';
 import { FeatureAuditTab } from './tabs/FeatureAuditTab';
+import { FeatureDependenciesTab } from './tabs/FeatureDependenciesTab';
 import { FeatureAdditionalOptionsTab } from './tabs/FeatureAdditionalOptionsTab';
 import { FeatureChildrenTab } from './tabs/FeatureChildrenTab';
 
@@ -292,6 +293,9 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
               <TabsTrigger value="discussions" className="executive-drawer-tab">
                 Discussions
               </TabsTrigger>
+              <TabsTrigger value="dependencies" className="executive-drawer-tab">
+                Dependencies
+              </TabsTrigger>
               <TabsTrigger value="links" className="executive-drawer-tab">
                 Links
               </TabsTrigger>
@@ -347,6 +351,10 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
 
             <TabsContent value="discussions" className="mt-0 p-[var(--s4)] sm:p-[var(--s6)]">
               <FeatureDiscussionsTab featureId={feature?.id} />
+            </TabsContent>
+
+            <TabsContent value="dependencies" className="mt-0 p-[var(--s4)] sm:p-[var(--s6)]">
+              <FeatureDependenciesTab feature={feature} />
             </TabsContent>
 
             <TabsContent value="links" className="mt-0 p-[var(--s4)] sm:p-[var(--s6)]">
