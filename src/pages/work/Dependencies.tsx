@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,11 +15,18 @@ import { DependencyMatrix } from '@/components/dependencies/DependencyMatrix';
 import { DependencyWheelMap } from '@/components/dependencies/DependencyWheelMap';
 import { DependencyContextMenu } from '@/components/dependencies/DependencyContextMenu';
 import { DependenciesSidebar } from '@/components/dependencies/DependenciesSidebar';
+import { WorkItemIcon, WorkItemBadge } from '@/components/dependencies/WorkItemIcon';
 import { SegmentedTabs, SegmentedTab } from '@/components/ui/segmented-tabs';
 import { toast } from 'sonner';
 import { useNavigate, useParams } from 'react-router-dom';
 import GlobalPageHeader from '@/components/layout/GlobalPageHeader';
 import { cn } from '@/lib/utils';
+import { 
+  buildWorkItemMaps, 
+  resolveDependencyWorkItems, 
+  isDependencyRelevantToProgram 
+} from '@/lib/dependencies/resolveWorkItem';
+import { DEPENDENCY_TYPE_LABELS, DEPENDENCY_LEVEL_LABELS } from '@/lib/dependencies/types';
 
 export default function DependenciesPage() {
   const queryClient = useQueryClient();
@@ -90,7 +97,7 @@ export default function DependenciesPage() {
 
       const { data, error } = await supabase
         .from('epics')
-        .select('id, name, epic_key')
+        .select('id, name, epic_key, program_id')
         .eq('program_id', activeProgramId);
 
       if (error) throw error;
@@ -99,9 +106,34 @@ export default function DependenciesPage() {
     enabled: !!activeProgramId,
   });
 
-  const programEpicsKey = useMemo(
-    () => (programEpics || []).map((e) => e.id).join(','),
-    [programEpics]
+  // Fetch all epics for resolution (including cross-program)
+  const { data: allEpics } = useQuery({
+    queryKey: ['all-epics-lookup'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('epics')
+        .select('id, name, epic_key, program_id')
+        .is('deleted_at', null);
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Fetch all features for resolution
+  const { data: allFeatures } = useQuery({
+    queryKey: ['all-features-lookup'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('features')
+        .select('id, name, display_id, project_id, projects(name)');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  const workItemMaps = useMemo(() => 
+    buildWorkItemMaps(allEpics, allFeatures), 
+    [allEpics, allFeatures]
   );
 
   const programEpicIdSet = useMemo(
@@ -109,91 +141,68 @@ export default function DependenciesPage() {
     [programEpics]
   );
 
-  const epicsById = useMemo(() => {
-    const map = new Map<string, { id: string; name: string; epic_key: string | null }>();
-    (programEpics || []).forEach((e) => map.set(e.id, e));
-    return map;
-  }, [programEpics]);
-
   // Fetch dependencies with filters - scoped to program if programId present
   const { data: dependencies, isLoading } = useQuery({
-    queryKey: ['dependencies-grid', activeProgramId, programEpicsKey, quarterFilter, levelFilter, typeFilter, statusFilter, viewMode],
+    queryKey: ['dependencies-grid', activeProgramId, quarterFilter, levelFilter, typeFilter, statusFilter, viewMode],
     queryFn: async () => {
       let query = supabase
         .from('dependencies')
         .select(`
           *,
-          from_feature:features!dependencies_from_feature_id_fkey(id, name, display_id, team_id, epic_id, teams(name)),
-          to_feature:features!dependencies_to_feature_id_fkey(id, name, display_id, team_id, epic_id, teams(name)),
-          needed_by_sprint:iterations!dependencies_needed_by_sprint_id_fkey(id, name, start_date),
-          committed_by_sprint:iterations!dependencies_committed_by_sprint_id_fkey(id, name, start_date),
-          requesting_team:teams!dependencies_requesting_team_id_fkey(id, name),
-          depends_on_team:teams!dependencies_depends_on_team_id_fkey(id, name),
-          external_entity:external_entities(id, name, entity_type)
+          from_feature:features!dependencies_from_feature_id_fkey(id, name, display_id, team_id, epic_id),
+          to_feature:features!dependencies_to_feature_id_fkey(id, name, display_id, team_id, epic_id)
         `);
 
       if (quarterFilter && quarterFilter !== 'all') query = query.eq('quarter', quarterFilter);
-      if (levelFilter && levelFilter !== 'all') query = query.eq('dependency_level', levelFilter as any);
-      if (typeFilter && typeFilter !== 'all') query = query.eq('type', typeFilter as any);
+      
+      // Level filter using new model
+      if (levelFilter && levelFilter !== 'all') {
+        query = query.eq('dependency_level_v2', levelFilter as any);
+      }
+      
+      // Type filter using new model
+      if (typeFilter && typeFilter !== 'all') {
+        query = query.eq('type', typeFilter as any);
+      }
+      
       if (statusFilter && statusFilter !== 'all') query = query.eq('status', statusFilter as any);
 
-      const { data, error } = await query.order('rank_order', { ascending: true });
+      const { data, error } = await query.order('created_at', { ascending: false });
       if (error) throw error;
 
       const rows = data || [];
       if (!activeProgramId) return rows;
 
-      // Include BOTH legacy feature-based dependencies and the newer epic-based dependencies.
-      return rows.filter((dep: any) => {
-        // New model: derived container scoping (preferred when present)
-        if (dep.derived_requesting_container_type === 'program' && dep.derived_requesting_container_id === activeProgramId) return true;
-        if (dep.derived_respondent_container_type === 'program' && dep.derived_respondent_container_id === activeProgramId) return true;
-
-        // New model: epic-to-epic dependencies (work-item fields)
-        if (dep.requesting_work_item_type === 'epic' && dep.requesting_work_item_id && programEpicIdSet.has(dep.requesting_work_item_id)) return true;
-        if (dep.depends_on_work_item_type === 'epic' && dep.depends_on_work_item_id && programEpicIdSet.has(dep.depends_on_work_item_id)) return true;
-
-        // Legacy model: feature-to-feature dependencies (feature joins)
-        if (dep.from_feature?.epic_id && programEpicIdSet.has(dep.from_feature.epic_id)) return true;
-        if (dep.to_feature?.epic_id && programEpicIdSet.has(dep.to_feature.epic_id)) return true;
-
-        return false;
-      });
+      // Filter to dependencies relevant to this program
+      return rows.filter((dep: any) => 
+        isDependencyRelevantToProgram(dep, activeProgramId, programEpicIdSet)
+      );
     },
-    enabled: !!activeProgramId,
+    enabled: !!activeProgramId || !programId,
   });
 
-  const getEpicLabel = (epicId?: string | null) => {
-    if (!epicId) return '';
-    const epic = epicsById.get(epicId);
-    if (!epic) return '';
-    return epic.epic_key ? `${epic.epic_key} - ${epic.name}` : epic.name;
-  };
+  // Transform dependencies with resolved work items
+  const resolvedDependencies = useMemo(() => {
+    if (!dependencies) return [];
+    
+    return dependencies.map((dep: any) => {
+      const { source, target } = resolveDependencyWorkItems(dep, workItemMaps);
+      return {
+        ...dep,
+        resolvedSource: source,
+        resolvedTarget: target,
+      };
+    });
+  }, [dependencies, workItemMaps]);
 
-  const getRequestingLabel = (dep: any) => {
-    return (
-      dep.from_feature?.name ||
-      (dep.requesting_work_item_type === 'epic' ? getEpicLabel(dep.requesting_work_item_id) : '') ||
-      dep.description ||
-      ''
-    );
-  };
-
-  const getRequestedForLabel = (dep: any) => {
-    return (
-      dep.to_feature?.name ||
-      (dep.depends_on_work_item_type === 'epic' ? getEpicLabel(dep.depends_on_work_item_id) : '') ||
-      dep.external_entity?.name ||
-      ''
-    );
-  };
-
-  const filteredDependencies = dependencies?.filter((dep: any) => {
+  const filteredDependencies = resolvedDependencies.filter((dep: any) => {
     if (!searchTerm) return true;
     const q = searchTerm.toLowerCase();
     return (
-      getRequestingLabel(dep).toLowerCase().includes(q) ||
-      getRequestedForLabel(dep).toLowerCase().includes(q) ||
+      (dep.resolvedSource?.name || '').toLowerCase().includes(q) ||
+      (dep.resolvedSource?.displayId || '').toLowerCase().includes(q) ||
+      (dep.resolvedTarget?.name || '').toLowerCase().includes(q) ||
+      (dep.resolvedTarget?.displayId || '').toLowerCase().includes(q) ||
       (dep.description || '').toLowerCase().includes(q)
     );
   });
@@ -214,15 +223,17 @@ export default function DependenciesPage() {
       return;
     }
 
-    const headers = ['Action Required', 'Requesting Team', 'Requested For', 'Depends On Team', 'Need By', 'Commit By', 'Status'];
+    const headers = ['Source', 'Source Type', 'Target', 'Target Type', 'Level', 'Type', 'Need By', 'Status', 'Risk'];
     const csvData = filteredDependencies.map((dep: any) => [
-      getRequestingLabel(dep),
-      dep.requesting_team?.name || '',
-      getRequestedForLabel(dep),
-      dep.depends_on_team?.name || dep.external_entity?.name || '',
-      dep.needed_by_date || dep.needed_by_sprint?.start_date || '',
-      dep.committed_by_date || dep.committed_by_sprint?.start_date || '',
-      dep.status || ''
+      dep.resolvedSource?.displayId || '',
+      dep.resolvedSource?.type || '',
+      dep.resolvedTarget?.displayId || '',
+      dep.resolvedTarget?.type || '',
+      dep.dependency_level_v2 || dep.dependency_level || '',
+      dep.type || '',
+      dep.needed_by_date || '',
+      dep.status || '',
+      dep.risk_level || ''
     ]);
 
     const csv = [headers, ...csvData].map(row => row.join(',')).join('\n');
@@ -238,6 +249,7 @@ export default function DependenciesPage() {
 
   const getStatusBadge = (status: string) => {
     const statusConfig: Record<string, { variant: 'default' | 'secondary' | 'destructive' | 'outline'; icon: any }> = {
+      draft: { variant: 'outline', icon: Clock },
       pending_commit: { variant: 'outline', icon: Clock },
       negotiation: { variant: 'secondary', icon: Clock },
       committed: { variant: 'default', icon: CheckCircle2 },
@@ -245,7 +257,8 @@ export default function DependenciesPage() {
       delivered: { variant: 'default', icon: CheckCircle2 },
       blocked: { variant: 'destructive', icon: AlertTriangle },
       rejected: { variant: 'destructive', icon: AlertTriangle },
-      no_work_done: { variant: 'outline', icon: AlertTriangle },
+      cancelled: { variant: 'outline', icon: AlertTriangle },
+      not_required: { variant: 'outline', icon: Clock },
     };
 
     const config = statusConfig[status] || { variant: 'outline' as const, icon: Clock };
@@ -259,6 +272,25 @@ export default function DependenciesPage() {
     );
   };
 
+  const getLevelBadge = (level: string | null) => {
+    if (!level) return <Badge variant="outline" className="text-xs">-</Badge>;
+    
+    const levelConfig: Record<string, string> = {
+      execution: 'bg-status-info-bg text-status-info',
+      delivery: 'bg-brand-primary-muted text-brand-primary',
+      cross_level: 'bg-status-warning-bg text-status-warning',
+    };
+
+    const label = DEPENDENCY_LEVEL_LABELS[level as keyof typeof DEPENDENCY_LEVEL_LABELS] || level;
+    const shortLabel = level === 'execution' ? 'Exec' : level === 'delivery' ? 'Deliv' : 'X-Level';
+
+    return (
+      <Badge variant="outline" className={cn("text-xs", levelConfig[level])}>
+        {shortLabel}
+      </Badge>
+    );
+  };
+
   // Detect embedded mode (within Program context - no sidebar needed)
   const isEmbedded = !!programId;
 
@@ -267,7 +299,7 @@ export default function DependenciesPage() {
       {/* Only show sidebar in standalone mode */}
       {!isEmbedded && <DependenciesSidebar />}
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-        {/* Canonical Header - matches Enterprise Objective Roadmap exactly */}
+        {/* Canonical Header */}
         <GlobalPageHeader 
           sectionLabel="PROGRAM" 
           pageTitle="Dependencies"
@@ -287,9 +319,6 @@ export default function DependenciesPage() {
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate('/reports/dependencies/maps')}>
                     View Dependency Maps
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/reports/dependencies/story-link-report')}>
-                    Story Link Report
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -336,28 +365,32 @@ export default function DependenciesPage() {
                   </SelectContent>
                 </Select>
                 
-                {/* Level Filter */}
+                {/* Level Filter - NEW MODEL */}
                 <Select value={levelFilter || 'all'} onValueChange={(v) => setLevelFilter(v === 'all' ? undefined : v)}>
-                  <SelectTrigger className="h-9 w-[120px]">
+                  <SelectTrigger className="h-9 w-[140px]">
                     <SelectValue placeholder="All Levels" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Levels</SelectItem>
-                    <SelectItem value="team">Team</SelectItem>
-                    <SelectItem value="program">Program</SelectItem>
-                    <SelectItem value="external">External</SelectItem>
+                    <SelectItem value="execution">Execution (E↔E)</SelectItem>
+                    <SelectItem value="delivery">Delivery (F↔F)</SelectItem>
+                    <SelectItem value="cross_level">Cross-Level</SelectItem>
                   </SelectContent>
                 </Select>
                 
-                {/* Type Filter */}
+                {/* Type Filter - NEW MODEL */}
                 <Select value={typeFilter || 'all'} onValueChange={(v) => setTypeFilter(v === 'all' ? undefined : v)}>
-                  <SelectTrigger className="h-9 w-[120px]">
+                  <SelectTrigger className="h-9 w-[140px]">
                     <SelectValue placeholder="All Types" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Types</SelectItem>
-                    <SelectItem value="sequential">Sequential</SelectItem>
-                    <SelectItem value="concurrent">Concurrent</SelectItem>
+                    <SelectItem value="blocks">Blocks</SelectItem>
+                    <SelectItem value="is_blocked_by">Is Blocked By</SelectItem>
+                    <SelectItem value="enables">Enables</SelectItem>
+                    <SelectItem value="provides_input">Provides Input</SelectItem>
+                    <SelectItem value="approves">Approves</SelectItem>
+                    <SelectItem value="governs">Governs</SelectItem>
                   </SelectContent>
                 </Select>
                 
@@ -368,52 +401,23 @@ export default function DependenciesPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Statuses</SelectItem>
+                    <SelectItem value="draft">Draft</SelectItem>
                     <SelectItem value="pending_commit">Pending Commit</SelectItem>
-                    <SelectItem value="negotiation">Negotiation</SelectItem>
                     <SelectItem value="committed">Committed</SelectItem>
                     <SelectItem value="in_progress">In Progress</SelectItem>
                     <SelectItem value="delivered">Delivered</SelectItem>
-                    <SelectItem value="rejected">Rejected</SelectItem>
+                    <SelectItem value="cancelled">Cancelled</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               
-              {/* Right: Scoped badge (when in program context) + View toggle */}
+              {/* Right: Scoped badge */}
               <div className="flex items-center gap-3">
                 {activeProgramId && (
                   <Badge variant="outline" className="bg-brand-gold/10 text-brand-gold border-brand-gold/30 flex items-center gap-1.5">
                     <Filter className="h-3 w-3" />
                     Scoped to: {currentProgram?.name || 'Program'}
                   </Badge>
-                )}
-                
-                {!isEmbedded && (
-                  <div className="flex items-center gap-1 border rounded-lg p-0.5">
-                    <Button
-                      variant={visualizationMode === 'list' ? 'secondary' : 'ghost'}
-                      size="sm"
-                      className="h-7 w-7 p-0"
-                      onClick={() => setVisualizationMode('list')}
-                    >
-                      <List className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant={visualizationMode === 'matrix' ? 'secondary' : 'ghost'}
-                      size="sm"
-                      className="h-7 w-7 p-0"
-                      onClick={() => setVisualizationMode('matrix')}
-                    >
-                      <Grid3x3 className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant={visualizationMode === 'wheel' ? 'secondary' : 'ghost'}
-                      size="sm"
-                      className="h-7 w-7 p-0"
-                      onClick={() => setVisualizationMode('wheel')}
-                    >
-                      <GitBranch className="h-4 w-4" />
-                    </Button>
-                  </div>
                 )}
               </div>
             </div>
@@ -494,7 +498,7 @@ export default function DependenciesPage() {
                     <div className="text-center">
                       <h3 className="font-semibold text-base sm:text-lg mb-2">No Dependencies Found</h3>
                       <p className="text-xs sm:text-sm text-muted-foreground mb-4">
-                        Create your first dependency to track cross-team commitments
+                        Create your first dependency to track cross-work-item commitments
                       </p>
                       <Button onClick={handleAddDependency} size="sm">
                         <Plus className="h-4 w-4 mr-2" />
@@ -504,23 +508,22 @@ export default function DependenciesPage() {
                   </div>
                 ) : (
                   <div className="overflow-x-auto overflow-y-auto" style={{ maxHeight: 'calc(100vh - 320px)' }}>
-                    <Table className="min-w-[800px]">
+                    <Table className="min-w-[900px]">
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Action Required</TableHead>
-                          <TableHead>Requesting</TableHead>
-                          <TableHead>Requested For</TableHead>
-                          <TableHead>Depends On</TableHead>
-                          <TableHead>Level</TableHead>
-                          <TableHead>Need By</TableHead>
-                          <TableHead>Commit By</TableHead>
-                          <TableHead>Status</TableHead>
-                          <TableHead>Risk</TableHead>
+                          <TableHead className="w-[200px]">Source (Requesting)</TableHead>
+                          <TableHead className="w-[200px]">Target (Depends On)</TableHead>
+                          <TableHead className="w-[100px]">Level</TableHead>
+                          <TableHead className="w-[120px]">Type</TableHead>
+                          <TableHead className="w-[100px]">Need By</TableHead>
+                          <TableHead className="w-[100px]">Quarter</TableHead>
+                          <TableHead className="w-[120px]">Status</TableHead>
+                          <TableHead className="w-[80px]">Risk</TableHead>
                           <TableHead className="w-12"></TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {filteredDependencies.map((dep) => (
+                        {filteredDependencies.map((dep: any) => (
                           <DependencyContextMenu
                             key={dep.id}
                             onEdit={() => handleRowClick(dep.id)}
@@ -541,32 +544,78 @@ export default function DependenciesPage() {
                               className="cursor-pointer hover:bg-muted/50"
                               onClick={() => handleRowClick(dep.id)}
                             >
-                              <TableCell className="font-medium">
-                                {getRequestingLabel(dep) || '-'}
-                              </TableCell>
-                              <TableCell className="text-sm">
-                                {dep.requesting_team?.name || '-'}
-                              </TableCell>
-                              <TableCell className="text-sm">
-                                {getRequestedForLabel(dep) || '-'}
-                              </TableCell>
-                              <TableCell className="text-sm">
-                                {dep.depends_on_team?.name || dep.external_entity?.name || '-'}
-                              </TableCell>
+                              {/* Source (Requesting) */}
                               <TableCell>
-                                <Badge variant="outline" className="text-xs capitalize">
-                                  {dep.dependency_level || dep.type}
+                                {dep.resolvedSource ? (
+                                  <div className="flex items-center gap-2">
+                                    <WorkItemIcon 
+                                      type={dep.resolvedSource.type === 'epic' ? 'epic' : 'feature'} 
+                                      size="sm" 
+                                    />
+                                    <div className="min-w-0">
+                                      <span className="text-xs font-mono text-muted-foreground block">
+                                        {dep.resolvedSource.displayId}
+                                      </span>
+                                      <span className="text-sm font-medium truncate block">
+                                        {dep.resolvedSource.name}
+                                      </span>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <span className="text-muted-foreground">-</span>
+                                )}
+                              </TableCell>
+
+                              {/* Target (Depends On) */}
+                              <TableCell>
+                                {dep.resolvedTarget ? (
+                                  <div className="flex items-center gap-2">
+                                    <WorkItemIcon 
+                                      type={dep.resolvedTarget.type === 'epic' ? 'epic' : 'feature'} 
+                                      size="sm" 
+                                    />
+                                    <div className="min-w-0">
+                                      <span className="text-xs font-mono text-muted-foreground block">
+                                        {dep.resolvedTarget.displayId}
+                                      </span>
+                                      <span className="text-sm font-medium truncate block">
+                                        {dep.resolvedTarget.name}
+                                      </span>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <span className="text-muted-foreground">-</span>
+                                )}
+                              </TableCell>
+
+                              {/* Level */}
+                              <TableCell>
+                                {getLevelBadge(dep.dependency_level_v2 || dep.dependency_level)}
+                              </TableCell>
+
+                              {/* Type */}
+                              <TableCell>
+                                <Badge variant="outline" className="text-xs">
+                                  {DEPENDENCY_TYPE_LABELS[dep.type as keyof typeof DEPENDENCY_TYPE_LABELS] || dep.type || '-'}
                                 </Badge>
                               </TableCell>
+
+                              {/* Need By */}
                               <TableCell className="text-sm">
-                                {dep.needed_by_date || dep.needed_by_sprint?.name || '-'}
+                                {dep.needed_by_date || '-'}
                               </TableCell>
+
+                              {/* Quarter */}
                               <TableCell className="text-sm">
-                                {dep.committed_by_date || dep.committed_by_sprint?.name || '-'}
+                                {dep.quarter || '-'}
                               </TableCell>
+
+                              {/* Status */}
                               <TableCell>
-                                {getStatusBadge(dep.status || 'open')}
+                                {getStatusBadge(dep.status || 'draft')}
                               </TableCell>
+
+                              {/* Risk */}
                               <TableCell>
                                 <Badge
                                   variant={
@@ -576,11 +625,13 @@ export default function DependenciesPage() {
                                   }
                                   className="text-xs"
                                 >
-                                  {dep.risk_level?.toUpperCase()}
+                                  {(dep.risk_level || 'low').toUpperCase()}
                                 </Badge>
                               </TableCell>
+
+                              {/* Blocked indicator */}
                               <TableCell>
-                                {(dep.blocked_requestor || dep.blocked_respondent) && (
+                                {(dep.source_blocked || dep.target_delayed || dep.blocked_requestor || dep.blocked_respondent) && (
                                   <AlertTriangle className="h-4 w-4 text-destructive" />
                                 )}
                               </TableCell>
