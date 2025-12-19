@@ -14,6 +14,9 @@ import { WorkTreeLegend } from './components/WorkTreeLegend';
 import { useWorkTreeData } from './hooks/useWorkTreeData';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { EpicDrawer } from '@/components/items/epics/EpicDrawer';
+import { FeatureDetailsPanel } from '@/components/items/features/FeatureDetailsPanel';
+import type { Feature } from '@/types/feature.types';
 
 type WorkTreeView = 'top-down' | 'bottom-up' | 'team' | 'strategy' | 'theme-group';
 
@@ -37,6 +40,10 @@ export function WorkTreePage() {
   const [hiddenCards, setHiddenCards] = useState<string[]>([]);
   const [selectedPIId, setSelectedPIId] = useState<string | undefined>(undefined);
   const [isMaximized, setIsMaximized] = useState(false);
+  
+  // Drawer states for Epic and Feature
+  const [selectedEpicId, setSelectedEpicId] = useState<string | null>(null);
+  const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
 
   // Fetch available PIs
   const { data: programIncrements } = useQuery({
@@ -79,6 +86,23 @@ export function WorkTreePage() {
       setHiddenCards(prev => prev.filter(id => id !== cardId));
     } else {
       setHiddenCards(prev => [...prev, cardId]);
+    }
+  };
+
+  // Handle item click from WorkTreeHierarchy
+  const handleItemClick = async (id: string, type: string) => {
+    if (type === 'epic') {
+      setSelectedEpicId(id);
+    } else if (type === 'feature') {
+      // Fetch feature data for the panel
+      const { data: feature } = await supabase
+        .from('features')
+        .select('*')
+        .eq('id', id)
+        .single();
+      if (feature) {
+        setSelectedFeature(feature as Feature);
+      }
     }
   };
 
@@ -234,6 +258,7 @@ export function WorkTreePage() {
               data={data}
               isLoading={isLoading}
               narrowToProgram={narrowToProgram}
+              onItemClick={handleItemClick}
             />
           </CardContent>
         </Card>
@@ -250,6 +275,20 @@ export function WorkTreePage() {
       <WorkTreeLegend
         open={legendOpen}
         onClose={() => setLegendOpen(false)}
+      />
+
+      {/* Epic Drawer */}
+      <EpicDrawer
+        isOpen={!!selectedEpicId}
+        onClose={() => setSelectedEpicId(null)}
+        epicId={selectedEpicId}
+      />
+
+      {/* Feature Details Panel */}
+      <FeatureDetailsPanel
+        feature={selectedFeature || undefined}
+        open={!!selectedFeature}
+        onClose={() => setSelectedFeature(null)}
       />
     </div>
   );
