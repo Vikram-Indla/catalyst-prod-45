@@ -68,7 +68,7 @@ export default function IncidentRoomDetail() {
   const [activeTab, setActiveTab] = useState('all');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [convertDialogOpen, setConvertDialogOpen] = useState(false);
-  const [convertType, setConvertType] = useState<'business_request' | 'epic' | 'feature' | 'story'>('business_request');
+  const [convertType, setConvertType] = useState<'epic' | 'feature' | 'story'>('story');
   const [convertReason, setConvertReason] = useState('');
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [editedDescription, setEditedDescription] = useState('');
@@ -308,6 +308,20 @@ export default function IncidentRoomDetail() {
           <DialogHeader>
             <DialogTitle>Convert Incident</DialogTitle>
           </DialogHeader>
+          
+          {/* L3 CAP Warning */}
+          {incident?.support_level === 'L3' && (
+            <div className="flex gap-3 p-3 rounded-lg bg-yellow-50 border border-yellow-200">
+              <AlertTriangle className="h-5 w-5 text-yellow-600 flex-shrink-0" />
+              <div>
+                <p className="text-sm font-medium text-yellow-800">L3 Committee Approval Required</p>
+                <p className="text-xs text-yellow-700">
+                  This L3 incident requires CAP committee approval before conversion.
+                </p>
+              </div>
+            </div>
+          )}
+          
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label>Convert to</Label>
@@ -316,20 +330,33 @@ export default function IncidentRoomDetail() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="business_request">Business Request</SelectItem>
-                  <SelectItem value="epic">Epic</SelectItem>
-                  <SelectItem value="feature">Feature</SelectItem>
                   <SelectItem value="story">Story</SelectItem>
+                  <SelectItem value="feature">Feature</SelectItem>
+                  <SelectItem value="epic">Epic</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Reason (optional)</Label>
+              <Label>Justification <span className="text-destructive">*</span></Label>
               <Textarea
                 value={convertReason}
                 onChange={(e) => setConvertReason(e.target.value)}
-                placeholder="Why is this incident being converted?"
+                placeholder="Why is this incident being converted? (Required)"
+                className={cn(!convertReason.trim() && "border-destructive/50")}
               />
+              {!convertReason.trim() && (
+                <p className="text-xs text-destructive">Justification is required</p>
+              )}
+            </div>
+            
+            {/* Preview Section */}
+            <div className="space-y-2 pt-2 border-t border-border">
+              <Label className="text-muted-foreground">Preview</Label>
+              <div className="bg-muted/30 rounded p-3 text-sm space-y-1">
+                <p><span className="text-muted-foreground">Type:</span> {convertType.charAt(0).toUpperCase() + convertType.slice(1)}</p>
+                <p><span className="text-muted-foreground">Title:</span> {incident?.title}</p>
+                <p><span className="text-muted-foreground">From:</span> {incident?.incident_key}</p>
+              </div>
             </div>
           </div>
           <DialogFooter>
@@ -338,7 +365,7 @@ export default function IncidentRoomDetail() {
             </Button>
             <Button 
               onClick={handleConvert} 
-              disabled={isSubmitting}
+              disabled={isSubmitting || !convertReason.trim()}
               className="bg-brand-primary hover:bg-brand-primary-hover text-white"
             >
               {isSubmitting ? 'Converting...' : 'Convert'}
@@ -731,20 +758,31 @@ export default function IncidentRoomDetail() {
             </div>
           )}
 
-          {/* Status */}
+          {/* Status - Only show valid transitions */}
           <div>
             <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Status</label>
             <Select 
               value={incident.status} 
               onValueChange={handleStatusChange}
-              disabled={isConverted}
+              disabled={isConverted || incident.status === 'closed'}
             >
               <SelectTrigger className={cn('mt-1', STATUS_CONFIG[incident.status].className)}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {Object.entries(STATUS_CONFIG).map(([key, config]) => (
-                  <SelectItem key={key} value={key}>{config.label}</SelectItem>
+                {/* Current status always shown */}
+                <SelectItem value={incident.status}>
+                  {STATUS_CONFIG[incident.status].label} (current)
+                </SelectItem>
+                {/* Only show valid transitions */}
+                {getAllowedTransitions(
+                  incident.status, 
+                  incident.support_level, 
+                  incident.committee?.status === 'approved'
+                ).map(transition => (
+                  <SelectItem key={transition.targetStatus} value={transition.targetStatus}>
+                    {transition.action} → {transition.label}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
