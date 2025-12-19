@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { Eye, EyeOff, Plus, AlertTriangle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useParams, Link, useSearchParams } from 'react-router-dom';
+import { Eye, EyeOff, Plus, AlertTriangle, CheckCircle2, X, UserPlus, Play, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
@@ -25,6 +25,7 @@ import { STATUS_CONFIG, SEVERITY_CONFIG } from '@/components/incidents/badges/In
 
 export default function IncidentRoomDetail() {
   const { id } = useParams<{ id: string }>();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { data: incident, isLoading, error } = useIncident(id || '');
   const updateIncident = useUpdateIncident();
   const addComment = useAddComment();
@@ -42,6 +43,15 @@ export default function IncidentRoomDetail() {
   const [convertDialogOpen, setConvertDialogOpen] = useState(false);
   const [convertType, setConvertType] = useState<'epic' | 'feature' | 'story'>('story');
   const [convertReason, setConvertReason] = useState('');
+  const [showCreatedBanner, setShowCreatedBanner] = useState(false);
+
+  // Handle ?created=true query param for post-create banner
+  useEffect(() => {
+    if (searchParams.get('created') === 'true') {
+      setShowCreatedBanner(true);
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   const isConverted = incident?.status === 'converted';
   
@@ -256,6 +266,54 @@ export default function IncidentRoomDetail() {
           </div>
         </div>
       </header>
+
+      {/* ========== POST-CREATE SUCCESS BANNER ========== */}
+      {showCreatedBanner && incident && (
+        <div className="mx-4 mt-3 p-3 rounded-md border border-emerald-200 bg-emerald-50 flex items-start justify-between gap-3">
+          <div className="flex items-start gap-2.5">
+            <CheckCircle2 className="h-4 w-4 text-emerald-600 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="text-xs font-medium text-emerald-800">
+                Incident {incident.incident_key} created successfully
+              </p>
+              <div className="flex items-center gap-2 mt-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-6 px-2 text-[10px] bg-white"
+                  onClick={() => {/* TODO: Open assign dialog */}}
+                >
+                  <UserPlus className="h-3 w-3 mr-1" />
+                  Assign Incident
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-6 px-2 text-[10px] bg-white"
+                  onClick={() => handleStatusChange('triage')}
+                >
+                  <Play className="h-3 w-3 mr-1" />
+                  Start Triage
+                </Button>
+                <Link to="/release/incidents/dashboard">
+                  <Button variant="outline" size="sm" className="h-6 px-2 text-[10px] bg-white">
+                    <LayoutDashboard className="h-3 w-3 mr-1" />
+                    Dashboard
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-6 w-6 p-0"
+            onClick={() => setShowCreatedBanner(false)}
+          >
+            <X className="h-3.5 w-3.5 text-emerald-600" />
+          </Button>
+        </div>
+      )}
 
       {/* ========== CONVERT DIALOG - Executive-grade ========== */}
       <Dialog open={convertDialogOpen} onOpenChange={setConvertDialogOpen}>
