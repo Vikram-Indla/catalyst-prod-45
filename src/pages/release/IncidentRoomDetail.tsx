@@ -24,18 +24,19 @@ import { canConvertIncident } from '@/utils/incidentLifecycle';
 import { STATUS_CONFIG, SEVERITY_CONFIG } from '@/components/incidents/badges/IncidentBadges';
 
 export default function IncidentRoomDetail() {
-  const { id } = useParams<{ id: string }>();
+  // Route param is :incidentId (must match App.tsx route definition)
+  const { incidentId } = useParams<{ incidentId: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { data: incident, isLoading, error } = useIncident(id || '');
+  const { data: incident, isLoading, error } = useIncident(incidentId || '');
   const updateIncident = useUpdateIncident();
   const addComment = useAddComment();
   const uploadAttachment = useUploadIncidentAttachment();
   const deleteAttachment = useDeleteIncidentAttachment();
   const downloadAttachment = useDownloadIncidentAttachment();
   
-  const { data: isWatching = false } = useIsWatching(id || '');
-  const { data: watcherCount = 0 } = useWatcherCount(id || '');
-  const toggleWatch = useToggleWatch(id || '');
+  const { data: isWatching = false } = useIsWatching(incidentId || '');
+  const { data: watcherCount = 0 } = useWatcherCount(incidentId || '');
+  const toggleWatch = useToggleWatch(incidentId || '');
 
   const queryClient = useQueryClient();
 
@@ -69,42 +70,42 @@ export default function IncidentRoomDetail() {
 
   // Handlers - all trigger backend operations
   const handleStatusChange = (status: IncidentStatus) => {
-    if (!id) return;
-    updateIncident.mutate({ id, data: { status } }, {
+    if (!incidentId) return;
+    updateIncident.mutate({ id: incidentId, data: { status } }, {
       onSuccess: () => toast.success('Status updated'),
       onError: () => toast.error('Failed to update status'),
     });
   };
 
   const handleFieldChange = (field: string, value: string) => {
-    if (!id) return;
-    updateIncident.mutate({ id, data: { [field]: value } }, {
+    if (!incidentId) return;
+    updateIncident.mutate({ id: incidentId, data: { [field]: value } }, {
       onSuccess: () => toast.success('Updated'),
       onError: () => toast.error('Failed to update'),
     });
   };
 
   const handlePostComment = (content: string, type: CommentType) => {
-    if (!id || !content.trim()) return;
-    addComment.mutate({ incident_id: id, content, comment_type: type }, {
+    if (!incidentId || !content.trim()) return;
+    addComment.mutate({ incident_id: incidentId, content, comment_type: type }, {
       onSuccess: () => toast.success('Comment posted'),
       onError: () => toast.error('Failed to post comment'),
     });
   };
 
   const handleConvert = async () => {
-    if (!id || !convertReason.trim()) return;
+    if (!incidentId || !convertReason.trim()) return;
     setIsSubmitting(true);
     try {
       const { data, error } = await supabase.functions.invoke('convert-incident', {
-        body: { incident_id: id, convert_to: convertType, reason: convertReason },
+        body: { incident_id: incidentId, convert_to: convertType, reason: convertReason },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
       toast.success(`Incident converted to ${convertType}`);
       setConvertDialogOpen(false);
       setConvertReason('');
-      queryClient.invalidateQueries({ queryKey: ['incident', id] });
+      queryClient.invalidateQueries({ queryKey: ['incident', incidentId] });
     } catch (error: any) {
       toast.error(error.message || 'Failed to convert incident');
     } finally {
@@ -122,7 +123,7 @@ export default function IncidentRoomDetail() {
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
       toast.success(data.message || 'Vote submitted');
-      queryClient.invalidateQueries({ queryKey: ['incident', id] });
+      queryClient.invalidateQueries({ queryKey: ['incident', incidentId] });
     } catch (error: any) {
       toast.error(error.message || 'Failed to submit vote');
     } finally {
@@ -132,7 +133,7 @@ export default function IncidentRoomDetail() {
 
   const handleAssignToMe = async () => {
     const { data: { user } } = await supabase.auth.getUser();
-    if (user && id) {
+    if (user && incidentId) {
       handleFieldChange('assignee_id', user.id);
     }
   };
@@ -154,8 +155,8 @@ export default function IncidentRoomDetail() {
   // Error - clean, production-ready error state
   if (error || !incident) {
     // Try to determine incident key from URL or error context
-    const displayId = id?.startsWith('INC-') ? id : id ? `ID ${id.slice(0, 8)}...` : null;
-    
+    const displayId = incidentId?.startsWith('INC-') ? incidentId : incidentId ? `ID ${incidentId.slice(0, 8)}...` : null;
+
     return (
       <div className="flex flex-col items-center justify-center h-full gap-4 p-6">
         <div className="flex flex-col items-center gap-3">
@@ -417,7 +418,7 @@ export default function IncidentRoomDetail() {
       <div className="flex flex-1 overflow-hidden">
         {/* LEFT COLUMN - 70% */}
         <IncidentMainContent
-          incidentId={id || ''}
+          incidentId={incidentId || ''}
           description={incident.description}
           attachments={incident.attachments || []}
           comments={incident.comments || []}
@@ -430,9 +431,9 @@ export default function IncidentRoomDetail() {
           isConverted={isConverted}
           onDescriptionChange={(desc) => handleFieldChange('description', desc)}
           onPostComment={handlePostComment}
-          onUploadFile={(file) => uploadAttachment.mutate({ incidentId: id!, file })}
+          onUploadFile={(file) => uploadAttachment.mutate({ incidentId: incidentId!, file })}
           onDownloadFile={(path, name) => downloadAttachment.mutate({ storagePath: path, fileName: name })}
-          onDeleteFile={(attId, path) => deleteAttachment.mutate({ attachmentId: attId, incidentId: id!, storagePath: path })}
+          onDeleteFile={(attId, path) => deleteAttachment.mutate({ attachmentId: attId, incidentId: incidentId!, storagePath: path })}
           onVote={handleVote}
           isUploadPending={uploadAttachment.isPending}
           isCommentPending={addComment.isPending}
@@ -441,7 +442,7 @@ export default function IncidentRoomDetail() {
 
         {/* RIGHT COLUMN - 30% */}
         <IncidentContextRail
-          incidentId={id || ''}
+          incidentId={incidentId || ''}
           status={incident.status}
           severity={incident.severity}
           priority={incident.priority}
