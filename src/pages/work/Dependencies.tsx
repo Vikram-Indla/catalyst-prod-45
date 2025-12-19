@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Search, Plus, Download, MoreHorizontal, AlertTriangle, CheckCircle2, Clock, Grid3x3, GitBranch, List, Filter, Map, X, Layers } from 'lucide-react';
+import { Search, Plus, Download, MoreHorizontal, AlertTriangle, CheckCircle2, Clock, Grid3x3, GitBranch, List, Filter, Map as MapIcon, X, Layers } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { DependencyDetailsDrawer } from '@/components/dependencies/DependencyDetailsDrawer';
 import { DependencyMatrix } from '@/components/dependencies/DependencyMatrix';
@@ -82,38 +82,42 @@ export default function DependenciesPage() {
   };
   const quarterOptions = generateQuarterOptions();
 
-  // Fetch feature IDs belonging to this program (via epics)
-  const { data: programFeatureIds } = useQuery({
-    queryKey: ['program-feature-ids', activeProgramId],
+  // Fetch epics for this program (used for scoping + labeling epic-level dependencies)
+  const { data: programEpics } = useQuery({
+    queryKey: ['program-epics-lookup', activeProgramId],
     queryFn: async () => {
       if (!activeProgramId) return [];
-      
-      // Get all epics for this program
-      const { data: epics, error: epicsError } = await supabase
+
+      const { data, error } = await supabase
         .from('epics')
-        .select('id')
+        .select('id, name, epic_key')
         .eq('program_id', activeProgramId);
-      
-      if (epicsError) throw epicsError;
-      if (!epics?.length) return [];
-      
-      const epicIds = epics.map(e => e.id);
-      
-      // Get all features linked to these epics
-      const { data: features, error: featuresError } = await supabase
-        .from('features')
-        .select('id')
-        .in('epic_id', epicIds);
-      
-      if (featuresError) throw featuresError;
-      return features?.map(f => f.id) || [];
+
+      if (error) throw error;
+      return data || [];
     },
     enabled: !!activeProgramId,
   });
 
+  const programEpicsKey = useMemo(
+    () => (programEpics || []).map((e) => e.id).join(','),
+    [programEpics]
+  );
+
+  const programEpicIdSet = useMemo(
+    () => new Set((programEpics || []).map((e) => e.id)),
+    [programEpics]
+  );
+
+  const epicsById = useMemo(() => {
+    const map = new Map<string, { id: string; name: string; epic_key: string | null }>();
+    (programEpics || []).forEach((e) => map.set(e.id, e));
+    return map;
+  }, [programEpics]);
+
   // Fetch dependencies with filters - scoped to program if programId present
   const { data: dependencies, isLoading } = useQuery({
-    queryKey: ['dependencies-grid', activeProgramId, programFeatureIds, quarterFilter, levelFilter, typeFilter, statusFilter, viewMode],
+    queryKey: ['dependencies-grid', activeProgramId, programEpicsKey, quarterFilter, levelFilter, typeFilter, statusFilter, viewMode],
     queryFn: async () => {
       let query = supabase
         .from('dependencies')
@@ -135,32 +139,62 @@ export default function DependenciesPage() {
 
       const { data, error } = await query.order('rank_order', { ascending: true });
       if (error) throw error;
-      
-      // If we have a program context, filter client-side to include dependencies
-      // where either from_feature_id OR to_feature_id belongs to program
-      if (activeProgramId && programFeatureIds && programFeatureIds.length > 0) {
-        const featureIdSet = new Set(programFeatureIds);
-        return data?.filter(dep => 
-          featureIdSet.has(dep.from_feature_id) || featureIdSet.has(dep.to_feature_id)
-        ) || [];
-      }
-      
-      // If program has no features, return empty for program context
-      if (activeProgramId && (!programFeatureIds || programFeatureIds.length === 0)) {
-        return [];
-      }
-      
-      return data;
+
+      const rows = data || [];
+      if (!activeProgramId) return rows;
+
+      // Include BOTH legacy feature-based dependencies and the newer epic-based dependencies.
+      return rows.filter((dep: any) => {
+        // New model: derived container scoping (preferred when present)
+        if (dep.derived_requesting_container_type === 'program' && dep.derived_requesting_container_id === activeProgramId) return true;
+        if (dep.derived_respondent_container_type === 'program' && dep.derived_respondent_container_id === activeProgramId) return true;
+
+        // New model: epic-to-epic dependencies (work-item fields)
+        if (dep.requesting_work_item_type === 'epic' && dep.requesting_work_item_id && programEpicIdSet.has(dep.requesting_work_item_id)) return true;
+        if (dep.depends_on_work_item_type === 'epic' && dep.depends_on_work_item_id && programEpicIdSet.has(dep.depends_on_work_item_id)) return true;
+
+        // Legacy model: feature-to-feature dependencies (feature joins)
+        if (dep.from_feature?.epic_id && programEpicIdSet.has(dep.from_feature.epic_id)) return true;
+        if (dep.to_feature?.epic_id && programEpicIdSet.has(dep.to_feature.epic_id)) return true;
+
+        return false;
+      });
     },
-    enabled: !activeProgramId || (!!programFeatureIds),
+    enabled: !!activeProgramId,
   });
 
-  const filteredDependencies = dependencies?.filter(dep => {
-    if (!searchTerm) return true;
+  const getEpicLabel = (epicId?: string | null) => {
+    if (!epicId) return '';
+    const epic = epicsById.get(epicId);
+    if (!epic) return '';
+    return epic.epic_key ? `${epic.epic_key} - ${epic.name}` : epic.name;
+  };
+
+  const getRequestingLabel = (dep: any) => {
     return (
-      dep.from_feature?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      dep.to_feature?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      dep.description?.toLowerCase().includes(searchTerm.toLowerCase())
+      dep.from_feature?.name ||
+      (dep.requesting_work_item_type === 'epic' ? getEpicLabel(dep.requesting_work_item_id) : '') ||
+      dep.description ||
+      ''
+    );
+  };
+
+  const getRequestedForLabel = (dep: any) => {
+    return (
+      dep.to_feature?.name ||
+      (dep.depends_on_work_item_type === 'epic' ? getEpicLabel(dep.depends_on_work_item_id) : '') ||
+      dep.external_entity?.name ||
+      ''
+    );
+  };
+
+  const filteredDependencies = dependencies?.filter((dep: any) => {
+    if (!searchTerm) return true;
+    const q = searchTerm.toLowerCase();
+    return (
+      getRequestingLabel(dep).toLowerCase().includes(q) ||
+      getRequestedForLabel(dep).toLowerCase().includes(q) ||
+      (dep.description || '').toLowerCase().includes(q)
     );
   });
 
@@ -181,11 +215,11 @@ export default function DependenciesPage() {
     }
 
     const headers = ['Action Required', 'Requesting Team', 'Requested For', 'Depends On Team', 'Need By', 'Commit By', 'Status'];
-    const csvData = filteredDependencies.map(dep => [
-      dep.from_feature?.name || '',
+    const csvData = filteredDependencies.map((dep: any) => [
+      getRequestingLabel(dep),
       dep.requesting_team?.name || '',
-      dep.to_feature?.name || '',
-      dep.depends_on_team?.name || '',
+      getRequestedForLabel(dep),
+      dep.depends_on_team?.name || dep.external_entity?.name || '',
       dep.needed_by_date || dep.needed_by_sprint?.start_date || '',
       dep.committed_by_date || dep.committed_by_sprint?.start_date || '',
       dep.status || ''
@@ -415,7 +449,7 @@ export default function DependenciesPage() {
                   Wheel
                 </SegmentedTab>
                 <SegmentedTab value="maps">
-                  <Map className="h-4 w-4 mr-2" />
+                  <MapIcon className="h-4 w-4 mr-2" />
                   Maps
                 </SegmentedTab>
               </SegmentedTabs>
@@ -508,13 +542,13 @@ export default function DependenciesPage() {
                               onClick={() => handleRowClick(dep.id)}
                             >
                               <TableCell className="font-medium">
-                                {dep.from_feature?.name || dep.description || '-'}
+                                {getRequestingLabel(dep) || '-'}
                               </TableCell>
                               <TableCell className="text-sm">
                                 {dep.requesting_team?.name || '-'}
                               </TableCell>
                               <TableCell className="text-sm">
-                                {dep.to_feature?.name || dep.external_entity?.name || '-'}
+                                {getRequestedForLabel(dep) || '-'}
                               </TableCell>
                               <TableCell className="text-sm">
                                 {dep.depends_on_team?.name || dep.external_entity?.name || '-'}
