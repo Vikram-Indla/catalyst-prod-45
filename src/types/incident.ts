@@ -142,6 +142,7 @@ export interface Incident {
   impact: ImpactLevel;
   urgency: UrgencyLevel;
   is_major_incident: boolean;
+  project_id?: string;
   release_version_id?: string;
   release_version?: ReleaseVersion;
   delivery_stage?: DeliveryStage;
