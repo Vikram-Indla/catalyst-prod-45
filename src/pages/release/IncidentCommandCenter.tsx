@@ -494,9 +494,9 @@ export default function IncidentCommandCenter() {
         rightActions={
           <Button 
             variant="outline" 
-            onClick={() => navigate('/release/incident-room')}
+            onClick={() => navigate('/release/incidents')}
           >
-            View Incident Room
+            View Incidents
           </Button>
         }
       />

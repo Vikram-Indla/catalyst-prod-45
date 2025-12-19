@@ -610,18 +610,25 @@ const App = () => (
               <Route path="/knowledge-hub/spaces/:spaceId" element={<KnowledgeHubSpacePage />} />
               <Route path="/knowledge-hub/documents/:documentId" element={<KnowledgeHubDocumentPage />} />
               
-              {/* Release Management Routes */}
+              {/* Release Management Routes - LOCKED FOR UAT */}
               <Route path="/release" element={<Navigate to="/release/incidents" replace />} />
               <Route path="/release/overview" element={<ReleaseOverview />} />
-              <Route path="/release/incident-room" element={<IncidentRoomList />} />
-              <Route path="/release/incident-room/:incidentId" element={<IncidentRoomDetail />} />
-              <Route path="/release/incidents" element={<IncidentsList />} />
+              
+              {/* Incident Module - Canonical Routes Only */}
+              <Route path="/release/incidents" element={<IncidentRoomList />} />
               <Route path="/release/incidents/dashboard" element={<IncidentsDashboard />} />
               <Route path="/release/incidents/create" element={<CreateIncident />} />
+              <Route path="/release/incidents/reports" element={<IncidentReports />} />
+              <Route path="/release/incidents/:incidentId" element={<IncidentRoomDetail />} />
+              
+              {/* Legacy Route Redirects - Preserve backwards compatibility */}
+              <Route path="/release/incident-room" element={<Navigate to="/release/incidents" replace />} />
+              <Route path="/release/incident-room/:incidentId" element={<Navigate to="/release/incidents/:incidentId" replace />} />
+              <Route path="/release/incident-reports" element={<Navigate to="/release/incidents/reports" replace />} />
+              
+              {/* Incident Support Routes */}
               <Route path="/release/incident-command-center" element={<IncidentCommandCenter />} />
-              <Route path="/release/incidents/:incidentId" element={<IncidentDetail />} />
               <Route path="/release/committee-queue" element={<CAPCommitteeQueue />} />
-              <Route path="/release/incident-reports" element={<IncidentReports />} />
               <Route path="/release/versions" element={<VersionsList />} />
               <Route path="/release/versions/calendar" element={<ReleaseCalendar />} />
               <Route path="/release/versions/:id" element={<VersionDetail />} />

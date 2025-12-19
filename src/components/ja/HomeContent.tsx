@@ -186,7 +186,7 @@ function ProjectCard({
                 Open backlog
               </DropdownMenuItem>
               <DropdownMenuItem 
-                onClick={() => navigate(`/release/incident-room?project=${project.key}`)}
+                onClick={() => navigate(`/release/incidents?project=${project.key}`)}
                 className="text-[var(--text-1)] cursor-pointer"
               >
                 <AlertTriangle className="w-4 h-4 mr-2" />
