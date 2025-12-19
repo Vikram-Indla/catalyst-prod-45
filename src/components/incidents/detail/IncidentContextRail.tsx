@@ -7,31 +7,19 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { SlaStatusCard } from '@/components/incidents/SlaStatusCard';
 import { cn } from '@/lib/utils';
 import { getAllowedTransitions } from '@/utils/incidentLifecycle';
+import { 
+  STATUS_CONFIG, 
+  SEVERITY_CONFIG as SEVERITY_OPTIONS_CONFIG,
+  PRIORITY_CONFIG 
+} from '@/components/incidents/badges/IncidentBadges';
 import type { IncidentStatus, SeverityLevel, PriorityLevel, ImpactLevel, UrgencyLevel, SupportLevel } from '@/types/incident';
 
-const STATUS_CONFIG: Record<IncidentStatus, { label: string; className: string }> = {
-  open: { label: 'New', className: 'bg-blue-100 text-blue-800' },
-  triage: { label: 'Triage', className: 'bg-yellow-100 text-yellow-800' },
-  to_committee: { label: 'To Committee', className: 'bg-purple-100 text-purple-800' },
-  in_progress: { label: 'In Progress', className: 'bg-cyan-100 text-cyan-800' },
-  resolved: { label: 'Resolved', className: 'bg-green-100 text-green-800' },
-  converted: { label: 'Converted', className: 'bg-secondary-green/20 text-secondary-green' },
-  closed: { label: 'Closed', className: 'bg-muted text-muted-foreground' },
-};
-
-const SEVERITY_OPTIONS = [
-  { value: 'SEV1', label: 'SEV1 — Critical', className: 'bg-red-100 text-red-800 border-red-200' },
-  { value: 'SEV2', label: 'SEV2 — High', className: 'bg-orange-100 text-orange-800 border-orange-200' },
-  { value: 'SEV3', label: 'SEV3 — Medium', className: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
-  { value: 'SEV4', label: 'SEV4 — Low', className: 'bg-blue-100 text-blue-800 border-blue-200' },
-];
-
-const PRIORITY_CONFIG: Record<PriorityLevel, { label: string; className: string }> = {
-  P1: { label: 'P1 — Critical', className: 'bg-red-100 text-red-800 border-red-200' },
-  P2: { label: 'P2 — High', className: 'bg-orange-100 text-orange-800 border-orange-200' },
-  P3: { label: 'P3 — Medium', className: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
-  P4: { label: 'P4 — Low', className: 'bg-blue-100 text-blue-800 border-blue-200' },
-};
+// Convert SEVERITY_CONFIG to array for dropdown
+const SEVERITY_OPTIONS = Object.entries(SEVERITY_OPTIONS_CONFIG).map(([value, config]) => ({
+  value,
+  label: `${value} — ${value === 'SEV1' ? 'Critical' : value === 'SEV2' ? 'High' : value === 'SEV3' ? 'Medium' : 'Low'}`,
+  className: config.className,
+}));
 
 interface SlaRecord {
   id: string;
@@ -178,7 +166,7 @@ export function IncidentContextRail({
           </label>
           {priority ? (
             <Badge variant="outline" className={cn('text-xs border', PRIORITY_CONFIG[priority].className)}>
-              {PRIORITY_CONFIG[priority].label}
+              {PRIORITY_CONFIG[priority].fullLabel}
             </Badge>
           ) : (
             <span className="text-xs text-muted-foreground">Not calculated</span>

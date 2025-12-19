@@ -1,78 +1,20 @@
 import { useState, useMemo } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { Search, ChevronLeft, ChevronRight, Filter, Download, Loader2, Plus, ArrowUpDown, ArrowUp, ArrowDown, X } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, Filter, Download, Loader2, Plus, ArrowUpDown, ArrowUp, ArrowDown, X, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useIncidents } from '@/hooks/useIncidents';
-import type { IncidentFilters, IncidentStatus, SupportLevel, Incident, PriorityLevel } from '@/types/incident';
+import type { IncidentFilters, IncidentStatus, SupportLevel, Incident } from '@/types/incident';
 import { IncidentsFiltersDialog } from '@/components/release/IncidentsFiltersDialog';
-
-// Severity badge component
-const SeverityBadge = ({ severity }: { severity: string }) => {
-  const colors: Record<string, string> = {
-    SEV1: 'bg-red-100 text-red-800 border-red-200',
-    SEV2: 'bg-orange-100 text-orange-800 border-orange-200',
-    SEV3: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-    SEV4: 'bg-blue-100 text-blue-800 border-blue-200',
-  };
-  return (
-    <Badge variant="outline" className={cn('text-[10px] font-medium px-1.5 py-0', colors[severity] || 'bg-gray-100')}>
-      {severity}
-    </Badge>
-  );
-};
-
-// Priority badge
-const PriorityBadge = ({ priority }: { priority: PriorityLevel | null | undefined }) => {
-  if (!priority) return <span className="text-muted-foreground text-xs">-</span>;
-  const colors: Record<string, string> = {
-    P1: 'bg-red-100 text-red-800 border-red-200',
-    P2: 'bg-orange-100 text-orange-800 border-orange-200',
-    P3: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-    P4: 'bg-blue-100 text-blue-800 border-blue-200',
-  };
-  return (
-    <Badge variant="outline" className={cn('text-[10px] font-medium px-1.5 py-0', colors[priority] || 'bg-gray-100')}>
-      {priority}
-    </Badge>
-  );
-};
-
-// Support Level badge
-const SupportLevelBadge = ({ level }: { level: string | null | undefined }) => {
-  if (!level) return <span className="text-muted-foreground text-xs">-</span>;
-  const colors: Record<string, string> = {
-    L1: 'bg-green-100 text-green-800',
-    L2: 'bg-blue-100 text-blue-800',
-    L3: 'bg-purple-100 text-purple-800',
-  };
-  return (
-    <Badge variant="outline" className={cn('text-[10px] font-medium px-1.5 py-0', colors[level] || 'bg-gray-100')}>
-      {level}
-    </Badge>
-  );
-};
-
-// Status badge
-const StatusBadge = ({ status }: { status: IncidentStatus }) => {
-  const config: Record<IncidentStatus, { label: string; className: string }> = {
-    open: { label: 'Open', className: 'bg-blue-100 text-blue-800' },
-    triage: { label: 'Triage', className: 'bg-yellow-100 text-yellow-800' },
-    to_committee: { label: 'To Committee', className: 'bg-purple-100 text-purple-800' },
-    in_progress: { label: 'In Progress', className: 'bg-orange-100 text-orange-800' },
-    resolved: { label: 'Resolved', className: 'bg-green-100 text-green-800' },
-    converted: { label: 'Converted', className: 'bg-teal-100 text-teal-800' },
-    closed: { label: 'Closed', className: 'bg-gray-100 text-gray-800' },
-  };
-  const { label, className } = config[status] || { label: status, className: 'bg-gray-100' };
-  return (
-    <Badge variant="outline" className={cn('text-[10px] font-medium px-1.5 py-0', className)}>
-      {label}
-    </Badge>
-  );
-};
+import { 
+  StatusBadge, 
+  SeverityBadge, 
+  PriorityBadge, 
+  SupportLevelBadge,
+  getAgingTime 
+} from '@/components/incidents/badges/IncidentBadges';
 
 type SortField = 'incident_key' | 'severity' | 'created_at';
 type SortDirection = 'asc' | 'desc';
@@ -214,21 +156,7 @@ export default function IncidentsListPage() {
     });
   }, [filteredIncidents, sortField, sortDirection]);
 
-  // Calculate aging (time since created)
-  const getAgingTime = (createdAt: string) => {
-    const created = new Date(createdAt);
-    const now = new Date();
-    const diffMs = now.getTime() - created.getTime();
-    const diffMins = Math.floor(diffMs / (1000 * 60));
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    
-    if (diffMins < 60) return `${diffMins}m`;
-    if (diffHours < 24) return `${diffHours}h`;
-    if (diffDays < 7) return `${diffDays}d`;
-    if (diffDays < 30) return `${Math.floor(diffDays / 7)}w`;
-    return `${Math.floor(diffDays / 30)}mo`;
-  };
+  // (getAgingTime imported from shared badges)
 
   // Calculate active filter count (excluding quick filters)
   const activeFilterCount = Object.entries(filters).filter(([, value]) => {
