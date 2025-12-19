@@ -25,8 +25,10 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 
+import { getAllowedTransitions, canConvertIncident, canSendToCommittee, calculatePriority } from '@/utils/incidentLifecycle';
+
 const STATUS_CONFIG: Record<IncidentStatus, { label: string; className: string }> = {
-  open: { label: 'Open', className: 'bg-blue-100 text-blue-800' },
+  open: { label: 'New', className: 'bg-blue-100 text-blue-800' },
   triage: { label: 'Triage', className: 'bg-yellow-100 text-yellow-800' },
   to_committee: { label: 'To Committee', className: 'bg-purple-100 text-purple-800' },
   in_progress: { label: 'In Progress', className: 'bg-cyan-100 text-cyan-800' },
@@ -72,8 +74,28 @@ export default function IncidentRoomDetail() {
   const [editedDescription, setEditedDescription] = useState('');
 
   const isConverted = incident?.status === 'converted';
-  const canConvert = incident?.status !== 'converted' && 
-    (!incident?.requires_committee || incident?.committee?.status === 'approved');
+  
+  // Use lifecycle rules for conversion gating
+  const conversionCheck = incident ? canConvertIncident(
+    incident.status,
+    incident.support_level,
+    incident.committee?.status
+  ) : { allowed: false };
+  const canConvert = conversionCheck.allowed;
+  
+  // Use lifecycle rules for committee gating
+  const committeeCheck = incident ? canSendToCommittee(
+    incident.status,
+    incident.support_level
+  ) : { allowed: false };
+  const canSendCommittee = committeeCheck.allowed;
+  
+  // Computed priority from business rules
+  const computedPriority = incident ? calculatePriority(
+    incident.severity,
+    incident.impact,
+    incident.urgency
+  ) : null;
 
   const handleStatusChange = (status: IncidentStatus) => {
     if (!id) return;
@@ -260,7 +282,8 @@ export default function IncidentRoomDetail() {
               variant="outline" 
               size="sm"
               onClick={handleSendToCommittee}
-              disabled={incident.status === 'to_committee' || isConverted || isSubmitting}
+              disabled={!canSendCommittee || isSubmitting}
+              title={committeeCheck.reason}
             >
               <Users className="h-4 w-4 mr-1" />
               Send to Committee
@@ -269,6 +292,7 @@ export default function IncidentRoomDetail() {
               size="sm"
               onClick={() => setConvertDialogOpen(true)}
               disabled={!canConvert || isSubmitting}
+              title={conversionCheck.reason}
               className="bg-brand-primary hover:bg-brand-primary-hover text-white"
             >
               <Plus className="h-4 w-4 mr-1" />
