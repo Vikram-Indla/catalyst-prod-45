@@ -468,7 +468,7 @@ export default function IncidentCommandCenter() {
   };
 
   const handleIncidentClick = (id: string) => {
-    navigate(`/release/incident-room/${id}`);
+    navigate(`/release/incidents/${id}`);
   };
 
   if (error) {

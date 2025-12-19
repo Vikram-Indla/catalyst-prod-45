@@ -130,10 +130,12 @@ export default function IncidentViewPage() {
   }
 
   if (error || !incident) {
+    const errorMessage = error instanceof Error ? error.message : 'Incident not found';
     return (
       <div className="h-full flex items-center justify-center bg-background">
         <div className="text-center">
-          <p className="text-destructive text-lg font-medium">Incident not found</p>
+          <p className="text-destructive text-lg font-medium">{errorMessage}</p>
+          <p className="text-sm text-muted-foreground mt-1">Unable to load incident data from the server</p>
           <Link to="/release/incidents" className="text-brand-primary hover:underline text-sm mt-2 inline-block">
             Back to Incidents
           </Link>
@@ -142,12 +144,11 @@ export default function IncidentViewPage() {
     );
   }
 
-  // SLA calculations
+  // SLA - READ-ONLY from sla_records, no client-side calculations
   const slaRecord = incident.sla;
-  const now = new Date();
   const responseSla = slaRecord ? {
     met: !!slaRecord.response_met_at,
-    breached: slaRecord.response_breached || (slaRecord.response_due_at && new Date(slaRecord.response_due_at) < now && !slaRecord.response_met_at),
+    breached: slaRecord.response_breached, // Backend-driven only
     detail: slaRecord.response_met_at 
       ? `Responded in ${formatDistanceToNow(new Date(slaRecord.response_due_at), { addSuffix: false })}`
       : slaRecord.response_due_at 
@@ -157,8 +158,8 @@ export default function IncidentViewPage() {
   
   const resolutionSla = slaRecord ? {
     met: !!slaRecord.resolution_met_at,
-    breached: slaRecord.resolution_breached || (slaRecord.resolution_due_at && new Date(slaRecord.resolution_due_at) < now && !slaRecord.resolution_met_at),
-    elapsed: Math.round((now.getTime() - new Date(incident.created_at).getTime()) / 60000),
+    breached: slaRecord.resolution_breached, // Backend-driven only
+    elapsed: Math.round((new Date().getTime() - new Date(incident.created_at).getTime()) / 60000),
     target: slaRecord.resolution_due_at 
       ? Math.round((new Date(slaRecord.resolution_due_at).getTime() - new Date(incident.created_at).getTime()) / 60000)
       : 0

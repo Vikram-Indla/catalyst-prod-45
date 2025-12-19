@@ -140,13 +140,15 @@ export default function IncidentRoomDetail() {
     );
   }
 
-  // Error
+  // Error - show backend error message
   if (error || !incident) {
+    const errorMessage = error instanceof Error ? error.message : 'Incident not found';
     return (
       <div className="flex flex-col items-center justify-center h-full gap-3">
         <AlertTriangle className="h-10 w-10 text-destructive" />
-        <h2 className="text-base font-medium">Incident not found</h2>
-        <Link to="/release/incident-room">
+        <h2 className="text-base font-medium">{errorMessage}</h2>
+        <p className="text-sm text-muted-foreground">Unable to load incident data from the server</p>
+        <Link to="/release/incidents">
           <Button variant="outline" size="sm">Back to Incidents</Button>
         </Link>
       </div>
@@ -161,9 +163,9 @@ export default function IncidentRoomDetail() {
       <header className="flex-shrink-0 border-b border-border px-4 py-2">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-1 text-[10px] text-muted-foreground mb-1">
-          <Link to="/release/incident-room" className="hover:text-foreground">RELEASE</Link>
+          <Link to="/release/incidents" className="hover:text-foreground">RELEASE</Link>
           <span>/</span>
-          <Link to="/release/incident-room" className="hover:text-foreground">Incidents</Link>
+          <Link to="/release/incidents" className="hover:text-foreground">Incidents</Link>
           <span>/</span>
           <span className="text-foreground font-medium">{incident.incident_key}</span>
         </nav>
