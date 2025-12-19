@@ -14,6 +14,7 @@ import { useAvailableApprovers } from '@/hooks/useIncidentUserProfiles';
 import { useIncidentCommittee } from '@/hooks/useIncidentCommittee';
 import { useProjects } from '@/hooks/useProjects';
 import { useIncidentWorkItems, useUnlinkWorkItem } from '@/hooks/useIncidentWorkItems';
+import { useIncidentTeams } from '@/hooks/useIncidentTeams';
 import { IncidentStickyHeader } from '@/components/incidents/detail/IncidentStickyHeader';
 import { IncidentWorkArea } from '@/components/incidents/detail/IncidentWorkArea';
 import { IncidentContextRail } from '@/components/incidents/detail/IncidentContextRail';
@@ -45,8 +46,10 @@ export default function IncidentRoomDetail() {
   const { data: projects = [] } = useProjects();
   const { data: linkedWorkItems = [] } = useIncidentWorkItems(incidentId || '');
   const unlinkWorkItem = useUnlinkWorkItem();
+  const { data: incidentTeams = [] } = useIncidentTeams();
 
   const queryClient = useQueryClient();
+  const [railCollapsed, setRailCollapsed] = useState(false);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [convertDialogOpen, setConvertDialogOpen] = useState(false);
@@ -504,18 +507,25 @@ export default function IncidentRoomDetail() {
           businessProcess={incident.business_process}
           serviceComponent={incident.service_component}
           projectId={incident.project_id}
+          teamId={(incident as any).team_id || null}
           sla={incident.sla}
           createdAt={incident.created_at}
           updatedAt={incident.updated_at}
           isConverted={isConverted}
+          isCollapsed={railCollapsed}
           availableProjects={projects}
+          availableTeams={incidentTeams}
+          availableUsers={availableApprovers}
           onStatusChange={handleStatusChange}
           onSeverityChange={(v) => handleFieldChange('severity', v)}
           onImpactChange={(v) => handleFieldChange('impact', v)}
           onUrgencyChange={(v) => handleFieldChange('urgency', v)}
           onDeliveryStageChange={(v) => handleFieldChange('delivery_stage', v)}
           onProjectChange={(projectId) => handleFieldChange('project_id', projectId)}
+          onTeamChange={(teamId) => handleFieldChange('team_id', teamId)}
+          onAssigneeChange={(userId) => handleFieldChange('assignee_id', userId)}
           onAssignToMe={handleAssignToMe}
+          onToggleCollapse={() => setRailCollapsed(!railCollapsed)}
           isSubmitting={isSubmitting}
         />
       </div>
