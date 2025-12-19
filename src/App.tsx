@@ -14,6 +14,7 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import Auth from "./pages/Auth";
 // Jira test pages removed - AtlasKit migration complete
 import BrowsePage from "./pages/BrowsePage";
+import DependencyMapsPage from "./pages/reports/DependencyMapsPage";
 import SearchPage from "./pages/SearchPage";
 import Home from "./pages/jira-align/Home";
 import PortfolioRoomPageOld from "./pages/jira-align/PortfolioRoomPage";
