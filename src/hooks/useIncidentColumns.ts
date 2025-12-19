@@ -10,15 +10,15 @@ export interface ColumnConfig {
 }
 
 const DEFAULT_COLUMNS: ColumnConfig[] = [
-  { id: 'key', label: 'Key', visible: true, minWidth: '100px', required: true },
+  { id: 'key', label: 'Key', visible: true, minWidth: '110px', required: true },
   { id: 'summary', label: 'Summary', visible: true, required: true },
-  { id: 'severity', label: 'Sev', visible: true, width: '52px' },
-  { id: 'priority', label: 'Pri', visible: true, width: '44px' },
-  { id: 'level', label: 'Lvl', visible: true, width: '40px' },
-  { id: 'status', label: 'Status', visible: true, minWidth: '90px' },
-  { id: 'assignee', label: 'Assignee', visible: true, width: '120px' },
-  { id: 'age', label: 'Age', visible: true, width: '52px' },
-  { id: 'sla', label: 'SLA', visible: true, width: '70px' },
+  { id: 'severity', label: 'Sev', visible: true, width: '72px' },
+  { id: 'priority', label: 'Pri', visible: true, width: '48px' },
+  { id: 'level', label: 'Lvl', visible: false, width: '44px' }, // Hidden by default - redundant with Sev/Pri
+  { id: 'status', label: 'Status', visible: true, minWidth: '100px' },
+  { id: 'assignee', label: 'Assignee', visible: true, width: '140px' },
+  { id: 'age', label: 'Age', visible: true, width: '64px' },
+  { id: 'sla', label: 'SLA', visible: true, width: '80px' },
   { id: 'releaseVersion', label: 'Release', visible: false, width: '100px' },
   { id: 'major', label: 'Major', visible: false, width: '56px' },
   { id: 'committee', label: 'Committee', visible: false, width: '80px' },
