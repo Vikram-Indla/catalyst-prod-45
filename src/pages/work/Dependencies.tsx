@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Search, Plus, Download, MoreHorizontal, AlertTriangle, CheckCircle2, Clock, Grid3x3, GitBranch, List, Filter, X, Layers } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { DependencyDetailsDrawer } from '@/components/dependencies/DependencyDetailsDrawer';
-import { DependencyAnalyticsDrawer } from '@/components/dependencies/DependencyAnalyticsDrawer';
+import { DependencyAnalyticsPanel } from '@/components/dependencies/DependencyAnalyticsPanel';
 import { DependencyMatrix } from '@/components/dependencies/DependencyMatrix';
 import { DependencyWheelMap } from '@/components/dependencies/DependencyWheelMap';
 import { DependencyContextMenu } from '@/components/dependencies/DependencyContextMenu';
@@ -478,16 +478,47 @@ export default function DependenciesPage() {
           )}
           
           {visualizationMode === 'wheel' && (
-            <DependencyWheelMap 
-              quarter={quarterFilter} 
-              onDependencyClick={handleRowClick}
-              selectedProgramId={selectedWheelProgramId}
-              onProgramSelect={(id, name) => {
-                setSelectedWheelProgramId(id);
-                setSelectedWheelProgramName(name);
-                setAnalyticsDrawerOpen(true);
-              }}
-            />
+            <div className="flex flex-1 gap-0 overflow-hidden">
+              {/* Wheel - moves left when panel is open */}
+              <div className={cn(
+                "flex items-center justify-center transition-all duration-300",
+                analyticsDrawerOpen ? "flex-1" : "flex-1"
+              )}>
+                <DependencyWheelMap 
+                  quarter={quarterFilter} 
+                  onDependencyClick={handleRowClick}
+                  selectedProgramId={selectedWheelProgramId}
+                  onProgramSelect={(id, name) => {
+                    setSelectedWheelProgramId(id);
+                    setSelectedWheelProgramName(name);
+                    setAnalyticsDrawerOpen(true);
+                  }}
+                />
+              </div>
+              
+              {/* Analytics Panel - appears on right */}
+              {analyticsDrawerOpen && selectedWheelProgramId && (
+                <div className="w-[480px] h-full flex-shrink-0 animate-in slide-in-from-right duration-300">
+                  <DependencyAnalyticsPanel
+                    selectedProgramId={selectedWheelProgramId}
+                    selectedProgramName={selectedWheelProgramName}
+                    dependencies={resolvedDependencies}
+                    programs={programs || []}
+                    workItemMaps={workItemMaps}
+                    initialQuarter={quarterFilter}
+                    onDependencyClick={(depId) => {
+                      setSelectedDependencyId(depId);
+                      setDrawerOpen(true);
+                    }}
+                    onClose={() => {
+                      setAnalyticsDrawerOpen(false);
+                      setSelectedWheelProgramId(null);
+                      setSelectedWheelProgramName(undefined);
+                    }}
+                  />
+                </div>
+              )}
+            </div>
           )}
 
           {visualizationMode === 'list' && (
@@ -685,27 +716,6 @@ export default function DependenciesPage() {
             dependencyId={selectedDependencyId}
           />
 
-          {/* Analytics Drawer for Wheel */}
-          <DependencyAnalyticsDrawer
-            open={analyticsDrawerOpen}
-            onOpenChange={(open) => {
-              setAnalyticsDrawerOpen(open);
-              if (!open) {
-                setSelectedWheelProgramId(null);
-                setSelectedWheelProgramName(undefined);
-              }
-            }}
-            selectedProgramId={selectedWheelProgramId}
-            selectedProgramName={selectedWheelProgramName}
-            dependencies={resolvedDependencies}
-            programs={programs || []}
-            workItemMaps={workItemMaps}
-            initialQuarter={quarterFilter}
-            onDependencyClick={(depId) => {
-              setSelectedDependencyId(depId);
-              setDrawerOpen(true);
-            }}
-          />
         </div>
       </div>
     </div>
