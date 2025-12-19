@@ -114,19 +114,19 @@ const DEFAULT_VISIBLE_COLUMNS: ColumnConfig[] = [
 
 // Grid column definition for pinned + scrollable layout
 const PINNED_WIDTH = 'min-w-[100px] w-[100px]';
-const SUMMARY_WIDTH = 'min-w-[240px] w-[240px]';
+// Summary is now flex-grow to consume remaining width
 
 function LoadingSkeleton({ density }: { density: TableDensity }) {
   return (
-    <div className="rounded-lg border-2 border-[var(--border-color)] overflow-hidden bg-[var(--surface-1)] shadow-sm">
+    <div className="rounded-lg border border-[var(--border-default)] overflow-hidden bg-[var(--surface-1)]" style={{ boxShadow: 'var(--shadow-card)' }}>
       {/* Header */}
       <div 
         className="flex items-center py-2.5 px-3 text-[10px] font-semibold uppercase tracking-wide sticky top-0 z-10"
         style={{ backgroundColor: 'var(--surface-2)', borderBottom: '2px solid var(--divider)' }}
       >
         <div className={cn(PINNED_WIDTH, "shrink-0")}>Key</div>
-        <div className={cn(SUMMARY_WIDTH, "shrink-0")}>Summary</div>
-        <div className="flex-1 min-w-0 flex items-center gap-4 px-3">
+        <div className="flex-1 min-w-[200px]">Summary</div>
+        <div className="shrink-0 flex items-center gap-4 px-3">
           <span className="w-16">Sev</span>
           <span className="w-12">Lvl</span>
           <span className="w-24">Status</span>
@@ -141,8 +141,8 @@ function LoadingSkeleton({ density }: { density: TableDensity }) {
       {[...Array(10)].map((_, i) => (
         <div key={i} className="flex items-center px-3 py-2.5" style={{ borderBottom: '1px solid var(--divider)' }}>
           <div className={cn(PINNED_WIDTH, "shrink-0")}><Skeleton className="h-4 w-16" /></div>
-          <div className={cn(SUMMARY_WIDTH, "shrink-0")}><Skeleton className="h-4 w-full" /></div>
-          <div className="flex-1 min-w-0 flex items-center gap-4 px-3">
+          <div className="flex-1 min-w-[200px]"><Skeleton className="h-4 w-full" /></div>
+          <div className="shrink-0 flex items-center gap-4 px-3">
             <Skeleton className="h-4 w-12" />
             <Skeleton className="h-4 w-8" />
             <Skeleton className="h-5 w-20" />
@@ -166,7 +166,7 @@ export function IncidentListTable({
   totalCount,
   onPageChange,
   visibleColumns = DEFAULT_VISIBLE_COLUMNS,
-  density = 'comfortable',
+  density = 'compact',
 }: IncidentListTableProps) {
   const navigate = useNavigate();
   const updateIncident = useUpdateIncident();
@@ -227,8 +227,8 @@ export function IncidentListTable({
   return (
     <TooltipProvider delayDuration={300}>
       <div className="flex flex-col h-full">
-        {/* Table Card Container - matching Home table style */}
-        <div className="rounded-lg border-2 border-[var(--border-color)] overflow-hidden bg-[var(--surface-1)] shadow-sm flex-1">
+        {/* Table Card Container - matching Home table style with proper shadow */}
+        <div className="rounded-lg border border-[var(--border-default)] overflow-hidden bg-[var(--surface-1)] flex-1" style={{ boxShadow: 'var(--shadow-card)' }}>
           {/* Horizontal scroll wrapper */}
           <div className="overflow-x-auto">
             <div className="min-w-[900px]">
@@ -241,12 +241,12 @@ export function IncidentListTable({
                 {isColumnVisible('key') && (
                   <div className={cn(PINNED_WIDTH, "shrink-0 text-[var(--text-2)]")}>Key</div>
                 )}
-                {/* Pinned: Summary */}
+                {/* Summary - flex grow */}
                 {isColumnVisible('summary') && (
-                  <div className={cn(SUMMARY_WIDTH, "shrink-0 text-[var(--text-2)]")}>Summary</div>
+                  <div className="flex-1 min-w-[200px] text-[var(--text-2)]">Summary</div>
                 )}
                 {/* Scrollable columns */}
-                <div className="flex-1 min-w-0 flex items-center">
+                <div className="shrink-0 flex items-center">
                   {isColumnVisible('severity') && <div className="w-[80px] shrink-0 px-2 text-[var(--text-2)]">Sev</div>}
                   {isColumnVisible('level') && <div className="w-[60px] shrink-0 px-2 text-[var(--text-2)]">Lvl</div>}
                   {isColumnVisible('status') && <div className="w-[110px] shrink-0 px-2 text-[var(--text-2)]">Status</div>}
@@ -317,9 +317,9 @@ export function IncidentListTable({
                         </div>
                       )}
                       
-                      {/* Pinned: Summary - Inline editable */}
+                      {/* Summary - flex grow, inline editable */}
                       {isColumnVisible('summary') && (
-                        <div className={cn(SUMMARY_WIDTH, "shrink-0 pr-2")} data-inline-edit>
+                        <div className="flex-1 min-w-[200px] pr-2" data-inline-edit>
                           <InlineEditCell
                             type="text"
                             value={incident.title}
@@ -338,8 +338,8 @@ export function IncidentListTable({
                         </div>
                       )}
                       
-                      {/* Scrollable columns */}
-                      <div className="flex-1 min-w-0 flex items-center">
+                      {/* Compact columns */}
+                      <div className="shrink-0 flex items-center">
                         {/* Severity - small dot + label */}
                         {isColumnVisible('severity') && (
                           <div className="w-[80px] shrink-0 px-2" data-inline-edit>

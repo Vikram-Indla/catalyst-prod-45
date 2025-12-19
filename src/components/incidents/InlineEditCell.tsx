@@ -91,22 +91,53 @@ export function InlineEditCell({
     );
   }
 
-  // Toggle type - always shows switch
+  // Toggle type - show displayValue by default, switch on click/edit
   if (type === 'toggle') {
+    if (!isEditing) {
+      return (
+        <div
+          className={cn(
+            textSize,
+            'cursor-pointer rounded px-1 -mx-1 py-0.5 hover:bg-muted/80 transition-colors',
+            className
+          )}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsEditing(true);
+          }}
+        >
+          {displayValue ?? (value ? 'Yes' : 'No')}
+        </div>
+      );
+    }
+    
+    // Editing mode - show switch
     return (
-      <Switch
-        checked={Boolean(value)}
-        onCheckedChange={async (checked) => {
-          setIsSaving(true);
-          try {
-            await onSave(checked);
-          } finally {
-            setIsSaving(false);
-          }
-        }}
-        disabled={isSaving}
-        className="data-[state=checked]:bg-amber-500"
-      />
+      <div 
+        className="flex items-center gap-2" 
+        onClick={(e) => e.stopPropagation()}
+      >
+        <Switch
+          checked={Boolean(value)}
+          onCheckedChange={async (checked) => {
+            setIsSaving(true);
+            try {
+              await onSave(checked);
+              setIsEditing(false);
+            } finally {
+              setIsSaving(false);
+            }
+          }}
+          disabled={isSaving}
+          className="data-[state=checked]:bg-amber-500 data-[state=unchecked]:bg-[var(--surface-3)] border-0 focus-visible:ring-[var(--focus-ring)]"
+        />
+        <button
+          onClick={() => setIsEditing(false)}
+          className="p-0.5 rounded hover:bg-muted/80 transition-colors"
+        >
+          <X className="h-3 w-3 text-[var(--text-3)]" />
+        </button>
+      </div>
     );
   }
 
