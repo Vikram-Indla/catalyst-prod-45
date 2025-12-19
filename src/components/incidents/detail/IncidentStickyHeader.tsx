@@ -29,7 +29,8 @@ import {
 import { cn } from '@/lib/utils';
 import { 
   STATUS_CONFIG, 
-  SEVERITY_CONFIG 
+  SEVERITY_CONFIG,
+  PRIORITY_CONFIG
 } from '@/components/incidents/badges/IncidentBadges';
 import { getAllowedTransitions } from '@/utils/incidentLifecycle';
 import type { 
@@ -37,7 +38,8 @@ import type {
   SeverityLevel, 
   PriorityLevel, 
   SupportLevel,
-  IncidentUserProfile 
+  IncidentUserProfile,
+  ReleaseVersion
 } from '@/types/incident';
 
 interface Project {
@@ -54,8 +56,11 @@ interface IncidentStickyHeaderProps {
   priority: PriorityLevel | null;
   supportLevel: SupportLevel | null;
   assignee: IncidentUserProfile | null;
+  reporter: IncidentUserProfile | null;
   projectId: string | null;
   projectName: string | null;
+  releaseVersionId: string | null;
+  releaseVersionName: string | null;
   createdAt: string;
   updatedAt: string;
   lastUpdatedBy: string | null;
@@ -68,12 +73,15 @@ interface IncidentStickyHeaderProps {
   // Available data for dropdowns
   availableProjects: Project[];
   availableUsers: IncidentUserProfile[];
+  availableReleaseVersions: ReleaseVersion[];
   // Handlers
   onTitleChange: (title: string) => void;
   onStatusChange: (status: IncidentStatus) => void;
   onSeverityChange: (severity: SeverityLevel) => void;
   onAssigneeChange: (userId: string) => void;
+  onReporterChange: (userId: string) => void;
   onProjectChange: (projectId: string) => void;
+  onReleaseVersionChange: (versionId: string) => void;
   onToggleWatch: () => void;
   onOpenCommittee: () => void;
   onOpenConvertDialog: () => void;
@@ -89,8 +97,11 @@ export function IncidentStickyHeader({
   priority,
   supportLevel,
   assignee,
+  reporter,
   projectId,
   projectName,
+  releaseVersionId,
+  releaseVersionName,
   createdAt,
   updatedAt,
   lastUpdatedBy,
@@ -102,11 +113,14 @@ export function IncidentStickyHeader({
   conversionReason,
   availableProjects,
   availableUsers,
+  availableReleaseVersions,
   onTitleChange,
   onStatusChange,
   onSeverityChange,
   onAssigneeChange,
+  onReporterChange,
   onProjectChange,
+  onReleaseVersionChange,
   onToggleWatch,
   onOpenCommittee,
   onOpenConvertDialog,
@@ -118,6 +132,7 @@ export function IncidentStickyHeader({
   
   const statusConfig = STATUS_CONFIG[status];
   const severityConfig = SEVERITY_CONFIG[severity];
+  const priorityConfig = priority ? PRIORITY_CONFIG[priority] : null;
   const allowedTransitions = getAllowedTransitions(status, supportLevel, undefined);
 
   const handleSaveTitle = () => {
@@ -209,7 +224,7 @@ export function IncidentStickyHeader({
                     }
                   }}
                 >
-                  <h1 className="text-lg font-semibold text-foreground truncate max-w-2xl">
+                  <h1 className="text-xl font-bold text-foreground truncate max-w-2xl">
                     {title}
                   </h1>
                   {!isConverted && (
@@ -299,88 +314,102 @@ export function IncidentStickyHeader({
             )}
           </p>
 
-          {/* Row 4: Editable fields row */}
-          <div className="flex items-center gap-4 flex-wrap">
+          {/* Row 4: Editable fields row - compact triage bar */}
+          <div className="flex items-center gap-3 flex-wrap">
             {/* Status Dropdown */}
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground uppercase tracking-wide">Status</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Status</span>
               <Select 
                 value={status} 
                 onValueChange={(v) => onStatusChange(v as IncidentStatus)}
                 disabled={isConverted || status === 'closed'}
               >
-                <SelectTrigger className={cn('h-8 w-auto min-w-[120px] text-sm font-medium', statusConfig.className)}>
+                <SelectTrigger className={cn('h-7 w-auto min-w-[100px] text-xs font-medium', statusConfig.className)}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={status} className="text-sm">
-                    {statusConfig.label} (current)
-                  </SelectItem>
-                  {allowedTransitions
-                    .filter(t => t.targetStatus !== status)
-                    .map(t => (
-                      <SelectItem key={t.targetStatus} value={t.targetStatus} className="text-sm">
-                        {STATUS_CONFIG[t.targetStatus].label}
-                      </SelectItem>
-                    ))}
+                  {allowedTransitions.map(t => (
+                    <SelectItem key={t.targetStatus} value={t.targetStatus} className="text-xs">
+                      {STATUS_CONFIG[t.targetStatus].label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
 
             {/* Assignee Dropdown */}
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground uppercase tracking-wide">Assignee</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Assignee</span>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" className="h-8 gap-2" disabled={isConverted}>
+                  <Button variant="outline" size="sm" className="h-7 gap-1.5 text-xs px-2" disabled={isConverted}>
                     {assignee ? (
                       <>
-                        <Avatar className="h-5 w-5">
-                          <AvatarFallback className="text-[10px] bg-primary text-primary-foreground">
+                        <Avatar className="h-4 w-4">
+                          <AvatarFallback className="text-[8px] bg-primary text-primary-foreground">
                             {assignee.avatar_initials || assignee.full_name?.slice(0, 2)}
                           </AvatarFallback>
                         </Avatar>
-                        <span className="text-sm">{assignee.full_name}</span>
+                        <span className="max-w-[80px] truncate">{assignee.full_name}</span>
                       </>
                     ) : (
-                      <span className="text-sm text-muted-foreground">Unassigned</span>
+                      <span className="text-muted-foreground">Unassigned</span>
                     )}
-                    <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                    <ChevronDown className="h-3 w-3 text-muted-foreground" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-56">
+                <DropdownMenuContent align="start" className="w-52 max-h-64 overflow-auto">
                   {availableUsers.map((user) => (
                     <DropdownMenuItem
                       key={user.id}
                       onClick={() => onAssigneeChange(user.id)}
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 text-xs"
                     >
-                      <Avatar className="h-6 w-6">
-                        <AvatarFallback className="text-[10px] bg-primary text-primary-foreground">
+                      <Avatar className="h-5 w-5">
+                        <AvatarFallback className="text-[9px] bg-primary text-primary-foreground">
                           {user.avatar_initials || user.full_name?.slice(0, 2)}
                         </AvatarFallback>
                       </Avatar>
-                      <span className="text-sm">{user.full_name}</span>
+                      {user.full_name}
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
 
+            {/* Reporter (read-only chip) */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Reporter</span>
+              <div className="flex items-center gap-1.5 px-2 py-1 rounded border border-border bg-muted/30 text-xs">
+                {reporter ? (
+                  <>
+                    <Avatar className="h-4 w-4">
+                      <AvatarFallback className="text-[8px] bg-muted-foreground/20 text-foreground">
+                        {reporter.avatar_initials || reporter.full_name?.slice(0, 2)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="max-w-[80px] truncate">{reporter.full_name}</span>
+                  </>
+                ) : (
+                  <span className="text-muted-foreground">Unknown</span>
+                )}
+              </div>
+            </div>
+
             {/* Severity Dropdown */}
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground uppercase tracking-wide">Severity</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Severity</span>
               <Select 
                 value={severity} 
                 onValueChange={(v) => onSeverityChange(v as SeverityLevel)}
                 disabled={isConverted}
               >
-                <SelectTrigger className={cn('h-8 w-auto min-w-[100px] text-sm font-medium', severityConfig.className)}>
+                <SelectTrigger className={cn('h-7 w-auto min-w-[80px] text-xs font-medium', severityConfig.className)}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   {Object.entries(SEVERITY_CONFIG).map(([value, config]) => (
-                    <SelectItem key={value} value={value} className="text-sm">
+                    <SelectItem key={value} value={value} className="text-xs">
                       {config.label}
                     </SelectItem>
                   ))}
@@ -388,13 +417,69 @@ export function IncidentStickyHeader({
               </Select>
             </div>
 
-            {/* Priority (read-only derived) */}
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground uppercase tracking-wide">Priority</span>
-              <Badge variant="outline" className="h-8 px-3 text-sm font-medium">
-                {priority || 'Not set'}
+            {/* Priority (derived badge, read-only) */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Priority</span>
+              <Badge 
+                variant="outline" 
+                className={cn(
+                  'h-7 px-2 text-xs font-medium',
+                  priorityConfig?.className || 'bg-muted/50'
+                )}
+              >
+                {priority || 'N/A'}
               </Badge>
             </div>
+
+            {/* Project Dropdown */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Project</span>
+              <Select 
+                value={projectId || 'default'} 
+                onValueChange={(v) => onProjectChange(v === 'default' ? '' : v)}
+                disabled={isConverted}
+              >
+                <SelectTrigger className="h-7 w-auto min-w-[100px] text-xs">
+                  <SelectValue placeholder="Select project" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="default" className="text-xs">
+                    Default
+                  </SelectItem>
+                  {availableProjects.map(project => (
+                    <SelectItem key={project.id} value={project.id} className="text-xs">
+                      {project.key} — {project.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Release Version Dropdown (if applicable) */}
+            {availableReleaseVersions.length > 0 && (
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Release</span>
+                <Select 
+                  value={releaseVersionId || 'none'} 
+                  onValueChange={(v) => onReleaseVersionChange(v === 'none' ? '' : v)}
+                  disabled={isConverted}
+                >
+                  <SelectTrigger className="h-7 w-auto min-w-[80px] text-xs">
+                    <SelectValue placeholder="—" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none" className="text-xs text-muted-foreground">
+                      None
+                    </SelectItem>
+                    {availableReleaseVersions.map(version => (
+                      <SelectItem key={version.id} value={version.id} className="text-xs">
+                        {version.version}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
         </div>
       </header>

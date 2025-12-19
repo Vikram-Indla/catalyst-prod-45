@@ -4844,6 +4844,7 @@ export type Database = {
           incident_key: string | null
           incident_type: string | null
           is_major_incident: boolean | null
+          owning_team_id: string | null
           priority: Database["public"]["Enums"]["priority_level"] | null
           project_id: string | null
           release_version_id: string | null
@@ -4885,6 +4886,7 @@ export type Database = {
           incident_key?: string | null
           incident_type?: string | null
           is_major_incident?: boolean | null
+          owning_team_id?: string | null
           priority?: Database["public"]["Enums"]["priority_level"] | null
           project_id?: string | null
           release_version_id?: string | null
@@ -4926,6 +4928,7 @@ export type Database = {
           incident_key?: string | null
           incident_type?: string | null
           is_major_incident?: boolean | null
+          owning_team_id?: string | null
           priority?: Database["public"]["Enums"]["priority_level"] | null
           project_id?: string | null
           release_version_id?: string | null
@@ -4974,6 +4977,13 @@ export type Database = {
             columns: ["committee_id"]
             isOneToOne: false
             referencedRelation: "incident_committees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_owning_team_id_fkey"
+            columns: ["owning_team_id"]
+            isOneToOne: false
+            referencedRelation: "owning_teams"
             referencedColumns: ["id"]
           },
           {
@@ -7770,6 +7780,33 @@ export type Database = {
             referencedColumns: ["code"]
           },
         ]
+      }
+      owning_teams: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          sort_order: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       package_modules: {
         Row: {
