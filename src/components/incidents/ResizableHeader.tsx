@@ -87,22 +87,22 @@ export function ResizableHeader({
     >
       {children}
       
-      {/* Resize handle - invisible by default, discovered on hover */}
+      {/* Resize handle - subtle but visible, more prominent on hover */}
       <div
-        className="absolute right-0 top-0 h-full w-2 z-10"
+        className="absolute right-0 top-0 h-full w-3 z-10 flex items-center justify-center"
         style={{ cursor: 'col-resize' }}
         onMouseDown={handleMouseDown}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* 1px vertical line - only visible on hover or drag */}
+        {/* 2px vertical line - always subtly visible, stronger on hover/drag */}
         <div 
           className={cn(
-            "absolute right-0 top-1 bottom-1 w-px transition-all duration-150",
+            "h-4 w-0.5 rounded-full transition-all duration-150",
             isResizing 
-              ? "bg-[var(--brand-primary)] opacity-100" 
+              ? "bg-primary h-5" 
               : isHovered 
-                ? "bg-[var(--border-color)] opacity-60" 
-                : "opacity-0"
+                ? "bg-muted-foreground/60 h-5" 
+                : "bg-border/60"
           )}
         />
       </div>

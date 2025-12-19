@@ -251,14 +251,13 @@ export function IncidentListTable({
     <TooltipProvider delayDuration={300}>
       <div className="flex flex-col h-full">
         {/* Table Card Container - enterprise grid styling */}
-        <div className="rounded-lg border border-[var(--border-color)] overflow-hidden bg-[var(--surface-1)] flex-1 shadow-sm">
-          {/* Horizontal scroll wrapper with sticky column support */}
-          <div className="overflow-x-auto relative">
+        <div className="rounded-lg border border-border overflow-hidden bg-card flex-1 shadow-sm">
+          {/* Horizontal scroll wrapper */}
+          <div className="overflow-x-auto">
             <div style={{ minWidth: `${getMinTableWidth()}px` }}>
               {/* Sticky Header - 40px height with resizable columns */}
               <div 
-                className="flex items-center h-10 px-0 text-[11px] font-semibold uppercase tracking-wider sticky top-0 z-20"
-                style={{ backgroundColor: 'var(--surface-2)', borderBottom: '1px solid var(--divider)' }}
+                className="flex items-center h-10 text-[11px] font-semibold uppercase tracking-wider sticky top-0 z-20 bg-muted/50 border-b border-border"
               >
                 {/* Key - resizable */}
                 {isColumnVisible('key') && (
@@ -267,7 +266,7 @@ export function IncidentListTable({
                     width={columnWidths.key}
                     minWidth={MIN_COLUMN_WIDTHS.key}
                     onResize={handleColumnResize}
-                    className="pr-2 text-[var(--text-2)]"
+                    className="pl-4 pr-2 text-muted-foreground"
                   >
                     Key
                   </ResizableHeader>
@@ -279,7 +278,7 @@ export function IncidentListTable({
                     width={columnWidths.summary}
                     minWidth={MIN_COLUMN_WIDTHS.summary}
                     onResize={handleColumnResize}
-                    className="text-[var(--text-2)]"
+                    className="text-muted-foreground"
                     isFlexible
                   >
                     Summary
@@ -292,7 +291,7 @@ export function IncidentListTable({
                     width={columnWidths.severity}
                     minWidth={MIN_COLUMN_WIDTHS.severity}
                     onResize={handleColumnResize}
-                    className="px-2 text-[var(--text-2)]"
+                    className="px-2 text-muted-foreground"
                   >
                     Sev
                   </ResizableHeader>
@@ -303,7 +302,7 @@ export function IncidentListTable({
                     width={columnWidths.level}
                     minWidth={MIN_COLUMN_WIDTHS.level}
                     onResize={handleColumnResize}
-                    className="px-2 text-[var(--text-2)]"
+                    className="px-2 text-muted-foreground"
                   >
                     Lvl
                   </ResizableHeader>
@@ -314,7 +313,7 @@ export function IncidentListTable({
                     width={columnWidths.status}
                     minWidth={MIN_COLUMN_WIDTHS.status}
                     onResize={handleColumnResize}
-                    className="px-2 text-[var(--text-2)]"
+                    className="px-2 text-muted-foreground"
                   >
                     Status
                   </ResizableHeader>
@@ -325,7 +324,7 @@ export function IncidentListTable({
                     width={columnWidths.assignee}
                     minWidth={MIN_COLUMN_WIDTHS.assignee}
                     onResize={handleColumnResize}
-                    className="px-2 text-[var(--text-2)]"
+                    className="px-2 text-muted-foreground"
                   >
                     Assignee
                   </ResizableHeader>
@@ -337,7 +336,7 @@ export function IncidentListTable({
                     width={columnWidths.age}
                     minWidth={MIN_COLUMN_WIDTHS.age}
                     onResize={handleColumnResize}
-                    className="px-1 text-right text-[var(--text-2)]"
+                    className="px-2 text-muted-foreground"
                   >
                     Age
                   </ResizableHeader>
@@ -348,7 +347,7 @@ export function IncidentListTable({
                     width={columnWidths.sla}
                     minWidth={MIN_COLUMN_WIDTHS.sla}
                     onResize={handleColumnResize}
-                    className="px-1 text-[var(--text-2)]"
+                    className="px-2 text-muted-foreground"
                   >
                     SLA
                   </ResizableHeader>
@@ -359,7 +358,7 @@ export function IncidentListTable({
                     width={columnWidths.releaseVersion}
                     minWidth={MIN_COLUMN_WIDTHS.releaseVersion}
                     onResize={handleColumnResize}
-                    className="px-2 text-[var(--text-2)]"
+                    className="px-2 text-muted-foreground"
                   >
                     Release
                   </ResizableHeader>
@@ -370,7 +369,7 @@ export function IncidentListTable({
                     width={columnWidths.major}
                     minWidth={MIN_COLUMN_WIDTHS.major}
                     onResize={handleColumnResize}
-                    className="px-2 text-[var(--text-2)]"
+                    className="px-2 text-muted-foreground"
                   >
                     Major
                   </ResizableHeader>
@@ -381,13 +380,13 @@ export function IncidentListTable({
                     width={columnWidths.committee}
                     minWidth={MIN_COLUMN_WIDTHS.committee}
                     onResize={handleColumnResize}
-                    className="px-2 text-[var(--text-2)]"
+                    className="px-2 text-muted-foreground"
                   >
                     Committee
                   </ResizableHeader>
                 )}
                 {/* Actions spacer */}
-                <div className="w-8 shrink-0"></div>
+                <div className="w-10 shrink-0 pr-4"></div>
               </div>
 
               {/* Body */}
@@ -412,11 +411,10 @@ export function IncidentListTable({
                     <div 
                       key={incident.id} 
                       className={cn(
-                        'flex items-center px-4 transition-colors cursor-pointer',
+                        'flex items-center transition-colors cursor-pointer border-b border-border',
                         rowHeight,
-                        isHovered && 'bg-[var(--row-hover)]'
+                        isHovered && 'bg-muted/40'
                       )}
-                      style={{ borderBottom: '1px solid var(--divider)' }}
                       onClick={(e) => handleRowClick(incident.id, e)}
                       onMouseEnter={() => setHoveredId(incident.id)}
                       onMouseLeave={() => setHoveredId(null)}
@@ -425,15 +423,15 @@ export function IncidentListTable({
                         if (e.key === 'Enter' && incident.id) navigate(`/release/incidents/${incident.id}`);
                       }}
                     >
-                      {/* Key - matches header width */}
+                      {/* Key - matches header width with pl-4 */}
                       {isColumnVisible('key') && (
                         <div 
-                          className="shrink-0 pr-2 flex items-center gap-1"
+                          className="shrink-0 pl-4 pr-2 flex items-center gap-1"
                           style={{ width: `${columnWidths.key}px` }}
                         >
                           <Link 
                             to={`/release/incidents/${incident.id}`} 
-                            className={cn(textSmall, "font-medium text-[var(--brand-primary)] hover:underline focus:outline-none focus:ring-2 focus:ring-[var(--focus-ring)] rounded-sm")}
+                            className={cn(textSmall, "font-medium text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-ring rounded-sm")}
                             onClick={(e) => e.stopPropagation()}
                           >
                             {incident.incident_key}
@@ -462,7 +460,7 @@ export function IncidentListTable({
                             displayValue={
                               <Tooltip>
                                 <TooltipTrigger asChild>
-                                  <span className={cn(textBase, "leading-5 text-[var(--text-1)] line-clamp-1 cursor-pointer font-medium")}>{incident.title}</span>
+                                  <span className={cn(textBase, "leading-5 text-foreground line-clamp-1 cursor-pointer font-medium")}>{incident.title}</span>
                                 </TooltipTrigger>
                                 <TooltipContent side="top" className="text-xs max-w-md">{incident.title}</TooltipContent>
                               </Tooltip>
@@ -490,7 +488,7 @@ export function IncidentListTable({
                                 <TooltipTrigger asChild>
                                   <div className="flex items-center gap-1.5 cursor-pointer">
                                     <span className={cn('h-2 w-2 rounded-full flex-shrink-0', severityConfig.dot)} />
-                                    <span className={cn(textSmall, "text-[var(--text-2)]")}>{severityConfig.label}</span>
+                                    <span className={cn(textSmall, "text-muted-foreground")}>{severityConfig.label}</span>
                                   </div>
                                 </TooltipTrigger>
                                 <TooltipContent side="top" className="text-xs">{severityConfig.description}</TooltipContent>
@@ -518,12 +516,12 @@ export function IncidentListTable({
                               supportConfig ? (
                                 <Tooltip>
                                   <TooltipTrigger asChild>
-                                    <span className={cn(textSmall, "text-[var(--text-2)] cursor-pointer")}>{supportConfig.label}</span>
+                                    <span className={cn(textSmall, "text-muted-foreground cursor-pointer")}>{supportConfig.label}</span>
                                   </TooltipTrigger>
                                   <TooltipContent side="top" className="text-xs">{supportConfig.description}</TooltipContent>
                                 </Tooltip>
                               ) : (
-                                <span className={cn(textSmall, "text-[var(--text-3)]")}>—</span>
+                                <span className={cn(textSmall, "text-muted-foreground/50")}>—</span>
                               )
                             }
                             onSave={(val) => handleInlineUpdate(incident.id, 'support_level', val)}
@@ -581,23 +579,23 @@ export function IncidentListTable({
                       {/* Age */}
                       {isColumnVisible('age') && (
                         <div 
-                          className="shrink-0 px-1 text-right"
+                          className="shrink-0 px-2"
                           style={{ width: `${columnWidths.age}px` }}
                         >
-                          <span className={cn(textSmall, "tabular-nums text-[var(--text-2)]")}>{age}</span>
+                          <span className={cn(textSmall, "tabular-nums text-muted-foreground")}>{age}</span>
                         </div>
                       )}
                       
                       {/* SLA */}
                       {isColumnVisible('sla') && (
                         <div 
-                          className="shrink-0 px-1"
+                          className="shrink-0 px-2"
                           style={{ width: `${columnWidths.sla}px` }}
                         >
                           {slaConfig ? (
                             <span className={cn(textSmall, slaConfig.className)}>{slaConfig.label}</span>
                           ) : (
-                            <span className={cn(textSmall, "text-[var(--text-3)]")}>—</span>
+                            <span className={cn(textSmall, "text-muted-foreground/50")}>—</span>
                           )}
                         </div>
                       )}
@@ -637,7 +635,7 @@ export function IncidentListTable({
                                         Major
                                       </span>
                                     ) : (
-                                      <span className={cn(textSmall, "text-[var(--text-3)]")}>Normal</span>
+                                      <span className={cn(textSmall, "text-muted-foreground/50")}>Normal</span>
                                     )
                                   }
                                   onSave={(val) => handleInlineUpdate(incident.id, 'is_major_incident', val)}
@@ -663,15 +661,15 @@ export function IncidentListTable({
                         </div>
                       )}
 
-                      {/* Actions */}
-                      <div className="w-8 shrink-0 flex items-center justify-end">
+                      {/* Actions - with pr-4 to match header */}
+                      <div className="w-10 shrink-0 flex items-center justify-end pr-4">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                             <button 
                               className={cn(
                                 "w-6 h-6 rounded flex items-center justify-center transition-opacity",
-                                "hover:bg-[var(--surface-3)] text-[var(--icon-muted)]",
-                                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]",
+                                "hover:bg-muted text-muted-foreground",
+                                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                                 isHovered ? "opacity-100" : "opacity-0"
                               )}
                             >
@@ -680,10 +678,10 @@ export function IncidentListTable({
                           </DropdownMenuTrigger>
                           <DropdownMenuContent 
                             align="end" 
-                            className="w-44 bg-[var(--surface-1)] border-[var(--border-color)] z-[300]"
+                            className="w-44 bg-popover border-border z-[300]"
                           >
                             <DropdownMenuItem 
-                              className="text-sm cursor-pointer text-[var(--text-1)]"
+                              className="text-sm cursor-pointer"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 navigate(`/release/incidents/${incident.id}`);
@@ -693,7 +691,7 @@ export function IncidentListTable({
                               View
                             </DropdownMenuItem>
                             <DropdownMenuItem 
-                              className="text-sm cursor-pointer text-[var(--text-1)]"
+                              className="text-sm cursor-pointer"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 navigate(`/release/incidents/${incident.id}?mode=edit`);
@@ -704,7 +702,7 @@ export function IncidentListTable({
                               Edit
                             </DropdownMenuItem>
                             <DropdownMenuItem 
-                              className="text-sm cursor-pointer text-[var(--text-1)]"
+                              className="text-sm cursor-pointer"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleCopyLink(incident.id, incident.incident_key);
@@ -713,9 +711,9 @@ export function IncidentListTable({
                               <Copy className="h-4 w-4 mr-2" />
                               Copy link
                             </DropdownMenuItem>
-                            <DropdownMenuSeparator className="bg-[var(--divider)]" />
+                            <DropdownMenuSeparator />
                             <DropdownMenuItem 
-                              className="text-sm text-rose-600 cursor-pointer focus:text-rose-600"
+                              className="text-sm text-destructive cursor-pointer focus:text-destructive"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setDeleteDialog({ open: true, id: incident.id, key: incident.incident_key });
@@ -737,8 +735,8 @@ export function IncidentListTable({
 
         {/* Pagination Footer */}
         {totalCount !== undefined && totalCount > 0 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--border-color)] bg-[var(--surface-1)] flex-shrink-0 mt-2 rounded-lg">
-            <span className="text-sm text-[var(--text-2)]">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-border bg-card flex-shrink-0 mt-2 rounded-lg">
+            <span className="text-sm text-muted-foreground">
               {totalCount > pageSize 
                 ? `${((page - 1) * pageSize) + 1}–${Math.min(page * pageSize, totalCount)} of ${totalCount} incidents`
                 : `${totalCount} incident${totalCount !== 1 ? 's' : ''}`
