@@ -478,12 +478,9 @@ export default function DependenciesPage() {
           )}
           
           {visualizationMode === 'wheel' && (
-            <div className="flex flex-1 gap-0 overflow-hidden">
-              {/* Wheel - moves left when panel is open */}
-              <div className={cn(
-                "flex items-center justify-center transition-all duration-300",
-                analyticsDrawerOpen ? "flex-1" : "flex-1"
-              )}>
+            <div className="relative flex-1 overflow-hidden">
+              {/* Wheel - stays full size */}
+              <div className="w-full h-full flex items-center justify-center">
                 <DependencyWheelMap 
                   quarter={quarterFilter} 
                   onDependencyClick={handleRowClick}
@@ -496,9 +493,9 @@ export default function DependenciesPage() {
                 />
               </div>
               
-              {/* Analytics Panel - appears on right */}
+              {/* Analytics Panel - slides in as overlay from right */}
               {analyticsDrawerOpen && selectedWheelProgramId && (
-                <div className="w-[480px] h-full flex-shrink-0 animate-in slide-in-from-right duration-300">
+                <div className="absolute top-0 right-0 h-full w-[480px] shadow-xl animate-slide-in-right">
                   <DependencyAnalyticsPanel
                     selectedProgramId={selectedWheelProgramId}
                     selectedProgramName={selectedWheelProgramName}
