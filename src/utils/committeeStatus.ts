@@ -34,12 +34,12 @@ export interface CommitteeStatusResult {
 }
 
 export function getCommitteeDisplayStatus(committee: Committee | null | undefined): CommitteeStatusResult {
-  // No committee or no members
+  // No committee or no members = Not started
   if (!committee || !committee.members || committee.members.length === 0) {
     return {
       status: 'not_applicable',
-      label: 'N/A',
-      className: 'text-muted-foreground/70',
+      label: 'Not started',
+      className: 'text-[var(--text-3)]',
     };
   }
 
