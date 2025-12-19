@@ -1,0 +1,183 @@
+/**
+ * InlineUserPicker — Inline user selection for Assignee column
+ * 
+ * Features:
+ * - Click to edit activation
+ * - Searchable user dropdown
+ * - Optimistic update with rollback on error
+ * - Keyboard navigation (Esc to cancel)
+ */
+
+import { useState, useRef, useEffect } from 'react';
+import { Search, X, User } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
+import type { IncidentUserProfile } from '@/types/incident';
+
+interface InlineUserPickerProps {
+  value: IncidentUserProfile | null | undefined;
+  onSave: (userId: string | null) => Promise<void>;
+  disabled?: boolean;
+  textSize?: string;
+}
+
+export function InlineUserPicker({
+  value,
+  onSave,
+  disabled = false,
+  textSize = 'text-[12px]',
+}: InlineUserPickerProps) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Fetch available users
+  const { data: users = [] } = useQuery({
+    queryKey: ['incident-user-profiles'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('incident_user_profiles')
+        .select('*')
+        .order('full_name');
+      if (error) throw error;
+      return data as IncidentUserProfile[];
+    },
+  });
+
+  // Focus search input when popover opens
+  useEffect(() => {
+    if (open && inputRef.current) {
+      setTimeout(() => inputRef.current?.focus(), 100);
+    }
+  }, [open]);
+
+  // Filter users by search
+  const filteredUsers = users.filter(u =>
+    u.full_name.toLowerCase().includes(search.toLowerCase()) ||
+    u.email.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const handleSelect = async (userId: string | null) => {
+    if (disabled || isSaving) return;
+    
+    setIsSaving(true);
+    try {
+      await onSave(userId);
+      setOpen(false);
+      setSearch('');
+    } catch {
+      // Error handled by parent
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  if (disabled) {
+    return (
+      <div className={cn(textSize, 'text-muted-foreground cursor-not-allowed')}>
+        {value?.full_name || 'Unassigned'}
+      </div>
+    );
+  }
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button
+          className={cn(
+            'w-full flex items-center gap-1.5 rounded px-1 -mx-1 py-0.5 hover:bg-muted/80 transition-colors text-left cursor-pointer',
+            textSize
+          )}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {value ? (
+            <>
+              <div className="h-5 w-5 rounded-full bg-[var(--surface-3)] flex items-center justify-center flex-shrink-0">
+                <span className="text-[9px] font-medium text-[var(--text-2)]">
+                  {value.avatar_initials || value.full_name?.charAt(0) || 'U'}
+                </span>
+              </div>
+              <span className="text-[var(--text-1)] truncate">{value.full_name}</span>
+            </>
+          ) : (
+            <span className="text-[var(--text-3)]">Unassigned</span>
+          )}
+        </button>
+      </PopoverTrigger>
+      <PopoverContent 
+        className="w-64 p-0 bg-[var(--surface-1)] border-[var(--border-color)]"
+        align="start"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="p-2 border-b border-[var(--divider)]">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--text-3)]" />
+            <Input
+              ref={inputRef}
+              placeholder="Search users..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-8 h-8 text-sm"
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') {
+                  setOpen(false);
+                  setSearch('');
+                }
+              }}
+            />
+          </div>
+        </div>
+        <div className="max-h-60 overflow-y-auto py-1">
+          {/* Unassign option */}
+          {value && (
+            <button
+              className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-[var(--surface-2)] transition-colors text-left"
+              onClick={() => handleSelect(null)}
+              disabled={isSaving}
+            >
+              <X className="h-4 w-4 text-[var(--text-3)]" />
+              <span className="text-[var(--text-2)]">Unassign</span>
+            </button>
+          )}
+          
+          {/* User list */}
+          {filteredUsers.length === 0 ? (
+            <div className="px-3 py-4 text-center text-sm text-[var(--text-3)]">
+              No users found
+            </div>
+          ) : (
+            filteredUsers.map((user) => (
+              <button
+                key={user.id}
+                className={cn(
+                  'w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-[var(--surface-2)] transition-colors text-left',
+                  value?.id === user.id && 'bg-[var(--surface-2)]'
+                )}
+                onClick={() => handleSelect(user.id)}
+                disabled={isSaving}
+              >
+                <div className="h-6 w-6 rounded-full bg-[var(--surface-3)] flex items-center justify-center flex-shrink-0">
+                  <span className="text-[10px] font-medium text-[var(--text-2)]">
+                    {user.avatar_initials || user.full_name?.charAt(0) || 'U'}
+                  </span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-[var(--text-1)] truncate">{user.full_name}</div>
+                  <div className="text-[10px] text-[var(--text-3)] truncate">{user.email}</div>
+                </div>
+              </button>
+            ))
+          )}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
