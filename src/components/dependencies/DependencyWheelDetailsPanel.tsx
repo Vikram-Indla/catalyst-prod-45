@@ -46,9 +46,12 @@ export function DependencyWheelDetailsPanel({
   }
 
   // Filter incoming (work that others need from selected node)
-  const incoming = links.filter((l) => l.toNodeId === selectedNode.id);
+  const incoming = links.filter(
+    (l) => l.toNodeId === selectedNode.id && l.fromNodeId !== selectedNode.id
+  );
 
   // Filter outgoing (work that selected node needs from others)
+  // Includes self-dependencies
   const outgoing = links.filter((l) => l.fromNodeId === selectedNode.id);
 
   // Calculate metrics
