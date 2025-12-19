@@ -193,17 +193,21 @@ export function DependencyMatrix({ quarter, onDependencyClick }: DependencyMatri
                       <td
                         key={toProg.id}
                         className={`border-r border-b border-border text-center align-middle p-0 h-12 sm:h-14 md:h-14 ${
-                          isSameProgram 
+                          isSameProgram && count === 0
                             ? 'bg-muted' 
                             : count === 0 
                               ? 'bg-background' 
-                              : 'bg-primary cursor-pointer hover:bg-primary/90 transition-colors'
+                              : isSameProgram
+                                ? 'bg-amber-500 cursor-pointer hover:bg-amber-500/90 transition-colors'
+                                : 'bg-primary cursor-pointer hover:bg-primary/90 transition-colors'
                         }`}
                         style={{ width: 'fit-content', minWidth: '48px' }}
-                        onClick={() => !isSameProgram && count > 0 && handleCellClick(fromProg, toProg)}
+                        onClick={() => count > 0 && handleCellClick(fromProg, toProg)}
                       >
-                        {!isSameProgram && count > 0 && (
-                          <div className="w-full h-full flex items-center justify-center text-primary-foreground font-medium text-xs sm:text-sm">
+                        {count > 0 && (
+                          <div className={`w-full h-full flex items-center justify-center font-medium text-xs sm:text-sm ${
+                            isSameProgram ? 'text-amber-950' : 'text-primary-foreground'
+                          }`}>
                             {count}
                           </div>
                         )}
