@@ -65,23 +65,42 @@ export function CommitteeCard({
     );
   }
 
-  // Committee required but not yet initiated
+  // Committee required but not yet initiated - allow adding approvers directly
   if (!committee && requiresCommittee) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-center">
-        <div className="h-12 w-12 rounded-full bg-amber-100 dark:bg-amber-950/30 flex items-center justify-center mb-3">
-          <AlertTriangle className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+      <div className="space-y-4">
+        <div className="flex flex-col items-center justify-center py-8 text-center">
+          <div className="h-12 w-12 rounded-full bg-amber-100 dark:bg-amber-950/30 flex items-center justify-center mb-3">
+            <AlertTriangle className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+          </div>
+          <p className="text-sm font-medium text-foreground mb-1">Committee Review Required</p>
+          <p className="text-xs text-muted-foreground max-w-xs mb-4">
+            This incident requires committee approval before it can be converted.
+          </p>
+          {!isConverted && (
+            <div className="flex flex-col gap-2 w-full max-w-xs">
+              <Button size="sm" onClick={() => setShowAddApprover(true)} className="h-8 text-xs">
+                <UserPlus className="h-3.5 w-3.5 mr-1.5" />
+                Add First Approver
+              </Button>
+              {onInitiateCommittee && (
+                <Button size="sm" variant="outline" onClick={onInitiateCommittee} className="h-8 text-xs">
+                  <Users className="h-3.5 w-3.5 mr-1.5" />
+                  Use Default Approvers
+                </Button>
+              )}
+            </div>
+          )}
         </div>
-        <p className="text-sm font-medium text-foreground mb-1">Committee Review Required</p>
-        <p className="text-xs text-muted-foreground max-w-xs mb-4">
-          This incident requires committee approval before it can be converted.
-        </p>
-        {onInitiateCommittee && !isConverted && (
-          <Button size="sm" onClick={onInitiateCommittee} className="h-8 text-xs">
-            <Users className="h-3.5 w-3.5 mr-1.5" />
-            Initiate Committee Review
-          </Button>
-        )}
+        
+        {/* Add Approver Dialog - works even without committee */}
+        <AddApproverDialog
+          open={showAddApprover}
+          onOpenChange={setShowAddApprover}
+          availableApprovers={availableApprovers}
+          existingApproverIds={[]}
+          onAdd={onAddApprover}
+        />
       </div>
     );
   }
