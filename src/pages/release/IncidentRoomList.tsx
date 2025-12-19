@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Plus, Search, AlertCircle, Clock, Users, ChevronRight, BarChart3 } from 'lucide-react';
+import { Plus, Search, AlertCircle, Clock, Users, ChevronRight, BarChart3, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -9,6 +9,7 @@ import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
 import { useIncidents } from '@/hooks/useIncidents';
 import { CreateIncidentDialog } from '@/components/incidents/CreateIncidentDialog';
 import { IncidentFiltersDialog } from '@/components/incidents/IncidentFiltersDialog';
+import { UATStatusPanel } from '@/components/incidents/UATStatusPanel';
 import type { Incident, IncidentFilters } from '@/types/incident';
 import { cn } from '@/lib/utils';
 import { 
@@ -121,6 +122,12 @@ export default function IncidentRoomList() {
         pageTitle="Incident Room"
         rightActions={
           <div className="flex items-center gap-2">
+            <Link to="/release/incidents/dashboard">
+              <Button variant="outline">
+                <LayoutDashboard className="h-4 w-4 mr-2" />
+                Dashboard
+              </Button>
+            </Link>
             <Link to="/release/incident-command-center">
               <Button variant="outline">
                 <BarChart3 className="h-4 w-4 mr-2" />
@@ -207,6 +214,9 @@ export default function IncidentRoomList() {
         open={createDialogOpen} 
         onOpenChange={setCreateDialogOpen} 
       />
+      
+      {/* UAT Status Panel - Dev only */}
+      <UATStatusPanel />
     </div>
   );
 }

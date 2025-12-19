@@ -55,7 +55,7 @@ export function CriticalStrip({
       hasRisk: majorIncidents.atRisk > 0,
       breached: majorIncidents.breached,
       atRisk: majorIncidents.atRisk,
-      route: '/release/incident-room?filter=major',
+      route: '/release/incidents?filter=major',
       severity: getMajorIncidentSeverity(),
     },
     {
@@ -64,7 +64,7 @@ export function CriticalStrip({
       icon: Clock,
       count: slaAtRisk,
       hasRisk: slaAtRisk > 0,
-      route: '/release/incident-room?filter=sla-risk',
+      route: '/release/incidents?filter=sla-risk',
       severity: slaAtRisk > 3 ? 2 : slaAtRisk > 0 ? 1 : 0,
     },
     {
