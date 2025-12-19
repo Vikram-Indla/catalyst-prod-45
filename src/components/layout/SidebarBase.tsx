@@ -200,15 +200,15 @@ export function SidebarBase({
                     }}
                   />
                 )}
-                {/* Icon container - fixed 32px width, centered */}
+                {/* Icon container - fixed 32px width, vertically centered */}
                 <span style={{ 
                   width: '32px',
-                  height: '44px',
+                  height: '32px',
                   display: 'flex', 
                   alignItems: 'center', 
                   justifyContent: 'center',
                   flexShrink: 0,
-                  marginLeft: expanded ? '8px' : '14px',
+                  marginLeft: expanded ? '6px' : '14px',
                 }}>
                   {CustomIcon && (
                     <CustomIcon 
@@ -221,9 +221,7 @@ export function SidebarBase({
                   <span style={{ 
                     flex: 1, 
                     textAlign: 'left',
-                    display: 'flex',
-                    alignItems: 'center',
-                    height: '44px',
+                    lineHeight: '44px',
                   }}>{item.title}</span>
                 )}
                 {item.badge !== undefined && item.badge > 0 && (
@@ -322,15 +320,15 @@ export function SidebarBase({
                       }}
                     />
                   )}
-                  {/* Icon container - fixed 32px width, centered */}
+                  {/* Icon container - fixed 32px width, vertically centered */}
                   <span style={{ 
                     width: '32px',
-                    height: '44px',
+                    height: '32px',
                     display: 'flex', 
                     alignItems: 'center', 
                     justifyContent: 'center',
                     flexShrink: 0,
-                    marginLeft: expanded ? '8px' : '14px',
+                    marginLeft: expanded ? '6px' : '14px',
                   }}>
                     {CustomIcon && (
                       <CustomIcon 
@@ -343,9 +341,7 @@ export function SidebarBase({
                     <span style={{ 
                       flex: 1, 
                       textAlign: 'left',
-                      display: 'flex',
-                      alignItems: 'center',
-                      height: '44px',
+                      lineHeight: '44px',
                     }}>{item.title}</span>
                   )}
                 </button>

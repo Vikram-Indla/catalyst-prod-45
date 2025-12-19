@@ -121,34 +121,34 @@ function LoadingSkeleton({ density }: { density: TableDensity }) {
         className="flex items-center h-10 px-4 text-[11px] font-semibold uppercase tracking-wider sticky top-0 z-10"
         style={{ backgroundColor: 'var(--surface-2)', borderBottom: '1px solid var(--divider)' }}
       >
-        <div className="w-[90px] shrink-0">Key</div>
-        <div className="flex-1 min-w-[240px]">Summary</div>
+        <div className="w-[80px] shrink-0 pr-2">Key</div>
+        <div className="flex-1 min-w-[220px]">Summary</div>
         <div className="shrink-0 flex items-center">
-          <span className="w-[72px] px-2">Sev</span>
-          <span className="w-[52px] px-2">Lvl</span>
-          <span className="w-[100px] px-2">Status</span>
-          <span className="w-[130px] px-2">Assignee</span>
-          <span className="w-[52px] px-2 text-right">Age</span>
-          <span className="w-[64px] px-2">SLA</span>
-          <span className="w-[90px] px-2">Committee</span>
+          <span className="w-[68px] px-2">Sev</span>
+          <span className="w-[48px] px-2">Lvl</span>
+          <span className="w-[96px] px-2">Status</span>
+          <span className="w-[120px] px-2">Assignee</span>
+          <span className="w-[48px] px-1 text-right">Age</span>
+          <span className="w-[56px] px-1">SLA</span>
+          <span className="w-[88px] px-2">Committee</span>
         </div>
-        <div className="w-9 shrink-0"></div>
+        <div className="w-8 shrink-0"></div>
       </div>
       {/* Skeleton rows - 44px each */}
       {[...Array(12)].map((_, i) => (
         <div key={i} className={cn("flex items-center px-4", rowH)} style={{ borderBottom: '1px solid var(--divider)' }}>
-          <div className="w-[90px] shrink-0"><Skeleton className="h-4 w-14" /></div>
-          <div className="flex-1 min-w-[240px] pr-3"><Skeleton className="h-4 w-full" /></div>
+          <div className="w-[80px] shrink-0 pr-2"><Skeleton className="h-4 w-14" /></div>
+          <div className="flex-1 min-w-[220px] pr-2"><Skeleton className="h-4 w-full" /></div>
           <div className="shrink-0 flex items-center">
-            <div className="w-[72px] px-2"><Skeleton className="h-4 w-12" /></div>
-            <div className="w-[52px] px-2"><Skeleton className="h-4 w-7" /></div>
-            <div className="w-[100px] px-2"><Skeleton className="h-5 w-16" /></div>
-            <div className="w-[130px] px-2"><Skeleton className="h-5 w-24" /></div>
-            <div className="w-[52px] px-2"><Skeleton className="h-4 w-8" /></div>
-            <div className="w-[64px] px-2"><Skeleton className="h-4 w-12" /></div>
-            <div className="w-[90px] px-2"><Skeleton className="h-4 w-14" /></div>
+            <div className="w-[68px] px-2"><Skeleton className="h-4 w-10" /></div>
+            <div className="w-[48px] px-2"><Skeleton className="h-4 w-6" /></div>
+            <div className="w-[96px] px-2"><Skeleton className="h-5 w-14" /></div>
+            <div className="w-[120px] px-2"><Skeleton className="h-5 w-20" /></div>
+            <div className="w-[48px] px-1"><Skeleton className="h-4 w-7" /></div>
+            <div className="w-[56px] px-1"><Skeleton className="h-4 w-10" /></div>
+            <div className="w-[88px] px-2"><Skeleton className="h-4 w-14" /></div>
           </div>
-          <div className="w-9 shrink-0"><Skeleton className="h-4 w-4 mx-auto" /></div>
+          <div className="w-8 shrink-0"><Skeleton className="h-4 w-4 mx-auto" /></div>
         </div>
       ))}
     </div>
@@ -229,34 +229,35 @@ export function IncidentListTable({
         <div className="rounded-lg border border-[var(--border-color)] overflow-hidden bg-[var(--surface-1)] flex-1 shadow-sm">
           {/* Horizontal scroll wrapper */}
           <div className="overflow-x-auto">
-            <div className="min-w-[960px]">
+            <div className="min-w-[920px]">
               {/* Sticky Header - 40px height */}
               <div 
                 className="flex items-center h-10 px-4 text-[11px] font-semibold uppercase tracking-wider sticky top-0 z-20"
                 style={{ backgroundColor: 'var(--surface-2)', borderBottom: '1px solid var(--divider)' }}
               >
-                {/* Pinned: Key */}
+                {/* Key - tighter width */}
                 {isColumnVisible('key') && (
-                  <div className="w-[90px] shrink-0 text-[var(--text-2)]">Key</div>
+                  <div className="w-[80px] shrink-0 pr-2 text-[var(--text-2)]">Key</div>
                 )}
                 {/* Summary - flex grow, dominant column */}
                 {isColumnVisible('summary') && (
-                  <div className="flex-1 min-w-[240px] text-[var(--text-2)]">Summary</div>
+                  <div className="flex-1 min-w-[220px] text-[var(--text-2)]">Summary</div>
                 )}
-                {/* Compact columns */}
+                {/* Compact columns - tightened spacing */}
                 <div className="shrink-0 flex items-center">
-                  {isColumnVisible('severity') && <div className="w-[72px] shrink-0 px-2 text-[var(--text-2)]">Sev</div>}
-                  {isColumnVisible('level') && <div className="w-[52px] shrink-0 px-2 text-[var(--text-2)]">Lvl</div>}
-                  {isColumnVisible('status') && <div className="w-[100px] shrink-0 px-2 text-[var(--text-2)]">Status</div>}
-                  {isColumnVisible('assignee') && <div className="w-[130px] shrink-0 px-2 text-[var(--text-2)]">Assignee</div>}
-                  {isColumnVisible('age') && <div className="w-[52px] shrink-0 px-2 text-right text-[var(--text-2)]">Age</div>}
-                  {isColumnVisible('sla') && <div className="w-[64px] shrink-0 px-2 text-[var(--text-2)]">SLA</div>}
-                  {isColumnVisible('releaseVersion') && <div className="w-[80px] shrink-0 px-2 text-[var(--text-2)]">Release</div>}
+                  {isColumnVisible('severity') && <div className="w-[68px] shrink-0 px-2 text-[var(--text-2)]">Sev</div>}
+                  {isColumnVisible('level') && <div className="w-[48px] shrink-0 px-2 text-[var(--text-2)]">Lvl</div>}
+                  {isColumnVisible('status') && <div className="w-[96px] shrink-0 px-2 text-[var(--text-2)]">Status</div>}
+                  {isColumnVisible('assignee') && <div className="w-[120px] shrink-0 px-2 text-[var(--text-2)]">Assignee</div>}
+                  {/* Age + SLA visually grouped with tighter spacing */}
+                  {isColumnVisible('age') && <div className="w-[48px] shrink-0 px-1 text-right text-[var(--text-2)]">Age</div>}
+                  {isColumnVisible('sla') && <div className="w-[56px] shrink-0 px-1 text-[var(--text-2)]">SLA</div>}
+                  {isColumnVisible('releaseVersion') && <div className="w-[76px] shrink-0 px-2 text-[var(--text-2)]">Release</div>}
                   {isColumnVisible('major') && <div className="w-[52px] shrink-0 px-2 text-[var(--text-2)]">Major</div>}
-                  {isColumnVisible('committee') && <div className="w-[90px] shrink-0 px-2 text-[var(--text-2)]">Committee</div>}
+                  {isColumnVisible('committee') && <div className="w-[88px] shrink-0 px-2 text-[var(--text-2)]">Committee</div>}
                 </div>
                 {/* Actions spacer */}
-                <div className="w-9 shrink-0"></div>
+                <div className="w-8 shrink-0"></div>
               </div>
 
               {/* Body */}
@@ -294,9 +295,9 @@ export function IncidentListTable({
                         if (e.key === 'Enter' && incident.id) navigate(`/release/incidents/${incident.id}`);
                       }}
                     >
-                      {/* Pinned: Key - link style */}
+                      {/* Key - tighter, with right padding for separation */}
                       {isColumnVisible('key') && (
-                        <div className="w-[90px] shrink-0 flex items-center gap-1.5">
+                        <div className="w-[80px] shrink-0 pr-2 flex items-center gap-1">
                           <Link 
                             to={`/release/incidents/${incident.id}`} 
                             className={cn(textSmall, "font-medium text-[var(--brand-primary)] hover:underline focus:outline-none focus:ring-2 focus:ring-[var(--focus-ring)] rounded-sm")}
@@ -309,7 +310,7 @@ export function IncidentListTable({
                               <TooltipTrigger asChild>
                                 <AlertTriangle className="h-3 w-3 text-amber-500 flex-shrink-0" />
                               </TooltipTrigger>
-                              <TooltipContent side="right" className="text-xs">Major Incident</TooltipContent>
+                              <TooltipContent side="right" className="text-xs">Major incident</TooltipContent>
                             </Tooltip>
                           )}
                         </div>
@@ -317,7 +318,7 @@ export function IncidentListTable({
                       
                       {/* Summary - flex grow, dominant column, inline editable */}
                       {isColumnVisible('summary') && (
-                        <div className="flex-1 min-w-[240px] pr-3" data-inline-edit>
+                        <div className="flex-1 min-w-[220px] pr-2" data-inline-edit>
                           <InlineEditCell
                             type="text"
                             value={incident.title}
@@ -336,11 +337,11 @@ export function IncidentListTable({
                         </div>
                       )}
                       
-                      {/* Compact columns */}
+                      {/* Compact columns - tightened widths */}
                       <div className="shrink-0 flex items-center">
                         {/* Severity - small dot + label */}
                         {isColumnVisible('severity') && (
-                          <div className="w-[72px] shrink-0 px-2" data-inline-edit>
+                          <div className="w-[68px] shrink-0 px-2" data-inline-edit>
                             <InlineEditCell
                               type="select"
                               value={incident.severity}
@@ -365,7 +366,7 @@ export function IncidentListTable({
                         
                         {/* Level */}
                         {isColumnVisible('level') && (
-                          <div className="w-[52px] shrink-0 px-2" data-inline-edit>
+                          <div className="w-[48px] shrink-0 px-2" data-inline-edit>
                             <InlineEditCell
                               type="select"
                               value={incident.support_level || ''}
@@ -391,7 +392,7 @@ export function IncidentListTable({
                         
                         {/* Status - compact chip */}
                         {isColumnVisible('status') && (
-                          <div className="w-[100px] shrink-0 px-2" data-inline-edit>
+                          <div className="w-[96px] shrink-0 px-2" data-inline-edit>
                             <InlineEditCell
                               type="select"
                               value={incident.status}
@@ -414,9 +415,9 @@ export function IncidentListTable({
                           </div>
                         )}
                         
-                        {/* Assignee */}
+                        {/* Assignee - tighter avatar/name spacing */}
                         {isColumnVisible('assignee') && (
-                          <div className="w-[130px] shrink-0 px-2">
+                          <div className="w-[120px] shrink-0 px-2">
                             {incident.assignee ? (
                               <div className="flex items-center gap-1.5">
                                 <div className="h-5 w-5 rounded-full bg-[var(--surface-3)] flex items-center justify-center flex-shrink-0">
@@ -434,16 +435,15 @@ export function IncidentListTable({
                           </div>
                         )}
                         
-                        {/* Age */}
+                        {/* Age + SLA grouped with tighter spacing */}
                         {isColumnVisible('age') && (
-                          <div className="w-[52px] shrink-0 px-2 text-right">
+                          <div className="w-[48px] shrink-0 px-1 text-right">
                             <span className={cn(textSmall, "tabular-nums text-[var(--text-2)]")}>{age}</span>
                           </div>
                         )}
                         
-                        {/* SLA - compact text */}
                         {isColumnVisible('sla') && (
-                          <div className="w-[64px] shrink-0 px-2">
+                          <div className="w-[56px] shrink-0 px-1">
                             {slaConfig ? (
                               <span className={cn(textSmall, slaConfig.className)}>{slaConfig.label}</span>
                             ) : (
@@ -454,14 +454,14 @@ export function IncidentListTable({
 
                         {/* Release */}
                         {isColumnVisible('releaseVersion') && (
-                          <div className="w-[80px] shrink-0 px-2">
+                          <div className="w-[76px] shrink-0 px-2">
                             <span className={cn(textSmall, "text-[var(--text-2)] truncate block")}>
                               {incident.release_version?.version || '—'}
                             </span>
                           </div>
                         )}
 
-                        {/* Major - Quiet by default: chip/text, no green outline */}
+                        {/* Major - state display only, toggle on edit */}
                         {isColumnVisible('major') && (
                           <div className="w-[52px] shrink-0 px-2" data-inline-edit>
                             <Tooltip>
@@ -473,10 +473,10 @@ export function IncidentListTable({
                                     displayValue={
                                       incident.is_major_incident ? (
                                         <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400">
-                                          Yes
+                                          Major
                                         </span>
                                       ) : (
-                                        <span className={cn(textSmall, "text-[var(--text-3)]")}>No</span>
+                                        <span className={cn(textSmall, "text-[var(--text-3)]")}>Normal</span>
                                       )
                                     }
                                     onSave={(val) => handleInlineUpdate(incident.id, 'is_major_incident', val)}
@@ -485,14 +485,14 @@ export function IncidentListTable({
                                   />
                                 </div>
                               </TooltipTrigger>
-                              <TooltipContent side="top" className="text-xs">Major incident flag</TooltipContent>
+                              <TooltipContent side="top" className="text-xs max-w-[200px]">Major incident — elevated visibility & escalation rules</TooltipContent>
                             </Tooltip>
                           </div>
                         )}
 
-                        {/* Committee - computed chip */}
+                        {/* Committee - state only */}
                         {isColumnVisible('committee') && (
-                          <div className="w-[90px] shrink-0 px-2">
+                          <div className="w-[88px] shrink-0 px-2">
                             <span className={cn(textSmall, 'font-medium', committeeStyle)}>
                               {committeeStatus.label}
                             </span>
@@ -501,7 +501,7 @@ export function IncidentListTable({
                       </div>
 
                       {/* Actions */}
-                      <div className="w-9 shrink-0 flex items-center justify-end">
+                      <div className="w-8 shrink-0 flex items-center justify-end">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                             <button 
