@@ -105,7 +105,7 @@ export function IncidentContextRail({
   const severityConfig = SEVERITY_CONFIG[severity];
 
   return (
-    <aside className="w-80 border-l border-border overflow-auto bg-muted/20 p-4 space-y-4">
+    <aside className="flex-[3] w-72 min-w-[280px] max-w-xs border-l border-border overflow-auto bg-muted/10 p-4 space-y-3">
       {/* L3 Governance Banner - Only for L3 */}
       {supportLevel === 'L3' && requiresCommittee && (
         <div className="flex gap-3 p-3 rounded-lg bg-yellow-50 border border-yellow-200">
