@@ -41,6 +41,11 @@ export default function DependenciesPage() {
   const [visualizationMode, setVisualizationMode] = useState<'list' | 'matrix' | 'wheel'>('list');
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedDependencyId, setSelectedDependencyId] = useState<string | undefined>();
+  
+  // Wheel-specific toggles (lifted to parent)
+  const [wheelShowEpics, setWheelShowEpics] = useState(true);
+  const [wheelShowFeatures, setWheelShowFeatures] = useState(false);
+  const [wheelShowOnlyConnected, setWheelShowOnlyConnected] = useState(false);
 
   // Get first program as default if no programId in params
   const { data: defaultProgram } = useQuery({
@@ -428,7 +433,7 @@ export default function DependenciesPage() {
         <div className="flex-1 flex flex-col overflow-auto px-6 py-4">
           {/* Embedded mode: Show horizontal segmented tabs for view selection */}
           {isEmbedded && (
-            <div className="mb-4">
+            <div className="mb-4 flex items-center justify-between flex-wrap gap-3">
               <SegmentedTabs 
                 value={visualizationMode} 
                 onValueChange={(v) => {
@@ -457,6 +462,39 @@ export default function DependenciesPage() {
                   Maps
                 </SegmentedTab>
               </SegmentedTabs>
+              
+              {/* Wheel-specific toggles - inline on same row, only when wheel mode */}
+              {visualizationMode === 'wheel' && (
+                <div className="flex items-center gap-4 flex-wrap">
+                  <label className="flex items-center gap-2 text-sm cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={wheelShowEpics}
+                      onChange={(e) => setWheelShowEpics(e.target.checked)}
+                      className="h-4 w-4 rounded border-border"
+                    />
+                    Epic Dependencies
+                  </label>
+                  <label className="flex items-center gap-2 text-sm cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={wheelShowFeatures}
+                      onChange={(e) => setWheelShowFeatures(e.target.checked)}
+                      className="h-4 w-4 rounded border-border"
+                    />
+                    Feature Dependencies
+                  </label>
+                  <label className="flex items-center gap-2 text-sm cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={wheelShowOnlyConnected}
+                      onChange={(e) => setWheelShowOnlyConnected(e.target.checked)}
+                      className="h-4 w-4 rounded border-border"
+                    />
+                    Show Only Connected
+                  </label>
+                </div>
+              )}
             </div>
           )}
 
@@ -472,6 +510,9 @@ export default function DependenciesPage() {
             <DependencyWheelMap 
               quarter={quarterFilter} 
               onDependencyClick={handleRowClick}
+              showEpics={wheelShowEpics}
+              showFeatures={wheelShowFeatures}
+              showOnlyConnected={wheelShowOnlyConnected}
             />
           )}
 
