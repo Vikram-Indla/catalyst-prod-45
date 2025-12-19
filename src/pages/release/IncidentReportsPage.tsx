@@ -101,12 +101,12 @@ function SLABreachReport({ incidents, onRowClick }: { incidents: Incident[]; onR
     { key: 'summary', label: 'Summary', render: (i: Incident) => <span className="truncate max-w-[200px] block">{i.title}</span> },
     { key: 'severity', label: 'Severity', render: (i: Incident) => <SeverityBadge severity={i.severity} /> },
     { key: 'response', label: 'Response SLA', render: (i: Incident) => (
-      <Badge variant="outline" className={cn('text-[10px]', i.sla?.response_breached ? 'bg-red-100 text-red-700 border-red-200' : 'bg-green-100 text-green-700 border-green-200')}>
+      <Badge variant="outline" className={cn('text-[10px]', i.sla?.response_breached ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200')}>
         {i.sla?.response_breached ? 'BREACHED' : 'MET'}
       </Badge>
     )},
     { key: 'resolution', label: 'Resolution SLA', render: (i: Incident) => (
-      <Badge variant="outline" className={cn('text-[10px]', i.sla?.resolution_breached ? 'bg-red-100 text-red-700 border-red-200' : 'bg-green-100 text-green-700 border-green-200')}>
+      <Badge variant="outline" className={cn('text-[10px]', i.sla?.resolution_breached ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200')}>
         {i.sla?.resolution_breached ? 'BREACHED' : 'MET'}
       </Badge>
     )},
@@ -146,7 +146,7 @@ function AgingReport({ incidents, onRowClick }: { incidents: Incident[]; onRowCl
     { key: 'age', label: 'Age', render: (i: Incident) => {
       const days = Math.floor((Date.now() - new Date(i.created_at).getTime()) / (1000 * 60 * 60 * 24));
       return (
-        <span className={cn('font-mono', days >= 7 ? 'text-red-600 font-semibold' : days >= 3 ? 'text-orange-600' : 'text-muted-foreground')}>
+        <span className={cn('font-mono', days >= 7 ? 'text-rose-600 font-semibold' : days >= 3 ? 'text-amber-600' : 'text-muted-foreground')}>
           {getAgingTime(i.created_at)}
         </span>
       );
@@ -178,9 +178,9 @@ function CommitteeReport({ incidents, onRowClick }: { incidents: Incident[]; onR
     { key: 'status', label: 'Status', render: (i: Incident) => <StatusBadge status={i.status} /> },
     { key: 'committee', label: 'Committee Status', render: (i: Incident) => (
       <Badge variant="outline" className={cn('text-[10px]',
-        i.committee?.status === 'approved' ? 'bg-green-100 text-green-700 border-green-200' :
-        i.committee?.status === 'rejected' ? 'bg-red-100 text-red-700 border-red-200' :
-        'bg-yellow-100 text-yellow-700 border-yellow-200'
+        i.committee?.status === 'approved' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+        i.committee?.status === 'rejected' ? 'bg-rose-50 text-rose-700 border-rose-200' :
+        'bg-amber-50 text-amber-700 border-amber-200'
       )}>
         {i.committee?.status || 'Not Submitted'}
       </Badge>
@@ -212,9 +212,9 @@ function ConversionReport({ incidents, onRowClick }: { incidents: Incident[]; on
     { key: 'severity', label: 'Severity', render: (i: Incident) => <SeverityBadge severity={i.severity} /> },
     { key: 'convertedTo', label: 'Converted To', render: (i: Incident) => (
       <Badge variant="outline" className={cn('text-[10px]',
-        i.converted_to_type === 'epic' ? 'bg-purple-100 text-purple-700 border-purple-200' :
-        i.converted_to_type === 'feature' ? 'bg-blue-100 text-blue-700 border-blue-200' :
-        'bg-teal-100 text-teal-700 border-teal-200'
+        i.converted_to_type === 'epic' ? 'bg-violet-50 text-violet-700 border-violet-200' :
+        i.converted_to_type === 'feature' ? 'bg-sky-50 text-sky-700 border-sky-200' :
+        'bg-teal-50 text-teal-700 border-teal-200'
       )}>
         {i.converted_to_type?.toUpperCase()}
       </Badge>

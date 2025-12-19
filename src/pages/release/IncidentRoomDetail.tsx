@@ -181,19 +181,21 @@ export default function IncidentRoomDetail() {
             </h1>
           </div>
 
-          {/* Center: Status Pills (exact order) */}
+          {/* Center: Status Pills - Enterprise muted tones */}
           <div className="flex items-center gap-1 flex-shrink-0">
             {/* Major Incident */}
             {incident.is_major_incident && (
-              <Badge variant="destructive" className="text-[9px] px-1.5 py-0 h-5">Major</Badge>
+              <Badge variant="outline" className="text-[9px] px-1.5 py-0 h-5 bg-rose-50 text-rose-700 border-rose-200 font-medium">
+                Major
+              </Badge>
             )}
             {/* Severity */}
-            <Badge variant="outline" className={cn('text-[9px] px-1.5 py-0 h-5 border', severityConfig.className)}>
+            <Badge variant="outline" className={cn('text-[9px] px-1.5 py-0 h-5 border font-medium', severityConfig.className)}>
               {severityConfig.label}
             </Badge>
             {/* Support Level */}
             {incident.support_level && (
-              <Badge variant="outline" className="text-[9px] px-1.5 py-0 h-5 bg-yellow-50 text-yellow-700 border-yellow-200">
+              <Badge variant="outline" className="text-[9px] px-1.5 py-0 h-5 bg-slate-50 text-slate-600 border-slate-200 font-medium">
                 {incident.support_level}
               </Badge>
             )}
@@ -202,10 +204,10 @@ export default function IncidentRoomDetail() {
               <Badge 
                 variant="outline" 
                 className={cn(
-                  'text-[9px] px-1.5 py-0 h-5',
-                  incident.committee.status === 'approved' ? 'bg-green-50 text-green-700 border-green-200' :
-                  incident.committee.status === 'rejected' ? 'bg-red-50 text-red-700 border-red-200' :
-                  'bg-purple-50 text-purple-700 border-purple-200'
+                  'text-[9px] px-1.5 py-0 h-5 font-medium',
+                  incident.committee.status === 'approved' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                  incident.committee.status === 'rejected' ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                  'bg-violet-50 text-violet-700 border-violet-200'
                 )}
               >
                 {incident.committee.status === 'pending' ? 'In Review' : 
@@ -254,69 +256,88 @@ export default function IncidentRoomDetail() {
         </div>
       </header>
 
-      {/* ========== CONVERT DIALOG ========== */}
+      {/* ========== CONVERT DIALOG - Executive-grade ========== */}
       <Dialog open={convertDialogOpen} onOpenChange={setConvertDialogOpen}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle className="text-sm">Convert Incident</DialogTitle>
+        <DialogContent className="max-w-md p-0">
+          <DialogHeader className="px-4 pt-4 pb-3 border-b border-border">
+            <DialogTitle className="text-sm font-semibold">Convert Incident to Work Item</DialogTitle>
           </DialogHeader>
           
-          {incident.support_level === 'L3' && (
-            <div className="flex gap-2 p-2 rounded bg-yellow-50 border border-yellow-200">
-              <AlertTriangle className="h-3.5 w-3.5 text-yellow-600 flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="text-[10px] font-medium text-yellow-800">L3 Committee Approval Required</p>
-                <p className="text-[9px] text-yellow-700">This incident requires CAP approval.</p>
+          <div className="p-4 space-y-4">
+            {/* L3 Committee Gating Notice */}
+            {incident.support_level === 'L3' && (
+              <div className="flex gap-2 p-2.5 rounded bg-amber-50 border border-amber-200">
+                <AlertTriangle className="h-4 w-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-xs font-medium text-amber-800">Committee Approval Required</p>
+                  <p className="text-[11px] text-amber-700 mt-0.5">
+                    L3 incidents require CAP committee approval before conversion.
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
-          
-          <div className="space-y-2 py-1">
-            <div className="space-y-1">
-              <Label className="text-[10px]">Convert to</Label>
+            )}
+            
+            {/* 1. Work Item Type */}
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Work Item Type</Label>
               <Select value={convertType} onValueChange={(v: any) => setConvertType(v)}>
-                <SelectTrigger className="h-7 text-xs">
+                <SelectTrigger className="h-9 text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="story" className="text-xs">Story</SelectItem>
-                  <SelectItem value="feature" className="text-xs">Feature</SelectItem>
-                  <SelectItem value="epic" className="text-xs">Epic</SelectItem>
+                  <SelectItem value="story" className="text-sm">Story</SelectItem>
+                  <SelectItem value="feature" className="text-sm">Feature</SelectItem>
+                  <SelectItem value="epic" className="text-sm">Epic</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             
-            <div className="space-y-1">
-              <Label className="text-[10px]">
-                Justification <span className="text-destructive">*</span>
+            {/* 2. Justification */}
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                Justification <span className="text-rose-500">*</span>
               </Label>
               <Textarea
                 value={convertReason}
                 onChange={(e) => setConvertReason(e.target.value)}
-                placeholder="Why is this incident being converted?"
-                className={cn('text-xs min-h-[60px]', !convertReason.trim() && 'border-destructive/50')}
+                placeholder="Provide business justification for converting this incident..."
+                className={cn('text-sm min-h-[80px] resize-none', !convertReason.trim() && 'border-rose-200 focus-visible:ring-rose-200')}
               />
             </div>
             
-            <div className="pt-1 border-t border-border">
-              <p className="text-[9px] text-muted-foreground uppercase tracking-wide mb-1">Preview</p>
-              <div className="bg-muted/50 rounded p-1.5 text-[10px] space-y-0.5">
-                <p><span className="text-muted-foreground">Type:</span> {convertType.charAt(0).toUpperCase() + convertType.slice(1)}</p>
-                <p><span className="text-muted-foreground">Title:</span> {incident.title}</p>
-                <p><span className="text-muted-foreground">From:</span> {incident.incident_key}</p>
+            {/* 3. Preview Summary */}
+            <div className="rounded border border-border bg-muted/30">
+              <div className="px-3 py-1.5 border-b border-border bg-muted/50">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide font-medium">Preview</p>
+              </div>
+              <div className="p-3 text-xs space-y-1">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Type</span>
+                  <span className="font-medium">{convertType.charAt(0).toUpperCase() + convertType.slice(1)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Title</span>
+                  <span className="font-medium truncate max-w-[200px]">{incident.title}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Source</span>
+                  <span className="font-mono text-brand-primary">{incident.incident_key}</span>
+                </div>
               </div>
             </div>
           </div>
           
-          <DialogFooter className="gap-1">
-            <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => setConvertDialogOpen(false)}>Cancel</Button>
+          <DialogFooter className="px-4 py-3 border-t border-border bg-muted/30">
+            <Button variant="outline" size="sm" className="h-8 text-xs" onClick={() => setConvertDialogOpen(false)}>
+              Cancel
+            </Button>
             <Button 
               size="sm"
-              className="h-7 text-xs bg-brand-primary hover:bg-brand-primary-hover text-white"
+              className="h-8 text-xs"
               onClick={handleConvert} 
               disabled={isSubmitting || !convertReason.trim()}
             >
-              {isSubmitting ? 'Converting...' : 'Convert'}
+              {isSubmitting ? 'Converting...' : 'Convert Incident'}
             </Button>
           </DialogFooter>
         </DialogContent>
