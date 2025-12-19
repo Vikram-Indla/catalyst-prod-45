@@ -186,10 +186,34 @@ export default function IncidentRoomDetail() {
       // Link to incident (so joins work)
       const { error: linkError } = await supabase
         .from('incidents')
-        .update({ committee_id: newCommittee.id, requires_committee: true })
+        .update({ committee_id: newCommittee.id })
         .eq('id', incidentId);
 
       if (linkError) throw linkError;
+
+      // Default membership: incident owners are approvers by default (auto-heal)
+      const ownerIds = Array.from(
+        new Set([
+          incident?.created_by,
+          incident?.assignee_id,
+          user?.id,
+        ].filter(Boolean) as string[])
+      );
+
+      if (ownerIds.length > 0) {
+        const { error: membersError } = await supabase
+          .from('committee_members')
+          .insert(ownerIds.map((uid) => ({
+            committee_id: newCommittee.id,
+            user_id: uid,
+            has_veto: false,
+            role: 'owner',
+          })));
+
+        if (membersError) {
+          console.error('Failed to create default committee members:', membersError);
+        }
+      }
 
       // Audit
       await supabase.from('incident_history').insert({

@@ -48,7 +48,7 @@ serve(async (req) => {
     // Get incident details
     const { data: incident, error: incidentError } = await supabase
       .from('incidents')
-      .select('id, incident_key, status, support_level, requires_committee, committee_id')
+      .select('id, incident_key, status, support_level, committee_id, created_by, assignee_id')
       .eq('id', incident_id)
       .maybeSingle();
 
@@ -70,16 +70,20 @@ serve(async (req) => {
 
     // Get committee members - either from request or fetch default members
     let memberUserIds: string[] = member_ids || [];
-    
+
+    // Always include incident owners by default (product rule)
+    const ownerIds = [incident.created_by, incident.assignee_id].filter(Boolean) as string[];
+    memberUserIds = Array.from(new Set([...ownerIds, ...memberUserIds]));
+
     if (memberUserIds.length === 0) {
-      // Fetch users with committee_member or admin role from incident_user_profiles
+      // Fallback: pick a few default users
       const { data: defaultMembers } = await supabase
         .from('incident_user_profiles')
         .select('id')
         .in('incident_role', ['committee_member', 'admin'])
         .limit(5);
-      
-      memberUserIds = defaultMembers?.map(m => m.id) || [];
+
+      memberUserIds = Array.from(new Set([...(defaultMembers?.map(m => m.id) || []), ...ownerIds]));
     }
 
     if (memberUserIds.length === 0) {

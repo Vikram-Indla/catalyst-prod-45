@@ -72,16 +72,52 @@ serve(async (req) => {
       });
     }
 
-    // Find user's membership
-    const { data: membership, error: memberError } = await supabase
+    // Find user's membership (approvers)
+    let { data: membership, error: memberError } = await supabase
       .from('committee_members')
       .select('id, has_veto')
       .eq('committee_id', committee_id)
       .eq('user_id', user.id)
       .maybeSingle();
 
+    // Auto-heal legacy committees: ensure incident owners are committee members by default
+    if (!membership) {
+      const { data: incidentOwners, error: ownersError } = await supabase
+        .from('incidents')
+        .select('created_by, assignee_id')
+        .eq('id', committee.incident_id)
+        .maybeSingle();
+
+      const isOwner = !!incidentOwners && (incidentOwners.created_by === user.id || incidentOwners.assignee_id === user.id);
+
+      if (ownersError) {
+        console.error('[submit-vote] Failed to load incident owners:', ownersError);
+      }
+
+      if (isOwner) {
+        const { data: createdMember, error: createMemberError } = await supabase
+          .from('committee_members')
+          .insert({
+            committee_id,
+            user_id: user.id,
+            has_veto: false,
+            role: 'owner',
+          })
+          .select('id, has_veto')
+          .single();
+
+        if (createMemberError) {
+          console.error('[submit-vote] Failed to auto-add owner as committee member:', createMemberError);
+        } else {
+          membership = createdMember;
+          memberError = null;
+          console.log('[submit-vote] Auto-added incident owner as committee member');
+        }
+      }
+    }
+
     if (memberError || !membership) {
-      return new Response(JSON.stringify({ error: 'You are not a member of this committee' }), {
+      return new Response(JSON.stringify({ error: 'You are not an approver for this committee' }), {
         status: 403,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
