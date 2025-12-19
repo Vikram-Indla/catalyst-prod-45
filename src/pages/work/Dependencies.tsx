@@ -478,9 +478,16 @@ export default function DependenciesPage() {
           )}
           
           {visualizationMode === 'wheel' && (
-            <div className="relative flex-1 overflow-hidden">
-              {/* Wheel - stays full size */}
-              <div className="w-full h-full flex items-center justify-center">
+            <div className="flex flex-1 overflow-hidden">
+              {/* Wheel container - shifts left when panel opens */}
+              <div 
+                className={cn(
+                  "flex items-center justify-center transition-all duration-500 ease-out",
+                  analyticsDrawerOpen 
+                    ? "w-[calc(100%-380px)]" 
+                    : "w-full"
+                )}
+              >
                 <DependencyWheelMap 
                   quarter={quarterFilter} 
                   onDependencyClick={handleRowClick}
@@ -493,28 +500,35 @@ export default function DependenciesPage() {
                 />
               </div>
               
-              {/* Analytics Panel - slides in as overlay from right */}
-              {analyticsDrawerOpen && selectedWheelProgramId && (
-                <div className="absolute top-0 right-0 h-full w-[480px] shadow-xl animate-slide-in-right">
-                  <DependencyAnalyticsPanel
-                    selectedProgramId={selectedWheelProgramId}
-                    selectedProgramName={selectedWheelProgramName}
-                    dependencies={resolvedDependencies}
-                    programs={programs || []}
-                    workItemMaps={workItemMaps}
-                    initialQuarter={quarterFilter}
-                    onDependencyClick={(depId) => {
-                      setSelectedDependencyId(depId);
-                      setDrawerOpen(true);
-                    }}
-                    onClose={() => {
-                      setAnalyticsDrawerOpen(false);
-                      setSelectedWheelProgramId(null);
-                      setSelectedWheelProgramName(undefined);
-                    }}
-                  />
-                </div>
-              )}
+              {/* Analytics Panel - slides in from right */}
+              <div 
+                className={cn(
+                  "h-full flex-shrink-0 transition-all duration-500 ease-out overflow-hidden",
+                  analyticsDrawerOpen ? "w-[380px]" : "w-0"
+                )}
+              >
+                {selectedWheelProgramId && (
+                  <div className="w-[380px] h-full">
+                    <DependencyAnalyticsPanel
+                      selectedProgramId={selectedWheelProgramId}
+                      selectedProgramName={selectedWheelProgramName}
+                      dependencies={resolvedDependencies}
+                      programs={programs || []}
+                      workItemMaps={workItemMaps}
+                      initialQuarter={quarterFilter}
+                      onDependencyClick={(depId) => {
+                        setSelectedDependencyId(depId);
+                        setDrawerOpen(true);
+                      }}
+                      onClose={() => {
+                        setAnalyticsDrawerOpen(false);
+                        setSelectedWheelProgramId(null);
+                        setSelectedWheelProgramName(undefined);
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
