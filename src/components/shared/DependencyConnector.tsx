@@ -8,9 +8,9 @@ interface Dependency {
   id: string;
   from_feature_id: string;
   to_feature_id: string;
-  type: 'sequential' | 'concurrent' | 'program' | 'external';
-  status: 'open' | 'in_progress' | 'done' | 'pending_commit' | 'negotiation' | 'committed' | 'delivered' | 'no_work_done' | 'rejected';
-  risk_level: 'low' | 'med' | 'high';
+  type: 'sequential' | 'concurrent' | 'program' | 'external' | 'blocks' | 'is_blocked_by' | 'enables' | 'provides_input' | 'approves' | 'governs' | null;
+  status: 'open' | 'in_progress' | 'done' | 'pending_commit' | 'negotiation' | 'committed' | 'delivered' | 'no_work_done' | 'rejected' | null;
+  risk_level: 'low' | 'med' | 'high' | null;
   from_feature?: { id: string; name: string };
   to_feature?: { id: string; name: string };
 }

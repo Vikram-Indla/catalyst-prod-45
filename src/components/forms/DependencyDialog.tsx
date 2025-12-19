@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 const formSchema = z.object({
   from_feature_id: z.string().min(1, 'Source feature is required'),
   to_feature_id: z.string().min(1, 'Target feature is required'),
-  type: z.enum(['sequential', 'concurrent', 'program', 'external']),
+  type: z.enum(['sequential', 'concurrent', 'program', 'external', 'blocks', 'is_blocked_by', 'enables', 'provides_input', 'approves', 'governs']),
   risk_level: z.enum(['low', 'med', 'high']),
   status: z.enum(['open', 'in_progress', 'done', 'pending_commit', 'negotiation', 'committed', 'delivered', 'no_work_done', 'rejected']),
   due_iteration_id: z.string().optional(),
@@ -83,10 +83,12 @@ export function DependencyDialog({ open, onClose, dependencyId }: DependencyDial
 
   useEffect(() => {
     if (existingDependency) {
+      const validTypes = ['sequential', 'concurrent', 'program', 'external', 'blocks', 'is_blocked_by', 'enables', 'provides_input', 'approves', 'governs'] as const;
+      const typeValue = validTypes.includes(existingDependency.type as any) ? existingDependency.type as typeof validTypes[number] : 'sequential';
       form.reset({
         from_feature_id: existingDependency.from_feature_id,
         to_feature_id: existingDependency.to_feature_id,
-        type: existingDependency.type || 'sequential',
+        type: typeValue,
         risk_level: existingDependency.risk_level || 'low',
         status: existingDependency.status || 'open',
         due_iteration_id: existingDependency.due_iteration_id || '',
@@ -203,10 +205,14 @@ export function DependencyDialog({ open, onClose, dependencyId }: DependencyDial
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="sequential">Sequential</SelectItem>
-                      <SelectItem value="concurrent">Concurrent</SelectItem>
-                      <SelectItem value="program">Program</SelectItem>
-                      <SelectItem value="external">External</SelectItem>
+                      <SelectItem value="blocks">Blocks</SelectItem>
+                      <SelectItem value="is_blocked_by">Is Blocked By</SelectItem>
+                      <SelectItem value="enables">Enables</SelectItem>
+                      <SelectItem value="provides_input">Provides Input</SelectItem>
+                      <SelectItem value="approves">Approves</SelectItem>
+                      <SelectItem value="governs">Governs</SelectItem>
+                      <SelectItem value="sequential">Sequential (Legacy)</SelectItem>
+                      <SelectItem value="concurrent">Concurrent (Legacy)</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

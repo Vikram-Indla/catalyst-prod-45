@@ -1696,17 +1696,30 @@ export type Database = {
           blocked_respondent: boolean | null
           committed_by_date: string | null
           committed_by_sprint_id: string | null
+          container_uses_sprints: boolean | null
           created_at: string | null
           criticality_score: number | null
           delivered_at: string | null
           dependency_level: string | null
+          dependency_level_v2:
+            | Database["public"]["Enums"]["dependency_level_v2"]
+            | null
           depends_on_project_id: string | null
           depends_on_team_id: string | null
+          depends_on_work_item_id: string | null
+          depends_on_work_item_type:
+            | Database["public"]["Enums"]["work_item_dependency_type"]
+            | null
+          derived_requesting_container_id: string | null
+          derived_requesting_container_type: string | null
+          derived_respondent_container_id: string | null
+          derived_respondent_container_type: string | null
           description: string | null
           due_iteration_id: string | null
           external_entity_id: string | null
           from_feature_id: string
           id: string
+          is_cross_level_exception: boolean | null
           needed_by_date: string | null
           needed_by_sprint_id: string | null
           no_work_required: boolean | null
@@ -1715,15 +1728,30 @@ export type Database = {
           owner_id: string | null
           pi_id: string | null
           quarter: string
+          quarter_derived_from_date: boolean | null
           rank_order: number | null
           rejection_reason: string | null
           related_stories_count: number | null
           requesting_project_id: string | null
           requesting_team_id: string | null
+          requesting_work_item_id: string | null
+          requesting_work_item_type:
+            | Database["public"]["Enums"]["work_item_dependency_type"]
+            | null
+          requestor_owner_id: string | null
           resolution_plan: string | null
+          respondent_owner_id: string | null
           risk_level: Database["public"]["Enums"]["risk_level"] | null
+          source_blocked: boolean | null
+          source_blocked_at: string | null
+          source_blocked_by: string | null
+          source_blocked_reason: string | null
           status: Database["public"]["Enums"]["dependency_status"] | null
           subscribed_users: string[] | null
+          target_delayed: boolean | null
+          target_delayed_at: string | null
+          target_delayed_by: string | null
+          target_delayed_reason: string | null
           to_feature_id: string
           type: Database["public"]["Enums"]["dependency_type"] | null
           updated_at: string | null
@@ -1736,17 +1764,30 @@ export type Database = {
           blocked_respondent?: boolean | null
           committed_by_date?: string | null
           committed_by_sprint_id?: string | null
+          container_uses_sprints?: boolean | null
           created_at?: string | null
           criticality_score?: number | null
           delivered_at?: string | null
           dependency_level?: string | null
+          dependency_level_v2?:
+            | Database["public"]["Enums"]["dependency_level_v2"]
+            | null
           depends_on_project_id?: string | null
           depends_on_team_id?: string | null
+          depends_on_work_item_id?: string | null
+          depends_on_work_item_type?:
+            | Database["public"]["Enums"]["work_item_dependency_type"]
+            | null
+          derived_requesting_container_id?: string | null
+          derived_requesting_container_type?: string | null
+          derived_respondent_container_id?: string | null
+          derived_respondent_container_type?: string | null
           description?: string | null
           due_iteration_id?: string | null
           external_entity_id?: string | null
           from_feature_id: string
           id?: string
+          is_cross_level_exception?: boolean | null
           needed_by_date?: string | null
           needed_by_sprint_id?: string | null
           no_work_required?: boolean | null
@@ -1755,15 +1796,30 @@ export type Database = {
           owner_id?: string | null
           pi_id?: string | null
           quarter?: string
+          quarter_derived_from_date?: boolean | null
           rank_order?: number | null
           rejection_reason?: string | null
           related_stories_count?: number | null
           requesting_project_id?: string | null
           requesting_team_id?: string | null
+          requesting_work_item_id?: string | null
+          requesting_work_item_type?:
+            | Database["public"]["Enums"]["work_item_dependency_type"]
+            | null
+          requestor_owner_id?: string | null
           resolution_plan?: string | null
+          respondent_owner_id?: string | null
           risk_level?: Database["public"]["Enums"]["risk_level"] | null
+          source_blocked?: boolean | null
+          source_blocked_at?: string | null
+          source_blocked_by?: string | null
+          source_blocked_reason?: string | null
           status?: Database["public"]["Enums"]["dependency_status"] | null
           subscribed_users?: string[] | null
+          target_delayed?: boolean | null
+          target_delayed_at?: string | null
+          target_delayed_by?: string | null
+          target_delayed_reason?: string | null
           to_feature_id: string
           type?: Database["public"]["Enums"]["dependency_type"] | null
           updated_at?: string | null
@@ -1776,17 +1832,30 @@ export type Database = {
           blocked_respondent?: boolean | null
           committed_by_date?: string | null
           committed_by_sprint_id?: string | null
+          container_uses_sprints?: boolean | null
           created_at?: string | null
           criticality_score?: number | null
           delivered_at?: string | null
           dependency_level?: string | null
+          dependency_level_v2?:
+            | Database["public"]["Enums"]["dependency_level_v2"]
+            | null
           depends_on_project_id?: string | null
           depends_on_team_id?: string | null
+          depends_on_work_item_id?: string | null
+          depends_on_work_item_type?:
+            | Database["public"]["Enums"]["work_item_dependency_type"]
+            | null
+          derived_requesting_container_id?: string | null
+          derived_requesting_container_type?: string | null
+          derived_respondent_container_id?: string | null
+          derived_respondent_container_type?: string | null
           description?: string | null
           due_iteration_id?: string | null
           external_entity_id?: string | null
           from_feature_id?: string
           id?: string
+          is_cross_level_exception?: boolean | null
           needed_by_date?: string | null
           needed_by_sprint_id?: string | null
           no_work_required?: boolean | null
@@ -1795,15 +1864,30 @@ export type Database = {
           owner_id?: string | null
           pi_id?: string | null
           quarter?: string
+          quarter_derived_from_date?: boolean | null
           rank_order?: number | null
           rejection_reason?: string | null
           related_stories_count?: number | null
           requesting_project_id?: string | null
           requesting_team_id?: string | null
+          requesting_work_item_id?: string | null
+          requesting_work_item_type?:
+            | Database["public"]["Enums"]["work_item_dependency_type"]
+            | null
+          requestor_owner_id?: string | null
           resolution_plan?: string | null
+          respondent_owner_id?: string | null
           risk_level?: Database["public"]["Enums"]["risk_level"] | null
+          source_blocked?: boolean | null
+          source_blocked_at?: string | null
+          source_blocked_by?: string | null
+          source_blocked_reason?: string | null
           status?: Database["public"]["Enums"]["dependency_status"] | null
           subscribed_users?: string[] | null
+          target_delayed?: boolean | null
+          target_delayed_at?: string | null
+          target_delayed_by?: string | null
+          target_delayed_reason?: string | null
           to_feature_id?: string
           type?: Database["public"]["Enums"]["dependency_type"] | null
           updated_at?: string | null
@@ -14132,6 +14216,24 @@ export type Database = {
         Returns: undefined
       }
       current_user_is_approved: { Args: never; Returns: boolean }
+      derive_dependency_container: {
+        Args: {
+          p_work_item_id: string
+          p_work_item_type: Database["public"]["Enums"]["work_item_dependency_type"]
+        }
+        Returns: {
+          container_id: string
+          container_type: string
+        }[]
+      }
+      derive_dependency_level: {
+        Args: {
+          p_depends_on_type: Database["public"]["Enums"]["work_item_dependency_type"]
+          p_requesting_type: Database["public"]["Enums"]["work_item_dependency_type"]
+        }
+        Returns: Database["public"]["Enums"]["dependency_level_v2"]
+      }
+      derive_quarter_from_date: { Args: { p_date: string }; Returns: string }
       extract_kb_tiptap_text: { Args: { content: Json }; Returns: string }
       generate_next_epic_key: {
         Args: { p_program_id: string }
@@ -14205,6 +14307,7 @@ export type Database = {
       committee_status: "pending" | "approved" | "rejected"
       confidence_level: "high" | "med" | "low"
       delivery_stage: "stage" | "qa" | "beta" | "prod"
+      dependency_level_v2: "execution" | "delivery" | "cross_level"
       dependency_status:
         | "open"
         | "in_progress"
@@ -14215,7 +14318,17 @@ export type Database = {
         | "delivered"
         | "no_work_done"
         | "rejected"
-      dependency_type: "sequential" | "concurrent" | "program" | "external"
+      dependency_type:
+        | "sequential"
+        | "concurrent"
+        | "program"
+        | "external"
+        | "blocks"
+        | "is_blocked_by"
+        | "enables"
+        | "provides_input"
+        | "approves"
+        | "governs"
       epic_state: "not_started" | "in_progress" | "accepted"
       epic_status:
         | "proposed"
@@ -14356,6 +14469,7 @@ export type Database = {
         | "REJECTED"
         | "DISABLED"
       vote_status: "pending" | "approved" | "rejected" | "vetoed"
+      work_item_dependency_type: "epic" | "feature"
       work_item_type_enum: "epic" | "feature" | "story" | "task" | "defect"
     }
     CompositeTypes: {
@@ -14509,6 +14623,7 @@ export const Constants = {
       committee_status: ["pending", "approved", "rejected"],
       confidence_level: ["high", "med", "low"],
       delivery_stage: ["stage", "qa", "beta", "prod"],
+      dependency_level_v2: ["execution", "delivery", "cross_level"],
       dependency_status: [
         "open",
         "in_progress",
@@ -14520,7 +14635,18 @@ export const Constants = {
         "no_work_done",
         "rejected",
       ],
-      dependency_type: ["sequential", "concurrent", "program", "external"],
+      dependency_type: [
+        "sequential",
+        "concurrent",
+        "program",
+        "external",
+        "blocks",
+        "is_blocked_by",
+        "enables",
+        "provides_input",
+        "approves",
+        "governs",
+      ],
       epic_state: ["not_started", "in_progress", "accepted"],
       epic_status: [
         "proposed",
@@ -14676,6 +14802,7 @@ export const Constants = {
         "DISABLED",
       ],
       vote_status: ["pending", "approved", "rejected", "vetoed"],
+      work_item_dependency_type: ["epic", "feature"],
       work_item_type_enum: ["epic", "feature", "story", "task", "defect"],
     },
   },
