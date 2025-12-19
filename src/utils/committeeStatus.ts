@@ -1,23 +1,36 @@
 /**
- * Committee computed status logic
+ * Committee Status Utility
  * 
- * Every incident has a committee, but the displayed status is computed:
- * - Not applicable: committee has 0 approvers
- * - In progress: approvers exist and at least one pending
- * - Approved: majority satisfied and no veto rejection
- * - Rejected: veto rejected OR rejection rule satisfied
+ * Computes the display status of an incident committee based on:
+ * - Member votes (approved/rejected/pending/vetoed)
+ * - Committee required_approvals setting
+ * - Veto power rules
+ * 
+ * Status priority:
+ * 1. If any veto member rejected -> "Vetoed"
+ * 2. If enough rejections to block approval -> "Rejected"
+ * 3. If enough approvals -> "Approved"
+ * 4. If some votes exist -> "Pending approval"
+ * 5. If committee exists but no votes -> "Not started"
+ * 6. If no committee -> "N/A" (should be rare with default committee requirement)
+ * 
+ * NOTE: Column widths are persisted in localStorage via useIncidentColumnWidths hook.
+ * Committee status is derived at display time from vote data.
  */
 
 export type CommitteeDisplayStatus = 
-  | 'not_applicable'
-  | 'in_progress'
-  | 'approved'
-  | 'rejected';
+  | 'not_applicable'    // No committee attached
+  | 'not_started'       // Committee exists, no votes yet
+  | 'in_progress'       // Votes in progress, awaiting decision
+  | 'pending_approval'  // Awaiting remaining approvals
+  | 'approved'          // All required approvals received
+  | 'rejected'          // Rejected by votes (not veto)
+  | 'vetoed';           // Rejected by veto holder
 
 interface CommitteeMember {
   id: string;
   has_veto: boolean;
-  vote?: { vote: string } | null;
+  vote?: { vote: string; voted_at?: string; comment?: string } | null;
 }
 
 interface Committee {
@@ -31,8 +44,18 @@ export interface CommitteeStatusResult {
   status: CommitteeDisplayStatus;
   label: string;
   className: string;
+  /** Short description for tooltips */
+  description?: string;
 }
 
+/**
+ * Compute the display status of a committee based on member votes
+ * 
+ * Developer notes:
+ * - This function is called for each row in the incident list
+ * - Committee status is derived from vote data, not stored directly
+ * - Veto rejection takes precedence over all other statuses
+ */
 export function getCommitteeDisplayStatus(committee: Committee | null | undefined): CommitteeStatusResult {
   // No committee = N/A
   if (!committee) {
@@ -40,15 +63,17 @@ export function getCommitteeDisplayStatus(committee: Committee | null | undefine
       status: 'not_applicable',
       label: 'N/A',
       className: 'text-[var(--text-3)]',
+      description: 'No committee assigned',
     };
   }
   
   // Committee exists but no members = Not started
   if (!committee.members || committee.members.length === 0) {
     return {
-      status: 'not_applicable',
+      status: 'not_started',
       label: 'Not started',
       className: 'text-[var(--text-3)]',
+      description: 'Committee has no members yet',
     };
   }
 
@@ -65,59 +90,77 @@ export function getCommitteeDisplayStatus(committee: Committee | null | undefine
     !m.vote?.vote || m.vote.vote === 'pending'
   ).length;
 
-  // Check for veto rejection
+  // Check for veto rejection - highest priority
   const hasVetoRejection = members.some(m => 
-    m.has_veto && m.vote?.vote === 'vetoed'
+    m.has_veto && (m.vote?.vote === 'vetoed' || m.vote?.vote === 'rejected')
   );
 
-  // Committee already decided
+  // 1. Veto rejection takes precedence
+  if (hasVetoRejection) {
+    return {
+      status: 'vetoed',
+      label: 'Vetoed',
+      className: 'text-rose-600 dark:text-rose-400 font-medium',
+      description: 'Rejected by veto holder',
+    };
+  }
+
+  // 2. Committee already decided in DB
   if (committee.status === 'approved') {
     return {
       status: 'approved',
       label: 'Approved',
       className: 'text-emerald-600 dark:text-emerald-400 font-medium',
+      description: 'Committee approved',
     };
   }
 
-  if (committee.status === 'rejected' || hasVetoRejection) {
+  if (committee.status === 'rejected') {
     return {
       status: 'rejected',
-      label: hasVetoRejection ? 'Vetoed' : 'Rejected',
+      label: 'Rejected',
       className: 'text-rose-600 dark:text-rose-400 font-medium',
+      description: 'Committee rejected',
     };
   }
 
-  // Check if majority approved
+  // 3. Check if majority approved
   if (approvedCount >= requiredApprovals) {
     return {
       status: 'approved',
       label: 'Approved',
       className: 'text-emerald-600 dark:text-emerald-400 font-medium',
+      description: `${approvedCount}/${requiredApprovals} approvals received`,
     };
   }
 
-  // Check if rejection threshold met
-  if (rejectedCount > totalMembers - requiredApprovals) {
+  // 4. Check if rejection threshold met (can't reach approval)
+  const remainingPossibleApprovals = pendingCount + approvedCount;
+  if (remainingPossibleApprovals < requiredApprovals) {
     return {
       status: 'rejected',
       label: 'Rejected',
       className: 'text-rose-600 dark:text-rose-400 font-medium',
+      description: 'Cannot reach required approval threshold',
     };
   }
 
-  // Still pending votes - show "In progress"
-  if (pendingCount > 0) {
+  // 5. Some votes cast - show pending approval
+  const totalVotesCast = approvedCount + rejectedCount;
+  if (totalVotesCast > 0) {
     return {
-      status: 'in_progress',
-      label: 'In progress',
-      className: 'text-violet-600 dark:text-violet-400',
+      status: 'pending_approval',
+      label: 'Pending approval',
+      className: 'text-amber-600 dark:text-amber-400',
+      description: `${approvedCount}/${requiredApprovals} approvals, ${pendingCount} pending`,
     };
   }
 
-  // Fallback
+  // 6. Committee exists, no votes yet
   return {
-    status: 'in_progress',
-    label: 'In progress',
-    className: 'text-violet-600 dark:text-violet-400',
+    status: 'not_started',
+    label: 'Not started',
+    className: 'text-[var(--text-3)]',
+    description: 'Awaiting committee review',
   };
 }

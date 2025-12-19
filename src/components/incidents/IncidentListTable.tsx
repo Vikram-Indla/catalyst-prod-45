@@ -31,6 +31,8 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { InlineEditCell } from './InlineEditCell';
+import { InlineUserPicker } from './InlineUserPicker';
+import { InlineReleasePicker } from './InlineReleasePicker';
 import { DeleteIncidentDialog } from './DeleteIncidentDialog';
 import { ResizableHeader } from './ResizableHeader';
 import { useIncidentColumnWidths, MIN_COLUMN_WIDTHS } from './useIncidentColumnWidths';
@@ -248,14 +250,14 @@ export function IncidentListTable({
   return (
     <TooltipProvider delayDuration={300}>
       <div className="flex flex-col h-full">
-        {/* Table Card Container - clear separation from sidebar */}
+        {/* Table Card Container - enterprise grid styling */}
         <div className="rounded-lg border border-[var(--border-color)] overflow-hidden bg-[var(--surface-1)] flex-1 shadow-sm">
-          {/* Horizontal scroll wrapper */}
-          <div className="overflow-x-auto">
+          {/* Horizontal scroll wrapper with sticky column support */}
+          <div className="overflow-x-auto relative">
             <div style={{ minWidth: `${getMinTableWidth()}px` }}>
               {/* Sticky Header - 40px height with resizable columns */}
               <div 
-                className="flex items-center h-10 px-4 text-[11px] font-semibold uppercase tracking-wider sticky top-0 z-20"
+                className="flex items-center h-10 px-0 text-[11px] font-semibold uppercase tracking-wider sticky top-0 z-20"
                 style={{ backgroundColor: 'var(--surface-2)', borderBottom: '1px solid var(--divider)' }}
               >
                 {/* Key - resizable */}
@@ -560,26 +562,19 @@ export function IncidentListTable({
                         </div>
                       )}
                       
-                      {/* Assignee */}
+                      {/* Assignee - inline user picker for direct editing */}
                       {isColumnVisible('assignee') && (
                         <div 
                           className="shrink-0 px-2"
                           style={{ width: `${columnWidths.assignee}px` }}
+                          data-inline-edit
                         >
-                          {incident.assignee ? (
-                            <div className="flex items-center gap-1.5">
-                              <div className="h-5 w-5 rounded-full bg-[var(--surface-3)] flex items-center justify-center flex-shrink-0">
-                                <span className="text-[9px] font-medium text-[var(--text-2)]">
-                                  {incident.assignee.avatar_initials || incident.assignee.full_name?.charAt(0) || 'U'}
-                                </span>
-                              </div>
-                              <span className={cn(textSmall, "text-[var(--text-1)] truncate")}>
-                                {incident.assignee.full_name}
-                              </span>
-                            </div>
-                          ) : (
-                            <span className={cn(textSmall, "text-[var(--text-3)]")}>Unassigned</span>
-                          )}
+                          <InlineUserPicker
+                            value={incident.assignee}
+                            onSave={(userId) => handleInlineUpdate(incident.id, 'assignee_id', userId || '')}
+                            disabled={isConverted}
+                            textSize={textSmall}
+                          />
                         </div>
                       )}
                       
@@ -607,15 +602,19 @@ export function IncidentListTable({
                         </div>
                       )}
 
-                      {/* Release */}
+                      {/* Release - inline release picker for direct editing */}
                       {isColumnVisible('releaseVersion') && (
                         <div 
-                          className="shrink-0 px-2"
+                          className="shrink-0 px-2 group"
                           style={{ width: `${columnWidths.releaseVersion}px` }}
+                          data-inline-edit
                         >
-                          <span className={cn(textSmall, "text-[var(--text-2)] truncate block")}>
-                            {incident.release_version?.version || '—'}
-                          </span>
+                          <InlineReleasePicker
+                            value={incident.release_version}
+                            onSave={(releaseId) => handleInlineUpdate(incident.id, 'release_version_id', releaseId || '')}
+                            disabled={isConverted}
+                            textSize={textSmall}
+                          />
                         </div>
                       )}
 
