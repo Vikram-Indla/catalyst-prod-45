@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useIncidents } from '@/hooks/useIncidents';
-import { UATStatusPanel } from '@/components/incidents/UATStatusPanel';
+
 import type { Incident } from '@/types/incident';
 import { 
   StatusBadge, 
@@ -428,9 +428,6 @@ export default function IncidentDashboardPage() {
           </Card>
         )}
       </div>
-      
-      {/* UAT Status Panel - Dev only */}
-      <UATStatusPanel />
     </div>
   );
 }

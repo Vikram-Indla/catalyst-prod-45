@@ -14,7 +14,7 @@ import { useUploadIncidentAttachment, useDeleteIncidentAttachment, useDownloadIn
 import { useIsWatching, useWatcherCount, useToggleWatch } from '@/hooks/useIncidentWatchers';
 import { IncidentMainContent } from '@/components/incidents/detail/IncidentMainContent';
 import { IncidentContextRail } from '@/components/incidents/detail/IncidentContextRail';
-import { UATStatusPanel } from '@/components/incidents/UATStatusPanel';
+
 import { supabase } from '@/integrations/supabase/client';
 import type { IncidentStatus, CommentType } from '@/types/incident';
 import { cn } from '@/lib/utils';
@@ -455,9 +455,6 @@ export default function IncidentRoomDetail() {
           voteDisabledReason={voteDisabledReason}
         />
       </div>
-      
-      {/* UAT Status Panel - Dev only */}
-      <UATStatusPanel />
     </div>
   );
 }

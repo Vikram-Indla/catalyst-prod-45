@@ -8,7 +8,6 @@ import { useIncidents } from '@/hooks/useIncidents';
 import { CreateIncidentDialog } from '@/components/incidents/CreateIncidentDialog';
 import { IncidentFiltersDialog } from '@/components/incidents/IncidentFiltersDialog';
 import { IncidentListTable } from '@/components/incidents/IncidentListTable';
-import { UATStatusPanel } from '@/components/incidents/UATStatusPanel';
 import type { IncidentFilters } from '@/types/incident';
 
 export default function IncidentRoomList() {
@@ -170,9 +169,6 @@ export default function IncidentRoomList() {
         open={createDialogOpen} 
         onOpenChange={setCreateDialogOpen} 
       />
-      
-      {/* UAT Status Panel - Dev only */}
-      <UATStatusPanel />
     </div>
   );
 }
