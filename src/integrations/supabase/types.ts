@@ -4673,6 +4673,42 @@ export type Database = {
           },
         ]
       }
+      incident_teams: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          sort_order: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       incident_user_profiles: {
         Row: {
           avatar_initials: string | null
@@ -4823,6 +4859,7 @@ export type Database = {
           status: Database["public"]["Enums"]["incident_status"]
           support_level: Database["public"]["Enums"]["support_level"] | null
           target_date: string | null
+          team_id: string | null
           title: string
           updated_at: string
           updated_by: string | null
@@ -4863,6 +4900,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["incident_status"]
           support_level?: Database["public"]["Enums"]["support_level"] | null
           target_date?: string | null
+          team_id?: string | null
           title: string
           updated_at?: string
           updated_by?: string | null
@@ -4903,6 +4941,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["incident_status"]
           support_level?: Database["public"]["Enums"]["support_level"] | null
           target_date?: string | null
+          team_id?: string | null
           title?: string
           updated_at?: string
           updated_by?: string | null
@@ -4956,6 +4995,13 @@ export type Database = {
             columns: ["reporter_id"]
             isOneToOne: false
             referencedRelation: "incident_user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "incident_teams"
             referencedColumns: ["id"]
           },
         ]
