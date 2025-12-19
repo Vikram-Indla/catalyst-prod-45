@@ -27,7 +27,7 @@ import {
   type WorkItemMode,
   type HealthStatus,
 } from '@/lib/dependencies/dependencyAnalytics';
-import { resolveDependencyWorkItems, type WorkItemMaps } from '@/lib/dependencies/resolveWorkItem';
+import { resolveDependencyWorkItems, extractProgramIdsFromDep, type WorkItemMaps } from '@/lib/dependencies/resolveWorkItem';
 import { DEPENDENCY_TYPE_LABELS } from '@/lib/dependencies/types';
 
 interface DependencyAnalyticsDrawerProps {
@@ -536,7 +536,7 @@ function DependencyRow({ dep, workItemMaps, programId, programs, onClick }: Depe
   const direction = classifyDirection(dep, programId, workItemMaps);
   let partnerName: string | null = null;
   if (direction !== 'internal') {
-    const { sourceProgramId, targetProgramId } = require('@/lib/dependencies/resolveWorkItem').extractProgramIdsFromDep(dep, workItemMaps);
+    const { sourceProgramId, targetProgramId } = extractProgramIdsFromDep(dep, workItemMaps);
     const partnerId = direction === 'outgoing' ? targetProgramId : sourceProgramId;
     partnerName = programs.find(p => p.id === partnerId)?.name || null;
   }

@@ -48,6 +48,10 @@ export function classifyDirection(
 
 /**
  * Apply drawer-specific filters to dependencies
+ * Work item mode uses BOTH source and target types for accurate classification:
+ * - Epics: requesting_work_item_type === 'epic' AND depends_on_work_item_type === 'epic'
+ * - Features: requesting_work_item_type === 'feature' AND depends_on_work_item_type === 'feature'
+ * - All: no restriction
  */
 export function applyDrawerFilters(
   deps: any[],
@@ -60,13 +64,19 @@ export function applyDrawerFilters(
       if (dep.quarter !== filters.quarter) return false;
     }
 
-    // Work item mode filter
+    // Work item mode filter - check BOTH source and target types
     if (filters.workItemMode !== 'all') {
-      const { source } = resolveDependencyWorkItems(dep, workItemMaps);
-      const sourceType = source?.type || dep.requesting_work_item_type || 'feature';
+      const sourceType = dep.requesting_work_item_type || 'feature';
+      const targetType = dep.depends_on_work_item_type || 'feature';
       
-      if (filters.workItemMode === 'epics' && sourceType !== 'epic') return false;
-      if (filters.workItemMode === 'features' && sourceType !== 'feature') return false;
+      if (filters.workItemMode === 'epics') {
+        // Both must be epic for epic-level dependencies
+        if (sourceType !== 'epic' || targetType !== 'epic') return false;
+      }
+      if (filters.workItemMode === 'features') {
+        // Both must be feature for feature-level dependencies
+        if (sourceType !== 'feature' || targetType !== 'feature') return false;
+      }
     }
 
     return true;
