@@ -882,12 +882,12 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                       <div className="grid grid-cols-2 gap-3">
                         <div>
                           <Label className="text-xs text-muted-foreground">Needed By Sprint (optional)</Label>
-                          <Select value={neededBySprint} onValueChange={setNeededBySprint}>
+                          <Select value={neededBySprint || "__none__"} onValueChange={(v) => setNeededBySprint(v === "__none__" ? "" : v)}>
                             <SelectTrigger className="h-9">
                               <SelectValue placeholder="Select sprint" />
                             </SelectTrigger>
                             <SelectContent className="z-[400]">
-                              <SelectItem value="">None</SelectItem>
+                              <SelectItem value="__none__">None</SelectItem>
                               {iterations?.map(sprint => (
                                 <SelectItem key={sprint.id} value={sprint.id}>{sprint.name}</SelectItem>
                               ))}
@@ -896,12 +896,12 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                         </div>
                         <div>
                           <Label className="text-xs text-muted-foreground">Committed By Sprint (optional)</Label>
-                          <Select value={committedBySprint} onValueChange={setCommittedBySprint}>
+                          <Select value={committedBySprint || "__none__"} onValueChange={(v) => setCommittedBySprint(v === "__none__" ? "" : v)}>
                             <SelectTrigger className="h-9">
                               <SelectValue placeholder="Select sprint" />
                             </SelectTrigger>
                             <SelectContent className="z-[400]">
-                              <SelectItem value="">None</SelectItem>
+                              <SelectItem value="__none__">None</SelectItem>
                               {iterations?.map(sprint => (
                                 <SelectItem key={sprint.id} value={sprint.id}>{sprint.name}</SelectItem>
                               ))}
