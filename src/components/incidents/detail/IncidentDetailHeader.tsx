@@ -3,31 +3,12 @@ import { Eye, EyeOff, Share2, MoreVertical, Users, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { 
+  STATUS_CONFIG, 
+  SEVERITY_CONFIG, 
+  PRIORITY_CONFIG 
+} from '@/components/incidents/badges/IncidentBadges';
 import type { IncidentStatus, SeverityLevel, PriorityLevel, SupportLevel } from '@/types/incident';
-
-const STATUS_CONFIG: Record<IncidentStatus, { label: string; className: string }> = {
-  open: { label: 'New', className: 'bg-blue-100 text-blue-800' },
-  triage: { label: 'Triage', className: 'bg-yellow-100 text-yellow-800' },
-  to_committee: { label: 'To Committee', className: 'bg-purple-100 text-purple-800' },
-  in_progress: { label: 'In Progress', className: 'bg-cyan-100 text-cyan-800' },
-  resolved: { label: 'Resolved', className: 'bg-green-100 text-green-800' },
-  converted: { label: 'Converted', className: 'bg-secondary-green/20 text-secondary-green' },
-  closed: { label: 'Closed', className: 'bg-muted text-muted-foreground' },
-};
-
-const SEVERITY_CONFIG: Record<SeverityLevel, { label: string; className: string }> = {
-  SEV1: { label: 'SEV1', className: 'bg-red-100 text-red-800 border-red-200' },
-  SEV2: { label: 'SEV2', className: 'bg-orange-100 text-orange-800 border-orange-200' },
-  SEV3: { label: 'SEV3', className: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
-  SEV4: { label: 'SEV4', className: 'bg-blue-100 text-blue-800 border-blue-200' },
-};
-
-const PRIORITY_CONFIG: Record<PriorityLevel, { label: string; className: string }> = {
-  P1: { label: 'P1', className: 'bg-red-100 text-red-800 border-red-200' },
-  P2: { label: 'P2', className: 'bg-orange-100 text-orange-800 border-orange-200' },
-  P3: { label: 'P3', className: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
-  P4: { label: 'P4', className: 'bg-blue-100 text-blue-800 border-blue-200' },
-};
 
 interface IncidentDetailHeaderProps {
   incidentKey: string;
@@ -78,9 +59,9 @@ export function IncidentDetailHeader({
     <header className="border-b border-border bg-background px-6 py-4">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
-        <Link to="/release/incident-room" className="hover:text-foreground">RELEASE</Link>
+        <Link to="/release/incidents" className="hover:text-foreground">RELEASE</Link>
         <span>/</span>
-        <Link to="/release/incident-room" className="hover:text-foreground">Incidents</Link>
+        <Link to="/release/incidents" className="hover:text-foreground">Incidents</Link>
         <span>/</span>
         <span className="text-foreground">{incidentKey}</span>
       </nav>
@@ -120,14 +101,16 @@ export function IncidentDetailHeader({
             
             {/* Support Level Badge */}
             {supportLevel && (
-              <Badge variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-200">
+              <Badge variant="outline" className="bg-slate-50 text-slate-600 border-slate-200">
                 {supportLevel}
               </Badge>
             )}
             
             {/* Major Incident Flag */}
             {isMajorIncident && (
-              <Badge variant="destructive">Major Incident</Badge>
+              <Badge variant="outline" className="bg-rose-50 text-rose-700 border-rose-200 font-medium">
+                Major Incident
+              </Badge>
             )}
           </div>
         </div>

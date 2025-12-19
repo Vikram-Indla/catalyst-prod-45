@@ -246,9 +246,9 @@ export function IncidentContextRail({
                   variant="outline" 
                   className={cn(
                     'text-[9px] px-1 py-0',
-                    committee.status === 'approved' ? 'bg-green-100 text-green-800' :
-                    committee.status === 'rejected' ? 'bg-red-100 text-red-800' :
-                    'bg-yellow-100 text-yellow-800'
+                    committee.status === 'approved' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                    committee.status === 'rejected' ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                    'bg-amber-50 text-amber-700 border-amber-200'
                   )}
                 >
                   {committee.status.charAt(0).toUpperCase() + committee.status.slice(1)}
@@ -295,10 +295,10 @@ export function IncidentContextRail({
                         variant="outline" 
                         className={cn(
                           'text-[8px] px-1 py-0 h-3',
-                          member.vote?.vote === 'approved' ? 'bg-green-100 text-green-800' :
-                          member.vote?.vote === 'rejected' ? 'bg-red-100 text-red-800' :
-                          member.vote?.vote === 'vetoed' ? 'bg-purple-100 text-purple-800' :
-                          'bg-muted text-muted-foreground'
+                          member.vote?.vote === 'approved' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                          member.vote?.vote === 'rejected' ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                          member.vote?.vote === 'vetoed' ? 'bg-violet-50 text-violet-700 border-violet-200' :
+                          'bg-muted text-muted-foreground border-border'
                         )}
                       >
                         {member.vote?.vote === 'approved' ? '✓' :

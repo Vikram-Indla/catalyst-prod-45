@@ -337,28 +337,28 @@ export default function IncidentDashboardPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-teal-600 mb-2">{metrics.convertedIncidents.length}</div>
+              <div className="text-2xl font-bold text-teal-700 mb-2">{metrics.convertedIncidents.length}</div>
               <div className="flex gap-3">
                 <button 
-                  className="flex-1 p-2 bg-muted/50 rounded text-center hover:bg-muted transition-colors"
+                  className="flex-1 p-2 bg-sky-50 border border-sky-100 rounded text-center hover:bg-sky-100 transition-colors"
                   onClick={() => navTo({ status: 'converted', converted_to: 'story' })}
                 >
-                  <div className="text-sm font-semibold text-blue-600">{metrics.convertedToStory}</div>
-                  <div className="text-[10px] text-muted-foreground">Story</div>
+                  <div className="text-sm font-semibold text-sky-700">{metrics.convertedToStory}</div>
+                  <div className="text-[10px] text-sky-600">Story</div>
                 </button>
                 <button 
-                  className="flex-1 p-2 bg-muted/50 rounded text-center hover:bg-muted transition-colors"
+                  className="flex-1 p-2 bg-violet-50 border border-violet-100 rounded text-center hover:bg-violet-100 transition-colors"
                   onClick={() => navTo({ status: 'converted', converted_to: 'feature' })}
                 >
-                  <div className="text-sm font-semibold text-purple-600">{metrics.convertedToFeature}</div>
-                  <div className="text-[10px] text-muted-foreground">Feature</div>
+                  <div className="text-sm font-semibold text-violet-700">{metrics.convertedToFeature}</div>
+                  <div className="text-[10px] text-violet-600">Feature</div>
                 </button>
                 <button 
-                  className="flex-1 p-2 bg-muted/50 rounded text-center hover:bg-muted transition-colors"
+                  className="flex-1 p-2 bg-amber-50 border border-amber-100 rounded text-center hover:bg-amber-100 transition-colors"
                   onClick={() => navTo({ status: 'converted', converted_to: 'epic' })}
                 >
-                  <div className="text-sm font-semibold text-orange-600">{metrics.convertedToEpic}</div>
-                  <div className="text-[10px] text-muted-foreground">Epic</div>
+                  <div className="text-sm font-semibold text-amber-700">{metrics.convertedToEpic}</div>
+                  <div className="text-[10px] text-amber-600">Epic</div>
                 </button>
               </div>
             </CardContent>
@@ -373,13 +373,13 @@ export default function IncidentDashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 gap-2">
-                <div className="p-2 bg-blue-50 rounded text-center">
-                  <div className="text-lg font-semibold text-blue-700">{metrics.openCount}</div>
-                  <div className="text-[10px] text-blue-600">Open</div>
+                <div className="p-2 bg-sky-50 rounded text-center border border-sky-100">
+                  <div className="text-lg font-semibold text-sky-700">{metrics.openCount}</div>
+                  <div className="text-[10px] text-sky-600">Open</div>
                 </div>
-                <div className="p-2 bg-green-50 rounded text-center">
-                  <div className="text-lg font-semibold text-green-700">{metrics.closedCount}</div>
-                  <div className="text-[10px] text-green-600">Closed</div>
+                <div className="p-2 bg-emerald-50 rounded text-center border border-emerald-100">
+                  <div className="text-lg font-semibold text-emerald-700">{metrics.closedCount}</div>
+                  <div className="text-[10px] text-emerald-600">Closed</div>
                 </div>
               </div>
             </CardContent>
@@ -388,22 +388,22 @@ export default function IncidentDashboardPage() {
 
         {/* Row 4: Active Major Incidents Table (if any) */}
         {metrics.majorActive.length > 0 && (
-          <Card className="border-red-200 bg-red-50/30">
+          <Card className="border-rose-200 bg-rose-50/30">
             <CardHeader className="pb-2">
-              <CardTitle className="text-xs font-semibold text-red-800 uppercase tracking-wide">
+              <CardTitle className="text-xs font-semibold text-rose-800 uppercase tracking-wide">
                 Active Major Incidents
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
               <table className="w-full text-xs">
-                <thead className="bg-red-100/50">
+                <thead className="bg-rose-100/50">
                   <tr>
-                    <th className="px-3 py-2 text-left font-semibold text-red-800">Key</th>
-                    <th className="px-3 py-2 text-left font-semibold text-red-800">Summary</th>
-                    <th className="px-3 py-2 text-left font-semibold text-red-800">Severity</th>
-                    <th className="px-3 py-2 text-left font-semibold text-red-800">Priority</th>
-                    <th className="px-3 py-2 text-left font-semibold text-red-800">Age</th>
-                    <th className="px-3 py-2 text-left font-semibold text-red-800">Assignee</th>
+                    <th className="px-3 py-2 text-left font-semibold text-rose-800">Key</th>
+                    <th className="px-3 py-2 text-left font-semibold text-rose-800">Summary</th>
+                    <th className="px-3 py-2 text-left font-semibold text-rose-800">Severity</th>
+                    <th className="px-3 py-2 text-left font-semibold text-rose-800">Priority</th>
+                    <th className="px-3 py-2 text-left font-semibold text-rose-800">Age</th>
+                    <th className="px-3 py-2 text-left font-semibold text-rose-800">Assignee</th>
                   </tr>
                 </thead>
                 <tbody>
