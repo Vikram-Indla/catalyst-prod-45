@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useIncident, useUpdateIncident, useAddComment } from '@/hooks/useIncidents';
 import { useUploadIncidentAttachment, useDeleteIncidentAttachment, useDownloadIncidentAttachment } from '@/hooks/useIncidentAttachments';
 import { useIsWatching, useWatcherCount, useToggleWatch } from '@/hooks/useIncidentWatchers';
@@ -18,9 +19,9 @@ import type { IncidentStatus, CommentType } from '@/types/incident';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
-import { canConvertIncident, canSendToCommittee } from '@/utils/incidentLifecycle';
+import { canConvertIncident } from '@/utils/incidentLifecycle';
 
-// Status configuration for pills
+// Status pills configuration
 const STATUS_CONFIG: Record<IncidentStatus, { label: string; className: string }> = {
   open: { label: 'New', className: 'bg-blue-100 text-blue-800' },
   triage: { label: 'Triage', className: 'bg-yellow-100 text-yellow-800' },
@@ -47,7 +48,6 @@ export default function IncidentRoomDetail() {
   const deleteAttachment = useDeleteIncidentAttachment();
   const downloadAttachment = useDownloadIncidentAttachment();
   
-  // Watch functionality
   const { data: isWatching = false } = useIsWatching(id || '');
   const { data: watcherCount = 0 } = useWatcherCount(id || '');
   const toggleWatch = useToggleWatch(id || '');
@@ -61,7 +61,7 @@ export default function IncidentRoomDetail() {
 
   const isConverted = incident?.status === 'converted';
   
-  // Use lifecycle rules for conversion gating
+  // Backend-driven conversion gating
   const conversionCheck = incident ? canConvertIncident(
     incident.status,
     incident.support_level,
@@ -69,7 +69,11 @@ export default function IncidentRoomDetail() {
   ) : { allowed: false, reason: 'Loading...' };
   const canConvert = conversionCheck.allowed;
 
-  // Handlers
+  // Backend-driven vote gating
+  const canVote = incident?.committee?.status === 'pending' && !isConverted;
+  const voteDisabledReason = !canVote ? 'Voting is only available when committee status is pending' : undefined;
+
+  // Handlers - all trigger backend operations
   const handleStatusChange = (status: IncidentStatus) => {
     if (!id) return;
     updateIncident.mutate({ id, data: { status } }, {
@@ -81,7 +85,7 @@ export default function IncidentRoomDetail() {
   const handleFieldChange = (field: string, value: string) => {
     if (!id) return;
     updateIncident.mutate({ id, data: { [field]: value } }, {
-      onSuccess: () => toast.success('Updated successfully'),
+      onSuccess: () => toast.success('Updated'),
       onError: () => toast.error('Failed to update'),
     });
   };
@@ -139,44 +143,41 @@ export default function IncidentRoomDetail() {
     }
   };
 
-  // Loading state
+  // Loading
   if (isLoading) {
     return (
-      <div className="flex flex-col h-full p-6 gap-4">
-        <Skeleton className="h-8 w-64" />
-        <Skeleton className="h-6 w-full max-w-xl" />
-        <div className="flex gap-6 flex-1">
-          <Skeleton className="flex-1 h-96" />
-          <Skeleton className="w-80 h-96" />
+      <div className="flex flex-col h-full p-4 gap-3">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-5 w-96" />
+        <div className="flex gap-4 flex-1">
+          <Skeleton className="w-[70%] h-96" />
+          <Skeleton className="w-[30%] h-96" />
         </div>
       </div>
     );
   }
 
-  // Error state
+  // Error
   if (error || !incident) {
     return (
-      <div className="flex flex-col items-center justify-center h-full gap-4">
-        <AlertTriangle className="h-12 w-12 text-destructive" />
-        <h2 className="text-lg font-medium">Incident not found</h2>
+      <div className="flex flex-col items-center justify-center h-full gap-3">
+        <AlertTriangle className="h-10 w-10 text-destructive" />
+        <h2 className="text-base font-medium">Incident not found</h2>
         <Link to="/release/incident-room">
-          <Button variant="outline">Back to Incident Room</Button>
+          <Button variant="outline" size="sm">Back to Incidents</Button>
         </Link>
       </div>
     );
   }
 
   const severityConfig = SEVERITY_CONFIG[incident.severity];
-  const statusConfig = STATUS_CONFIG[incident.status];
 
   return (
     <div className="flex flex-col h-full overflow-hidden bg-background">
-      {/* ============================================ */}
-      {/* PAGE HEADER - Fixed, high-density           */}
-      {/* ============================================ */}
-      <header className="flex-shrink-0 border-b border-border px-6 py-3">
+      {/* ========== HEADER - Compact, single-row ========== */}
+      <header className="flex-shrink-0 border-b border-border px-4 py-2">
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-1 text-xs text-muted-foreground mb-1">
+        <nav className="flex items-center gap-1 text-[10px] text-muted-foreground mb-1">
           <Link to="/release/incident-room" className="hover:text-foreground">RELEASE</Link>
           <span>/</span>
           <Link to="/release/incident-room" className="hover:text-foreground">Incidents</Link>
@@ -184,123 +185,137 @@ export default function IncidentRoomDetail() {
           <span className="text-foreground font-medium">{incident.incident_key}</span>
         </nav>
 
-        {/* Title Row */}
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex-1 min-w-0">
-            {/* Title */}
-            <h1 className="text-lg font-semibold text-foreground leading-tight truncate">
+        {/* Title + Pills + Actions */}
+        <div className="flex items-center justify-between gap-3">
+          {/* Left: Key + Summary */}
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <h1 className="text-sm font-semibold text-foreground whitespace-nowrap">
               <span className="text-brand-primary">{incident.incident_key}</span>
-              <span className="mx-2 text-muted-foreground">—</span>
-              <span>{incident.title}</span>
+              <span className="mx-1.5 text-muted-foreground">—</span>
+              <span className="truncate">{incident.title}</span>
             </h1>
-            
-            {/* Status Pills - Exact order: Major Incident | Severity | Support Level | Committee State */}
-            <div className="flex items-center gap-1.5 mt-1.5">
-              {incident.is_major_incident && (
-                <Badge variant="destructive" className="text-[10px] px-1.5 py-0">Major</Badge>
-              )}
-              <Badge variant="outline" className={cn('text-[10px] px-1.5 py-0 border', severityConfig.className)}>
-                {severityConfig.label}
-              </Badge>
-              {incident.support_level && (
-                <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-yellow-50 text-yellow-700 border-yellow-200">
-                  {incident.support_level}
-                </Badge>
-              )}
-              {incident.committee && (
-                <Badge 
-                  variant="outline" 
-                  className={cn(
-                    'text-[10px] px-1.5 py-0',
-                    incident.committee.status === 'approved' ? 'bg-green-50 text-green-700 border-green-200' :
-                    incident.committee.status === 'rejected' ? 'bg-red-50 text-red-700 border-red-200' :
-                    'bg-purple-50 text-purple-700 border-purple-200'
-                  )}
-                >
-                  {incident.committee.status === 'pending' ? 'In Review' : 
-                   incident.committee.status.charAt(0).toUpperCase() + incident.committee.status.slice(1)}
-                </Badge>
-              )}
-            </div>
           </div>
 
-          {/* Actions - Right aligned: Watch | Convert */}
-          <div className="flex items-center gap-2 flex-shrink-0">
+          {/* Center: Status Pills (exact order) */}
+          <div className="flex items-center gap-1 flex-shrink-0">
+            {/* Major Incident */}
+            {incident.is_major_incident && (
+              <Badge variant="destructive" className="text-[9px] px-1.5 py-0 h-5">Major</Badge>
+            )}
+            {/* Severity */}
+            <Badge variant="outline" className={cn('text-[9px] px-1.5 py-0 h-5 border', severityConfig.className)}>
+              {severityConfig.label}
+            </Badge>
+            {/* Support Level */}
+            {incident.support_level && (
+              <Badge variant="outline" className="text-[9px] px-1.5 py-0 h-5 bg-yellow-50 text-yellow-700 border-yellow-200">
+                {incident.support_level}
+              </Badge>
+            )}
+            {/* Committee Status */}
+            {incident.committee && (
+              <Badge 
+                variant="outline" 
+                className={cn(
+                  'text-[9px] px-1.5 py-0 h-5',
+                  incident.committee.status === 'approved' ? 'bg-green-50 text-green-700 border-green-200' :
+                  incident.committee.status === 'rejected' ? 'bg-red-50 text-red-700 border-red-200' :
+                  'bg-purple-50 text-purple-700 border-purple-200'
+                )}
+              >
+                {incident.committee.status === 'pending' ? 'In Review' : 
+                 incident.committee.status.charAt(0).toUpperCase() + incident.committee.status.slice(1)}
+              </Badge>
+            )}
+          </div>
+
+          {/* Right: Actions (Watch | Convert only) */}
+          <div className="flex items-center gap-1.5 flex-shrink-0">
             <Button 
               variant={isWatching ? 'secondary' : 'ghost'} 
               size="sm"
               onClick={() => toggleWatch.mutate(isWatching)}
               disabled={toggleWatch.isPending}
-              className="h-8 px-3 text-xs"
+              className="h-7 px-2 text-[10px]"
             >
-              {isWatching ? <EyeOff className="h-3.5 w-3.5 mr-1" /> : <Eye className="h-3.5 w-3.5 mr-1" />}
+              {isWatching ? <EyeOff className="h-3 w-3 mr-1" /> : <Eye className="h-3 w-3 mr-1" />}
               {isWatching ? 'Unwatch' : 'Watch'}
-              {watcherCount > 0 && <span className="ml-1 text-muted-foreground">({watcherCount})</span>}
+              {watcherCount > 0 && <span className="ml-0.5 text-muted-foreground">({watcherCount})</span>}
             </Button>
             
-            <Button 
-              size="sm"
-              onClick={() => setConvertDialogOpen(true)}
-              disabled={!canConvert || isSubmitting}
-              title={conversionCheck.reason}
-              className="h-8 px-3 text-xs bg-brand-primary hover:bg-brand-primary-hover text-white"
-            >
-              <Plus className="h-3.5 w-3.5 mr-1" />
-              Convert
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div>
+                    <Button 
+                      size="sm"
+                      onClick={() => setConvertDialogOpen(true)}
+                      disabled={!canConvert || isSubmitting}
+                      className="h-7 px-2 text-[10px] bg-brand-primary hover:bg-brand-primary-hover text-white"
+                    >
+                      <Plus className="h-3 w-3 mr-1" />
+                      Convert
+                    </Button>
+                  </div>
+                </TooltipTrigger>
+                {!canConvert && conversionCheck.reason && (
+                  <TooltipContent side="bottom" className="text-xs">
+                    {conversionCheck.reason}
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            </TooltipProvider>
           </div>
         </div>
       </header>
 
-      {/* ============================================ */}
-      {/* CONVERT DIALOG                              */}
-      {/* ============================================ */}
+      {/* ========== CONVERT DIALOG ========== */}
       <Dialog open={convertDialogOpen} onOpenChange={setConvertDialogOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle className="text-base">Convert Incident</DialogTitle>
+            <DialogTitle className="text-sm">Convert Incident</DialogTitle>
           </DialogHeader>
           
           {incident.support_level === 'L3' && (
-            <div className="flex gap-2 p-2.5 rounded bg-yellow-50 border border-yellow-200">
-              <AlertTriangle className="h-4 w-4 text-yellow-600 flex-shrink-0 mt-0.5" />
+            <div className="flex gap-2 p-2 rounded bg-yellow-50 border border-yellow-200">
+              <AlertTriangle className="h-3.5 w-3.5 text-yellow-600 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-xs font-medium text-yellow-800">L3 Committee Approval Required</p>
-                <p className="text-[10px] text-yellow-700">This incident requires CAP approval.</p>
+                <p className="text-[10px] font-medium text-yellow-800">L3 Committee Approval Required</p>
+                <p className="text-[9px] text-yellow-700">This incident requires CAP approval.</p>
               </div>
             </div>
           )}
           
-          <div className="space-y-3 py-2">
-            <div className="space-y-1.5">
-              <Label className="text-xs">Convert to</Label>
+          <div className="space-y-2 py-1">
+            <div className="space-y-1">
+              <Label className="text-[10px]">Convert to</Label>
               <Select value={convertType} onValueChange={(v: any) => setConvertType(v)}>
-                <SelectTrigger className="h-8 text-sm">
+                <SelectTrigger className="h-7 text-xs">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="story">Story</SelectItem>
-                  <SelectItem value="feature">Feature</SelectItem>
-                  <SelectItem value="epic">Epic</SelectItem>
+                  <SelectItem value="story" className="text-xs">Story</SelectItem>
+                  <SelectItem value="feature" className="text-xs">Feature</SelectItem>
+                  <SelectItem value="epic" className="text-xs">Epic</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             
-            <div className="space-y-1.5">
-              <Label className="text-xs">
+            <div className="space-y-1">
+              <Label className="text-[10px]">
                 Justification <span className="text-destructive">*</span>
               </Label>
               <Textarea
                 value={convertReason}
                 onChange={(e) => setConvertReason(e.target.value)}
                 placeholder="Why is this incident being converted?"
-                className={cn('text-sm min-h-[80px]', !convertReason.trim() && 'border-destructive/50')}
+                className={cn('text-xs min-h-[60px]', !convertReason.trim() && 'border-destructive/50')}
               />
             </div>
             
-            <div className="pt-2 border-t border-border">
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">Preview</p>
-              <div className="bg-muted/50 rounded p-2 text-xs space-y-0.5">
+            <div className="pt-1 border-t border-border">
+              <p className="text-[9px] text-muted-foreground uppercase tracking-wide mb-1">Preview</p>
+              <div className="bg-muted/50 rounded p-1.5 text-[10px] space-y-0.5">
                 <p><span className="text-muted-foreground">Type:</span> {convertType.charAt(0).toUpperCase() + convertType.slice(1)}</p>
                 <p><span className="text-muted-foreground">Title:</span> {incident.title}</p>
                 <p><span className="text-muted-foreground">From:</span> {incident.incident_key}</p>
@@ -308,13 +323,13 @@ export default function IncidentRoomDetail() {
             </div>
           </div>
           
-          <DialogFooter className="gap-2">
-            <Button variant="outline" size="sm" onClick={() => setConvertDialogOpen(false)}>Cancel</Button>
+          <DialogFooter className="gap-1">
+            <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => setConvertDialogOpen(false)}>Cancel</Button>
             <Button 
               size="sm"
+              className="h-7 text-xs bg-brand-primary hover:bg-brand-primary-hover text-white"
               onClick={handleConvert} 
               disabled={isSubmitting || !convertReason.trim()}
-              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
             >
               {isSubmitting ? 'Converting...' : 'Convert'}
             </Button>
@@ -322,11 +337,9 @@ export default function IncidentRoomDetail() {
         </DialogContent>
       </Dialog>
 
-      {/* ============================================ */}
-      {/* MAIN CONTENT - Two-Column Layout (70/30)    */}
-      {/* ============================================ */}
+      {/* ========== MAIN CONTENT - 70/30 Two-Column Layout ========== */}
       <div className="flex flex-1 overflow-hidden">
-        {/* LEFT COLUMN - Primary Work Area (70%) */}
+        {/* LEFT COLUMN - 70% */}
         <IncidentMainContent
           incidentId={id || ''}
           description={incident.description}
@@ -350,7 +363,7 @@ export default function IncidentRoomDetail() {
           isVotePending={isSubmitting}
         />
 
-        {/* RIGHT COLUMN - Context Rail (30%) */}
+        {/* RIGHT COLUMN - 30% */}
         <IncidentContextRail
           incidentId={id || ''}
           status={incident.status}
@@ -367,11 +380,14 @@ export default function IncidentRoomDetail() {
           requiresCommittee={incident.requires_committee || false}
           isConverted={isConverted}
           onStatusChange={handleStatusChange}
+          onSeverityChange={(v) => handleFieldChange('severity', v)}
           onImpactChange={(v) => handleFieldChange('impact', v)}
           onUrgencyChange={(v) => handleFieldChange('urgency', v)}
           onAssignToMe={handleAssignToMe}
           onVote={handleVote}
           isSubmitting={isSubmitting}
+          canVote={canVote}
+          voteDisabledReason={voteDisabledReason}
         />
       </div>
     </div>
