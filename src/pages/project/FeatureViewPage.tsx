@@ -66,7 +66,7 @@ interface FeatureWithRelations {
   epic_id: string | null;
   project_id: string;
   owner?: { id: string; name: string } | null;
-  epic?: { id: string; display_id: string; name: string } | null;
+  epic?: { id: string; display_id: string; name: string; program_id?: string | null } | null;
   project?: { id: string; name: string } | null;
   // Sidebar fields - not in DB, will be null
   priority?: string | null;
@@ -195,10 +195,10 @@ export default function FeatureViewPage() {
       if (data.epic_id) {
         const { data: epicData } = await supabase
           .from('epics')
-          .select('id, epic_key, name')
+          .select('id, epic_key, name, primary_program_id')
           .eq('id', data.epic_id)
           .single();
-        epic = epicData ? { id: epicData.id, display_id: epicData.epic_key || epicData.id.slice(0, 6), name: epicData.name } : null;
+        epic = epicData ? { id: epicData.id, display_id: epicData.epic_key || epicData.id.slice(0, 6), name: epicData.name, program_id: epicData.primary_program_id } : null;
       }
       
       if (data.project_id) {
@@ -720,7 +720,7 @@ export default function FeatureViewPage() {
             />
 
             {/* Linked Items */}
-            <FeatureLinkedItems featureId={feature.id} />
+            <FeatureLinkedItems featureId={feature.id} programId={feature.epic?.program_id} />
 
             {/* Activity */}
             <FeatureActivity featureId={feature.id} />
