@@ -466,32 +466,27 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
         }}
       >
         <div 
-          className="text-[9px] font-semibold uppercase tracking-wider pl-3"
-          style={{ color: 'var(--text-secondary)' }}
+          className="text-[10px] font-semibold uppercase tracking-wider pl-3 text-gray-700 dark:text-gray-300"
         >
           Item
         </div>
         <div 
-          className="text-[9px] font-semibold uppercase tracking-wider px-2"
-          style={{ color: 'var(--text-secondary)' }}
+          className="text-[10px] font-semibold uppercase tracking-wider px-2 text-gray-700 dark:text-gray-300"
         >
           Progress
         </div>
         <div 
-          className="text-[9px] font-semibold uppercase tracking-wider text-right pr-2"
-          style={{ color: 'var(--text-secondary)' }}
+          className="text-[10px] font-semibold uppercase tracking-wider text-right pr-2 text-gray-700 dark:text-gray-300"
         >
           %
         </div>
         <div 
-          className="text-[9px] font-semibold uppercase tracking-wider text-center"
-          style={{ color: 'var(--text-secondary)' }}
+          className="text-[10px] font-semibold uppercase tracking-wider text-center text-gray-700 dark:text-gray-300"
         >
           Status
         </div>
         <div 
-          className="text-[9px] font-semibold uppercase tracking-wider px-2"
-          style={{ color: 'var(--text-secondary)' }}
+          className="text-[10px] font-semibold uppercase tracking-wider px-2 text-gray-700 dark:text-gray-300"
         >
           Owner
         </div>

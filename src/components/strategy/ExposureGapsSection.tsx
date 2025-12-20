@@ -107,13 +107,13 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
         className="rounded-lg overflow-hidden bg-card border border-border"
         style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
       >
-        <div className="px-4 py-2.5 border-b border-border/50">
+        <div className="px-4 py-2.5 border-b border-border">
           <Skeleton className="h-4 w-32" />
         </div>
         <div className="p-3">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
             {['c1', 'c2', 'c3'].map((key) => (
-              <div key={key} className="rounded-md p-3 bg-muted border border-border/50 min-h-[150px]">
+              <div key={key} className="rounded-md p-3 bg-muted border border-border min-h-[150px]">
                 <Skeleton className="h-4 w-28 mb-4" />
                 <div className="space-y-2">
                   <Skeleton className="h-5 w-full" />
@@ -136,7 +136,7 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
       style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
     >
       {/* Section Header */}
-      <div className="px-4 py-2.5 flex items-center justify-between border-b border-border/50">
+      <div className="px-4 py-2.5 flex items-center justify-between border-b border-border">
         <div className="flex items-center gap-2">
           <Shield size={14} className="text-destructive" />
           <h2 className={cn(TYPOGRAPHY.sectionTitle, TEXT_COLORS.primary)}>
@@ -194,7 +194,7 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
             </div>
 
             {displayData.overdueRisks > 0 && (
-              <div className="pt-2 mt-2 border-t border-border/50">
+              <div className="pt-2 mt-2 border-t border-border">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <Clock size={14} className="text-destructive" />
@@ -229,7 +229,7 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
               />
             </div>
 
-            <div className="pt-2 mt-2 border-t border-border/50">
+            <div className="pt-2 mt-2 border-t border-border">
               <div className="flex items-center justify-between">
                 <span className={cn(TYPOGRAPHY.cardLabel, TEXT_COLORS.secondaryStrong)}>Total gaps</span>
                 <span className={cn(
@@ -284,9 +284,9 @@ interface CockpitCardProps {
 
 function CockpitCard({ title, icon, iconColor, children, cta }: CockpitCardProps) {
   return (
-    <div className="rounded-md overflow-hidden flex flex-col bg-muted/50 border border-border/50 min-h-[150px]">
+    <div className="rounded-md overflow-hidden flex flex-col bg-muted border border-border min-h-[150px]">
       {/* Card header */}
-      <div className="px-3 py-2.5 flex items-center gap-2 border-b border-border/50 bg-muted/70">
+      <div className="px-3 py-2.5 flex items-center gap-2 border-b border-border bg-muted">
         <span className={iconColor}>{icon}</span>
         <span className={cn(TYPOGRAPHY.sectionTitle, TEXT_COLORS.primary)}>
           {title}
