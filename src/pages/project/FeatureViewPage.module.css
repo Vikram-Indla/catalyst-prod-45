@@ -184,21 +184,26 @@
 }
 
 /* ============================================================
-   KEY DETAILS GRID
+   KEY DETAILS - 2-Column Grid + Planned Dates Row
    ============================================================ */
 
-.keyDetailsGrid {
-  display: flex;
-  gap: 48px;
+.keyDetailsWrapper {
   padding: 16px 0;
   border-bottom: 1px solid hsl(var(--border));
+  margin-bottom: 16px;
+}
+
+.keyDetailsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
   margin-bottom: 16px;
 }
 
 .keyDetailItem {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .keyDetailLabel {
@@ -217,98 +222,165 @@
   color: hsl(var(--foreground));
 }
 
-.epicLink {
+/* Epic Card - Olive/Gold styling with lightning icon */
+.epicCard {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 4px 10px;
+  gap: 10px;
+  padding: 8px 12px;
   background: hsl(var(--muted));
-  border-radius: 4px;
-  color: hsl(var(--foreground));
-  font-size: var(--text-sm, 12px);
-  text-decoration: none;
+  border: 1px solid hsl(var(--border));
+  border-radius: 6px;
+  cursor: pointer;
   transition: all 0.15s ease;
+  max-width: 100%;
 }
 
-.epicLink:hover {
+.epicCard:hover {
   background: hsl(var(--accent));
+  border-color: var(--brand-primary);
 }
 
-.epicLinkIcon {
-  width: 16px;
-  height: 16px;
-  border-radius: 3px;
-  background: hsl(262 52% 47%);
+.epicIconBox {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background: var(--brand-gold, #C69C6D);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: hsl(var(--primary-foreground));
-  font-size: 9px;
-  font-weight: 600;
+  color: white;
+  flex-shrink: 0;
+}
+
+.epicLinkText {
+  color: var(--brand-gold, #C69C6D);
+  font-size: var(--text-sm, 12px);
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.epicLinkText:hover {
+  text-decoration: underline;
+}
+
+/* Owner Field - Clean with hidden chevron */
+.ownerField {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.ownerField:hover {
+  opacity: 0.8;
 }
 
 .ownerValue {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .avatar {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background: hsl(var(--primary));
+  background: var(--brand-gold, #C69C6D);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: hsl(var(--primary-foreground));
-  font-size: 10px;
+  color: white;
+  font-size: 11px;
   font-weight: 600;
 }
 
-.avatarSystem {
-  background: hsl(var(--muted-foreground));
+/* PLANNED DATES Row */
+.plannedDatesRow {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.healthBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: var(--text-sm, 12px);
-  font-weight: 500;
-  text-transform: uppercase;
-}
-
-.healthAtRisk {
-  background: hsl(25 95% 53% / 0.15);
-  color: hsl(25 95% 53%);
-}
-
-.healthOnTrack {
-  background: hsl(142 76% 36% / 0.15);
-  color: hsl(142 76% 36%);
-}
-
-.healthBadgeDot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: currentColor;
-}
-
-.datesValue {
+.plannedDatesValue {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  font-size: var(--text-base, 14px);
   color: hsl(var(--foreground));
 }
 
-.datesValue svg {
-  width: 14px;
-  height: 14px;
+.calendarIcon {
   color: hsl(var(--muted-foreground));
+  flex-shrink: 0;
+}
+
+.dateClickable {
+  background: transparent;
+  border: none;
+  padding: 2px 4px;
+  font-size: var(--text-base, 14px);
+  color: hsl(var(--foreground));
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.15s ease;
+}
+
+.dateClickable:hover {
+  background: hsl(var(--accent));
+}
+
+.dateSeparator {
+  color: hsl(var(--muted-foreground));
+  margin: 0 2px;
+}
+
+.dateTrigger {
+  border: none !important;
+  background: transparent !important;
+  padding: 2px 4px !important;
+  height: auto !important;
+  font-size: var(--text-base, 14px) !important;
+  color: hsl(var(--foreground)) !important;
+  justify-content: flex-start !important;
+  width: auto !important;
+}
+
+.dateTrigger:hover {
+  background: hsl(var(--accent)) !important;
+}
+
+.noneValue {
+  color: hsl(var(--foreground) / 0.6);
+  font-style: italic;
+}
+
+/* Legacy styles kept for compatibility */
+.editableField {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.editableChevron {
+  color: hsl(var(--muted-foreground));
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.editableField:hover .editableChevron {
+  opacity: 1;
 }
 
 /* ============================================================
