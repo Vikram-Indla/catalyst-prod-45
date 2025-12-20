@@ -3,7 +3,7 @@
  * Control room for IT Operations
  */
 
-import { useState, lazy, Suspense } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Printer, Lightbulb, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -15,9 +15,8 @@ import { BreakdownTiles } from '../components/BreakdownTiles';
 import { MajorIncidentsTable } from '../components/MajorIncidentsTable';
 import { DrilldownDrawer } from '../components/DrilldownDrawer';
 import { TimeRangeSelector } from '../components/TimeRangeSelector';
+import IncidentDetailModal from '@/components/incidents/modal/IncidentDetailModal';
 import type { TimeRange, DrilldownFilter } from '../types';
-
-const IncidentDetailModal = lazy(() => import('@/components/incidents/modal/IncidentDetailModal'));
 
 export default function IncidentAnalyticsPage() {
   const [timeRange, setTimeRange] = useState<TimeRange>('7d');
@@ -137,13 +136,11 @@ export default function IncidentAnalyticsPage() {
 
       {/* Incident Detail Modal */}
       {selectedIncident && (
-        <Suspense fallback={null}>
-          <IncidentDetailModal
-            incident={selectedIncident}
-            isOpen={!!selectedIncidentId}
-            onClose={() => setSelectedIncidentId(null)}
-          />
-        </Suspense>
+        <IncidentDetailModal
+          incident={selectedIncident}
+          isOpen={!!selectedIncidentId}
+          onClose={() => setSelectedIncidentId(null)}
+        />
       )}
     </div>
   );
