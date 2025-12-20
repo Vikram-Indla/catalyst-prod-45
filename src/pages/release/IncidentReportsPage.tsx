@@ -10,14 +10,20 @@
  * Uses exact same table styling as /release/incidents
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Clock, AlertTriangle, Users, GitBranch, BarChart3,
-  Download, ChevronRight, AlertCircle, CheckCircle, XCircle, Timer
+  Download, ChevronRight, AlertCircle, CheckCircle, XCircle, Timer, FileText, ChevronDown
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { useIncidents } from '@/hooks/useIncidents';
 import { useCommitteeQueue } from '@/hooks/useCommitteeQueue';
@@ -33,6 +39,7 @@ import {
 } from '@/components/incidents/badges/IncidentBadges';
 import type { Incident } from '@/types/incident';
 import type { CommitteeQueueItem } from '@/hooks/useCommitteeQueue';
+import { exportReportToPDF } from '@/utils/pdfExport';
 
 type ReportType = 'sla_breach' | 'aging' | 'committee' | 'conversion' | 'distribution';
 
@@ -83,7 +90,7 @@ function SLABreachReport({ incidents, onRowClick }: { incidents: Incident[]; onR
     { key: 'key', label: 'Key', minWidth: 100, render: (i) => <span className="font-mono text-primary font-medium">{i.incident_key}</span> },
     { key: 'summary', label: 'Summary', minWidth: 280, canGrow: true, render: (i) => <span className="truncate block">{i.title}</span> },
     { key: 'severity', label: 'Sev', minWidth: 70, centered: true, render: (i) => <SeverityBadge severity={i.severity} /> },
-    { key: 'status', label: 'Status', minWidth: 100, centered: true, render: (i) => <StatusBadge status={i.status} /> },
+    { key: 'status', label: 'Status', minWidth: 110, centered: true, render: (i) => <StatusBadge status={i.status} /> },
     { key: 'assignee', label: 'Assignee', minWidth: 140, render: (i) => <span className="truncate">{i.assignee?.full_name || '—'}</span> },
     { key: 'age', label: 'Age', minWidth: 60, centered: true, render: (i) => <span className="font-mono text-xs">{getAgingTime(i.created_at)}</span> },
     { key: 'slaState', label: 'SLA State', minWidth: 90, centered: true, render: (i) => (
@@ -152,7 +159,7 @@ function AgingReport({ incidents, onRowClick }: { incidents: Incident[]; onRowCl
     { key: 'key', label: 'Key', minWidth: 100, render: (i) => <span className="font-mono text-primary font-medium">{i.incident_key}</span> },
     { key: 'summary', label: 'Summary', minWidth: 280, canGrow: true, render: (i) => <span className="truncate block">{i.title}</span> },
     { key: 'severity', label: 'Sev', minWidth: 70, centered: true, render: (i) => <SeverityBadge severity={i.severity} /> },
-    { key: 'status', label: 'Status', minWidth: 100, centered: true, render: (i) => <StatusBadge status={i.status} /> },
+    { key: 'status', label: 'Status', minWidth: 110, centered: true, render: (i) => <StatusBadge status={i.status} /> },
     { key: 'assignee', label: 'Assignee', minWidth: 140, render: (i) => <span className="truncate">{i.assignee?.full_name || '—'}</span> },
     { key: 'age', label: 'Age', minWidth: 60, centered: true, render: (i) => {
       const days = Math.floor((Date.now() - new Date(i.created_at).getTime()) / (1000 * 60 * 60 * 24));
@@ -369,7 +376,7 @@ function ConversionReport({ incidents, onRowClick }: { incidents: Incident[]; on
     { key: 'key', label: 'Key', minWidth: 100, render: (i) => <span className="font-mono text-primary font-medium">{i.incident_key}</span> },
     { key: 'summary', label: 'Summary', minWidth: 260, canGrow: true, render: (i) => <span className="truncate block">{i.title}</span> },
     { key: 'severity', label: 'Sev', minWidth: 70, centered: true, render: (i) => <SeverityBadge severity={i.severity} /> },
-    { key: 'status', label: 'Status', minWidth: 100, centered: true, render: (i) => <StatusBadge status={i.status} /> },
+    { key: 'status', label: 'Status', minWidth: 110, centered: true, render: (i) => <StatusBadge status={i.status} /> },
     { key: 'converted', label: 'Converted?', minWidth: 85, centered: true, render: (i) => (
       i.converted_to_type 
         ? <CheckCircle className="h-4 w-4 text-emerald-500" />
@@ -433,7 +440,7 @@ function DistributionReport({ incidents, onRowClick }: { incidents: Incident[]; 
     { key: 'summary', label: 'Summary', minWidth: 260, canGrow: true, render: (i) => <span className="truncate block">{i.title}</span> },
     { key: 'severity', label: 'Sev', minWidth: 70, centered: true, render: (i) => <SeverityBadge severity={i.severity} /> },
     { key: 'priority', label: 'Priority', minWidth: 80, centered: true, render: (i) => <PriorityBadge priority={i.priority} /> },
-    { key: 'status', label: 'Status', minWidth: 100, centered: true, render: (i) => <StatusBadge status={i.status} /> },
+    { key: 'status', label: 'Status', minWidth: 110, centered: true, render: (i) => <StatusBadge status={i.status} /> },
     { key: 'assignee', label: 'Assignee', minWidth: 140, render: (i) => <span className="truncate">{i.assignee?.full_name || '—'}</span> },
     { key: 'age', label: 'Age', minWidth: 60, centered: true, render: (i) => <span className="font-mono text-xs">{getAgingTime(i.created_at)}</span> },
     { key: 'slaState', label: 'SLA', minWidth: 70, centered: true, render: (i) => (
@@ -484,28 +491,136 @@ export default function IncidentReportsPage() {
     navigate(`/release/incidents/${id}`);
   };
 
-  const handleExport = () => {
+  // Get report-specific data and settings
+  const getReportExportData = useCallback(() => {
+    const STATUS_LABELS: Record<string, string> = {
+      open: 'New',
+      triage: 'Triage',
+      to_committee: 'To Committee',
+      in_progress: 'In Progress',
+      resolved: 'Resolved',
+      converted: 'Converted',
+      closed: 'Closed',
+    };
+
+    const baseColumns = [
+      { key: 'key', label: 'Key', width: 1.5, align: 'left' as const },
+      { key: 'summary', label: 'Summary', width: 4, align: 'left' as const },
+      { key: 'severity', label: 'Sev', width: 1, align: 'center' as const },
+      { key: 'status', label: 'Status', width: 1.5, align: 'center' as const },
+    ];
+
+    const mapIncident = (i: Incident) => ({
+      key: i.incident_key || '—',
+      summary: i.title || '—',
+      severity: i.severity || '—',
+      status: STATUS_LABELS[i.status] || i.status || '—',
+      assignee: i.assignee?.full_name || '—',
+      priority: i.priority || '—',
+      age: getAgingTime(i.created_at),
+      slaState: i.sla?.response_breached || i.sla?.resolution_breached ? 'BREACHED' : 'OK',
+      release: i.release_version?.version || '—',
+    });
+
+    switch (activeReport) {
+      case 'sla_breach': {
+        const breached = incidents.filter(i => i.sla?.response_breached || i.sla?.resolution_breached);
+        return {
+          title: 'SLA Breach Report',
+          insights: [
+            { label: 'Breached', value: breached.length },
+            { label: 'SEV1 Breached', value: breached.filter(i => i.severity === 'SEV1').length },
+          ],
+          columns: [...baseColumns, 
+            { key: 'assignee', label: 'Assignee', width: 2, align: 'left' as const },
+            { key: 'slaState', label: 'SLA State', width: 1.2, align: 'center' as const },
+          ],
+          data: breached.map(mapIncident),
+        };
+      }
+      case 'aging': {
+        const open = incidents.filter(i => ['open', 'triage', 'to_committee', 'in_progress'].includes(i.status));
+        return {
+          title: 'Incident Aging Report',
+          insights: [
+            { label: 'Open Incidents', value: open.length },
+            { label: '>7 Days', value: open.filter(i => Math.floor((Date.now() - new Date(i.created_at).getTime()) / 86400000) > 7).length },
+          ],
+          columns: [...baseColumns,
+            { key: 'assignee', label: 'Assignee', width: 2, align: 'left' as const },
+            { key: 'age', label: 'Age', width: 1, align: 'center' as const },
+          ],
+          data: open.map(mapIncident),
+        };
+      }
+      case 'conversion': {
+        const converted = incidents.filter(i => i.converted_to_type != null);
+        return {
+          title: 'Conversion Funnel Report',
+          insights: [
+            { label: 'Converted', value: converted.length },
+            { label: 'Not Converted', value: incidents.filter(i => !i.converted_to_type).length },
+          ],
+          columns: [...baseColumns,
+            { key: 'targetType', label: 'Target', width: 1.2, align: 'center' as const },
+          ],
+          data: converted.map(i => ({ ...mapIncident(i), targetType: i.converted_to_type?.toUpperCase() || '—' })),
+        };
+      }
+      case 'distribution': {
+        return {
+          title: 'Severity vs Priority Report',
+          insights: [
+            { label: 'Total', value: incidents.length },
+            { label: 'SEV1 Low Priority', value: incidents.filter(i => i.severity === 'SEV1' && (i.priority === 'P3' || i.priority === 'P4')).length },
+          ],
+          columns: [...baseColumns,
+            { key: 'priority', label: 'Priority', width: 1, align: 'center' as const },
+            { key: 'assignee', label: 'Assignee', width: 2, align: 'left' as const },
+          ],
+          data: incidents.map(mapIncident),
+        };
+      }
+      default:
+        return {
+          title: 'Incident Report',
+          insights: [{ label: 'Total', value: incidents.length }],
+          columns: baseColumns,
+          data: incidents.map(mapIncident),
+        };
+    }
+  }, [activeReport, incidents]);
+
+  const handleExportCSV = useCallback(() => {
+    const { title, columns, data } = getReportExportData();
     const csvContent = [
-      ['Key', 'Summary', 'Severity', 'Priority', 'Status', 'Support Level', 'Created At'].join(','),
-      ...incidents.map(i => [
-        i.incident_key,
-        `"${i.title.replace(/"/g, '""')}"`,
-        i.severity,
-        i.priority || '',
-        i.status,
-        i.support_level || '',
-        i.created_at
-      ].join(','))
+      columns.map(c => c.label).join(','),
+      ...data.map(row => 
+        columns.map(c => {
+          const val = String(row[c.key as keyof typeof row] ?? '');
+          return val.includes(',') ? `"${val.replace(/"/g, '""')}"` : val;
+        }).join(',')
+      )
     ].join('\n');
     
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `incident-report-${activeReport}-${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `${title.toLowerCase().replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-  };
+  }, [getReportExportData]);
+
+  const handleExportPDF = useCallback(() => {
+    const { title, insights, columns, data } = getReportExportData();
+    exportReportToPDF({
+      reportTitle: title,
+      insights,
+      columns,
+      data,
+    });
+  }, [getReportExportData]);
 
   const activeConfig = REPORT_CONFIGS.find(r => r.id === activeReport)!;
 
@@ -529,10 +644,25 @@ export default function IncidentReportsPage() {
         pageTitle={`Incident Reports / ${activeConfig.title}`}
         showDivider={false}
         rightActions={
-          <Button variant="outline" size="sm" className="h-8 text-xs" onClick={handleExport}>
-            <Download className="h-3.5 w-3.5 mr-1.5" />
-            Export CSV
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5">
+                <Download className="h-3.5 w-3.5" />
+                Export
+                <ChevronDown className="h-3 w-3" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-popover border border-border shadow-lg z-50">
+              <DropdownMenuItem onClick={handleExportCSV} className="text-xs cursor-pointer">
+                <Download className="h-3.5 w-3.5 mr-2" />
+                Export as CSV
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleExportPDF} className="text-xs cursor-pointer">
+                <FileText className="h-3.5 w-3.5 mr-2" />
+                Export as PDF
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         }
       />
 
