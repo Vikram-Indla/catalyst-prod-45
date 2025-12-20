@@ -160,8 +160,8 @@ export function CatalystHeader() {
               lineHeight: 1
             }}
           >
-            <span style={{ color: 'var(--secondary-green)' }}>Cata</span>
-            <span style={{ color: 'var(--brand-gold)' }}>lyst</span>
+            <span className="text-foreground">Cata</span>
+            <span className="text-gold-500">lyst</span>
           </span>
         </a>
         

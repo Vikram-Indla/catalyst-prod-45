@@ -518,9 +518,9 @@ export default function RequestAccess() {
     doc.setFillColor(26, 26, 26); // brand-dark #1A1A1A
     doc.rect(0, 0, pageWidth, 50, 'F');
     
-    // Catalyst logo text - "Cata" in olive, "lyst" in gold
+    // Catalyst logo text - "Cata" in dark, "lyst" in gold
     doc.setFontSize(28);
-    doc.setTextColor(92, 124, 92); // #5C7C5C olive
+    doc.setTextColor(10, 10, 10); // #0a0a0a dark (Pure Onyx)
     doc.text('Cata', margin, 28);
     doc.setTextColor(198, 156, 109); // #C69C6D gold
     doc.text('lyst', margin + 36, 28);

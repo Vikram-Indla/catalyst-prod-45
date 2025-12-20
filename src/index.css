@@ -61,6 +61,32 @@
     --bg-sidebar: #f7f7f7;
     --accent-gold: #c69c6d;
     --accent-gold-hover: #b8894d;
+    
+    /* Legacy variable mappings for existing components */
+    --bg: #faf7f1;
+    --bg-workspace: #faf7f1;
+    --surface-1: #f7f7f7;
+    --surface-2: #ffffff;
+    --surface-3: #fafafa;
+    --text-1: #0a0a0a;
+    --text-2: #404040;
+    --text-3: #525252;
+    --icon-default: #525252;
+    --divider: #e5e5e5;
+    --border-color: #d4d4d4;
+    --nav-bg: #ffffff;
+    --nav-hover-bg: rgba(0, 0, 0, 0.04);
+    --nav-active-bg: rgba(198, 156, 109, 0.12);
+    --brand-active: #c69c6d;
+    --brand-gold: #c69c6d;
+    --brand-primary: #c69c6d;
+    --card-bg: #ffffff;
+    --card-border: #e5e5e5;
+    --card-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    --table-row-bg: #ffffff;
+    --table-row-hover: rgba(0, 0, 0, 0.02);
+    --selection-row-bg: rgba(198, 156, 109, 0.08);
+    --selection-bar-accent: #c69c6d;
   }
   
   [data-theme="dark"],
@@ -116,6 +142,32 @@
     --bg-sidebar: #0f0f0f;
     --accent-gold: #d4a855;
     --accent-gold-hover: #e0b866;
+    
+    /* Legacy variable mappings for dark mode */
+    --bg: #0a0a0a;
+    --bg-workspace: #0a0a0a;
+    --surface-1: #0f0f0f;
+    --surface-2: #171717;
+    --surface-3: #1f1f1f;
+    --text-1: #fafafa;
+    --text-2: #a3a3a3;
+    --text-3: #737373;
+    --icon-default: #a3a3a3;
+    --divider: #262626;
+    --border-color: #404040;
+    --nav-bg: #0f0f0f;
+    --nav-hover-bg: rgba(255, 255, 255, 0.04);
+    --nav-active-bg: rgba(212, 168, 85, 0.15);
+    --brand-active: #d4a855;
+    --brand-gold: #d4a855;
+    --brand-primary: #d4a855;
+    --card-bg: #171717;
+    --card-border: #262626;
+    --card-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    --table-row-bg: #171717;
+    --table-row-hover: rgba(255, 255, 255, 0.02);
+    --selection-row-bg: rgba(212, 168, 85, 0.12);
+    --selection-bar-accent: #d4a855;
   }
   
   * {
