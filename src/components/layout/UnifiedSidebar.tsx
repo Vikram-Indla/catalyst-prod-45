@@ -78,7 +78,7 @@ export function UnifiedSidebar({
   
   const menuItems = menuConfigs[workspaceType];
   const entityLabel = workspaceType === 'program' ? 'Program' : 'Project';
-  const tableName = workspaceType === 'program' ? 'programs' : 'programs';
+  const tableName = workspaceType === 'program' ? 'programs' : 'projects';
 
   // Fetch entity details
   const { data: entity } = useQuery({

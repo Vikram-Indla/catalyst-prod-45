@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { WorkItem, WorkItemType, WorkItemWithChildren, WorkHubFilters, StatusCategory, STATUS_CATEGORY_MAP } from '../types';
+import { WorkItem, WorkItemType, WorkItemWithChildren, WorkHubFilters, StatusCategory } from '../types';
 
 // Map database status to status category
 const getStatusCategory = (status: string): StatusCategory => {
@@ -18,8 +18,8 @@ export function useWorkItems(projectId: string, filters?: Partial<WorkHubFilters
   return useQuery({
     queryKey: ['work-items', projectId, filters],
     queryFn: async () => {
-      // Fetch real features from the database
-      const { data: features, error } = await supabase
+      // Fetch real features from the database for this project
+      const { data: features, error: featuresError } = await supabase
         .from('features')
         .select(`
           id,
@@ -30,6 +30,7 @@ export function useWorkItems(projectId: string, filters?: Partial<WorkHubFilters
           updated_at,
           epic_id,
           estimate_points,
+          owner_id,
           epics (
             id,
             epic_key,
@@ -39,9 +40,40 @@ export function useWorkItems(projectId: string, filters?: Partial<WorkHubFilters
         .eq('project_id', projectId)
         .is('deleted_at', null);
 
-      if (error) {
-        console.error('Error fetching features:', error);
-        throw error;
+      if (featuresError) {
+        console.error('Error fetching features:', featuresError);
+        throw featuresError;
+      }
+
+      const featureIds = (features || []).map(f => f.id);
+      
+      // Fetch stories for these features
+      let stories: any[] = [];
+      if (featureIds.length > 0) {
+        const { data: storyData, error: storiesError } = await supabase
+          .from('stories')
+          .select(`
+            id,
+            story_key,
+            title,
+            name,
+            status,
+            state,
+            created_at,
+            updated_at,
+            feature_id,
+            assignee_id,
+            priority,
+            story_points
+          `)
+          .in('feature_id', featureIds)
+          .is('deleted_at', null);
+
+        if (storiesError) {
+          console.error('Error fetching stories:', storiesError);
+        } else {
+          stories = storyData || [];
+        }
       }
 
       // Transform database features to WorkItem format
@@ -53,13 +85,31 @@ export function useWorkItems(projectId: string, filters?: Partial<WorkHubFilters
         status: feature.status || 'open',
         statusCategory: getStatusCategory(feature.status || 'open'),
         priority: 'MEDIUM' as any,
-        createdAt: feature.created_at,
-        updatedAt: feature.updated_at,
+        createdAt: feature.created_at || new Date().toISOString(),
+        updatedAt: feature.updated_at || new Date().toISOString(),
         commentsCount: 0,
         epicId: feature.epic_id || undefined,
         epicKey: feature.epics?.epic_key || undefined,
         epicName: feature.epics?.name || undefined,
       }));
+
+      // Transform stories to WorkItem format
+      const storyItems: WorkItem[] = stories.map(story => ({
+        id: story.id,
+        key: story.story_key || `S-${story.id.slice(0, 4)}`,
+        type: 'STORY' as WorkItemType,
+        summary: story.title || story.name || 'Untitled Story',
+        status: story.status || story.state || 'backlog',
+        statusCategory: getStatusCategory(story.status || story.state || 'backlog'),
+        priority: (story.priority || 'MEDIUM') as any,
+        createdAt: story.created_at || new Date().toISOString(),
+        updatedAt: story.updated_at || new Date().toISOString(),
+        commentsCount: 0,
+        parentId: story.feature_id,
+        storyPoints: story.story_points,
+      }));
+
+      items = [...items, ...storyItems];
 
       // Apply filters
       if (filters?.search) {
@@ -118,8 +168,10 @@ export function useWorkItemsHierarchy(projectId: string) {
         parent.hasChildren = true;
         node.level = parent.level + 1;
       } else if (item.type === 'FEATURE') {
+        // Features are root items
         roots.push(node);
       }
+      // Stories without a valid parent feature are orphaned - skip them
     });
     
     return roots;
