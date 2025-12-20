@@ -202,11 +202,7 @@ function KPICard({
 }) {
   return (
     <div 
-      className="flex-1 min-w-[140px] p-3 rounded-lg"
-      style={{ 
-        backgroundColor: 'var(--surface-1)',
-        border: '1px solid var(--border-default)',
-      }}
+      className="flex-1 min-w-[140px] p-3 rounded-lg bg-card border border-border"
     >
       <div className="flex items-center gap-2 mb-1.5">
         <Icon size={12} style={{ color: 'var(--text-muted)' }} />
@@ -843,8 +839,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                 >
                   Alignment
                   <span 
-                    className="ml-1.5 text-[10px] px-1.5 py-0.5 rounded"
-                    style={{ backgroundColor: 'var(--brand-gold-bg)', color: 'var(--brand-gold)' }}
+                    className="ml-1.5 text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground"
                   >
                     {objectives.length + epics.length}
                   </span>
@@ -914,11 +909,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
 
                   {/* Summary / Description */}
                   <section 
-                    className="rounded-lg p-4"
-                    style={{ 
-                      backgroundColor: 'var(--surface-bg)',
-                      border: '1px solid var(--border-default)',
-                    }}
+                    className="rounded-lg p-4 bg-muted border border-border"
                   >
                     <div className="flex items-center gap-2 mb-3">
                       <FileText size={14} style={{ color: 'var(--text-muted)' }} />
@@ -981,11 +972,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                 <TabsContent value="alignment" className="mt-0 space-y-4">
                   {/* Linked Objectives */}
                   <section 
-                    className="rounded-lg p-4"
-                    style={{ 
-                      backgroundColor: 'var(--surface-bg)',
-                      border: '1px solid var(--border-default)',
-                    }}
+                    className="rounded-lg p-4 bg-muted border border-border"
                   >
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
@@ -995,8 +982,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                         </span>
                         {objectives.length > 0 && (
                           <span 
-                            className="text-[10px] font-semibold px-1.5 py-0.5 rounded"
-                            style={{ backgroundColor: 'var(--brand-gold-bg)', color: 'var(--brand-gold)' }}
+                            className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-muted text-muted-foreground"
                           >
                             {objectives.length}
                           </span>
@@ -1063,8 +1049,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                             >
                               <div className="flex items-center gap-2 min-w-0 flex-1">
                                 <span 
-                                  className="text-[9px] font-semibold px-1.5 py-0.5 rounded shrink-0"
-                                  style={{ backgroundColor: 'var(--brand-gold-bg)', color: 'var(--brand-gold)' }}
+                                  className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-muted text-muted-foreground shrink-0"
                                 >
                                   OBJ
                                 </span>
@@ -1098,11 +1083,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
 
                   {/* Aligned Epics */}
                   <section 
-                    className="rounded-lg p-4"
-                    style={{ 
-                      backgroundColor: 'var(--surface-bg)',
-                      border: '1px solid var(--border-default)',
-                    }}
+                    className="rounded-lg p-4 bg-muted border border-border"
                   >
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
@@ -1112,8 +1093,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                         </span>
                         {epics.length > 0 && (
                           <span 
-                            className="text-[10px] font-semibold px-1.5 py-0.5 rounded"
-                            style={{ backgroundColor: 'var(--secondary-bronze-bg)', color: 'var(--secondary-bronze)' }}
+                            className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-muted text-muted-foreground"
                           >
                             {epics.length}
                           </span>
