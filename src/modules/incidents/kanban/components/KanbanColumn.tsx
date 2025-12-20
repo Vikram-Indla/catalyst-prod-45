@@ -88,18 +88,18 @@ export const KanbanColumn = memo(function KanbanColumn({
       >
         {/* Collapsed Header */}
         <div className="flex flex-col items-center gap-1.5 px-1.5 py-2.5 border-b border-border/50 bg-muted/30 rounded-t-lg">
-          <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/60" />
+          <ChevronRight className="h-3.5 w-3.5 text-[var(--text-3)]" />
         </div>
         
         {/* Vertical Label + Stats */}
         <div className="flex-1 flex flex-col items-center justify-start py-3 gap-2">
           <span 
-            className="text-[11px] font-medium text-muted-foreground writing-mode-vertical"
+            className="text-[11px] font-medium text-[var(--text-2)] writing-mode-vertical"
             style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
           >
             {config.label}
           </span>
-          <span className="text-[11px] font-medium text-foreground/80">
+          <span className="text-[11px] font-medium text-[var(--text-1)]">
             {stats.total}
           </span>
         </div>
@@ -117,21 +117,21 @@ export const KanbanColumn = memo(function KanbanColumn({
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
-      {/* Column Header - Executive Clean */}
+      {/* Column Header - Executive Clean, Green-led */}
       <div 
         className="flex items-center gap-1.5 px-2.5 py-2 border-b border-border/50 bg-muted/30 rounded-t-lg cursor-pointer hover:bg-muted/40 transition-colors"
         onClick={handleToggle}
       >
         {/* Collapse chevron - subtle */}
         {onToggleCollapse && (
-          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground/50 flex-shrink-0" />
+          <ChevronDown className="h-3.5 w-3.5 text-[var(--text-3)] flex-shrink-0" />
         )}
         
-        {/* Column name + count */}
-        <span className="text-sm font-medium text-foreground truncate">
+        {/* Column name + count - READABLE typography */}
+        <span className="text-sm font-medium text-[var(--text-1)] truncate">
           {config.label}
         </span>
-        <span className="text-xs text-muted-foreground font-normal">
+        <span className="text-xs text-[var(--text-2)] font-normal">
           ({stats.total})
         </span>
         
@@ -139,11 +139,11 @@ export const KanbanColumn = memo(function KanbanColumn({
         <div className="flex-1" />
         
         {/* Secondary micro-metrics - context-aware */}
-        <div className="flex items-center gap-2.5 text-[11px] text-muted-foreground/70">
+        <div className="flex items-center gap-2.5 text-[11px] text-[var(--text-3)]">
           {/* Committee column: Due Soon metric */}
           {status === 'to_committee' && dueSoonCount > 0 && (
             <span className="flex items-center gap-0.5 font-normal">
-              <Clock className="h-3 w-3 text-[var(--brand-gold)]" />
+              <Clock className="h-3 w-3 text-[var(--secondary-green)]" />
               Due Soon: <span className="font-medium text-[var(--text-2)]">{dueSoonCount}</span>
             </span>
           )}
@@ -151,12 +151,12 @@ export const KanbanColumn = memo(function KanbanColumn({
           {/* Standard metrics for non-Committee columns */}
           {status !== 'to_committee' && stats.atRisk > 0 && (
             <span className="font-normal">
-              At Risk: <span className="font-medium text-muted-foreground">{stats.atRisk}</span>
+              At Risk: <span className="font-medium text-[var(--text-2)]">{stats.atRisk}</span>
             </span>
           )}
           {status !== 'to_committee' && stats.breached > 0 && (
             <span className="font-normal">
-              Breached: <span className="font-medium text-muted-foreground">{stats.breached}</span>
+              Breached: <span className="font-medium text-[var(--text-2)]">{stats.breached}</span>
             </span>
           )}
         </div>
