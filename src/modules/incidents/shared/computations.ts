@@ -206,10 +206,11 @@ export const QUICK_FILTERS: QuickFilterConfig[] = [
   },
   {
     key: 'committee',
-    label: 'CAB Configured',
+    label: 'Committee Configured',
     color: 'var(--brand-gold)',
-    // "Committee configured" = has committee approvers set up (not the status)
-    match: (inc) => inc.requires_committee && inc.status !== 'to_committee',
+    // "Committee Configured" = in Committee column AND has approvers (validates governance)
+    match: (inc) => inc.status === 'to_committee' && 
+      (inc.committee?.members?.length ?? 0) > 0,
   },
   {
     key: 'unassigned',
