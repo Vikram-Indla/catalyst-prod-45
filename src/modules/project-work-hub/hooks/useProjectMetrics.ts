@@ -111,22 +111,22 @@ export function useStatusDistribution(projectId: string, includeFeatures: boolea
         });
       }
 
-      // Status color mapping
+      // Status color mapping using semantic CSS variable colors
       const statusColors: Record<string, string> = {
-        'todo': '#2684FF',
-        'in_progress': '#0052CC',
-        'done': '#00875A',
-        'funnel': '#6554C0',
-        'analyzing': '#FF8B00',
-        'backlog': '#2684FF',
-        'implementing': '#0052CC',
+        'todo': 'hsl(var(--primary))',
+        'in_progress': 'hsl(var(--chart-1))',
+        'done': 'hsl(var(--chart-2))',
+        'funnel': 'hsl(var(--chart-4))',
+        'analyzing': 'hsl(var(--chart-3))',
+        'backlog': 'hsl(var(--primary))',
+        'implementing': 'hsl(var(--chart-1))',
       };
 
       // Convert to array
       return Object.entries(statusCounts).map(([status, count]) => ({
         status: status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
         count,
-        color: statusColors[status] || '#6B778C',
+        color: statusColors[status] || 'hsl(var(--muted-foreground))',
       }));
     },
   });

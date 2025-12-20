@@ -31,7 +31,7 @@ interface Project {
   category: string;
   lead: { name: string; avatar?: string };
   icon: string;
-  iconBg: string;
+  iconBgClass: string;
   isStarred: boolean;
 }
 
@@ -68,7 +68,8 @@ export default function ProjectDirectory() {
     },
   });
 
-  const iconColors = ['#4C9AFF', '#FF5630', '#00B8D9', '#FFC400', '#36B37E', '#6554C0'];
+  // Using semantic color classes instead of hex colors
+  const iconBgClasses = ['bg-blue-500', 'bg-red-500', 'bg-cyan-500', 'bg-amber-500', 'bg-green-500', 'bg-purple-500'];
   const icons = ['🧭', '💼', '🏢', '🔧', '📊', '📱', '⚙️', '🚀'];
 
   const projects: Project[] = (projectsData || []).map((p: any, index) => ({
@@ -82,7 +83,7 @@ export default function ProjectDirectory() {
     category: 'Software',
     lead: { name: 'Unassigned' },
     icon: icons[index % icons.length],
-    iconBg: iconColors[index % iconColors.length],
+    iconBgClass: iconBgClasses[index % iconBgClasses.length],
     isStarred: starredProjects.has(p.id),
   }));
 
@@ -180,7 +181,7 @@ export default function ProjectDirectory() {
                 <Star className={`w-4 h-4 ${project.isStarred ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
               </button>
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded flex items-center justify-center text-sm" style={{ background: project.iconBg }}>{project.icon}</div>
+                <div className={`w-6 h-6 rounded flex items-center justify-center text-sm ${project.iconBgClass}`}>{project.icon}</div>
                 <span className="text-sm font-medium text-primary">{project.name}</span>
               </div>
               <code className="text-xs bg-muted px-1.5 py-0.5 rounded">{project.key}</code>

@@ -20,8 +20,7 @@ export const PriorityIcon: React.FC<PriorityIconProps> = ({ priority, showLabel 
 
   return (
     <span 
-      className="inline-flex items-center gap-1"
-      style={{ color: config.color }}
+      className={`inline-flex items-center gap-1 ${config.colorClass}`}
       title={config.label}
     >
       <IconComponent className="w-4 h-4" />

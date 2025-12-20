@@ -21,8 +21,7 @@ export const WorkTypeIcon: React.FC<WorkTypeIconProps> = ({ type, size = 'small'
 
   return (
     <span 
-      className={`inline-flex items-center justify-center ${sizeClass}`}
-      style={{ color: config.color }}
+      className={`inline-flex items-center justify-center ${sizeClass} ${config.colorClass}`}
       title={config.label}
     >
       <IconComponent className={sizeClass} />

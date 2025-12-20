@@ -140,15 +140,22 @@ export const SummaryTab: React.FC<SummaryTabProps> = ({ projectId }) => {
               <div className="flex items-end gap-4 h-full pt-4">
                 {priorityData.map((item) => {
                   const maxCount = Math.max(...priorityData.map(p => p.count));
-                  const heightPct = (item.count / maxCount) * 100;
+                  const heightPct = maxCount > 0 ? (item.count / maxCount) * 100 : 0;
+                  // Map priority to CSS classes for bar colors
+                  const priorityBarColors: Record<string, string> = {
+                    HIGHEST: 'bg-destructive',
+                    HIGH: 'bg-red-500 dark:bg-red-400',
+                    MEDIUM: 'bg-amber-500 dark:bg-amber-400',
+                    LOW: 'bg-green-600 dark:bg-green-400',
+                    LOWEST: 'bg-muted-foreground',
+                  };
                   return (
                     <div key={item.priority} className="flex-1 flex flex-col items-center">
                       <div 
-                        className="w-full rounded-t-sm"
+                        className={`w-full rounded-t-sm ${priorityBarColors[item.priority] || 'bg-muted-foreground'}`}
                         style={{ 
                           height: `${heightPct}%`,
                           minHeight: 4,
-                          backgroundColor: PRIORITY_CONFIG[item.priority].color,
                         }} 
                       />
                       <div className="text-[11px] text-muted-foreground mt-2 text-center">
@@ -177,7 +184,7 @@ export const SummaryTab: React.FC<SummaryTabProps> = ({ projectId }) => {
             {typeData?.map((item) => (
               <div key={item.type} className="flex items-center gap-3">
                 <div className="flex items-center gap-2 w-36 flex-shrink-0">
-                  <span style={{ color: WORK_ITEM_TYPE_CONFIG[item.type].color }}>●</span>
+                  <span className={WORK_ITEM_TYPE_CONFIG[item.type].colorClass}>●</span>
                   <span className="text-sm text-foreground">
                     {WORK_ITEM_TYPE_CONFIG[item.type].label}
                   </span>
