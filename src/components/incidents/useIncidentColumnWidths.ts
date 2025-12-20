@@ -6,25 +6,26 @@ import { useState, useCallback } from 'react';
 
 const STORAGE_KEY = 'catalyst-incident-list-column-widths';
 
-// Default column widths - enterprise-grade stable widths
+// Default column widths - enterprise-grade fixed widths per spec
 export const DEFAULT_COLUMN_WIDTHS: Record<string, number> = {
-  key: 110,         // Compact key column
-  summary: 280,     // Flexible - takes remaining space
-  severity: 80,     // Compact severity with dot
-  level: 50,        // Plain text L1/L2/L3
-  status: 110,      // Compact status pill
-  assignee: 160,    // Avatar + truncated name
-  age: 55,          // Compact numeric
-  sla: 70,          // Subtle text
+  key: 110,           // Fixed key column
+  summary: 320,       // Fixed width, NOT flexible - scroll if needed
+  severity: 80,       // Compact severity with dot
+  level: 50,          // Plain text L1/L2/L3
+  status: 110,        // Compact status pill
+  assignee: 160,      // Avatar + truncated name
+  age: 55,            // Compact numeric tabular
+  sla: 70,            // Subtle text color
   releaseVersion: 90, // Plain text version
-  major: 60,        // Small badge or "—"
-  committee: 90,    // Text only
+  major: 70,          // Small badge or "—"
+  committee: 90,      // Text only
+  actions: 32,        // Fixed actions column
 };
 
 // Minimum widths to prevent collapse
 export const MIN_COLUMN_WIDTHS: Record<string, number> = {
   key: 80,
-  summary: 180,
+  summary: 200,       // Minimum readable summary width
   severity: 65,
   level: 40,
   status: 90,
@@ -32,8 +33,9 @@ export const MIN_COLUMN_WIDTHS: Record<string, number> = {
   age: 45,
   sla: 55,
   releaseVersion: 70,
-  major: 50,
+  major: 55,
   committee: 70,
+  actions: 32,
 };
 
 export function useIncidentColumnWidths() {
