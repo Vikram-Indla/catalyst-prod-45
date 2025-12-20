@@ -40,6 +40,7 @@ import Features from "./pages/Features";
 import FeaturesPage from "./pages/items/FeaturesPage";
 import FeaturesBacklog from "./pages/FeaturesBacklog";
 import FeaturePrioritizationView from "./pages/items/FeaturePrioritizationView";
+import FeatureViewPage from "./pages/project/FeatureViewPage";
 import { EpicBalancingPage } from "./modules/epic-balancing";
 
 import Defects from "./pages/Defects";
@@ -447,6 +448,8 @@ const App = () => (
               <Route path="/projects/:projectKey" element={<ProjectSummaryPage />} />
               <Route path="/projects/:projectKey/summary" element={<ProjectSummaryPage />} />
               <Route path="/projects/:projectKey/settings" element={<ProjectSettingsPage />} />
+              <Route path="/projects/:projectId/features" element={<FeaturesPage />} />
+              <Route path="/projects/:projectId/features/:featureId" element={<FeatureViewPage />} />
               <Route path="/project/:projectId/work" element={<ProjectWorkHubPage />} />
               <Route path="/teams" element={<TeamComingSoon />} />
               <Route path="/teams/:teamId/room" element={<TeamComingSoon />} />

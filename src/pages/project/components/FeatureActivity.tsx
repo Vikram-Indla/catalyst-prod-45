@@ -1,10 +1,12 @@
 /**
  * FeatureActivity — Activity feed with tabs (All / Comments / History)
+ * Fetches real data from discussions table, shows "No activity" if empty.
  */
 
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { formatDistanceToNow } from 'date-fns';
 import styles from '../FeatureViewPage.module.css';
 
 interface FeatureActivityProps {
@@ -22,41 +24,45 @@ interface ActivityItem {
   type: 'comment' | 'system';
 }
 
+function getInitials(name: string): string {
+  return name
+    .split(' ')
+    .map(n => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
+}
+
 export function FeatureActivity({ featureId }: FeatureActivityProps) {
   const [activeTab, setActiveTab] = useState<ActivityTab>('all');
   const [comment, setComment] = useState('');
   
-  // Fetch activity (mock for now)
+  // Fetch real discussions/comments from database
   const { data: activities = [] } = useQuery({
     queryKey: ['feature-activity', featureId],
     queryFn: async (): Promise<ActivityItem[]> => {
-      // Mock data matching screenshot
-      return [
-        {
-          id: '1',
-          authorInitials: 'SA',
-          authorName: 'Sarah Ahmed',
-          time: '2 hours ago',
-          content: "Updated on the security review - we're still waiting for InfoSec to complete their assessment. @Omar can you follow up with the team today?",
-          type: 'comment',
-        },
-        {
-          id: '2',
-          authorInitials: 'OT',
-          authorName: 'Omar Taleb',
-          time: 'Yesterday',
-          content: "The Absher integration is progressing well. We've completed the sandbox testing and are ready for production credentials. Waiting on the official API keys from NIC.",
-          type: 'comment',
-        },
-        {
-          id: '3',
-          authorInitials: 'SY',
-          authorName: 'System',
-          time: '2 days ago',
-          content: 'Health changed from On Track to At Risk',
-          type: 'system',
-        },
-      ];
+      // Fetch discussions for this feature
+      const { data: discussions, error } = await supabase
+        .from('discussions')
+        .select('id, message, created_at, user_id')
+        .eq('entity_type', 'feature')
+        .eq('entity_id', featureId)
+        .order('created_at', { ascending: false })
+        .limit(20);
+      
+      if (error || !discussions) {
+        return [];
+      }
+      
+      // Map to activity items
+      return discussions.map(d => ({
+        id: d.id,
+        authorInitials: 'U',
+        authorName: 'User',
+        time: formatDistanceToNow(new Date(d.created_at), { addSuffix: true }),
+        content: d.message,
+        type: 'comment' as const,
+      }));
     },
     enabled: !!featureId,
   });
@@ -106,13 +112,12 @@ export function FeatureActivity({ featureId }: FeatureActivityProps) {
       {/* Activity List */}
       <div className={styles.activityList}>
         {filteredActivities.length === 0 ? (
-          <span className={styles.noneValue}>No activity yet.</span>
+          <span className={styles.noneValue}>No activity yet</span>
         ) : (
           filteredActivities.map(item => (
             <div key={item.id} className={styles.activityItem}>
               <div 
-                className={styles.activityAvatar}
-                style={item.type === 'system' ? { background: '#8b7355' } : undefined}
+                className={`${styles.activityAvatar} ${item.type === 'system' ? styles.avatarSystem : ''}`}
               >
                 {item.authorInitials}
               </div>

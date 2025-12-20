@@ -1,5 +1,6 @@
 /**
  * FeatureDetailsSidebar — Right sidebar with details
+ * Shows real data only, displays "—" or "None" for missing fields.
  */
 
 import { Pencil, AlertTriangle } from 'lucide-react';
@@ -17,6 +18,7 @@ interface Feature {
   component?: string | null;
   theme?: string | null;
   release?: string | null;
+  reporter?: { id: string; name: string } | null;
 }
 
 interface FeatureDetailsSidebarProps {
@@ -50,7 +52,7 @@ export function FeatureDetailsSidebar({ feature }: FeatureDetailsSidebarProps) {
     <aside className={styles.sidebar}>
       <div className={styles.sidebarHeader}>
         <h3 className={styles.sidebarTitle}>DETAILS</h3>
-        <button className={styles.editBtn} onClick={handleEdit}>
+        <button className={styles.editBtn} onClick={handleEdit} aria-label="Edit details">
           <Pencil size={12} />
         </button>
       </div>
@@ -64,8 +66,10 @@ export function FeatureDetailsSidebar({ feature }: FeatureDetailsSidebarProps) {
               <AlertTriangle size={12} />
               High
             </span>
+          ) : feature.priority ? (
+            feature.priority
           ) : (
-            feature.priority || '—'
+            <span className={styles.noneValue}>—</span>
           )}
         </span>
       </div>
@@ -87,14 +91,20 @@ export function FeatureDetailsSidebar({ feature }: FeatureDetailsSidebarProps) {
         </span>
       </div>
       
-      {/* Reporter - mock */}
+      {/* Reporter */}
       <div className={styles.sidebarField}>
         <span className={styles.sidebarFieldLabel}>Reporter</span>
         <span className={styles.sidebarFieldValue}>
-          <div className={styles.avatar} style={{ width: 20, height: 20, fontSize: 9, background: '#8b7355' }}>
-            KA
-          </div>
-          Khalid Al-Rashid
+          {feature.reporter ? (
+            <>
+              <div className={styles.avatar} style={{ width: 20, height: 20, fontSize: 9 }}>
+                {getInitials(feature.reporter.name)}
+              </div>
+              {feature.reporter.name}
+            </>
+          ) : (
+            <span className={styles.noneValue}>—</span>
+          )}
         </span>
       </div>
       
@@ -135,7 +145,7 @@ export function FeatureDetailsSidebar({ feature }: FeatureDetailsSidebarProps) {
       <div className={styles.sidebarField}>
         <span className={styles.sidebarFieldLabel}>Component</span>
         <span className={styles.sidebarFieldValue}>
-          {feature.component || <span className={styles.noneValue}>None</span>}
+          {feature.component || <span className={styles.noneValue}>Not configured</span>}
         </span>
       </div>
       
@@ -143,7 +153,7 @@ export function FeatureDetailsSidebar({ feature }: FeatureDetailsSidebarProps) {
       <div className={styles.sidebarField}>
         <span className={styles.sidebarFieldLabel}>Theme</span>
         <span className={styles.sidebarFieldValue}>
-          <span className={styles.noneValue}>None</span>
+          <span className={styles.noneValue}>Not configured</span>
         </span>
       </div>
       
@@ -151,7 +161,7 @@ export function FeatureDetailsSidebar({ feature }: FeatureDetailsSidebarProps) {
       <div className={styles.sidebarField}>
         <span className={styles.sidebarFieldLabel}>Release</span>
         <span className={styles.sidebarFieldValue}>
-          {feature.release || <span className={styles.noneValue}>None</span>}
+          {feature.release || <span className={styles.noneValue}>Not configured</span>}
         </span>
       </div>
       
