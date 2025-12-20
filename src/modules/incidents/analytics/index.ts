@@ -11,3 +11,4 @@ export * from './components/BreakdownTiles';
 export * from './components/MajorIncidentsTable';
 export * from './components/DrilldownDrawer';
 export * from './components/TimeRangeSelector';
+export * from './components/RequiresAttentionTabs';

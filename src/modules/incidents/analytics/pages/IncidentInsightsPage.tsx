@@ -3,15 +3,15 @@
  * Premium Executive Operational Report for CIOs
  */
 
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { Printer, Loader2, ChevronRight, AlertTriangle, Target, TrendingUp, TrendingDown, Minus, Lightbulb, Clock, ArrowRight, FileText, Users, Zap } from 'lucide-react';
+import { Printer, Loader2, AlertTriangle, Target, TrendingUp, TrendingDown, Minus, Lightbulb, Clock, ArrowRight, FileText, Users, Zap, List, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
 import { usePeriodAnalytics } from '../hooks/usePeriodAnalytics';
 import { useIncidentInsights } from '../hooks/useIncidentInsights';
 import { DrilldownDrawer } from '../components/DrilldownDrawer';
-import { ModeSwitchSegment } from '../components/ModeSwitchSegment';
 import { useIncidentDetail } from '../hooks/useIncidentDetail';
 import IncidentDetailModal from '@/components/incidents/modal/IncidentDetailModal';
 import { cn } from '@/lib/utils';
@@ -752,7 +752,44 @@ function InsightTabContent({ period, onDrilldown, onRowClick }: InsightTabConten
 // MAIN PAGE
 // ============================================================================
 
+type ViewMode = 'list' | 'analytics' | 'insights';
+
+function ViewSwitch({ currentMode }: { currentMode: ViewMode }) {
+  const navigate = useNavigate();
+  
+  const modes: { value: ViewMode; label: string; icon: React.ElementType; path: string }[] = [
+    { value: 'list', label: 'List', icon: List, path: '/release/incidents' },
+    { value: 'analytics', label: 'Analytics', icon: BarChart3, path: '/release/incidents/analytics' },
+    { value: 'insights', label: 'Insights', icon: Lightbulb, path: '/release/incidents/insights' },
+  ];
+
+  return (
+    <div className="inline-flex items-center rounded-lg border border-border bg-muted/30 p-1">
+      {modes.map((mode) => {
+        const Icon = mode.icon;
+        const isActive = currentMode === mode.value;
+        return (
+          <button
+            key={mode.value}
+            onClick={() => navigate(mode.path)}
+            className={cn(
+              "inline-flex items-center gap-2 px-3.5 py-2 text-sm font-medium rounded-md transition-all",
+              isActive 
+                ? "bg-background text-foreground shadow-sm" 
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+            )}
+          >
+            <Icon className="h-4 w-4" />
+            {mode.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function IncidentInsightsPage() {
+  const navigate = useNavigate();
   const [activePeriod, setActivePeriod] = useState<InsightPeriod>('today');
   const [activeFilter, setActiveFilter] = useState<DrilldownFilter | null>(null);
   const [filteredIncidents, setFilteredIncidents] = useState<IncidentWithSLA[]>([]);
@@ -760,9 +797,9 @@ export default function IncidentInsightsPage() {
   
   const { data: selectedIncident } = useIncidentDetail(selectedIncidentId);
 
-  const handleDrilldown = (filter: DrilldownFilter, incidents: IncidentWithSLA[]) => {
+  const handleDrilldown = (filter: DrilldownFilter, incidentList: IncidentWithSLA[]) => {
     setActiveFilter(filter);
-    setFilteredIncidents(incidents);
+    setFilteredIncidents(incidentList);
   };
 
   const handleCloseDrilldown = () => {
@@ -780,49 +817,31 @@ export default function IncidentInsightsPage() {
 
   return (
     <div className="h-full flex flex-col bg-background">
-      {/* Header */}
-      <div className="border-b border-border bg-card flex-shrink-0">
-        <div className="px-8 py-5">
-          {/* Breadcrumb */}
-          <nav className="flex items-center gap-1.5 text-sm text-muted-foreground mb-3">
-            <Link to="/release" className="hover:text-foreground transition-colors">
-              Release
-            </Link>
-            <ChevronRight className="h-3.5 w-3.5" />
-            <Link to="/release/incidents" className="hover:text-foreground transition-colors">
-              Incident List
-            </Link>
-            <ChevronRight className="h-3.5 w-3.5" />
-            <span className="text-foreground font-medium">Insights</span>
-          </nav>
-          
-          {/* Title Row */}
-          <div className="flex items-start justify-between">
-            <div>
-              <h1 className="text-2xl font-semibold text-foreground tracking-tight">
-                Incident Insights
-              </h1>
-              <p className="text-sm text-muted-foreground mt-1">
-                Executive operational report
-              </p>
-            </div>
-            <div className="flex items-center gap-5">
-              <ModeSwitchSegment currentMode="insights" />
-              <div className="h-6 w-px bg-border" />
-              <Button variant="outline" size="sm" onClick={handlePrint} className="h-9">
-                <Printer className="h-4 w-4 mr-2" />
-                Print / PDF
-              </Button>
-            </div>
+      <GlobalPageHeader
+        sectionLabel="RELEASE"
+        pageTitle="Incident Insights"
+        rightActions={
+          <div className="flex items-center gap-4">
+            <ViewSwitch currentMode="insights" />
+            <div className="h-6 w-px bg-border" />
+            <Button variant="outline" size="sm" onClick={handlePrint} className="h-8 px-3 text-sm">
+              <Printer className="h-4 w-4 mr-2" />
+              Print / PDF
+            </Button>
           </div>
-        </div>
+        }
+      />
+
+      {/* Subtitle bar */}
+      <div className="px-6 py-2 border-b border-border bg-muted/20">
+        <p className="text-sm text-muted-foreground">Executive operational report</p>
       </div>
 
       {/* Content with Tabs */}
       <div className="flex-1 overflow-auto">
-        <div className="px-8 py-6 max-w-[1400px]">
+        <div className="px-6 py-6 max-w-[1600px]">
           <Tabs value={activePeriod} onValueChange={(v) => setActivePeriod(v as InsightPeriod)}>
-            <TabsList className="mb-8 p-1 bg-muted/40 border border-border">
+            <TabsList className="mb-8 p-1 bg-muted/40 border border-border h-10">
               {PERIOD_TABS.map(tab => (
                 <TabsTrigger 
                   key={tab.value} 
