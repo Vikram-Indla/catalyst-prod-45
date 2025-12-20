@@ -72,6 +72,7 @@
     --text-2: #404040;
     --text-3: #525252;
     --text-4: #737373;
+    --text-secondary-strong: 0 0% 30%;  /* #4d4d4d - darker than muted, readable */
     --icon-default: #525252;
     --divider: #e5e5e5;
     --border-color: #d4d4d4;
@@ -178,6 +179,7 @@
     --text-2: #a3a3a3;
     --text-3: #737373;
     --text-4: #525252;
+    --text-secondary-strong: 0 0% 75%;  /* #bfbfbf - lighter for dark mode */
     --icon-default: #a3a3a3;
     --divider: #262626;
     --border-color: #404040;

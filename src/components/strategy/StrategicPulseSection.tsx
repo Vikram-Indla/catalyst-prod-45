@@ -89,13 +89,13 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
         className="rounded-lg overflow-hidden bg-card border border-border"
         style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
       >
-        <div className="px-4 py-2.5 border-b border-border/50">
+        <div className="px-4 py-2.5 border-b border-border">
           <Skeleton className="h-4 w-32" />
         </div>
         <div className="p-3">
           <div className="flex flex-col lg:flex-row gap-3">
             {/* Primary card skeleton */}
-            <div className="lg:w-[220px] flex-shrink-0 p-4 rounded-md bg-muted border border-border/50 min-h-[120px]">
+            <div className="lg:w-[220px] flex-shrink-0 p-4 rounded-md bg-muted border border-border min-h-[120px]">
               <Skeleton className="h-4 w-28 mb-3" />
               <Skeleton className="h-8 w-24 mb-2" />
               <Skeleton className="h-4 w-32" />
@@ -103,7 +103,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
             {/* Secondary cards skeleton */}
             <div className="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-2">
               {['s1', 's2', 's3', 's4'].map((key) => (
-                <div key={key} className="p-3 rounded-md bg-muted border border-border/50 min-h-[100px]">
+                <div key={key} className="p-3 rounded-md bg-muted border border-border min-h-[100px]">
                   <Skeleton className="h-4 w-20 mb-2" />
                   <Skeleton className="h-8 w-14 mb-1" />
                   <Skeleton className="h-4 w-24" />
@@ -124,7 +124,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
       style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
     >
       {/* Section Header */}
-      <div className="px-4 py-2.5 flex items-center justify-between border-b border-border/50">
+      <div className="px-4 py-2.5 flex items-center justify-between border-b border-border">
         <div className="flex items-center gap-2">
           <Activity size={14} className="text-primary" />
           <h2 className={cn(TYPOGRAPHY.sectionTitle, TEXT_COLORS.primary)}>
@@ -152,7 +152,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
         <div className="flex flex-col lg:flex-row gap-3">
           {/* PRIMARY CARD: Strategy Health */}
           <div 
-            className="lg:w-[220px] flex-shrink-0 p-4 rounded-md flex flex-col justify-between bg-muted/50 border border-border/50"
+            className="lg:w-[220px] flex-shrink-0 p-4 rounded-md flex flex-col justify-between bg-muted border border-border"
             style={{
               borderLeftWidth: '4px',
               borderLeftColor: displayData.overallStatus === 'on-track' 
@@ -192,7 +192,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
             </div>
 
             {/* Trend indicator */}
-            <div className="flex items-center gap-1.5 mt-3 pt-2 border-t border-border/50">
+            <div className="flex items-center gap-1.5 mt-3 pt-2 border-t border-border">
               <TrendIcon size={16} className={config.textClass} />
               <span className={cn(TYPOGRAPHY.subtext, 'font-medium', TEXT_COLORS.secondaryStrong)}>
                 {overallProgress}% · {trendLabel}
@@ -292,7 +292,7 @@ function CompactKPITile({
     <button
       onClick={onClick}
       className={cn(
-        "p-3 rounded-md text-left relative group w-full bg-muted/50 border border-border/50",
+        "p-3 rounded-md text-left relative group w-full bg-muted border border-border",
         "transition-[background-color,border-color] duration-150 ease-out",
         "hover:bg-accent/60 hover:border-border",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
