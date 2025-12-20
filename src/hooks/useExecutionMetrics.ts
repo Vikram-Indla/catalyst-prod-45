@@ -314,14 +314,21 @@ export function useStrategyPyramidCounts(snapshotId?: string) {
         .select('id', { count: 'exact', head: true });
 
       // Features linked to aligned epics
-      const { data: alignedFeatures = [] } = await supabase
-        .from('features')
-        .select('id, epic_id')
-        .in('epic_id', Array.from(alignedEpicIds).length > 0 ? Array.from(alignedEpicIds) : ['__none__']);
+      // IMPORTANT: never call `.in()` with a fake UUID (it causes request errors + retry loops)
+      let alignedFeaturesCount = 0;
+      if (alignedEpicIds.size > 0) {
+        const epicIds = Array.from(alignedEpicIds);
+        const { count, error: alignedFeaturesError } = await supabase
+          .from('features')
+          .select('id', { count: 'exact', head: true })
+          .in('epic_id', epicIds);
+
+        if (alignedFeaturesError) throw alignedFeaturesError;
+        alignedFeaturesCount = count ?? 0;
+      }
 
       const alignedEpicsCount = alignedEpicIds.size;
       const misalignedEpicsCount = (totalEpicsCount || 0) - alignedEpicsCount;
-      const alignedFeaturesCount = alignedFeatures.length;
       const misalignedFeaturesCount = (totalFeaturesCount || 0) - alignedFeaturesCount;
 
       return {
