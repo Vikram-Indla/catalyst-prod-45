@@ -2,14 +2,15 @@
  * FeatureKeyDetails — Epic, Owner, Health, Planned Dates grid
  * 
  * Epic picker is now editable but cannot be cleared (mandatory).
- * Matches Epic UI patterns.
+ * Owner, Assignee, Reporter linked to Global Directory (profiles table).
+ * Uses CatalystDatePicker for date selection.
  */
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Calendar, ChevronDown, Check, Loader2 } from 'lucide-react';
+import { ChevronDown, Check, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import {
   DropdownMenu,
@@ -22,8 +23,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Calendar as CalendarComponent } from '@/components/ui/calendar';
-import { Button } from '@/components/ui/button';
+import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
 import styles from '../FeatureViewPage.module.css';
@@ -99,14 +99,7 @@ function getHealthLabel(health: string | null): string {
 
 export function FeatureKeyDetails({ feature, onFeatureUpdated }: FeatureKeyDetailsProps) {
   const queryClient = useQueryClient();
-  const [datePopoverOpen, setDatePopoverOpen] = useState(false);
   const [epicPopoverOpen, setEpicPopoverOpen] = useState(false);
-  const [startDate, setStartDate] = useState<Date | undefined>(
-    feature.planned_start_date ? new Date(feature.planned_start_date) : undefined
-  );
-  const [endDate, setEndDate] = useState<Date | undefined>(
-    feature.planned_end_date ? new Date(feature.planned_end_date) : undefined
-  );
 
   // Fetch profiles for owner selection
   const { data: profiles = [] } = useQuery({
@@ -191,30 +184,6 @@ export function FeatureKeyDetails({ feature, onFeatureUpdated }: FeatureKeyDetai
       },
     });
   };
-
-  const handleSaveDates = () => {
-    // Validate dates
-    if (startDate && endDate && startDate > endDate) {
-      toast.error('Invalid dates', { description: 'Start date must be before end date' });
-      return;
-    }
-    
-    updateFeature.mutate({
-      planned_start_date: startDate ? format(startDate, 'yyyy-MM-dd') : null,
-      planned_end_date: endDate ? format(endDate, 'yyyy-MM-dd') : null,
-    }, {
-      onSuccess: () => {
-        toast.success('Dates updated');
-        setDatePopoverOpen(false);
-      },
-    });
-  };
-
-  const displayStartDate = formatDate(feature.planned_start_date);
-  const displayEndDate = formatDate(feature.planned_end_date);
-  const dateRange = displayStartDate && displayEndDate 
-    ? `${displayStartDate} – ${displayEndDate}` 
-    : displayStartDate || displayEndDate || '—';
   
   return (
     <div className={styles.keyDetailsGrid}>
@@ -340,54 +309,49 @@ export function FeatureKeyDetails({ feature, onFeatureUpdated }: FeatureKeyDetai
         </div>
       </div>
       
-      {/* Planned Dates - Editable */}
+      {/* Planned Dates - Editable with CatalystDatePicker */}
       <div className={styles.keyDetailItem}>
-        <div className={styles.keyDetailLabel}>PLANNED DATES</div>
+        <div className={styles.keyDetailLabel}>START DATE</div>
         <div className={styles.keyDetailValue}>
-          <Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}>
-            <PopoverTrigger asChild>
-              <button className={styles.editableField}>
-                <div className={styles.datesValue}>
-                  <Calendar size={14} />
-                  <span>{dateRange}</span>
-                </div>
-                <ChevronDown size={12} className={styles.editableChevron} />
-              </button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-4" align="start">
-              <div className="space-y-4">
-                <div>
-                  <label className="text-xs font-medium text-muted-foreground uppercase mb-2 block">
-                    Start Date
-                  </label>
-                  <CalendarComponent
-                    mode="single"
-                    selected={startDate}
-                    onSelect={setStartDate}
-                    initialFocus
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-muted-foreground uppercase mb-2 block">
-                    End Date
-                  </label>
-                  <CalendarComponent
-                    mode="single"
-                    selected={endDate}
-                    onSelect={setEndDate}
-                  />
-                </div>
-                <div className="flex justify-end gap-2">
-                  <Button variant="outline" size="sm" onClick={() => setDatePopoverOpen(false)}>
-                    Cancel
-                  </Button>
-                  <Button size="sm" onClick={handleSaveDates}>
-                    Save
-                  </Button>
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
+          <CatalystDatePicker
+            value={feature.planned_start_date}
+            onChange={(date) => {
+              if (date && feature.planned_end_date && date > new Date(feature.planned_end_date)) {
+                toast.error('Start date must be before end date');
+                return;
+              }
+              updateFeature.mutate({
+                planned_start_date: date ? format(date, 'yyyy-MM-dd') : null,
+              }, {
+                onSuccess: () => toast.success('Start date updated'),
+              });
+            }}
+            placeholder="Select start date"
+            triggerClassName={styles.editableField}
+          />
+        </div>
+      </div>
+      
+      <div className={styles.keyDetailItem}>
+        <div className={styles.keyDetailLabel}>DUE DATE</div>
+        <div className={styles.keyDetailValue}>
+          <CatalystDatePicker
+            value={feature.planned_end_date}
+            onChange={(date) => {
+              if (date && feature.planned_start_date && new Date(feature.planned_start_date) > date) {
+                toast.error('End date must be after start date');
+                return;
+              }
+              updateFeature.mutate({
+                planned_end_date: date ? format(date, 'yyyy-MM-dd') : null,
+              }, {
+                onSuccess: () => toast.success('Due date updated'),
+              });
+            }}
+            placeholder="Select due date"
+            minDate={feature.planned_start_date ? new Date(feature.planned_start_date) : undefined}
+            triggerClassName={styles.editableField}
+          />
         </div>
       </div>
     </div>

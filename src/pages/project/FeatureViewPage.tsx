@@ -95,11 +95,11 @@ export default function FeatureViewPage() {
       
       if (data.owner_id) {
         const { data: ownerData } = await supabase
-          .from('team_members')
-          .select('id, name')
+          .from('profiles')
+          .select('id, full_name')
           .eq('id', data.owner_id)
           .single();
-        owner = ownerData;
+        owner = ownerData ? { id: ownerData.id, name: ownerData.full_name || 'Unknown' } : null;
       }
       
       if (data.epic_id) {
