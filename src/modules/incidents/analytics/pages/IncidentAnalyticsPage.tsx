@@ -141,10 +141,6 @@ export default function IncidentAnalyticsPage() {
         }
       />
 
-      {/* Subtitle bar */}
-      <div className="px-6 py-2 border-b border-border bg-muted/20">
-        <p className="text-sm text-muted-foreground">Operations control room</p>
-      </div>
 
       {/* Content */}
       <div className="flex-1 overflow-auto">
