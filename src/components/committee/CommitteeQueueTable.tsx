@@ -60,8 +60,8 @@ const COLUMN_LABELS: Record<ColumnId, string> = {
   aging: 'AGE',
 };
 
-// Center-aligned columns (everything except key and summary)
-const CENTER_ALIGNED_COLUMNS: ColumnId[] = ['severity', 'major', 'status', 'progress', 'time', 'aging'];
+// Center-aligned columns (everything except key, summary, and lastAction)
+const CENTER_ALIGNED_COLUMNS: ColumnId[] = ['severity', 'major', 'status', 'progress', 'approvers', 'time', 'aging'];
 
 // Column width constraints
 const MIN_COLUMN_WIDTHS: Record<ColumnId, number> = {
@@ -476,7 +476,7 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
                       <ProgressBar completed={item.approvalsCompletedCount} total={item.approvalsRequiredCount} />
                     </div>
                     {/* APPROVERS */}
-                    <div className={cn(GRID_CELL_BASE, "px-2 flex items-center h-full")}>
+                    <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
                       <ApproversAvatars approvers={item.approvers} />
                     </div>
                     {/* LAST ACTION */}
