@@ -4,11 +4,12 @@
  */
 
 import { useState, lazy, Suspense } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Printer, Lightbulb, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useIncidentAnalytics, useFilteredIncidents } from '../hooks/useIncidentAnalytics';
+import { useIncidentDetail } from '../hooks/useIncidentDetail';
 import { ExecutiveSnapshot } from '../components/ExecutiveSnapshot';
 import { BreakdownTiles } from '../components/BreakdownTiles';
 import { MajorIncidentsTable } from '../components/MajorIncidentsTable';
@@ -19,7 +20,6 @@ import type { TimeRange, DrilldownFilter } from '../types';
 const IncidentDetailModal = lazy(() => import('@/components/incidents/modal/IncidentDetailModal'));
 
 export default function IncidentAnalyticsPage() {
-  const navigate = useNavigate();
   const [timeRange, setTimeRange] = useState<TimeRange>('7d');
   const [customStart, setCustomStart] = useState<Date>();
   const [customEnd, setCustomEnd] = useState<Date>();
@@ -29,6 +29,8 @@ export default function IncidentAnalyticsPage() {
   const { incidents, snapshot, breakdowns, majorIncidents, isLoading } = useIncidentAnalytics(
     timeRange, customStart, customEnd
   );
+
+  const { data: selectedIncident } = useIncidentDetail(selectedIncidentId);
 
   const filteredIncidents = useFilteredIncidents(
     incidents,
@@ -134,10 +136,10 @@ export default function IncidentAnalyticsPage() {
       />
 
       {/* Incident Detail Modal */}
-      {selectedIncidentId && (
+      {selectedIncident && (
         <Suspense fallback={null}>
           <IncidentDetailModal
-            incidentId={selectedIncidentId}
+            incident={selectedIncident}
             isOpen={!!selectedIncidentId}
             onClose={() => setSelectedIncidentId(null)}
           />
