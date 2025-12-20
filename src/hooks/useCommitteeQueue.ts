@@ -185,6 +185,8 @@ export function useCommitteeQueue(options: UseCommitteeQueueOptions = {}) {
 
   return useQuery({
     queryKey: ['committee-queue', { includeClosedDecisions }],
+    staleTime: 30000, // Cache for 30 seconds to avoid refetching
+    refetchOnWindowFocus: false, // Avoid refetch on tab switch
     queryFn: async () => {
       // Build query for incidents with committee
       let query = supabase
