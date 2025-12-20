@@ -61,7 +61,8 @@ export function TablePill({
         // Typography - 11px, line-height 20px for perfect centering
         'text-[11px] font-medium',
         'leading-5', // 20px line height matches height
-        'whitespace-nowrap',
+        // CRITICAL: Prevent pill from exceeding column width
+        'max-w-full min-w-0 overflow-hidden',
         // Variant styling
         variantStyles[variant] || variantStyles.default,
         className
@@ -75,7 +76,7 @@ export function TablePill({
           )} 
         />
       )}
-      {children}
+      <span className="truncate">{children}</span>
     </span>
   );
 }
