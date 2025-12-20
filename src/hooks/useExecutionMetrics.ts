@@ -284,11 +284,13 @@ export function useStrategyPyramidCounts(snapshotId?: string) {
       // Use either the count from strategic_themes or snapshot_strategy_links (whichever is higher)
       const finalThemesCount = Math.max(themesCount || 0, linkedThemeIds.length);
 
-      // Fetch theme-epic links for aligned epics
-      const { data: themeEpicLinks = [] } = await supabase
-        .from('theme_epic_links')
-        .select('theme_id, epic_id')
-        .in('theme_id', linkedThemeIds.length > 0 ? linkedThemeIds : ['__none__']);
+      // Fetch theme-epic links for aligned epics (skip if no themes)
+      const themeEpicLinks = linkedThemeIds.length > 0 
+        ? (await supabase
+            .from('theme_epic_links')
+            .select('theme_id, epic_id')
+            .in('theme_id', linkedThemeIds)).data || []
+        : [];
 
       // Fetch objective-epic links
       const { data: objectiveEpicLinks = [] } = await supabase

@@ -102,10 +102,13 @@ export function PyramidDrilldownDrawer({
         
         const themeIds = links?.theme_ids || [];
         
-        const { data: themeEpicLinks } = await supabase
-          .from('theme_epic_links')
-          .select('epic_id')
-          .in('theme_id', themeIds.length > 0 ? themeIds : ['__none__']);
+        // Skip query if no theme IDs to avoid invalid UUID error
+        const themeEpicLinks = themeIds.length > 0 
+          ? (await supabase
+              .from('theme_epic_links')
+              .select('epic_id')
+              .in('theme_id', themeIds)).data
+          : [];
         
         const { data: objectiveEpicLinks } = await supabase
           .from('objective_epic_links')
