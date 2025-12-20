@@ -82,7 +82,7 @@ export function InlineUserPicker({
 
   if (disabled) {
     return (
-      <div className={cn(textSize, 'text-muted-foreground cursor-not-allowed')}>
+      <div className={cn(textSize, 'text-muted-foreground cursor-not-allowed text-center')}>
         {value?.full_name || 'Unassigned'}
       </div>
     );
@@ -93,7 +93,7 @@ export function InlineUserPicker({
       <PopoverTrigger asChild>
         <button
           className={cn(
-            'w-full flex items-center gap-1.5 rounded px-1 -mx-1 py-0.5 hover:bg-muted/80 transition-colors text-left cursor-pointer',
+            'w-full flex items-center justify-center gap-1.5 rounded px-1 py-0.5 hover:bg-muted/80 transition-colors cursor-pointer',
             textSize
           )}
           onClick={(e) => e.stopPropagation()}
