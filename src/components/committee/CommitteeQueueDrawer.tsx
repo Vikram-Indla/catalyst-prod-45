@@ -47,12 +47,12 @@ function StatusBadge({ status }: { status: CommitteeDecisionStatus }) {
 
 // Approver row with addedBy
 function ApproverRow({ approver }: { approver: CommitteeApprover }) {
-  const cfg: Record<CommitteeDecisionStatus, { label: string; bg: string; fg: string; icon: typeof Clock }> = {
-    pending: { label: 'Pending', bg: 'var(--surface-subtle)', fg: 'var(--text-secondary)', icon: Clock },
-    approved: { label: 'Approved', bg: 'var(--status-success-bg)', fg: 'var(--status-success)', icon: CheckCircle },
-    vetoed: { label: 'Vetoed', bg: 'var(--status-danger-bg)', fg: 'var(--status-danger)', icon: XCircle },
+  const statusCfg: Record<CommitteeDecisionStatus, { label: string; fg: string; icon: typeof Clock }> = {
+    pending: { label: 'Pending', fg: 'var(--text-secondary)', icon: Clock },
+    approved: { label: 'Approved', fg: 'var(--status-success)', icon: CheckCircle },
+    vetoed: { label: 'Vetoed', fg: 'var(--status-danger)', icon: XCircle },
   };
-  const { label, bg, fg, icon: Icon } = cfg[approver.decision];
+  const { label, fg, icon: Icon } = statusCfg[approver.decision];
 
   return (
     <div
@@ -60,9 +60,10 @@ function ApproverRow({ approver }: { approver: CommitteeApprover }) {
       style={{ background: 'var(--surface-subtle)', borderColor: 'var(--border-default)' }}
     >
       <div className="flex items-start gap-3">
+        {/* Avatar - always neutral background, not status-colored */}
         <div
-          className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium shrink-0"
-          style={{ background: bg, color: fg }}
+          className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium shrink-0 border"
+          style={{ background: 'var(--surface-subtle)', color: 'var(--text-secondary)', borderColor: 'var(--border-default)' }}
         >
           {approver.userInitials || approver.userName.charAt(0)}
         </div>
