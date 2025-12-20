@@ -454,7 +454,7 @@ export function CreateIncidentModal({ isOpen, onClose, onSubmit }: CreateInciden
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-[700px] max-h-[90vh] overflow-hidden flex flex-col p-0 gap-0">
+      <DialogContent className="max-w-[700px] h-[90vh] flex flex-col p-0 gap-0">
         {/* Header */}
         <DialogHeader className="px-6 py-4 border-b border-border flex-shrink-0">
           <DialogTitle className="text-lg font-semibold text-foreground">
@@ -492,7 +492,7 @@ export function CreateIncidentModal({ isOpen, onClose, onSubmit }: CreateInciden
         )}
 
         {/* Scrollable Content - Single Column Layout */}
-        <ScrollArea className="flex-1">
+        <div className="flex-1 overflow-y-auto">
           <div className="px-6 py-6 space-y-6">
             
             {/* ============================================ */}
@@ -527,19 +527,7 @@ export function CreateIncidentModal({ isOpen, onClose, onSubmit }: CreateInciden
 
               {/* Description with Rich Text */}
               <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <FieldLabel>Description</FieldLabel>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={insertTemplate}
-                    className="h-7 text-xs gap-1 text-muted-foreground hover:text-foreground"
-                  >
-                    <FileText className="h-3 w-3" />
-                    Insert template
-                  </Button>
-                </div>
+                <FieldLabel>Description</FieldLabel>
                 <RichTextEditor
                   value={formData.description || ''}
                   onChange={(value) => setFormData(prev => ({ ...prev, description: value }))}
@@ -1010,7 +998,7 @@ export function CreateIncidentModal({ isOpen, onClose, onSubmit }: CreateInciden
             </section>
 
           </div>
-        </ScrollArea>
+        </div>
 
         {/* Footer */}
         <div className="px-6 py-4 border-t border-border bg-muted/30 flex-shrink-0 flex justify-end gap-3">
