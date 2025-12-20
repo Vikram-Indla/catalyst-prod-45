@@ -113,8 +113,8 @@ function ExecutivePosture({
 
   return (
     <section className="mb-10 print:mb-8">
-      <div className="border-l-4 border-[var(--brand-primary)] bg-card rounded-r-lg p-8 print:p-6">
-        <div className="flex items-start justify-between gap-8">
+      <div className="border-l-4 border-[var(--brand-primary)] bg-card rounded-r-lg p-4 sm:p-6 lg:p-8 print:p-6">
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 lg:gap-8">
           {/* Left: Executive Summary Text */}
           <div className="flex-1 max-w-3xl">
             <div className="flex items-center gap-3 mb-4">
@@ -123,29 +123,29 @@ function ExecutivePosture({
                 Executive Posture
               </h2>
             </div>
-            <p className="text-lg leading-relaxed text-foreground mb-6 print:text-base">
+            <p className="text-base lg:text-lg leading-relaxed text-foreground mb-4 lg:mb-6 print:text-base">
               {summary}
             </p>
-            <div className="flex items-center gap-6 text-sm text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-xs sm:text-sm text-muted-foreground">
               <span className="flex items-center gap-1.5">
                 <Clock className="h-4 w-4" />
                 Generated {format(generatedAt, 'MMM d, yyyy HH:mm')}
               </span>
-              <span className="text-muted-foreground/50">|</span>
+              <span className="hidden sm:inline text-muted-foreground/50">|</span>
               <span>Period: {periodLabel}</span>
             </div>
           </div>
           
           {/* Right: Change vs Period Mini-Metrics */}
-          <div className="flex-shrink-0 min-w-[200px] border-l border-border pl-8 print:pl-6">
-            <div className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+          <div className="flex-shrink-0 w-full lg:w-auto lg:min-w-[200px] border-t lg:border-t-0 lg:border-l border-border pt-4 lg:pt-0 lg:pl-8 print:pl-6">
+            <div className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3 lg:mb-4">
               Δ vs {comparisonLabel}
             </div>
-            <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+            <div className="grid grid-cols-4 lg:grid-cols-2 gap-x-4 sm:gap-x-6 gap-y-3">
               {deltaMetrics.map(metric => (
-                <div key={metric.key} className="text-center">
+                <div key={metric.key} className="text-center lg:text-center">
                   <div className={cn(
-                    "text-2xl font-bold tabular-nums",
+                    "text-xl sm:text-2xl font-bold tabular-nums",
                     metric.value > 0 && "text-[hsl(var(--warning))]",
                     metric.value < 0 && "text-emerald-600 dark:text-emerald-400",
                     metric.value === 0 && "text-muted-foreground"
@@ -191,7 +191,7 @@ function KPIScoreboard({ metrics, deltas, onMetricClick }: KPIScoreboardProps) {
         <span className="w-1 h-5 bg-[var(--brand-primary)] rounded-full" />
         KPI Scoreboard
       </h2>
-      <div className="grid grid-cols-6 gap-4 print:gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 print:gap-3">
         {kpis.map(kpi => (
           <button
             key={kpi.key}
@@ -244,7 +244,7 @@ function FactsAndRisks({ keyFacts, operationalRisks }: FactsAndRisksProps) {
 
   return (
     <section className="mb-10 print:mb-8">
-      <div className="grid grid-cols-2 gap-6 print:gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 print:gap-4">
         {/* KEY FACTS */}
         <div className="border border-border rounded-lg bg-card p-6 print:p-4">
           <h3 className="text-base font-bold uppercase tracking-wider text-foreground mb-5 flex items-center gap-2">
@@ -352,66 +352,107 @@ function RequiredActionsTable({ actions, metrics, onActionClick }: RequiredActio
           <p className="text-base text-muted-foreground">No immediate actions required.</p>
         </div>
       ) : (
-        <div className="border border-border rounded-lg bg-card overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-muted/50">
-              <tr>
-                <th className="px-5 py-4 text-left text-sm font-bold uppercase tracking-wider text-muted-foreground border-b border-border w-[80px]">
-                  Priority
-                </th>
-                <th className="px-5 py-4 text-left text-sm font-bold uppercase tracking-wider text-muted-foreground border-b border-border">
-                  Action
-                </th>
-                <th className="px-5 py-4 text-left text-sm font-bold uppercase tracking-wider text-muted-foreground border-b border-border w-[180px]">
-                  Trigger Metric
-                </th>
-                <th className="px-5 py-4 text-left text-sm font-bold uppercase tracking-wider text-muted-foreground border-b border-border w-[140px]">
-                  Related Incidents
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {structuredActions.map((item) => (
-                <tr 
-                  key={item.priority}
-                  onClick={() => onActionClick(item.action)}
-                  className="hover:bg-muted/30 cursor-pointer border-b border-border last:border-b-0"
-                >
-                  <td className="px-5 py-4 align-middle">
-                    <span className={cn(
-                      "inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold",
-                      item.priority === 1 && "bg-destructive text-destructive-foreground",
-                      item.priority === 2 && "bg-[hsl(var(--warning))] text-white",
-                      item.priority > 2 && "bg-muted text-muted-foreground"
-                    )}>
-                      {item.priority}
-                    </span>
-                  </td>
-                  <td className="px-5 py-4 align-middle">
-                    <span className="text-base font-medium text-foreground print:text-sm">
+        <>
+          {/* Mobile Card Layout */}
+          <div className="md:hidden space-y-3">
+            {structuredActions.map((item) => (
+              <div
+                key={item.priority}
+                onClick={() => onActionClick(item.action)}
+                className="p-4 border border-border rounded-lg bg-card cursor-pointer hover:bg-muted/30"
+              >
+                <div className="flex items-start gap-3">
+                  <span className={cn(
+                    "inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold flex-shrink-0",
+                    item.priority === 1 && "bg-destructive text-destructive-foreground",
+                    item.priority === 2 && "bg-[hsl(var(--warning))] text-white",
+                    item.priority > 2 && "bg-muted text-muted-foreground"
+                  )}>
+                    {item.priority}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground mb-1">
                       {item.action}
-                    </span>
-                  </td>
-                  <td className="px-5 py-4 align-middle">
-                    <span className="text-sm text-muted-foreground">
-                      {item.triggerMetric}
-                    </span>
-                  </td>
-                  <td className="px-5 py-4 align-middle">
-                    {item.relatedCount > 0 ? (
-                      <span className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--brand-primary)] hover:underline">
-                        {item.relatedCount} incidents
-                        <ExternalLink className="h-3.5 w-3.5" />
-                      </span>
-                    ) : (
-                      <span className="text-sm text-muted-foreground">—</span>
-                    )}
-                  </td>
+                    </p>
+                    <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                      <span>{item.triggerMetric}</span>
+                      {item.relatedCount > 0 && (
+                        <>
+                          <span>•</span>
+                          <span className="text-[var(--brand-primary)]">
+                            {item.relatedCount} incidents
+                          </span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Table Layout */}
+          <div className="hidden md:block border border-border rounded-lg bg-card overflow-hidden overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th className="px-3 lg:px-5 py-3 lg:py-4 text-left text-xs lg:text-sm font-bold uppercase tracking-wider text-muted-foreground border-b border-border w-[60px] lg:w-[80px]">
+                    Priority
+                  </th>
+                  <th className="px-3 lg:px-5 py-3 lg:py-4 text-left text-xs lg:text-sm font-bold uppercase tracking-wider text-muted-foreground border-b border-border">
+                    Action
+                  </th>
+                  <th className="px-3 lg:px-5 py-3 lg:py-4 text-left text-xs lg:text-sm font-bold uppercase tracking-wider text-muted-foreground border-b border-border w-[140px] lg:w-[180px]">
+                    Trigger Metric
+                  </th>
+                  <th className="px-3 lg:px-5 py-3 lg:py-4 text-left text-xs lg:text-sm font-bold uppercase tracking-wider text-muted-foreground border-b border-border w-[100px] lg:w-[140px]">
+                    Related
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {structuredActions.map((item) => (
+                  <tr 
+                    key={item.priority}
+                    onClick={() => onActionClick(item.action)}
+                    className="hover:bg-muted/30 cursor-pointer border-b border-border last:border-b-0"
+                  >
+                    <td className="px-3 lg:px-5 py-3 lg:py-4 align-middle">
+                      <span className={cn(
+                        "inline-flex items-center justify-center w-7 h-7 lg:w-8 lg:h-8 rounded-full text-xs lg:text-sm font-bold",
+                        item.priority === 1 && "bg-destructive text-destructive-foreground",
+                        item.priority === 2 && "bg-[hsl(var(--warning))] text-white",
+                        item.priority > 2 && "bg-muted text-muted-foreground"
+                      )}>
+                        {item.priority}
+                      </span>
+                    </td>
+                    <td className="px-3 lg:px-5 py-3 lg:py-4 align-middle">
+                      <span className="text-sm lg:text-base font-medium text-foreground print:text-sm">
+                        {item.action}
+                      </span>
+                    </td>
+                    <td className="px-3 lg:px-5 py-3 lg:py-4 align-middle">
+                      <span className="text-xs lg:text-sm text-muted-foreground">
+                        {item.triggerMetric}
+                      </span>
+                    </td>
+                    <td className="px-3 lg:px-5 py-3 lg:py-4 align-middle">
+                      {item.relatedCount > 0 ? (
+                        <span className="inline-flex items-center gap-1 text-xs lg:text-sm font-medium text-[var(--brand-primary)] hover:underline">
+                          {item.relatedCount}
+                          <ExternalLink className="h-3 w-3 lg:h-3.5 lg:w-3.5" />
+                        </span>
+                      ) : (
+                        <span className="text-xs lg:text-sm text-muted-foreground">—</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
     </section>
   );
@@ -476,7 +517,7 @@ function WhatChangedSection({ deltas, comparisonLabel, metrics }: WhatChangedPro
           <p className="text-base text-muted-foreground">No significant changes from the comparison period.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-3 gap-6 print:gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 print:gap-4">
           {/* Increases */}
           <div className="border border-[hsl(var(--warning))]/30 rounded-lg bg-[hsl(var(--warning))]/5 p-5">
             <div className="flex items-center gap-2 mb-4">
@@ -616,7 +657,48 @@ function TopRiskIncidents({ incidents, onRowClick }: TopRiskIncidentsProps) {
         Top Risk Incidents
       </h2>
 
-      <div className="border border-border rounded-lg bg-card overflow-hidden">
+      {/* Mobile Card Layout */}
+      <div className="lg:hidden space-y-3">
+        {paginatedIncidents.map((incident) => {
+          const slaConfig = SLA_STATE_CONFIG[incident.sla_state.state] || SLA_STATE_CONFIG.n_a;
+          return (
+            <div
+              key={incident.id}
+              onClick={() => onRowClick(incident.id)}
+              className="p-4 border border-border rounded-lg bg-card cursor-pointer hover:bg-muted/30"
+            >
+              <div className="flex items-start justify-between gap-2 mb-2">
+                <span className="font-mono text-sm font-medium text-[var(--brand-primary)]">
+                  {incident.incident_key}
+                </span>
+                <span className={cn(
+                  "text-sm font-bold",
+                  incident.severity === 'SEV1' && "text-destructive",
+                  incident.severity === 'SEV2' && "text-[hsl(var(--warning))]"
+                )}>
+                  {incident.severity}
+                </span>
+              </div>
+              <p className="text-sm text-foreground line-clamp-2 mb-3">
+                {incident.title}
+              </p>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                <span>{STATUS_LABELS[incident.status] || incident.status}</span>
+                <span className="font-mono tabular-nums">{formatAge(incident.age_hours)}</span>
+                <span className={slaConfig.className}>{slaConfig.label}</span>
+                {incident.assignee_name ? (
+                  <span className="truncate max-w-[100px]">{incident.assignee_name}</span>
+                ) : (
+                  <span className="text-destructive/80 italic">Unassigned</span>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Desktop Table Layout */}
+      <div className="hidden lg:block border border-border rounded-lg bg-card overflow-hidden overflow-x-auto">
         <table className="w-full" style={{ tableLayout: 'fixed' }}>
           <colgroup>
             <col style={{ width: '10%' }} />
@@ -629,25 +711,25 @@ function TopRiskIncidents({ incidents, onRowClick }: TopRiskIncidentsProps) {
           </colgroup>
           <thead className="bg-muted/50">
             <tr>
-              <th className="px-5 py-4 text-left text-sm font-bold uppercase tracking-wider text-muted-foreground border-b border-border">
+              <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground border-b border-border">
                 ID
               </th>
-              <th className="px-5 py-4 text-left text-sm font-bold uppercase tracking-wider text-muted-foreground border-b border-border">
+              <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground border-b border-border">
                 Summary
               </th>
-              <th className="px-5 py-4 text-left text-sm font-bold uppercase tracking-wider text-muted-foreground border-b border-border">
+              <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground border-b border-border">
                 Severity
               </th>
-              <th className="px-5 py-4 text-left text-sm font-bold uppercase tracking-wider text-muted-foreground border-b border-border">
+              <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground border-b border-border">
                 Status
               </th>
-              <th className="px-5 py-4 text-left text-sm font-bold uppercase tracking-wider text-muted-foreground border-b border-border">
+              <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground border-b border-border">
                 Age
               </th>
-              <th className="px-5 py-4 text-left text-sm font-bold uppercase tracking-wider text-muted-foreground border-b border-border">
+              <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground border-b border-border">
                 SLA State
               </th>
-              <th className="px-5 py-4 text-left text-sm font-bold uppercase tracking-wider text-muted-foreground border-b border-border">
+              <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground border-b border-border">
                 Assignee
               </th>
             </tr>
@@ -662,17 +744,17 @@ function TopRiskIncidents({ incidents, onRowClick }: TopRiskIncidentsProps) {
                   onClick={() => onRowClick(incident.id)}
                   className="hover:bg-muted/30 cursor-pointer border-b border-border last:border-b-0"
                 >
-                  <td className="px-5 py-4 align-middle">
+                  <td className="px-4 py-3 align-middle">
                     <span className="font-mono text-sm font-medium text-[var(--brand-primary)]">
                       {incident.incident_key}
                     </span>
                   </td>
-                  <td className="px-5 py-4 align-middle">
+                  <td className="px-4 py-3 align-middle">
                     <span className="text-sm text-foreground line-clamp-1">
                       {incident.title}
                     </span>
                   </td>
-                  <td className="px-5 py-4 align-middle">
+                  <td className="px-4 py-3 align-middle">
                     <span className={cn(
                       "text-sm font-bold",
                       incident.severity === 'SEV1' && "text-destructive",
@@ -681,22 +763,22 @@ function TopRiskIncidents({ incidents, onRowClick }: TopRiskIncidentsProps) {
                       {incident.severity}
                     </span>
                   </td>
-                  <td className="px-5 py-4 align-middle">
+                  <td className="px-4 py-3 align-middle">
                     <span className="text-sm text-foreground">
                       {STATUS_LABELS[incident.status] || incident.status}
                     </span>
                   </td>
-                  <td className="px-5 py-4 align-middle">
+                  <td className="px-4 py-3 align-middle">
                     <span className="text-sm font-mono tabular-nums text-muted-foreground">
                       {formatAge(incident.age_hours)}
                     </span>
                   </td>
-                  <td className="px-5 py-4 align-middle">
+                  <td className="px-4 py-3 align-middle">
                     <span className={cn("text-sm", slaConfig.className)}>
                       {slaConfig.label}
                     </span>
                   </td>
-                  <td className="px-5 py-4 align-middle">
+                  <td className="px-4 py-3 align-middle">
                     {incident.assignee_name ? (
                       <span className="text-sm text-foreground truncate block max-w-[140px]">
                         {incident.assignee_name}
@@ -1219,8 +1301,8 @@ export default function IncidentInsightsPage() {
           />
 
           {/* Subtitle */}
-          <div className="px-6 pt-2 pb-4 border-b border-border">
-            <p className="text-sm text-muted-foreground uppercase tracking-wider font-medium">
+          <div className="px-4 sm:px-6 pt-2 pb-4 border-b border-border">
+            <p className="text-xs sm:text-sm text-muted-foreground uppercase tracking-wider font-medium">
               Executive Operational Report
             </p>
           </div>
@@ -1228,14 +1310,14 @@ export default function IncidentInsightsPage() {
 
         {/* Content with Tabs */}
         <div className="flex-1 overflow-auto print:overflow-visible">
-          <div className="px-6 py-8 print:py-4 max-w-[1800px] print:max-w-none">
+          <div className="px-4 sm:px-6 py-6 sm:py-8 print:py-4 max-w-[1800px] print:max-w-none">
             <Tabs value={activePeriod} onValueChange={(v) => setActivePeriod(v as InsightPeriod)}>
-              <TabsList className="mb-10 p-1.5 bg-muted/40 border border-border h-12">
+              <TabsList className="mb-6 sm:mb-10 p-1 sm:p-1.5 bg-muted/40 border border-border h-10 sm:h-12 w-full sm:w-auto">
                 {PERIOD_TABS.map(tab => (
                   <TabsTrigger 
                     key={tab.value} 
                     value={tab.value} 
-                    className="px-8 py-2.5 text-sm font-semibold data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                    className="flex-1 sm:flex-none px-3 sm:px-8 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold data-[state=active]:bg-background data-[state=active]:shadow-sm"
                   >
                     {tab.label}
                   </TabsTrigger>

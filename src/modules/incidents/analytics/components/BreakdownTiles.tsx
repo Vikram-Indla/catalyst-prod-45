@@ -92,7 +92,7 @@ export function BreakdownTiles({ breakdowns, onDrilldown, activeFilter }: Breakd
       <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
         Operational Distribution
       </h2>
-      <div className="grid grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
         {/* Severity Breakdown */}
         <BreakdownCard title="Severity">
           <div className="grid grid-cols-2 gap-3">
