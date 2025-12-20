@@ -106,18 +106,14 @@ const COLUMN_ORDER = ['key', 'summary', 'severity', 'level', 'status', 'assignee
 function LoadingSkeleton({ columnWidths, visibleColumns }: { columnWidths: Record<string, number>; visibleColumns: ColumnConfig[] }) {
   const isColumnVisible = (colId: string) => visibleColumns.some(c => c.id === colId && c.visible !== false);
   
-  // Build grid template - Summary uses minmax for flexible growth
+  // Build grid template - ALL columns use fixed pixel widths (no fr units)
   const gridTemplate = useMemo(() => {
     const cols: string[] = [];
     COLUMN_ORDER.forEach(colId => {
       if (colId === 'actions') {
         cols.push('40px');
       } else if (isColumnVisible(colId)) {
-        if (colId === 'summary') {
-          cols.push(`minmax(${columnWidths.summary}px, 1fr)`);
-        } else {
-          cols.push(`${columnWidths[colId]}px`);
-        }
+        cols.push(`${columnWidths[colId]}px`);
       }
     });
     return cols.join(' ');
@@ -192,27 +188,21 @@ export function IncidentListTable({
   const isColumnVisible = (colId: string) => visibleColumns.some(c => c.id === colId && c.visible !== false);
 
   // Build CSS Grid template string from column widths - shared by header and body
-  // Summary uses minmax(width, 1fr) to allow growth without breaking resize
+  // ALL columns use fixed pixel widths - no fr units (required for proper resizing)
   const gridTemplate = useMemo(() => {
     const cols: string[] = [];
     COLUMN_ORDER.forEach(colId => {
       if (colId === 'actions') {
         cols.push('40px');
       } else if (isColumnVisible(colId)) {
-        if (colId === 'summary') {
-          // Summary: minmax for flexible growth while respecting resize
-          cols.push(`minmax(${columnWidths.summary}px, 1fr)`);
-        } else {
-          cols.push(`${columnWidths[colId]}px`);
-        }
+        cols.push(`${columnWidths[colId]}px`);
       }
     });
     return cols.join(' ');
   }, [columnWidths, visibleColumns]);
 
-  // Calculate minimum table width for horizontal scroll trigger
-  // This is the sum of all minimum/fixed column widths (summary uses its base width)
-  const minTableWidth = useMemo(() => {
+  // Calculate total table width for horizontal scroll (sum of all column widths)
+  const totalTableWidth = useMemo(() => {
     let width = 40; // Actions column
     COLUMN_ORDER.forEach(colId => {
       if (colId !== 'actions' && isColumnVisible(colId)) {
@@ -266,9 +256,9 @@ export function IncidentListTable({
       <div className="flex flex-col h-full">
         {/* Table container - horizontal scroll enabled */}
         <div className="rounded-md border border-border overflow-hidden bg-card flex-1">
-          <div className="overflow-x-auto">
-            {/* Table uses minWidth for scroll threshold, width: 100% to fill container */}
-            <div style={{ minWidth: `${minTableWidth}px`, width: '100%' }}>
+          <div className="overflow-x-auto w-full">
+            {/* Grid table - uses exact pixel width, expands beyond viewport for scroll */}
+            <div style={{ width: `${totalTableWidth}px`, minWidth: `${totalTableWidth}px` }}>
               {/* Header row - exactly 32px height, CSS Grid layout */}
               <div 
                 className="grid items-center h-8 sticky top-0 z-20 bg-muted/40 border-b border-border"
