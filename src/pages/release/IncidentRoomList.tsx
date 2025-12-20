@@ -4,11 +4,12 @@ import { Plus, Search, AlertCircle, BarChart3, Lightbulb, RefreshCw, ArrowUpDown
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
-import { useIncidents } from '@/hooks/useIncidents';
+import { useIncidents, useCreateIncident } from '@/hooks/useIncidents';
 import { useIncidentColumns, TableDensity } from '@/hooks/useIncidentColumns';
-import { CreateIncidentDialog } from '@/components/incidents/CreateIncidentDialog';
+import { CreateIncidentModal, IncidentFormData } from '@/components/incidents/CreateIncidentModal';
 import { IncidentFiltersDialog } from '@/components/incidents/IncidentFiltersDialog';
 import { IncidentListTable } from '@/components/incidents/IncidentListTable';
+import { toast } from 'sonner';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -97,6 +98,39 @@ export default function IncidentRoomList() {
   
   const { columns, visibleColumns, toggleColumn, resetColumns, density, setDensity } = useIncidentColumns();
   const { data: incidents, isLoading, error, refetch } = useIncidents(filters);
+  const createIncident = useCreateIncident();
+
+  // Handle incident creation from modal
+  const handleCreateIncident = async (formData: IncidentFormData) => {
+    try {
+      const result = await createIncident.mutateAsync({
+        title: formData.title,
+        description: formData.description,
+        severity: formData.severity,
+        impact: formData.impact,
+        urgency: formData.urgency,
+        support_level: formData.support_level,
+        project_id: formData.project_id,
+        release_version_id: formData.release_version_id,
+        is_major_incident: formData.is_major_incident,
+        incident_type: formData.incident_type,
+        reporter_id: formData.reporterId,
+        reporter_name: formData.reporterName,
+        assignee_id: formData.assigneeId,
+        target_date: formData.target_resolution_date,
+      });
+      
+      toast.success('Incident created successfully');
+      setCreateDialogOpen(false);
+      
+      // Navigate to detail page
+      if (result?.id) {
+        navigate(`/release/incidents/${result.id}?created=true`);
+      }
+    } catch (error: any) {
+      toast.error(error?.message || 'Failed to create incident');
+    }
+  };
 
   // Handle ?create=true query param
   useEffect(() => {
@@ -416,9 +450,10 @@ export default function IncidentRoomList() {
         )}
       </div>
 
-      <CreateIncidentDialog 
-        open={createDialogOpen} 
-        onOpenChange={setCreateDialogOpen} 
+      <CreateIncidentModal 
+        isOpen={createDialogOpen} 
+        onClose={() => setCreateDialogOpen(false)}
+        onSubmit={handleCreateIncident}
       />
     </div>
   );
