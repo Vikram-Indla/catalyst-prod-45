@@ -30,29 +30,33 @@ import { CreateIncidentModal, IncidentFormData } from '@/components/incidents/Cr
 import { useIncidents, useUpdateIncident, useCreateIncident } from '@/hooks/useIncidents';
 import { useUserRole } from '@/hooks/useUserRole';
 import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
 
 import { KanbanColumn } from '../components/KanbanColumn';
 import { KanbanSwimlane } from '../components/KanbanSwimlane';
 import { ManageColumnsDialog } from '../components/ManageColumnsDialog';
+import { QuickFilterChips } from '../components/QuickFilterChips';
 import { useKanbanColumnPrefs } from '../hooks/useKanbanColumnPrefs';
 import { useKanbanColumnConfig } from '../hooks/useKanbanColumnConfig';
 import {
-  KANBAN_STATUSES,
   OPEN_STATUSES,
   GROUP_BY_OPTIONS,
   groupIncidents,
   type GroupByOption,
+  getSlaHealth,
+  type QuickFilterKey,
+  QUICK_FILTERS,
+  applyQuickFilters,
 } from '../types';
 import type { Incident, IncidentStatus } from '@/types/incident';
 
 export default function IncidentKanbanPage() {
   const navigate = useNavigate();
-  const { isAdmin, isLoading: isRoleLoading } = useUserRole();
+  const { isAdmin } = useUserRole();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [manageColumnsOpen, setManageColumnsOpen] = useState(false);
   const [showOpenOnly, setShowOpenOnly] = useState(true);
   const [groupBy, setGroupBy] = useState<GroupByOption>('none');
+  const [quickFilters, setQuickFilters] = useState<QuickFilterKey[]>([]);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [optimisticUpdates, setOptimisticUpdates] = useState<Record<string, IncidentStatus>>({});
 
@@ -91,25 +95,49 @@ export default function IncidentKanbanPage() {
     return configuredStatuses;
   }, [showOpenOnly, configuredStatuses]);
 
-  // Filter and apply optimistic updates
-  const filteredIncidents = useMemo(() => {
+  // Base filtered incidents (status filter + optimistic updates)
+  const baseFilteredIncidents = useMemo(() => {
     if (!incidents) return [];
     
     return incidents
       .filter(incident => {
-        // Apply optimistic status
         const effectiveStatus = optimisticUpdates[incident.id] || incident.status;
-        // Filter by visible statuses
         return visibleStatuses.includes(effectiveStatus);
       })
       .map(incident => {
-        // Apply optimistic update to incident object
         if (optimisticUpdates[incident.id]) {
           return { ...incident, status: optimisticUpdates[incident.id] };
         }
         return incident;
       });
   }, [incidents, visibleStatuses, optimisticUpdates]);
+
+  // Compute quick filter counts (before applying quick filters)
+  const quickFilterCounts = useMemo(() => {
+    const counts: Record<QuickFilterKey, number> = {
+      major: 0,
+      committee: 0,
+      unassigned: 0,
+      sev1: 0,
+      at_risk: 0,
+      breached: 0,
+    };
+
+    baseFilteredIncidents.forEach(inc => {
+      QUICK_FILTERS.forEach(filter => {
+        if (filter.match(inc)) {
+          counts[filter.key]++;
+        }
+      });
+    });
+
+    return counts;
+  }, [baseFilteredIncidents]);
+
+  // Apply quick filters
+  const filteredIncidents = useMemo(() => {
+    return applyQuickFilters(baseFilteredIncidents, quickFilters);
+  }, [baseFilteredIncidents, quickFilters]);
 
   // Group incidents by status for non-swimlane view
   const incidentsByStatus = useMemo(() => {
@@ -133,6 +161,13 @@ export default function IncidentKanbanPage() {
   // Check if any columns are collapsed
   const hasCollapsedColumns = collapsedColumns.length > 0;
 
+  // Toggle quick filter
+  const handleToggleQuickFilter = useCallback((key: QuickFilterKey) => {
+    setQuickFilters(prev => 
+      prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]
+    );
+  }, []);
+
   // Drag handlers
   const handleDragStart = useCallback((e: React.DragEvent, incident: Incident) => {
     setDraggingId(incident.id);
@@ -147,7 +182,6 @@ export default function IncidentKanbanPage() {
     const incident = incidents?.find(i => i.id === incidentId);
     if (!incident || incident.status === newStatus) return;
 
-    // Optimistic update
     setOptimisticUpdates(prev => ({ ...prev, [incidentId]: newStatus }));
     setDraggingId(null);
 
@@ -157,7 +191,6 @@ export default function IncidentKanbanPage() {
         data: { status: newStatus } as any,
       });
       
-      // Clear optimistic update on success
       setOptimisticUpdates(prev => {
         const next = { ...prev };
         delete next[incidentId];
@@ -166,7 +199,6 @@ export default function IncidentKanbanPage() {
       
       toast.success(`Moved to ${newStatus.replace('_', ' ')}`);
     } catch (err: any) {
-      // Rollback on failure
       setOptimisticUpdates(prev => {
         const next = { ...prev };
         delete next[incidentId];
@@ -239,7 +271,6 @@ export default function IncidentKanbanPage() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
-                  {/* Collapse/Expand All */}
                   {hasCollapsedColumns ? (
                     <DropdownMenuItem onClick={expandAll}>
                       <ChevronsRightLeft className="h-4 w-4 mr-2" />
@@ -252,7 +283,6 @@ export default function IncidentKanbanPage() {
                     </DropdownMenuItem>
                   )}
                   
-                  {/* Admin: Manage Columns */}
                   {isAdmin && (
                     <>
                       <DropdownMenuSeparator />
@@ -311,9 +341,26 @@ export default function IncidentKanbanPage() {
             </Select>
           </div>
 
+          <div className="h-5 w-px bg-border hidden sm:block" />
+
+          {/* Quick Filter Chips */}
+          <QuickFilterChips
+            activeFilters={quickFilters}
+            onToggle={handleToggleQuickFilter}
+            counts={quickFilterCounts}
+          />
+
           {/* Stats summary */}
           <div className="ml-auto flex items-center gap-3 text-xs text-muted-foreground">
             <span>{filteredIncidents.length} incident{filteredIncidents.length !== 1 ? 's' : ''}</span>
+            {quickFilters.length > 0 && (
+              <button 
+                onClick={() => setQuickFilters([])}
+                className="text-primary hover:underline"
+              >
+                Clear filters
+              </button>
+            )}
           </div>
         </div>
 
@@ -332,7 +379,6 @@ export default function IncidentKanbanPage() {
               </Button>
             </div>
           ) : groupBy === 'none' ? (
-            // Standard column view (no swimlanes)
             <div className="h-full overflow-x-auto px-4 sm:px-6 py-4">
               <div className="flex gap-4 h-full">
                 {visibleStatuses.map(status => (
@@ -351,7 +397,6 @@ export default function IncidentKanbanPage() {
               </div>
             </div>
           ) : (
-            // Swimlane view
             <div className="h-full overflow-y-auto">
               {swimlanes.map(group => (
                 <KanbanSwimlane

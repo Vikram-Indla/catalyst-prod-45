@@ -33,7 +33,7 @@ export const KanbanCard = memo(function KanbanCard({
   const navigate = useNavigate();
   const slaHealth = getSlaHealth(incident);
   const slaConfig = SLA_HEALTH_CONFIG[slaHealth];
-  const timeInStatus = getTimeInStatus(incident);
+  const timeInStatus = getTimeInStatus(incident.updated_at);
   const age = formatAge(incident.created_at);
 
   const handleClick = () => {
