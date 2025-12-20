@@ -111,15 +111,16 @@ export const KanbanCard = memo(function KanbanCard({
             </Tooltip>
           )}
           
-          {incident.requires_committee && (
+          {/* CAB Configured indicator - only show if NOT in Committee status */}
+          {incident.requires_committee && incident.status !== 'to_committee' && (
             <Tooltip>
               <TooltipTrigger asChild>
-                <span className="flex items-center gap-0.5 text-muted-foreground">
+                <span className="flex items-center gap-0.5 text-[var(--brand-gold)]">
                   <Users className="h-3 w-3" />
                   <span className="text-[9px]">CAB</span>
                 </span>
               </TooltipTrigger>
-              <TooltipContent side="top" className="text-xs">Requires Committee</TooltipContent>
+              <TooltipContent side="top" className="text-xs">CAB Configured</TooltipContent>
             </Tooltip>
           )}
           
