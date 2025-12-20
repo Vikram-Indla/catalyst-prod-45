@@ -11,49 +11,49 @@ import { useState, useCallback } from 'react';
 
 const STORAGE_KEY = 'catalyst-incident-list-column-widths';
 
-// Default column widths - enterprise-grade fixed widths
-// Summary is fixed width (not flex), resizable like all other columns
+// Default column widths - enterprise-grade CSS Grid widths
+// Summary uses minmax(width, 1fr) in grid template for flexible growth
 export const DEFAULT_COLUMN_WIDTHS: Record<string, number> = {
-  key: 110,           // Fixed key column
-  summary: 360,       // Fixed width, resizable up to 900
-  severity: 90,       // Compact severity pill with dot
-  level: 60,          // Plain text L1/L2/L3
-  status: 130,        // Compact status pill
-  assignee: 170,      // Avatar + truncated name
-  age: 60,            // Compact numeric tabular
-  sla: 80,            // Subtle text color
-  releaseVersion: 90, // Plain text version
-  major: 70,          // Small badge or "—"
+  key: 90,            // Fixed key column
+  summary: 320,       // minmax(320px, 1fr) - grows to fill space
+  severity: 70,       // Compact severity pill with dot
+  level: 70,          // Plain text L1/L2/L3
+  status: 140,        // Compact status pill
+  assignee: 160,      // Avatar + truncated name
+  age: 70,            // Compact numeric tabular
+  sla: 110,           // Subtle text color
+  releaseVersion: 110,// Plain text version
+  major: 90,          // Small badge or "—"
   committee: 120,     // Text only
-  actions: 40,        // Fixed actions column
+  actions: 40,        // Fixed actions column (never resized)
 };
 
 // Minimum widths to prevent collapse
 export const MIN_COLUMN_WIDTHS: Record<string, number> = {
-  key: 80,
+  key: 70,
   summary: 200,       // Minimum readable summary width
-  severity: 70,
+  severity: 60,
   level: 50,
   status: 100,
-  assignee: 120,
+  assignee: 100,
   age: 50,
-  sla: 60,
+  sla: 70,
   releaseVersion: 80,
-  major: 55,
+  major: 60,
   committee: 80,
   actions: 40,
 };
 
-// Maximum widths - per-column clamp rules as specified
+// Maximum widths - per-column clamp rules
 export const MAX_COLUMN_WIDTHS: Record<string, number> = {
   key: 160,           // Key max: 160
-  summary: 900,       // Summary max: 900 (not 600, that's too tight)
-  severity: 140,
+  summary: 900,       // Summary max: 900
+  severity: 120,
   level: 100,
   status: 200,
   assignee: 260,      // Assignee max: 260
   age: 100,
-  sla: 140,
+  sla: 160,
   releaseVersion: 180,
   major: 120,
   committee: 200,
