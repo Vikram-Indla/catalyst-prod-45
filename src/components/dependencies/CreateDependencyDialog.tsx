@@ -115,8 +115,6 @@ export function CreateDependencyDialog({
     requestingWorkItemType === 'epic' && dependsOnWorkItemType === 'epic' ? 'execution' :
     requestingWorkItemType === 'feature' && dependsOnWorkItemType === 'feature' ? 'delivery' :
     'cross_level';
-  
-  const isCrossLevel = derivedLevel === 'cross_level';
 
   // Fetch epics for picker - also check defaultRequestingWorkItemType to enable immediately
   const { data: epics } = useQuery({
@@ -167,7 +165,7 @@ export function CreateDependencyDialog({
         depends_on_work_item_id: dependsOnWorkItemId,
         depends_on_work_item_type: dependsOnWorkItemType,
         dependency_level_v2: derivedLevel,
-        is_cross_level_exception: isCrossLevel,
+        is_cross_level_exception: false,
         type: dependencyType,
         risk_level: riskLevel,
         needed_by_date: neededByDate || null,
@@ -245,15 +243,9 @@ export function CreateDependencyDialog({
             {/* Dependency Level Indicator */}
             <div className="flex items-center gap-2 p-2 rounded-md bg-muted/50">
               <span className="text-sm text-muted-foreground">Dependency Level:</span>
-              <Badge variant={isCrossLevel ? 'destructive' : 'secondary'}>
+              <Badge variant="secondary">
                 {DEPENDENCY_LEVEL_LABELS[derivedLevel]}
               </Badge>
-              {isCrossLevel && (
-                <div className="flex items-center gap-1 text-xs text-warning">
-                  <AlertTriangle className="h-3 w-3" />
-                  Cross-level dependencies require explicit approval
-                </div>
-              )}
             </div>
 
             {/* Requesting Work Item */}

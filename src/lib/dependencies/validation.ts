@@ -28,9 +28,10 @@ export function deriveDependencyLevel(
 }
 
 /**
- * Check if a dependency is a cross-level exception
+ * Check if a dependency is cross-level (Epic ↔ Feature)
+ * Note: Cross-level dependencies are now allowed without special approval
  */
-export function isCrossLevelException(
+export function isCrossLevelDependency(
   requestingType: WorkItemDependencyType | null,
   dependsOnType: WorkItemDependencyType | null
 ): boolean {
@@ -140,10 +141,7 @@ export function validateDependencyForm(
     errors.risk_level = 'Risk level is required';
   }
   
-  // Cross-level warning
-  if (isCrossLevelException(data.requesting_work_item_type || null, data.depends_on_work_item_type || null)) {
-    warnings.dependency_level = 'This is a cross-level dependency (Epic ↔ Feature). These are exceptions and should be documented.';
-  }
+  // Cross-level dependencies are now allowed without special warnings
   
   // Commitment validation
   const commitmentResult = validateCommitmentDate(

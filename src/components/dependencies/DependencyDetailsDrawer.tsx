@@ -202,7 +202,6 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
     requestingWorkItemType === 'feature' && dependsOnWorkItemType === 'feature' ? 'delivery' :
     'cross_level';
   
-  const isCrossLevel = derivedLevel === 'cross_level';
   const derivedQuarter = neededByDate ? deriveQuarterFromDate(neededByDate) : getCurrentQuarter();
 
   // Fetch existing dependency
@@ -408,7 +407,7 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
         depends_on_work_item_id: dependsOnWorkItemId || null,
         depends_on_work_item_type: dependsOnWorkItemType,
         dependency_level_v2: derivedLevel,
-        is_cross_level_exception: isCrossLevel,
+        is_cross_level_exception: false,
         type: dependencyType,
         risk_level: riskLevel,
         status,
@@ -790,15 +789,9 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                     <div className="flex items-center gap-2 p-3 rounded-md bg-muted/50">
                       <Layers className="h-4 w-4 text-muted-foreground" />
                       <span className="text-sm text-muted-foreground">Dependency Level:</span>
-                      <Badge variant={isCrossLevel ? 'destructive' : 'secondary'}>
+                      <Badge variant="secondary">
                         {DEPENDENCY_LEVEL_LABELS[derivedLevel]}
                       </Badge>
-                      {isCrossLevel && (
-                        <div className="flex items-center gap-1 text-xs text-amber-600">
-                          <AlertTriangle className="h-3 w-3" />
-                          Cross-level dependencies require explicit approval
-                        </div>
-                      )}
                     </div>
 
                     {/* Requesting Work Item */}
