@@ -66,6 +66,15 @@ const REPORT_CONFIGS: ReportConfig[] = [
 // TABS COMPONENT
 // ═══════════════════════════════════════════════════════════════════
 
+// Icon colors for each report type
+const ICON_COLORS: Record<ReportType, string> = {
+  'sla-breach': 'text-destructive',
+  'aging': 'text-amber-500',
+  'committee': 'text-violet-500',
+  'conversion': 'text-emerald-500',
+  'distribution': 'text-sky-500',
+};
+
 interface ReportTabsProps {
   activeTab: ReportType;
   onTabChange: (tab: ReportType) => void;
@@ -73,11 +82,12 @@ interface ReportTabsProps {
 
 function ReportTabs({ activeTab, onTabChange }: ReportTabsProps) {
   return (
-    <div className="border-b border-border">
+    <div className="border-b" style={{ borderColor: 'var(--brand-gold)' }}>
       <div className="flex gap-1 overflow-x-auto scrollbar-hide -mb-px">
         {REPORT_CONFIGS.map((report) => {
           const Icon = report.icon;
           const isActive = activeTab === report.id;
+          const iconColor = ICON_COLORS[report.id];
           return (
             <button
               key={report.id}
@@ -85,11 +95,12 @@ function ReportTabs({ activeTab, onTabChange }: ReportTabsProps) {
               className={cn(
                 "flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap",
                 isActive 
-                  ? "border-primary text-primary bg-primary/5" 
+                  ? "text-foreground" 
                   : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
               )}
+              style={isActive ? { borderColor: 'var(--brand-gold)' } : undefined}
             >
-              <Icon className={cn("h-4 w-4", isActive && "text-primary")} />
+              <Icon className={cn("h-4 w-4", isActive ? iconColor : "text-muted-foreground")} />
               {report.label}
             </button>
           );
