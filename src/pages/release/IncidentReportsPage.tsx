@@ -2,7 +2,7 @@
  * IncidentReportsPage — Tabbed Reports Hub
  * 
  * Route: /release/incidents/reports
- * Query params: ?tab=sla-breach|aging|committee|conversion|distribution
+ * Query params: ?tab=sla-breach|aging|conversion|distribution
  * 
  * Layout:
  * - No sidebar — uses horizontal tabs for report navigation
@@ -14,7 +14,7 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { 
-  Clock, AlertTriangle, Users, GitBranch, BarChart3,
+  Clock, AlertTriangle, GitBranch, BarChart3,
   Download, AlertCircle, CheckCircle, XCircle, Timer, FileText, ChevronDown, RefreshCw
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -27,7 +27,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { useIncidents } from '@/hooks/useIncidents';
-import { useCommitteeQueue } from '@/hooks/useCommitteeQueue';
 import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
 import { ExecutiveInsightStrip } from '@/components/reports/ExecutiveInsightStrip';
 import { ReportTable, type ReportColumn } from '@/components/reports/ReportTable';
@@ -38,14 +37,13 @@ import {
   getAgingTime 
 } from '@/components/incidents/badges/IncidentBadges';
 import type { Incident } from '@/types/incident';
-import type { CommitteeQueueItem } from '@/hooks/useCommitteeQueue';
 import { exportReportToPDF } from '@/utils/pdfExport';
 
 // ═══════════════════════════════════════════════════════════════════
 // TYPES & CONFIG
 // ═══════════════════════════════════════════════════════════════════
 
-type ReportType = 'sla-breach' | 'aging' | 'committee' | 'conversion' | 'distribution';
+type ReportType = 'sla-breach' | 'aging' | 'conversion' | 'distribution';
 
 interface ReportConfig {
   id: ReportType;
@@ -57,7 +55,6 @@ interface ReportConfig {
 const REPORT_CONFIGS: ReportConfig[] = [
   { id: 'sla-breach', label: 'SLA Breach', title: 'SLA Breach Report', icon: Clock },
   { id: 'aging', label: 'Incident Aging', title: 'Incident Aging Report', icon: AlertTriangle },
-  { id: 'committee', label: 'Committee Queue', title: 'Committee Queue Report', icon: Users },
   { id: 'conversion', label: 'Conversion Funnel', title: 'Conversion Funnel Report', icon: GitBranch },
   { id: 'distribution', label: 'Severity vs Priority', title: 'Severity vs Priority Report', icon: BarChart3 },
 ];
@@ -70,7 +67,6 @@ const REPORT_CONFIGS: ReportConfig[] = [
 const ICON_COLORS: Record<ReportType, string> = {
   'sla-breach': 'text-destructive',
   'aging': 'text-amber-500',
-  'committee': 'text-violet-500',
   'conversion': 'text-emerald-500',
   'distribution': 'text-sky-500',
 };
@@ -257,134 +253,6 @@ function AgingReport({ incidents, onRowClick }: { incidents: Incident[]; onRowCl
         getRowId={(i) => i.id}
         onRowClick={(i) => onRowClick(i.id)}
         emptyMessage="No open incidents"
-      />
-    </>
-  );
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// COMMITTEE QUEUE REPORT
-// ═══════════════════════════════════════════════════════════════════
-
-function CommitteeReport({ onRowClick }: { onRowClick: (id: string) => void }) {
-  const [showHistory, setShowHistory] = useState(false);
-  const { data: queueItems = [], isLoading } = useCommitteeQueue({ includeClosedDecisions: showHistory });
-
-  const pendingItems = useMemo(() => queueItems.filter(i => i.committeeStatus === 'pending'), [queueItems]);
-  const historyItems = useMemo(() => queueItems.filter(i => i.committeeStatus !== 'pending'), [queueItems]);
-  
-  const displayItems = showHistory ? historyItems : pendingItems;
-  
-  const sev1Pending = pendingItems.filter(i => i.incident.severity === 'SEV1').length;
-  const over3Days = pendingItems.filter(i => i.agingDays > 3).length;
-  const oldest = pendingItems.length > 0 ? Math.max(...pendingItems.map(i => i.agingDays)) : 0;
-
-  const approvedCount = historyItems.filter(i => i.committeeStatus === 'approved').length;
-  const vetoedCount = historyItems.filter(i => i.committeeStatus === 'vetoed').length;
-
-  const queueInsights = [
-    { label: 'Pending', value: pendingItems.length, icon: <Clock className="h-4 w-4" /> },
-    { label: 'SEV1 Pending', value: sev1Pending, highlight: sev1Pending > 0 ? 'danger' as const : undefined, icon: <AlertTriangle className="h-4 w-4" /> },
-    { label: '>3 Days Pending', value: over3Days, highlight: over3Days > 0 ? 'warning' as const : undefined, icon: <Timer className="h-4 w-4" /> },
-    { label: 'Oldest Pending', value: `${oldest}d`, icon: <AlertCircle className="h-4 w-4" /> },
-  ];
-
-  const historyInsights = [
-    { label: 'Approved', value: approvedCount, highlight: 'success' as const, icon: <CheckCircle className="h-4 w-4" /> },
-    { label: 'Vetoed', value: vetoedCount, highlight: vetoedCount > 0 ? 'danger' as const : undefined, icon: <XCircle className="h-4 w-4" /> },
-    { label: 'Veto Rate', value: `${historyItems.length > 0 ? ((vetoedCount / historyItems.length) * 100).toFixed(1) : 0}%`, icon: <BarChart3 className="h-4 w-4" /> },
-    { label: 'Total Decisions', value: historyItems.length, icon: <Users className="h-4 w-4" /> },
-  ];
-
-  const pendingColumns: ReportColumn<CommitteeQueueItem>[] = [
-    { key: 'key', label: 'Key', minWidth: 100, render: (i) => <span className="font-mono text-primary font-medium">{i.incident.incident_key}</span> },
-    { key: 'summary', label: 'Summary', minWidth: 260, canGrow: true, render: (i) => <span className="truncate block">{i.incident.title}</span> },
-    { key: 'severity', label: 'Sev', minWidth: 70, centered: true, render: (i) => <SeverityBadge severity={i.incident.severity} /> },
-    { key: 'major', label: 'Major', minWidth: 55, centered: true, render: (i) => i.incident.is_major_incident ? <AlertTriangle className="h-3.5 w-3.5 text-amber-500" /> : <span className="text-muted-foreground">—</span> },
-    { key: 'progress', label: 'Progress', minWidth: 80, centered: true, render: (i) => (
-      <span className="font-mono text-xs font-medium">{i.approvalsCompletedCount}/{i.approvalsRequiredCount}</span>
-    )},
-    { key: 'approvers', label: 'Approvers', minWidth: 100, centered: true, render: (i) => (
-      <div className="flex -space-x-1 justify-center">
-        {i.approvers.slice(0, 3).map((a, idx) => (
-          <div key={idx} className={cn(
-            "w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-medium border border-background",
-            a.decision === 'approved' ? 'bg-emerald-500/10 text-emerald-600' :
-            a.decision === 'vetoed' ? 'bg-destructive/10 text-destructive' :
-            'bg-muted text-muted-foreground'
-          )}>
-            {a.userInitials || a.userName.charAt(0)}
-          </div>
-        ))}
-        {i.approvers.length > 3 && (
-          <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-medium border border-background bg-muted text-muted-foreground">
-            +{i.approvers.length - 3}
-          </div>
-        )}
-      </div>
-    )},
-    { key: 'age', label: 'Age', minWidth: 55, centered: true, render: (i) => (
-      <span className={cn('font-mono text-xs font-medium', i.agingDays > 3 ? 'text-amber-600' : 'text-muted-foreground')}>
-        {i.agingDays}d
-      </span>
-    )},
-  ];
-
-  const historyColumns: ReportColumn<CommitteeQueueItem>[] = [
-    { key: 'key', label: 'Key', minWidth: 100, render: (i) => <span className="font-mono text-primary font-medium">{i.incident.incident_key}</span> },
-    { key: 'summary', label: 'Summary', minWidth: 280, canGrow: true, render: (i) => <span className="truncate block">{i.incident.title}</span> },
-    { key: 'severity', label: 'Sev', minWidth: 70, centered: true, render: (i) => <SeverityBadge severity={i.incident.severity} /> },
-    { key: 'outcome', label: 'Outcome', minWidth: 90, centered: true, render: (i) => (
-      <Badge variant="outline" className={cn('text-[10px] whitespace-nowrap',
-        i.committeeStatus === 'approved' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' :
-        'bg-destructive/10 text-destructive border-destructive/20'
-      )}>
-        {i.committeeStatus === 'approved' ? 'APPROVED' : 'VETOED'}
-      </Badge>
-    )},
-    { key: 'decidedBy', label: 'Decided By', minWidth: 130, render: (i) => <span className="truncate">{i.lastAction?.by || '—'}</span> },
-    { key: 'decisionTime', label: 'Time', minWidth: 70, centered: true, render: (i) => (
-      <span className="font-mono text-xs text-muted-foreground">{i.agingDays}d</span>
-    )},
-    { key: 'decidedAt', label: 'Decided At', minWidth: 110, render: (i) => (
-      <span className="text-muted-foreground text-xs">
-        {i.committeeDecisionAt ? new Date(i.committeeDecisionAt).toLocaleDateString() : '—'}
-      </span>
-    )},
-  ];
-
-  return (
-    <>
-      <ExecutiveInsightStrip 
-        title={showHistory ? "COMMITTEE DECISION SUMMARY" : "COMMITTEE QUEUE SUMMARY"} 
-        insights={showHistory ? historyInsights : queueInsights}
-        className="mb-4"
-      />
-      <div className="flex items-center gap-2 mb-4">
-        <Button
-          variant={showHistory ? "ghost" : "default"}
-          size="sm"
-          className="h-7 text-xs"
-          onClick={() => setShowHistory(false)}
-        >
-          Pending ({pendingItems.length})
-        </Button>
-        <Button
-          variant={showHistory ? "default" : "ghost"}
-          size="sm"
-          className="h-7 text-xs"
-          onClick={() => setShowHistory(true)}
-        >
-          Decision History ({historyItems.length})
-        </Button>
-      </div>
-      <ReportTable 
-        data={displayItems} 
-        columns={showHistory ? historyColumns : pendingColumns} 
-        isLoading={isLoading}
-        getRowId={(i) => i.incident.id}
-        onRowClick={(i) => onRowClick(i.incident.id)}
-        emptyMessage={showHistory ? "No committee decisions in history" : "No pending committee decisions"}
       />
     </>
   );
@@ -742,7 +610,6 @@ export default function IncidentReportsPage() {
             <>
               {activeReport === 'sla-breach' && <SLABreachReport incidents={incidents} onRowClick={handleRowClick} />}
               {activeReport === 'aging' && <AgingReport incidents={incidents} onRowClick={handleRowClick} />}
-              {activeReport === 'committee' && <CommitteeReport onRowClick={handleRowClick} />}
               {activeReport === 'conversion' && <ConversionReport incidents={incidents} onRowClick={handleRowClick} />}
               {activeReport === 'distribution' && <DistributionReport incidents={incidents} onRowClick={handleRowClick} />}
             </>
