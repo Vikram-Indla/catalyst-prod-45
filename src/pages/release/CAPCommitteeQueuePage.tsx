@@ -118,13 +118,13 @@ export default function CAPCommitteeQueuePage() {
     <div className="h-full flex flex-col bg-[var(--surface-default)]">
       {/* Header */}
       <div className="h-12 border-b border-[var(--border-default)] bg-[var(--surface-elevated)] shrink-0 px-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Shield className="h-4 w-4 text-[var(--brand-primary)]" />
-          <h1 className="text-sm font-semibold text-[var(--text-1)]">Committee Queue</h1>
-          <Badge variant="secondary" className="text-[10px] h-5 px-1.5 font-medium">
+        <div className="flex items-center gap-2 min-w-0">
+          <Shield className="h-4 w-4" style={{ color: 'var(--brand-primary)' }} />
+          <h1 className="text-sm font-semibold text-[var(--text-primary)] truncate">Committee Queue</h1>
+          <Badge variant="secondary" className="text-[10px] h-5 px-1.5 font-medium text-[var(--text-secondary)]">
             {pendingCount} Pending
           </Badge>
-          <span className="text-[11px] text-[var(--text-3)] hidden sm:inline">
+          <span className="text-[11px] text-[var(--text-secondary)] hidden sm:inline truncate">
             Incidents awaiting committee decision
           </span>
         </div>
@@ -132,7 +132,7 @@ export default function CAPCommitteeQueuePage() {
         {/* Toolbar */}
         <div className="flex items-center gap-1.5">
           <div className="relative w-44">
-            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-[var(--text-3)]" />
+            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-[var(--text-tertiary)]" />
             <Input
               placeholder="Search..."
               value={searchQuery}
@@ -175,13 +175,13 @@ export default function CAPCommitteeQueuePage() {
           <Button
             variant="ghost"
             size="sm"
-            className="h-7 gap-1.5 text-[11px] px-2"
+            className="h-7 gap-1.5 text-[11px] px-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
             onClick={() => setIncludeClosedDecisions(!includeClosedDecisions)}
           >
             {includeClosedDecisions ? (
-              <ToggleRight className="h-3.5 w-3.5 text-emerald-600" />
+              <ToggleRight className="h-3.5 w-3.5" style={{ color: 'var(--brand-primary)' }} />
             ) : (
-              <ToggleLeft className="h-3.5 w-3.5 text-[var(--text-3)]" />
+              <ToggleLeft className="h-3.5 w-3.5" style={{ color: 'var(--text-tertiary)' }} />
             )}
             {includeClosedDecisions ? 'All' : 'Open'}
           </Button>
