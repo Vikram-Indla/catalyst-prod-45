@@ -690,8 +690,8 @@ export default function IncidentReportsPage() {
     <div className="h-full flex flex-col bg-background min-h-0">
       {/* Header with breadcrumb */}
       <GlobalPageHeader
-        sectionLabel="RELEASE"
-        pageTitle={`Incident Reports / ${activeConfig.title}`}
+        sectionLabel={['RELEASE', 'Incident Reports']}
+        pageTitle={activeConfig.title}
         showDivider={false}
         rightActions={
           <div className="flex items-center gap-2">
