@@ -1,20 +1,18 @@
 /**
  * IncidentListTable — Enterprise-grade incident tracking table
  * 
- * Design: Matches Home "Your Work" table quality with operational enhancements
+ * Design: Jira-quality dense enterprise list view
  * Features:
+ * - Fixed row height (44px body, 40px header)
+ * - Consistent vertical alignment across all cells
+ * - Standardized pill sizing (24px height)
  * - Resizable columns with localStorage persistence
- * - Horizontal scroll with future scaling (15+ columns)
  * - Inline editing with DB persistence (optimistic + rollback)
- * - Committee computed status
- * - Premium hover/focus states
- * - Kebab menu actions
  */
 
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Clock, MoreHorizontal, Eye, Pencil, Trash2, AlertTriangle, Copy, ExternalLink, Star, CheckCircle2 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { MoreHorizontal, Eye, Pencil, Trash2, AlertTriangle, Copy } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import {
@@ -43,6 +41,7 @@ import type { Incident } from '@/types/incident';
 import type { ColumnConfig, TableDensity } from '@/hooks/useIncidentColumns';
 import { cn } from '@/lib/utils';
 import { getAgingTime } from '@/components/incidents/badges/IncidentBadges';
+import { StatusPill, SeverityPill, SlaPill, MajorPill, CommitteePill, TablePill } from './TablePill';
 
 interface IncidentListTableProps {
   incidents: Incident[];
@@ -55,105 +54,100 @@ interface IncidentListTableProps {
   density?: TableDensity;
 }
 
-// Status configuration with token-based styling
-const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; dot?: string }> = {
-  open: { label: 'Open', bg: 'bg-[var(--surface-3)]', text: 'text-[var(--text-1)]' },
-  triage: { label: 'Triage', bg: 'bg-amber-50 dark:bg-amber-950/30', text: 'text-amber-700 dark:text-amber-400', dot: 'bg-amber-500' },
-  to_committee: { label: 'Committee', bg: 'bg-violet-50 dark:bg-violet-950/30', text: 'text-violet-700 dark:text-violet-400', dot: 'bg-violet-500' },
-  in_progress: { label: 'In Progress', bg: 'bg-sky-50 dark:bg-sky-950/30', text: 'text-sky-700 dark:text-sky-400', dot: 'bg-sky-500' },
-  resolved: { label: 'Resolved', bg: 'bg-emerald-50 dark:bg-emerald-950/30', text: 'text-emerald-700 dark:text-emerald-400', dot: 'bg-emerald-500' },
-  converted: { label: 'Converted', bg: 'bg-[var(--surface-2)]', text: 'text-[var(--text-3)]' },
-  closed: { label: 'Closed', bg: 'bg-[var(--surface-2)]', text: 'text-[var(--text-3)]' },
-};
+// Typography tokens - consistent across table
+const TABLE_HEADER_CLASS = 'text-xs font-medium text-muted-foreground uppercase tracking-wide';
+const TABLE_CELL_TEXT = 'text-[13px] leading-5 text-foreground';
+const TABLE_CELL_MUTED = 'text-[13px] leading-5 text-muted-foreground';
 
-const STATUS_OPTIONS = Object.entries(STATUS_CONFIG).map(([value, { label }]) => ({ value, label }));
+// Status options for inline editing
+const STATUS_OPTIONS = [
+  { value: 'open', label: 'Open' },
+  { value: 'triage', label: 'Triage' },
+  { value: 'to_committee', label: 'Committee' },
+  { value: 'in_progress', label: 'In Progress' },
+  { value: 'resolved', label: 'Resolved' },
+  { value: 'converted', label: 'Converted' },
+  { value: 'closed', label: 'Closed' },
+];
 
-// Severity - small colored dot + label (no loud pill)
-const SEVERITY_CONFIG: Record<string, { label: string; dot: string; description: string }> = {
-  SEV1: { label: 'SEV1', dot: 'bg-rose-500', description: 'Critical' },
-  SEV2: { label: 'SEV2', dot: 'bg-amber-500', description: 'High' },
-  SEV3: { label: 'SEV3', dot: 'bg-[var(--text-3)]', description: 'Medium' },
-  SEV4: { label: 'SEV4', dot: 'bg-[var(--text-3)]/50', description: 'Low' },
-};
+// Severity options for inline editing
+const SEVERITY_OPTIONS = [
+  { value: 'SEV1', label: 'SEV1' },
+  { value: 'SEV2', label: 'SEV2' },
+  { value: 'SEV3', label: 'SEV3' },
+  { value: 'SEV4', label: 'SEV4' },
+];
 
-const SEVERITY_OPTIONS = Object.entries(SEVERITY_CONFIG).map(([value, { label }]) => ({ value, label }));
+// Support Level options
+const SUPPORT_OPTIONS = [
+  { value: 'L1', label: 'L1' },
+  { value: 'L2', label: 'L2' },
+  { value: 'L3', label: 'L3' },
+];
 
-// Support Level
+// Support Level descriptions
 const SUPPORT_CONFIG: Record<string, { label: string; description: string }> = {
   L1: { label: 'L1', description: 'Frontline Support' },
   L2: { label: 'L2', description: 'Technical Support' },
   L3: { label: 'L3', description: 'Specialist / CAP' },
 };
 
-const SUPPORT_OPTIONS = Object.entries(SUPPORT_CONFIG).map(([value, { label }]) => ({ value, label }));
-
-// SLA states - compact text/chip
-const SLA_CONFIG = {
-  breached: { label: 'Breached', className: 'text-rose-600 dark:text-rose-400 font-medium' },
-  at_risk: { label: 'At risk', className: 'text-amber-600 dark:text-amber-400' },
-  on_track: { label: 'On track', className: 'text-emerald-600 dark:text-emerald-400' },
-};
-
-// Committee status styling
-const COMMITTEE_STATUS_STYLES: Record<string, string> = {
-  not_applicable: 'text-[var(--text-3)]',
-  in_progress: 'text-amber-600 dark:text-amber-400',
-  approved: 'text-emerald-600 dark:text-emerald-400',
-  rejected: 'text-rose-600 dark:text-rose-400',
+// Severity descriptions
+const SEVERITY_CONFIG: Record<string, { description: string }> = {
+  SEV1: { description: 'Critical' },
+  SEV2: { description: 'High' },
+  SEV3: { description: 'Medium' },
+  SEV4: { description: 'Low' },
 };
 
 // Default columns
 const DEFAULT_VISIBLE_COLUMNS: ColumnConfig[] = [
-  { id: 'key', label: 'Key', visible: true, minWidth: '100px', required: true },
+  { id: 'key', label: 'Key', visible: true, minWidth: '130px', required: true },
   { id: 'summary', label: 'Summary', visible: true, required: true },
-  { id: 'severity', label: 'Sev', visible: true, width: '80px' },
+  { id: 'severity', label: 'Sev', visible: true, width: '110px' },
   { id: 'level', label: 'Lvl', visible: true, width: '60px' },
-  { id: 'status', label: 'Status', visible: true, minWidth: '110px' },
-  { id: 'assignee', label: 'Assignee', visible: true, width: '140px' },
-  { id: 'age', label: 'Age', visible: true, width: '56px' },
-  { id: 'sla', label: 'SLA', visible: true, width: '72px' },
-  { id: 'releaseVersion', label: 'Release', visible: false, width: '90px' },
-  { id: 'major', label: 'Major', visible: false, width: '56px' },
-  { id: 'committee', label: 'Committee', visible: true, width: '100px' },
+  { id: 'status', label: 'Status', visible: true, minWidth: '140px' },
+  { id: 'assignee', label: 'Assignee', visible: true, width: '180px' },
+  { id: 'age', label: 'Age', visible: true, width: '70px' },
+  { id: 'sla', label: 'SLA', visible: true, width: '90px' },
+  { id: 'releaseVersion', label: 'Release', visible: false, width: '110px' },
+  { id: 'major', label: 'Major', visible: false, width: '110px' },
+  { id: 'committee', label: 'Committee', visible: true, width: '120px' },
 ];
 
 function LoadingSkeleton({ density }: { density: TableDensity }) {
-  const rowH = density === 'compact' ? 'h-[44px]' : 'h-[52px]';
   return (
-    <div className="rounded-lg border border-[var(--border-color)] overflow-hidden bg-[var(--surface-1)] shadow-sm">
+    <div className="rounded-lg border border-border overflow-hidden bg-card shadow-sm">
       {/* Header - 40px */}
-      <div 
-        className="flex items-center h-10 px-4 text-[11px] font-semibold uppercase tracking-wider sticky top-0 z-10"
-        style={{ backgroundColor: 'var(--surface-2)', borderBottom: '1px solid var(--divider)' }}
-      >
-        <div className="w-[80px] shrink-0 pr-2">Key</div>
-        <div className="flex-1 min-w-[220px]">Summary</div>
+      <div className="flex items-center h-10 px-4 text-xs font-medium text-muted-foreground uppercase tracking-wide sticky top-0 z-10 bg-muted/50 border-b border-border">
+        <div className="w-[130px] shrink-0 pr-2">Key</div>
+        <div className="flex-1 min-w-[320px]">Summary</div>
         <div className="shrink-0 flex items-center">
-          <span className="w-[68px] px-2">Sev</span>
-          <span className="w-[48px] px-2">Lvl</span>
-          <span className="w-[96px] px-2">Status</span>
-          <span className="w-[120px] px-2">Assignee</span>
-          <span className="w-[48px] px-1 text-right">Age</span>
-          <span className="w-[56px] px-1">SLA</span>
-          <span className="w-[88px] px-2">Committee</span>
+          <span className="w-[110px] px-2">Sev</span>
+          <span className="w-[60px] px-2">Lvl</span>
+          <span className="w-[140px] px-2">Status</span>
+          <span className="w-[180px] px-2">Assignee</span>
+          <span className="w-[70px] px-2">Age</span>
+          <span className="w-[90px] px-2">SLA</span>
+          <span className="w-[120px] px-2">Committee</span>
         </div>
-        <div className="w-8 shrink-0"></div>
+        <div className="w-10 shrink-0"></div>
       </div>
       {/* Skeleton rows - 44px each */}
       {[...Array(12)].map((_, i) => (
-        <div key={i} className={cn("flex items-center px-4", rowH)} style={{ borderBottom: '1px solid var(--divider)' }}>
-          <div className="w-[80px] shrink-0 pr-2"><Skeleton className="h-4 w-14" /></div>
-          <div className="flex-1 min-w-[220px] pr-2"><Skeleton className="h-4 w-full" /></div>
+        <div key={i} className="flex items-center h-11 px-4 border-b border-border">
+          <div className="w-[130px] shrink-0 pr-2"><Skeleton className="h-4 w-16" /></div>
+          <div className="flex-1 min-w-[320px] pr-3"><Skeleton className="h-4 w-full" /></div>
           <div className="shrink-0 flex items-center">
-            <div className="w-[68px] px-2"><Skeleton className="h-4 w-10" /></div>
-            <div className="w-[48px] px-2"><Skeleton className="h-4 w-6" /></div>
-            <div className="w-[96px] px-2"><Skeleton className="h-5 w-14" /></div>
-            <div className="w-[120px] px-2"><Skeleton className="h-5 w-20" /></div>
-            <div className="w-[48px] px-1"><Skeleton className="h-4 w-7" /></div>
-            <div className="w-[56px] px-1"><Skeleton className="h-4 w-10" /></div>
-            <div className="w-[88px] px-2"><Skeleton className="h-4 w-14" /></div>
+            <div className="w-[110px] px-2"><Skeleton className="h-6 w-14 rounded-full" /></div>
+            <div className="w-[60px] px-2"><Skeleton className="h-4 w-6" /></div>
+            <div className="w-[140px] px-2"><Skeleton className="h-6 w-20 rounded-full" /></div>
+            <div className="w-[180px] px-2"><Skeleton className="h-5 w-24" /></div>
+            <div className="w-[70px] px-2"><Skeleton className="h-4 w-8" /></div>
+            <div className="w-[90px] px-2"><Skeleton className="h-6 w-16 rounded-full" /></div>
+            <div className="w-[120px] px-2"><Skeleton className="h-6 w-16 rounded-full" /></div>
           </div>
-          <div className="w-8 shrink-0"><Skeleton className="h-4 w-4 mx-auto" /></div>
+          <div className="w-10 shrink-0"><Skeleton className="h-4 w-4 mx-auto" /></div>
         </div>
       ))}
     </div>
@@ -181,11 +175,6 @@ export function IncidentListTable({
   
   // Column widths with persistence
   const { columnWidths, handleColumnResize } = useIncidentColumnWidths();
-  
-  // Row height: 44px compact, 52px comfortable
-  const rowHeight = density === 'compact' ? 'h-[44px]' : 'h-[52px]';
-  const textBase = density === 'compact' ? 'text-[13px]' : 'text-sm';
-  const textSmall = 'text-[12px]';
   
   if (isLoading) {
     return <LoadingSkeleton density={density} />;
@@ -392,18 +381,14 @@ export function IncidentListTable({
               {/* Body */}
               {incidents.length === 0 ? (
                 <div className="py-12 text-center">
-                  <div className="text-sm text-[var(--text-3)]">No incidents to display</div>
+                  <div className="text-sm text-muted-foreground">No incidents to display</div>
                 </div>
               ) : (
                 incidents.map((incident) => {
-                  const statusConfig = STATUS_CONFIG[incident.status] || STATUS_CONFIG.open;
-                  const severityConfig = SEVERITY_CONFIG[incident.severity] || SEVERITY_CONFIG.SEV3;
                   const supportConfig = incident.support_level ? SUPPORT_CONFIG[incident.support_level] : null;
                   const age = getAgingTime(incident.created_at);
                   const slaStatus = getSlaStatus(incident);
-                  const slaConfig = slaStatus ? SLA_CONFIG[slaStatus] : null;
                   const committeeStatus = getCommitteeDisplayStatus(incident.committee);
-                  const committeeStyle = COMMITTEE_STATUS_STYLES[committeeStatus.status] || 'text-[var(--text-3)]';
                   const isConverted = incident.status === 'converted' || incident.status === 'closed';
                   const isHovered = hoveredId === incident.id;
                   
@@ -411,8 +396,8 @@ export function IncidentListTable({
                     <div 
                       key={incident.id} 
                       className={cn(
-                        'flex items-center transition-colors cursor-pointer border-b border-border',
-                        rowHeight,
+                        // Fixed row height - 44px for consistent vertical rhythm
+                        'flex items-center h-11 transition-colors cursor-pointer border-b border-border',
                         isHovered && 'bg-muted/40'
                       )}
                       onClick={(e) => handleRowClick(incident.id, e)}
@@ -423,15 +408,15 @@ export function IncidentListTable({
                         if (e.key === 'Enter' && incident.id) navigate(`/release/incidents/${incident.id}`);
                       }}
                     >
-                      {/* Key - matches header width with pl-4 */}
+                      {/* Key - consistent vertical alignment */}
                       {isColumnVisible('key') && (
                         <div 
-                          className="shrink-0 pl-4 pr-2 flex items-center gap-1"
+                          className="shrink-0 pl-4 pr-2 flex items-center h-full gap-1.5"
                           style={{ width: `${columnWidths.key}px` }}
                         >
                           <Link 
                             to={`/release/incidents/${incident.id}`} 
-                            className={cn(textSmall, "font-medium text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-ring rounded-sm")}
+                            className={cn(TABLE_CELL_TEXT, "font-medium text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-ring rounded-sm")}
                             onClick={(e) => e.stopPropagation()}
                           >
                             {incident.incident_key}
@@ -439,7 +424,7 @@ export function IncidentListTable({
                           {incident.is_major_incident && (
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <AlertTriangle className="h-3 w-3 text-amber-500 flex-shrink-0" />
+                                <AlertTriangle className="h-3.5 w-3.5 text-amber-500 flex-shrink-0" />
                               </TooltipTrigger>
                               <TooltipContent side="right" className="text-xs">Major incident</TooltipContent>
                             </Tooltip>
@@ -447,10 +432,10 @@ export function IncidentListTable({
                         </div>
                       )}
                       
-                      {/* Summary - flexible, matches header */}
+                      {/* Summary - flexible, vertically centered */}
                       {isColumnVisible('summary') && (
                         <div 
-                          className="flex-1 pr-2" 
+                          className="flex-1 pr-3 flex items-center h-full" 
                           style={{ minWidth: `${columnWidths.summary}px` }}
                           data-inline-edit
                         >
@@ -460,22 +445,22 @@ export function IncidentListTable({
                             displayValue={
                               <Tooltip>
                                 <TooltipTrigger asChild>
-                                  <span className={cn(textBase, "leading-5 text-foreground line-clamp-1 cursor-pointer font-medium")}>{incident.title}</span>
+                                  <span className={cn(TABLE_CELL_TEXT, "line-clamp-1 cursor-pointer font-medium")}>{incident.title}</span>
                                 </TooltipTrigger>
                                 <TooltipContent side="top" className="text-xs max-w-md">{incident.title}</TooltipContent>
                               </Tooltip>
                             }
                             onSave={(val) => handleInlineUpdate(incident.id, 'title', val)}
                             disabled={isConverted}
-                            textSize={textBase}
+                            textSize="text-[13px]"
                           />
                         </div>
                       )}
                       
-                      {/* Severity - matches header width */}
+                      {/* Severity - using TablePill */}
                       {isColumnVisible('severity') && (
                         <div 
-                          className="shrink-0 px-2" 
+                          className="shrink-0 px-2 flex items-center h-full" 
                           style={{ width: `${columnWidths.severity}px` }}
                           data-inline-edit
                         >
@@ -486,25 +471,26 @@ export function IncidentListTable({
                             displayValue={
                               <Tooltip>
                                 <TooltipTrigger asChild>
-                                  <div className="flex items-center gap-1.5 cursor-pointer">
-                                    <span className={cn('h-2 w-2 rounded-full flex-shrink-0', severityConfig.dot)} />
-                                    <span className={cn(textSmall, "text-muted-foreground")}>{severityConfig.label}</span>
-                                  </div>
+                                  <span className="cursor-pointer">
+                                    <SeverityPill severity={incident.severity} />
+                                  </span>
                                 </TooltipTrigger>
-                                <TooltipContent side="top" className="text-xs">{severityConfig.description}</TooltipContent>
+                                <TooltipContent side="top" className="text-xs">
+                                  {SEVERITY_CONFIG[incident.severity]?.description || incident.severity}
+                                </TooltipContent>
                               </Tooltip>
                             }
                             onSave={(val) => handleInlineUpdate(incident.id, 'severity', val)}
                             disabled={isConverted}
-                            textSize={textSmall}
+                            textSize="text-[13px]"
                           />
                         </div>
                       )}
                       
-                      {/* Level */}
+                      {/* Level - centered text */}
                       {isColumnVisible('level') && (
                         <div 
-                          className="shrink-0 px-2" 
+                          className="shrink-0 px-2 flex items-center h-full" 
                           style={{ width: `${columnWidths.level}px` }}
                           data-inline-edit
                         >
@@ -516,25 +502,25 @@ export function IncidentListTable({
                               supportConfig ? (
                                 <Tooltip>
                                   <TooltipTrigger asChild>
-                                    <span className={cn(textSmall, "text-muted-foreground cursor-pointer")}>{supportConfig.label}</span>
+                                    <span className={cn(TABLE_CELL_MUTED, "cursor-pointer")}>{supportConfig.label}</span>
                                   </TooltipTrigger>
                                   <TooltipContent side="top" className="text-xs">{supportConfig.description}</TooltipContent>
                                 </Tooltip>
                               ) : (
-                                <span className={cn(textSmall, "text-muted-foreground/50")}>—</span>
+                                <span className={cn(TABLE_CELL_MUTED, "opacity-50")}>—</span>
                               )
                             }
                             onSave={(val) => handleInlineUpdate(incident.id, 'support_level', val)}
                             disabled={isConverted}
-                            textSize={textSmall}
+                            textSize="text-[13px]"
                           />
                         </div>
                       )}
                       
-                      {/* Status - compact chip */}
+                      {/* Status - using TablePill with 24px height */}
                       {isColumnVisible('status') && (
                         <div 
-                          className="shrink-0 px-2" 
+                          className="shrink-0 px-2 flex items-center h-full" 
                           style={{ width: `${columnWidths.status}px` }}
                           data-inline-edit
                         >
@@ -542,28 +528,18 @@ export function IncidentListTable({
                             type="select"
                             value={incident.status}
                             options={STATUS_OPTIONS}
-                            displayValue={
-                              <span 
-                                className={cn(
-                                  'inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium',
-                                  statusConfig.bg, statusConfig.text
-                                )}
-                              >
-                                {statusConfig.dot && <span className={cn('h-1.5 w-1.5 rounded-full', statusConfig.dot)} />}
-                                {statusConfig.label}
-                              </span>
-                            }
+                            displayValue={<StatusPill status={incident.status} />}
                             onSave={(val) => handleInlineUpdate(incident.id, 'status', val)}
                             disabled={isConverted}
-                            textSize={textSmall}
+                            textSize="text-[13px]"
                           />
                         </div>
                       )}
                       
-                      {/* Assignee - inline user picker for direct editing */}
+                      {/* Assignee - avatar + name on one row, vertically centered */}
                       {isColumnVisible('assignee') && (
                         <div 
-                          className="shrink-0 px-2"
+                          className="shrink-0 px-2 flex items-center h-full"
                           style={{ width: `${columnWidths.assignee}px` }}
                           data-inline-edit
                         >
@@ -571,39 +547,39 @@ export function IncidentListTable({
                             value={incident.assignee}
                             onSave={(userId) => handleInlineUpdate(incident.id, 'assignee_id', userId || '')}
                             disabled={isConverted}
-                            textSize={textSmall}
+                            textSize="text-[13px]"
                           />
                         </div>
                       )}
                       
-                      {/* Age */}
+                      {/* Age - centered */}
                       {isColumnVisible('age') && (
                         <div 
-                          className="shrink-0 px-2"
+                          className="shrink-0 px-2 flex items-center h-full"
                           style={{ width: `${columnWidths.age}px` }}
                         >
-                          <span className={cn(textSmall, "tabular-nums text-muted-foreground")}>{age}</span>
+                          <span className={cn(TABLE_CELL_MUTED, "tabular-nums")}>{age}</span>
                         </div>
                       )}
                       
-                      {/* SLA */}
+                      {/* SLA - using TablePill */}
                       {isColumnVisible('sla') && (
                         <div 
-                          className="shrink-0 px-2"
+                          className="shrink-0 px-2 flex items-center h-full"
                           style={{ width: `${columnWidths.sla}px` }}
                         >
-                          {slaConfig ? (
-                            <span className={cn(textSmall, slaConfig.className)}>{slaConfig.label}</span>
+                          {slaStatus ? (
+                            <SlaPill status={slaStatus} />
                           ) : (
-                            <span className={cn(textSmall, "text-muted-foreground/50")}>—</span>
+                            <span className={cn(TABLE_CELL_MUTED, "opacity-50")}>—</span>
                           )}
                         </div>
                       )}
 
-                      {/* Release - inline release picker for direct editing */}
+                      {/* Release - vertically centered */}
                       {isColumnVisible('releaseVersion') && (
                         <div 
-                          className="shrink-0 px-2 group"
+                          className="shrink-0 px-2 flex items-center h-full"
                           style={{ width: `${columnWidths.releaseVersion}px` }}
                           data-inline-edit
                         >
@@ -611,15 +587,15 @@ export function IncidentListTable({
                             value={incident.release_version}
                             onSave={(releaseId) => handleInlineUpdate(incident.id, 'release_version_id', releaseId || '')}
                             disabled={isConverted}
-                            textSize={textSmall}
+                            textSize="text-[13px]"
                           />
                         </div>
                       )}
 
-                      {/* Major - state display only, toggle on edit */}
+                      {/* Major - using TablePill */}
                       {isColumnVisible('major') && (
                         <div 
-                          className="shrink-0 px-2" 
+                          className="shrink-0 px-2 flex items-center h-full" 
                           style={{ width: `${columnWidths.major}px` }}
                           data-inline-edit
                         >
@@ -629,35 +605,27 @@ export function IncidentListTable({
                                 <InlineEditCell
                                   type="toggle"
                                   value={incident.is_major_incident || false}
-                                  displayValue={
-                                    incident.is_major_incident ? (
-                                      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400">
-                                        Major
-                                      </span>
-                                    ) : (
-                                      <span className={cn(textSmall, "text-muted-foreground/50")}>Normal</span>
-                                    )
-                                  }
+                                  displayValue={<MajorPill isMajor={incident.is_major_incident || false} />}
                                   onSave={(val) => handleInlineUpdate(incident.id, 'is_major_incident', val)}
                                   disabled={isConverted}
-                                  textSize={textSmall}
+                                  textSize="text-[13px]"
                                 />
                               </div>
                             </TooltipTrigger>
-                            <TooltipContent side="top" className="text-xs max-w-[200px]">Major incident — elevated visibility & escalation rules</TooltipContent>
+                            <TooltipContent side="top" className="text-xs max-w-[200px]">
+                              Major incident — elevated visibility & escalation rules
+                            </TooltipContent>
                           </Tooltip>
                         </div>
                       )}
 
-                      {/* Committee - state only */}
+                      {/* Committee - using TablePill */}
                       {isColumnVisible('committee') && (
                         <div 
-                          className="shrink-0 px-2"
+                          className="shrink-0 px-2 flex items-center h-full"
                           style={{ width: `${columnWidths.committee}px` }}
                         >
-                          <span className={cn(textSmall, 'font-medium', committeeStyle)}>
-                            {committeeStatus.label}
-                          </span>
+                          <CommitteePill status={committeeStatus.status} label={committeeStatus.label} />
                         </div>
                       )}
 

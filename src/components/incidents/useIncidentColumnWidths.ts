@@ -6,34 +6,34 @@ import { useState, useCallback } from 'react';
 
 const STORAGE_KEY = 'catalyst-incident-list-column-widths';
 
-// Default column widths - designed for enterprise density
+// Default column widths - enterprise-grade stable widths per spec
 export const DEFAULT_COLUMN_WIDTHS: Record<string, number> = {
-  key: 80,
-  summary: 280,
-  severity: 68,
-  level: 48,
-  status: 96,
-  assignee: 120,
-  age: 48,
-  sla: 56,
-  releaseVersion: 76,
-  major: 52,
-  committee: 88,
+  key: 130,         // 120-140px range
+  summary: 320,     // Flexible (takes remaining space)
+  severity: 110,    // 110px per spec
+  level: 60,        // Compact level indicator
+  status: 140,      // 140px per spec
+  assignee: 180,    // 180px per spec
+  age: 70,          // 70px per spec
+  sla: 90,          // 90px per spec
+  releaseVersion: 110, // 110px per spec
+  major: 110,       // 110px per spec
+  committee: 120,   // 120px per spec
 };
 
 // Minimum widths to prevent collapse
 export const MIN_COLUMN_WIDTHS: Record<string, number> = {
-  key: 60,
-  summary: 160,
-  severity: 50,
-  level: 40,
-  status: 70,
-  assignee: 80,
-  age: 40,
-  sla: 48,
-  releaseVersion: 60,
-  major: 44,
-  committee: 70,
+  key: 100,
+  summary: 200,
+  severity: 80,
+  level: 50,
+  status: 100,
+  assignee: 120,
+  age: 60,
+  sla: 70,
+  releaseVersion: 90,
+  major: 80,
+  committee: 100,
 };
 
 export function useIncidentColumnWidths() {
