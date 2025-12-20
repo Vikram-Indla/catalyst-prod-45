@@ -451,8 +451,8 @@ const App = () => (
               <Route path="/program-backlog" element={<div className="p-8"><h1 className="text-2xl font-bold">Program Backlog</h1><p className="text-muted-foreground">Coming soon</p></div>} />
               <Route path="/programs" element={<ProgramDirectory />} />
               <Route path="/projects" element={<ProjectDirectory />} />
-              <Route path="/projects/:projectKey" element={<ProjectSummaryPage />} />
-              <Route path="/projects/:projectKey/summary" element={<ProjectSummaryPage />} />
+              <Route path="/projects/:projectKey" element={<Navigate to={`/projects`} replace />} />
+              <Route path="/projects/:projectKey/summary" element={<Navigate to={`/projects`} replace />} />
               <Route path="/projects/:projectKey/settings" element={<ProjectSettingsPage />} />
               <Route path="/projects/:projectId/features" element={<FeaturesPage />} />
               <Route path="/projects/:projectId/features/:featureId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><FeatureViewPage /></Suspense>} />

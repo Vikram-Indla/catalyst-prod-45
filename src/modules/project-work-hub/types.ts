@@ -182,20 +182,20 @@ export const STATUS_CATEGORY_MAP: Record<string, StatusCategory> = {
   'resolved': 'DONE',
 };
 
-// Type icons mapping
-export const WORK_ITEM_TYPE_CONFIG: Record<WorkItemType, { label: string; color: string; icon: string }> = {
-  FEATURE: { label: 'Feature', color: '#36B37E', icon: 'lightning' },
-  STORY: { label: 'Story', color: '#36B37E', icon: 'bookmark' },
-  SUBTASK: { label: 'Subtask', color: '#2684FF', icon: 'subtask' },
-  DEFECT: { label: 'Defect', color: '#FF5630', icon: 'bug' },
-  INCIDENT: { label: 'Incident', color: '#FF991F', icon: 'warning' },
+// Type icons mapping - using CSS variables for token-based theming
+export const WORK_ITEM_TYPE_CONFIG: Record<WorkItemType, { label: string; colorClass: string; icon: string }> = {
+  FEATURE: { label: 'Feature', colorClass: 'text-green-600 dark:text-green-400', icon: 'lightning' },
+  STORY: { label: 'Story', colorClass: 'text-green-600 dark:text-green-400', icon: 'bookmark' },
+  SUBTASK: { label: 'Subtask', colorClass: 'text-blue-600 dark:text-blue-400', icon: 'subtask' },
+  DEFECT: { label: 'Defect', colorClass: 'text-destructive', icon: 'bug' },
+  INCIDENT: { label: 'Incident', colorClass: 'text-amber-600 dark:text-amber-400', icon: 'warning' },
 };
 
-// Priority config
-export const PRIORITY_CONFIG: Record<Priority, { label: string; color: string }> = {
-  HIGHEST: { label: 'Highest', color: '#FF5630' },
-  HIGH: { label: 'High', color: '#FF7452' },
-  MEDIUM: { label: 'Medium', color: '#FFAB00' },
-  LOW: { label: 'Low', color: '#36B37E' },
-  LOWEST: { label: 'Lowest', color: '#6B778C' },
+// Priority config - using CSS variables for token-based theming
+export const PRIORITY_CONFIG: Record<Priority, { label: string; colorClass: string }> = {
+  HIGHEST: { label: 'Highest', colorClass: 'text-destructive' },
+  HIGH: { label: 'High', colorClass: 'text-red-500 dark:text-red-400' },
+  MEDIUM: { label: 'Medium', colorClass: 'text-amber-500 dark:text-amber-400' },
+  LOW: { label: 'Low', colorClass: 'text-green-600 dark:text-green-400' },
+  LOWEST: { label: 'Lowest', colorClass: 'text-muted-foreground' },
 };

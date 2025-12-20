@@ -30,9 +30,9 @@ export default function SummaryView({ project }: SummaryViewProps) {
   const lowPriority = allItems.filter(i => i.priority === 'Low').length;
 
   const statusData = [
-    { name: 'To Do', value: todoCount, color: '#64748b' },
-    { name: 'In Progress', value: inProgressCount, color: '#3b82f6' },
-    { name: 'Done', value: doneCount, color: '#22c55e' },
+    { name: 'To Do', value: todoCount, color: 'hsl(var(--muted-foreground))' },
+    { name: 'In Progress', value: inProgressCount, color: 'hsl(var(--primary))' },
+    { name: 'Done', value: doneCount, color: 'hsl(var(--chart-2))' },
   ];
 
   const priorityData = [
@@ -42,9 +42,9 @@ export default function SummaryView({ project }: SummaryViewProps) {
   ];
 
   const typeData = [
-    { type: 'Feature', count: featureCount, percentage: Math.round((featureCount / totalItems) * 100), color: '#8b5cf6' },
-    { type: 'Story', count: storyCount, percentage: Math.round((storyCount / totalItems) * 100), color: '#22c55e' },
-    { type: 'Subtask', count: subtaskCount, percentage: Math.round((subtaskCount / totalItems) * 100), color: '#3b82f6' },
+    { type: 'Feature', count: featureCount, percentage: Math.round((featureCount / Math.max(totalItems, 1)) * 100), color: 'hsl(var(--chart-4))' },
+    { type: 'Story', count: storyCount, percentage: Math.round((storyCount / Math.max(totalItems, 1)) * 100), color: 'hsl(var(--chart-2))' },
+    { type: 'Subtask', count: subtaskCount, percentage: Math.round((subtaskCount / Math.max(totalItems, 1)) * 100), color: 'hsl(var(--primary))' },
   ];
 
   return (
@@ -150,7 +150,7 @@ export default function SummaryView({ project }: SummaryViewProps) {
                   tickLine={false}
                 />
                 <Tooltip />
-                <Bar dataKey="count" fill="#3b82f6" radius={[0, 4, 4, 0]} barSize={16} />
+                <Bar dataKey="count" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} barSize={16} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
