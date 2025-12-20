@@ -1,14 +1,13 @@
 /**
  * Incident Kanban Swimlane - Collapsible lane for grouped incidents
+ * Shows total count + SLA sub-counts in header
  */
 
 import { memo, useState, useMemo, useCallback } from 'react';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronDown, ChevronRight, AlertTriangle, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { KanbanCard } from './KanbanCard';
 import { 
-  KANBAN_STATUSES, 
   STATUS_CONFIG, 
   getColumnStats,
   type SwimlaneGroup 
@@ -33,6 +32,9 @@ export const KanbanSwimlane = memo(function KanbanSwimlane({
   visibleStatuses,
 }: KanbanSwimlaneProps) {
   const [isExpanded, setIsExpanded] = useState(true);
+
+  // Calculate lane-level stats
+  const laneStats = useMemo(() => getColumnStats(group.incidents), [group.incidents]);
 
   // Group incidents by status
   const incidentsByStatus = useMemo(() => {
@@ -63,11 +65,11 @@ export const KanbanSwimlane = memo(function KanbanSwimlane({
 
   return (
     <div className="border-b border-border last:border-b-0">
-      {/* Swimlane Header - Sticky */}
+      {/* Swimlane Header - Sticky with counts */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
         className={cn(
-          "w-full flex items-center gap-2 px-4 py-2 bg-muted/30 border-b border-border",
+          "w-full flex items-center gap-2 px-4 py-2.5 bg-muted/30 border-b border-border",
           "hover:bg-muted/50 transition-colors sticky top-0 z-10 text-left"
         )}
       >
@@ -83,9 +85,25 @@ export const KanbanSwimlane = memo(function KanbanSwimlane({
           />
         )}
         <span className="text-sm font-semibold text-foreground">{group.label}</span>
+        
+        {/* Total count */}
         <span className="text-xs text-muted-foreground">
-          ({group.incidents.length} incident{group.incidents.length !== 1 ? 's' : ''})
+          ({group.incidents.length})
         </span>
+
+        {/* SLA sub-counts */}
+        {laneStats.atRisk > 0 && (
+          <span className="flex items-center gap-0.5 text-[10px] text-warning">
+            <AlertTriangle className="h-3 w-3" />
+            {laneStats.atRisk}
+          </span>
+        )}
+        {laneStats.breached > 0 && (
+          <span className="flex items-center gap-0.5 text-[10px] text-destructive">
+            <AlertCircle className="h-3 w-3" />
+            {laneStats.breached}
+          </span>
+        )}
       </button>
 
       {/* Swimlane Content */}
@@ -119,9 +137,14 @@ export const KanbanSwimlane = memo(function KanbanSwimlane({
                     <span className="text-[10px] text-muted-foreground">
                       {stats.total}
                     </span>
+                    {stats.atRisk > 0 && (
+                      <span className="text-[9px] text-warning">
+                        {stats.atRisk}!
+                      </span>
+                    )}
                     {stats.breached > 0 && (
                       <span className="text-[9px] text-destructive">
-                        +{stats.breached}!
+                        {stats.breached}!!
                       </span>
                     )}
                   </div>
