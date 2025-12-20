@@ -1,13 +1,33 @@
 /**
  * FeatureKeyDetails — Epic, Owner, Health, Planned Dates grid
+ * 
+ * Now with real CRUD for Owner, Health, and Dates.
  */
 
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar } from 'lucide-react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Calendar, ChevronDown } from 'lucide-react';
 import { format } from 'date-fns';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 import styles from '../FeatureViewPage.module.css';
 
 interface Feature {
+  id: string;
   epic_id: string | null;
   epic?: { id: string; display_id: string; name: string } | null;
   owner_id: string | null;
@@ -19,7 +39,14 @@ interface Feature {
 
 interface FeatureKeyDetailsProps {
   feature: Feature;
+  onFeatureUpdated?: () => void;
 }
+
+const HEALTH_OPTIONS = [
+  { value: 'green', label: 'ON TRACK' },
+  { value: 'yellow', label: 'AT RISK' },
+  { value: 'red', label: 'OFF TRACK' },
+];
 
 function getInitials(name: string): string {
   return name
@@ -44,6 +71,7 @@ function getHealthClass(health: string | null): string {
     case 'green':
       return styles.healthOnTrack;
     case 'red':
+      return styles.healthOffTrack;
     case 'yellow':
     case 'amber':
       return styles.healthAtRisk;
@@ -57,7 +85,7 @@ function getHealthLabel(health: string | null): string {
     case 'green':
       return 'ON TRACK';
     case 'red':
-      return 'AT RISK';
+      return 'OFF TRACK';
     case 'yellow':
     case 'amber':
       return 'AT RISK';
@@ -66,12 +94,81 @@ function getHealthLabel(health: string | null): string {
   }
 }
 
-export function FeatureKeyDetails({ feature }: FeatureKeyDetailsProps) {
-  const startDate = formatDate(feature.planned_start_date);
-  const endDate = formatDate(feature.planned_end_date);
-  const dateRange = startDate && endDate 
-    ? `${startDate} – ${endDate}` 
-    : startDate || endDate || '—';
+export function FeatureKeyDetails({ feature, onFeatureUpdated }: FeatureKeyDetailsProps) {
+  const queryClient = useQueryClient();
+  const [datePopoverOpen, setDatePopoverOpen] = useState(false);
+  const [startDate, setStartDate] = useState<Date | undefined>(
+    feature.planned_start_date ? new Date(feature.planned_start_date) : undefined
+  );
+  const [endDate, setEndDate] = useState<Date | undefined>(
+    feature.planned_end_date ? new Date(feature.planned_end_date) : undefined
+  );
+
+  // Fetch profiles for owner selection
+  const { data: profiles = [] } = useQuery({
+    queryKey: ['profiles-for-feature'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, full_name')
+        .order('full_name');
+      
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  type HealthType = 'green' | 'yellow' | 'red';
+
+  // Mutation for updating feature
+  const updateFeature = useMutation({
+    mutationFn: async (data: { owner_id?: string | null; health?: HealthType; planned_start_date?: string | null; planned_end_date?: string | null }) => {
+      const { error } = await supabase
+        .from('features')
+        .update({ ...data, updated_at: new Date().toISOString() })
+        .eq('id', feature.id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['feature-view', feature.id] });
+      queryClient.invalidateQueries({ queryKey: ['features'] });
+      onFeatureUpdated?.();
+    },
+    onError: (error: any) => {
+      toast.error('Failed to update', { description: error.message });
+    },
+  });
+
+  const handleHealthChange = (newHealth: HealthType) => {
+    updateFeature.mutate({ health: newHealth }, {
+      onSuccess: () => toast.success('Health updated'),
+    });
+  };
+
+  const handleOwnerChange = (newOwnerId: string | null) => {
+    updateFeature.mutate({ owner_id: newOwnerId }, {
+      onSuccess: () => toast.success('Owner updated'),
+    });
+  };
+
+  const handleSaveDates = () => {
+    updateFeature.mutate({
+      planned_start_date: startDate ? format(startDate, 'yyyy-MM-dd') : null,
+      planned_end_date: endDate ? format(endDate, 'yyyy-MM-dd') : null,
+    }, {
+      onSuccess: () => {
+        toast.success('Dates updated');
+        setDatePopoverOpen(false);
+      },
+    });
+  };
+
+  const displayStartDate = formatDate(feature.planned_start_date);
+  const displayEndDate = formatDate(feature.planned_end_date);
+  const dateRange = displayStartDate && displayEndDate 
+    ? `${displayStartDate} – ${displayEndDate}` 
+    : displayStartDate || displayEndDate || '—';
   
   return (
     <div className={styles.keyDetailsGrid}>
@@ -85,7 +182,7 @@ export function FeatureKeyDetails({ feature }: FeatureKeyDetailsProps) {
               className={styles.epicLink}
             >
               <span className={styles.epicLinkIcon}>E</span>
-              {feature.epic.display_id} · {feature.epic.name}
+              {feature.epic.display_id || feature.epic.id.slice(0, 6)} · {feature.epic.name}
             </Link>
           ) : (
             <span className={styles.noneValue}>None</span>
@@ -93,42 +190,119 @@ export function FeatureKeyDetails({ feature }: FeatureKeyDetailsProps) {
         </div>
       </div>
       
-      {/* Owner */}
+      {/* Owner - Editable */}
       <div className={styles.keyDetailItem}>
         <div className={styles.keyDetailLabel}>OWNER</div>
         <div className={styles.keyDetailValue}>
-          {feature.owner ? (
-            <div className={styles.ownerValue}>
-              <div className={styles.avatar}>
-                {getInitials(feature.owner.name)}
-              </div>
-              <span>{feature.owner.name}</span>
-            </div>
-          ) : (
-            <span className={styles.noneValue}>Unassigned</span>
-          )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className={styles.editableField}>
+                {feature.owner ? (
+                  <div className={styles.ownerValue}>
+                    <div className={styles.avatar}>
+                      {getInitials(feature.owner.name)}
+                    </div>
+                    <span>{feature.owner.name}</span>
+                  </div>
+                ) : (
+                  <span className={styles.noneValue}>Unassigned</span>
+                )}
+                <ChevronDown size={12} className={styles.editableChevron} />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="max-h-64 overflow-y-auto">
+              <DropdownMenuItem onClick={() => handleOwnerChange(null)}>
+                Unassigned
+              </DropdownMenuItem>
+              {profiles.map(profile => (
+                <DropdownMenuItem 
+                  key={profile.id} 
+                  onClick={() => handleOwnerChange(profile.id)}
+                >
+                  {profile.full_name || 'Unknown'}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
       
-      {/* Health */}
+      {/* Health - Editable */}
       <div className={styles.keyDetailItem}>
         <div className={styles.keyDetailLabel}>HEALTH</div>
         <div className={styles.keyDetailValue}>
-          <span className={`${styles.healthBadge} ${getHealthClass(feature.health)}`}>
-            <span className={styles.healthBadgeDot} />
-            {getHealthLabel(feature.health)}
-          </span>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className={styles.editableField}>
+                <span className={`${styles.healthBadge} ${getHealthClass(feature.health)}`}>
+                  <span className={styles.healthBadgeDot} />
+                  {getHealthLabel(feature.health)}
+                </span>
+                <ChevronDown size={12} className={styles.editableChevron} />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              {HEALTH_OPTIONS.map(option => (
+                <DropdownMenuItem 
+                  key={option.value} 
+                  onClick={() => handleHealthChange(option.value as HealthType)}
+                >
+                  {option.label}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
       
-      {/* Planned Dates */}
+      {/* Planned Dates - Editable */}
       <div className={styles.keyDetailItem}>
         <div className={styles.keyDetailLabel}>PLANNED DATES</div>
         <div className={styles.keyDetailValue}>
-          <div className={styles.datesValue}>
-            <Calendar size={14} />
-            <span>{dateRange}</span>
-          </div>
+          <Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}>
+            <PopoverTrigger asChild>
+              <button className={styles.editableField}>
+                <div className={styles.datesValue}>
+                  <Calendar size={14} />
+                  <span>{dateRange}</span>
+                </div>
+                <ChevronDown size={12} className={styles.editableChevron} />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-4" align="start">
+              <div className="space-y-4">
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground uppercase mb-2 block">
+                    Start Date
+                  </label>
+                  <CalendarComponent
+                    mode="single"
+                    selected={startDate}
+                    onSelect={setStartDate}
+                    initialFocus
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground uppercase mb-2 block">
+                    End Date
+                  </label>
+                  <CalendarComponent
+                    mode="single"
+                    selected={endDate}
+                    onSelect={setEndDate}
+                  />
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" size="sm" onClick={() => setDatePopoverOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button size="sm" onClick={handleSaveDates}>
+                    Save
+                  </Button>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
     </div>

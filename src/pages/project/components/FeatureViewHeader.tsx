@@ -1,15 +1,20 @@
 /**
  * FeatureViewHeader — Feature ID, Title, Status, Actions
+ * 
+ * Now with real CRUD for status changes.
  */
 
 import { useState } from 'react';
-import { Layers, Share2, Link2, MoreHorizontal, ChevronDown } from 'lucide-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Layers, Share2, Link2, MoreHorizontal, ChevronDown, Pencil } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import styles from '../FeatureViewPage.module.css';
 
@@ -22,6 +27,7 @@ interface Feature {
 
 interface FeatureViewHeaderProps {
   feature: Feature;
+  onFeatureUpdated?: () => void;
 }
 
 const STATUS_OPTIONS = [
@@ -66,7 +72,34 @@ function getStatusLabel(status: string | null): string {
   }
 }
 
-export function FeatureViewHeader({ feature }: FeatureViewHeaderProps) {
+export function FeatureViewHeader({ feature, onFeatureUpdated }: FeatureViewHeaderProps) {
+  const queryClient = useQueryClient();
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editedName, setEditedName] = useState(feature.name);
+  
+  type FeatureStatus = 'funnel' | 'analyzing' | 'backlog' | 'implementing' | 'done';
+  
+  // Mutation for updating feature
+  const updateFeature = useMutation({
+    mutationFn: async (data: { name?: string; status?: FeatureStatus }) => {
+      const { error } = await supabase
+        .from('features')
+        .update({ ...data, updated_at: new Date().toISOString() })
+        .eq('id', feature.id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['feature-view', feature.id] });
+      queryClient.invalidateQueries({ queryKey: ['features'] });
+      queryClient.invalidateQueries({ queryKey: ['work-items'] });
+      onFeatureUpdated?.();
+    },
+    onError: (error: any) => {
+      toast.error('Failed to update feature', { description: error.message });
+    },
+  });
+
   const handleCopyLink = () => {
     const url = window.location.href;
     navigator.clipboard.writeText(url);
@@ -74,7 +107,39 @@ export function FeatureViewHeader({ feature }: FeatureViewHeaderProps) {
   };
   
   const handleShare = () => {
-    toast.info('Share feature');
+    // For now, copy link is the share action
+    handleCopyLink();
+  };
+  
+  const handleStatusChange = (newStatus: FeatureStatus) => {
+    updateFeature.mutate({ status: newStatus }, {
+      onSuccess: () => {
+        toast.success('Status updated');
+      }
+    });
+  };
+
+  const handleSaveName = () => {
+    if (editedName.trim() && editedName.trim() !== feature.name) {
+      updateFeature.mutate({ name: editedName.trim() }, {
+        onSuccess: () => {
+          toast.success('Title updated');
+          setIsEditingName(false);
+        }
+      });
+    } else {
+      setIsEditingName(false);
+      setEditedName(feature.name);
+    }
+  };
+
+  const handleNameKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSaveName();
+    } else if (e.key === 'Escape') {
+      setIsEditingName(false);
+      setEditedName(feature.name);
+    }
   };
   
   return (
@@ -88,11 +153,31 @@ export function FeatureViewHeader({ feature }: FeatureViewHeaderProps) {
         {/* Content */}
         <div className={styles.featureHeaderContent}>
           <div className={styles.featureId}>
-            {feature.display_id || feature.id}
+            {feature.display_id || `FEAT-${feature.id.slice(0, 4).toUpperCase()}`}
           </div>
-          <h1 className={styles.featureTitle}>
-            {feature.name}
-          </h1>
+          {isEditingName ? (
+            <Input
+              value={editedName}
+              onChange={(e) => setEditedName(e.target.value)}
+              onBlur={handleSaveName}
+              onKeyDown={handleNameKeyDown}
+              autoFocus
+              className={styles.titleInput}
+            />
+          ) : (
+            <div className={styles.titleRow}>
+              <h1 className={styles.featureTitle}>
+                {feature.name}
+              </h1>
+              <button
+                onClick={() => setIsEditingName(true)}
+                className={styles.editTitleBtn}
+                title="Edit title"
+              >
+                <Pencil size={14} />
+              </button>
+            </div>
+          )}
         </div>
         
         {/* Actions */}
@@ -118,21 +203,21 @@ export function FeatureViewHeader({ feature }: FeatureViewHeaderProps) {
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => toast.info('Edit feature')}>
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => toast.info('Delete feature')}>
-                Delete
+              <DropdownMenuItem onClick={() => setIsEditingName(true)}>
+                Edit title
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       </div>
       
-      {/* Status Pill */}
+      {/* Status Pill with real DB update */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className={`${styles.statusPill} ${getStatusClass(feature.status)}`}>
+          <button 
+            className={`${styles.statusPill} ${getStatusClass(feature.status)}`}
+            disabled={updateFeature.isPending}
+          >
             {getStatusLabel(feature.status)}
             <ChevronDown />
           </button>
@@ -141,7 +226,7 @@ export function FeatureViewHeader({ feature }: FeatureViewHeaderProps) {
           {STATUS_OPTIONS.map(option => (
             <DropdownMenuItem 
               key={option.value}
-              onClick={() => toast.info(`Status: ${option.label}`)}
+              onClick={() => handleStatusChange(option.value as FeatureStatus)}
             >
               {option.label}
             </DropdownMenuItem>
