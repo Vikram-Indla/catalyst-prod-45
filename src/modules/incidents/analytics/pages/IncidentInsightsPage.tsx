@@ -21,6 +21,7 @@ import { useIncidentDetail } from '../hooks/useIncidentDetail';
 import IncidentDetailModal from '@/components/incidents/modal/IncidentDetailModal';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import catalystLogo from '@/assets/catalyst-logo.png';
 import type { InsightPeriod, DrilldownFilter, IncidentWithSLA, ConversionMetrics, PeriodMetrics, PeriodComparison } from '../types';
 
 const PERIOD_TABS: { value: InsightPeriod; label: string }[] = [
@@ -940,69 +941,218 @@ function ViewSwitch({ currentMode }: { currentMode: ViewMode }) {
 }
 
 // ============================================================================
+// PRINT HEADER COMPONENT
+// ============================================================================
+
+interface PrintHeaderProps {
+  periodLabel: string;
+}
+
+function PrintHeader({ periodLabel }: PrintHeaderProps) {
+  const currentDate = format(new Date(), 'MMMM d, yyyy • HH:mm');
+  
+  return (
+    <div className="hidden print:block mb-8 pb-6 border-b-2 border-[var(--brand-primary)]">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <img 
+            src={catalystLogo} 
+            alt="Catalyst" 
+            className="h-10 w-auto"
+          />
+          <div className="h-10 w-px bg-border" />
+          <div>
+            <h1 className="text-2xl font-bold text-foreground tracking-tight">
+              Incident Insights Report
+            </h1>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              Executive Operational Report
+            </p>
+          </div>
+        </div>
+        <div className="text-right">
+          <div className="text-sm font-semibold text-foreground">
+            Period: {periodLabel}
+          </div>
+          <div className="text-xs text-muted-foreground mt-1">
+            Generated: {currentDate}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================================
 // PRINT STYLES
 // ============================================================================
 
 const printStyles = `
 @media print {
-  body {
+  /* Force color printing */
+  * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+    color-adjust: exact !important;
   }
   
-  .print\\:hidden {
+  body {
+    background: white !important;
+    font-size: 11pt !important;
+  }
+  
+  /* Hide non-print elements */
+  .print\\:hidden,
+  nav, 
+  aside, 
+  [data-sidebar], 
+  [role="navigation"],
+  header:not(.print-header),
+  .no-print {
     display: none !important;
   }
   
-  nav, aside, [data-sidebar], [role="navigation"] {
-    display: none !important;
+  /* Show print-only elements */
+  .hidden.print\\:block {
+    display: block !important;
   }
   
-  main {
+  /* Reset main container */
+  main, .main-content {
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
+    max-width: 100% !important;
+    overflow: visible !important;
   }
   
+  /* Remove max-width constraints */
+  [class*="max-w-"] {
+    max-width: 100% !important;
+  }
+  
+  /* Optimize spacing for print */
   .print\\:mb-8 {
-    margin-bottom: 2rem !important;
+    margin-bottom: 1.5rem !important;
   }
   
   .print\\:p-4 {
-    padding: 1rem !important;
+    padding: 0.75rem !important;
   }
   
   .print\\:p-6 {
-    padding: 1.5rem !important;
+    padding: 1rem !important;
   }
   
+  /* Typography adjustments */
   .print\\:text-sm {
-    font-size: 0.875rem !important;
+    font-size: 10pt !important;
   }
   
   .print\\:text-base {
-    font-size: 1rem !important;
+    font-size: 11pt !important;
   }
   
   .print\\:text-3xl {
-    font-size: 1.875rem !important;
+    font-size: 20pt !important;
   }
   
+  /* Gap adjustments */
   .print\\:gap-3 {
-    gap: 0.75rem !important;
+    gap: 0.5rem !important;
   }
   
   .print\\:gap-4 {
-    gap: 1rem !important;
+    gap: 0.75rem !important;
   }
   
   .print\\:gap-6 {
-    gap: 1.5rem !important;
+    gap: 1rem !important;
   }
   
+  /* KPI Grid - optimize for landscape */
+  .grid-cols-6 {
+    grid-template-columns: repeat(6, 1fr) !important;
+  }
+  
+  .grid-cols-6 > * {
+    padding: 1rem !important;
+  }
+  
+  .grid-cols-6 .text-4xl {
+    font-size: 24pt !important;
+  }
+  
+  /* Two-column sections */
+  .grid-cols-2 {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1rem !important;
+  }
+  
+  /* Tables */
+  table {
+    width: 100% !important;
+    font-size: 10pt !important;
+  }
+  
+  th, td {
+    padding: 0.5rem 0.75rem !important;
+  }
+  
+  /* Cards and borders */
+  .border {
+    border-width: 1px !important;
+  }
+  
+  .rounded-lg {
+    border-radius: 6px !important;
+  }
+  
+  /* Section headers */
+  section h2 {
+    font-size: 12pt !important;
+    margin-bottom: 0.75rem !important;
+  }
+  
+  /* Tabs - hide them in print, show active content */
+  [role="tablist"] {
+    display: none !important;
+  }
+  
+  /* Page settings */
   @page {
-    margin: 1.5cm;
-    size: A4 portrait;
+    margin: 1cm 1.5cm;
+    size: A4 landscape;
+  }
+  
+  @page :first {
+    margin-top: 1cm;
+  }
+  
+  /* Avoid page breaks inside important elements */
+  section, 
+  .border, 
+  table,
+  tr {
+    page-break-inside: avoid !important;
+  }
+  
+  /* Force page breaks where needed */
+  .page-break-before {
+    page-break-before: always !important;
+  }
+  
+  /* Print footer */
+  .print-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 8pt;
+    color: #666;
+    padding: 0.5rem;
+    border-top: 1px solid #ddd;
   }
 }
 `;
@@ -1042,37 +1192,45 @@ export default function IncidentInsightsPage() {
     <>
       <style>{printStyles}</style>
       <div className="h-full flex flex-col bg-background">
-        <GlobalPageHeader
-          sectionLabel="RELEASE"
-          pageTitle="Incident Insights"
-          showDivider={false}
-          rightActions={
-            <div className="flex items-center gap-4">
-              <ViewSwitch currentMode="insights" />
-              <div className="h-6 w-px bg-border print:hidden" />
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={handlePrint} 
-                className="h-9 px-4 text-sm font-medium print:hidden"
-              >
-                <Printer className="h-4 w-4 mr-2" />
-                Print / PDF
-              </Button>
-            </div>
-          }
-        />
+        {/* Print Header - only visible when printing */}
+        <div className="px-6 pt-6">
+          <PrintHeader periodLabel={PERIOD_TABS.find(t => t.value === activePeriod)?.label || 'Today'} />
+        </div>
+        
+        {/* Screen Header - hidden when printing */}
+        <div className="print:hidden">
+          <GlobalPageHeader
+            sectionLabel="RELEASE"
+            pageTitle="Incident Insights"
+            showDivider={false}
+            rightActions={
+              <div className="flex items-center gap-4">
+                <ViewSwitch currentMode="insights" />
+                <div className="h-6 w-px bg-border" />
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handlePrint} 
+                  className="h-9 px-4 text-sm font-medium"
+                >
+                  <Printer className="h-4 w-4 mr-2" />
+                  Print / PDF
+                </Button>
+              </div>
+            }
+          />
 
-        {/* Subtitle */}
-        <div className="px-6 pt-2 pb-4 border-b border-border">
-          <p className="text-sm text-muted-foreground uppercase tracking-wider font-medium">
-            Executive Operational Report
-          </p>
+          {/* Subtitle */}
+          <div className="px-6 pt-2 pb-4 border-b border-border">
+            <p className="text-sm text-muted-foreground uppercase tracking-wider font-medium">
+              Executive Operational Report
+            </p>
+          </div>
         </div>
 
         {/* Content with Tabs */}
-        <div className="flex-1 overflow-auto">
-          <div className="px-6 py-8 max-w-[1800px]">
+        <div className="flex-1 overflow-auto print:overflow-visible">
+          <div className="px-6 py-8 print:py-4 max-w-[1800px] print:max-w-none">
             <Tabs value={activePeriod} onValueChange={(v) => setActivePeriod(v as InsightPeriod)}>
               <TabsList className="mb-10 p-1.5 bg-muted/40 border border-border h-12">
                 {PERIOD_TABS.map(tab => (
