@@ -2,16 +2,16 @@
  * FeatureKeyDetails — Epic, Owner, Planned Dates grid
  * 
  * Layout: 2-column grid (Epic | Owner), then PLANNED DATES row below
- * Epic: Lightning icon in olive/gold, single-line horizontal layout
- * Owner: Avatar + name (chevron hidden, shows on hover)
- * Planned Dates: Combined start – end date range with calendar icon
+ * Epic: Lightning icon in green, left-aligned container
+ * Owner: Avatar + name in matching container
+ * Planned Dates: Single calendar icon + inline date range text
  */
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { ChevronDown, Check, Loader2, Zap, Calendar } from 'lucide-react';
+import { Check, Loader2, Zap, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 import {
   DropdownMenu,
@@ -24,7 +24,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
 import styles from '../FeatureViewPage.module.css';
@@ -66,6 +66,8 @@ function formatDate(dateStr: string | null): string {
 export function FeatureKeyDetails({ feature, onFeatureUpdated }: FeatureKeyDetailsProps) {
   const queryClient = useQueryClient();
   const [epicPopoverOpen, setEpicPopoverOpen] = useState(false);
+  const [startDateOpen, setStartDateOpen] = useState(false);
+  const [endDateOpen, setEndDateOpen] = useState(false);
 
   // Fetch profiles for owner selection
   const { data: profiles = [] } = useQuery({
@@ -275,23 +277,54 @@ export function FeatureKeyDetails({ feature, onFeatureUpdated }: FeatureKeyDetai
         <div className={styles.plannedDatesValue}>
           <Calendar size={16} className={styles.calendarIcon} />
           
-          {/* Start Date */}
-          <CatalystDatePicker
-            value={feature.planned_start_date}
-            onChange={handleStartDateChange}
-            placeholder="Start date"
-            triggerClassName={styles.dateTrigger}
-          />
+          {/* Start Date - clickable text */}
+          <Popover open={startDateOpen} onOpenChange={setStartDateOpen}>
+            <PopoverTrigger asChild>
+              <span className={styles.dateText}>
+                {feature.planned_start_date 
+                  ? format(new Date(feature.planned_start_date), 'MMM d, yyyy')
+                  : 'Start date'}
+              </span>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <CalendarComponent
+                mode="single"
+                selected={feature.planned_start_date ? new Date(feature.planned_start_date) : undefined}
+                onSelect={(date) => {
+                  handleStartDateChange(date || null);
+                  setStartDateOpen(false);
+                }}
+                className="p-3 pointer-events-auto"
+              />
+            </PopoverContent>
+          </Popover>
 
           <span className={styles.dateSeparator}>–</span>
 
-          {/* End Date */}
-          <CatalystDatePicker
-            value={feature.planned_end_date}
-            onChange={handleEndDateChange}
-            placeholder="End date"
-            minDate={feature.planned_start_date ? new Date(feature.planned_start_date) : undefined}
-          />
+          {/* End Date - clickable text */}
+          <Popover open={endDateOpen} onOpenChange={setEndDateOpen}>
+            <PopoverTrigger asChild>
+              <span className={styles.dateText}>
+                {feature.planned_end_date 
+                  ? format(new Date(feature.planned_end_date), 'MMM d, yyyy')
+                  : 'End date'}
+              </span>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <CalendarComponent
+                mode="single"
+                selected={feature.planned_end_date ? new Date(feature.planned_end_date) : undefined}
+                onSelect={(date) => {
+                  handleEndDateChange(date || null);
+                  setEndDateOpen(false);
+                }}
+                disabled={(date) => 
+                  feature.planned_start_date ? date < new Date(feature.planned_start_date) : false
+                }
+                className="p-3 pointer-events-auto"
+              />
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
     </div>
