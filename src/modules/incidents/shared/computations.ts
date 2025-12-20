@@ -193,7 +193,6 @@ export type QuickFilterKey =
 export interface QuickFilterConfig {
   key: QuickFilterKey;
   label: string;
-  color?: string;
   match: (incident: Incident, slaConfig?: SLAConfig) => boolean;
 }
 
@@ -201,16 +200,13 @@ export const QUICK_FILTERS: QuickFilterConfig[] = [
   {
     key: 'major',
     label: 'Major',
-    color: 'hsl(var(--destructive))',
     match: (inc) => inc.is_major_incident,
   },
   {
     key: 'committee',
-    label: 'Committee Configured',
-    color: 'var(--brand-gold)',
-    // "Committee Configured" = in Committee column AND has approvers (validates governance)
-    match: (inc) => inc.status === 'to_committee' && 
-      (inc.committee?.members?.length ?? 0) > 0,
+    label: 'Committee',
+    // Committee chip = status is 'to_committee' (simple, matches column)
+    match: (inc) => inc.status === 'to_committee',
   },
   {
     key: 'unassigned',
@@ -220,19 +216,16 @@ export const QUICK_FILTERS: QuickFilterConfig[] = [
   {
     key: 'sev1',
     label: 'SEV1',
-    color: 'hsl(var(--destructive))',
     match: (inc) => inc.severity === 'SEV1',
   },
   {
     key: 'at_risk',
     label: 'At Risk',
-    color: 'hsl(var(--warning))',
     match: (inc, cfg) => computeSlaHealth(inc, cfg) === 'at_risk',
   },
   {
     key: 'breached',
     label: 'Breached',
-    color: 'hsl(var(--destructive))',
     match: (inc, cfg) => computeSlaHealth(inc, cfg) === 'breached',
   },
 ];
