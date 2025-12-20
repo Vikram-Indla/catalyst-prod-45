@@ -1,10 +1,11 @@
 /**
  * SetCommitteeApproversModal
- * Modal for setting committee approvers when transitioning to Committee status
+ * Modal for setting/editing committee approvers
  * Enterprise-clean design with proper validation
+ * Supports both create (new transition) and edit (existing committee) modes
  */
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { Users, Calendar, FileText, AlertCircle, X, Check } from 'lucide-react';
 import {
   Dialog,
@@ -33,7 +34,7 @@ import {
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { useAvailableApprovers } from '@/hooks/useIncidentUserProfiles';
-import type { IncidentUserProfile } from '@/types/incident';
+import type { IncidentUserProfile, Incident } from '@/types/incident';
 
 export interface CommitteeSetupData {
   approverIds: string[];
@@ -47,6 +48,11 @@ interface SetCommitteeApproversModalProps {
   incidentTitle?: string;
   onConfirm: (data: CommitteeSetupData) => void;
   onCancel: () => void;
+  // Edit mode props
+  mode?: 'create' | 'edit';
+  initialApproverIds?: string[];
+  initialDueDate?: string;
+  initialNotes?: string;
 }
 
 export function SetCommitteeApproversModal({
@@ -55,6 +61,10 @@ export function SetCommitteeApproversModal({
   incidentTitle,
   onConfirm,
   onCancel,
+  mode = 'create',
+  initialApproverIds = [],
+  initialDueDate = '',
+  initialNotes = '',
 }: SetCommitteeApproversModalProps) {
   const [selectedApprovers, setSelectedApprovers] = useState<IncidentUserProfile[]>([]);
   const [dueDate, setDueDate] = useState('');
@@ -63,6 +73,20 @@ export function SetCommitteeApproversModal({
   const [validationError, setValidationError] = useState('');
 
   const { data: availableApprovers = [], isLoading } = useAvailableApprovers();
+
+  // Initialize state when modal opens or initial values change
+  useEffect(() => {
+    if (open && availableApprovers.length > 0) {
+      // Set initial approvers from IDs
+      const initialApprovers = availableApprovers.filter(a => 
+        initialApproverIds.includes(a.id)
+      );
+      setSelectedApprovers(initialApprovers);
+      setDueDate(initialDueDate ? initialDueDate.slice(0, 16) : '');
+      setNotes(initialNotes);
+      setValidationError('');
+    }
+  }, [open, availableApprovers, initialApproverIds, initialDueDate, initialNotes]);
 
   // Filter out already selected approvers
   const unselectedApprovers = useMemo(() => {
@@ -120,7 +144,7 @@ export function SetCommitteeApproversModal({
         <DialogHeader className="space-y-3 pb-4 border-b border-[var(--border-subtle)]">
           <DialogTitle className="text-lg font-semibold text-[var(--text-1)] flex items-center gap-2">
             <Users className="h-5 w-5 text-[var(--brand-gold)]" />
-            Set Committee Approvers
+            {mode === 'edit' ? 'Edit Committee Approvers' : 'Set Committee Approvers'}
           </DialogTitle>
           {(incidentKey || incidentTitle) && (
             <p className="text-sm text-[var(--text-3)]">
@@ -280,7 +304,7 @@ export function SetCommitteeApproversModal({
             onClick={handleConfirm}
             className="bg-[var(--brand-gold)] text-[var(--surface-1)] hover:bg-[var(--brand-gold)]/90"
           >
-            Confirm Committee
+            {mode === 'edit' ? 'Save Changes' : 'Confirm Committee'}
           </Button>
         </DialogFooter>
       </DialogContent>

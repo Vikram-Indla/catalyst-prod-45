@@ -1,15 +1,18 @@
 /**
  * Incident Kanban Card - Compact, operational design
  * Left accent indicates SLA health (breached/at-risk only)
+ * Special handling for Committee column: shows approvers, due date, edit action
  */
 
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   AlertTriangle, 
   Users, 
   Paperclip, 
   ArrowRightLeft,
+  Clock,
+  Settings,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -22,6 +25,58 @@ interface KanbanCardProps {
   isDragging?: boolean;
   onDragStart?: (e: React.DragEvent, incident: Incident) => void;
   onDragEnd?: () => void;
+  onEditCommittee?: (incident: Incident) => void;
+}
+
+// Format due date compactly
+function formatDueDate(dueDate: string): { text: string; isUrgent: boolean } {
+  const due = new Date(dueDate);
+  const now = new Date();
+  const diffMs = due.getTime() - now.getTime();
+  const diffHours = diffMs / (1000 * 60 * 60);
+  
+  // Check if urgent (within 24h or past due)
+  const isUrgent = diffHours <= 24;
+  
+  if (diffMs < 0) {
+    const hoursAgo = Math.abs(Math.floor(diffHours));
+    if (hoursAgo < 24) {
+      return { text: `Overdue ${hoursAgo}h`, isUrgent: true };
+    }
+    const daysAgo = Math.floor(hoursAgo / 24);
+    return { text: `Overdue ${daysAgo}d`, isUrgent: true };
+  }
+  
+  // Today
+  if (due.toDateString() === now.toDateString()) {
+    return { 
+      text: `Today ${due.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`,
+      isUrgent 
+    };
+  }
+  
+  // Tomorrow
+  const tomorrow = new Date(now);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  if (due.toDateString() === tomorrow.toDateString()) {
+    return { 
+      text: `Tomorrow ${due.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`,
+      isUrgent 
+    };
+  }
+  
+  // Within this week
+  if (diffHours < 168) { // 7 days
+    return { 
+      text: due.toLocaleDateString('en-US', { weekday: 'short', hour: 'numeric', minute: '2-digit' }),
+      isUrgent 
+    };
+  }
+  
+  return { 
+    text: due.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+    isUrgent: false 
+  };
 }
 
 export const KanbanCard = memo(function KanbanCard({ 
@@ -29,11 +84,22 @@ export const KanbanCard = memo(function KanbanCard({
   isDragging,
   onDragStart,
   onDragEnd,
+  onEditCommittee,
 }: KanbanCardProps) {
   const navigate = useNavigate();
   const slaHealth = getSlaHealth(incident);
   const slaConfig = SLA_HEALTH_CONFIG[slaHealth];
   const age = formatAge(incident.created_at);
+  
+  // Committee-specific data
+  const isInCommittee = incident.status === 'to_committee';
+  const approverCount = incident.committee?.members?.length || 0;
+  const committeeDue = incident.committee?.due_date;
+  
+  const dueDateInfo = useMemo(() => {
+    if (!committeeDue) return null;
+    return formatDueDate(committeeDue);
+  }, [committeeDue]);
 
   const handleClick = () => {
     navigate(`/release/incidents/${incident.id}`);
@@ -42,6 +108,11 @@ export const KanbanCard = memo(function KanbanCard({
   const handleKeyClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     navigate(`/release/incidents/${incident.id}`);
+  };
+  
+  const handleEditCommitteeClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onEditCommittee?.(incident);
   };
 
   const handleDragStart = (e: React.DragEvent) => {
@@ -154,16 +225,58 @@ export const KanbanCard = memo(function KanbanCard({
         {incident.title}
       </p>
 
-      {/* Row 3: Compact metadata line */}
-      <div className="flex items-center gap-1 text-[10px] text-muted-foreground mb-1">
-        <span className={getSeverityClass()}>{incident.severity}</span>
-        <span className="opacity-40">·</span>
-        <span>{incident.support_level || '—'}</span>
-        <span className="opacity-40">·</span>
-        <span>{age}</span>
-        <span className="opacity-40">·</span>
-        <span className={getSlaClass()}>{slaConfig.label}</span>
-      </div>
+      {/* Row 3: Committee info OR standard metadata */}
+      {isInCommittee ? (
+        <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground mb-1">
+          {/* Approvers count */}
+          <span className="flex items-center gap-0.5 text-[var(--brand-gold)]">
+            <Users className="h-3 w-3" />
+            <span className="font-medium">{approverCount}</span>
+          </span>
+          
+          {/* Due date */}
+          {dueDateInfo && (
+            <>
+              <span className="opacity-40">·</span>
+              <span className={cn(
+                "flex items-center gap-0.5",
+                dueDateInfo.isUrgent && "text-[var(--brand-gold)]"
+              )}>
+                {dueDateInfo.isUrgent && <Clock className="h-3 w-3" />}
+                Due: {dueDateInfo.text}
+              </span>
+            </>
+          )}
+          
+          {/* Edit button */}
+          {onEditCommittee && (
+            <>
+              <span className="flex-1" />
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={handleEditCommitteeClick}
+                    className="p-0.5 rounded hover:bg-[var(--surface-3)] text-[var(--text-3)] hover:text-[var(--brand-gold)] transition-colors"
+                  >
+                    <Settings className="h-3 w-3" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="text-xs">Edit Committee</TooltipContent>
+              </Tooltip>
+            </>
+          )}
+        </div>
+      ) : (
+        <div className="flex items-center gap-1 text-[10px] text-muted-foreground mb-1">
+          <span className={getSeverityClass()}>{incident.severity}</span>
+          <span className="opacity-40">·</span>
+          <span>{incident.support_level || '—'}</span>
+          <span className="opacity-40">·</span>
+          <span>{age}</span>
+          <span className="opacity-40">·</span>
+          <span className={getSlaClass()}>{slaConfig.label}</span>
+        </div>
+      )}
 
       {/* Row 4: Assignee + Release */}
       <div className="flex items-center justify-between gap-1.5">

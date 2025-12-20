@@ -1,10 +1,11 @@
 /**
  * Incident Kanban Column - Optimized for performance
  * Uses virtualization for large card counts
+ * Special handling for Committee column governance metrics
  */
 
-import { memo, useCallback } from 'react';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { memo, useCallback, useMemo } from 'react';
+import { ChevronDown, ChevronRight, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { VirtualizedCardList } from './VirtualizedCardList';
 import { STATUS_CONFIG, getColumnStats } from '../types';
@@ -19,6 +20,20 @@ interface KanbanColumnProps {
   onDragEnd: () => void;
   isCollapsed?: boolean;
   onToggleCollapse?: (status: IncidentStatus) => void;
+  onEditCommittee?: (incident: Incident) => void;
+}
+
+// Helper to count incidents due within 24h
+function countDueSoon(incidents: Incident[]): number {
+  const now = new Date();
+  const in24h = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+  
+  return incidents.filter(inc => {
+    const dueDate = inc.committee?.due_date;
+    if (!dueDate) return false;
+    const due = new Date(dueDate);
+    return due > now && due <= in24h;
+  }).length;
 }
 
 export const KanbanColumn = memo(function KanbanColumn({
@@ -30,9 +45,16 @@ export const KanbanColumn = memo(function KanbanColumn({
   onDragEnd,
   isCollapsed = false,
   onToggleCollapse,
+  onEditCommittee,
 }: KanbanColumnProps) {
   const config = STATUS_CONFIG[status];
   const stats = getColumnStats(incidents);
+  
+  // Committee-specific: count due soon
+  const dueSoonCount = useMemo(() => {
+    if (status !== 'to_committee') return 0;
+    return countDueSoon(incidents);
+  }, [status, incidents]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -116,14 +138,23 @@ export const KanbanColumn = memo(function KanbanColumn({
         {/* Spacer */}
         <div className="flex-1" />
         
-        {/* Secondary micro-metrics - muted, only if > 0 */}
+        {/* Secondary micro-metrics - context-aware */}
         <div className="flex items-center gap-2.5 text-[11px] text-muted-foreground/70">
-          {stats.atRisk > 0 && (
+          {/* Committee column: Due Soon metric */}
+          {status === 'to_committee' && dueSoonCount > 0 && (
+            <span className="flex items-center gap-0.5 font-normal">
+              <Clock className="h-3 w-3 text-[var(--brand-gold)]" />
+              Due Soon: <span className="font-medium text-[var(--text-2)]">{dueSoonCount}</span>
+            </span>
+          )}
+          
+          {/* Standard metrics for non-Committee columns */}
+          {status !== 'to_committee' && stats.atRisk > 0 && (
             <span className="font-normal">
               At Risk: <span className="font-medium text-muted-foreground">{stats.atRisk}</span>
             </span>
           )}
-          {stats.breached > 0 && (
+          {status !== 'to_committee' && stats.breached > 0 && (
             <span className="font-normal">
               Breached: <span className="font-medium text-muted-foreground">{stats.breached}</span>
             </span>
@@ -139,6 +170,7 @@ export const KanbanColumn = memo(function KanbanColumn({
         onDragEnd={onDragEnd}
         maxHeight={window.innerHeight - 320}
         emptyMessage="No incidents"
+        onEditCommittee={status === 'to_committee' ? onEditCommittee : undefined}
       />
     </div>
   );
