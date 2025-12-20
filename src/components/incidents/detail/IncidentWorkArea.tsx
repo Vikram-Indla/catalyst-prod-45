@@ -446,83 +446,80 @@ export function IncidentWorkArea({
           </TabsContent>
 
           {/* SLA Tab */}
-          <TabsContent value="sla" className="flex-1 overflow-auto p-4 m-0">
+          <TabsContent value="sla" className="flex-1 overflow-auto p-0 m-0">
             {sla ? (
-              <div className="space-y-4">
+              <div className="divide-y divide-border">
                 {sla.policy_name && (
-                  <div className="text-sm">
-                    <span className="text-muted-foreground">SLA Policy: </span>
+                  <div className="flex items-center justify-between px-3 py-1.5 bg-muted/30 text-xs">
+                    <span className="text-muted-foreground">Policy:</span>
                     <span className="font-medium">{sla.policy_name}</span>
                   </div>
                 )}
-                
-                {/* Response SLA */}
-                <div className="p-4 rounded-lg border border-border bg-muted/20">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium">Response SLA</span>
-                    <Badge 
-                      variant="outline" 
-                      className={cn(
-                        sla.response_breached 
-                          ? 'bg-destructive/10 text-destructive border-destructive/30'
-                          : sla.responded_at 
-                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800'
-                            : 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800'
-                      )}
-                    >
-                      {sla.response_breached ? 'Breached' : sla.responded_at ? 'Met' : 'On track'}
-                    </Badge>
+                {/* Response SLA - compact row */}
+                <div className="flex items-center justify-between px-3 py-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-xs font-medium">Response</span>
+                    <span className="text-[11px] text-muted-foreground truncate">
+                      Due {new Date(sla.response_due_at).toLocaleString()}
+                      {sla.responded_at && ` • Done ${new Date(sla.responded_at).toLocaleString()}`}
+                    </span>
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    Due: {new Date(sla.response_due_at).toLocaleString()}
-                    {sla.responded_at && (
-                      <> • Responded: {new Date(sla.responded_at).toLocaleString()}</>
+                  <Badge 
+                    variant="outline" 
+                    className={cn(
+                      'text-[10px] h-5 px-1.5',
+                      sla.response_breached 
+                        ? 'bg-destructive/10 text-destructive border-destructive/30'
+                        : sla.responded_at 
+                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800'
+                          : 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800'
                     )}
-                  </p>
+                  >
+                    {sla.response_breached ? 'Breached' : sla.responded_at ? 'Met' : 'On track'}
+                  </Badge>
                 </div>
-
-                {/* Resolution SLA */}
-                <div className="p-4 rounded-lg border border-border bg-muted/20">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium">Resolution SLA</span>
-                    <Badge 
-                      variant="outline" 
-                      className={cn(
-                        sla.resolution_breached 
-                          ? 'bg-destructive/10 text-destructive border-destructive/30'
-                          : sla.resolved_at 
-                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800'
-                            : 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800'
-                      )}
-                    >
-                      {sla.resolution_breached ? 'Breached' : sla.resolved_at ? 'Met' : 'On track'}
-                    </Badge>
+                {/* Resolution SLA - compact row */}
+                <div className="flex items-center justify-between px-3 py-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-xs font-medium">Resolution</span>
+                    <span className="text-[11px] text-muted-foreground truncate">
+                      Due {new Date(sla.resolution_due_at).toLocaleString()}
+                      {sla.resolved_at && ` • Done ${new Date(sla.resolved_at).toLocaleString()}`}
+                    </span>
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    Due: {new Date(sla.resolution_due_at).toLocaleString()}
-                    {sla.resolved_at && (
-                      <> • Resolved: {new Date(sla.resolved_at).toLocaleString()}</>
+                  <Badge 
+                    variant="outline" 
+                    className={cn(
+                      'text-[10px] h-5 px-1.5',
+                      sla.resolution_breached 
+                        ? 'bg-destructive/10 text-destructive border-destructive/30'
+                        : sla.resolved_at 
+                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800'
+                          : 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800'
                     )}
-                  </p>
+                  >
+                    {sla.resolution_breached ? 'Breached' : sla.resolved_at ? 'Met' : 'On track'}
+                  </Badge>
                 </div>
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">No SLA configured for this severity.</p>
+              <p className="text-xs text-muted-foreground px-3 py-2">No SLA configured for this severity.</p>
             )}
           </TabsContent>
 
           {/* Committee Log Tab */}
-          <TabsContent value="committee-log" className="flex-1 overflow-auto p-4 m-0">
+          <TabsContent value="committee-log" className="flex-1 overflow-auto p-0 m-0">
             {committee ? (
-              <div className="space-y-4">
-                {/* Summary line */}
-                <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                  <span className="text-sm">
-                    {committee.members?.filter(m => m.vote?.vote === 'approved').length || 0} of {committee.required_approvals || 2} approvals completed
+              <div className="divide-y divide-border">
+                {/* Summary row */}
+                <div className="flex items-center justify-between px-3 py-2 bg-muted/30">
+                  <span className="text-xs">
+                    {committee.members?.filter(m => m.vote?.vote === 'approved').length || 0}/{committee.required_approvals || 2} approvals
                   </span>
                   <Badge 
                     variant="outline"
                     className={cn(
+                      'text-[10px] h-5 px-1.5',
                       committee.status === 'approved' && 'bg-emerald-50 text-emerald-700 border-emerald-200',
                       committee.status === 'rejected' && 'bg-rose-50 text-rose-700 border-rose-200',
                       committee.status === 'pending' && 'bg-violet-50 text-violet-700 border-violet-200'
@@ -532,80 +529,63 @@ export function IncidentWorkArea({
                      committee.status.charAt(0).toUpperCase() + committee.status.slice(1)}
                   </Badge>
                 </div>
-
-                {/* Approvers list */}
-                <div className="space-y-2">
-                  {committee.members?.map(member => (
-                    <div key={member.id} className="flex items-center gap-3 p-3 bg-background border border-border rounded-lg">
-                      <Avatar className="h-8 w-8">
-                        <AvatarFallback className="text-xs bg-primary text-primary-foreground">
-                          {member.user?.avatar_initials || member.user?.full_name?.slice(0, 2) || '??'}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">
-                          {member.user?.full_name || 'Unknown'}
-                          {member.has_veto && (
-                            <span className="ml-1.5 text-xs text-amber-600">(veto)</span>
-                          )}
-                        </p>
-                        {member.role && (
-                          <p className="text-xs text-muted-foreground">{member.role}</p>
-                        )}
-                      </div>
-                      <Badge 
-                        variant="outline"
-                        className={cn(
-                          'text-xs',
-                          member.vote?.vote === 'approved' && 'bg-emerald-50 text-emerald-700 border-emerald-200',
-                          member.vote?.vote === 'rejected' && 'bg-rose-50 text-rose-700 border-rose-200',
-                          member.vote?.vote === 'vetoed' && 'bg-amber-50 text-amber-700 border-amber-200',
-                          (!member.vote || member.vote.vote === 'pending') && 'bg-muted text-muted-foreground'
-                        )}
-                      >
-                        {member.vote?.vote === 'pending' ? 'Pending' : 
-                         member.vote?.vote ? member.vote.vote.charAt(0).toUpperCase() + member.vote.vote.slice(1) : 'Pending'}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
+                {/* Approvers - compact rows */}
+                {committee.members?.map(member => (
+                  <div key={member.id} className="flex items-center gap-2 px-3 py-1.5">
+                    <Avatar className="h-5 w-5">
+                      <AvatarFallback className="text-[9px] bg-primary text-primary-foreground">
+                        {member.user?.avatar_initials || member.user?.full_name?.slice(0, 2) || '??'}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="text-xs font-medium truncate flex-1">
+                      {member.user?.full_name || 'Unknown'}
+                      {member.has_veto && <span className="ml-1 text-[10px] text-amber-600">(V)</span>}
+                      {member.role && <span className="ml-1 text-[10px] text-muted-foreground">• {member.role}</span>}
+                    </span>
+                    <Badge 
+                      variant="outline"
+                      className={cn(
+                        'text-[10px] h-4 px-1',
+                        member.vote?.vote === 'approved' && 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                        member.vote?.vote === 'rejected' && 'bg-rose-50 text-rose-700 border-rose-200',
+                        member.vote?.vote === 'vetoed' && 'bg-amber-50 text-amber-700 border-amber-200',
+                        (!member.vote || member.vote.vote === 'pending') && 'bg-muted text-muted-foreground'
+                      )}
+                    >
+                      {member.vote?.vote === 'pending' ? 'Pending' : 
+                       member.vote?.vote ? member.vote.vote.charAt(0).toUpperCase() + member.vote.vote.slice(1) : 'Pending'}
+                    </Badge>
+                  </div>
+                ))}
               </div>
             ) : (
-              <div className="text-center py-8">
-                <Users className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">No committee has been created for this incident.</p>
-              </div>
+              <p className="text-xs text-muted-foreground px-3 py-2">No committee created.</p>
             )}
           </TabsContent>
 
           {/* Audit Log Tab */}
           <TabsContent value="audit-log" className="flex-1 overflow-auto p-0 m-0">
             {/* Banner */}
-            <div className="px-4 py-2 bg-muted/50 border-b border-border text-xs text-muted-foreground">
-              This log is immutable. All changes are recorded with actor and timestamp.
+            <div className="px-3 py-1 bg-muted/50 border-b border-border text-[10px] text-muted-foreground">
+              Immutable log. All changes recorded with actor & timestamp.
             </div>
-            
             <div className="divide-y divide-border">
               {history.length > 0 ? (
                 history.map(h => (
-                  <div key={h.id} className="flex gap-3 p-4">
-                    <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
-                      <History className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm">
-                        <span className="font-medium">{h.field_name}</span> changed from{' '}
-                        <span className="text-muted-foreground">{h.old_value || 'empty'}</span> to{' '}
-                        <span className="font-medium">{h.new_value || 'empty'}</span>
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        {h.changer?.full_name || 'System'} • {new Date(h.changed_at).toLocaleString()}
-                      </p>
-                    </div>
+                  <div key={h.id} className="flex items-center gap-2 px-3 py-1.5">
+                    <History className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                    <span className="text-[11px] flex-1 min-w-0 truncate">
+                      <span className="font-medium">{h.field_name}</span>
+                      <span className="text-muted-foreground"> {h.old_value || '∅'} → </span>
+                      <span className="font-medium">{h.new_value || '∅'}</span>
+                    </span>
+                    <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+                      {h.changer?.full_name?.split(' ')[0] || 'Sys'} • {new Date(h.changed_at).toLocaleDateString()}
+                    </span>
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-muted-foreground p-4">No history entries.</p>
+                <p className="text-xs text-muted-foreground px-3 py-2">No history.</p>
               )}
             </div>
           </TabsContent>
