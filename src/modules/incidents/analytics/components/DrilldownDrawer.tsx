@@ -121,22 +121,22 @@ export function DrilldownDrawer({
           <table className="w-full">
             <thead className="bg-muted/50 sticky top-0 z-10">
               <tr>
-                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border">
+                <th className="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border">
                   ID
                 </th>
-                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border">
+                <th className="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border">
                   Summary
                 </th>
-                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border w-[56px]">
+                <th className="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border w-[56px]">
                   Sev
                 </th>
-                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border w-[70px]">
+                <th className="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border w-[70px]">
                   Status
                 </th>
-                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border w-[44px]">
+                <th className="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border w-[44px]">
                   Age
                 </th>
-                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border w-[70px]">
+                <th className="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border w-[70px]">
                   SLA
                 </th>
               </tr>
@@ -158,33 +158,33 @@ export function DrilldownDrawer({
                       onClick={() => onRowClick(incident.id)}
                       className="hover:bg-muted/30 cursor-pointer border-b border-border last:border-b-0"
                     >
-                      <td className="px-3 py-2">
-                        <span className="font-mono text-xs font-medium text-[var(--brand-primary)]">
+                      <td className="px-3 py-2.5 align-middle">
+                        <span className="font-mono text-xs font-medium text-[var(--brand-primary)] leading-none">
                           {incident.incident_key}
                         </span>
                       </td>
-                      <td className="px-3 py-2">
-                        <span className="text-xs text-foreground line-clamp-1">
+                      <td className="px-3 py-2.5 align-middle">
+                        <span className="text-xs text-foreground leading-normal line-clamp-1">
                           {incident.title}
                         </span>
                       </td>
-                      <td className="px-3 py-2">
-                        <span className="text-xs text-foreground font-medium">
+                      <td className="px-3 py-2.5 align-middle">
+                        <span className="text-xs text-foreground font-medium leading-none">
                           {incident.severity}
                         </span>
                       </td>
-                      <td className="px-3 py-2">
-                        <span className="text-xs text-foreground">
+                      <td className="px-3 py-2.5 align-middle">
+                        <span className="text-xs text-foreground leading-none">
                           {STATUS_LABELS[incident.status] || incident.status}
                         </span>
                       </td>
-                      <td className="px-3 py-2">
-                        <span className="text-xs font-mono tabular-nums text-muted-foreground">
+                      <td className="px-3 py-2.5 align-middle">
+                        <span className="text-xs font-mono tabular-nums text-muted-foreground leading-none">
                           {formatAge(incident.age_hours)}
                         </span>
                       </td>
-                      <td className="px-3 py-2">
-                        <span className={cn("text-xs", slaConfig.className)}>
+                      <td className="px-3 py-2.5 align-middle">
+                        <span className={cn("text-xs leading-none", slaConfig.className)}>
                           {slaConfig.label}
                         </span>
                       </td>

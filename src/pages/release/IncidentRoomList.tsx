@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
-import { Plus, Search, AlertCircle, BarChart3, Lightbulb, RefreshCw, SlidersHorizontal, ArrowUpDown, Columns3, LayoutGrid, LayoutList } from 'lucide-react';
+import { Link, useSearchParams, useNavigate, useLocation } from 'react-router-dom';
+import { Plus, Search, AlertCircle, BarChart3, Lightbulb, RefreshCw, ArrowUpDown, Columns3, LayoutGrid, LayoutList, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
@@ -24,12 +24,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
 import type { IncidentFilters } from '@/types/incident';
 
 const PAGE_SIZE = 40;
 
 type SortField = 'created_at' | 'severity' | 'priority' | 'status';
 type SortOrder = 'asc' | 'desc';
+type ViewMode = 'list' | 'analytics' | 'insights';
 
 const SORT_OPTIONS: { field: SortField; label: string }[] = [
   { field: 'created_at', label: 'Created (newest)' },
@@ -38,7 +40,48 @@ const SORT_OPTIONS: { field: SortField; label: string }[] = [
   { field: 'status', label: 'Status' },
 ];
 
+// Mode switch component
+function ModeSwitchSegment({ 
+  currentMode, 
+  onModeChange 
+}: { 
+  currentMode: ViewMode; 
+  onModeChange: (mode: ViewMode) => void;
+}) {
+  const modes: { value: ViewMode; label: string; icon: React.ElementType }[] = [
+    { value: 'list', label: 'List', icon: List },
+    { value: 'analytics', label: 'Analytics', icon: BarChart3 },
+    { value: 'insights', label: 'Insights', icon: Lightbulb },
+  ];
+
+  return (
+    <div className="inline-flex items-center rounded-md border border-border bg-muted/30 p-0.5">
+      {modes.map((mode) => {
+        const Icon = mode.icon;
+        const isActive = currentMode === mode.value;
+        return (
+          <button
+            key={mode.value}
+            onClick={() => onModeChange(mode.value)}
+            className={cn(
+              "inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded transition-all",
+              isActive 
+                ? "bg-background text-foreground shadow-sm" 
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <Icon className="h-3.5 w-3.5" />
+            {mode.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function IncidentRoomList() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -62,6 +105,16 @@ export default function IncidentRoomList() {
       setSearchParams({}, { replace: true });
     }
   }, [searchParams, setSearchParams]);
+
+  const handleModeChange = (mode: ViewMode) => {
+    if (mode === 'list') {
+      navigate('/release/incidents');
+    } else if (mode === 'analytics') {
+      navigate('/release/incidents/analytics');
+    } else if (mode === 'insights') {
+      navigate('/release/incidents/insights');
+    }
+  };
 
   // Client-side search + sort
   const processedIncidents = useMemo(() => {
@@ -134,19 +187,8 @@ export default function IncidentRoomList() {
         sectionLabel="RELEASE"
         pageTitle="Incident List"
         rightActions={
-          <div className="flex items-center gap-2">
-            <Link to="/release/incidents/analytics">
-              <Button variant="ghost" size="sm" className="h-8 px-3 text-sm">
-                <BarChart3 className="h-4 w-4 mr-1.5" />
-                Analytics
-              </Button>
-            </Link>
-            <Link to="/release/incidents/insights">
-              <Button variant="ghost" size="sm" className="h-8 px-3 text-sm">
-                <Lightbulb className="h-4 w-4 mr-1.5" />
-                Insights
-              </Button>
-            </Link>
+          <div className="flex items-center gap-4">
+            <ModeSwitchSegment currentMode="list" onModeChange={handleModeChange} />
             <Button 
               size="sm"
               className="h-8 px-4 text-sm"
