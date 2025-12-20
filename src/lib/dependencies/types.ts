@@ -206,7 +206,7 @@ export const DEPENDENCY_TYPE_LABELS: Record<DependencyTypeV2, string> = {
 export const DEPENDENCY_LEVEL_LABELS: Record<DependencyLevelV2, string> = {
   execution: 'Execution Dependency (Epic ↔ Epic)',
   delivery: 'Delivery Dependency (Feature ↔ Feature)',
-  cross_level: 'Cross-Level (Exception)',
+  cross_level: 'Cross-Level Dependency',
 };
 
 /**

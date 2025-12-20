@@ -183,11 +183,6 @@ function DependencyRow({ dependency, onSelect }: DependencyRowProps) {
             <span className="text-xs text-muted-foreground">
               {DEPENDENCY_TYPE_LABELS[dependency.dependency_type as keyof typeof DEPENDENCY_TYPE_LABELS] || dependency.dependency_type}
             </span>
-            {dependency.is_cross_level && (
-              <Badge variant="outline" className="text-[10px] bg-warning/10 text-warning border-warning/30">
-                Cross-Level
-              </Badge>
-            )}
           </div>
         </div>
       </div>
