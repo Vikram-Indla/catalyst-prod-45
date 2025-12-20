@@ -4,6 +4,12 @@ import { useProjectMetrics, useStatusDistribution, usePriorityDistribution, useT
 import { WORK_ITEM_TYPE_CONFIG, PRIORITY_CONFIG } from '../../types';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface SummaryTabProps {
   projectId: string;
@@ -65,8 +71,7 @@ export const SummaryTab: React.FC<SummaryTabProps> = ({ projectId }) => {
               Status overview
             </h3>
             <p className="text-sm text-muted-foreground mt-1">
-              Get a snapshot of the status of your work items.{' '}
-              <a href="#" className="text-primary hover:underline">View all work items</a>
+              Get a snapshot of the status of your work items.
             </p>
           </div>
 
@@ -126,8 +131,7 @@ export const SummaryTab: React.FC<SummaryTabProps> = ({ projectId }) => {
               Priority breakdown
             </h3>
             <p className="text-sm text-muted-foreground mt-1">
-              Get a holistic view of how work is being prioritized.{' '}
-              <a href="#" className="text-primary hover:underline">How to manage priorities for spaces</a>
+              Get a holistic view of how work is being prioritized.
             </p>
           </div>
 
@@ -165,8 +169,7 @@ export const SummaryTab: React.FC<SummaryTabProps> = ({ projectId }) => {
               Types of work
             </h3>
             <p className="text-sm text-muted-foreground mt-1">
-              Get a breakdown of work items by their types.{' '}
-              <a href="#" className="text-primary hover:underline">View all items</a>
+              Get a breakdown of work items by their types.
             </p>
           </div>
 

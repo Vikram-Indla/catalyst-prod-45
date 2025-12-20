@@ -229,13 +229,50 @@ export function useUpdateWorkItemStatus() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async ({ itemId, newStatus }: { itemId: string; newStatus: string }) => {
-      // TODO: Implement actual update
-      console.log('Updating item', itemId, 'to status', newStatus);
+    mutationFn: async ({ itemId, newStatus, itemType }: { itemId: string; newStatus: string; itemType?: 'FEATURE' | 'STORY' }) => {
+      // Determine if this is a feature or story by checking both tables
+      let updated = false;
+      
+      // Try features first if type is FEATURE or unknown
+      if (itemType === 'FEATURE' || !itemType) {
+        const { data: featureData, error: featureError } = await supabase
+          .from('features')
+          .update({ status: newStatus as any, updated_at: new Date().toISOString() })
+          .eq('id', itemId)
+          .select('id')
+          .single();
+        
+        if (featureData && !featureError) {
+          updated = true;
+        }
+      }
+      
+      // Try stories if not updated yet and type is STORY or unknown
+      if (!updated && (itemType === 'STORY' || !itemType)) {
+        const { data: storyData, error: storyError } = await supabase
+          .from('stories')
+          .update({ status: newStatus as any, state: newStatus as any, updated_at: new Date().toISOString() })
+          .eq('id', itemId)
+          .select('id')
+          .single();
+        
+        if (storyData && !storyError) {
+          updated = true;
+        } else if (storyError) {
+          throw new Error(`Failed to update status: ${storyError.message}`);
+        }
+      }
+      
+      if (!updated) {
+        throw new Error('Work item not found');
+      }
+      
       return { id: itemId, status: newStatus };
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['work-items'] });
+      queryClient.invalidateQueries({ queryKey: ['features'] });
+      queryClient.invalidateQueries({ queryKey: ['stories'] });
     },
   });
 }
@@ -245,9 +282,8 @@ export function useCreateWorkItem() {
   
   return useMutation({
     mutationFn: async (data: Partial<WorkItem>) => {
-      // TODO: Implement actual creation
-      console.log('Creating work item', data);
-      return data;
+      // This is a legacy fallback - Feature and Story have their own dialogs with mutations
+      throw new Error('Use specific create dialogs for features/stories');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['work-items'] });

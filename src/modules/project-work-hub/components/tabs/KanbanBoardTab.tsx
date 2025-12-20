@@ -1,12 +1,19 @@
 import React, { useState } from 'react';
 import { Search, ChevronDown, ChevronRight, MoreHorizontal, Settings2, BarChart3 } from 'lucide-react';
 import { useWorkItemsByAssignee, useUpdateWorkItemStatus } from '../../hooks/useWorkItems';
-import { DEFAULT_BOARD_COLUMNS, WorkItem, BoardGrouping } from '../../types';
+import { DEFAULT_BOARD_COLUMNS, WorkItem, BoardGrouping, WorkItemType } from '../../types';
 import { WorkTypeIcon } from '../WorkTypeIcon';
 import { PriorityIcon } from '../PriorityIcon';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { toast } from '@/components/ui/sonner';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,8 +44,18 @@ export const KanbanBoardTab: React.FC<KanbanBoardTabProps> = ({ projectId, onIte
     setExpandedSwimlanes(next);
   };
 
-  const handleDrop = (itemId: string, newStatus: string) => {
-    updateStatus.mutate({ itemId, newStatus });
+  const handleDrop = (itemId: string, newStatus: string, itemType?: WorkItemType) => {
+    updateStatus.mutate(
+      { itemId, newStatus, itemType: itemType as 'FEATURE' | 'STORY' | undefined },
+      {
+        onSuccess: () => {
+          toast.success('Status updated');
+        },
+        onError: (error) => {
+          toast.error('Failed to update status', { description: error.message });
+        },
+      }
+    );
   };
 
   // Get unique assignees for avatar group
@@ -87,23 +104,20 @@ export const KanbanBoardTab: React.FC<KanbanBoardTabProps> = ({ projectId, onIte
             )}
           </div>
 
-          {/* Quick Filters */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="gap-1">
-                Quick filters
-                <ChevronDown className="w-4 h-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem>My open items</DropdownMenuItem>
-              <DropdownMenuItem>High priority</DropdownMenuItem>
-              <DropdownMenuItem>Has defects</DropdownMenuItem>
-              <DropdownMenuItem>Has incidents</DropdownMenuItem>
-              <DropdownMenuItem>Current quarter</DropdownMenuItem>
-              <DropdownMenuItem>Unassigned</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* Quick Filters - disabled with tooltip */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" className="gap-1" disabled>
+                  Quick filters
+                  <ChevronDown className="w-4 h-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Coming soon</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
 
         {/* Right side */}
@@ -117,17 +131,47 @@ export const KanbanBoardTab: React.FC<KanbanBoardTabProps> = ({ projectId, onIte
             Group: {grouping === 'ASSIGNEE' ? 'Assignee' : 'None'}
           </Button>
 
-          <Button variant="ghost" size="icon">
-            <BarChart3 className="w-5 h-5" />
-          </Button>
+          {/* Analytics - disabled with tooltip */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" disabled>
+                  <BarChart3 className="w-5 h-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Coming soon</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
-          <Button variant="ghost" size="icon">
-            <Settings2 className="w-5 h-5" />
-          </Button>
+          {/* Settings - disabled with tooltip */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" disabled>
+                  <Settings2 className="w-5 h-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Coming soon</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
-          <Button variant="ghost" size="icon">
-            <MoreHorizontal className="w-5 h-5" />
-          </Button>
+          {/* More - disabled with tooltip */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" disabled>
+                  <MoreHorizontal className="w-5 h-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Coming soon</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
 
@@ -176,7 +220,7 @@ const SwimlaneRow: React.FC<{
   expanded: boolean;
   onToggle: () => void;
   onItemClick: (item: WorkItem) => void;
-  onDrop: (itemId: string, newStatus: string) => void;
+  onDrop: (itemId: string, newStatus: string, itemType?: WorkItemType) => void;
 }> = ({ swimlane, columns, expanded, onToggle, onItemClick, onDrop }) => {
   const itemsByColumn = columns.reduce((acc, col) => {
     acc[col.id] = swimlane.items.filter(i => col.statuses.includes(i.status.toLowerCase()));
@@ -229,12 +273,38 @@ const BoardColumn: React.FC<{
   column: typeof DEFAULT_BOARD_COLUMNS[0];
   items: WorkItem[];
   onItemClick: (item: WorkItem) => void;
-  onDrop: (itemId: string, newStatus: string) => void;
+  onDrop: (itemId: string, newStatus: string, itemType?: WorkItemType) => void;
   compact?: boolean;
 }> = ({ column, items, onItemClick, onDrop, compact }) => {
+  const [isDragOver, setIsDragOver] = useState(false);
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    const itemId = e.dataTransfer.getData('itemId');
+    const itemType = e.dataTransfer.getData('itemType') as WorkItemType | undefined;
+    if (itemId) {
+      // Use the first status in the column's status list as the target
+      const targetStatus = column.statuses[0] || column.id;
+      onDrop(itemId, targetStatus, itemType);
+    }
+  };
+
   return (
     <div
-      className={`flex-1 bg-muted rounded flex flex-col ${compact ? 'min-w-[140px]' : 'min-w-[200px]'}`}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      className={`flex-1 bg-muted rounded flex flex-col transition-colors ${compact ? 'min-w-[140px]' : 'min-w-[200px]'} ${isDragOver ? 'bg-primary/10 ring-2 ring-primary/30' : ''}`}
     >
       {/* Column Header */}
       <div className="px-3 py-2 border-b border-border flex items-center justify-between">
@@ -259,10 +329,22 @@ const BoardColumn: React.FC<{
           />
         ))}
 
-        {/* Create Button */}
-        <button className="flex items-center gap-1 p-2 bg-transparent border-none cursor-pointer text-muted-foreground text-sm hover:text-foreground">
-          + Create
-        </button>
+        {/* Create Button - disabled with tooltip */}
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button 
+                disabled
+                className="flex items-center gap-1 p-2 bg-transparent border-none cursor-not-allowed text-muted-foreground/50 text-sm"
+              >
+                + Create
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Coming soon</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
     </div>
   );
@@ -274,10 +356,26 @@ const StoryCard: React.FC<{
   onClick: () => void;
   compact?: boolean;
 }> = ({ item, onClick, compact }) => {
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleDragStart = (e: React.DragEvent) => {
+    setIsDragging(true);
+    e.dataTransfer.setData('itemId', item.id);
+    e.dataTransfer.setData('itemType', item.type);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+  };
+
   return (
     <div
+      draggable
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
       onClick={onClick}
-      className="bg-card rounded p-3 shadow-sm cursor-pointer transition-shadow hover:shadow-md border border-border"
+      className={`bg-card rounded p-3 shadow-sm cursor-grab transition-all hover:shadow-md border border-border ${isDragging ? 'opacity-50 scale-95' : ''}`}
     >
       {/* Summary */}
       <div className="text-sm text-foreground leading-5 mb-2 line-clamp-2">
