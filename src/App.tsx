@@ -241,7 +241,7 @@ import IncidentCommandCenter from "./pages/release/IncidentCommandCenter";
 // Incident Analytics
 const IncidentAnalyticsPage = lazy(() => import("./modules/incidents/analytics/pages/IncidentAnalyticsPage"));
 const IncidentInsightsPage = lazy(() => import("./modules/incidents/analytics/pages/IncidentInsightsPage"));
-const IncidentKanbanPage = lazy(() => import("./modules/incidents/analytics/pages/IncidentKanbanPage"));
+const IncidentKanbanPage = lazy(() => import("./modules/incidents/kanban/pages/IncidentKanbanPage"));
 
 const queryClient = new QueryClient();
 
