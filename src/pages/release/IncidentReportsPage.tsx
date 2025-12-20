@@ -80,13 +80,13 @@ function SLABreachReport({ incidents, onRowClick }: { incidents: Incident[]; onR
   ];
 
   const columns: ReportColumn<Incident>[] = [
-    { key: 'key', label: 'Key', width: 90, render: (i) => <span className="font-mono text-primary font-medium">{i.incident_key}</span> },
-    { key: 'summary', label: 'Summary', width: 280, render: (i) => <span className="truncate block">{i.title}</span> },
-    { key: 'severity', label: 'Sev', width: 65, centered: true, render: (i) => <SeverityBadge severity={i.severity} /> },
-    { key: 'status', label: 'Status', width: 100, centered: true, render: (i) => <StatusBadge status={i.status} /> },
-    { key: 'assignee', label: 'Assignee', width: 140, render: (i) => <span className="truncate">{i.assignee?.full_name || '—'}</span> },
-    { key: 'age', label: 'Age', width: 60, centered: true, render: (i) => <span className="font-mono text-xs">{getAgingTime(i.created_at)}</span> },
-    { key: 'slaState', label: 'SLA State', width: 90, centered: true, render: (i) => (
+    { key: 'key', label: 'Key', minWidth: 100, render: (i) => <span className="font-mono text-primary font-medium">{i.incident_key}</span> },
+    { key: 'summary', label: 'Summary', minWidth: 280, canGrow: true, render: (i) => <span className="truncate block">{i.title}</span> },
+    { key: 'severity', label: 'Sev', minWidth: 70, centered: true, render: (i) => <SeverityBadge severity={i.severity} /> },
+    { key: 'status', label: 'Status', minWidth: 100, centered: true, render: (i) => <StatusBadge status={i.status} /> },
+    { key: 'assignee', label: 'Assignee', minWidth: 140, render: (i) => <span className="truncate">{i.assignee?.full_name || '—'}</span> },
+    { key: 'age', label: 'Age', minWidth: 60, centered: true, render: (i) => <span className="font-mono text-xs">{getAgingTime(i.created_at)}</span> },
+    { key: 'slaState', label: 'SLA State', minWidth: 90, centered: true, render: (i) => (
       <Badge variant="outline" className={cn('text-[10px]', 
         i.sla?.response_breached || i.sla?.resolution_breached 
           ? 'bg-destructive/10 text-destructive border-destructive/20' 
@@ -95,11 +95,11 @@ function SLABreachReport({ incidents, onRowClick }: { incidents: Incident[]; onR
         {i.sla?.response_breached || i.sla?.resolution_breached ? 'BREACHED' : 'ON TRACK'}
       </Badge>
     )},
-    { key: 'breachAmount', label: 'Breach Amount', width: 100, centered: true, render: (i) => {
+    { key: 'breachAmount', label: 'Breach', minWidth: 90, centered: true, render: (i) => {
       const days = Math.floor((Date.now() - new Date(i.created_at).getTime()) / (1000 * 60 * 60 * 24));
-      return <span className="font-mono text-destructive font-medium">{days}d overdue</span>;
+      return <span className="font-mono text-destructive font-medium">{days}d</span>;
     }},
-    { key: 'release', label: 'Release', width: 100, render: (i) => <span className="truncate text-muted-foreground">{i.release_version?.version || '—'}</span> },
+    { key: 'release', label: 'Release', minWidth: 100, render: (i) => <span className="truncate text-muted-foreground">{i.release_version?.version || '—'}</span> },
   ];
 
   return (
@@ -149,12 +149,12 @@ function AgingReport({ incidents, onRowClick }: { incidents: Incident[]; onRowCl
   ];
 
   const columns: ReportColumn<Incident>[] = [
-    { key: 'key', label: 'Key', width: 90, render: (i) => <span className="font-mono text-primary font-medium">{i.incident_key}</span> },
-    { key: 'summary', label: 'Summary', width: 280, render: (i) => <span className="truncate block">{i.title}</span> },
-    { key: 'severity', label: 'Sev', width: 65, centered: true, render: (i) => <SeverityBadge severity={i.severity} /> },
-    { key: 'status', label: 'Status', width: 100, centered: true, render: (i) => <StatusBadge status={i.status} /> },
-    { key: 'assignee', label: 'Assignee', width: 140, render: (i) => <span className="truncate">{i.assignee?.full_name || '—'}</span> },
-    { key: 'age', label: 'Age', width: 60, centered: true, render: (i) => {
+    { key: 'key', label: 'Key', minWidth: 100, render: (i) => <span className="font-mono text-primary font-medium">{i.incident_key}</span> },
+    { key: 'summary', label: 'Summary', minWidth: 280, canGrow: true, render: (i) => <span className="truncate block">{i.title}</span> },
+    { key: 'severity', label: 'Sev', minWidth: 70, centered: true, render: (i) => <SeverityBadge severity={i.severity} /> },
+    { key: 'status', label: 'Status', minWidth: 100, centered: true, render: (i) => <StatusBadge status={i.status} /> },
+    { key: 'assignee', label: 'Assignee', minWidth: 140, render: (i) => <span className="truncate">{i.assignee?.full_name || '—'}</span> },
+    { key: 'age', label: 'Age', minWidth: 60, centered: true, render: (i) => {
       const days = Math.floor((Date.now() - new Date(i.created_at).getTime()) / (1000 * 60 * 60 * 24));
       return (
         <span className={cn('font-mono text-xs font-medium', 
@@ -164,7 +164,7 @@ function AgingReport({ incidents, onRowClick }: { incidents: Incident[]; onRowCl
         </span>
       );
     }},
-    { key: 'ageBucket', label: 'Age Bucket', width: 90, centered: true, render: (i) => {
+    { key: 'ageBucket', label: 'Bucket', minWidth: 80, centered: true, render: (i) => {
       const days = Math.floor((Date.now() - new Date(i.created_at).getTime()) / (1000 * 60 * 60 * 24));
       let bucket = '<24h';
       if (days >= 7) bucket = '>7d';
@@ -180,7 +180,7 @@ function AgingReport({ incidents, onRowClick }: { incidents: Incident[]; onRowCl
         </Badge>
       );
     }},
-    { key: 'slaState', label: 'SLA State', width: 80, centered: true, render: (i) => (
+    { key: 'slaState', label: 'SLA', minWidth: 70, centered: true, render: (i) => (
       <Badge variant="outline" className={cn('text-[10px]', 
         i.sla?.response_breached || i.sla?.resolution_breached 
           ? 'bg-destructive/10 text-destructive border-destructive/20' 
@@ -189,7 +189,7 @@ function AgingReport({ incidents, onRowClick }: { incidents: Incident[]; onRowCl
         {i.sla?.response_breached || i.sla?.resolution_breached ? 'BREACH' : 'OK'}
       </Badge>
     )},
-    { key: 'release', label: 'Release', width: 100, render: (i) => <span className="truncate text-muted-foreground">{i.release_version?.version || '—'}</span> },
+    { key: 'release', label: 'Release', minWidth: 100, render: (i) => <span className="truncate text-muted-foreground">{i.release_version?.version || '—'}</span> },
   ];
 
   return (
@@ -240,14 +240,14 @@ function CommitteeReport({ onRowClick }: { onRowClick: (id: string) => void }) {
   ];
 
   const pendingColumns: ReportColumn<CommitteeQueueItem>[] = [
-    { key: 'key', label: 'Key', width: 90, render: (i) => <span className="font-mono text-primary font-medium">{i.incident.incident_key}</span> },
-    { key: 'summary', label: 'Summary', width: 260, render: (i) => <span className="truncate block">{i.incident.title}</span> },
-    { key: 'severity', label: 'Sev', width: 65, centered: true, render: (i) => <SeverityBadge severity={i.incident.severity} /> },
-    { key: 'major', label: 'Major', width: 55, centered: true, render: (i) => i.incident.is_major_incident ? <AlertTriangle className="h-3.5 w-3.5 text-amber-500" /> : <span className="text-muted-foreground">—</span> },
-    { key: 'progress', label: 'Progress', width: 80, centered: true, render: (i) => (
+    { key: 'key', label: 'Key', minWidth: 100, render: (i) => <span className="font-mono text-primary font-medium">{i.incident.incident_key}</span> },
+    { key: 'summary', label: 'Summary', minWidth: 260, canGrow: true, render: (i) => <span className="truncate block">{i.incident.title}</span> },
+    { key: 'severity', label: 'Sev', minWidth: 70, centered: true, render: (i) => <SeverityBadge severity={i.incident.severity} /> },
+    { key: 'major', label: 'Major', minWidth: 55, centered: true, render: (i) => i.incident.is_major_incident ? <AlertTriangle className="h-3.5 w-3.5 text-amber-500" /> : <span className="text-muted-foreground">—</span> },
+    { key: 'progress', label: 'Progress', minWidth: 80, centered: true, render: (i) => (
       <span className="font-mono text-xs font-medium">{i.approvalsCompletedCount}/{i.approvalsRequiredCount}</span>
     )},
-    { key: 'approvers', label: 'Approvers', width: 100, centered: true, render: (i) => (
+    { key: 'approvers', label: 'Approvers', minWidth: 100, centered: true, render: (i) => (
       <div className="flex -space-x-1 justify-center">
         {i.approvers.slice(0, 3).map((a, idx) => (
           <div key={idx} className={cn(
@@ -266,7 +266,7 @@ function CommitteeReport({ onRowClick }: { onRowClick: (id: string) => void }) {
         )}
       </div>
     )},
-    { key: 'lastAction', label: 'Last Action', width: 120, render: (i) => (
+    { key: 'lastAction', label: 'Last Action', minWidth: 120, render: (i) => (
       <span className="truncate text-muted-foreground text-[11px]">
         {i.lastAction?.type === 'vetoed' && `Veto by ${i.lastAction.by}`}
         {i.lastAction?.type === 'approved' && i.lastAction.by}
@@ -274,7 +274,7 @@ function CommitteeReport({ onRowClick }: { onRowClick: (id: string) => void }) {
         {!i.lastAction && '—'}
       </span>
     )},
-    { key: 'age', label: 'Age', width: 55, centered: true, render: (i) => (
+    { key: 'age', label: 'Age', minWidth: 55, centered: true, render: (i) => (
       <span className={cn('font-mono text-xs font-medium', i.agingDays > 3 ? 'text-amber-600' : 'text-muted-foreground')}>
         {i.agingDays}d
       </span>
@@ -282,10 +282,10 @@ function CommitteeReport({ onRowClick }: { onRowClick: (id: string) => void }) {
   ];
 
   const historyColumns: ReportColumn<CommitteeQueueItem>[] = [
-    { key: 'key', label: 'Key', width: 90, render: (i) => <span className="font-mono text-primary font-medium">{i.incident.incident_key}</span> },
-    { key: 'summary', label: 'Summary', width: 280, render: (i) => <span className="truncate block">{i.incident.title}</span> },
-    { key: 'severity', label: 'Sev', width: 65, centered: true, render: (i) => <SeverityBadge severity={i.incident.severity} /> },
-    { key: 'outcome', label: 'Outcome', width: 90, centered: true, render: (i) => (
+    { key: 'key', label: 'Key', minWidth: 100, render: (i) => <span className="font-mono text-primary font-medium">{i.incident.incident_key}</span> },
+    { key: 'summary', label: 'Summary', minWidth: 280, canGrow: true, render: (i) => <span className="truncate block">{i.incident.title}</span> },
+    { key: 'severity', label: 'Sev', minWidth: 70, centered: true, render: (i) => <SeverityBadge severity={i.incident.severity} /> },
+    { key: 'outcome', label: 'Outcome', minWidth: 90, centered: true, render: (i) => (
       <Badge variant="outline" className={cn('text-[10px]',
         i.committeeStatus === 'approved' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' :
         'bg-destructive/10 text-destructive border-destructive/20'
@@ -293,11 +293,11 @@ function CommitteeReport({ onRowClick }: { onRowClick: (id: string) => void }) {
         {i.committeeStatus === 'approved' ? 'APPROVED' : 'VETOED'}
       </Badge>
     )},
-    { key: 'decidedBy', label: 'Decided By', width: 140, render: (i) => <span className="truncate">{i.lastAction?.by || '—'}</span> },
-    { key: 'decisionTime', label: 'Decision Time', width: 100, centered: true, render: (i) => (
+    { key: 'decidedBy', label: 'Decided By', minWidth: 130, render: (i) => <span className="truncate">{i.lastAction?.by || '—'}</span> },
+    { key: 'decisionTime', label: 'Time', minWidth: 70, centered: true, render: (i) => (
       <span className="font-mono text-xs text-muted-foreground">{i.agingDays}d</span>
     )},
-    { key: 'decidedAt', label: 'Decided At', width: 120, render: (i) => (
+    { key: 'decidedAt', label: 'Decided At', minWidth: 110, render: (i) => (
       <span className="text-muted-foreground text-xs">
         {i.committeeDecisionAt ? new Date(i.committeeDecisionAt).toLocaleDateString() : '—'}
       </span>
@@ -366,16 +366,16 @@ function ConversionReport({ incidents, onRowClick }: { incidents: Incident[]; on
   ];
 
   const columns: ReportColumn<Incident>[] = [
-    { key: 'key', label: 'Key', width: 90, render: (i) => <span className="font-mono text-primary font-medium">{i.incident_key}</span> },
-    { key: 'summary', label: 'Summary', width: 260, render: (i) => <span className="truncate block">{i.title}</span> },
-    { key: 'severity', label: 'Sev', width: 65, centered: true, render: (i) => <SeverityBadge severity={i.severity} /> },
-    { key: 'status', label: 'Status', width: 100, centered: true, render: (i) => <StatusBadge status={i.status} /> },
-    { key: 'converted', label: 'Converted?', width: 80, centered: true, render: (i) => (
+    { key: 'key', label: 'Key', minWidth: 100, render: (i) => <span className="font-mono text-primary font-medium">{i.incident_key}</span> },
+    { key: 'summary', label: 'Summary', minWidth: 260, canGrow: true, render: (i) => <span className="truncate block">{i.title}</span> },
+    { key: 'severity', label: 'Sev', minWidth: 70, centered: true, render: (i) => <SeverityBadge severity={i.severity} /> },
+    { key: 'status', label: 'Status', minWidth: 100, centered: true, render: (i) => <StatusBadge status={i.status} /> },
+    { key: 'converted', label: 'Converted?', minWidth: 85, centered: true, render: (i) => (
       i.converted_to_type 
         ? <CheckCircle className="h-4 w-4 text-emerald-500" />
         : <span className="text-muted-foreground">—</span>
     )},
-    { key: 'targetType', label: 'Target Type', width: 90, centered: true, render: (i) => (
+    { key: 'targetType', label: 'Target', minWidth: 90, centered: true, render: (i) => (
       i.converted_to_type ? (
         <Badge variant="outline" className={cn('text-[10px]',
           i.converted_to_type === 'epic' ? 'bg-violet-500/10 text-violet-600 border-violet-500/20' :
@@ -386,11 +386,11 @@ function ConversionReport({ incidents, onRowClick }: { incidents: Incident[]; on
         </Badge>
       ) : <span className="text-muted-foreground">—</span>
     )},
-    { key: 'linkedItem', label: 'Linked Item', width: 100, render: (i) => <span className="font-mono text-muted-foreground">{i.converted_to_id || '—'}</span> },
-    { key: 'convertedAt', label: 'Converted At', width: 100, render: (i) => (
+    { key: 'linkedItem', label: 'Linked', minWidth: 100, render: (i) => <span className="font-mono text-muted-foreground truncate">{i.converted_to_id || '—'}</span> },
+    { key: 'convertedAt', label: 'Converted At', minWidth: 100, render: (i) => (
       <span className="text-muted-foreground text-xs">{i.converted_at ? new Date(i.converted_at).toLocaleDateString() : '—'}</span>
     )},
-    { key: 'timeToConvert', label: 'Time', width: 70, centered: true, render: (i) => {
+    { key: 'timeToConvert', label: 'Time', minWidth: 70, centered: true, render: (i) => {
       if (!i.converted_at || !i.created_at) return <span className="text-muted-foreground">—</span>;
       const hours = Math.round((new Date(i.converted_at).getTime() - new Date(i.created_at).getTime()) / (1000 * 60 * 60));
       return <span className="font-mono text-xs">{hours}h</span>;
@@ -429,14 +429,14 @@ function DistributionReport({ incidents, onRowClick }: { incidents: Incident[]; 
   ];
 
   const columns: ReportColumn<Incident>[] = [
-    { key: 'key', label: 'Key', width: 90, render: (i) => <span className="font-mono text-primary font-medium">{i.incident_key}</span> },
-    { key: 'summary', label: 'Summary', width: 260, render: (i) => <span className="truncate block">{i.title}</span> },
-    { key: 'severity', label: 'Sev', width: 65, centered: true, render: (i) => <SeverityBadge severity={i.severity} /> },
-    { key: 'priority', label: 'Priority', width: 70, centered: true, render: (i) => <PriorityBadge priority={i.priority} /> },
-    { key: 'status', label: 'Status', width: 100, centered: true, render: (i) => <StatusBadge status={i.status} /> },
-    { key: 'assignee', label: 'Assignee', width: 140, render: (i) => <span className="truncate">{i.assignee?.full_name || '—'}</span> },
-    { key: 'age', label: 'Age', width: 60, centered: true, render: (i) => <span className="font-mono text-xs">{getAgingTime(i.created_at)}</span> },
-    { key: 'slaState', label: 'SLA State', width: 80, centered: true, render: (i) => (
+    { key: 'key', label: 'Key', minWidth: 100, render: (i) => <span className="font-mono text-primary font-medium">{i.incident_key}</span> },
+    { key: 'summary', label: 'Summary', minWidth: 260, canGrow: true, render: (i) => <span className="truncate block">{i.title}</span> },
+    { key: 'severity', label: 'Sev', minWidth: 70, centered: true, render: (i) => <SeverityBadge severity={i.severity} /> },
+    { key: 'priority', label: 'Priority', minWidth: 80, centered: true, render: (i) => <PriorityBadge priority={i.priority} /> },
+    { key: 'status', label: 'Status', minWidth: 100, centered: true, render: (i) => <StatusBadge status={i.status} /> },
+    { key: 'assignee', label: 'Assignee', minWidth: 140, render: (i) => <span className="truncate">{i.assignee?.full_name || '—'}</span> },
+    { key: 'age', label: 'Age', minWidth: 60, centered: true, render: (i) => <span className="font-mono text-xs">{getAgingTime(i.created_at)}</span> },
+    { key: 'slaState', label: 'SLA', minWidth: 70, centered: true, render: (i) => (
       <Badge variant="outline" className={cn('text-[10px]', 
         i.sla?.response_breached || i.sla?.resolution_breached 
           ? 'bg-destructive/10 text-destructive border-destructive/20' 
@@ -445,7 +445,7 @@ function DistributionReport({ incidents, onRowClick }: { incidents: Incident[]; 
         {i.sla?.response_breached || i.sla?.resolution_breached ? 'BREACH' : 'OK'}
       </Badge>
     )},
-    { key: 'triageFlag', label: 'Triage', width: 70, centered: true, render: (i) => {
+    { key: 'triageFlag', label: 'Triage', minWidth: 80, centered: true, render: (i) => {
       const sevNum = parseInt(i.severity?.replace('SEV', '') || '4');
       const priNum = parseInt(i.priority?.replace('P', '') || '4');
       const mismatch = Math.abs(sevNum - priNum) >= 2;
@@ -522,7 +522,7 @@ export default function IncidentReportsPage() {
   }
 
   return (
-    <div className="h-full flex flex-col bg-background">
+    <div className="h-full flex flex-col bg-background min-h-0">
       {/* Header with breadcrumb */}
       <GlobalPageHeader
         sectionLabel="RELEASE"
@@ -536,10 +536,10 @@ export default function IncidentReportsPage() {
         }
       />
 
-      {/* Content */}
-      <div className="flex-1 overflow-hidden flex">
+      {/* Content - flex row with proper overflow handling */}
+      <div className="flex-1 flex min-h-0">
         {/* Left Panel - Report Navigation */}
-        <div className="w-56 border-r border-border bg-muted/30 flex-shrink-0 overflow-auto">
+        <div className="w-56 border-r border-border bg-muted/30 flex-shrink-0 overflow-y-auto">
           <div className="p-3">
             <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-2">Reports</div>
             <div className="space-y-0.5">
@@ -567,21 +567,23 @@ export default function IncidentReportsPage() {
           </div>
         </div>
 
-        {/* Right Panel - Report Content */}
-        <div className="flex-1 overflow-auto p-6">
-          {isLoading ? (
-            <div className="flex items-center justify-center h-full">
-              <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full" />
-            </div>
-          ) : (
-            <>
-              {activeReport === 'sla_breach' && <SLABreachReport incidents={incidents} onRowClick={handleRowClick} />}
-              {activeReport === 'aging' && <AgingReport incidents={incidents} onRowClick={handleRowClick} />}
-              {activeReport === 'committee' && <CommitteeReport onRowClick={handleRowClick} />}
-              {activeReport === 'conversion' && <ConversionReport incidents={incidents} onRowClick={handleRowClick} />}
-              {activeReport === 'distribution' && <DistributionReport incidents={incidents} onRowClick={handleRowClick} />}
-            </>
-          )}
+        {/* Right Panel - Report Content - single scroll surface */}
+        <div className="flex-1 overflow-y-auto min-h-0">
+          <div className="p-6">
+            {isLoading ? (
+              <div className="flex items-center justify-center py-20">
+                <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full" />
+              </div>
+            ) : (
+              <>
+                {activeReport === 'sla_breach' && <SLABreachReport incidents={incidents} onRowClick={handleRowClick} />}
+                {activeReport === 'aging' && <AgingReport incidents={incidents} onRowClick={handleRowClick} />}
+                {activeReport === 'committee' && <CommitteeReport onRowClick={handleRowClick} />}
+                {activeReport === 'conversion' && <ConversionReport incidents={incidents} onRowClick={handleRowClick} />}
+                {activeReport === 'distribution' && <DistributionReport incidents={incidents} onRowClick={handleRowClick} />}
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>
