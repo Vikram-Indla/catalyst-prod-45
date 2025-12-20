@@ -1,102 +1,56 @@
 /**
  * Incident Insights Page
- * Premium tabbed executive report for CIOs
+ * Premium Executive Operational Report for CIOs
  */
 
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useState } from 'react';
-import { Printer, Loader2, ChevronRight, AlertTriangle, Target, TrendingUp, TrendingDown, Minus, Lightbulb, Clock, ArrowRight, BarChart3, List } from 'lucide-react';
+import { Printer, Loader2, ChevronRight, AlertTriangle, Target, TrendingUp, TrendingDown, Minus, Lightbulb, Clock, ArrowRight, FileText, Users, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { usePeriodAnalytics } from '../hooks/usePeriodAnalytics';
 import { useIncidentInsights } from '../hooks/useIncidentInsights';
 import { DrilldownDrawer } from '../components/DrilldownDrawer';
+import { ModeSwitchSegment } from '../components/ModeSwitchSegment';
 import { useIncidentDetail } from '../hooks/useIncidentDetail';
 import IncidentDetailModal from '@/components/incidents/modal/IncidentDetailModal';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import type { InsightPeriod, DrilldownFilter, IncidentWithSLA, ConversionMetrics } from '../types';
+import type { InsightPeriod, DrilldownFilter, IncidentWithSLA, ConversionMetrics, PeriodMetrics, PeriodComparison } from '../types';
 
 const PERIOD_TABS: { value: InsightPeriod; label: string }[] = [
   { value: 'today', label: 'Today' },
-  { value: 'this_week', label: 'This Week (WTD)' },
+  { value: 'this_week', label: 'This Week' },
   { value: 'last_week', label: 'Last Week' },
 ];
 
-type ViewMode = 'list' | 'analytics' | 'insights';
-
-function ModeSwitchSegment({ 
-  currentMode, 
-  onModeChange 
-}: { 
-  currentMode: ViewMode; 
-  onModeChange: (mode: ViewMode) => void;
-}) {
-  const modes: { value: ViewMode; label: string; icon: React.ElementType }[] = [
-    { value: 'list', label: 'List', icon: List },
-    { value: 'analytics', label: 'Analytics', icon: BarChart3 },
-    { value: 'insights', label: 'Insights', icon: Lightbulb },
-  ];
-
-  return (
-    <div className="inline-flex items-center rounded-md border border-border bg-muted/30 p-0.5">
-      {modes.map((mode) => {
-        const Icon = mode.icon;
-        const isActive = currentMode === mode.value;
-        return (
-          <button
-            key={mode.value}
-            onClick={() => onModeChange(mode.value)}
-            className={cn(
-              "inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded transition-all",
-              isActive 
-                ? "bg-background text-foreground shadow-sm" 
-                : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            <Icon className="h-3.5 w-3.5" />
-            {mode.label}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
-interface FactMetric {
-  key: string;
-  label: string;
-  value: number;
-  delta?: number;
-  isUrgent?: boolean;
-  isWarning?: boolean;
-  filterType: DrilldownFilter['type'];
-}
+// ============================================================================
+// DELTA INDICATORS
+// ============================================================================
 
 function DeltaIndicator({ delta, inverted = false }: { delta: number; inverted?: boolean }) {
   if (delta === 0) {
     return (
-      <span className="inline-flex items-center text-muted-foreground text-xs">
-        <Minus className="h-3 w-3 mr-0.5" />
+      <span className="inline-flex items-center text-muted-foreground text-sm">
+        <Minus className="h-3.5 w-3.5 mr-1" />
         0
       </span>
     );
   }
   
-  // For some metrics, increase is bad (breached, at_risk). For others (resolved), increase is good
   const isPositive = inverted ? delta < 0 : delta > 0;
   const isNegative = inverted ? delta > 0 : delta < 0;
   
   return (
     <span className={cn(
-      "inline-flex items-center text-xs font-medium",
+      "inline-flex items-center text-sm font-medium",
       isPositive && "text-[hsl(var(--warning))]",
       isNegative && "text-muted-foreground"
     )}>
       {delta > 0 ? (
-        <TrendingUp className="h-3 w-3 mr-0.5" />
+        <TrendingUp className="h-3.5 w-3.5 mr-1" />
       ) : (
-        <TrendingDown className="h-3 w-3 mr-0.5" />
+        <TrendingDown className="h-3.5 w-3.5 mr-1" />
       )}
       {delta > 0 ? '+' : ''}{delta}
     </span>
@@ -106,90 +60,318 @@ function DeltaIndicator({ delta, inverted = false }: { delta: number; inverted?:
 function LatencyDeltaIndicator({ delta }: { delta: number | null }) {
   if (delta === null || delta === 0) {
     return (
-      <span className="inline-flex items-center text-muted-foreground text-xs">
-        <Minus className="h-3 w-3 mr-0.5" />
+      <span className="inline-flex items-center text-muted-foreground text-sm">
+        <Minus className="h-3.5 w-3.5 mr-1" />
         —
       </span>
     );
   }
   
-  // Negative = faster (good), Positive = slower (warning)
   const isFaster = delta < 0;
   
   return (
     <span className={cn(
-      "inline-flex items-center text-xs font-medium",
+      "inline-flex items-center text-sm font-medium",
       isFaster ? "text-muted-foreground" : "text-[hsl(var(--warning))]"
     )}>
       {delta > 0 ? (
-        <TrendingUp className="h-3 w-3 mr-0.5" />
+        <TrendingUp className="h-3.5 w-3.5 mr-1" />
       ) : (
-        <TrendingDown className="h-3 w-3 mr-0.5" />
+        <TrendingDown className="h-3.5 w-3.5 mr-1" />
       )}
       {delta > 0 ? '+' : ''}{Math.round(delta)}h
     </span>
   );
 }
 
-function FactStrip({ 
+// ============================================================================
+// EXECUTIVE SUMMARY HERO
+// ============================================================================
+
+interface ExecutiveSummaryHeroProps {
+  summary: string;
+  generatedAt: Date;
+  metrics: PeriodMetrics;
+  deltas: PeriodComparison;
+  comparisonLabel: string;
+  onMetricClick: (type: DrilldownFilter['type'], label: string) => void;
+}
+
+function ExecutiveSummaryHero({ 
+  summary, 
+  generatedAt, 
   metrics, 
+  deltas, 
   comparisonLabel,
   onMetricClick 
-}: { 
-  metrics: FactMetric[]; 
-  comparisonLabel: string;
-  onMetricClick: (metric: FactMetric) => void;
-}) {
+}: ExecutiveSummaryHeroProps) {
+  const deltaMetrics = [
+    { key: 'backlog', label: 'Backlog Δ', value: metrics.backlog_delta, delta: deltas.backlog_delta, type: 'open' as const },
+    { key: 'breached', label: 'SLA Breached', value: metrics.sla_breached, delta: deltas.sla_breached, type: 'sla_breached' as const, isUrgent: true },
+    { key: 'at_risk', label: 'SLA At Risk', value: metrics.sla_at_risk, delta: deltas.sla_at_risk, type: 'sla_at_risk' as const, isWarning: true },
+    { key: 'major', label: 'Major Active', value: metrics.major_active, delta: deltas.major_active, type: 'major_active' as const, isUrgent: true },
+  ];
+
   return (
-    <div className="border-l border-border pl-5 ml-5 flex-shrink-0">
-      <div className="text-[9px] uppercase tracking-wider text-muted-foreground mb-3 font-medium">
-        vs {comparisonLabel}
+    <section className="border border-border rounded-lg bg-card mb-8">
+      <div className="p-6 flex gap-8">
+        {/* Left: Executive Summary */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-3">
+            <FileText className="h-4 w-4 text-muted-foreground" />
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+              Operational Posture
+            </h2>
+          </div>
+          <p className="text-base text-foreground leading-relaxed mb-4">
+            {summary}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Generated {format(generatedAt, 'MMM d, yyyy HH:mm')}
+          </p>
+        </div>
+        
+        {/* Right: Change vs Baseline */}
+        <div className="flex-shrink-0 w-[280px] border-l border-border pl-6">
+          <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+            Change vs {comparisonLabel}
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            {deltaMetrics.map(metric => (
+              <button
+                key={metric.key}
+                onClick={() => onMetricClick(metric.type, metric.label)}
+                className="text-left p-2 -m-2 rounded-md hover:bg-muted/50 transition-colors"
+              >
+                <div className="text-xs text-muted-foreground mb-1">
+                  {metric.label}
+                </div>
+                <div className="flex items-baseline gap-2">
+                  <span className={cn(
+                    "text-xl font-bold tabular-nums",
+                    metric.isUrgent && metric.value > 0 && "text-destructive",
+                    metric.isWarning && metric.value > 0 && "text-[hsl(var(--warning))]",
+                    !metric.isUrgent && !metric.isWarning && "text-foreground"
+                  )}>
+                    {metric.value}
+                  </span>
+                  <DeltaIndicator delta={metric.delta} inverted={metric.key === 'resolved'} />
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
-      <div className="grid grid-cols-3 gap-x-5 gap-y-3">
-        {metrics.map(metric => (
+    </section>
+  );
+}
+
+// ============================================================================
+// KPI SCOREBOARD
+// ============================================================================
+
+interface KPIScoreboardProps {
+  metrics: PeriodMetrics;
+  deltas: PeriodComparison;
+  onMetricClick: (type: DrilldownFilter['type'], label: string) => void;
+}
+
+function KPIScoreboard({ metrics, deltas, onMetricClick }: KPIScoreboardProps) {
+  const kpis = [
+    { key: 'created', label: 'Created', value: metrics.created, delta: deltas.created, type: 'created' as const },
+    { key: 'resolved', label: 'Resolved', value: metrics.resolved, delta: deltas.resolved, type: 'resolved' as const, invertDelta: true },
+    { key: 'backlog', label: 'Backlog Δ', value: metrics.backlog_delta, delta: deltas.backlog_delta, type: 'open' as const },
+    { key: 'breached', label: 'SLA Breached', value: metrics.sla_breached, delta: deltas.sla_breached, type: 'sla_breached' as const, isUrgent: true },
+    { key: 'at_risk', label: 'SLA At Risk', value: metrics.sla_at_risk, delta: deltas.sla_at_risk, type: 'sla_at_risk' as const, isWarning: true },
+    { key: 'major', label: 'Major Active', value: metrics.major_active, delta: deltas.major_active, type: 'major_active' as const, isUrgent: true },
+  ];
+
+  return (
+    <section className="mb-8">
+      <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+        KPI Scoreboard
+      </h2>
+      <div className="grid grid-cols-6 gap-4">
+        {kpis.map(kpi => (
           <button
-            key={metric.key}
-            onClick={() => onMetricClick(metric)}
+            key={kpi.key}
+            onClick={() => onMetricClick(kpi.type, kpi.label)}
             className={cn(
-              "text-left p-2 -m-2 rounded transition-colors min-w-[72px]",
-              "hover:bg-muted/50 cursor-pointer"
+              "p-5 rounded-lg border text-left transition-all cursor-pointer",
+              "hover:shadow-md hover:border-[var(--brand-primary)] hover:-translate-y-0.5",
+              "bg-card border-border"
             )}
           >
-            <div className="text-[9px] uppercase tracking-wide text-muted-foreground mb-1">
-              {metric.label}
+            <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-2">
+              {kpi.label}
             </div>
-            <div className="flex items-baseline gap-2">
-              <span className={cn(
-                "text-xl font-bold tabular-nums",
-                metric.isUrgent && metric.value > 0 && "text-destructive",
-                metric.isWarning && metric.value > 0 && "text-[hsl(var(--warning))]",
-                !metric.isUrgent && !metric.isWarning && "text-foreground"
-              )}>
-                {metric.value}
-              </span>
-              {metric.delta !== undefined && (
-                <DeltaIndicator 
-                  delta={metric.delta} 
-                  inverted={metric.key === 'resolved'} 
-                />
-              )}
+            <div className={cn(
+              "text-3xl font-bold tabular-nums leading-none mb-2",
+              kpi.isUrgent && kpi.value > 0 && "text-destructive",
+              kpi.isWarning && kpi.value > 0 && "text-[hsl(var(--warning))]",
+              !kpi.isUrgent && !kpi.isWarning && "text-foreground"
+            )}>
+              {kpi.value}
             </div>
+            <DeltaIndicator delta={kpi.delta} inverted={kpi.invertDelta} />
           </button>
         ))}
       </div>
-    </div>
+    </section>
   );
+}
+
+// ============================================================================
+// OPERATIONAL NARRATIVE CARDS
+// ============================================================================
+
+interface NarrativeCardsProps {
+  keyFacts: string[];
+  requiredActions: string[];
+}
+
+function NarrativeCards({ keyFacts, requiredActions }: NarrativeCardsProps) {
+  // Group facts into categories
+  const slaFacts = keyFacts.filter(f => f.toLowerCase().includes('sla') || f.toLowerCase().includes('breach') || f.toLowerCase().includes('risk'));
+  const flowFacts = keyFacts.filter(f => f.toLowerCase().includes('backlog') || f.toLowerCase().includes('flow') || f.toLowerCase().includes('created') || f.toLowerCase().includes('resolved'));
+  const ownershipFacts = keyFacts.filter(f => f.toLowerCase().includes('assign') || f.toLowerCase().includes('escalat') || f.toLowerCase().includes('major') || f.toLowerCase().includes('committee'));
+
+  const narrativeCards = [
+    { 
+      title: 'SLA & Risk', 
+      icon: AlertTriangle, 
+      facts: slaFacts.length > 0 ? slaFacts : keyFacts.slice(0, 2),
+      color: 'text-destructive' 
+    },
+    { 
+      title: 'Flow & Backlog', 
+      icon: Zap, 
+      facts: flowFacts.length > 0 ? flowFacts : keyFacts.slice(2, 4),
+      color: 'text-[hsl(var(--warning))]' 
+    },
+    { 
+      title: 'Ownership & Escalation', 
+      icon: Users, 
+      facts: ownershipFacts.length > 0 ? ownershipFacts : keyFacts.slice(4, 6),
+      color: 'text-muted-foreground' 
+    },
+  ];
+
+  return (
+    <section className="mb-8">
+      <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+        Operational Narrative
+      </h2>
+      <div className="grid grid-cols-3 gap-5">
+        {narrativeCards.map(card => (
+          <div key={card.title} className="border border-border rounded-lg bg-card p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <card.icon className={cn("h-4 w-4", card.color)} />
+              <h3 className="text-sm font-semibold text-foreground">
+                {card.title}
+              </h3>
+            </div>
+            <ul className="space-y-2">
+              {card.facts.slice(0, 4).map((fact, idx) => (
+                <li key={idx} className="text-sm text-foreground leading-snug flex items-start gap-2">
+                  <span className="text-muted-foreground select-none mt-0.5">•</span>
+                  <span>{fact}</span>
+                </li>
+              ))}
+              {card.facts.length === 0 && (
+                <li className="text-sm text-muted-foreground italic">No notable items</li>
+              )}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// ============================================================================
+// ACTION REGISTER
+// ============================================================================
+
+interface ActionRegisterProps {
+  actions: string[];
+  onActionClick: (action: string) => void;
+}
+
+function ActionRegister({ actions, onActionClick }: ActionRegisterProps) {
+  return (
+    <section className="mb-8">
+      <div className="flex items-center gap-2 mb-4">
+        <Target className="h-4 w-4 text-destructive" />
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-destructive">
+          Required Actions
+        </h2>
+      </div>
+      
+      {actions.length === 0 ? (
+        <div className="border border-border rounded-lg bg-card p-8 text-center">
+          <p className="text-sm text-muted-foreground">No immediate actions required</p>
+        </div>
+      ) : (
+        <div className="border border-border rounded-lg bg-card overflow-hidden">
+          <table className="w-full">
+            <thead className="bg-muted/50">
+              <tr>
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-border w-[60px]">
+                  Priority
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-border">
+                  Action
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {actions.slice(0, 7).map((action, idx) => (
+                <tr 
+                  key={idx}
+                  onClick={() => onActionClick(action)}
+                  className="hover:bg-muted/30 cursor-pointer border-b border-border last:border-b-0"
+                >
+                  <td className="px-4 py-3 align-middle">
+                    <span className={cn(
+                      "inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold",
+                      idx === 0 && "bg-destructive/10 text-destructive",
+                      idx === 1 && "bg-[hsl(var(--warning)/0.15)] text-[hsl(var(--warning))]",
+                      idx > 1 && "bg-muted text-muted-foreground"
+                    )}>
+                      {idx + 1}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 align-middle">
+                    <span className="text-sm text-foreground font-medium">
+                      {action}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </section>
+  );
+}
+
+// ============================================================================
+// CHANGE & LEARNING SECTION
+// ============================================================================
+
+interface ChangeLearningProps {
+  conversionMetrics: ConversionMetrics;
+  comparisonLabel: string;
+  conversionDelta: number;
 }
 
 function ChangeLearningSection({ 
   conversionMetrics, 
   comparisonLabel,
-  conversionDelta,
-}: { 
-  conversionMetrics: ConversionMetrics;
-  comparisonLabel: string;
-  conversionDelta: number;
-}) {
+  conversionDelta 
+}: ChangeLearningProps) {
   const { total, byType, medianLatencyHours, latencyChange, recentConversions } = conversionMetrics;
   
   const formatLatency = (hours: number | null): string => {
@@ -200,108 +382,280 @@ function ChangeLearningSection({
   };
 
   return (
-    <section className="border border-border rounded-md bg-card">
-      <div className="p-4">
-        <div className="flex items-center gap-2 mb-4">
-          <Lightbulb className="h-4 w-4 text-muted-foreground" />
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Change &amp; Learning
-          </h2>
-        </div>
+    <section className="mb-8">
+      <div className="flex items-center gap-2 mb-4">
+        <Lightbulb className="h-4 w-4 text-muted-foreground" />
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+          Change & Learning
+        </h2>
+      </div>
 
-        <div className="grid grid-cols-3 gap-6">
-          {/* Conversion Count */}
-          <div>
-            <div className="text-[9px] uppercase tracking-wide text-muted-foreground mb-1">
-              Incidents Converted to Change
-            </div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-bold tabular-nums text-foreground">
-                {total}
-              </span>
-              <DeltaIndicator delta={conversionDelta} inverted={true} />
-            </div>
-            <div className="text-[9px] text-muted-foreground mt-0.5">
-              vs {comparisonLabel}
-            </div>
+      <div className="border border-border rounded-lg bg-card p-6">
+        {total === 0 ? (
+          <div className="text-center py-6">
+            <Lightbulb className="h-10 w-10 mx-auto mb-3 text-muted-foreground/30" />
+            <p className="text-base font-medium text-foreground mb-1">
+              No incidents converted to change items
+            </p>
+            <p className="text-sm text-muted-foreground max-w-md mx-auto">
+              Consider reviewing resolved incidents for recurring patterns that could be addressed through stories, features, or epics to prevent future occurrences.
+            </p>
           </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-3 gap-8 mb-6">
+              {/* Conversion Count */}
+              <div>
+                <div className="text-xs uppercase tracking-wide text-muted-foreground mb-2">
+                  Incidents Converted to Change
+                </div>
+                <div className="flex items-baseline gap-3">
+                  <span className="text-3xl font-bold tabular-nums text-foreground">
+                    {total}
+                  </span>
+                  <DeltaIndicator delta={conversionDelta} inverted={true} />
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  vs {comparisonLabel}
+                </div>
+              </div>
 
-          {/* Conversion Mix */}
-          <div>
-            <div className="text-[9px] uppercase tracking-wide text-muted-foreground mb-1">
-              Conversion Mix
-            </div>
-            <div className="flex items-center gap-3 text-sm">
-              <span className="text-foreground">
-                <span className="font-semibold tabular-nums">{byType.story || 0}</span>
-                <span className="text-muted-foreground ml-1">Story</span>
-              </span>
-              <span className="text-muted-foreground">/</span>
-              <span className="text-foreground">
-                <span className="font-semibold tabular-nums">{byType.feature || 0}</span>
-                <span className="text-muted-foreground ml-1">Feature</span>
-              </span>
-              <span className="text-muted-foreground">/</span>
-              <span className="text-foreground">
-                <span className="font-semibold tabular-nums">{byType.epic || 0}</span>
-                <span className="text-muted-foreground ml-1">Epic</span>
-              </span>
-            </div>
-          </div>
-
-          {/* Median Latency */}
-          <div>
-            <div className="text-[9px] uppercase tracking-wide text-muted-foreground mb-1">
-              Median Conversion Latency
-            </div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-lg font-semibold tabular-nums text-foreground flex items-center gap-1">
-                <Clock className="h-3.5 w-3.5 text-muted-foreground" />
-                {formatLatency(medianLatencyHours)}
-              </span>
-              <LatencyDeltaIndicator delta={latencyChange} />
-            </div>
-            <div className="text-[9px] text-muted-foreground mt-0.5">
-              created → converted
-            </div>
-          </div>
-        </div>
-
-        {/* Recent Conversions */}
-        {recentConversions.length > 0 && (
-          <div className="mt-4 pt-4 border-t border-border">
-            <div className="text-[9px] uppercase tracking-wide text-muted-foreground mb-2">
-              Latest Conversions
-            </div>
-            <div className="space-y-1.5">
-              {recentConversions.map((conv) => (
-                <div key={conv.incident_id} className="flex items-center gap-2 text-sm">
-                  <span className="font-mono text-xs text-muted-foreground">{conv.incident_key}</span>
-                  <ArrowRight className="h-3 w-3 text-muted-foreground" />
-                  <span className="text-foreground capitalize">{conv.converted_to_type}</span>
-                  {conv.converted_to_key && (
-                    <span className="font-mono text-xs text-muted-foreground">{conv.converted_to_key}</span>
-                  )}
-                  <span className="text-muted-foreground text-xs ml-auto">
-                    {format(new Date(conv.converted_at), 'MMM d, HH:mm')}
+              {/* Conversion Mix */}
+              <div>
+                <div className="text-xs uppercase tracking-wide text-muted-foreground mb-2">
+                  Conversion Mix
+                </div>
+                <div className="flex items-center gap-4 text-base">
+                  <span className="text-foreground">
+                    <span className="font-bold tabular-nums text-xl">{byType.story || 0}</span>
+                    <span className="text-muted-foreground ml-1.5">Story</span>
+                  </span>
+                  <span className="text-muted-foreground/50">/</span>
+                  <span className="text-foreground">
+                    <span className="font-bold tabular-nums text-xl">{byType.feature || 0}</span>
+                    <span className="text-muted-foreground ml-1.5">Feature</span>
+                  </span>
+                  <span className="text-muted-foreground/50">/</span>
+                  <span className="text-foreground">
+                    <span className="font-bold tabular-nums text-xl">{byType.epic || 0}</span>
+                    <span className="text-muted-foreground ml-1.5">Epic</span>
                   </span>
                 </div>
-              ))}
+              </div>
+
+              {/* Median Latency */}
+              <div>
+                <div className="text-xs uppercase tracking-wide text-muted-foreground mb-2">
+                  Median Conversion Latency
+                </div>
+                <div className="flex items-baseline gap-3">
+                  <span className="text-2xl font-bold tabular-nums text-foreground flex items-center gap-2">
+                    <Clock className="h-5 w-5 text-muted-foreground" />
+                    {formatLatency(medianLatencyHours)}
+                  </span>
+                  <LatencyDeltaIndicator delta={latencyChange} />
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  created → converted
+                </div>
+              </div>
             </div>
-          </div>
+
+            {/* Recent Conversions Table */}
+            {recentConversions.length > 0 && (
+              <div className="border-t border-border pt-5">
+                <div className="text-xs uppercase tracking-wide text-muted-foreground mb-3">
+                  Latest Conversions
+                </div>
+                <div className="space-y-2">
+                  {recentConversions.map((conv) => (
+                    <div key={conv.incident_id} className="flex items-center gap-3 text-sm py-1">
+                      <span className="font-mono text-xs text-[var(--brand-primary)] font-medium">
+                        {conv.incident_key}
+                      </span>
+                      <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" />
+                      <span className="text-foreground capitalize font-medium">
+                        {conv.converted_to_type}
+                      </span>
+                      {conv.converted_to_key && (
+                        <span className="font-mono text-xs text-muted-foreground">
+                          {conv.converted_to_key}
+                        </span>
+                      )}
+                      <span className="text-muted-foreground text-xs ml-auto">
+                        {format(new Date(conv.converted_at), 'MMM d, HH:mm')}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </section>
   );
 }
 
-function InsightTabContent({ 
-  period,
-  onDrilldown,
-}: { 
+// ============================================================================
+// TOP RISK INCIDENTS TABLE
+// ============================================================================
+
+interface TopRiskIncidentsProps {
+  incidents: IncidentWithSLA[];
+  onRowClick: (id: string) => void;
+}
+
+const SLA_STATE_CONFIG: Record<string, { label: string; className: string }> = {
+  on_track: { label: 'On Track', className: 'text-foreground' },
+  at_risk: { label: 'At Risk', className: 'text-[hsl(var(--warning))] font-semibold' },
+  breached: { label: 'Breached', className: 'text-destructive font-semibold' },
+  n_a: { label: 'N/A', className: 'text-muted-foreground' },
+  met: { label: 'Met', className: 'text-foreground' },
+};
+
+const STATUS_LABELS: Record<string, string> = {
+  open: 'Open',
+  triage: 'Triage',
+  in_progress: 'In Progress',
+  to_committee: 'Committee',
+  resolved: 'Resolved',
+  closed: 'Closed',
+};
+
+function formatAge(hours: number): string {
+  if (hours < 1) return '<1h';
+  if (hours < 24) return `${Math.round(hours)}h`;
+  const days = Math.floor(hours / 24);
+  return `${days}d`;
+}
+
+function TopRiskIncidents({ incidents, onRowClick }: TopRiskIncidentsProps) {
+  const topIncidents = incidents.slice(0, 10);
+
+  return (
+    <section>
+      <div className="flex items-center gap-2 mb-4">
+        <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+          Top Risk Incidents
+        </h2>
+        <span className="ml-auto text-sm text-muted-foreground tabular-nums">
+          {topIncidents.length} of {incidents.length}
+        </span>
+      </div>
+
+      <div className="border border-border rounded-lg bg-card overflow-hidden">
+        <table className="w-full">
+          <thead className="bg-muted/50">
+            <tr>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-border w-[100px]">
+                ID
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-border">
+                Summary
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-border w-[72px]">
+                Severity
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-border w-[90px]">
+                Status
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-border w-[60px]">
+                Age
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-border w-[90px]">
+                SLA State
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-border w-[120px]">
+                Assignee
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {topIncidents.length === 0 ? (
+              <tr>
+                <td colSpan={7} className="px-4 py-12 text-center text-muted-foreground text-sm">
+                  No high-risk incidents at this time
+                </td>
+              </tr>
+            ) : (
+              topIncidents.map((incident) => {
+                const slaConfig = SLA_STATE_CONFIG[incident.sla_state.state] || SLA_STATE_CONFIG.n_a;
+
+                return (
+                  <tr
+                    key={incident.id}
+                    onClick={() => onRowClick(incident.id)}
+                    className="hover:bg-muted/30 cursor-pointer border-b border-border last:border-b-0"
+                  >
+                    <td className="px-4 py-3 align-middle">
+                      <span className="font-mono text-sm font-medium text-[var(--brand-primary)]">
+                        {incident.incident_key}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 align-middle">
+                      <span className="text-sm text-foreground line-clamp-1">
+                        {incident.title}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 align-middle">
+                      <span className={cn(
+                        "text-sm font-semibold",
+                        incident.severity === 'SEV1' && "text-destructive",
+                        incident.severity === 'SEV2' && "text-[hsl(var(--warning))]"
+                      )}>
+                        {incident.severity}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 align-middle">
+                      <span className="text-sm text-foreground">
+                        {STATUS_LABELS[incident.status] || incident.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 align-middle">
+                      <span className="text-sm font-mono tabular-nums text-muted-foreground">
+                        {formatAge(incident.age_hours)}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 align-middle">
+                      <span className={cn("text-sm", slaConfig.className)}>
+                        {slaConfig.label}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 align-middle">
+                      {incident.assignee_name ? (
+                        <span className="text-sm text-foreground truncate block max-w-[120px]">
+                          {incident.assignee_name}
+                        </span>
+                      ) : (
+                        <span className="text-sm text-destructive/80 italic">
+                          Unassigned
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
+
+// ============================================================================
+// INSIGHT TAB CONTENT
+// ============================================================================
+
+interface InsightTabContentProps {
   period: InsightPeriod;
   onDrilldown: (filter: DrilldownFilter, incidents: IncidentWithSLA[]) => void;
-}) {
+  onRowClick: (id: string) => void;
+}
+
+function InsightTabContent({ period, onDrilldown, onRowClick }: InsightTabContentProps) {
   const {
     periodRange,
     currentMetrics,
@@ -323,124 +677,88 @@ function InsightTabContent({
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-16">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
-  const factMetrics: FactMetric[] = [
-    { key: 'created', label: 'Created', value: currentMetrics.created, delta: deltas.created, filterType: 'created' },
-    { key: 'resolved', label: 'Resolved', value: currentMetrics.resolved, delta: deltas.resolved, filterType: 'resolved' },
-    { key: 'backlog', label: 'Backlog Δ', value: currentMetrics.backlog_delta, delta: deltas.backlog_delta, filterType: 'open' },
-    { key: 'breached', label: 'SLA Breached', value: currentMetrics.sla_breached, delta: deltas.sla_breached, isUrgent: true, filterType: 'sla_breached' },
-    { key: 'at_risk', label: 'SLA At Risk', value: currentMetrics.sla_at_risk, delta: deltas.sla_at_risk, isWarning: true, filterType: 'sla_at_risk' },
-    { key: 'major', label: 'Major Active', value: currentMetrics.major_active, delta: deltas.major_active, isUrgent: true, filterType: 'major_active' },
-  ];
+  const handleMetricClick = (type: DrilldownFilter['type'], label: string) => {
+    const incidents = getFilteredIncidents(type);
+    onDrilldown({ type, label }, incidents);
+  };
 
-  const handleMetricClick = (metric: FactMetric) => {
-    const incidents = getFilteredIncidents(metric.filterType);
-    onDrilldown({ type: metric.filterType, label: metric.label }, incidents);
+  const handleActionClick = (action: string) => {
+    // Try to determine which filter to apply based on action text
+    if (action.toLowerCase().includes('breach')) {
+      handleMetricClick('sla_breached', 'SLA Breached');
+    } else if (action.toLowerCase().includes('risk')) {
+      handleMetricClick('sla_at_risk', 'SLA At Risk');
+    } else if (action.toLowerCase().includes('major')) {
+      handleMetricClick('major_active', 'Major Active');
+    } else if (action.toLowerCase().includes('committee')) {
+      handleMetricClick('committee', 'Committee');
+    }
   };
 
   return (
-    <div className="space-y-6">
+    <div>
       {/* Period Info */}
-      <div className="text-xs text-muted-foreground">
+      <div className="text-sm text-muted-foreground mb-6 flex items-center gap-2">
+        <Clock className="h-4 w-4" />
         {format(periodRange.start, 'MMM d, yyyy HH:mm')} – {format(periodRange.end, 'MMM d, yyyy HH:mm')}
       </div>
 
-      {/* Executive Briefing Card */}
-      <section className="border border-border rounded-md bg-card">
-        <div className="p-4 flex">
-          {/* Left: Executive Summary */}
-          <div className="flex-1 min-w-0">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-              Executive Briefing
-            </h2>
-            <p className="text-sm text-foreground leading-relaxed">
-              {insights.executiveSummary}
-            </p>
-          </div>
-          
-          {/* Right: Fact Strip */}
-          <FactStrip 
-            metrics={factMetrics} 
-            comparisonLabel={periodRange.comparisonLabel}
-            onMetricClick={handleMetricClick}
-          />
-        </div>
-      </section>
+      <ExecutiveSummaryHero
+        summary={insights.executiveSummary}
+        generatedAt={insights.generatedAt}
+        metrics={currentMetrics}
+        deltas={deltas}
+        comparisonLabel={periodRange.comparisonLabel}
+        onMetricClick={handleMetricClick}
+      />
 
-      {/* Situation Breakdown */}
-      <section className="grid grid-cols-2 gap-6">
-        {/* Key Facts */}
-        <div>
-          <div className="flex items-center gap-2 mb-3">
-            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Key Facts
-            </h2>
-          </div>
-          <ul className="space-y-1.5">
-            {insights.keyFacts.map((fact, idx) => (
-              <li key={idx} className="flex items-start gap-2 text-sm text-foreground">
-                <span className="text-muted-foreground select-none leading-5">•</span>
-                <span className="leading-5">{fact}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+      <KPIScoreboard
+        metrics={currentMetrics}
+        deltas={deltas}
+        onMetricClick={handleMetricClick}
+      />
 
-        {/* Required Actions */}
-        <div>
-          <div className="flex items-center gap-2 mb-3">
-            <Target className="h-4 w-4 text-destructive" />
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-destructive">
-              Required Actions
-            </h2>
-          </div>
-          <ol className="space-y-1.5">
-            {insights.requiredActions.map((action, idx) => (
-              <li key={idx} className="flex items-start gap-2 text-sm">
-                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-destructive/10 text-destructive text-xs font-semibold flex items-center justify-center">
-                  {idx + 1}
-                </span>
-                <span className="text-foreground font-medium leading-5 pt-0.5">{action}</span>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
+      <NarrativeCards
+        keyFacts={insights.keyFacts}
+        requiredActions={insights.requiredActions}
+      />
 
-      {/* Change & Learning Section */}
-      <ChangeLearningSection 
+      <ActionRegister
+        actions={insights.requiredActions}
+        onActionClick={handleActionClick}
+      />
+
+      <ChangeLearningSection
         conversionMetrics={conversionMetrics}
         comparisonLabel={periodRange.comparisonLabel}
         conversionDelta={deltas.converted}
+      />
+
+      <TopRiskIncidents
+        incidents={majorIncidents}
+        onRowClick={onRowClick}
       />
     </div>
   );
 }
 
+// ============================================================================
+// MAIN PAGE
+// ============================================================================
+
 export default function IncidentInsightsPage() {
-  const navigate = useNavigate();
   const [activePeriod, setActivePeriod] = useState<InsightPeriod>('today');
   const [activeFilter, setActiveFilter] = useState<DrilldownFilter | null>(null);
   const [filteredIncidents, setFilteredIncidents] = useState<IncidentWithSLA[]>([]);
   const [selectedIncidentId, setSelectedIncidentId] = useState<string | null>(null);
   
   const { data: selectedIncident } = useIncidentDetail(selectedIncidentId);
-
-  const handleModeChange = (mode: ViewMode) => {
-    if (mode === 'list') {
-      navigate('/release/incidents');
-    } else if (mode === 'analytics') {
-      navigate('/release/incidents/analytics');
-    } else if (mode === 'insights') {
-      navigate('/release/incidents/insights');
-    }
-  };
 
   const handleDrilldown = (filter: DrilldownFilter, incidents: IncidentWithSLA[]) => {
     setActiveFilter(filter);
@@ -464,32 +782,36 @@ export default function IncidentInsightsPage() {
     <div className="h-full flex flex-col bg-background">
       {/* Header */}
       <div className="border-b border-border bg-card flex-shrink-0">
-        <div className="px-6 py-4">
-          {/* Breadcrumb Row */}
-          <nav className="flex items-center gap-1.5 text-xs text-muted-foreground mb-2">
+        <div className="px-8 py-5">
+          {/* Breadcrumb */}
+          <nav className="flex items-center gap-1.5 text-sm text-muted-foreground mb-3">
             <Link to="/release" className="hover:text-foreground transition-colors">
               Release
             </Link>
-            <ChevronRight className="h-3 w-3" />
+            <ChevronRight className="h-3.5 w-3.5" />
             <Link to="/release/incidents" className="hover:text-foreground transition-colors">
               Incident List
             </Link>
-            <ChevronRight className="h-3 w-3" />
+            <ChevronRight className="h-3.5 w-3.5" />
             <span className="text-foreground font-medium">Insights</span>
           </nav>
           
           {/* Title Row */}
           <div className="flex items-start justify-between">
             <div>
-              <h1 className="text-xl font-semibold text-foreground">Incident Insights</h1>
-              <p className="text-sm text-muted-foreground mt-0.5">Executive operational report</p>
+              <h1 className="text-2xl font-semibold text-foreground tracking-tight">
+                Incident Insights
+              </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Executive operational report
+              </p>
             </div>
-            <div className="flex items-center gap-4">
-              <ModeSwitchSegment currentMode="insights" onModeChange={handleModeChange} />
-              <div className="h-5 w-px bg-border" />
-              <Button variant="outline" size="sm" onClick={handlePrint} className="h-8">
-                <Printer className="h-4 w-4 mr-1.5" />
-                Print
+            <div className="flex items-center gap-5">
+              <ModeSwitchSegment currentMode="insights" />
+              <div className="h-6 w-px bg-border" />
+              <Button variant="outline" size="sm" onClick={handlePrint} className="h-9">
+                <Printer className="h-4 w-4 mr-2" />
+                Print / PDF
               </Button>
             </div>
           </div>
@@ -498,11 +820,15 @@ export default function IncidentInsightsPage() {
 
       {/* Content with Tabs */}
       <div className="flex-1 overflow-auto">
-        <div className="max-w-5xl mx-auto px-6 py-5">
+        <div className="px-8 py-6 max-w-[1400px]">
           <Tabs value={activePeriod} onValueChange={(v) => setActivePeriod(v as InsightPeriod)}>
-            <TabsList className="mb-6">
+            <TabsList className="mb-8 p-1 bg-muted/40 border border-border">
               {PERIOD_TABS.map(tab => (
-                <TabsTrigger key={tab.value} value={tab.value} className="px-4">
+                <TabsTrigger 
+                  key={tab.value} 
+                  value={tab.value} 
+                  className="px-6 py-2 text-sm font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                >
                   {tab.label}
                 </TabsTrigger>
               ))}
@@ -513,6 +839,7 @@ export default function IncidentInsightsPage() {
                 <InsightTabContent 
                   period={tab.value} 
                   onDrilldown={handleDrilldown}
+                  onRowClick={handleRowClick}
                 />
               </TabsContent>
             ))}
