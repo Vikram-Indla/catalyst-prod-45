@@ -144,6 +144,7 @@ export function useCreateIncident() {
         .from('incidents')
         .insert({
           ...data,
+          reporter_id: user?.id, // Default reporter to current user
           created_by: user?.id,
           updated_by: user?.id,
         })

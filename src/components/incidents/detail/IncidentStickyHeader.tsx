@@ -394,23 +394,44 @@ export function IncidentStickyHeader({
               </DropdownMenu>
             </div>
 
-            {/* Reporter (read-only chip) */}
+            {/* Reporter Dropdown */}
             <div className="flex items-center gap-1.5">
               <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Reporter</span>
-              <div className="flex items-center gap-1.5 px-2 py-1 rounded border border-border bg-muted/30 text-xs">
-                {reporter ? (
-                  <>
-                    <Avatar className="h-4 w-4">
-                      <AvatarFallback className="text-[8px] bg-muted-foreground/20 text-foreground">
-                        {reporter.avatar_initials || reporter.full_name?.slice(0, 2)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="max-w-[80px] truncate">{reporter.full_name}</span>
-                  </>
-                ) : (
-                  <span className="text-muted-foreground">Unknown</span>
-                )}
-              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-7 gap-1.5 text-xs px-2" disabled={isConverted}>
+                    {reporter ? (
+                      <>
+                        <Avatar className="h-4 w-4">
+                          <AvatarFallback className="text-[8px] bg-muted-foreground/20 text-foreground">
+                            {reporter.avatar_initials || reporter.full_name?.slice(0, 2)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="max-w-[80px] truncate">{reporter.full_name}</span>
+                      </>
+                    ) : (
+                      <span className="text-muted-foreground">Unknown</span>
+                    )}
+                    <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-52 max-h-64 overflow-auto bg-popover">
+                  {availableUsers.map((user) => (
+                    <DropdownMenuItem
+                      key={user.id}
+                      onClick={() => onReporterChange(user.id)}
+                      className="flex items-center gap-2 text-xs"
+                    >
+                      <Avatar className="h-5 w-5">
+                        <AvatarFallback className="text-[9px] bg-muted-foreground/20 text-foreground">
+                          {user.avatar_initials || user.full_name?.slice(0, 2)}
+                        </AvatarFallback>
+                      </Avatar>
+                      {user.full_name}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
 
             {/* Severity Dropdown */}
