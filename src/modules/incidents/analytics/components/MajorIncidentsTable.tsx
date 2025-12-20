@@ -52,28 +52,28 @@ export function MajorIncidentsTable({ incidents, onRowClick, maxHeight = '360px'
           <table className="w-full min-w-[800px]">
             <thead className="bg-muted/50 sticky top-0 z-10">
               <tr>
-                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border">
+                <th className="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border">
                   ID
                 </th>
-                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border min-w-[200px]">
+                <th className="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border min-w-[200px]">
                   Summary
                 </th>
-                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border w-[60px]">
+                <th className="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border w-[60px]">
                   Severity
                 </th>
-                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border w-[48px]">
+                <th className="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border w-[48px]">
                   Level
                 </th>
-                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border w-[80px]">
+                <th className="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border w-[80px]">
                   Status
                 </th>
-                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border w-[56px]">
+                <th className="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border w-[56px]">
                   Age
                 </th>
-                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border min-w-[120px]">
+                <th className="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border min-w-[120px]">
                   Assignee
                 </th>
-                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border w-[80px]">
+                <th className="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border w-[80px]">
                   SLA State
                 </th>
               </tr>
@@ -95,59 +95,59 @@ export function MajorIncidentsTable({ incidents, onRowClick, maxHeight = '360px'
                       onClick={() => onRowClick(incident.id)}
                       className="hover:bg-muted/30 cursor-pointer border-b border-border last:border-b-0"
                     >
-                      <td className="px-3 py-2">
+                      <td className="px-3 py-2.5 align-middle">
                         <div className="flex items-center gap-1.5">
-                          <span className="font-mono text-sm font-medium text-[var(--brand-primary)]">
+                          <span className="font-mono text-sm font-medium text-[var(--brand-primary)] leading-none">
                             {incident.incident_key}
                           </span>
                           {incident.is_major_incident && (
-                            <Badge variant="destructive" className="text-[9px] px-1 py-0 h-4">
+                            <Badge variant="destructive" className="text-[9px] px-1 py-0 h-4 leading-none">
                               Major
                             </Badge>
                           )}
                         </div>
                       </td>
-                      <td className="px-3 py-2">
-                        <span className="text-sm text-foreground line-clamp-1">
+                      <td className="px-3 py-2.5 align-middle">
+                        <span className="text-sm text-foreground leading-normal line-clamp-1">
                           {incident.title}
                         </span>
                       </td>
-                      <td className="px-3 py-2">
-                        <span className="text-sm text-foreground font-medium">
+                      <td className="px-3 py-2.5 align-middle">
+                        <span className="text-sm text-foreground font-medium leading-none">
                           {incident.severity}
                         </span>
                       </td>
-                      <td className="px-3 py-2">
-                        <span className="text-sm text-muted-foreground">
+                      <td className="px-3 py-2.5 align-middle">
+                        <span className="text-sm text-muted-foreground leading-none">
                           {incident.support_level || '—'}
                         </span>
                       </td>
-                      <td className="px-3 py-2">
-                        <span className="text-sm text-foreground">
+                      <td className="px-3 py-2.5 align-middle">
+                        <span className="text-sm text-foreground leading-none">
                           {STATUS_LABELS[incident.status] || incident.status}
                         </span>
                       </td>
-                      <td className="px-3 py-2">
+                      <td className="px-3 py-2.5 align-middle">
                         <span className={cn(
-                          "text-sm font-mono tabular-nums",
+                          "text-sm font-mono tabular-nums leading-none",
                           incident.age_hours > 48 && "text-destructive font-medium"
                         )}>
                           {formatAge(incident.age_hours)}
                         </span>
                       </td>
-                      <td className="px-3 py-2">
+                      <td className="px-3 py-2.5 align-middle">
                         {incident.assignee_name ? (
-                          <span className="text-sm text-foreground">
+                          <span className="text-sm text-foreground leading-none">
                             {incident.assignee_name}
                           </span>
                         ) : (
-                          <span className="text-sm text-destructive font-medium">
+                          <span className="text-sm text-destructive font-medium leading-none">
                             Unassigned
                           </span>
                         )}
                       </td>
-                      <td className="px-3 py-2">
-                        <span className={cn("text-sm", slaConfig.className)}>
+                      <td className="px-3 py-2.5 align-middle">
+                        <span className={cn("text-sm leading-none", slaConfig.className)}>
                           {slaConfig.label}
                         </span>
                       </td>

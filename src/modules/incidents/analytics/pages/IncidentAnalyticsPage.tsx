@@ -4,8 +4,8 @@
  */
 
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Printer, Lightbulb, Loader2, ChevronRight } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Printer, Lightbulb, Loader2, ChevronRight, BarChart3, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useIncidentAnalytics, useFilteredIncidents } from '../hooks/useIncidentAnalytics';
@@ -16,9 +16,51 @@ import { MajorIncidentsTable } from '../components/MajorIncidentsTable';
 import { DrilldownDrawer } from '../components/DrilldownDrawer';
 import { TimeRangeSelector } from '../components/TimeRangeSelector';
 import IncidentDetailModal from '@/components/incidents/modal/IncidentDetailModal';
+import { cn } from '@/lib/utils';
 import type { TimeRange, DrilldownFilter } from '../types';
 
+type ViewMode = 'list' | 'analytics' | 'insights';
+
+function ModeSwitchSegment({ 
+  currentMode, 
+  onModeChange 
+}: { 
+  currentMode: ViewMode; 
+  onModeChange: (mode: ViewMode) => void;
+}) {
+  const modes: { value: ViewMode; label: string; icon: React.ElementType }[] = [
+    { value: 'list', label: 'List', icon: List },
+    { value: 'analytics', label: 'Analytics', icon: BarChart3 },
+    { value: 'insights', label: 'Insights', icon: Lightbulb },
+  ];
+
+  return (
+    <div className="inline-flex items-center rounded-md border border-border bg-muted/30 p-0.5">
+      {modes.map((mode) => {
+        const Icon = mode.icon;
+        const isActive = currentMode === mode.value;
+        return (
+          <button
+            key={mode.value}
+            onClick={() => onModeChange(mode.value)}
+            className={cn(
+              "inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded transition-all",
+              isActive 
+                ? "bg-background text-foreground shadow-sm" 
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <Icon className="h-3.5 w-3.5" />
+            {mode.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function IncidentAnalyticsPage() {
+  const navigate = useNavigate();
   const [timeRange, setTimeRange] = useState<TimeRange>('7d');
   const [customStart, setCustomStart] = useState<Date>();
   const [customEnd, setCustomEnd] = useState<Date>();
@@ -36,6 +78,16 @@ export default function IncidentAnalyticsPage() {
     activeFilter?.type || null,
     activeFilter?.value || null
   );
+
+  const handleModeChange = (mode: ViewMode) => {
+    if (mode === 'list') {
+      navigate('/release/incidents');
+    } else if (mode === 'analytics') {
+      navigate('/release/incidents/analytics');
+    } else if (mode === 'insights') {
+      navigate('/release/incidents/insights');
+    }
+  };
 
   const handleTimeRangeChange = (range: TimeRange, start?: Date, end?: Date) => {
     setTimeRange(range);
@@ -93,25 +145,20 @@ export default function IncidentAnalyticsPage() {
               <h1 className="text-xl font-semibold text-foreground">Incident Analytics</h1>
               <p className="text-sm text-muted-foreground mt-0.5">Operations control room</p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
+              <ModeSwitchSegment currentMode="analytics" onModeChange={handleModeChange} />
+              <div className="h-5 w-px bg-border" />
               <TimeRangeSelector
                 value={timeRange}
                 onChange={handleTimeRangeChange}
                 customStart={customStart}
                 customEnd={customEnd}
               />
-              <div className="h-5 w-px bg-border" />
-              <Link to="/release/incidents/insights">
-                <Button variant="outline" size="sm" className="h-8">
-                  <Lightbulb className="h-4 w-4 mr-1.5" />
-                  Insights
-                </Button>
-              </Link>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button variant="outline" size="sm" onClick={handlePrint} className="h-8">
                     <Printer className="h-4 w-4 mr-1.5" />
-                    Print / PDF
+                    Print
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>Export current view to PDF</TooltipContent>

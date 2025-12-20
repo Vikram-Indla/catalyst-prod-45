@@ -2,80 +2,88 @@
  * Hook for managing incident table column widths with localStorage persistence
  * Enterprise-grade auto-fit + manual resize + persist pattern
  * 
- * Features:
- * - Auto-fit: Measures content widths and distributes space on first load
- * - Persist: Saves user's resized widths to localStorage
- * - Restore: On reload, uses saved widths (user's manual layout becomes default)
- * - Stretch: Distributes leftover space to stretchable columns using weights
- * - Single getGridTemplate function for header AND rows alignment
+ * COLUMN SIZING SPEC:
+ * - ID/Key: fixed (small)
+ * - Summary: AUTO-FIT CONTENT WIDTH up to MAX, then truncates with ellipsis
+ * - Other columns: flexible (share remaining space with weights)
+ * - SLA State: fixed/small
+ * 
+ * Algorithm:
+ * 1) Fixed columns get their fixed widths
+ * 2) Summary gets content-based width clamped to [min, max]
+ * 3) Remaining space is distributed to flexible columns via weights
+ * 4) Table always fills container width (no dead space)
  */
 import { useState, useCallback, useRef, useLayoutEffect } from 'react';
 
-const STORAGE_KEY = 'catalyst.release.incidentList.columnWidths.v1';
+const STORAGE_KEY = 'catalyst.release.incidentList.columnWidths.v2';
+
+// Column categories for sizing algorithm
+const FIXED_COLUMNS = ['key', 'sla', 'actions'] as const;
+const SUMMARY_COLUMN = 'summary';
 
 // Base minimum widths (content + padding allowance)
 export const MIN_COLUMN_WIDTHS: Record<string, number> = {
-  key: 70,
-  summary: 200,
-  severity: 60,
-  level: 50,
-  status: 90,
-  assignee: 120,
-  age: 50,
-  sla: 70,
+  key: 80,
+  summary: 180,
+  severity: 54,
+  level: 44,
+  status: 80,
+  assignee: 100,
+  age: 48,
+  sla: 64,
   releaseVersion: 80,
-  major: 60,
-  committee: 80,
+  major: 54,
+  committee: 72,
   actions: 40,
 };
 
 // Maximum widths for columns
 export const MAX_COLUMN_WIDTHS: Record<string, number> = {
-  key: 140,
-  summary: 1200,
-  severity: 100,
-  level: 80,
-  status: 160,
-  assignee: 280,
-  age: 80,
-  sla: 120,
-  releaseVersion: 180,
-  major: 100,
-  committee: 160,
+  key: 120,
+  summary: 600, // Summary max - prevents it from taking over
+  severity: 80,
+  level: 60,
+  status: 120,
+  assignee: 200,
+  age: 64,
+  sla: 80,
+  releaseVersion: 140,
+  major: 70,
+  committee: 120,
   actions: 40,
 };
 
-// Stretch weights for distributing leftover space
-// Only stretchable columns get extra space
-const STRETCH_WEIGHTS: Record<string, number> = {
-  summary: 4,
-  assignee: 2,
-  status: 1,
-  releaseVersion: 1,
-  committee: 1,
+// Flexible column weights for distributing remaining space
+// Higher weight = more space
+const FLEXIBLE_WEIGHTS: Record<string, number> = {
+  status: 2,
+  assignee: 2.5,
+  severity: 1,
+  level: 0.8,
+  age: 0.8,
+  releaseVersion: 1.5,
+  major: 0.8,
+  committee: 1.2,
 };
-
-// Non-stretchable columns (fixed after content fit)
-const NON_STRETCHABLE = ['key', 'severity', 'level', 'age', 'sla', 'major', 'actions'];
 
 // Sensible fallback defaults if we can't measure
 export const DEFAULT_COLUMN_WIDTHS: Record<string, number> = {
   key: 90,
-  summary: 400,
-  severity: 70,
-  level: 60,
-  status: 110,
-  assignee: 150,
-  age: 60,
-  sla: 90,
-  releaseVersion: 100,
-  major: 70,
-  committee: 100,
+  summary: 320,
+  severity: 60,
+  level: 50,
+  status: 95,
+  assignee: 140,
+  age: 52,
+  sla: 70,
+  releaseVersion: 95,
+  major: 58,
+  committee: 85,
   actions: 40,
 };
 
 // Column order for iteration - EXACT ORDER for header and rows
-// KEY, SUMMARY, SEV, LVL, STATUS, ASSIGNEE, AGE, SLA, RELEASE, MAJOR, COMMITTEE, ACTIONS
 export const COLUMN_ORDER = [
   'key', 
   'summary', 
@@ -107,10 +115,6 @@ export const CENTER_ALIGNED_COLUMNS = [
 /**
  * SINGLE SOURCE OF TRUTH: Generate grid template columns string
  * This EXACT string must be used by BOTH header row and data rows
- * 
- * @param columnWidths - Current column widths
- * @param isColumnVisible - Function to check if column is visible
- * @returns CSS gridTemplateColumns string
  */
 export function getGridTemplate(
   columnWidths: Record<string, number>,
@@ -120,11 +124,10 @@ export function getGridTemplate(
   
   COLUMN_ORDER.forEach(colId => {
     if (colId === 'actions') {
-      // Actions column is always 40px fixed
       cols.push('40px');
     } else if (isColumnVisible(colId)) {
-      const width = columnWidths[colId] || DEFAULT_COLUMN_WIDTHS[colId] || 100;
-      cols.push(`${width}px`);
+      const width = columnWidths[colId] || DEFAULT_COLUMN_WIDTHS[colId] || 80;
+      cols.push(`${Math.round(width)}px`);
     }
   });
   
@@ -204,22 +207,22 @@ function calculateAutoFitWidths(
   });
   totalIdeal += 40; // Actions column
   
-  // Step 3: If totalIdeal < containerWidth, distribute leftover to stretchable columns
+  // Step 3: If totalIdeal < containerWidth, distribute leftover to flexible columns
   if (totalIdeal < containerWidth) {
     const leftover = containerWidth - totalIdeal;
     
-    // Calculate total stretch weight
+    // Calculate total flexible weight
     let totalWeight = 0;
     visibleColumns.forEach(colId => {
-      if (STRETCH_WEIGHTS[colId]) {
-        totalWeight += STRETCH_WEIGHTS[colId];
+      if (FLEXIBLE_WEIGHTS[colId]) {
+        totalWeight += FLEXIBLE_WEIGHTS[colId];
       }
     });
     
     if (totalWeight > 0) {
       // Distribute leftover proportionally
       visibleColumns.forEach(colId => {
-        const weight = STRETCH_WEIGHTS[colId] || 0;
+        const weight = FLEXIBLE_WEIGHTS[colId] || 0;
         if (weight > 0) {
           const extra = (leftover * weight) / totalWeight;
           const newWidth = widths[colId] + extra;
