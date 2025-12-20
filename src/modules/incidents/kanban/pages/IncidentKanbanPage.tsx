@@ -5,7 +5,7 @@
 
 import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Loader2, AlertCircle, RefreshCw } from 'lucide-react';
+import { Loader2, AlertCircle, RefreshCw, Settings2, ChevronsLeftRight, ChevronsRightLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -16,7 +16,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { TooltipProvider } from '@/components/ui/tooltip';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
 import { IncidentCommandBar } from '@/components/incidents/IncidentCommandBar';
 import { CreateIncidentModal, IncidentFormData } from '@/components/incidents/CreateIncidentModal';
@@ -26,6 +33,9 @@ import { cn } from '@/lib/utils';
 
 import { KanbanColumn } from '../components/KanbanColumn';
 import { KanbanSwimlane } from '../components/KanbanSwimlane';
+import { ManageColumnsDialog } from '../components/ManageColumnsDialog';
+import { useKanbanColumnPrefs } from '../hooks/useKanbanColumnPrefs';
+import { useKanbanColumnConfig } from '../hooks/useKanbanColumnConfig';
 import {
   KANBAN_STATUSES,
   OPEN_STATUSES,
@@ -35,9 +45,17 @@ import {
 } from '../types';
 import type { Incident, IncidentStatus } from '@/types/incident';
 
+// Mock admin check - replace with actual auth check
+const useIsAdmin = () => {
+  // TODO: Replace with actual admin check from auth context
+  return true;
+};
+
 export default function IncidentKanbanPage() {
   const navigate = useNavigate();
+  const isAdmin = useIsAdmin();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [manageColumnsOpen, setManageColumnsOpen] = useState(false);
   const [showOpenOnly, setShowOpenOnly] = useState(true);
   const [groupBy, setGroupBy] = useState<GroupByOption>('none');
   const [draggingId, setDraggingId] = useState<string | null>(null);
@@ -47,13 +65,36 @@ export default function IncidentKanbanPage() {
   const updateIncident = useUpdateIncident();
   const createIncident = useCreateIncident();
 
-  // Determine visible statuses based on toggle
+  // Column preferences (collapse state)
+  const {
+    isCollapsed,
+    toggleCollapsed,
+    collapseAll,
+    expandAll,
+    collapsedColumns,
+  } = useKanbanColumnPrefs();
+
+  // Column configuration (admin)
+  const {
+    orderedStatuses,
+    addColumn,
+    removeColumn,
+    reorderColumns,
+    resetToDefaults,
+    getAddableStatuses,
+    canRemove,
+  } = useKanbanColumnConfig();
+
+  // Get configured and ordered statuses
+  const configuredStatuses = useMemo(() => orderedStatuses(), [orderedStatuses]);
+
+  // Determine visible statuses based on toggle and config
   const visibleStatuses = useMemo(() => {
     if (showOpenOnly) {
-      return KANBAN_STATUSES.filter(s => OPEN_STATUSES.includes(s));
+      return configuredStatuses.filter(s => OPEN_STATUSES.includes(s));
     }
-    return KANBAN_STATUSES;
-  }, [showOpenOnly]);
+    return configuredStatuses;
+  }, [showOpenOnly, configuredStatuses]);
 
   // Filter and apply optimistic updates
   const filteredIncidents = useMemo(() => {
@@ -93,6 +134,9 @@ export default function IncidentKanbanPage() {
   const swimlanes = useMemo(() => {
     return groupIncidents(filteredIncidents, groupBy);
   }, [filteredIncidents, groupBy]);
+
+  // Check if any columns are collapsed
+  const hasCollapsedColumns = collapsedColumns.length > 0;
 
   // Drag handlers
   const handleDragStart = useCallback((e: React.DragEvent, incident: Incident) => {
@@ -190,15 +234,52 @@ export default function IncidentKanbanPage() {
         <IncidentCommandBar
           onCreateClick={() => setCreateDialogOpen(true)}
           additionalActions={
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-9 px-3 text-sm"
-              onClick={() => refetch()}
-            >
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Refresh
-            </Button>
+            <div className="flex items-center gap-1">
+              {/* Board Settings Menu */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-9 px-3 text-sm">
+                    <Settings2 className="h-4 w-4 mr-2" />
+                    Board Settings
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  {/* Collapse/Expand All */}
+                  {hasCollapsedColumns ? (
+                    <DropdownMenuItem onClick={expandAll}>
+                      <ChevronsRightLeft className="h-4 w-4 mr-2" />
+                      Expand All Columns
+                    </DropdownMenuItem>
+                  ) : (
+                    <DropdownMenuItem onClick={() => collapseAll(visibleStatuses)}>
+                      <ChevronsLeftRight className="h-4 w-4 mr-2" />
+                      Collapse All Columns
+                    </DropdownMenuItem>
+                  )}
+                  
+                  {/* Admin: Manage Columns */}
+                  {isAdmin && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => setManageColumnsOpen(true)}>
+                        <Settings2 className="h-4 w-4 mr-2" />
+                        Manage Columns
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-9 px-3 text-sm"
+                onClick={() => refetch()}
+              >
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Refresh
+              </Button>
+            </div>
           }
         />
 
@@ -268,6 +349,8 @@ export default function IncidentKanbanPage() {
                     draggingId={draggingId}
                     onDragStart={handleDragStart}
                     onDragEnd={handleDragEnd}
+                    isCollapsed={isCollapsed(status)}
+                    onToggleCollapse={toggleCollapsed}
                   />
                 ))}
               </div>
@@ -296,6 +379,21 @@ export default function IncidentKanbanPage() {
           onClose={() => setCreateDialogOpen(false)}
           onSubmit={handleCreateIncident}
         />
+
+        {/* Manage Columns Dialog (Admin) */}
+        {isAdmin && (
+          <ManageColumnsDialog
+            open={manageColumnsOpen}
+            onOpenChange={setManageColumnsOpen}
+            statuses={configuredStatuses}
+            onReorder={reorderColumns}
+            onAdd={addColumn}
+            onRemove={removeColumn}
+            onReset={resetToDefaults}
+            getAddableStatuses={getAddableStatuses}
+            canRemove={canRemove}
+          />
+        )}
       </div>
     </TooltipProvider>
   );
