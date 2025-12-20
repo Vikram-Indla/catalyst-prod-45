@@ -1,12 +1,13 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link, useSearchParams, useNavigate, useLocation } from 'react-router-dom';
-import { Plus, Search, AlertCircle, BarChart3, Lightbulb, RefreshCw, ArrowUpDown, Columns3, LayoutGrid, LayoutList, List } from 'lucide-react';
+import { Search, AlertCircle, RefreshCw, ArrowUpDown, Columns3, LayoutGrid, LayoutList, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
 import { useIncidents, useCreateIncident } from '@/hooks/useIncidents';
 import { useIncidentColumns, TableDensity } from '@/hooks/useIncidentColumns';
 import { CreateIncidentModal, IncidentFormData } from '@/components/incidents/CreateIncidentModal';
+import { IncidentCommandBar } from '@/components/incidents/IncidentCommandBar';
 import { IncidentFiltersDialog } from '@/components/incidents/IncidentFiltersDialog';
 import { IncidentListTable } from '@/components/incidents/IncidentListTable';
 import { toast } from 'sonner';
@@ -32,7 +33,6 @@ const PAGE_SIZE = 40;
 
 type SortField = 'created_at' | 'severity' | 'priority' | 'status';
 type SortOrder = 'asc' | 'desc';
-type ViewMode = 'list' | 'analytics' | 'insights';
 
 const SORT_OPTIONS: { field: SortField; label: string }[] = [
   { field: 'created_at', label: 'Created (newest)' },
@@ -40,45 +40,6 @@ const SORT_OPTIONS: { field: SortField; label: string }[] = [
   { field: 'priority', label: 'Priority' },
   { field: 'status', label: 'Status' },
 ];
-
-// Mode switch component
-function ModeSwitchSegment({ 
-  currentMode, 
-  onModeChange 
-}: { 
-  currentMode: ViewMode; 
-  onModeChange: (mode: ViewMode) => void;
-}) {
-  const modes: { value: ViewMode; label: string; icon: React.ElementType }[] = [
-    { value: 'list', label: 'List', icon: List },
-    { value: 'analytics', label: 'Analytics', icon: BarChart3 },
-    { value: 'insights', label: 'Insights', icon: Lightbulb },
-  ];
-
-  return (
-    <div className="inline-flex items-center rounded-md border border-border bg-muted/30 p-0.5">
-      {modes.map((mode) => {
-        const Icon = mode.icon;
-        const isActive = currentMode === mode.value;
-        return (
-          <button
-            key={mode.value}
-            onClick={() => onModeChange(mode.value)}
-            className={cn(
-              "inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded transition-all",
-              isActive 
-                ? "bg-background text-foreground shadow-sm" 
-                : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            <Icon className="h-3.5 w-3.5" />
-            {mode.label}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
 
 export default function IncidentRoomList() {
   const navigate = useNavigate();
@@ -140,15 +101,6 @@ export default function IncidentRoomList() {
     }
   }, [searchParams, setSearchParams]);
 
-  const handleModeChange = (mode: ViewMode) => {
-    if (mode === 'list') {
-      navigate('/release/incidents');
-    } else if (mode === 'analytics') {
-      navigate('/release/incidents/analytics');
-    } else if (mode === 'insights') {
-      navigate('/release/incidents/insights');
-    }
-  };
 
   // Client-side search + sort
   const processedIncidents = useMemo(() => {
@@ -220,20 +172,11 @@ export default function IncidentRoomList() {
       <GlobalPageHeader
         sectionLabel="RELEASE"
         pageTitle="Incident List"
-        rightActions={
-          <div className="flex items-center gap-4">
-            <ModeSwitchSegment currentMode="list" onModeChange={handleModeChange} />
-            <Button 
-              size="sm"
-              className="h-8 px-4 text-sm"
-              onClick={() => setCreateDialogOpen(true)}
-            >
-              <Plus className="h-4 w-4 mr-1.5" />
-              Create
-            </Button>
-          </div>
-        }
+        showDivider={false}
       />
+
+      {/* Standardized Command Bar */}
+      <IncidentCommandBar onCreateClick={() => setCreateDialogOpen(true)} />
 
       {/* ========== TOOLBAR ========== */}
       <TooltipProvider delayDuration={300}>

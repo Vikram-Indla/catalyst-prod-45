@@ -5,11 +5,14 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Printer, Loader2, List, BarChart3, Lightbulb } from 'lucide-react';
+import { Printer, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
+import { IncidentCommandBar } from '@/components/incidents/IncidentCommandBar';
+import { CreateIncidentModal, IncidentFormData } from '@/components/incidents/CreateIncidentModal';
 import { useIncidentAnalytics, useFilteredIncidents } from '../hooks/useIncidentAnalytics';
 import { useIncidentDetail } from '../hooks/useIncidentDetail';
+import { useCreateIncident } from '@/hooks/useIncidents';
 import { ExecutiveSnapshot } from '../components/ExecutiveSnapshot';
 import { BreakdownTiles } from '../components/BreakdownTiles';
 import { AgingPressureBar } from '../components/AgingPressureBar';
@@ -17,58 +20,25 @@ import { RequiresAttentionTabs } from '../components/RequiresAttentionTabs';
 import { DrilldownDrawer } from '../components/DrilldownDrawer';
 import { TimeRangeSelector } from '../components/TimeRangeSelector';
 import IncidentDetailModal from '@/components/incidents/modal/IncidentDetailModal';
-import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 import type { TimeRange, DrilldownFilter, IncidentWithSLA } from '../types';
 
-type ViewMode = 'list' | 'analytics' | 'insights';
-
-function ViewSwitch({ currentMode }: { currentMode: ViewMode }) {
-  const navigate = useNavigate();
-  
-  const modes: { value: ViewMode; label: string; icon: React.ElementType; path: string }[] = [
-    { value: 'list', label: 'List', icon: List, path: '/release/incidents' },
-    { value: 'analytics', label: 'Analytics', icon: BarChart3, path: '/release/incidents/analytics' },
-    { value: 'insights', label: 'Insights', icon: Lightbulb, path: '/release/incidents/insights' },
-  ];
-
-  return (
-    <div className="inline-flex items-center rounded-lg border border-border bg-muted/30 p-1">
-      {modes.map((mode) => {
-        const Icon = mode.icon;
-        const isActive = currentMode === mode.value;
-        return (
-          <button
-            key={mode.value}
-            onClick={() => navigate(mode.path)}
-            className={cn(
-              "inline-flex items-center gap-2 px-3.5 py-2 text-sm font-medium rounded-md transition-all",
-              isActive 
-                ? "bg-background text-foreground shadow-sm" 
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-            )}
-          >
-            <Icon className="h-4 w-4" />
-            {mode.label}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
 export default function IncidentAnalyticsPage() {
+  const navigate = useNavigate();
   const [timeRange, setTimeRange] = useState<TimeRange>('7d');
   const [customStart, setCustomStart] = useState<Date>();
   const [customEnd, setCustomEnd] = useState<Date>();
   const [activeFilter, setActiveFilter] = useState<DrilldownFilter | null>(null);
   const [filteredIncidentsList, setFilteredIncidentsList] = useState<IncidentWithSLA[]>([]);
   const [selectedIncidentId, setSelectedIncidentId] = useState<string | null>(null);
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
   const { incidents, snapshot, breakdowns, majorIncidents, isLoading } = useIncidentAnalytics(
     timeRange, customStart, customEnd
   );
 
   const { data: selectedIncident } = useIncidentDetail(selectedIncidentId);
+  const createIncident = useCreateIncident();
 
   const filteredIncidents = useFilteredIncidents(
     incidents,
@@ -107,6 +77,36 @@ export default function IncidentAnalyticsPage() {
     window.print();
   };
 
+  const handleCreateIncident = async (formData: IncidentFormData) => {
+    try {
+      const result = await createIncident.mutateAsync({
+        title: formData.title,
+        description: formData.description,
+        severity: formData.severity,
+        impact: formData.impact,
+        urgency: formData.urgency,
+        support_level: formData.support_level,
+        project_id: formData.project_id,
+        release_version_id: formData.release_version_id,
+        is_major_incident: formData.is_major_incident,
+        incident_type: formData.incident_type,
+        reporter_id: formData.reporterId,
+        reporter_name: formData.reporterName,
+        assignee_id: formData.assigneeId,
+        target_date: formData.target_resolution_date,
+      });
+      
+      toast.success('Incident created successfully');
+      setCreateDialogOpen(false);
+      
+      if (result?.id) {
+        navigate(`/release/incidents/${result.id}?created=true`);
+      }
+    } catch (error: any) {
+      toast.error(error?.message || 'Failed to create incident');
+    }
+  };
+
   // Use filtered incidents from aging bar if available, otherwise use standard filter
   const drawerIncidents = filteredIncidentsList.length > 0 ? filteredIncidentsList : filteredIncidents;
 
@@ -124,24 +124,26 @@ export default function IncidentAnalyticsPage() {
         sectionLabel="RELEASE"
         pageTitle="Incident Analytics"
         showDivider={false}
-        rightActions={
-          <div className="flex items-center gap-4">
-            <ViewSwitch currentMode="analytics" />
-            <div className="h-6 w-px bg-border" />
+      />
+
+      {/* Standardized Command Bar */}
+      <IncidentCommandBar
+        onCreateClick={() => setCreateDialogOpen(true)}
+        additionalActions={
+          <>
             <TimeRangeSelector
               value={timeRange}
               onChange={handleTimeRangeChange}
               customStart={customStart}
               customEnd={customEnd}
             />
-            <Button variant="outline" size="sm" onClick={handlePrint} className="h-8 px-3 text-sm">
+            <Button variant="outline" size="sm" onClick={handlePrint} className="h-9 px-3 text-sm">
               <Printer className="h-4 w-4 mr-2" />
               Print
             </Button>
-          </div>
+          </>
         }
       />
-
 
       {/* Content */}
       <div className="flex-1 overflow-auto">
@@ -186,6 +188,13 @@ export default function IncidentAnalyticsPage() {
           onClose={() => setSelectedIncidentId(null)}
         />
       )}
+
+      {/* Create Incident Modal */}
+      <CreateIncidentModal
+        isOpen={createDialogOpen}
+        onClose={() => setCreateDialogOpen(false)}
+        onSubmit={handleCreateIncident}
+      />
     </div>
   );
 }
