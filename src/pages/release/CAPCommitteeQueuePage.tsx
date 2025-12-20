@@ -28,11 +28,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useCommitteeQueue, type CommitteeQueueItem, type CommitteeDecisionStatus } from '@/hooks/useCommitteeQueue';
+import { useCommitteeQueue, type CommitteeQueueItem } from '@/hooks/useCommitteeQueue';
 import { CommitteeQueueTable } from '@/components/committee/CommitteeQueueTable';
 import { CommitteeQueueDrawer } from '@/components/committee/CommitteeQueueDrawer';
 import { ExecutiveInsightPanel } from '@/components/committee/ExecutiveInsightPanel';
-import { generateCommitteeDemoData, shouldLoadDemoData } from '@/data/committeeDemoData';
 
 type FilterSeverity = 'all' | 'SEV1' | 'SEV2' | 'SEV3' | 'SEV4';
 type FilterAging = 'all' | '>3d' | '>7d' | '>14d';
@@ -44,24 +43,9 @@ export default function CAPCommitteeQueuePage() {
   const [agingFilter, setAgingFilter] = useState<FilterAging>('all');
   const [selectedItem, setSelectedItem] = useState<CommitteeQueueItem | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [useDemoData, setUseDemoData] = useState(shouldLoadDemoData);
 
-  // Include closed decisions when in history mode
-  const { data: realItems = [], isLoading: queryLoading } = useCommitteeQueue({ includeClosedDecisions: showDecisionHistory });
-
-  // Use demo data immediately if configured, or if query returned empty
-  const items = useMemo(() => {
-    if (useDemoData) {
-      return generateCommitteeDemoData();
-    }
-    if (!queryLoading && realItems.length === 0) {
-      return generateCommitteeDemoData();
-    }
-    return realItems;
-  }, [realItems, queryLoading, useDemoData]);
-
-  // Only show loading if we're waiting for real data AND not using demo
-  const isLoading = queryLoading && !useDemoData && realItems.length === 0;
+  // Fetch from backend (no demo fallback)
+  const { data: items = [], isLoading } = useCommitteeQueue({ includeClosedDecisions: showDecisionHistory });
 
   // Counts
   const openCount = items.filter((i) => i.committeeStatus === 'pending').length;
@@ -206,7 +190,6 @@ export default function CAPCommitteeQueuePage() {
             items={filteredItems}
             isLoading={isLoading}
             onRowClick={handleRowClick}
-            onLoadDemoData={() => setUseDemoData(true)}
             includeClosedDecisions={showDecisionHistory}
           />
         </div>
