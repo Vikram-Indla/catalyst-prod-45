@@ -8,18 +8,19 @@ import type { IncidentStatus } from '@/types/incident';
 
 const STORAGE_KEY = 'incident-kanban-column-config';
 
-// Required columns that cannot be removed
+// Required columns that cannot be removed (in order)
+// Committee IS a required column per spec
 export const REQUIRED_COLUMNS: IncidentStatus[] = [
   'open',
   'triage',
   'in_progress',
+  'to_committee',
   'resolved',
   'closed',
 ];
 
 // Statuses that can NEVER be added as columns
 export const FORBIDDEN_COLUMNS: IncidentStatus[] = [
-  'to_committee', // Committee is never a column
   'converted',    // Converted is a terminal state, not a workflow column
 ];
 
@@ -28,6 +29,7 @@ export const ALL_WORKFLOW_STATUSES: IncidentStatus[] = [
   'open',
   'triage',
   'in_progress',
+  'to_committee',
   'resolved',
   'closed',
 ];
@@ -39,7 +41,7 @@ interface ColumnConfig {
 
 const defaultConfig: ColumnConfig = {
   statuses: [...REQUIRED_COLUMNS],
-  order: [0, 1, 2, 3, 4], // Default order matches REQUIRED_COLUMNS
+  order: [0, 1, 2, 3, 4, 5], // Default order matches REQUIRED_COLUMNS
 };
 
 export function useKanbanColumnConfig() {
