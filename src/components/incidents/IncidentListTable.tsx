@@ -126,18 +126,18 @@ function LoadingSkeleton({ columnWidths, visibleColumns }: { columnWidths: Recor
         className="grid items-center h-8 bg-muted/40 border-b border-border"
         style={{ gridTemplateColumns: gridTemplate }}
       >
-        {isColumnVisible('key') && <div className="pl-3 pr-2 flex items-center h-full"><span className={HEADER_TEXT}>KEY</span></div>}
-        {isColumnVisible('summary') && <div className="pr-2 flex items-center h-full"><span className={HEADER_TEXT}>SUMMARY</span></div>}
-        {isColumnVisible('severity') && <div className="px-2 flex items-center h-full"><span className={HEADER_TEXT}>SEV</span></div>}
-        {isColumnVisible('level') && <div className="px-2 flex items-center h-full"><span className={HEADER_TEXT}>LVL</span></div>}
-        {isColumnVisible('status') && <div className="px-2 flex items-center h-full"><span className={HEADER_TEXT}>STATUS</span></div>}
-        {isColumnVisible('assignee') && <div className="px-2 flex items-center h-full"><span className={HEADER_TEXT}>ASSIGNEE</span></div>}
-        {isColumnVisible('age') && <div className="px-2 flex items-center h-full"><span className={HEADER_TEXT}>AGE</span></div>}
-        {isColumnVisible('sla') && <div className="px-2 flex items-center h-full"><span className={HEADER_TEXT}>SLA</span></div>}
-        {isColumnVisible('releaseVersion') && <div className="px-2 flex items-center h-full"><span className={HEADER_TEXT}>RELEASE</span></div>}
-        {isColumnVisible('major') && <div className="px-2 flex items-center h-full"><span className={HEADER_TEXT}>MAJOR</span></div>}
-        {isColumnVisible('committee') && <div className="px-2 flex items-center h-full"><span className={HEADER_TEXT}>COMMITTEE</span></div>}
-        <div className="flex items-center h-full"></div>
+        {isColumnVisible('key') && <div className="pl-3 pr-2 flex items-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>KEY</span></div>}
+        {isColumnVisible('summary') && <div className="pr-2 flex items-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>SUMMARY</span></div>}
+        {isColumnVisible('severity') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>SEV</span></div>}
+        {isColumnVisible('level') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>LVL</span></div>}
+        {isColumnVisible('status') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>STATUS</span></div>}
+        {isColumnVisible('assignee') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>ASSIGNEE</span></div>}
+        {isColumnVisible('age') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>AGE</span></div>}
+        {isColumnVisible('sla') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>SLA</span></div>}
+        {isColumnVisible('releaseVersion') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>RELEASE</span></div>}
+        {isColumnVisible('major') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>MAJOR</span></div>}
+        {isColumnVisible('committee') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>COMMITTEE</span></div>}
+        <div className="flex items-center h-full min-w-0"></div>
       </div>
       {/* Skeleton rows - exactly 36px each */}
       {[...Array(12)].map((_, i) => (
@@ -146,18 +146,18 @@ function LoadingSkeleton({ columnWidths, visibleColumns }: { columnWidths: Recor
           className="grid items-center h-9 border-b border-border last:border-b-0"
           style={{ gridTemplateColumns: gridTemplate }}
         >
-          {isColumnVisible('key') && <div className="pl-3 pr-2 flex items-center h-full"><Skeleton className="h-3.5 w-14" /></div>}
-          {isColumnVisible('summary') && <div className="pr-2 flex items-center h-full"><Skeleton className="h-3.5 w-full max-w-[90%]" /></div>}
-          {isColumnVisible('severity') && <div className="px-2 flex items-center h-full"><Skeleton className="h-5 w-14 rounded-full" /></div>}
-          {isColumnVisible('level') && <div className="px-2 flex items-center h-full"><Skeleton className="h-3.5 w-6" /></div>}
-          {isColumnVisible('status') && <div className="px-2 flex items-center h-full"><Skeleton className="h-5 w-20 rounded-full" /></div>}
-          {isColumnVisible('assignee') && <div className="px-2 flex items-center h-full"><Skeleton className="h-4 w-24" /></div>}
-          {isColumnVisible('age') && <div className="px-2 flex items-center h-full"><Skeleton className="h-3.5 w-8" /></div>}
-          {isColumnVisible('sla') && <div className="px-2 flex items-center h-full"><Skeleton className="h-3.5 w-14" /></div>}
-          {isColumnVisible('releaseVersion') && <div className="px-2 flex items-center h-full"><Skeleton className="h-3.5 w-16" /></div>}
-          {isColumnVisible('major') && <div className="px-2 flex items-center h-full"><Skeleton className="h-3.5 w-10" /></div>}
-          {isColumnVisible('committee') && <div className="px-2 flex items-center h-full"><Skeleton className="h-3.5 w-16" /></div>}
-          <div className="flex items-center h-full"></div>
+          {isColumnVisible('key') && <div className="pl-3 pr-2 flex items-center h-full min-w-0 overflow-hidden"><Skeleton className="h-3.5 w-14" /></div>}
+          {isColumnVisible('summary') && <div className="pr-2 flex items-center h-full min-w-0 overflow-hidden"><Skeleton className="h-3.5 w-full max-w-[90%]" /></div>}
+          {isColumnVisible('severity') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><Skeleton className="h-5 w-14 rounded-full" /></div>}
+          {isColumnVisible('level') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><Skeleton className="h-3.5 w-6" /></div>}
+          {isColumnVisible('status') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><Skeleton className="h-5 w-20 rounded-full" /></div>}
+          {isColumnVisible('assignee') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><Skeleton className="h-4 w-24" /></div>}
+          {isColumnVisible('age') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><Skeleton className="h-3.5 w-8" /></div>}
+          {isColumnVisible('sla') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><Skeleton className="h-3.5 w-14" /></div>}
+          {isColumnVisible('releaseVersion') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><Skeleton className="h-3.5 w-16" /></div>}
+          {isColumnVisible('major') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><Skeleton className="h-3.5 w-10" /></div>}
+          {isColumnVisible('committee') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><Skeleton className="h-3.5 w-16" /></div>}
+          <div className="flex items-center h-full min-w-0"></div>
         </div>
       ))}
     </div>
@@ -440,9 +440,9 @@ export function IncidentListTable({
                         if (e.key === 'Enter' && incident.id) navigate(`/release/incidents/${incident.id}`);
                       }}
                     >
-                      {/* Key */}
+                      {/* Key - min-w-0 prevents grid cell bleed */}
                       {isColumnVisible('key') && (
-                        <div className="pl-3 pr-2 flex items-center h-full overflow-hidden">
+                        <div className="pl-3 pr-2 flex items-center h-full min-w-0 overflow-hidden">
                           <Link 
                             to={`/release/incidents/${incident.id}`} 
                             className={cn(CELL_TEXT, "font-medium text-primary hover:underline truncate")}
@@ -461,10 +461,10 @@ export function IncidentListTable({
                         </div>
                       )}
                       
-                      {/* Summary - single line, ellipsis, tooltip on hover */}
+                      {/* Summary - single line, ellipsis, tooltip on hover, min-w-0 for grid */}
                       {isColumnVisible('summary') && (
                         <div 
-                          className="pr-2 flex items-center h-full overflow-hidden" 
+                          className="pr-2 flex items-center h-full min-w-0 overflow-hidden" 
                           data-inline-edit
                         >
                           <InlineEditCell
@@ -485,10 +485,10 @@ export function IncidentListTable({
                         </div>
                       )}
                       
-                      {/* Severity - small neutral pill with colored dot */}
+                      {/* Severity - min-w-0 prevents grid bleed */}
                       {isColumnVisible('severity') && (
                         <div 
-                          className="px-2 flex items-center h-full overflow-hidden" 
+                          className="px-2 flex items-center h-full min-w-0 overflow-hidden" 
                           data-inline-edit
                         >
                           <InlineEditCell
@@ -503,10 +503,10 @@ export function IncidentListTable({
                         </div>
                       )}
                       
-                      {/* Level - plain text only, no pill, distinct column */}
+                      {/* Level - DISTINCT column, plain text, min-w-0 */}
                       {isColumnVisible('level') && (
                         <div 
-                          className="px-2 flex items-center h-full overflow-hidden" 
+                          className="px-2 flex items-center h-full min-w-0 overflow-hidden" 
                           data-inline-edit
                         >
                           <InlineEditCell
@@ -515,7 +515,7 @@ export function IncidentListTable({
                             options={SUPPORT_OPTIONS}
                             displayValue={
                               incident.support_level ? (
-                                <span className={cn(CELL_MUTED, "tabular-nums")}>{incident.support_level}</span>
+                                <span className={cn(CELL_MUTED, "tabular-nums truncate")}>{incident.support_level}</span>
                               ) : (
                                 <span className={cn(CELL_MUTED, "opacity-50")}>—</span>
                               )
@@ -527,10 +527,10 @@ export function IncidentListTable({
                         </div>
                       )}
                       
-                      {/* Status - compact pill */}
+                      {/* Status - compact pill, min-w-0 */}
                       {isColumnVisible('status') && (
                         <div 
-                          className="px-2 flex items-center h-full overflow-hidden" 
+                          className="px-2 flex items-center h-full min-w-0 overflow-hidden" 
                           data-inline-edit
                         >
                           <InlineEditCell
@@ -545,10 +545,10 @@ export function IncidentListTable({
                         </div>
                       )}
                       
-                      {/* Assignee - avatar + name inline */}
+                      {/* Assignee - avatar + name inline, min-w-0 */}
                       {isColumnVisible('assignee') && (
                         <div 
-                          className="px-2 flex items-center h-full overflow-hidden"
+                          className="px-2 flex items-center h-full min-w-0 overflow-hidden"
                           data-inline-edit
                         >
                           <InlineUserPicker
@@ -560,16 +560,16 @@ export function IncidentListTable({
                         </div>
                       )}
                       
-                      {/* Age - numeric text */}
+                      {/* Age - numeric text, min-w-0 */}
                       {isColumnVisible('age') && (
-                        <div className="px-2 flex items-center h-full overflow-hidden">
-                          <span className={cn(CELL_MUTED, "tabular-nums text-[11px]")}>{age}</span>
+                        <div className="px-2 flex items-center h-full min-w-0 overflow-hidden">
+                          <span className={cn(CELL_MUTED, "tabular-nums text-[11px] truncate")}>{age}</span>
                         </div>
                       )}
                       
-                      {/* SLA - subtle text color only */}
+                      {/* SLA - subtle text, min-w-0 */}
                       {isColumnVisible('sla') && (
-                        <div className="px-2 flex items-center h-full overflow-hidden">
+                        <div className="px-2 flex items-center h-full min-w-0 overflow-hidden">
                           {slaStatus ? (
                             <SlaPill status={slaStatus} />
                           ) : (
@@ -578,10 +578,10 @@ export function IncidentListTable({
                         </div>
                       )}
 
-                      {/* Release - plain text */}
+                      {/* Release - plain text, min-w-0 */}
                       {isColumnVisible('releaseVersion') && (
                         <div 
-                          className="px-2 flex items-center h-full overflow-hidden"
+                          className="px-2 flex items-center h-full min-w-0 overflow-hidden"
                           data-inline-edit
                         >
                           <InlineReleasePicker
@@ -593,10 +593,10 @@ export function IncidentListTable({
                         </div>
                       )}
 
-                      {/* Major - small badge or "—" */}
+                      {/* Major - small badge, min-w-0 */}
                       {isColumnVisible('major') && (
                         <div 
-                          className="px-2 flex items-center h-full overflow-hidden" 
+                          className="px-2 flex items-center h-full min-w-0 overflow-hidden" 
                           data-inline-edit
                         >
                           <InlineEditCell
@@ -610,9 +610,9 @@ export function IncidentListTable({
                         </div>
                       )}
 
-                      {/* Committee - text only */}
+                      {/* Committee - text only, min-w-0 */}
                       {isColumnVisible('committee') && (
-                        <div className="px-2 flex items-center h-full overflow-hidden">
+                        <div className="px-2 flex items-center h-full min-w-0 overflow-hidden">
                           <CommitteePill status={committeeStatus.status} label={committeeStatus.label} />
                         </div>
                       )}

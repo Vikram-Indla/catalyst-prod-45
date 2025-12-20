@@ -73,13 +73,16 @@ export function ResizableHeader({
   return (
     <div
       className={cn(
-        "relative select-none flex items-center h-full overflow-hidden",
+        // CRITICAL: min-w-0 prevents grid cell from expanding beyond its allocated width
+        "relative select-none flex items-center h-full min-w-0 overflow-hidden",
         className
       )}
+      // Explicit width - NO flex-1, NO isFlexible behavior
+      style={{ width: `${width}px` }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => !isResizing && setIsHovered(false)}
     >
-      {children}
+      <span className="truncate">{children}</span>
       
       {/* Resize handle - 8px hit zone, subtle visual */}
       <div
