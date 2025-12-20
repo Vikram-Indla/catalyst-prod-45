@@ -1,13 +1,12 @@
 /**
- * Incident Kanban Column - Displays incidents in a single status column
- * Supports collapse/expand with persisted state
+ * Incident Kanban Column - Optimized for performance
+ * Uses virtualization for large card counts
  */
 
 import { memo, useCallback } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { KanbanCard } from './KanbanCard';
+import { VirtualizedCardList } from './VirtualizedCardList';
 import { STATUS_CONFIG, getColumnStats } from '../types';
 import type { Incident, IncidentStatus } from '@/types/incident';
 
@@ -86,7 +85,7 @@ export const KanbanColumn = memo(function KanbanColumn({
     );
   }
 
-  // Expanded view
+  // Expanded view with virtualized cards
   return (
     <div
       className={cn(
@@ -132,26 +131,15 @@ export const KanbanColumn = memo(function KanbanColumn({
         </div>
       </div>
 
-      {/* Card List */}
-      <ScrollArea className="flex-1 max-h-[calc(100vh-320px)]">
-        <div className="p-2 space-y-2">
-          {incidents.length === 0 ? (
-            <div className="py-8 text-center text-xs text-muted-foreground/60">
-              No incidents
-            </div>
-          ) : (
-            incidents.map(incident => (
-              <KanbanCard
-                key={incident.id}
-                incident={incident}
-                isDragging={draggingId === incident.id}
-                onDragStart={onDragStart}
-                onDragEnd={onDragEnd}
-              />
-            ))
-          )}
-        </div>
-      </ScrollArea>
+      {/* Virtualized Card List */}
+      <VirtualizedCardList
+        incidents={incidents}
+        draggingId={draggingId}
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
+        maxHeight={window.innerHeight - 320}
+        emptyMessage="No incidents"
+      />
     </div>
   );
 });

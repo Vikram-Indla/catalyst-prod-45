@@ -1,13 +1,12 @@
 /**
- * Incident Kanban Swimlane - Clean, collapsible lane for grouped incidents
- * Sticky headers with lane name + counts, no visual clutter
+ * Incident Kanban Swimlane - Optimized with virtualization
+ * Clean, collapsible lanes with smooth scrolling
  */
 
 import { memo, useState, useMemo, useCallback } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { KanbanCard } from './KanbanCard';
+import { VirtualizedCardList } from './VirtualizedCardList';
 import { 
   STATUS_CONFIG, 
   getColumnStats,
@@ -37,7 +36,7 @@ export const KanbanSwimlane = memo(function KanbanSwimlane({
   // Calculate lane-level stats
   const laneStats = useMemo(() => getColumnStats(group.incidents), [group.incidents]);
 
-  // Group incidents by status
+  // Group incidents by status - memoized
   const incidentsByStatus = useMemo(() => {
     const grouped: Record<IncidentStatus, Incident[]> = {} as Record<IncidentStatus, Incident[]>;
     visibleStatuses.forEach(status => {
@@ -64,6 +63,10 @@ export const KanbanSwimlane = memo(function KanbanSwimlane({
     }
   }, [onDrop]);
 
+  const handleToggle = useCallback(() => {
+    setIsExpanded(prev => !prev);
+  }, []);
+
   // Skip empty lanes
   if (group.incidents.length === 0) {
     return null;
@@ -73,7 +76,7 @@ export const KanbanSwimlane = memo(function KanbanSwimlane({
     <div className="border-b border-border/40 last:border-b-0">
       {/* Swimlane Header - Sticky, clean */}
       <button
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={handleToggle}
         className={cn(
           "w-full flex items-center gap-2 px-4 sm:px-6 py-2 bg-muted/20",
           "hover:bg-muted/30 transition-colors sticky top-0 z-10 text-left"
@@ -122,51 +125,79 @@ export const KanbanSwimlane = memo(function KanbanSwimlane({
               const columnStats = getColumnStats(incidents);
 
               return (
-                <div
+                <SwimlaneColumn
                   key={status}
-                  className={cn(
-                    "flex flex-col min-w-[240px] max-w-[260px] flex-shrink-0",
-                    "bg-muted/10 rounded border border-border/30"
-                  )}
+                  status={status}
+                  config={config}
+                  incidents={incidents}
+                  columnStats={columnStats}
+                  draggingId={draggingId}
+                  onDragStart={onDragStart}
+                  onDragEnd={onDragEnd}
                   onDragOver={handleDragOver}
                   onDrop={handleDrop(status)}
-                >
-                  {/* Mini Column Header */}
-                  <div className="flex items-center gap-1.5 px-2 py-1.5 border-b border-border/30 bg-muted/20">
-                    <span className="text-xs font-medium text-muted-foreground flex-1 truncate">
-                      {config.label}
-                    </span>
-                    <span className="text-[10px] text-muted-foreground/60">
-                      {columnStats.total}
-                    </span>
-                  </div>
-
-                  {/* Cards */}
-                  <ScrollArea className="max-h-[280px]">
-                    <div className="p-1.5 space-y-1">
-                      {incidents.length === 0 ? (
-                        <div className="py-6 text-center text-[10px] text-muted-foreground/40">
-                          —
-                        </div>
-                      ) : (
-                        incidents.map(incident => (
-                          <KanbanCard
-                            key={incident.id}
-                            incident={incident}
-                            isDragging={draggingId === incident.id}
-                            onDragStart={onDragStart}
-                            onDragEnd={onDragEnd}
-                          />
-                        ))
-                      )}
-                    </div>
-                  </ScrollArea>
-                </div>
+                />
               );
             })}
           </div>
         </div>
       )}
+    </div>
+  );
+});
+
+// Memoized column within swimlane to prevent rerenders
+interface SwimlaneColumnProps {
+  status: IncidentStatus;
+  config: { label: string; color: string };
+  incidents: Incident[];
+  columnStats: { total: number; atRisk: number; breached: number };
+  draggingId: string | null;
+  onDragStart: (e: React.DragEvent, incident: Incident) => void;
+  onDragEnd: () => void;
+  onDragOver: (e: React.DragEvent) => void;
+  onDrop: (e: React.DragEvent) => void;
+}
+
+const SwimlaneColumn = memo(function SwimlaneColumn({
+  status,
+  config,
+  incidents,
+  columnStats,
+  draggingId,
+  onDragStart,
+  onDragEnd,
+  onDragOver,
+  onDrop,
+}: SwimlaneColumnProps) {
+  return (
+    <div
+      className={cn(
+        "flex flex-col min-w-[240px] max-w-[260px] flex-shrink-0",
+        "bg-muted/10 rounded border border-border/30"
+      )}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
+    >
+      {/* Mini Column Header */}
+      <div className="flex items-center gap-1.5 px-2 py-1.5 border-b border-border/30 bg-muted/20">
+        <span className="text-xs font-medium text-muted-foreground flex-1 truncate">
+          {config.label}
+        </span>
+        <span className="text-[10px] text-muted-foreground/60">
+          {columnStats.total}
+        </span>
+      </div>
+
+      {/* Virtualized Cards */}
+      <VirtualizedCardList
+        incidents={incidents}
+        draggingId={draggingId}
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
+        maxHeight={280}
+        emptyMessage="—"
+      />
     </div>
   );
 });
