@@ -6,48 +6,22 @@
 
 import React, { useState, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { ChevronRight, ChevronDown, Layers, BookOpen, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 import { useWorkItemsHierarchy } from '@/modules/project-work-hub/hooks/useWorkItems';
-import { WorkItemWithChildren } from '@/modules/project-work-hub/types';
-import { StoryDetailsPanel } from '@/components/items/stories/StoryDetailsPanel';
-import { Badge } from '@/components/ui/badge';
+import { WorkItemWithChildren, WorkItem } from '@/modules/project-work-hub/types';
+import { WorkItemDetailsDrawer } from '@/modules/project-work-hub/components/WorkItemDetailsDrawer';
+import { StatusLozenge } from '@/modules/project-work-hub/components/StatusLozenge';
+import { WorkTypeIcon } from '@/modules/project-work-hub/components/WorkTypeIcon';
 import { cn } from '@/lib/utils';
-
-// Status color mapping
-const getStatusColor = (status: string): string => {
-  const statusLower = status?.toLowerCase() || '';
-  if (statusLower === 'done' || statusLower === 'completed' || statusLower === 'closed') {
-    return 'bg-success';
-  }
-  if (statusLower.includes('progress') || statusLower === 'implementing' || statusLower === 'in_development' || statusLower === 'in_qa') {
-    return 'bg-primary';
-  }
-  if (statusLower === 'blocked') {
-    return 'bg-destructive';
-  }
-  return 'bg-muted-foreground';
-};
-
-const getStatusBadgeVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
-  const statusLower = status?.toLowerCase() || '';
-  if (statusLower === 'done' || statusLower === 'completed' || statusLower === 'accepted') {
-    return 'default';
-  }
-  if (statusLower === 'blocked') {
-    return 'destructive';
-  }
-  if (statusLower.includes('progress') || statusLower === 'implementing') {
-    return 'outline';
-  }
-  return 'secondary';
-};
 
 interface FeatureRowProps {
   feature: WorkItemWithChildren;
   isExpanded: boolean;
   onToggle: () => void;
   onFeatureClick: () => void;
-  onStoryClick: (story: WorkItemWithChildren) => void;
+  onStoryClick: (story: WorkItem) => void;
 }
 
 function FeatureRow({ feature, isExpanded, onToggle, onFeatureClick, onStoryClick }: FeatureRowProps) {
@@ -85,17 +59,14 @@ function FeatureRow({ feature, isExpanded, onToggle, onFeatureClick, onStoryClic
 
         {/* Feature Info */}
         <div className="flex items-center gap-3 min-w-0">
-          <div className={cn("w-2.5 h-2.5 rounded-full flex-shrink-0", getStatusColor(feature.status))} />
-          <Layers className="h-4 w-4 text-workitem-feature flex-shrink-0" />
+          <WorkTypeIcon type="FEATURE" size="small" />
           <span className="text-xs font-mono text-muted-foreground flex-shrink-0">{feature.key}</span>
           <span className="text-sm font-medium text-foreground truncate">{feature.summary}</span>
         </div>
 
         {/* Status */}
         <div>
-          <Badge variant={getStatusBadgeVariant(feature.status)} className="text-xs">
-            {feature.status?.replace(/_/g, ' ') || 'Open'}
-          </Badge>
+          <StatusLozenge status={feature.status} statusCategory={feature.statusCategory} />
         </div>
 
         {/* Story Count */}
@@ -121,17 +92,14 @@ function FeatureRow({ feature, isExpanded, onToggle, onFeatureClick, onStoryClic
 
                 {/* Story Info */}
                 <div className="flex items-center gap-3 min-w-0 pl-4">
-                  <div className={cn("w-2 h-2 rounded-full flex-shrink-0", getStatusColor(story.status))} />
-                  <BookOpen className="h-3.5 w-3.5 text-workitem-story flex-shrink-0" />
+                  <WorkTypeIcon type="STORY" size="small" />
                   <span className="text-xs font-mono text-muted-foreground flex-shrink-0">{story.key}</span>
                   <span className="text-sm text-foreground truncate">{story.summary}</span>
                 </div>
 
                 {/* Status */}
                 <div>
-                  <Badge variant={getStatusBadgeVariant(story.status)} className="text-xs">
-                    {story.status?.replace(/_/g, ' ') || 'Backlog'}
-                  </Badge>
+                  <StatusLozenge status={story.status} statusCategory={story.statusCategory} />
                 </div>
 
                 {/* Points placeholder */}
@@ -155,7 +123,23 @@ export function ProjectBacklogPage() {
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
   const [expandedFeatures, setExpandedFeatures] = useState<Set<string>>(new Set());
-  const [selectedStory, setSelectedStory] = useState<WorkItemWithChildren | null>(null);
+  const [selectedItem, setSelectedItem] = useState<WorkItem | null>(null);
+
+  // Fetch project name for breadcrumb
+  const { data: project } = useQuery({
+    queryKey: ['project', projectId],
+    queryFn: async () => {
+      if (!projectId) return null;
+      const { data, error } = await supabase
+        .from('projects')
+        .select('id, name, key')
+        .eq('id', projectId)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!projectId,
+  });
 
   const { data: features, isLoading } = useWorkItemsHierarchy(projectId || '');
 
@@ -183,9 +167,8 @@ export function ProjectBacklogPage() {
     navigate(`/projects/${projectId}/features/${featureId}`);
   };
 
-  const handleStoryClick = (story: WorkItemWithChildren) => {
-    // Map WorkItemWithChildren to expected story format
-    setSelectedStory(story);
+  const handleStoryClick = (story: WorkItem) => {
+    setSelectedItem(story);
   };
 
   const totalStories = useMemo(() => {
@@ -200,7 +183,9 @@ export function ProjectBacklogPage() {
         <nav className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
           <Link to="/projects" className="hover:text-foreground transition-colors">Projects</Link>
           <ChevronRight className="h-3 w-3" />
-          <Link to={`/projects/${projectId}/work`} className="hover:text-foreground transition-colors">Project Room</Link>
+          <Link to={`/projects/${projectId}/work`} className="hover:text-foreground transition-colors">
+            {project?.name || 'Project Room'}
+          </Link>
         </nav>
 
         <h1 className="text-2xl font-medium text-foreground">Backlog</h1>
@@ -257,19 +242,11 @@ export function ProjectBacklogPage() {
         )}
       </div>
 
-      {/* Story Drawer */}
-      <StoryDetailsPanel
-        story={selectedStory ? {
-          id: selectedStory.id,
-          story_key: selectedStory.key,
-          name: selectedStory.summary,
-          title: selectedStory.summary,
-          status: selectedStory.status,
-          description: selectedStory.description,
-          priority: selectedStory.priority,
-        } : null}
-        open={!!selectedStory}
-        onClose={() => setSelectedStory(null)}
+      {/* Work Item Details Drawer - same as Project Room */}
+      <WorkItemDetailsDrawer
+        item={selectedItem}
+        isOpen={!!selectedItem}
+        onClose={() => setSelectedItem(null)}
       />
     </div>
   );
