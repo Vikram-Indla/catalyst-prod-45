@@ -52,8 +52,8 @@ export const ProjectSelectorDropdown = React.memo(function ProjectSelectorDropdo
       setProgramName(project.programName);
     }
     
-    // Navigate to Project Backlog as default
-    navigate(`/project/${project.id}/backlog`);
+    // Navigate to Project Work Hub as default landing
+    navigate(`/projects/${project.id}/work`);
     onClose();
   }, [navigate, onClose, setProgramId, setProgramName, setProjectId, setProjectName]);
 

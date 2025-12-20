@@ -90,7 +90,7 @@ export function getProgramLandingRoute(programId: string): string {
 }
 
 export function getProjectLandingRoute(projectId: string): string {
-  return `/programs/${projectId}/backlog`;
+  return `/projects/${projectId}/work`;
 }
 
 /**
