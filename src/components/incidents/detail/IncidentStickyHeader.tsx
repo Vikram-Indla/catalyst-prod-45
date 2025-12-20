@@ -469,31 +469,6 @@ export function IncidentStickyHeader({
               </Badge>
             </div>
 
-            {/* Release Version Dropdown (if applicable) - Project moved to right panel */}
-            {availableReleaseVersions.length > 0 && (
-              <div className="flex items-center gap-1.5">
-                <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Release</span>
-                <Select 
-                  value={releaseVersionId || 'none'} 
-                  onValueChange={(v) => onReleaseVersionChange(v === 'none' ? '' : v)}
-                  disabled={isConverted}
-                >
-                  <SelectTrigger className="h-7 w-auto min-w-[80px] text-xs bg-background">
-                    <SelectValue placeholder="—" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-popover">
-                    <SelectItem value="none" className="text-xs text-muted-foreground">
-                      None
-                    </SelectItem>
-                    {availableReleaseVersions.map(version => (
-                      <SelectItem key={version.id} value={version.id} className="text-xs">
-                        {version.version}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
           </div>
         </div>
       </header>
