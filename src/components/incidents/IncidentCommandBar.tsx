@@ -5,11 +5,11 @@
  */
 
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Plus, List, BarChart3, Lightbulb } from 'lucide-react';
+import { Plus, List, BarChart3, Lightbulb, Kanban } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-type ViewMode = 'list' | 'analytics' | 'insights';
+type ViewMode = 'list' | 'analytics' | 'insights' | 'kanban';
 
 interface IncidentCommandBarProps {
   onCreateClick: () => void;
@@ -21,6 +21,7 @@ const VIEW_MODES: { value: ViewMode; label: string; icon: React.ElementType; pat
   { value: 'list', label: 'List', icon: List, path: '/release/incidents' },
   { value: 'analytics', label: 'Analytics', icon: BarChart3, path: '/release/incidents/analytics' },
   { value: 'insights', label: 'Insights', icon: Lightbulb, path: '/release/incidents/insights' },
+  { value: 'kanban', label: 'Kanban', icon: Kanban, path: '/release/incidents/kanban' },
 ];
 
 export function IncidentCommandBar({ onCreateClick, additionalActions }: IncidentCommandBarProps) {
@@ -29,6 +30,7 @@ export function IncidentCommandBar({ onCreateClick, additionalActions }: Inciden
   
   // Determine current mode from URL
   const getCurrentMode = (): ViewMode => {
+    if (location.pathname.includes('/kanban')) return 'kanban';
     if (location.pathname.includes('/insights')) return 'insights';
     if (location.pathname.includes('/analytics')) return 'analytics';
     return 'list';

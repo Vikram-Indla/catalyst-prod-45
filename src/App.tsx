@@ -241,6 +241,7 @@ import IncidentCommandCenter from "./pages/release/IncidentCommandCenter";
 // Incident Analytics
 const IncidentAnalyticsPage = lazy(() => import("./modules/incidents/analytics/pages/IncidentAnalyticsPage"));
 const IncidentInsightsPage = lazy(() => import("./modules/incidents/analytics/pages/IncidentInsightsPage"));
+const IncidentKanbanPage = lazy(() => import("./modules/incidents/analytics/pages/IncidentKanbanPage"));
 
 const queryClient = new QueryClient();
 
@@ -633,6 +634,7 @@ const App = () => (
               <Route path="/release/incidents/dashboard" element={<IncidentsDashboard />} />
               <Route path="/release/incidents/analytics" element={<Suspense fallback={null}><IncidentAnalyticsPage /></Suspense>} />
               <Route path="/release/incidents/insights" element={<Suspense fallback={null}><IncidentInsightsPage /></Suspense>} />
+              <Route path="/release/incidents/kanban" element={<Suspense fallback={null}><IncidentKanbanPage /></Suspense>} />
               <Route path="/release/incidents/create" element={<CreateIncident />} />
               <Route path="/release/incidents/reports" element={<IncidentReports />} />
               <Route path="/release/incidents/:incidentId" element={<IncidentRoomDetail />} />
