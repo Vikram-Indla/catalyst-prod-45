@@ -27,11 +27,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import { 
-  STATUS_CONFIG, 
-  SEVERITY_CONFIG,
-  PRIORITY_CONFIG
-} from '@/components/incidents/badges/IncidentBadges';
+import { STATUS_CONFIG } from '@/components/incidents/badges/IncidentBadges';
 import { getAllowedTransitions } from '@/utils/incidentLifecycle';
 import type { 
   IncidentStatus, 
@@ -89,50 +85,46 @@ interface IncidentStickyHeaderProps {
   isWatchPending: boolean;
 }
 
-export function IncidentStickyHeader({
-  incidentKey,
-  title,
-  status,
-  severity,
-  priority,
-  supportLevel,
-  assignee,
-  reporter,
-  projectId,
-  projectName,
-  releaseVersionId,
-  releaseVersionName,
-  createdAt,
-  updatedAt,
-  lastUpdatedBy,
-  committeeApproverCount,
-  isConverted,
-  isWatching,
-  watcherCount,
-  canConvert,
-  conversionReason,
-  availableProjects,
-  availableUsers,
-  availableReleaseVersions,
-  onTitleChange,
-  onStatusChange,
-  onSeverityChange,
-  onAssigneeChange,
-  onReporterChange,
-  onProjectChange,
-  onReleaseVersionChange,
-  onToggleWatch,
-  onOpenCommittee,
-  onOpenConvertDialog,
-  isSubmitting,
-  isWatchPending,
-}: IncidentStickyHeaderProps) {
+export function IncidentStickyHeader(props: IncidentStickyHeaderProps) {
+  const {
+    incidentKey,
+    title,
+    status,
+    supportLevel,
+    assignee,
+    reporter,
+    projectId,
+    projectName,
+    releaseVersionId,
+    releaseVersionName,
+    createdAt,
+    updatedAt,
+    lastUpdatedBy,
+    committeeApproverCount,
+    isConverted,
+    isWatching,
+    watcherCount,
+    canConvert,
+    conversionReason,
+    availableProjects,
+    availableUsers,
+    availableReleaseVersions,
+    onTitleChange,
+    onStatusChange,
+    onAssigneeChange,
+    onReporterChange,
+    onProjectChange,
+    onReleaseVersionChange,
+    onToggleWatch,
+    onOpenCommittee,
+    onOpenConvertDialog,
+    isSubmitting,
+    isWatchPending,
+  } = props;
+
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editedTitle, setEditedTitle] = useState(title);
-  
-  const statusConfig = STATUS_CONFIG[status];
-  const severityConfig = SEVERITY_CONFIG[severity];
-  const priorityConfig = priority ? PRIORITY_CONFIG[priority] : null;
+
   const allowedTransitions = getAllowedTransitions(status, supportLevel, undefined);
 
   const handleSaveTitle = () => {
@@ -434,40 +426,6 @@ export function IncidentStickyHeader({
               </DropdownMenu>
             </div>
 
-            {/* Severity Dropdown */}
-            <div className="flex items-center gap-1.5">
-              <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Severity</span>
-              <Select 
-                value={severity} 
-                onValueChange={(v) => onSeverityChange(v as SeverityLevel)}
-                disabled={isConverted}
-              >
-                <SelectTrigger className={cn('h-7 w-auto min-w-[80px] text-xs font-medium', severityConfig.className)}>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-popover">
-                  {Object.entries(SEVERITY_CONFIG).map(([value, config]) => (
-                    <SelectItem key={value} value={value} className="text-xs">
-                      {config.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Priority (derived badge, read-only) */}
-            <div className="flex items-center gap-1.5">
-              <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Priority</span>
-              <Badge 
-                variant="outline" 
-                className={cn(
-                  'h-7 px-2 text-xs font-medium',
-                  priorityConfig?.className || 'bg-muted/50'
-                )}
-              >
-                {priority || 'N/A'}
-              </Badge>
-            </div>
 
           </div>
         </div>
