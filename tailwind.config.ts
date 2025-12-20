@@ -188,6 +188,25 @@ export default {
             pale: "rgba(198, 156, 109, 0.08)",
           },
         },
+        
+        /* Status colors - for bg-status-danger, text-status-success, etc. */
+        status: {
+          success: {
+            DEFAULT: "var(--status-success)",
+            bg: "var(--status-success-bg)",
+            border: "var(--status-success-border)",
+          },
+          warning: {
+            DEFAULT: "var(--status-warning)",
+            bg: "var(--status-warning-bg)",
+            border: "var(--status-warning-border)",
+          },
+          danger: {
+            DEFAULT: "var(--status-danger)",
+            bg: "var(--status-danger-bg)",
+            border: "var(--status-danger-border)",
+          },
+        },
       },
       
       fontFamily: {
