@@ -59,7 +59,7 @@ import { toast } from 'sonner';
 // Import drawer tabs
 import { EpicDetailsViewTab } from './drawer-tabs/EpicDetailsViewTab';
 import { TechnicalScoreViewTab } from './drawer-tabs/TechnicalScoreViewTab';
-import { EpicBudgetViewTab } from './drawer-tabs/EpicBudgetViewTab';
+
 import { EpicRisksViewTab } from './drawer-tabs/EpicRisksViewTab';
 import { EpicLinksViewTab } from './drawer-tabs/EpicLinksViewTab';
 import { EpicFeaturesViewTab } from './drawer-tabs/EpicFeaturesViewTab';
@@ -161,7 +161,6 @@ async function logFieldChanges(
 const EPIC_TABS = [
   { value: 'epic-details', label: 'Epic Details' },
   { value: 'technical-score', label: 'Technical Score' },
-  { value: 'budget', label: 'Budget' },
   { value: 'risks', label: 'Risks' },
   { value: 'links', label: 'Links' },
   { value: 'features', label: 'Features' },
@@ -590,9 +589,6 @@ export function EpicDetailsPanel({ epic: initialEpic, open, onClose }: EpicDetai
                   epicId={epic?.id}
                   onDirtyChange={handleDirtyChange}
                 />
-              </TabsContent>
-              <TabsContent value="budget" className="m-0 focus-visible:outline-none flex-1 p-4 md:p-5 pb-6">
-                <EpicBudgetViewTab data={formData} onChange={handleFieldChange} />
               </TabsContent>
               <TabsContent value="risks" className="m-0 focus-visible:outline-none flex-1 p-4 md:p-5 pb-6">
                 {epic?.id && <EpicRisksViewTab epicId={epic.id} />}
