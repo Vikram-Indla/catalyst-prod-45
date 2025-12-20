@@ -196,7 +196,6 @@ export function useCommitteeQueue(options: UseCommitteeQueueOptions = {}) {
           release_version:release_versions(*),
           reporter:incident_user_profiles!incidents_reporter_id_fkey(*),
           assignee:incident_user_profiles!incidents_assignee_id_fkey(*),
-          sla:incident_sla!incident_sla_incident_id_fkey(*),
           committee:incident_committees!incidents_committee_id_fkey(
             *,
             members:committee_members(
