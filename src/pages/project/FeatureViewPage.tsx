@@ -262,6 +262,7 @@ export default function FeatureViewPage() {
           <FeatureChildStories 
             stories={stories}
             featureId={feature.id}
+            projectId={projectId || ''}
             totalCount={progress?.totalStories || 0}
           />
           
