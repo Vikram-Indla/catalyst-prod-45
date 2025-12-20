@@ -530,8 +530,26 @@ function formatAge(hours: number): string {
   return `${days}d`;
 }
 
+const PAGE_SIZE_OPTIONS = [10, 25, 50];
+
 function TopRiskIncidents({ incidents, onRowClick }: TopRiskIncidentsProps) {
-  const topIncidents = incidents.slice(0, 10);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  const totalItems = incidents.length;
+  const totalPages = Math.ceil(totalItems / pageSize);
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = Math.min(startIndex + pageSize, totalItems);
+  const paginatedIncidents = incidents.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
+  };
+
+  const handlePageSizeChange = (size: number) => {
+    setPageSize(size);
+    setCurrentPage(1);
+  };
 
   return (
     <section>
@@ -540,9 +558,6 @@ function TopRiskIncidents({ incidents, onRowClick }: TopRiskIncidentsProps) {
         <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
           Top Risk Incidents
         </h2>
-        <span className="ml-auto text-sm text-muted-foreground tabular-nums">
-          {topIncidents.length} of {incidents.length}
-        </span>
       </div>
 
       <div className="border border-border rounded-lg bg-card overflow-hidden">
@@ -573,14 +588,14 @@ function TopRiskIncidents({ incidents, onRowClick }: TopRiskIncidentsProps) {
             </tr>
           </thead>
           <tbody>
-            {topIncidents.length === 0 ? (
+            {paginatedIncidents.length === 0 ? (
               <tr>
                 <td colSpan={7} className="px-4 py-12 text-center text-muted-foreground text-sm">
                   No high-risk incidents at this time
                 </td>
               </tr>
             ) : (
-              topIncidents.map((incident) => {
+              paginatedIncidents.map((incident) => {
                 const slaConfig = SLA_STATE_CONFIG[incident.sla_state.state] || SLA_STATE_CONFIG.n_a;
 
                 return (
@@ -640,6 +655,85 @@ function TopRiskIncidents({ incidents, onRowClick }: TopRiskIncidentsProps) {
             )}
           </tbody>
         </table>
+
+        {/* Enterprise Pagination Footer */}
+        {totalItems > 0 && (
+          <div className="flex items-center justify-between px-4 py-3 border-t border-border bg-muted/30">
+            {/* Left: Page size selector */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Rows per page:</span>
+              <select
+                value={pageSize}
+                onChange={(e) => handlePageSizeChange(Number(e.target.value))}
+                className="h-8 px-2 text-sm border border-border rounded bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+              >
+                {PAGE_SIZE_OPTIONS.map((size) => (
+                  <option key={size} value={size}>{size}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Center: Page info */}
+            <div className="text-sm text-muted-foreground tabular-nums">
+              {startIndex + 1}–{endIndex} of {totalItems}
+            </div>
+
+            {/* Right: Navigation controls */}
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handlePageChange(1)}
+                disabled={currentPage === 1}
+                className="h-8 w-8 p-0"
+              >
+                <span className="sr-only">First page</span>
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                </svg>
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="h-8 w-8 p-0"
+              >
+                <span className="sr-only">Previous page</span>
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </Button>
+              <span className="px-2 text-sm text-foreground tabular-nums">
+                Page {currentPage} of {totalPages || 1}
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage >= totalPages}
+                className="h-8 w-8 p-0"
+              >
+                <span className="sr-only">Next page</span>
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handlePageChange(totalPages)}
+                disabled={currentPage >= totalPages}
+                className="h-8 w-8 p-0"
+              >
+                <span className="sr-only">Last page</span>
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                </svg>
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );
