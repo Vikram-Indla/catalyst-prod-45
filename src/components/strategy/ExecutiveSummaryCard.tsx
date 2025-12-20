@@ -256,8 +256,8 @@ export function ExecutiveSummaryCard({ snapshotId }: ExecutiveSummaryCardProps) 
             onClick={() => navigate('/enterprise/okr-hub')}
             isLoading={okrLoading}
             accentColor={progressColor}
-            iconBgColor="rgba(92, 124, 92, 0.1)"
-            icon={<BarChart3 size={16} style={{ color: '#5C7C5C' }} />}
+            iconBgColor="var(--status-success-bg)"
+            icon={<BarChart3 size={16} style={{ color: 'var(--status-success)' }} />}
             showProgress={hasObjectives}
             progressValue={overallProgress ?? 0}
           />

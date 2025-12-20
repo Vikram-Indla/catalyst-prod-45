@@ -191,8 +191,8 @@ export function KanbanCard({ ticket, onClick, compactMode, teamMembers = [] }: K
           <span 
             className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-medium"
             style={{
-              backgroundColor: 'rgba(92, 124, 92, 0.1)',
-              color: 'hsl(var(--secondary-green))',
+              backgroundColor: 'var(--status-success-bg)',
+              color: 'var(--status-success)',
             }}
           >
             <KanbanIcons.User />

@@ -34,30 +34,30 @@ import {
 const ROW_HEIGHT = 80;
 const LEFT_COLUMN_WIDTH = 340;
 
-// Status configuration per MD spec
+// Status configuration per MD spec - using CSS variables
 const statusConfig = {
   ontrack: {
     label: 'On Track',
-    bgClass: 'bg-[rgba(92,124,92,0.1)] dark:bg-[rgba(92,124,92,0.15)]',
-    textClass: 'text-[#5C7C5C] dark:text-[#7DA37D]',
-    borderClass: 'border-l-[#5C7C5C]',
-    dotClass: 'bg-[#5C7C5C] dark:bg-[#7DA37D]',
+    bgClass: 'bg-[var(--status-success-bg)]',
+    textClass: 'text-[var(--status-success)]',
+    borderClass: 'border-l-[var(--status-success)]',
+    dotClass: 'bg-[var(--status-success)]',
     icon: CheckCircle,
   },
   atrisk: {
     label: 'At Risk',
-    bgClass: 'bg-[rgba(198,156,109,0.1)] dark:bg-[rgba(198,156,109,0.15)]',
-    textClass: 'text-[#C69C6D] dark:text-[#D4B896]',
-    borderClass: 'border-l-[#C69C6D]',
-    dotClass: 'bg-[#C69C6D] dark:bg-[#D4B896]',
+    bgClass: 'bg-[var(--status-info-bg)]',
+    textClass: 'text-[var(--status-info)]',
+    borderClass: 'border-l-[var(--status-info)]',
+    dotClass: 'bg-[var(--status-info)]',
     icon: AlertTriangle,
   },
   delayed: {
     label: 'Delayed',
-    bgClass: 'bg-[rgba(184,92,92,0.1)] dark:bg-[rgba(184,92,92,0.15)]',
-    textClass: 'text-[#B85C5C] dark:text-[#D88888]',
-    borderClass: 'border-l-[#B85C5C]',
-    dotClass: 'bg-[#B85C5C] dark:bg-[#D88888]',
+    bgClass: 'bg-destructive/10',
+    textClass: 'text-destructive',
+    borderClass: 'border-l-destructive',
+    dotClass: 'bg-destructive',
     icon: XCircle,
   },
 };

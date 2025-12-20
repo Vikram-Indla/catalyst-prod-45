@@ -173,7 +173,7 @@ export function FillGapModal({
                       <div className="text-right">
                         <div className={cn(
                           "text-sm font-semibold",
-                          resource.availableCapacity >= 50 ? "text-[#5c7c5c]" : "text-[#8b7355]"
+                          resource.availableCapacity >= 50 ? "text-[var(--status-success)]" : "text-[hsl(var(--secondary-bronze))]"
                         )}>
                           {resource.availableCapacity}% free
                         </div>

@@ -88,6 +88,30 @@
     --table-row-hover: rgba(0, 0, 0, 0.02);
     --selection-row-bg: rgba(198, 156, 109, 0.08);
     --selection-bar-accent: #c69c6d;
+    
+    /* Status/Semantic colors - Light Mode */
+    --status-success: #5c7c5c;
+    --status-success-light: #7da37d;
+    --status-success-bg: rgba(92, 124, 92, 0.1);
+    --status-success-bg-hover: rgba(92, 124, 92, 0.15);
+    --status-success-border: rgba(92, 124, 92, 0.3);
+    
+    --status-warning: #b8894d;
+    --status-warning-bg: rgba(184, 137, 77, 0.1);
+    --status-warning-border: rgba(184, 137, 77, 0.3);
+    
+    --status-info: #c69c6d;
+    --status-info-bg: rgba(198, 156, 109, 0.1);
+    --status-info-border: rgba(198, 156, 109, 0.3);
+    
+    --status-muted: #6b7280;
+    --status-muted-bg: rgba(107, 114, 128, 0.1);
+    --status-muted-border: rgba(107, 114, 128, 0.3);
+    
+    /* Secondary brand colors */
+    --secondary-green: 120 26% 42%;
+    --secondary-bronze: 30 24% 44%;
+    --secondary-champagne: 34 40% 71%;
   }
   
   [data-theme="dark"],
@@ -170,6 +194,30 @@
     --table-row-hover: rgba(255, 255, 255, 0.02);
     --selection-row-bg: rgba(212, 168, 85, 0.12);
     --selection-bar-accent: #d4a855;
+    
+    /* Status/Semantic colors - Dark Mode */
+    --status-success: #7da37d;
+    --status-success-light: #9dc49d;
+    --status-success-bg: rgba(92, 124, 92, 0.15);
+    --status-success-bg-hover: rgba(92, 124, 92, 0.2);
+    --status-success-border: rgba(92, 124, 92, 0.4);
+    
+    --status-warning: #d4b896;
+    --status-warning-bg: rgba(212, 184, 150, 0.15);
+    --status-warning-border: rgba(212, 184, 150, 0.4);
+    
+    --status-info: #d4a855;
+    --status-info-bg: rgba(212, 168, 85, 0.15);
+    --status-info-border: rgba(212, 168, 85, 0.4);
+    
+    --status-muted: #8b949e;
+    --status-muted-bg: rgba(139, 148, 158, 0.15);
+    --status-muted-border: rgba(139, 148, 158, 0.4);
+    
+    /* Secondary brand colors */
+    --secondary-green: 120 26% 55%;
+    --secondary-bronze: 30 24% 55%;
+    --secondary-champagne: 34 40% 80%;
   }
   
   * {
