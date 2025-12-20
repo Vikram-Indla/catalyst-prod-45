@@ -138,20 +138,20 @@ const OWNING_TEAM_DEFAULTS = [
   { id: 'business', name: 'Business' },
 ];
 
-// Severity badge colors
+// Severity badge colors - Branded enterprise tones
 const SEVERITY_COLORS: Record<SeverityLevel, string> = {
-  SEV1: 'bg-red-100 text-red-700 border-red-200',
-  SEV2: 'bg-orange-100 text-orange-700 border-orange-200',
-  SEV3: 'bg-amber-100 text-amber-700 border-amber-200',
-  SEV4: 'bg-yellow-100 text-yellow-700 border-yellow-200',
+  SEV1: 'bg-destructive/10 text-destructive border-destructive/30',
+  SEV2: 'bg-orange-500/10 text-orange-600 border-orange-500/30',
+  SEV3: 'bg-primary/10 text-primary border-primary/30',
+  SEV4: 'bg-muted text-muted-foreground border-border',
 };
 
-// Priority badge colors
+// Priority badge colors - Branded enterprise tones
 const PRIORITY_COLORS: Record<PriorityLevel, string> = {
-  P1: 'bg-red-100 text-red-700 border-red-200',
-  P2: 'bg-orange-100 text-orange-700 border-orange-200',
-  P3: 'bg-amber-100 text-amber-700 border-amber-200',
-  P4: 'bg-yellow-100 text-yellow-700 border-yellow-200',
+  P1: 'bg-destructive/10 text-destructive border-destructive/30',
+  P2: 'bg-orange-500/10 text-orange-600 border-orange-500/30',
+  P3: 'bg-primary/10 text-primary border-primary/30',
+  P4: 'bg-muted text-muted-foreground border-border',
 };
 
 function FieldRow({ 
@@ -321,7 +321,7 @@ export function IncidentContextRail({
           </FieldRow>
 
           {/* Severity */}
-          <FieldRow label="Severity" icon={AlertCircle}>
+          <FieldRow label="Severity">
             <Select 
               value={severity} 
               onValueChange={onSeverityChange}
@@ -343,7 +343,7 @@ export function IncidentContextRail({
           </FieldRow>
 
           {/* Priority */}
-          <FieldRow label="Priority" icon={Flag}>
+          <FieldRow label="Priority">
             <Select 
               value={priority || ''} 
               onValueChange={(v) => onPriorityChange?.(v)}
