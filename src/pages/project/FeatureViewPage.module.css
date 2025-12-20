@@ -245,14 +245,14 @@
 
 .epicCard:hover {
   background: hsl(var(--accent));
-  border-color: hsl(var(--secondary-green));
+  border-color: var(--secondary-green);
 }
 
 .epicIconBox {
   width: 20px;
   height: 20px;
   border-radius: 4px;
-  background: hsl(var(--secondary-green));
+  background: var(--secondary-green);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -261,7 +261,7 @@
 }
 
 .epicLinkText {
-  color: hsl(var(--secondary-green));
+  color: var(--secondary-green);
   font-size: var(--text-sm, 12px);
   font-weight: 500;
   text-decoration: none;
@@ -302,7 +302,7 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: hsl(var(--secondary-green));
+  background: var(--secondary-green);
   display: flex;
   align-items: center;
   justify-content: center;
