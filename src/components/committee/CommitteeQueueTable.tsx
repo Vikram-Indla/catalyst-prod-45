@@ -31,24 +31,71 @@ import type { CommitteeQueueItem, CommitteeDecisionStatus } from '@/hooks/useCom
 const PAGE_SIZE_OPTIONS = [25, 50, 100];
 const PAGE_SIZE_STORAGE_KEY = 'catalyst.committeeQueue.pageSize';
 
-// Typography tokens
-const HEADER_TEXT = 'text-[10px] font-semibold text-[var(--text-2)] uppercase tracking-wider';
-const CELL_TEXT = 'text-[12px] leading-4 text-[var(--text-1)]';
-const CELL_SECONDARY = 'text-[12px] leading-4 text-[var(--text-2)]';
+// Grid + typography (match Incident List table behavior)
+const HEADER_TEXT = 'text-[10px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider';
+const CELL_TEXT = 'text-[12px] leading-4 text-[var(--text-primary)]';
+const CELL_SECONDARY = 'text-[12px] leading-4 text-[var(--text-secondary)]';
+const CELL_META = 'text-[10px] text-[var(--text-tertiary)] tabular-nums';
 
-// Column widths optimized for content
-const COLUMN_WIDTHS = {
+// Grid cell base styles - consistent box model + no header overlap
+const GRID_CELL_BASE = 'min-w-0 overflow-hidden';
+
+// Column widths optimized for content (Summary is flexible to avoid empty canvas)
+const SUMMARY_MIN_WIDTH = 260;
+const FIXED_WIDTHS = {
   key: 85,
-  summary: 260,
   severity: 55,
   major: 40,
-  status: 90,
+  status: 96,
   progress: 70,
-  approvers: 100,
-  lastAction: 150,
-  time: 70,
-  aging: 55,
-};
+  approvers: 110,
+  lastAction: 160,
+  time: 84,
+  aging: 64,
+} as const;
+
+type ColumnId =
+  | 'key'
+  | 'summary'
+  | 'severity'
+  | 'major'
+  | 'status'
+  | 'progress'
+  | 'approvers'
+  | 'lastAction'
+  | 'time'
+  | 'aging';
+
+const COLUMN_IDS: ColumnId[] = [
+  'key',
+  'summary',
+  'severity',
+  'major',
+  'status',
+  'progress',
+  'approvers',
+  'lastAction',
+  'time',
+  'aging',
+];
+
+function getGridTemplate() {
+  return [
+    `${FIXED_WIDTHS.key}px`,
+    `minmax(${SUMMARY_MIN_WIDTH}px, 1fr)`,
+    `${FIXED_WIDTHS.severity}px`,
+    `${FIXED_WIDTHS.major}px`,
+    `${FIXED_WIDTHS.status}px`,
+    `${FIXED_WIDTHS.progress}px`,
+    `${FIXED_WIDTHS.approvers}px`,
+    `${FIXED_WIDTHS.lastAction}px`,
+    `${FIXED_WIDTHS.time}px`,
+    `${FIXED_WIDTHS.aging}px`,
+  ].join(' ');
+}
+
+const MIN_TABLE_WIDTH =
+  Object.values(FIXED_WIDTHS).reduce((a, b) => a + b, 0) + SUMMARY_MIN_WIDTH;
 
 interface CommitteeQueueTableProps {
   items: CommitteeQueueItem[];
@@ -57,32 +104,41 @@ interface CommitteeQueueTableProps {
   onLoadDemoData?: () => void;
 }
 
-// Status badge - compact
 function StatusBadge({ status }: { status: CommitteeDecisionStatus }) {
   const config = {
-    pending: { label: 'Pending', className: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400', icon: Clock },
-    approved: { label: 'Approved', className: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400', icon: CheckCircle },
-    vetoed: { label: 'Vetoed', className: 'bg-rose-100 text-rose-800 dark:bg-rose-900/30 dark:text-rose-400', icon: XCircle },
-  };
-  const { label, className, icon: Icon } = config[status];
+    pending: { label: 'Pending', bg: 'var(--status-warning-bg)', fg: 'var(--status-warning)', icon: Clock },
+    approved: { label: 'Approved', bg: 'var(--status-success-bg)', fg: 'var(--status-success)', icon: CheckCircle },
+    vetoed: { label: 'Vetoed', bg: 'var(--status-danger-bg)', fg: 'var(--status-danger)', icon: XCircle },
+  } as const;
+
+  const { label, bg, fg, icon: Icon } = config[status];
   return (
-    <span className={cn('inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium', className)}>
+    <span
+      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium whitespace-nowrap border"
+      style={{ background: bg, color: fg, borderColor: 'var(--border-default)' }}
+    >
       <Icon className="h-3 w-3" />
       {label}
     </span>
   );
 }
 
-// Severity badge - compact
 function SeverityBadge({ severity }: { severity: string }) {
-  const colors: Record<string, string> = {
-    SEV1: 'bg-rose-100 text-rose-800 dark:bg-rose-900/30 dark:text-rose-400',
-    SEV2: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
-    SEV3: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400',
-    SEV4: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+  const dotBySeverity: Record<string, string> = {
+    SEV1: 'var(--status-danger)',
+    SEV2: 'var(--status-warning)',
+    SEV3: 'var(--status-info)',
+    SEV4: 'var(--text-tertiary)',
   };
+
+  const dot = dotBySeverity[severity] || 'var(--text-tertiary)';
+
   return (
-    <span className={cn('inline-flex px-1.5 py-0 rounded text-[10px] font-medium', colors[severity] || 'bg-[var(--surface-subtle)] text-[var(--text-2)]')}>
+    <span
+      className="inline-flex items-center gap-1.5 px-1.5 py-0 h-5 rounded-full border bg-[var(--surface-subtle)] text-[10px] font-medium text-[var(--text-secondary)]"
+      style={{ borderColor: 'var(--border-default)' }}
+    >
+      <span className="w-1.5 h-1.5 rounded-full" style={{ background: dot }} />
       {severity}
     </span>
   );
@@ -92,30 +148,44 @@ function SeverityBadge({ severity }: { severity: string }) {
 function ApproversAvatars({ approvers }: { approvers: CommitteeQueueItem['approvers'] }) {
   const visible = approvers.slice(0, 3);
   const remaining = approvers.length - 3;
+
+  const decisionStyles: Record<CommitteeDecisionStatus, { bg: string; fg: string }> = {
+    pending: { bg: 'var(--surface-subtle)', fg: 'var(--text-secondary)' },
+    approved: { bg: 'var(--status-success-bg)', fg: 'var(--status-success)' },
+    vetoed: { bg: 'var(--status-danger-bg)', fg: 'var(--status-danger)' },
+  };
+
   return (
     <div className="flex items-center -space-x-1.5">
-      {visible.map((a) => (
-        <Tooltip key={a.id}>
-          <TooltipTrigger asChild>
-            <div className={cn(
-              "w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-medium border border-[var(--surface-elevated)]",
-              a.decision === 'approved' && "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-400",
-              a.decision === 'vetoed' && "bg-rose-100 text-rose-800 dark:bg-rose-900/50 dark:text-rose-400",
-              a.decision === 'pending' && "bg-[var(--surface-subtle)] text-[var(--text-2)]"
-            )}>
-              {a.userInitials || a.userName.charAt(0)}
-            </div>
-          </TooltipTrigger>
-          <TooltipContent side="top" className="text-xs">
-            <div className="font-medium">{a.userName}</div>
-            <div className="capitalize text-[var(--text-3)]">{a.decision}</div>
-            {a.hasVeto && <div className="text-amber-600">Veto power</div>}
-            {a.addedBy && <div className="text-[var(--text-3)]">Added by {a.addedBy}</div>}
-          </TooltipContent>
-        </Tooltip>
-      ))}
+      {visible.map((a) => {
+        const s = decisionStyles[a.decision];
+        return (
+          <Tooltip key={a.id}>
+            <TooltipTrigger asChild>
+              <div
+                className={cn(
+                  "w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-medium border",
+                  "bg-[var(--surface-subtle)]"
+                )}
+                style={{ background: s.bg, color: s.fg, borderColor: 'var(--surface-elevated)' }}
+              >
+                {a.userInitials || a.userName.charAt(0)}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="text-xs">
+              <div className="font-medium text-[var(--text-primary)]">{a.userName}</div>
+              <div className="capitalize text-[var(--text-tertiary)]">{a.decision}</div>
+              {a.hasVeto && <div className="text-[var(--text-warning)]">Veto power</div>}
+              {a.addedBy && <div className="text-[var(--text-tertiary)]">Added by {a.addedBy}</div>}
+            </TooltipContent>
+          </Tooltip>
+        );
+      })}
       {remaining > 0 && (
-        <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-medium bg-[var(--surface-subtle)] text-[var(--text-2)] border border-[var(--surface-elevated)]">
+        <div
+          className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-medium border"
+          style={{ background: 'var(--surface-subtle)', color: 'var(--text-secondary)', borderColor: 'var(--surface-elevated)' }}
+        >
           +{remaining}
         </div>
       )}
@@ -123,20 +193,30 @@ function ApproversAvatars({ approvers }: { approvers: CommitteeQueueItem['approv
   );
 }
 
-// Loading skeleton
 function LoadingSkeleton() {
-  const gridTemplate = Object.values(COLUMN_WIDTHS).map(w => `${w}px`).join(' ');
+  const gridTemplate = getGridTemplate();
   return (
     <div className="rounded-md border border-[var(--border-default)] overflow-hidden bg-[var(--surface-elevated)]">
-      <div className="grid items-center h-8 bg-[var(--surface-subtle)] border-b border-[var(--border-default)]" style={{ gridTemplateColumns: gridTemplate }}>
-        {Object.keys(COLUMN_WIDTHS).map((col) => (
-          <div key={col} className="px-2 flex items-center h-full"><Skeleton className="h-3 w-10" /></div>
+      <div
+        className="grid items-center h-8 bg-[var(--surface-subtle)] border-b border-[var(--border-default)]"
+        style={{ gridTemplateColumns: gridTemplate }}
+      >
+        {COLUMN_IDS.map((col) => (
+          <div key={col} className={cn(GRID_CELL_BASE, "px-2 flex items-center h-full")}>
+            <Skeleton className="h-3 w-10" />
+          </div>
         ))}
       </div>
       {[...Array(6)].map((_, i) => (
-        <div key={i} className="grid items-center h-9 border-b border-[var(--border-default)] last:border-b-0" style={{ gridTemplateColumns: gridTemplate }}>
-          {Object.keys(COLUMN_WIDTHS).map((col) => (
-            <div key={col} className="px-2 flex items-center h-full"><Skeleton className="h-3 w-full max-w-[80%]" /></div>
+        <div
+          key={i}
+          className="grid items-center h-9 border-b border-[var(--border-default)] last:border-b-0"
+          style={{ gridTemplateColumns: gridTemplate }}
+        >
+          {COLUMN_IDS.map((col) => (
+            <div key={col} className={cn(GRID_CELL_BASE, "px-2 flex items-center h-full")}>
+              <Skeleton className="h-3 w-full max-w-[80%]" />
+            </div>
           ))}
         </div>
       ))}
@@ -188,7 +268,7 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
     onRowClick ? onRowClick(item) : navigate(`/release/incidents/${item.incident.id}`);
   }, [navigate, onRowClick]);
 
-  const gridTemplate = useMemo(() => Object.values(COLUMN_WIDTHS).map(w => `${w}px`).join(' '), []);
+  const gridTemplate = useMemo(() => getGridTemplate(), []);
 
   if (isLoading) return <LoadingSkeleton />;
 
@@ -196,20 +276,47 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
     <TooltipProvider delayDuration={200}>
       <div className="flex flex-col h-full">
         <div className="rounded-md border border-[var(--border-default)] overflow-hidden bg-[var(--surface-elevated)] flex-1 min-h-0">
-          <div className="overflow-x-auto w-full h-full">
-            <div style={{ minWidth: Object.values(COLUMN_WIDTHS).reduce((a, b) => a + b, 0) }}>
+          {/* Single scroll container (keeps horizontal + vertical scroll always available) */}
+          <div
+            className="overflow-auto w-full h-full"
+            style={{ scrollbarGutter: 'stable both-edges' }}
+          >
+            <div style={{ minWidth: `${MIN_TABLE_WIDTH}px`, width: '100%' }}>
               {/* Header */}
-              <div className="grid items-center h-8 sticky top-0 z-20 bg-[var(--surface-subtle)] border-b border-[var(--border-default)]" style={{ gridTemplateColumns: gridTemplate }}>
-                <div className="pl-3 pr-1 flex items-center h-full"><span className={HEADER_TEXT}>KEY</span></div>
-                <div className="px-1 flex items-center h-full"><span className={HEADER_TEXT}>SUMMARY</span></div>
-                <div className="px-1 flex items-center justify-center h-full"><span className={HEADER_TEXT}>SEV</span></div>
-                <div className="px-1 flex items-center justify-center h-full"><span className={HEADER_TEXT}>MAJ</span></div>
-                <div className="px-1 flex items-center justify-center h-full"><span className={HEADER_TEXT}>STATUS</span></div>
-                <div className="px-1 flex items-center justify-center h-full"><span className={HEADER_TEXT}>PROG</span></div>
-                <div className="px-1 flex items-center h-full"><span className={HEADER_TEXT}>APPROVERS</span></div>
-                <div className="px-1 flex items-center h-full"><span className={HEADER_TEXT}>LAST ACTION</span></div>
-                <div className="px-1 flex items-center justify-center h-full"><span className={HEADER_TEXT}>TIME</span></div>
-                <div className="px-1 flex items-center justify-center h-full"><span className={HEADER_TEXT}>AGE</span></div>
+              <div
+                className="grid items-center h-8 sticky top-0 z-20 bg-[var(--surface-subtle)] border-b border-[var(--border-default)]"
+                style={{ gridTemplateColumns: gridTemplate }}
+              >
+                <div className={cn(GRID_CELL_BASE, "pl-3 pr-1 flex items-center h-full")}>
+                  <span className={cn(HEADER_TEXT, "truncate")}>KEY</span>
+                </div>
+                <div className={cn(GRID_CELL_BASE, "px-1 flex items-center h-full")}>
+                  <span className={cn(HEADER_TEXT, "truncate")}>SUMMARY</span>
+                </div>
+                <div className={cn(GRID_CELL_BASE, "px-1 flex items-center justify-center h-full")}>
+                  <span className={cn(HEADER_TEXT, "truncate")}>SEV</span>
+                </div>
+                <div className={cn(GRID_CELL_BASE, "px-1 flex items-center justify-center h-full")}>
+                  <span className={cn(HEADER_TEXT, "truncate")}>MAJ</span>
+                </div>
+                <div className={cn(GRID_CELL_BASE, "px-1 flex items-center justify-center h-full")}>
+                  <span className={cn(HEADER_TEXT, "truncate")}>STATUS</span>
+                </div>
+                <div className={cn(GRID_CELL_BASE, "px-1 flex items-center justify-center h-full")}>
+                  <span className={cn(HEADER_TEXT, "truncate")}>PROG</span>
+                </div>
+                <div className={cn(GRID_CELL_BASE, "px-1 flex items-center h-full")}>
+                  <span className={cn(HEADER_TEXT, "truncate")}>APPROVERS</span>
+                </div>
+                <div className={cn(GRID_CELL_BASE, "px-1 flex items-center h-full")}>
+                  <span className={cn(HEADER_TEXT, "truncate")}>LAST ACTION</span>
+                </div>
+                <div className={cn(GRID_CELL_BASE, "px-1 flex items-center justify-center h-full")}>
+                  <span className={cn(HEADER_TEXT, "truncate")}>TIME</span>
+                </div>
+                <div className={cn(GRID_CELL_BASE, "px-1 flex items-center justify-center h-full")}>
+                  <span className={cn(HEADER_TEXT, "truncate")}>AGE</span>
+                </div>
               </div>
 
               {/* Rows */}
@@ -228,65 +335,72 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
                     onMouseEnter={() => setHoveredId(item.incident.id)}
                     onMouseLeave={() => setHoveredId(null)}
                   >
-                    <div className="pl-3 pr-1 flex items-center h-full">
-                      <Link to={`/release/incidents/${item.incident.id}`} className={cn(CELL_TEXT, "font-medium text-[var(--brand-primary)] hover:underline truncate")} onClick={(e) => e.stopPropagation()}>
+                    <div className={cn(GRID_CELL_BASE, "pl-3 pr-1 flex items-center h-full")}>
+                      <Link
+                        to={`/release/incidents/${item.incident.id}`}
+                        className={cn(CELL_TEXT, 'font-medium text-[var(--brand-primary)] hover:underline truncate')}
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         {item.incident.incident_key}
                       </Link>
                     </div>
-                    <div className="px-1 flex items-center h-full">
+                    <div className={cn(GRID_CELL_BASE, "px-1 flex items-center h-full")}>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <span className={cn(CELL_TEXT, "truncate")}>{item.incident.title}</span>
+                          <span className={cn(CELL_TEXT, 'truncate')}>{item.incident.title}</span>
                         </TooltipTrigger>
-                        <TooltipContent side="top" className="max-w-sm text-xs">{item.incident.title}</TooltipContent>
+                        <TooltipContent side="top" className="max-w-sm text-xs">
+                          {item.incident.title}
+                        </TooltipContent>
                       </Tooltip>
                     </div>
-                    <div className="px-1 flex items-center justify-center h-full">
+                    <div className={cn(GRID_CELL_BASE, "px-1 flex items-center justify-center h-full")}>
                       <SeverityBadge severity={item.incident.severity} />
                     </div>
-                    <div className="px-1 flex items-center justify-center h-full">
+                    <div className={cn(GRID_CELL_BASE, "px-1 flex items-center justify-center h-full")}>
                       {item.incident.is_major_incident ? (
-                        <AlertTriangle className="h-3.5 w-3.5 text-amber-500" />
+                        <AlertTriangle className="h-3.5 w-3.5" style={{ color: 'var(--status-warning)' }} />
                       ) : (
-                        <span className="text-[var(--text-3)] text-[10px]">—</span>
+                        <span className={cn(CELL_META, 'text-[11px]')}>—</span>
                       )}
                     </div>
-                    <div className="px-1 flex items-center justify-center h-full">
+                    <div className={cn(GRID_CELL_BASE, "px-1 flex items-center justify-center h-full")}>
                       <StatusBadge status={item.committeeStatus} />
                     </div>
-                    <div className="px-1 flex items-center justify-center h-full">
-                      <span className={cn(CELL_SECONDARY, "text-[11px] tabular-nums font-medium")}>
+                    <div className={cn(GRID_CELL_BASE, "px-1 flex items-center justify-center h-full")}>
+                      <span className={cn(CELL_SECONDARY, 'text-[11px] tabular-nums font-medium')}>
                         {item.approvalsCompletedCount}/{item.approvalsRequiredCount}
                       </span>
                     </div>
-                    <div className="px-1 flex items-center h-full">
+                    <div className={cn(GRID_CELL_BASE, "px-1 flex items-center h-full")}>
                       <ApproversAvatars approvers={item.approvers} />
                     </div>
-                    <div className="px-1 flex items-center h-full">
-                      <span className={cn(CELL_SECONDARY, "truncate text-[11px]")}>
+                    <div className={cn(GRID_CELL_BASE, "px-1 flex items-center h-full")}>
+                      <span className={cn(CELL_SECONDARY, 'truncate text-[11px]')}>
                         {item.lastAction?.type === 'vetoed' && `Veto by ${item.lastAction.by}`}
                         {item.lastAction?.type === 'approved' && `${item.lastAction.by}`}
                         {item.lastAction?.type === 'sent_to_committee' && 'Sent'}
                         {item.lastAction?.type === 'approver_added' && `Added by ${item.lastAction.by}`}
                       </span>
                     </div>
-                    <div className="px-1 flex items-center justify-center h-full">
+                    <div className={cn(GRID_CELL_BASE, "px-1 flex items-center justify-center h-full")}>
                       {item.lastAction?.at ? (
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <span className="text-[10px] text-[var(--text-3)] tabular-nums">
+                            <span className={CELL_META}>
                               {formatDistanceToNow(new Date(item.lastAction.at), { addSuffix: false })}
                             </span>
                           </TooltipTrigger>
                           <TooltipContent>{format(new Date(item.lastAction.at), 'PPp')}</TooltipContent>
                         </Tooltip>
-                      ) : <span className="text-[var(--text-3)] text-[10px]">—</span>}
+                      ) : (
+                        <span className={CELL_META}>—</span>
+                      )}
                     </div>
-                    <div className="px-1 flex items-center justify-center h-full">
-                      <span className={cn(
-                        "text-[11px] tabular-nums font-medium",
-                        item.agingDays >= 7 ? "text-orange-600 dark:text-orange-400" : "text-[var(--text-2)]"
-                      )}>
+                    <div className={cn(GRID_CELL_BASE, "px-1 flex items-center justify-center h-full")}>
+                      <span
+                        className={cn('text-[11px] tabular-nums font-medium', item.agingDays >= 7 ? 'text-[var(--text-warning)]' : 'text-[var(--text-secondary)]')}
+                      >
                         {item.agingDays}d
                       </span>
                     </div>
@@ -301,7 +415,7 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
         {items.length > 0 && (
           <div className="flex items-center justify-between py-2">
             <div className="flex items-center gap-2">
-              <span className="text-[11px] text-[var(--text-3)]">Rows:</span>
+              <span className="text-[11px] text-[var(--text-tertiary)]">Rows:</span>
               <Select value={pageSize.toString()} onValueChange={handlePageSizeChange}>
                 <SelectTrigger className="h-6 w-14 text-[11px]"><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -310,7 +424,7 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
               </Select>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-[11px] text-[var(--text-2)]">
+              <span className="text-[11px] text-[var(--text-secondary)]">
                 {startIndex + 1}–{Math.min(startIndex + pageSize, items.length)} of {items.length}
               </span>
               <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>
