@@ -44,10 +44,10 @@ export function IncidentCommandBar({ onCreateClick, additionalActions }: Inciden
   };
 
   return (
-    <div className="px-6 py-3 border-b border-border bg-card/50 shadow-sm print:hidden">
-      <div className="flex items-center justify-between gap-4">
+    <div className="px-4 sm:px-6 py-3 border-b border-border bg-card/50 shadow-sm print:hidden">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         {/* Left: View Mode Segmented Control */}
-        <div className="inline-flex items-center rounded-lg border border-border bg-muted/40 p-1">
+        <div className="inline-flex items-center rounded-lg border border-border bg-muted/40 p-1 w-full sm:w-auto">
           {VIEW_MODES.map((mode) => {
             const Icon = mode.icon;
             const isActive = currentMode === mode.value;
@@ -56,25 +56,25 @@ export function IncidentCommandBar({ onCreateClick, additionalActions }: Inciden
                 key={mode.value}
                 onClick={() => handleModeChange(mode.value)}
                 className={cn(
-                  "inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-all",
+                  "flex-1 sm:flex-none inline-flex items-center justify-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium rounded-md transition-all",
                   isActive 
                     ? "bg-background text-foreground shadow-sm border border-border/50" 
                     : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                 )}
               >
-                <Icon className="h-4 w-4" />
-                <span>{mode.label}</span>
+                <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span className="hidden xs:inline sm:inline">{mode.label}</span>
               </button>
             );
           })}
         </div>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 flex-wrap sm:flex-nowrap">
           {additionalActions && (
             <>
               {additionalActions}
-              <div className="h-6 w-px bg-border" />
+              <div className="hidden sm:block h-6 w-px bg-border" />
             </>
           )}
           
@@ -82,10 +82,10 @@ export function IncidentCommandBar({ onCreateClick, additionalActions }: Inciden
           <Button 
             size="sm"
             onClick={onCreateClick}
-            className="h-9 px-4 text-sm font-medium bg-brand-primary hover:bg-brand-primary-hover text-white"
+            className="h-9 px-3 sm:px-4 text-xs sm:text-sm font-medium bg-brand-primary hover:bg-brand-primary-hover text-white"
           >
-            <Plus className="h-4 w-4 mr-1.5 flex-shrink-0" />
-            Create Incident
+            <Plus className="h-4 w-4 mr-1 sm:mr-1.5 flex-shrink-0" />
+            <span className="whitespace-nowrap">Create Incident</span>
           </Button>
         </div>
       </div>
