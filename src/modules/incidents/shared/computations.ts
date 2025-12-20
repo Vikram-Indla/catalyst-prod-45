@@ -206,9 +206,10 @@ export const QUICK_FILTERS: QuickFilterConfig[] = [
   },
   {
     key: 'committee',
-    label: 'Committee',
-    color: 'hsl(var(--secondary-bronze))',
-    match: (inc) => inc.requires_committee,
+    label: 'CAB Configured',
+    color: 'var(--brand-gold)',
+    // "Committee configured" = has committee approvers set up (not the status)
+    match: (inc) => inc.requires_committee && inc.status !== 'to_committee',
   },
   {
     key: 'unassigned',
@@ -317,18 +318,19 @@ export const KANBAN_STATUSES: IncidentStatus[] = [
   'open',
   'triage',
   'in_progress',
+  'to_committee',
   'resolved',
   'closed',
 ];
 
-export const OPEN_STATUSES: IncidentStatus[] = ['open', 'triage', 'in_progress'];
+export const OPEN_STATUSES: IncidentStatus[] = ['open', 'triage', 'in_progress', 'to_committee'];
 export const RESOLVED_STATUSES: IncidentStatus[] = ['resolved', 'closed'];
 
 export const STATUS_CONFIG: Record<IncidentStatus, { label: string; color: string }> = {
   open: { label: 'Open', color: 'hsl(var(--b400))' },
   triage: { label: 'Triage', color: 'hsl(var(--y300))' },
   in_progress: { label: 'In Progress', color: 'hsl(var(--p300))' },
-  to_committee: { label: 'Committee', color: 'hsl(var(--secondary-bronze))' },
+  to_committee: { label: 'Committee', color: 'var(--brand-gold)' },
   resolved: { label: 'Resolved', color: 'hsl(var(--g300))' },
   converted: { label: 'Converted', color: 'hsl(var(--info))' },
   closed: { label: 'Closed', color: 'var(--text-3)' },

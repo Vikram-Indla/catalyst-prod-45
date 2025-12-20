@@ -57,13 +57,13 @@ export const REQUIRED_COLUMNS: IncidentStatus[] = [
   'open',
   'triage',
   'in_progress',
+  'to_committee',
   'resolved',
   'closed',
 ];
 
 // Statuses that can NEVER be added as columns
 export const FORBIDDEN_COLUMNS: IncidentStatus[] = [
-  'to_committee', // Committee is never a column
   'converted',    // Converted is a terminal state
 ];
 
