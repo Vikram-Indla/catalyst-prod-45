@@ -57,44 +57,30 @@ export const KanbanColumn = memo(function KanbanColumn({
     return (
       <div
         className={cn(
-          "flex flex-col min-w-[56px] max-w-[56px] flex-shrink-0",
-          "bg-muted/20 rounded-lg border border-border cursor-pointer",
-          "hover:bg-muted/30 transition-colors"
+          "flex flex-col min-w-[48px] max-w-[48px] flex-shrink-0",
+          "bg-muted/10 rounded-lg border border-border/50 cursor-pointer",
+          "hover:bg-muted/20 transition-colors"
         )}
         onClick={handleToggle}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
       >
         {/* Collapsed Header */}
-        <div className="flex flex-col items-center gap-2 px-2 py-3 border-b border-border bg-muted/40 rounded-t-lg">
-          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-          <span
-            className="w-2 h-2 rounded-full flex-shrink-0"
-            style={{ backgroundColor: config.color }}
-          />
+        <div className="flex flex-col items-center gap-1.5 px-1.5 py-2.5 border-b border-border/50 bg-muted/30 rounded-t-lg">
+          <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/60" />
         </div>
         
         {/* Vertical Label + Stats */}
         <div className="flex-1 flex flex-col items-center justify-start py-3 gap-2">
           <span 
-            className="text-xs font-semibold text-foreground writing-mode-vertical"
+            className="text-[11px] font-medium text-muted-foreground writing-mode-vertical"
             style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
           >
             {config.label}
           </span>
-          <span className="text-xs font-medium text-foreground bg-muted px-1.5 py-0.5 rounded">
+          <span className="text-[11px] font-medium text-foreground/80">
             {stats.total}
           </span>
-          {stats.breached > 0 && (
-            <span className="text-[10px] font-medium text-destructive">
-              {stats.breached}!
-            </span>
-          )}
-          {stats.atRisk > 0 && (
-            <span className="text-[10px] font-medium text-[hsl(var(--warning))]">
-              {stats.atRisk}
-            </span>
-          )}
         </div>
       </div>
     );
@@ -105,40 +91,42 @@ export const KanbanColumn = memo(function KanbanColumn({
     <div
       className={cn(
         "flex flex-col min-w-[260px] max-w-[280px] flex-shrink-0",
-        "bg-muted/20 rounded-lg border border-border"
+        "bg-muted/10 rounded-lg border border-border/50"
       )}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
-      {/* Column Header */}
+      {/* Column Header - Executive Clean */}
       <div 
-        className="flex items-center gap-2 px-3 py-2 border-b border-border bg-muted/40 rounded-t-lg cursor-pointer hover:bg-muted/50 transition-colors"
+        className="flex items-center gap-1.5 px-2.5 py-2 border-b border-border/50 bg-muted/30 rounded-t-lg cursor-pointer hover:bg-muted/40 transition-colors"
         onClick={handleToggle}
       >
+        {/* Collapse chevron - subtle */}
         {onToggleCollapse && (
-          <ChevronDown className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground/50 flex-shrink-0" />
         )}
-        <span
-          className="w-2 h-2 rounded-full flex-shrink-0"
-          style={{ backgroundColor: config.color }}
-        />
-        <span className="text-sm font-semibold text-foreground flex-1 truncate">
+        
+        {/* Column name + count */}
+        <span className="text-sm font-medium text-foreground truncate">
           {config.label}
         </span>
+        <span className="text-xs text-muted-foreground font-normal">
+          ({stats.total})
+        </span>
         
-        {/* Stats */}
-        <div className="flex items-center gap-1.5 flex-shrink-0">
-          <span className="text-xs font-medium text-foreground bg-muted px-1.5 py-0.5 rounded">
-            {stats.total}
-          </span>
+        {/* Spacer */}
+        <div className="flex-1" />
+        
+        {/* Secondary micro-metrics - muted, only if > 0 */}
+        <div className="flex items-center gap-2.5 text-[11px] text-muted-foreground/70">
           {stats.atRisk > 0 && (
-            <span className="text-[10px] font-medium text-[hsl(var(--warning))] bg-[hsl(var(--warning))]/10 px-1 py-0.5 rounded">
-              {stats.atRisk} risk
+            <span className="font-normal">
+              At Risk: <span className="font-medium text-muted-foreground">{stats.atRisk}</span>
             </span>
           )}
           {stats.breached > 0 && (
-            <span className="text-[10px] font-medium text-destructive bg-destructive/10 px-1 py-0.5 rounded">
-              {stats.breached} breach
+            <span className="font-normal">
+              Breached: <span className="font-medium text-muted-foreground">{stats.breached}</span>
             </span>
           )}
         </div>
