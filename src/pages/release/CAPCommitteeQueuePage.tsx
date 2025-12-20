@@ -1,12 +1,7 @@
 /**
- * Committee Queue Page — Executive-grade governance and approval system
+ * Committee Queue Page — Executive-grade governance system
  * 
- * Redesigned with:
- * - Same enterprise table pattern as Incident List
- * - Governance-focused columns (Committee Status, Approval Progress, Approvers)
- * - KPI widgets for filtering
- * - Right drawer for decision trail
- * - Typography contract enforced
+ * Clean layout, enterprise table, demo data support.
  */
 
 import { useState, useMemo } from 'react';
@@ -25,12 +20,12 @@ import { useCommitteeQueue, type CommitteeQueueItem, type CommitteeDecisionStatu
 import { CommitteeQueueTable } from '@/components/committee/CommitteeQueueTable';
 import { CommitteeQueueDrawer } from '@/components/committee/CommitteeQueueDrawer';
 import { CommitteeKPIWidgets } from '@/components/committee/CommitteeKPIWidgets';
+import { generateCommitteeDemoData, shouldLoadDemoData } from '@/data/committeeDemoData';
 
 type FilterSeverity = 'all' | 'SEV1' | 'SEV2' | 'SEV3' | 'SEV4';
 type FilterAging = 'all' | '>3d' | '>7d' | '>14d';
 
 export default function CAPCommitteeQueuePage() {
-  // State
   const [searchQuery, setSearchQuery] = useState('');
   const [includeClosedDecisions, setIncludeClosedDecisions] = useState(false);
   const [statusFilter, setStatusFilter] = useState<CommitteeDecisionStatus | 'all'>('all');
@@ -39,31 +34,29 @@ export default function CAPCommitteeQueuePage() {
   const [kpiFilter, setKpiFilter] = useState<string | null>(null);
   const [selectedItem, setSelectedItem] = useState<CommitteeQueueItem | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [useDemoData, setUseDemoData] = useState(shouldLoadDemoData);
 
-  // Fetch data
-  const { data: items = [], isLoading } = useCommitteeQueue({ 
-    includeClosedDecisions 
-  });
+  const { data: realItems = [], isLoading } = useCommitteeQueue({ includeClosedDecisions });
+  
+  // Use demo data if enabled or if real data is empty
+  const items = useMemo(() => {
+    if (useDemoData || (realItems.length === 0 && !isLoading)) {
+      return generateCommitteeDemoData();
+    }
+    return realItems;
+  }, [realItems, isLoading, useDemoData]);
 
-  // Apply filters
+  // Filters
   const filteredItems = useMemo(() => {
     let result = items;
 
-    // KPI filter (takes precedence)
+    // KPI filter
     if (kpiFilter) {
       switch (kpiFilter) {
-        case 'pending':
-          result = result.filter(i => i.committeeStatus === 'pending');
-          break;
-        case 'approved':
-          result = result.filter(i => i.committeeStatus === 'approved');
-          break;
-        case 'vetoed':
-          result = result.filter(i => i.committeeStatus === 'vetoed');
-          break;
-        case 'aging':
-          result = result.filter(i => i.agingDays >= 7);
-          break;
+        case 'pending': result = result.filter(i => i.committeeStatus === 'pending'); break;
+        case 'approved': result = result.filter(i => i.committeeStatus === 'approved'); break;
+        case 'vetoed': result = result.filter(i => i.committeeStatus === 'vetoed'); break;
+        case 'aging': result = result.filter(i => i.agingDays >= 7 && i.committeeStatus === 'pending'); break;
       }
     }
 
@@ -72,12 +65,12 @@ export default function CAPCommitteeQueuePage() {
       result = result.filter(i => i.committeeStatus === statusFilter);
     }
 
-    // Severity filter
+    // Severity
     if (severityFilter !== 'all') {
       result = result.filter(i => i.incident.severity === severityFilter);
     }
 
-    // Aging filter
+    // Aging
     if (agingFilter !== 'all') {
       result = result.filter(i => {
         switch (agingFilter) {
@@ -89,7 +82,7 @@ export default function CAPCommitteeQueuePage() {
       });
     }
 
-    // Search filter
+    // Search
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       result = result.filter(i =>
@@ -98,25 +91,25 @@ export default function CAPCommitteeQueuePage() {
       );
     }
 
-    // Sort: Pending first, then by aging desc
-    result = [...result].sort((a, b) => {
+    // Sort: pending first, then aging desc
+    return [...result].sort((a, b) => {
       if (a.committeeStatus === 'pending' && b.committeeStatus !== 'pending') return -1;
       if (a.committeeStatus !== 'pending' && b.committeeStatus === 'pending') return 1;
       return b.agingDays - a.agingDays;
     });
-
-    return result;
   }, [items, kpiFilter, statusFilter, severityFilter, agingFilter, searchQuery]);
+
+  const pendingCount = items.filter(i => i.committeeStatus === 'pending').length;
 
   const handleRowClick = (item: CommitteeQueueItem) => {
     setSelectedItem(item);
     setDrawerOpen(true);
   };
 
-  if (isLoading) {
+  if (isLoading && !useDemoData) {
     return (
       <div className="h-full flex items-center justify-center">
-        <div className="animate-spin h-8 w-8 border-4 border-[var(--brand-primary)] border-t-transparent rounded-full" />
+        <div className="animate-spin h-6 w-6 border-2 border-[var(--brand-primary)] border-t-transparent rounded-full" />
       </div>
     );
   }
@@ -124,36 +117,32 @@ export default function CAPCommitteeQueuePage() {
   return (
     <div className="h-full flex flex-col bg-[var(--surface-default)]">
       {/* Header */}
-      <div className="h-14 border-b border-[var(--border-default)] bg-[var(--surface-elevated)] shrink-0 px-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Shield className="h-5 w-5 text-[var(--brand-primary)]" />
-          <div>
-            <h1 className="text-base font-semibold text-[var(--text-1)]">Committee Queue</h1>
-            <p className="text-xs text-[var(--text-3)]">Incidents awaiting committee decision and approval</p>
-          </div>
-          <Badge variant="secondary" className="ml-2 text-xs">
-            {filteredItems.length} {!includeClosedDecisions ? 'Pending' : 'Total'}
+      <div className="h-12 border-b border-[var(--border-default)] bg-[var(--surface-elevated)] shrink-0 px-4 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Shield className="h-4 w-4 text-[var(--brand-primary)]" />
+          <h1 className="text-sm font-semibold text-[var(--text-1)]">Committee Queue</h1>
+          <Badge variant="secondary" className="text-[10px] h-5 px-1.5 font-medium">
+            {pendingCount} Pending
           </Badge>
+          <span className="text-[11px] text-[var(--text-3)] hidden sm:inline">
+            Incidents awaiting committee decision
+          </span>
         </div>
 
         {/* Toolbar */}
-        <div className="flex items-center gap-2">
-          {/* Search */}
-          <div className="relative w-56">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--text-3)]" />
+        <div className="flex items-center gap-1.5">
+          <div className="relative w-44">
+            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-[var(--text-3)]" />
             <Input
-              placeholder="Search key or summary..."
+              placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 h-8 text-sm"
+              className="pl-7 h-7 text-xs"
             />
           </div>
 
-          {/* Status filter */}
           <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v as any); setKpiFilter(null); }}>
-            <SelectTrigger className="w-28 h-8 text-xs">
-              <SelectValue />
-            </SelectTrigger>
+            <SelectTrigger className="w-24 h-7 text-[11px]"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Status</SelectItem>
               <SelectItem value="pending">Pending</SelectItem>
@@ -162,11 +151,8 @@ export default function CAPCommitteeQueuePage() {
             </SelectContent>
           </Select>
 
-          {/* Severity filter */}
           <Select value={severityFilter} onValueChange={(v) => setSeverityFilter(v as FilterSeverity)}>
-            <SelectTrigger className="w-24 h-8 text-xs">
-              <SelectValue />
-            </SelectTrigger>
+            <SelectTrigger className="w-20 h-7 text-[11px]"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Sev</SelectItem>
               <SelectItem value="SEV1">SEV1</SelectItem>
@@ -176,43 +162,35 @@ export default function CAPCommitteeQueuePage() {
             </SelectContent>
           </Select>
 
-          {/* Aging filter */}
           <Select value={agingFilter} onValueChange={(v) => setAgingFilter(v as FilterAging)}>
-            <SelectTrigger className="w-24 h-8 text-xs">
-              <SelectValue />
-            </SelectTrigger>
+            <SelectTrigger className="w-20 h-7 text-[11px]"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Ages</SelectItem>
-              <SelectItem value=">3d">&gt;3 days</SelectItem>
-              <SelectItem value=">7d">&gt;7 days</SelectItem>
-              <SelectItem value=">14d">&gt;14 days</SelectItem>
+              <SelectItem value=">3d">&gt;3d</SelectItem>
+              <SelectItem value=">7d">&gt;7d</SelectItem>
+              <SelectItem value=">14d">&gt;14d</SelectItem>
             </SelectContent>
           </Select>
 
-          {/* Include closed toggle */}
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
-            className="h-8 gap-2 text-xs"
+            className="h-7 gap-1.5 text-[11px] px-2"
             onClick={() => setIncludeClosedDecisions(!includeClosedDecisions)}
           >
             {includeClosedDecisions ? (
-              <ToggleRight className="h-4 w-4 text-emerald-600" />
+              <ToggleRight className="h-3.5 w-3.5 text-emerald-600" />
             ) : (
-              <ToggleLeft className="h-4 w-4 text-[var(--text-3)]" />
+              <ToggleLeft className="h-3.5 w-3.5 text-[var(--text-3)]" />
             )}
-            {includeClosedDecisions ? 'Include closed' : 'Open only'}
+            {includeClosedDecisions ? 'All' : 'Open'}
           </Button>
         </div>
       </div>
 
-      {/* KPI Widgets */}
-      <div className="px-4 py-3 border-b border-[var(--border-default)] bg-[var(--surface-default)]">
-        <CommitteeKPIWidgets
-          items={items}
-          activeFilter={kpiFilter}
-          onFilterClick={setKpiFilter}
-        />
+      {/* KPI Strip */}
+      <div className="px-4 py-2 border-b border-[var(--border-default)] bg-[var(--surface-default)]">
+        <CommitteeKPIWidgets items={items} activeFilter={kpiFilter} onFilterClick={setKpiFilter} />
       </div>
 
       {/* Table */}
@@ -221,6 +199,7 @@ export default function CAPCommitteeQueuePage() {
           items={filteredItems}
           isLoading={isLoading}
           onRowClick={handleRowClick}
+          onLoadDemoData={() => setUseDemoData(true)}
         />
       </div>
 
