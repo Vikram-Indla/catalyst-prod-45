@@ -198,8 +198,11 @@ export interface IncidentFormData {
   impact?: ImpactLevel;
   urgency?: UrgencyLevel;
   support_level?: SupportLevel;
+  project_id?: string;
   release_version_id?: string;
   delivery_stage?: DeliveryStage;
+  reporter_id?: string;
+  reporter_name?: string;
   assignee_id?: string;
   assignee_workgroup_id?: string;
   business_process_id?: string;
