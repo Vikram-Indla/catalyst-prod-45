@@ -327,7 +327,7 @@ function CompactKPITile({
 
       {/* Progress bar - secondary signal */}
       {showProgress && (
-        <div className="w-full h-1.5 rounded-full mt-2.5 overflow-hidden bg-border/60">
+        <div className="w-full h-1.5 rounded-full mt-2.5 overflow-hidden bg-gray-200 dark:bg-gray-700">
           <div 
             className="h-full rounded-full bg-primary/80"
             style={{ width: `${progressValue}%` }}
