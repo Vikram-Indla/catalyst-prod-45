@@ -46,7 +46,7 @@ export function CommitteeKPIWidgets({
   }
 
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex items-center gap-2">
       {widgets.map((widget) => {
         const isActive = activeFilter === widget.id;
         const Icon = widget.icon;
@@ -56,29 +56,18 @@ export function CommitteeKPIWidgets({
             key={widget.id}
             onClick={() => onFilterClick(isActive ? null : widget.id)}
             className={cn(
-              'flex items-center gap-1.5 px-2.5 py-1 rounded-md border transition-all text-xs',
-              'bg-[var(--surface-elevated)] hover:bg-[var(--surface-subtle)]',
+              'flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border transition-all text-xs',
+              'bg-card hover:bg-muted',
               isActive
-                ? 'border-[var(--secondary-green)] border-2 bg-[var(--nav-active-bg)]'
-                : 'border-[var(--border-default)]'
+                ? 'border-primary border-2 bg-primary/5'
+                : 'border-border'
             )}
           >
-            <Icon
-              className="h-3 w-3"
-              style={{
-                color: isActive ? 'var(--secondary-green)' : 'var(--text-secondary)',
-              }}
-            />
-            <span
-              className="font-medium"
-              style={{ color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)' }}
-            >
+            <Icon className={cn("h-3 w-3", isActive ? 'text-primary' : 'text-muted-foreground')} />
+            <span className={cn("font-medium", isActive ? 'text-foreground' : 'text-muted-foreground')}>
               {widget.label}
             </span>
-            <span
-              className="font-semibold tabular-nums min-w-[1rem] text-center"
-              style={{ color: 'var(--text-primary)' }}
-            >
+            <span className="font-semibold tabular-nums min-w-[1rem] text-center text-foreground">
               {widget.value}
             </span>
           </button>
