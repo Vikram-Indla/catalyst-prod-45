@@ -450,6 +450,7 @@ const App = () => (
               <Route path="/projects/:projectKey/settings" element={<ProjectSettingsPage />} />
               <Route path="/projects/:projectId/features" element={<FeaturesPage />} />
               <Route path="/projects/:projectId/features/:featureId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><FeatureViewPage /></Suspense>} />
+              <Route path="/projects/:projectId/work" element={<ProjectWorkHubPage />} />
               <Route path="/project/:projectId/work" element={<ProjectWorkHubPage />} />
               <Route path="/teams" element={<TeamComingSoon />} />
               <Route path="/teams/:teamId/room" element={<TeamComingSoon />} />
