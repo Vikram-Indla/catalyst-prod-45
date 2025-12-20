@@ -35,14 +35,15 @@ export function CommitteeKPIWidgets({
     label: string;
     value: number;
     icon: typeof Clock;
+    iconColor: string;
   }[] = [
-    { id: 'pending', label: 'Pending', value: pendingCount, icon: Clock },
-    { id: 'vetoed', label: 'Vetoed', value: vetoedCount, icon: XCircle },
-    { id: 'aging', label: 'Aging >7d', value: agingCount, icon: AlertTriangle },
+    { id: 'pending', label: 'Pending', value: pendingCount, icon: Clock, iconColor: 'text-amber-500' },
+    { id: 'vetoed', label: 'Vetoed', value: vetoedCount, icon: XCircle, iconColor: 'text-rose-500' },
+    { id: 'aging', label: 'Aging >7d', value: agingCount, icon: AlertTriangle, iconColor: 'text-amber-500' },
   ];
 
   if (includeClosedDecisions) {
-    widgets.push({ id: 'approved', label: 'Approved', value: approvedCount, icon: CheckCircle });
+    widgets.push({ id: 'approved', label: 'Approved', value: approvedCount, icon: CheckCircle, iconColor: 'text-emerald-500' });
   }
 
   return (
@@ -63,7 +64,7 @@ export function CommitteeKPIWidgets({
                 : 'border-border'
             )}
           >
-            <Icon className={cn("h-3 w-3", isActive ? 'text-primary' : 'text-muted-foreground')} />
+            <Icon className={cn("h-3 w-3", widget.iconColor)} />
             <span className={cn("font-medium", isActive ? 'text-foreground' : 'text-muted-foreground')}>
               {widget.label}
             </span>
