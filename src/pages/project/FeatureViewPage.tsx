@@ -105,10 +105,10 @@ export default function FeatureViewPage() {
       if (data.epic_id) {
         const { data: epicData } = await supabase
           .from('epics')
-          .select('id, display_id, name')
+          .select('id, epic_key, name')
           .eq('id', data.epic_id)
           .single();
-        epic = epicData;
+        epic = epicData ? { id: epicData.id, display_id: epicData.epic_key || epicData.id.slice(0, 6), name: epicData.name } : null;
       }
       
       if (data.project_id) {
