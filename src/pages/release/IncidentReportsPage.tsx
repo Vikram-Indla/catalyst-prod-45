@@ -1,20 +1,21 @@
 /**
- * IncidentReportsPage — Enterprise Incident Reports
+ * IncidentReportsPage — Tabbed Reports Hub
  * 
  * Route: /release/incidents/reports
+ * Query params: ?tab=sla-breach|aging|committee|conversion|distribution
  * 
  * Layout:
- * - Left panel: report navigation
- * - Right panel: active report with insight strip + table
+ * - No sidebar — uses horizontal tabs for report navigation
+ * - Each tab: Executive insight strip + CatalystTable
  * 
  * Uses exact same table styling as /release/incidents
  */
 
-import { useState, useMemo, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { 
   Clock, AlertTriangle, Users, GitBranch, BarChart3,
-  Download, ChevronRight, AlertCircle, CheckCircle, XCircle, Timer, FileText, ChevronDown
+  Download, AlertCircle, CheckCircle, XCircle, Timer, FileText, ChevronDown, RefreshCw
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -34,32 +35,74 @@ import {
   StatusBadge, 
   SeverityBadge, 
   PriorityBadge,
-  SupportLevelBadge,
   getAgingTime 
 } from '@/components/incidents/badges/IncidentBadges';
 import type { Incident } from '@/types/incident';
 import type { CommitteeQueueItem } from '@/hooks/useCommitteeQueue';
 import { exportReportToPDF } from '@/utils/pdfExport';
 
-type ReportType = 'sla_breach' | 'aging' | 'committee' | 'conversion' | 'distribution';
+// ═══════════════════════════════════════════════════════════════════
+// TYPES & CONFIG
+// ═══════════════════════════════════════════════════════════════════
+
+type ReportType = 'sla-breach' | 'aging' | 'committee' | 'conversion' | 'distribution';
 
 interface ReportConfig {
   id: ReportType;
+  label: string;
   title: string;
   icon: React.ElementType;
 }
 
 const REPORT_CONFIGS: ReportConfig[] = [
-  { id: 'sla_breach', title: 'SLA Breach Report', icon: Clock },
-  { id: 'aging', title: 'Incident Aging Report', icon: AlertTriangle },
-  { id: 'committee', title: 'Committee Queue Report', icon: Users },
-  { id: 'conversion', title: 'Conversion Funnel Report', icon: GitBranch },
-  { id: 'distribution', title: 'Severity vs Priority', icon: BarChart3 },
+  { id: 'sla-breach', label: 'SLA Breach', title: 'SLA Breach Report', icon: Clock },
+  { id: 'aging', label: 'Incident Aging', title: 'Incident Aging Report', icon: AlertTriangle },
+  { id: 'committee', label: 'Committee Queue', title: 'Committee Queue Report', icon: Users },
+  { id: 'conversion', label: 'Conversion Funnel', title: 'Conversion Funnel Report', icon: GitBranch },
+  { id: 'distribution', label: 'Severity vs Priority', title: 'Severity vs Priority Report', icon: BarChart3 },
 ];
 
-// =============================================
+// ═══════════════════════════════════════════════════════════════════
+// TABS COMPONENT
+// ═══════════════════════════════════════════════════════════════════
+
+interface ReportTabsProps {
+  activeTab: ReportType;
+  onTabChange: (tab: ReportType) => void;
+}
+
+function ReportTabs({ activeTab, onTabChange }: ReportTabsProps) {
+  return (
+    <div className="border-b border-border">
+      <div className="flex gap-1 overflow-x-auto scrollbar-hide -mb-px">
+        {REPORT_CONFIGS.map((report) => {
+          const Icon = report.icon;
+          const isActive = activeTab === report.id;
+          return (
+            <button
+              key={report.id}
+              onClick={() => onTabChange(report.id)}
+              className={cn(
+                "flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap",
+                isActive 
+                  ? "border-primary text-primary bg-primary/5" 
+                  : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
+              )}
+            >
+              <Icon className={cn("h-4 w-4", isActive && "text-primary")} />
+              {report.label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════
 // SLA BREACH REPORT
-// =============================================
+// ═══════════════════════════════════════════════════════════════════
+
 function SLABreachReport({ incidents, onRowClick }: { incidents: Incident[]; onRowClick: (id: string) => void }) {
   const breachedIncidents = useMemo(() => 
     incidents.filter(i => i.sla?.response_breached || i.sla?.resolution_breached),
@@ -90,11 +133,11 @@ function SLABreachReport({ incidents, onRowClick }: { incidents: Incident[]; onR
     { key: 'key', label: 'Key', minWidth: 100, render: (i) => <span className="font-mono text-primary font-medium">{i.incident_key}</span> },
     { key: 'summary', label: 'Summary', minWidth: 280, canGrow: true, render: (i) => <span className="truncate block">{i.title}</span> },
     { key: 'severity', label: 'Sev', minWidth: 70, centered: true, render: (i) => <SeverityBadge severity={i.severity} /> },
-    { key: 'status', label: 'Status', minWidth: 110, centered: true, render: (i) => <StatusBadge status={i.status} /> },
+    { key: 'status', label: 'Status', minWidth: 115, centered: true, render: (i) => <StatusBadge status={i.status} /> },
     { key: 'assignee', label: 'Assignee', minWidth: 140, render: (i) => <span className="truncate">{i.assignee?.full_name || '—'}</span> },
     { key: 'age', label: 'Age', minWidth: 60, centered: true, render: (i) => <span className="font-mono text-xs">{getAgingTime(i.created_at)}</span> },
     { key: 'slaState', label: 'SLA State', minWidth: 90, centered: true, render: (i) => (
-      <Badge variant="outline" className={cn('text-[10px]', 
+      <Badge variant="outline" className={cn('text-[10px] whitespace-nowrap', 
         i.sla?.response_breached || i.sla?.resolution_breached 
           ? 'bg-destructive/10 text-destructive border-destructive/20' 
           : 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
@@ -102,16 +145,11 @@ function SLABreachReport({ incidents, onRowClick }: { incidents: Incident[]; onR
         {i.sla?.response_breached || i.sla?.resolution_breached ? 'BREACHED' : 'ON TRACK'}
       </Badge>
     )},
-    { key: 'breachAmount', label: 'Breach', minWidth: 90, centered: true, render: (i) => {
-      const days = Math.floor((Date.now() - new Date(i.created_at).getTime()) / (1000 * 60 * 60 * 24));
-      return <span className="font-mono text-destructive font-medium">{days}d</span>;
-    }},
-    { key: 'release', label: 'Release', minWidth: 100, render: (i) => <span className="truncate text-muted-foreground">{i.release_version?.version || '—'}</span> },
   ];
 
   return (
     <>
-      <ExecutiveInsightStrip title="SLA BREACH SUMMARY" insights={insights} />
+      <ExecutiveInsightStrip title="SLA BREACH SUMMARY" insights={insights} className="mb-4" />
       <ReportTable 
         data={breachedIncidents} 
         columns={columns} 
@@ -123,9 +161,10 @@ function SLABreachReport({ incidents, onRowClick }: { incidents: Incident[]; onR
   );
 }
 
-// =============================================
+// ═══════════════════════════════════════════════════════════════════
 // INCIDENT AGING REPORT
-// =============================================
+// ═══════════════════════════════════════════════════════════════════
+
 function AgingReport({ incidents, onRowClick }: { incidents: Incident[]; onRowClick: (id: string) => void }) {
   const openIncidents = useMemo(() => 
     incidents.filter(i => ['open', 'triage', 'to_committee', 'in_progress'].includes(i.status))
@@ -159,7 +198,7 @@ function AgingReport({ incidents, onRowClick }: { incidents: Incident[]; onRowCl
     { key: 'key', label: 'Key', minWidth: 100, render: (i) => <span className="font-mono text-primary font-medium">{i.incident_key}</span> },
     { key: 'summary', label: 'Summary', minWidth: 280, canGrow: true, render: (i) => <span className="truncate block">{i.title}</span> },
     { key: 'severity', label: 'Sev', minWidth: 70, centered: true, render: (i) => <SeverityBadge severity={i.severity} /> },
-    { key: 'status', label: 'Status', minWidth: 110, centered: true, render: (i) => <StatusBadge status={i.status} /> },
+    { key: 'status', label: 'Status', minWidth: 115, centered: true, render: (i) => <StatusBadge status={i.status} /> },
     { key: 'assignee', label: 'Assignee', minWidth: 140, render: (i) => <span className="truncate">{i.assignee?.full_name || '—'}</span> },
     { key: 'age', label: 'Age', minWidth: 60, centered: true, render: (i) => {
       const days = Math.floor((Date.now() - new Date(i.created_at).getTime()) / (1000 * 60 * 60 * 24));
@@ -178,7 +217,7 @@ function AgingReport({ incidents, onRowClick }: { incidents: Incident[]; onRowCl
       else if (days >= 3) bucket = '3-7d';
       else if (days >= 1) bucket = '1-3d';
       return (
-        <Badge variant="outline" className={cn('text-[10px]',
+        <Badge variant="outline" className={cn('text-[10px] whitespace-nowrap',
           days >= 7 ? 'bg-destructive/10 text-destructive border-destructive/20' :
           days >= 3 ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' :
           'bg-muted text-muted-foreground'
@@ -188,7 +227,7 @@ function AgingReport({ incidents, onRowClick }: { incidents: Incident[]; onRowCl
       );
     }},
     { key: 'slaState', label: 'SLA', minWidth: 70, centered: true, render: (i) => (
-      <Badge variant="outline" className={cn('text-[10px]', 
+      <Badge variant="outline" className={cn('text-[10px] whitespace-nowrap', 
         i.sla?.response_breached || i.sla?.resolution_breached 
           ? 'bg-destructive/10 text-destructive border-destructive/20' 
           : 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
@@ -196,12 +235,11 @@ function AgingReport({ incidents, onRowClick }: { incidents: Incident[]; onRowCl
         {i.sla?.response_breached || i.sla?.resolution_breached ? 'BREACH' : 'OK'}
       </Badge>
     )},
-    { key: 'release', label: 'Release', minWidth: 100, render: (i) => <span className="truncate text-muted-foreground">{i.release_version?.version || '—'}</span> },
   ];
 
   return (
     <>
-      <ExecutiveInsightStrip title="INCIDENT AGING SUMMARY" insights={insights} />
+      <ExecutiveInsightStrip title="INCIDENT AGING SUMMARY" insights={insights} className="mb-4" />
       <ReportTable 
         data={openIncidents} 
         columns={columns} 
@@ -213,9 +251,10 @@ function AgingReport({ incidents, onRowClick }: { incidents: Incident[]; onRowCl
   );
 }
 
-// =============================================
+// ═══════════════════════════════════════════════════════════════════
 // COMMITTEE QUEUE REPORT
-// =============================================
+// ═══════════════════════════════════════════════════════════════════
+
 function CommitteeReport({ onRowClick }: { onRowClick: (id: string) => void }) {
   const [showHistory, setShowHistory] = useState(false);
   const { data: queueItems = [], isLoading } = useCommitteeQueue({ includeClosedDecisions: showHistory });
@@ -273,14 +312,6 @@ function CommitteeReport({ onRowClick }: { onRowClick: (id: string) => void }) {
         )}
       </div>
     )},
-    { key: 'lastAction', label: 'Last Action', minWidth: 120, render: (i) => (
-      <span className="truncate text-muted-foreground text-[11px]">
-        {i.lastAction?.type === 'vetoed' && `Veto by ${i.lastAction.by}`}
-        {i.lastAction?.type === 'approved' && i.lastAction.by}
-        {i.lastAction?.type === 'sent_to_committee' && 'Sent'}
-        {!i.lastAction && '—'}
-      </span>
-    )},
     { key: 'age', label: 'Age', minWidth: 55, centered: true, render: (i) => (
       <span className={cn('font-mono text-xs font-medium', i.agingDays > 3 ? 'text-amber-600' : 'text-muted-foreground')}>
         {i.agingDays}d
@@ -293,7 +324,7 @@ function CommitteeReport({ onRowClick }: { onRowClick: (id: string) => void }) {
     { key: 'summary', label: 'Summary', minWidth: 280, canGrow: true, render: (i) => <span className="truncate block">{i.incident.title}</span> },
     { key: 'severity', label: 'Sev', minWidth: 70, centered: true, render: (i) => <SeverityBadge severity={i.incident.severity} /> },
     { key: 'outcome', label: 'Outcome', minWidth: 90, centered: true, render: (i) => (
-      <Badge variant="outline" className={cn('text-[10px]',
+      <Badge variant="outline" className={cn('text-[10px] whitespace-nowrap',
         i.committeeStatus === 'approved' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' :
         'bg-destructive/10 text-destructive border-destructive/20'
       )}>
@@ -313,13 +344,11 @@ function CommitteeReport({ onRowClick }: { onRowClick: (id: string) => void }) {
 
   return (
     <>
-      <div className="flex items-center justify-between mb-4">
-        <ExecutiveInsightStrip 
-          title={showHistory ? "COMMITTEE DECISION SUMMARY" : "COMMITTEE QUEUE UPDATE"} 
-          insights={showHistory ? historyInsights : queueInsights}
-          className="flex-1 mb-0"
-        />
-      </div>
+      <ExecutiveInsightStrip 
+        title={showHistory ? "COMMITTEE DECISION SUMMARY" : "COMMITTEE QUEUE SUMMARY"} 
+        insights={showHistory ? historyInsights : queueInsights}
+        className="mb-4"
+      />
       <div className="flex items-center gap-2 mb-4">
         <Button
           variant={showHistory ? "ghost" : "default"}
@@ -350,9 +379,10 @@ function CommitteeReport({ onRowClick }: { onRowClick: (id: string) => void }) {
   );
 }
 
-// =============================================
+// ═══════════════════════════════════════════════════════════════════
 // CONVERSION FUNNEL REPORT
-// =============================================
+// ═══════════════════════════════════════════════════════════════════
+
 function ConversionReport({ incidents, onRowClick }: { incidents: Incident[]; onRowClick: (id: string) => void }) {
   const convertedIncidents = useMemo(() => incidents.filter(i => i.converted_to_type != null), [incidents]);
   const notConverted = useMemo(() => incidents.filter(i => !i.converted_to_type && i.status !== 'open'), [incidents]);
@@ -366,17 +396,23 @@ function ConversionReport({ incidents, onRowClick }: { incidents: Incident[]; on
       }, 0) / convertedIncidents.length)
     : 0;
 
+  const storyCount = convertedIncidents.filter(i => i.converted_to_type === 'story').length;
+  const featureCount = convertedIncidents.filter(i => i.converted_to_type === 'feature').length;
+  const epicCount = convertedIncidents.filter(i => i.converted_to_type === 'epic').length;
+
   const insights = [
     { label: 'Converted', value: convertedIncidents.length, highlight: 'success' as const, icon: <CheckCircle className="h-4 w-4" /> },
     { label: 'Not Converted', value: notConverted.length, icon: <XCircle className="h-4 w-4" /> },
     { label: 'Avg Time', value: `${avgConversionTime}h`, icon: <Timer className="h-4 w-4" /> },
+    { label: 'Stories', value: storyCount, icon: <FileText className="h-4 w-4" /> },
+    { label: 'Features', value: featureCount, icon: <GitBranch className="h-4 w-4" /> },
   ];
 
   const columns: ReportColumn<Incident>[] = [
     { key: 'key', label: 'Key', minWidth: 100, render: (i) => <span className="font-mono text-primary font-medium">{i.incident_key}</span> },
     { key: 'summary', label: 'Summary', minWidth: 260, canGrow: true, render: (i) => <span className="truncate block">{i.title}</span> },
     { key: 'severity', label: 'Sev', minWidth: 70, centered: true, render: (i) => <SeverityBadge severity={i.severity} /> },
-    { key: 'status', label: 'Status', minWidth: 110, centered: true, render: (i) => <StatusBadge status={i.status} /> },
+    { key: 'status', label: 'Status', minWidth: 115, centered: true, render: (i) => <StatusBadge status={i.status} /> },
     { key: 'converted', label: 'Converted?', minWidth: 85, centered: true, render: (i) => (
       i.converted_to_type 
         ? <CheckCircle className="h-4 w-4 text-emerald-500" />
@@ -384,7 +420,7 @@ function ConversionReport({ incidents, onRowClick }: { incidents: Incident[]; on
     )},
     { key: 'targetType', label: 'Target', minWidth: 90, centered: true, render: (i) => (
       i.converted_to_type ? (
-        <Badge variant="outline" className={cn('text-[10px]',
+        <Badge variant="outline" className={cn('text-[10px] whitespace-nowrap',
           i.converted_to_type === 'epic' ? 'bg-violet-500/10 text-violet-600 border-violet-500/20' :
           i.converted_to_type === 'feature' ? 'bg-sky-500/10 text-sky-600 border-sky-500/20' :
           'bg-teal-500/10 text-teal-600 border-teal-500/20'
@@ -397,16 +433,11 @@ function ConversionReport({ incidents, onRowClick }: { incidents: Incident[]; on
     { key: 'convertedAt', label: 'Converted At', minWidth: 100, render: (i) => (
       <span className="text-muted-foreground text-xs">{i.converted_at ? new Date(i.converted_at).toLocaleDateString() : '—'}</span>
     )},
-    { key: 'timeToConvert', label: 'Time', minWidth: 70, centered: true, render: (i) => {
-      if (!i.converted_at || !i.created_at) return <span className="text-muted-foreground">—</span>;
-      const hours = Math.round((new Date(i.converted_at).getTime() - new Date(i.created_at).getTime()) / (1000 * 60 * 60));
-      return <span className="font-mono text-xs">{hours}h</span>;
-    }},
   ];
 
   return (
     <>
-      <ExecutiveInsightStrip title="CONVERSION FUNNEL SUMMARY" insights={insights} />
+      <ExecutiveInsightStrip title="CONVERSION FUNNEL SUMMARY" insights={insights} className="mb-4" />
       <ReportTable 
         data={convertedIncidents} 
         columns={columns} 
@@ -418,9 +449,10 @@ function ConversionReport({ incidents, onRowClick }: { incidents: Incident[]; on
   );
 }
 
-// =============================================
+// ═══════════════════════════════════════════════════════════════════
 // SEVERITY VS PRIORITY REPORT
-// =============================================
+// ═══════════════════════════════════════════════════════════════════
+
 function DistributionReport({ incidents, onRowClick }: { incidents: Incident[]; onRowClick: (id: string) => void }) {
   const sev1LowPriority = incidents.filter(i => i.severity === 'SEV1' && (i.priority === 'P3' || i.priority === 'P4')).length;
   const triageMismatches = incidents.filter(i => {
@@ -429,9 +461,14 @@ function DistributionReport({ incidents, onRowClick }: { incidents: Incident[]; 
     return Math.abs(sevNum - priNum) >= 2;
   }).length;
 
+  const sev1Count = incidents.filter(i => i.severity === 'SEV1').length;
+  const sev2Count = incidents.filter(i => i.severity === 'SEV2').length;
+
   const insights = [
     { label: 'Total Incidents', value: incidents.length, icon: <BarChart3 className="h-4 w-4" /> },
-    { label: 'SEV1 Low Priority', value: sev1LowPriority, highlight: sev1LowPriority > 0 ? 'danger' as const : undefined, icon: <AlertTriangle className="h-4 w-4" /> },
+    { label: 'SEV1', value: sev1Count, highlight: sev1Count > 0 ? 'danger' as const : undefined, icon: <AlertTriangle className="h-4 w-4" /> },
+    { label: 'SEV2', value: sev2Count, highlight: sev2Count > 0 ? 'warning' as const : undefined, icon: <AlertCircle className="h-4 w-4" /> },
+    { label: 'SEV1 Low Priority', value: sev1LowPriority, highlight: sev1LowPriority > 0 ? 'danger' as const : undefined, icon: <XCircle className="h-4 w-4" /> },
     { label: 'Triage Mismatches', value: triageMismatches, highlight: triageMismatches > 0 ? 'warning' as const : undefined, icon: <AlertCircle className="h-4 w-4" /> },
   ];
 
@@ -440,24 +477,15 @@ function DistributionReport({ incidents, onRowClick }: { incidents: Incident[]; 
     { key: 'summary', label: 'Summary', minWidth: 260, canGrow: true, render: (i) => <span className="truncate block">{i.title}</span> },
     { key: 'severity', label: 'Sev', minWidth: 70, centered: true, render: (i) => <SeverityBadge severity={i.severity} /> },
     { key: 'priority', label: 'Priority', minWidth: 80, centered: true, render: (i) => <PriorityBadge priority={i.priority} /> },
-    { key: 'status', label: 'Status', minWidth: 110, centered: true, render: (i) => <StatusBadge status={i.status} /> },
+    { key: 'status', label: 'Status', minWidth: 115, centered: true, render: (i) => <StatusBadge status={i.status} /> },
     { key: 'assignee', label: 'Assignee', minWidth: 140, render: (i) => <span className="truncate">{i.assignee?.full_name || '—'}</span> },
     { key: 'age', label: 'Age', minWidth: 60, centered: true, render: (i) => <span className="font-mono text-xs">{getAgingTime(i.created_at)}</span> },
-    { key: 'slaState', label: 'SLA', minWidth: 70, centered: true, render: (i) => (
-      <Badge variant="outline" className={cn('text-[10px]', 
-        i.sla?.response_breached || i.sla?.resolution_breached 
-          ? 'bg-destructive/10 text-destructive border-destructive/20' 
-          : 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
-      )}>
-        {i.sla?.response_breached || i.sla?.resolution_breached ? 'BREACH' : 'OK'}
-      </Badge>
-    )},
     { key: 'triageFlag', label: 'Triage', minWidth: 80, centered: true, render: (i) => {
       const sevNum = parseInt(i.severity?.replace('SEV', '') || '4');
       const priNum = parseInt(i.priority?.replace('P', '') || '4');
       const mismatch = Math.abs(sevNum - priNum) >= 2;
       return mismatch ? (
-        <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-600 border-amber-500/20">
+        <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-600 border-amber-500/20 whitespace-nowrap">
           REVIEW
         </Badge>
       ) : <span className="text-muted-foreground">—</span>;
@@ -466,7 +494,7 @@ function DistributionReport({ incidents, onRowClick }: { incidents: Incident[]; 
 
   return (
     <>
-      <ExecutiveInsightStrip title="SEVERITY VS PRIORITY ANALYSIS" insights={insights} />
+      <ExecutiveInsightStrip title="SEVERITY VS PRIORITY ANALYSIS" insights={insights} className="mb-4" />
       <ReportTable 
         data={incidents} 
         columns={columns} 
@@ -478,25 +506,36 @@ function DistributionReport({ incidents, onRowClick }: { incidents: Incident[]; 
   );
 }
 
-// =============================================
+// ═══════════════════════════════════════════════════════════════════
 // MAIN REPORTS PAGE
-// =============================================
+// ═══════════════════════════════════════════════════════════════════
+
 export default function IncidentReportsPage() {
   const navigate = useNavigate();
-  const [activeReport, setActiveReport] = useState<ReportType>('sla_breach');
+  const [searchParams, setSearchParams] = useSearchParams();
   
-  const { data: incidents = [], isLoading, error } = useIncidents();
+  // Get active tab from URL or default to 'sla-breach'
+  const tabFromUrl = searchParams.get('tab') as ReportType | null;
+  const activeReport = tabFromUrl && REPORT_CONFIGS.some(r => r.id === tabFromUrl) 
+    ? tabFromUrl 
+    : 'sla-breach';
+  
+  const { data: incidents = [], isLoading, error, refetch } = useIncidents();
+
+  const handleTabChange = useCallback((tab: ReportType) => {
+    setSearchParams({ tab });
+  }, [setSearchParams]);
 
   const handleRowClick = (id: string) => {
     navigate(`/release/incidents/${id}`);
   };
 
-  // Get report-specific data and settings
+  // Get report-specific data and settings for export
   const getReportExportData = useCallback(() => {
     const STATUS_LABELS: Record<string, string> = {
       open: 'New',
       triage: 'Triage',
-      to_committee: 'To Committee',
+      to_committee: 'Committee',
       in_progress: 'In Progress',
       resolved: 'Resolved',
       converted: 'Converted',
@@ -523,7 +562,7 @@ export default function IncidentReportsPage() {
     });
 
     switch (activeReport) {
-      case 'sla_breach': {
+      case 'sla-breach': {
         const breached = incidents.filter(i => i.sla?.response_breached || i.sla?.resolution_breached);
         return {
           title: 'SLA Breach Report',
@@ -644,76 +683,59 @@ export default function IncidentReportsPage() {
         pageTitle={`Incident Reports / ${activeConfig.title}`}
         showDivider={false}
         rightActions={
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5">
-                <Download className="h-3.5 w-3.5" />
-                Export
-                <ChevronDown className="h-3 w-3" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-popover border border-border shadow-lg z-50">
-              <DropdownMenuItem onClick={handleExportCSV} className="text-xs cursor-pointer">
-                <Download className="h-3.5 w-3.5 mr-2" />
-                Export as CSV
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleExportPDF} className="text-xs cursor-pointer">
-                <FileText className="h-3.5 w-3.5 mr-2" />
-                Export as PDF
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex items-center gap-2">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-8 w-8 p-0"
+              onClick={() => refetch()}
+            >
+              <RefreshCw className="h-4 w-4" />
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5">
+                  <Download className="h-3.5 w-3.5" />
+                  Export
+                  <ChevronDown className="h-3 w-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-popover border border-border shadow-lg z-50">
+                <DropdownMenuItem onClick={handleExportCSV} className="text-xs cursor-pointer">
+                  <Download className="h-3.5 w-3.5 mr-2" />
+                  Export as CSV
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleExportPDF} className="text-xs cursor-pointer">
+                  <FileText className="h-3.5 w-3.5 mr-2" />
+                  Export as PDF
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         }
       />
 
-      {/* Content - flex row with proper overflow handling */}
-      <div className="flex-1 flex min-h-0">
-        {/* Left Panel - Report Navigation */}
-        <div className="w-56 border-r border-border bg-muted/30 flex-shrink-0 overflow-y-auto">
-          <div className="p-3">
-            <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-2">Reports</div>
-            <div className="space-y-0.5">
-              {REPORT_CONFIGS.map(report => {
-                const Icon = report.icon;
-                const isActive = activeReport === report.id;
-                return (
-                  <button
-                    key={report.id}
-                    className={cn(
-                      "w-full flex items-center gap-2 px-3 py-2 rounded text-left transition-colors text-sm",
-                      isActive 
-                        ? "bg-primary text-primary-foreground" 
-                        : "hover:bg-muted text-foreground"
-                    )}
-                    onClick={() => setActiveReport(report.id)}
-                  >
-                    <Icon className="h-4 w-4 flex-shrink-0" />
-                    <span className="truncate font-medium">{report.title}</span>
-                    {isActive && <ChevronRight className="h-3 w-3 ml-auto" />}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
+      {/* Tabs navigation */}
+      <div className="px-6">
+        <ReportTabs activeTab={activeReport} onTabChange={handleTabChange} />
+      </div>
 
-        {/* Right Panel - Report Content - single scroll surface */}
-        <div className="flex-1 overflow-y-auto min-h-0">
-          <div className="p-6">
-            {isLoading ? (
-              <div className="flex items-center justify-center py-20">
-                <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full" />
-              </div>
-            ) : (
-              <>
-                {activeReport === 'sla_breach' && <SLABreachReport incidents={incidents} onRowClick={handleRowClick} />}
-                {activeReport === 'aging' && <AgingReport incidents={incidents} onRowClick={handleRowClick} />}
-                {activeReport === 'committee' && <CommitteeReport onRowClick={handleRowClick} />}
-                {activeReport === 'conversion' && <ConversionReport incidents={incidents} onRowClick={handleRowClick} />}
-                {activeReport === 'distribution' && <DistributionReport incidents={incidents} onRowClick={handleRowClick} />}
-              </>
-            )}
-          </div>
+      {/* Content - single scroll surface */}
+      <div className="flex-1 overflow-y-auto min-h-0">
+        <div className="p-6">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full" />
+            </div>
+          ) : (
+            <>
+              {activeReport === 'sla-breach' && <SLABreachReport incidents={incidents} onRowClick={handleRowClick} />}
+              {activeReport === 'aging' && <AgingReport incidents={incidents} onRowClick={handleRowClick} />}
+              {activeReport === 'committee' && <CommitteeReport onRowClick={handleRowClick} />}
+              {activeReport === 'conversion' && <ConversionReport incidents={incidents} onRowClick={handleRowClick} />}
+              {activeReport === 'distribution' && <DistributionReport incidents={incidents} onRowClick={handleRowClick} />}
+            </>
+          )}
         </div>
       </div>
     </div>
