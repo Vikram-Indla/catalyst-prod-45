@@ -1,11 +1,11 @@
 /**
  * Major Incidents Table
- * Enterprise-density table for incidents requiring attention
- * Reduced pill noise, SLA State is primary urgency signal
+ * Enterprise-grade table for major/at-risk incidents
+ * Proper column widths, no clipped text, readable row heights
  */
 
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
+import { AlertTriangle } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { IncidentWithSLA } from '../types';
 
@@ -41,39 +41,52 @@ const STATUS_LABELS: Record<string, string> = {
   closed: 'Closed',
 };
 
-export function MajorIncidentsTable({ incidents, onRowClick, maxHeight = '360px' }: MajorIncidentsTableProps) {
+export function MajorIncidentsTable({ 
+  incidents, 
+  onRowClick, 
+  maxHeight = '400px' 
+}: MajorIncidentsTableProps) {
   return (
-    <section className="mb-6">
-      <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
-        Major Incidents Requiring Attention
-      </h2>
-      <div className="border border-border rounded-md bg-card overflow-hidden">
-        <ScrollArea className="max-h-[360px]" style={{ maxHeight }}>
-          <table className="w-full min-w-[800px]">
+    <section>
+      <div className="flex items-center gap-2 mb-4">
+        <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+          Major Incidents Requiring Attention
+        </h2>
+        <span className="ml-auto text-sm text-muted-foreground tabular-nums">
+          {incidents.length} incident{incidents.length !== 1 ? 's' : ''}
+        </span>
+      </div>
+
+      <div 
+        className="border border-border rounded-lg bg-card overflow-hidden"
+      >
+        <ScrollArea style={{ maxHeight }}>
+          <table className="w-full min-w-[900px]">
             <thead className="bg-muted/50 sticky top-0 z-10">
               <tr>
-                <th className="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border">
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-border w-[100px]">
                   ID
                 </th>
-                <th className="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border min-w-[200px]">
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-border">
                   Summary
                 </th>
-                <th className="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border w-[60px]">
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-border w-[72px]">
                   Severity
                 </th>
-                <th className="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border w-[48px]">
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-border w-[56px]">
                   Level
                 </th>
-                <th className="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border w-[80px]">
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-border w-[100px]">
                   Status
                 </th>
-                <th className="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border w-[56px]">
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-border w-[72px]">
                   Age
                 </th>
-                <th className="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border min-w-[120px]">
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-border w-[140px]">
                   Assignee
                 </th>
-                <th className="px-3 py-2.5 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border w-[80px]">
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-border w-[90px]">
                   SLA State
                 </th>
               </tr>
@@ -81,73 +94,104 @@ export function MajorIncidentsTable({ incidents, onRowClick, maxHeight = '360px'
             <tbody>
               {incidents.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-3 py-8 text-center text-muted-foreground text-sm">
-                    No major incidents requiring attention
+                  <td colSpan={8} className="px-4 py-12 text-center">
+                    <div className="text-muted-foreground">
+                      <AlertTriangle className="h-8 w-8 mx-auto mb-2 opacity-30" />
+                      <p className="text-sm">No major incidents at this time</p>
+                      <p className="text-xs mt-1 opacity-70">All systems operating normally</p>
+                    </div>
                   </td>
                 </tr>
               ) : (
                 incidents.map((incident) => {
                   const slaConfig = SLA_STATE_CONFIG[incident.sla_state.state] || SLA_STATE_CONFIG.n_a;
+                  const isUrgent = incident.sla_state.state === 'breached' || incident.sla_state.state === 'at_risk';
 
                   return (
                     <tr
                       key={incident.id}
                       onClick={() => onRowClick(incident.id)}
-                      className="hover:bg-muted/30 cursor-pointer border-b border-border last:border-b-0"
+                      className={cn(
+                        "hover:bg-muted/30 cursor-pointer transition-colors",
+                        "border-b border-border last:border-b-0",
+                        isUrgent && "bg-destructive/[0.02]"
+                      )}
                     >
-                      <td className="px-3 py-2.5 align-middle">
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-mono text-sm font-medium text-[var(--brand-primary)] leading-none">
+                      {/* ID */}
+                      <td className="px-4 py-3.5 align-middle">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-sm font-medium text-[var(--brand-primary)]">
                             {incident.incident_key}
                           </span>
                           {incident.is_major_incident && (
-                            <Badge variant="destructive" className="text-[9px] px-1 py-0 h-4 leading-none">
+                            <span className="px-1.5 py-0.5 text-[10px] font-semibold uppercase bg-destructive/10 text-destructive rounded">
                               Major
-                            </Badge>
+                            </span>
                           )}
                         </div>
                       </td>
-                      <td className="px-3 py-2.5 align-middle">
-                        <span className="text-sm text-foreground leading-normal line-clamp-1">
+
+                      {/* Summary */}
+                      <td className="px-4 py-3.5 align-middle">
+                        <span className="text-sm text-foreground leading-snug line-clamp-2">
                           {incident.title}
                         </span>
                       </td>
-                      <td className="px-3 py-2.5 align-middle">
-                        <span className="text-sm text-foreground font-medium leading-none">
+
+                      {/* Severity */}
+                      <td className="px-4 py-3.5 align-middle">
+                        <span className={cn(
+                          "text-sm font-semibold",
+                          incident.severity === 'SEV1' && "text-destructive",
+                          incident.severity === 'SEV2' && "text-[hsl(var(--warning))]",
+                          incident.severity !== 'SEV1' && incident.severity !== 'SEV2' && "text-foreground"
+                        )}>
                           {incident.severity}
                         </span>
                       </td>
-                      <td className="px-3 py-2.5 align-middle">
-                        <span className="text-sm text-muted-foreground leading-none">
+
+                      {/* Level */}
+                      <td className="px-4 py-3.5 align-middle">
+                        <span className="text-sm text-muted-foreground">
                           {incident.support_level || '—'}
                         </span>
                       </td>
-                      <td className="px-3 py-2.5 align-middle">
-                        <span className="text-sm text-foreground leading-none">
+
+                      {/* Status */}
+                      <td className="px-4 py-3.5 align-middle">
+                        <span className="text-sm text-foreground">
                           {STATUS_LABELS[incident.status] || incident.status}
                         </span>
                       </td>
-                      <td className="px-3 py-2.5 align-middle">
+
+                      {/* Age */}
+                      <td className="px-4 py-3.5 align-middle">
                         <span className={cn(
-                          "text-sm font-mono tabular-nums leading-none",
-                          incident.age_hours > 48 && "text-destructive font-medium"
+                          "text-sm font-mono tabular-nums",
+                          incident.age_hours > 168 && "text-destructive font-medium",
+                          incident.age_hours > 72 && incident.age_hours <= 168 && "text-[hsl(var(--warning))]",
+                          incident.age_hours <= 72 && "text-muted-foreground"
                         )}>
                           {formatAge(incident.age_hours)}
                         </span>
                       </td>
-                      <td className="px-3 py-2.5 align-middle">
+
+                      {/* Assignee */}
+                      <td className="px-4 py-3.5 align-middle">
                         {incident.assignee_name ? (
-                          <span className="text-sm text-foreground leading-none">
+                          <span className="text-sm text-foreground truncate block max-w-[140px]">
                             {incident.assignee_name}
                           </span>
                         ) : (
-                          <span className="text-sm text-destructive font-medium leading-none">
+                          <span className="text-sm text-destructive/80 italic">
                             Unassigned
                           </span>
                         )}
                       </td>
-                      <td className="px-3 py-2.5 align-middle">
-                        <span className={cn("text-sm leading-none", slaConfig.className)}>
+
+                      {/* SLA State */}
+                      <td className="px-4 py-3.5 align-middle">
+                        <span className={cn("text-sm", slaConfig.className)}>
                           {slaConfig.label}
                         </span>
                       </td>
