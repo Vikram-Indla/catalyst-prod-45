@@ -1,3 +1,12 @@
+/**
+ * FeaturesPage — Slim Framework
+ * 
+ * Simplified feature list without SAFe complexity:
+ * - No WSJF prioritization view
+ * - No heavy toolbar actions
+ * - Story-driven progress
+ */
+
 import { useState, useEffect } from 'react';
 import * as React from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -6,7 +15,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { FeatureDetailsPanel } from '@/components/items/features/FeatureDetailsPanel';
-import { FeatureWSJFDialog } from '@/components/items/features/FeatureWSJFDialog';
 import { FeatureToolbar } from '@/components/items/features/FeatureToolbar';
 import { FeatureTable } from '@/components/items/features/FeatureTable';
 import { FeatureMassMoveDialog } from '@/components/items/features/FeatureMassMoveDialog';
@@ -19,7 +27,6 @@ export default function FeaturesPage() {
   const [searchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
-  const [wsjfDialogOpen, setWSJFDialogOpen] = useState(false);
   const [massMoveDialogOpen, setMassMoveDialogOpen] = useState(false);
   
   // Get featureId from URL params
@@ -41,12 +48,26 @@ export default function FeaturesPage() {
       let query = supabase
         .from('features')
         .select(`
-          *,
+          id,
+          display_id,
+          name,
+          description,
+          status,
+          health,
+          blocked,
+          blocked_reason,
+          epic_id,
+          project_id,
+          owner_id,
+          planned_start_date,
+          planned_end_date,
+          created_at,
+          updated_at,
           epics(name),
-          programs(name),
-          teams(name)
+          owner:profiles!features_owner_id_fkey(full_name)
         `)
-        .order('rank_within_epic', { ascending: true, nullsFirst: false });
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false });
 
       if (searchQuery) {
         query = query.ilike('name', `%${searchQuery}%`);
@@ -68,8 +89,8 @@ export default function FeaturesPage() {
         'Status': f.status || '',
         'Health': f.health || '',
         'Epic': (f as any).epics?.name || '',
-        'Program': (f as any).programs?.name || '',
-        'Points': f.estimate_points || 0
+        'Blocked': f.blocked ? 'Yes' : 'No',
+        'Owner': (f as any).owner?.full_name || '',
       }));
       
       const csv = [
@@ -84,7 +105,7 @@ export default function FeaturesPage() {
       link.download = 'features-export.csv';
       link.click();
       
-      toast.success('Features exported to CSV');
+      toast.success('Features exported');
     } else {
       toast.error('No features to export');
     }
@@ -98,7 +119,7 @@ export default function FeaturesPage() {
           <div className="min-w-0">
             <h1 className="text-xl sm:text-2xl font-bold truncate">Features</h1>
             <p className="text-xs sm:text-sm text-muted-foreground">
-              Mid-level work items that deliver value to end users
+              Lightweight delivery slices between Epics and Stories
             </p>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
@@ -128,15 +149,8 @@ export default function FeaturesPage() {
       <FeatureToolbar
         selectedFeatureIds={selectedRows}
         onCreateFeature={() => navigate('/features?featureId=new')}
-        onImport={() => toast.info('Import features coming soon')}
         onExport={handleExport}
-        onAuditReport={() => toast.info('Audit report coming soon')}
-        onWSJFPrioritization={() => navigate('/features/prioritization')}
         onMassMove={() => setMassMoveDialogOpen(true)}
-        onPromoteToEpic={() => toast.info('Promote to epic coming soon')}
-        onWorkflow={() => toast.info('Workflow coming soon')}
-        onRecycleBin={() => toast.info('Recycle bin coming soon')}
-        onCanceledItems={() => toast.info('Canceled items coming soon')}
       />
 
       {/* Features Table */}
@@ -148,20 +162,24 @@ export default function FeaturesPage() {
         ) : features && features.length > 0 ? (
           <div className="overflow-x-auto">
             <FeatureTable
-            features={features}
-            selectedIds={selectedRows}
-            onSelectionChange={setSelectedRows}
-            onRowClick={(id) => {
-              navigate(`/features?featureId=${id}`);
-            }}
-            onSortChange={(column, direction) => {
-              toast.info(`Sorting by ${column} ${direction}`);
-            }}
+              features={features}
+              selectedIds={selectedRows}
+              onSelectionChange={setSelectedRows}
+              onRowClick={(id) => {
+                navigate(`/features?featureId=${id}`);
+              }}
+              onSortChange={(column, direction) => {
+                toast.info(`Sorting by ${column} ${direction}`);
+              }}
             />
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center h-64 text-center px-4">
             <div className="text-sm text-muted-foreground mb-4">No features found</div>
+            <Button onClick={() => setSelectedFeatureId('new')} size="sm">
+              <Plus className="w-4 h-4 mr-2" />
+              Create First Feature
+            </Button>
           </div>
         )}
       </div>
@@ -183,13 +201,6 @@ export default function FeaturesPage() {
         open={massMoveDialogOpen}
         onClose={() => setMassMoveDialogOpen(false)}
         selectedFeatureIds={selectedRows}
-      />
-
-      {/* WSJF Prioritization Dialog */}
-      <FeatureWSJFDialog
-        features={selectedRows.length > 0 ? features?.filter(f => selectedRows.includes(f.id)) || [] : []}
-        open={wsjfDialogOpen}
-        onClose={() => setWSJFDialogOpen(false)}
       />
     </div>
   );
