@@ -285,7 +285,7 @@ export default function BacklogPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-stone-50">
       <BacklogHeader 
         viewingOptions={VIEWING_OPTIONS}
         selectedViewingId={selectedViewingId}
