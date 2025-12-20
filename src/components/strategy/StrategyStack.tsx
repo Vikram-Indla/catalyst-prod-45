@@ -112,12 +112,24 @@ function getStatusColor(status?: string): { bg: string; text: string; border: st
   }
 }
 
-function getCoverageStatus(coverage: number): { color: string; label: string } {
+function getCoverageStatus(coverage: number): { color: string; label: string; badgeClass: string } {
   // Use safePercentage to prevent NaN issues
   const safeCoverage = safePercentage(coverage);
-  if (safeCoverage >= 80) return { color: 'var(--status-success)', label: 'Healthy' };
-  if (safeCoverage >= 50) return { color: 'var(--status-warning)', label: 'At Risk' };
-  return { color: 'var(--status-danger)', label: 'Critical' };
+  if (safeCoverage >= 80) return { 
+    color: 'var(--status-success)', 
+    label: 'Healthy',
+    badgeClass: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+  };
+  if (safeCoverage >= 50) return { 
+    color: 'var(--status-warning)', 
+    label: 'At Risk',
+    badgeClass: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400'
+  };
+  return { 
+    color: 'var(--status-danger)', 
+    label: 'Critical',
+    badgeClass: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
+  };
 }
 
 export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) {
@@ -422,14 +434,11 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                     </span>
                   </div>
                   
-                  {/* Aligned: Progress Bar + % */}
+                  {/* Aligned: Progress Bar + % - Improved track contrast */}
                   <div className="flex items-center gap-1.5">
                     {data.count > 0 ? (
                       <>
-                        <div 
-                          className="flex-1 h-[3px] rounded-full overflow-hidden"
-                          style={{ backgroundColor: 'var(--progress-bg)' }}
-                        >
+                        <div className="flex-1 h-[3px] rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700">
                           <div 
                             className="h-full rounded-full transition-all"
                             style={{ 
@@ -454,12 +463,14 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                     )}
                   </div>
                   
-                  {/* Coverage Label */}
+                  {/* Coverage Label - Consistent badge styling */}
                   <div className="text-center">
                     {data.count > 0 ? (
                       <span 
-                        className={cn(TYPOGRAPHY.statusBadge)}
-                        style={{ color: coverageStatus.color }}
+                        className={cn(
+                          'px-2 py-0.5 rounded text-xs font-medium',
+                          coverageStatus.badgeClass
+                        )}
                       >
                         {coverageStatus.label}
                       </span>
@@ -468,16 +479,16 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                     )}
                   </div>
                   
-                  {/* Gap Badge */}
+                  {/* Gap Badge - Neutral grey for Onyx consistency */}
                   <div className="text-center">
                     {hasGap ? (
                       <span 
-                        className={cn(TYPOGRAPHY.countBadge, 'inline-flex items-center gap-0.5 px-1 py-0.5 rounded')}
-                        style={{ 
-                          backgroundColor: 'var(--status-warning-bg)',
-                          color: 'var(--status-warning)',
-                          border: '1px solid var(--status-warning)',
-                        }}
+                        className={cn(
+                          TYPOGRAPHY.countBadge, 
+                          'inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded',
+                          'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300',
+                          'border border-gray-300 dark:border-gray-600'
+                        )}
                       >
                         <AlertTriangle size={10} />
                         {data.gap}

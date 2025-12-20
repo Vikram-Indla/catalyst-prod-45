@@ -222,7 +222,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
               icon={<AlertTriangle size={18} />}
               onClick={() => navigate('/enterprise/okr-hub')}
               accentColor={atRiskCount > 0 ? 'warning' : 'muted'}
-              valueColor={atRiskCount > 0 ? 'text-status-warning' : undefined}
+              // Removed valueColor - all KPI values should be consistent black/white
             />
 
             <CompactKPITile
@@ -232,7 +232,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
               icon={<Target size={18} />}
               onClick={() => navigate('/enterprise/backlog')}
               accentColor={displayData.alignmentGaps > 0 ? 'bronze' : 'muted'}
-              valueColor={displayData.alignmentGaps > 0 ? 'text-secondary-bronze' : undefined}
+              // Removed valueColor - all KPI values should be consistent black/white
             />
 
             <CompactKPITile
@@ -242,7 +242,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
               icon={<Shield size={18} />}
               onClick={() => navigate('/enterprise/risks')}
               accentColor={displayData.highRisks > 0 ? 'danger' : 'muted'}
-              valueColor={displayData.highRisks > 0 ? 'text-status-danger' : undefined}
+              // Removed valueColor - all KPI values should be consistent black/white
             />
           </div>
         </div>
