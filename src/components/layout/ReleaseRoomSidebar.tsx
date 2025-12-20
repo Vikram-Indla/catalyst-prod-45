@@ -1,4 +1,4 @@
-import { LayoutDashboard, AlertCircle, Tag, Calendar, Settings, List, Users, FileText } from 'lucide-react';
+import { AlertCircle, Tag, Calendar, Settings, List, Users, FileText } from 'lucide-react';
 import { SidebarBase, SidebarConfig, SidebarMenuItem } from './SidebarBase';
 import { useOpenIncidentCount } from '@/hooks/useOpenIncidentCount';
 
@@ -15,7 +15,6 @@ export function ReleaseRoomSidebar({ expanded, onToggle, className }: ReleaseRoo
     badge: 'RL',
     label: 'Release',
     items: [
-      { id: 'incidents-dashboard', title: 'Incident Dashboard', path: '/release/incidents/dashboard', icon: LayoutDashboard, exact: true },
       { id: 'incidents', title: 'Incident List', path: '/release/incidents', icon: List, exact: true, badge: openIncidentCount },
       { id: 'incident-reports', title: 'Incident Reports', path: '/release/incident-reports', icon: FileText, exact: true },
       { id: 'committee-queue', title: 'Committee Queue', path: '/release/committee-queue', icon: Users, exact: true },
