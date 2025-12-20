@@ -950,7 +950,7 @@
 }
 
 .noneValue {
-  color: hsl(var(--muted-foreground));
+  color: hsl(var(--foreground) / 0.6);
   font-style: italic;
 }
 
