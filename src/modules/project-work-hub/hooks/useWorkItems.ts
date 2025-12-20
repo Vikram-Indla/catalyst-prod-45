@@ -2,147 +2,65 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { WorkItem, WorkItemType, WorkItemWithChildren, WorkHubFilters, StatusCategory, STATUS_CATEGORY_MAP } from '../types';
 
-// Mock data for development - will be replaced with real queries
-const generateMockWorkItems = (projectId: string): WorkItem[] => {
-  const items: WorkItem[] = [];
-  const now = new Date();
-  
-  // Generate Features
-  for (let f = 1; f <= 3; f++) {
-    const featureId = `feature-${f}`;
-    items.push({
-      id: featureId,
-      key: `PRJ-${f}`,
-      type: 'FEATURE',
-      summary: `Feature ${f}: ${['User Authentication System', 'Payment Gateway Integration', 'Dashboard Analytics'][f-1]}`,
-      status: ['in_progress', 'done', 'open'][f-1],
-      statusCategory: ['IN_PROGRESS', 'DONE', 'TODO'][f-1] as StatusCategory,
-      priority: ['HIGH', 'MEDIUM', 'LOW'][f-1] as any,
-      assigneeName: ['Ahmed Yousry', 'Waleed El-Melegy', null][f-1] || undefined,
-      assigneeAvatar: f < 3 ? `https://i.pravatar.cc/32?u=${f}` : undefined,
-      createdAt: new Date(now.getTime() - f * 7 * 24 * 60 * 60 * 1000).toISOString(),
-      updatedAt: new Date(now.getTime() - f * 2 * 24 * 60 * 60 * 1000).toISOString(),
-      commentsCount: f * 2,
-      quarterId: 'q1-2025',
-      quarterName: 'Q1 2025',
-      releaseVersionId: 'rel-1',
-      releaseVersionName: 'Release 1.0',
-      epicId: `epic-${f}`,
-      epicKey: `EPIC-${f}`,
-      epicName: `Epic ${f}`,
-    });
-
-    // Generate Stories for each Feature
-    for (let s = 1; s <= 4; s++) {
-      const storyId = `story-${f}-${s}`;
-      const storyNum = (f - 1) * 4 + s + 3;
-      items.push({
-        id: storyId,
-        key: `PRJ-${storyNum}`,
-        type: 'STORY',
-        summary: `Story ${s} for Feature ${f}: ${['Login flow', 'Password reset', 'User profile', 'Session management'][s-1]}`,
-        status: ['open', 'in_development', 'in_qa', 'done'][s-1],
-        statusCategory: ['TODO', 'IN_PROGRESS', 'IN_PROGRESS', 'DONE'][s-1] as StatusCategory,
-        priority: ['HIGH', 'MEDIUM', 'LOW', 'MEDIUM'][s-1] as any,
-        assigneeName: ['Ahmed Yousry', 'Waleed El-Melegy', 'Hasan Elsherbiny', null][s-1] || undefined,
-        assigneeAvatar: s < 4 ? `https://i.pravatar.cc/32?u=${f}${s}` : undefined,
-        createdAt: new Date(now.getTime() - (f * 7 + s) * 24 * 60 * 60 * 1000).toISOString(),
-        updatedAt: new Date(now.getTime() - s * 24 * 60 * 60 * 1000).toISOString(),
-        commentsCount: s,
-        quarterId: 'q1-2025',
-        quarterName: 'Q1 2025',
-        releaseVersionId: 'rel-1',
-        releaseVersionName: 'Release 1.0',
-        parentId: featureId,
-        parentKey: `PRJ-${f}`,
-        subtaskCount: 2,
-        defectCount: s % 2,
-        incidentCount: s === 1 ? 1 : 0,
-      });
-
-      // Generate Subtasks for each Story
-      for (let t = 1; t <= 2; t++) {
-        const subtaskNum = storyNum * 10 + t;
-        items.push({
-          id: `subtask-${f}-${s}-${t}`,
-          key: `PRJ-${subtaskNum}`,
-          type: 'SUBTASK',
-          summary: `Subtask ${t}: ${['Implementation', 'Testing'][t-1]}`,
-          status: ['in_progress', 'done'][t-1],
-          statusCategory: ['IN_PROGRESS', 'DONE'][t-1] as StatusCategory,
-          priority: 'MEDIUM',
-          assigneeName: ['Ahmed Yousry', 'Waleed El-Melegy'][t-1],
-          createdAt: new Date(now.getTime() - t * 24 * 60 * 60 * 1000).toISOString(),
-          updatedAt: now.toISOString(),
-          commentsCount: 0,
-          parentId: storyId,
-          parentKey: `PRJ-${storyNum}`,
-        });
-      }
-
-      // Generate Defects for some Stories
-      if (s % 2 === 1) {
-        const defectNum = storyNum * 10 + 5;
-        items.push({
-          id: `defect-${f}-${s}`,
-          key: `PRJ-${defectNum}`,
-          type: 'DEFECT',
-          summary: `Defect: ${['Login validation error', 'Session timeout issue'][s === 1 ? 0 : 1]}`,
-          status: 'open',
-          statusCategory: 'TODO',
-          priority: 'HIGH',
-          assigneeName: 'Ahmed Yousry',
-          assigneeAvatar: 'https://i.pravatar.cc/32?u=defect',
-          createdAt: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-          updatedAt: now.toISOString(),
-          commentsCount: 3,
-          quarterId: 'q1-2025',
-          quarterName: 'Q1 2025',
-          releaseVersionId: 'rel-1',
-          releaseVersionName: 'Release 1.0',
-          parentId: storyId,
-          parentKey: `PRJ-${storyNum}`,
-        });
-      }
-
-      // Generate Incident for first Story
-      if (s === 1) {
-        const incidentNum = storyNum * 10 + 6;
-        items.push({
-          id: `incident-${f}-${s}`,
-          key: `PRJ-${incidentNum}`,
-          type: 'INCIDENT',
-          summary: `Production Incident: Service degradation`,
-          status: 'in_progress',
-          statusCategory: 'IN_PROGRESS',
-          priority: 'HIGHEST',
-          assigneeName: 'Hasan Elsherbiny',
-          assigneeAvatar: 'https://i.pravatar.cc/32?u=incident',
-          createdAt: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-          updatedAt: now.toISOString(),
-          commentsCount: 5,
-          quarterId: 'q1-2025',
-          quarterName: 'Q1 2025',
-          releaseVersionId: 'rel-1',
-          releaseVersionName: 'Release 1.0',
-          parentId: storyId,
-          parentKey: `PRJ-${storyNum}`,
-        });
-      }
-    }
+// Map database status to status category
+const getStatusCategory = (status: string): StatusCategory => {
+  const statusLower = status?.toLowerCase() || '';
+  if (statusLower === 'done' || statusLower === 'completed' || statusLower === 'closed') {
+    return 'DONE';
   }
-
-  return items;
+  if (statusLower === 'in_progress' || statusLower === 'in progress' || statusLower === 'active' || statusLower === 'in_development' || statusLower === 'in_qa') {
+    return 'IN_PROGRESS';
+  }
+  return 'TODO';
 };
 
 export function useWorkItems(projectId: string, filters?: Partial<WorkHubFilters>) {
   return useQuery({
     queryKey: ['work-items', projectId, filters],
     queryFn: async () => {
-      // For now, return mock data
-      // TODO: Replace with actual Supabase queries when tables are created
-      let items = generateMockWorkItems(projectId);
-      
+      // Fetch real features from the database
+      const { data: features, error } = await supabase
+        .from('features')
+        .select(`
+          id,
+          display_id,
+          name,
+          status,
+          created_at,
+          updated_at,
+          epic_id,
+          estimate_points,
+          epics (
+            id,
+            epic_key,
+            name
+          )
+        `)
+        .eq('project_id', projectId)
+        .is('deleted_at', null);
+
+      if (error) {
+        console.error('Error fetching features:', error);
+        throw error;
+      }
+
+      // Transform database features to WorkItem format
+      let items: WorkItem[] = (features || []).map(feature => ({
+        id: feature.id,
+        key: feature.display_id || `F-${feature.id.slice(0, 4)}`,
+        type: 'FEATURE' as WorkItemType,
+        summary: feature.name || 'Untitled Feature',
+        status: feature.status || 'open',
+        statusCategory: getStatusCategory(feature.status || 'open'),
+        priority: 'MEDIUM' as any,
+        createdAt: feature.created_at,
+        updatedAt: feature.updated_at,
+        commentsCount: 0,
+        epicId: feature.epic_id || undefined,
+        epicKey: feature.epics?.epic_key || undefined,
+        epicName: feature.epics?.name || undefined,
+      }));
+
       // Apply filters
       if (filters?.search) {
         const search = filters.search.toLowerCase();
