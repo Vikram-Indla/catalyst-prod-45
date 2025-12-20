@@ -48,6 +48,7 @@ export interface PeriodMetrics {
   sla_breached: number;
   sla_at_risk: number;
   major_active: number;
+  converted: number;
 }
 
 export interface PeriodComparison {
@@ -57,6 +58,25 @@ export interface PeriodComparison {
   sla_breached: number;
   sla_at_risk: number;
   major_active: number;
+  converted: number;
+}
+
+export interface ConversionMetrics {
+  total: number;
+  byType: Record<string, number>;
+  medianLatencyHours: number | null;
+  latencyChange: number | null; // positive = slower, negative = faster
+  recentConversions: ConvertedIncident[];
+}
+
+export interface ConvertedIncident {
+  incident_id: string;
+  incident_key: string;
+  incident_title: string;
+  converted_to_type: 'story' | 'feature' | 'epic';
+  converted_to_key: string | null;
+  converted_at: string;
+  latency_hours: number;
 }
 
 export interface BreakdownData {

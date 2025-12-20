@@ -4832,7 +4832,9 @@ export type Database = {
           committee_id: string | null
           conversion_reason: string | null
           converted_at: string | null
+          converted_by: string | null
           converted_to_id: string | null
+          converted_to_key: string | null
           converted_to_type: string | null
           created_at: string
           created_by: string | null
@@ -4874,7 +4876,9 @@ export type Database = {
           committee_id?: string | null
           conversion_reason?: string | null
           converted_at?: string | null
+          converted_by?: string | null
           converted_to_id?: string | null
+          converted_to_key?: string | null
           converted_to_type?: string | null
           created_at?: string
           created_by?: string | null
@@ -4916,7 +4920,9 @@ export type Database = {
           committee_id?: string | null
           conversion_reason?: string | null
           converted_at?: string | null
+          converted_by?: string | null
           converted_to_id?: string | null
+          converted_to_key?: string | null
           converted_to_type?: string | null
           created_at?: string
           created_by?: string | null
