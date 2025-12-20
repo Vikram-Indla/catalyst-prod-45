@@ -23,11 +23,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
 import { IncidentCommandBar } from '@/components/incidents/IncidentCommandBar';
 import { CreateIncidentModal, IncidentFormData } from '@/components/incidents/CreateIncidentModal';
 import { useIncidents, useUpdateIncident, useCreateIncident } from '@/hooks/useIncidents';
+import { useUserRole } from '@/hooks/useUserRole';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -45,15 +46,9 @@ import {
 } from '../types';
 import type { Incident, IncidentStatus } from '@/types/incident';
 
-// Mock admin check - replace with actual auth check
-const useIsAdmin = () => {
-  // TODO: Replace with actual admin check from auth context
-  return true;
-};
-
 export default function IncidentKanbanPage() {
   const navigate = useNavigate();
-  const isAdmin = useIsAdmin();
+  const { isAdmin, isLoading: isRoleLoading } = useUserRole();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [manageColumnsOpen, setManageColumnsOpen] = useState(false);
   const [showOpenOnly, setShowOpenOnly] = useState(true);
