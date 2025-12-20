@@ -16,6 +16,7 @@ interface VirtualizedCardListProps {
   onDragEnd: () => void;
   maxHeight?: number;
   emptyMessage?: string;
+  onEditCommittee?: (incident: Incident) => void;
 }
 
 // Estimated card height (compact card ~72px)
@@ -29,6 +30,7 @@ export const VirtualizedCardList = memo(function VirtualizedCardList({
   onDragEnd,
   maxHeight = 400,
   emptyMessage = 'No incidents',
+  onEditCommittee,
 }: VirtualizedCardListProps) {
   const parentRef = useRef<HTMLDivElement>(null);
 
@@ -67,6 +69,7 @@ export const VirtualizedCardList = memo(function VirtualizedCardList({
             isDragging={draggingId === incident.id}
             onDragStart={handleDragStart}
             onDragEnd={onDragEnd}
+            onEditCommittee={onEditCommittee}
           />
         ))}
       </div>
@@ -106,6 +109,7 @@ export const VirtualizedCardList = memo(function VirtualizedCardList({
                 isDragging={draggingId === incident.id}
                 onDragStart={handleDragStart}
                 onDragEnd={onDragEnd}
+                onEditCommittee={onEditCommittee}
               />
             </div>
           );

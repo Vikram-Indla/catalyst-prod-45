@@ -73,6 +73,8 @@ export default function IncidentKanbanPage() {
   
   // Committee modal state
   const [committeeModalOpen, setCommitteeModalOpen] = useState(false);
+  const [committeeModalMode, setCommitteeModalMode] = useState<'create' | 'edit'>('create');
+  const [editingCommitteeIncident, setEditingCommitteeIncident] = useState<Incident | null>(null);
   const pendingCommitteeDrop = useRef<PendingCommitteeDrop | null>(null);
 
   const { data: incidents, isLoading, error, refetch } = useIncidents({});
@@ -208,7 +210,8 @@ export default function IncidentKanbanPage() {
       // Apply optimistic update to show card in Committee column
       setOptimisticUpdates(prev => ({ ...prev, [incidentId]: newStatus }));
       setDraggingId(null);
-      // Open the modal
+      // Open the modal in create mode
+      setCommitteeModalMode('create');
       setCommitteeModalOpen(true);
       return;
     }
@@ -350,20 +353,130 @@ export default function IncidentKanbanPage() {
     }
   }, [queryClient]);
 
-  // Handle Committee modal cancel - revert the drop
+  // Handle Committee modal cancel - revert the drop (only in create mode)
   const handleCommitteeCancel = useCallback(() => {
-    const pending = pendingCommitteeDrop.current;
-    if (pending) {
-      // Revert optimistic update
-      setOptimisticUpdates(prev => {
-        const next = { ...prev };
-        delete next[pending.incidentId];
-        return next;
-      });
-      pendingCommitteeDrop.current = null;
+    if (committeeModalMode === 'create') {
+      const pending = pendingCommitteeDrop.current;
+      if (pending) {
+        // Revert optimistic update
+        setOptimisticUpdates(prev => {
+          const next = { ...prev };
+          delete next[pending.incidentId];
+          return next;
+        });
+        pendingCommitteeDrop.current = null;
+      }
     }
     setCommitteeModalOpen(false);
+    setEditingCommitteeIncident(null);
+  }, [committeeModalMode]);
+
+  // Handle Edit Committee click from card
+  const handleEditCommittee = useCallback((incident: Incident) => {
+    setEditingCommitteeIncident(incident);
+    setCommitteeModalMode('edit');
+    setCommitteeModalOpen(true);
   }, []);
+
+  // Handle Edit Committee confirm - update existing committee
+  const handleEditCommitteeConfirm = useCallback(async (data: CommitteeSetupData) => {
+    const incident = editingCommitteeIncident;
+    if (!incident || !incident.committee_id) return;
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      const committeeId = incident.committee_id;
+
+      // Update committee due_date and notes
+      const { error: committeeError } = await supabase
+        .from('incident_committees')
+        .update({
+          due_date: data.dueDate || null,
+          decision_note: data.notes || null,
+        })
+        .eq('id', committeeId);
+
+      if (committeeError) throw committeeError;
+
+      // Get current members
+      const { data: currentMembers } = await supabase
+        .from('committee_members')
+        .select('id, user_id')
+        .eq('committee_id', committeeId);
+
+      const currentMemberUserIds = new Set(currentMembers?.map(m => m.user_id) || []);
+      const newMemberUserIds = new Set(data.approverIds);
+
+      // Remove members no longer in list
+      const membersToRemove = currentMembers?.filter(m => !newMemberUserIds.has(m.user_id)) || [];
+      for (const member of membersToRemove) {
+        await supabase.from('committee_votes').delete().eq('member_id', member.id);
+        await supabase.from('committee_members').delete().eq('id', member.id);
+      }
+
+      // Add new members
+      const userIdsToAdd = data.approverIds.filter(id => !currentMemberUserIds.has(id));
+      for (const userId of userIdsToAdd) {
+        const { error: memberError } = await supabase
+          .from('committee_members')
+          .insert({
+            committee_id: committeeId,
+            user_id: userId,
+            has_veto: false,
+            role: null,
+          });
+
+        if (memberError) {
+          console.error('Failed to add member:', memberError);
+          continue;
+        }
+
+        const { data: member } = await supabase
+          .from('committee_members')
+          .select('id')
+          .eq('committee_id', committeeId)
+          .eq('user_id', userId)
+          .single();
+
+        if (member) {
+          await supabase.from('committee_votes').insert({
+            committee_id: committeeId,
+            member_id: member.id,
+            vote: 'pending',
+          });
+        }
+      }
+
+      // Log history
+      await supabase.from('incident_history').insert({
+        incident_id: incident.id,
+        field_name: 'committee_approvers',
+        old_value: `${currentMembers?.length || 0} approvers`,
+        new_value: `${data.approverIds.length} approvers`,
+        changed_by: user?.id,
+      });
+
+      setCommitteeModalOpen(false);
+      setEditingCommitteeIncident(null);
+
+      queryClient.invalidateQueries({ queryKey: ['incidents'] });
+      queryClient.invalidateQueries({ queryKey: ['incident-committee', incident.id] });
+
+      toast.success('Committee updated');
+    } catch (err: any) {
+      console.error('Failed to update committee:', err);
+      toast.error(`Failed to update committee: ${err?.message || 'Unknown error'}`);
+    }
+  }, [editingCommitteeIncident, queryClient]);
+
+  // Unified committee confirm handler
+  const handleCommitteeConfirmUnified = useCallback((data: CommitteeSetupData) => {
+    if (committeeModalMode === 'edit') {
+      handleEditCommitteeConfirm(data);
+    } else {
+      handleCommitteeConfirm(data);
+    }
+  }, [committeeModalMode, handleCommitteeConfirm, handleEditCommitteeConfirm]);
 
   // Create incident handler
   const handleCreateIncident = async (formData: IncidentFormData) => {
@@ -546,6 +659,7 @@ export default function IncidentKanbanPage() {
                     onDragEnd={handleDragEnd}
                     isCollapsed={isCollapsed(status)}
                     onToggleCollapse={toggleCollapsed}
+                    onEditCommittee={handleEditCommittee}
                   />
                 ))}
               </div>
@@ -592,9 +706,13 @@ export default function IncidentKanbanPage() {
         {/* Set Committee Approvers Modal */}
         <SetCommitteeApproversModal
           open={committeeModalOpen}
-          incidentKey={pendingCommitteeDrop.current?.incident?.incident_key}
-          incidentTitle={pendingCommitteeDrop.current?.incident?.title}
-          onConfirm={handleCommitteeConfirm}
+          mode={committeeModalMode}
+          incidentKey={committeeModalMode === 'edit' ? editingCommitteeIncident?.incident_key : pendingCommitteeDrop.current?.incident?.incident_key}
+          incidentTitle={committeeModalMode === 'edit' ? editingCommitteeIncident?.title : pendingCommitteeDrop.current?.incident?.title}
+          initialApproverIds={editingCommitteeIncident?.committee?.members?.map(m => m.user_id) || []}
+          initialDueDate={editingCommitteeIncident?.committee?.due_date || ''}
+          initialNotes={editingCommitteeIncident?.committee?.decision_note || ''}
+          onConfirm={handleCommitteeConfirmUnified}
           onCancel={handleCommitteeCancel}
         />
       </div>
