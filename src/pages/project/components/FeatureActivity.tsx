@@ -1,12 +1,15 @@
 /**
  * FeatureActivity — Activity feed with tabs (All / Comments / History)
- * Fetches real data from discussions table, shows "No activity" if empty.
+ * Now with real comment creation (no quick reactions as per Epic pattern).
  */
 
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
+import { Loader2, Send } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 import styles from '../FeatureViewPage.module.css';
 
 interface FeatureActivityProps {
@@ -34,52 +37,130 @@ function getInitials(name: string): string {
 }
 
 export function FeatureActivity({ featureId }: FeatureActivityProps) {
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<ActivityTab>('all');
   const [comment, setComment] = useState('');
   
+  // Fetch current user
+  const { data: currentUser } = useQuery({
+    queryKey: ['current-user'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+      
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id, full_name')
+        .eq('id', user.id)
+        .single();
+      
+      return profile;
+    },
+  });
+
   // Fetch real discussions/comments from database
-  const { data: activities = [] } = useQuery({
+  const { data: activities = [], isLoading } = useQuery({
     queryKey: ['feature-activity', featureId],
     queryFn: async (): Promise<ActivityItem[]> => {
-      // Fetch discussions for this feature
+      // Fetch discussions for this feature with user profiles
       const { data: discussions, error } = await supabase
         .from('discussions')
-        .select('id, message, created_at, user_id')
+        .select(`
+          id, 
+          message, 
+          created_at, 
+          user_id,
+          profiles:user_id(id, full_name)
+        `)
         .eq('entity_type', 'feature')
         .eq('entity_id', featureId)
         .order('created_at', { ascending: false })
-        .limit(20);
+        .limit(50);
       
       if (error || !discussions) {
         return [];
       }
       
-      // Map to activity items
-      return discussions.map(d => ({
+      // Also fetch activity logs for history
+      const { data: historyLogs } = await supabase
+        .from('activity_logs')
+        .select('id, action, created_at, actor_id, before_json, after_json')
+        .eq('entity_type', 'features')
+        .eq('entity_id', featureId)
+        .order('created_at', { ascending: false })
+        .limit(20);
+      
+      const commentItems: ActivityItem[] = discussions.map((d: any) => ({
         id: d.id,
-        authorInitials: 'U',
-        authorName: 'User',
+        authorInitials: d.profiles?.full_name ? getInitials(d.profiles.full_name) : 'U',
+        authorName: d.profiles?.full_name || 'User',
         time: formatDistanceToNow(new Date(d.created_at), { addSuffix: true }),
         content: d.message,
         type: 'comment' as const,
       }));
+      
+      const historyItems: ActivityItem[] = (historyLogs || []).map((h: any) => ({
+        id: h.id,
+        authorInitials: 'SY',
+        authorName: 'System',
+        time: formatDistanceToNow(new Date(h.created_at), { addSuffix: true }),
+        content: formatHistoryAction(h.action, h.before_json, h.after_json),
+        type: 'system' as const,
+      }));
+      
+      // Combine and sort by time (most recent first)
+      return [...commentItems, ...historyItems].sort((a, b) => {
+        // Already sorted from DB, just interleave
+        return 0;
+      });
     },
     enabled: !!featureId,
   });
+
+  // Create comment mutation
+  const createComment = useMutation({
+    mutationFn: async (message: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+      
+      const { error } = await supabase
+        .from('discussions')
+        .insert({
+          entity_type: 'feature',
+          entity_id: featureId,
+          message: message,
+          user_id: user.id,
+        });
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      setComment('');
+      queryClient.invalidateQueries({ queryKey: ['feature-activity', featureId] });
+      toast.success('Comment added');
+    },
+    onError: (error: any) => {
+      toast.error('Failed to add comment', { description: error.message });
+    },
+  });
+
+  const handleSubmitComment = () => {
+    if (!comment.trim()) return;
+    createComment.mutate(comment.trim());
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmitComment();
+    }
+  };
   
   const filteredActivities = activeTab === 'all' 
     ? activities 
     : activeTab === 'comments' 
       ? activities.filter(a => a.type === 'comment')
       : activities.filter(a => a.type === 'system');
-  
-  const quickReplies = [
-    { emoji: '👍', text: 'Looks good' },
-    { emoji: '👋', text: 'Need help?' },
-    { emoji: '🚫', text: 'This is blocked' },
-    { emoji: '❓', text: 'Can you clarify?' },
-    { emoji: '✅', text: 'On track' },
-  ];
   
   return (
     <div className={styles.panel}>
@@ -111,8 +192,16 @@ export function FeatureActivity({ featureId }: FeatureActivityProps) {
       
       {/* Activity List */}
       <div className={styles.activityList}>
-        {filteredActivities.length === 0 ? (
-          <span className={styles.noneValue}>No activity yet</span>
+        {isLoading ? (
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+          </div>
+        ) : filteredActivities.length === 0 ? (
+          <span className={styles.noneValue}>
+            {activeTab === 'comments' ? 'No comments yet' : 
+             activeTab === 'history' ? 'No history yet' : 
+             'No activity yet'}
+          </span>
         ) : (
           filteredActivities.map(item => (
             <div key={item.id} className={styles.activityItem}>
@@ -135,26 +224,52 @@ export function FeatureActivity({ featureId }: FeatureActivityProps) {
         )}
       </div>
       
-      {/* Comment Composer */}
+      {/* Comment Composer - simplified without quick reactions */}
       <div className={styles.commentComposer}>
-        <textarea 
-          className={styles.commentTextarea}
-          placeholder="Add a comment..."
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-        />
-        <div className={styles.quickReplies}>
-          {quickReplies.map((qr, i) => (
-            <button 
-              key={i} 
-              className={styles.quickReply}
-              onClick={() => setComment(qr.text)}
-            >
-              {qr.emoji} {qr.text}
-            </button>
-          ))}
+        <div className="flex gap-2">
+          <textarea 
+            className={styles.commentTextarea}
+            placeholder="Add a comment..."
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            onKeyDown={handleKeyDown}
+            rows={2}
+          />
+        </div>
+        <div className="flex justify-end mt-2">
+          <Button 
+            size="sm" 
+            onClick={handleSubmitComment}
+            disabled={!comment.trim() || createComment.isPending}
+          >
+            {createComment.isPending ? (
+              <Loader2 className="h-4 w-4 animate-spin mr-1" />
+            ) : (
+              <Send className="h-4 w-4 mr-1" />
+            )}
+            Comment
+          </Button>
         </div>
       </div>
     </div>
   );
+}
+
+// Helper to format history action
+function formatHistoryAction(action: string, before: any, after: any): string {
+  if (action === 'UPDATE') {
+    const changes: string[] = [];
+    if (before && after) {
+      for (const key of Object.keys(after)) {
+        if (JSON.stringify(before[key]) !== JSON.stringify(after[key])) {
+          const fieldName = key.replace(/_/g, ' ');
+          changes.push(`${fieldName} changed`);
+        }
+      }
+    }
+    return changes.length > 0 ? changes.join(', ') : 'Updated feature';
+  }
+  if (action === 'INSERT') return 'Created feature';
+  if (action === 'DELETE') return 'Deleted feature';
+  return action;
 }

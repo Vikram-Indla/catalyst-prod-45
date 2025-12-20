@@ -629,7 +629,60 @@
   font-weight: 500;
   text-transform: uppercase;
   color: hsl(var(--muted-foreground));
-  min-width: 80px;
+  min-width: 100px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.storyRow {
+  cursor: pointer;
+}
+
+.editableField {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.editableChevron {
+  color: hsl(var(--muted-foreground));
+  opacity: 0.6;
+}
+
+.healthOffTrack {
+  background: hsl(0 84% 60% / 0.15);
+  color: hsl(0 84% 60%);
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.editTitleBtn {
+  opacity: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: hsl(var(--muted-foreground));
+  transition: opacity 0.15s;
+}
+
+.titleRow:hover .editTitleBtn {
+  opacity: 1;
+}
+
+.titleInput {
+  font-size: var(--text-2xl, 22px);
+  font-weight: 600;
+  padding: 4px 8px;
 }
 
 .linkedItemIcon {

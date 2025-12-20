@@ -1,12 +1,13 @@
 /**
  * FeatureLinkedItems — Dependencies and related items
- * Fetches real data from dependencies table, shows "None" if empty.
+ * Uses real CreateDependencyDialog for adding new links.
  */
 
-import { Plus } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
+import { Plus, ArrowRight, ArrowLeft } from 'lucide-react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { CreateDependencyDialog } from '@/components/dependencies/CreateDependencyDialog';
 import styles from '../FeatureViewPage.module.css';
 
 interface FeatureLinkedItemsProps {
@@ -22,8 +23,11 @@ interface LinkedItem {
 }
 
 export function FeatureLinkedItems({ featureId }: FeatureLinkedItemsProps) {
+  const queryClient = useQueryClient();
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+
   // Fetch real dependencies from database
-  const { data: linkedItems = [] } = useQuery({
+  const { data: linkedItems = [], refetch } = useQuery({
     queryKey: ['feature-linked-items', featureId],
     queryFn: async (): Promise<LinkedItem[]> => {
       // Fetch dependencies where this feature is the requestor (depends on)
@@ -80,41 +84,65 @@ export function FeatureLinkedItems({ featureId }: FeatureLinkedItemsProps) {
     },
     enabled: !!featureId,
   });
-  
-  const handleAddLink = () => {
-    toast.info('Add link functionality coming soon');
+
+  const handleDialogClose = () => {
+    setCreateDialogOpen(false);
+    refetch();
+    queryClient.invalidateQueries({ queryKey: ['feature-linked-items', featureId] });
   };
   
   return (
-    <div className={styles.panel}>
-      <div className={styles.panelHeader}>
-        <h2 className={styles.panelTitle}>
-          Linked Items
-          <span className={styles.panelCount}>{linkedItems.length}</span>
-        </h2>
-        <div className={styles.panelActions}>
-          <button className={styles.panelAction} onClick={handleAddLink}>
-            <Plus size={14} />
-            Add link
-          </button>
+    <>
+      <div className={styles.panel}>
+        <div className={styles.panelHeader}>
+          <h2 className={styles.panelTitle}>
+            Linked Items
+            <span className={styles.panelCount}>{linkedItems.length}</span>
+          </h2>
+          <div className={styles.panelActions}>
+            <button className={styles.panelAction} onClick={() => setCreateDialogOpen(true)}>
+              <Plus size={14} />
+              Add link
+            </button>
+          </div>
+        </div>
+        <div className={styles.linkedItemsBody}>
+          {linkedItems.length === 0 ? (
+            <span className={styles.noneValue}>No linked items</span>
+          ) : (
+            linkedItems.map(item => (
+              <div key={item.id} className={styles.linkedItem}>
+                <span className={styles.linkedType}>
+                  {item.type === 'depends' ? (
+                    <>
+                      <ArrowRight size={12} />
+                      DEPENDS ON
+                    </>
+                  ) : item.type === 'blocks' ? (
+                    <>
+                      <ArrowLeft size={12} />
+                      BLOCKS
+                    </>
+                  ) : (
+                    'RELATED'
+                  )}
+                </span>
+                <span className={styles.linkedItemIcon}>F</span>
+                <span className={styles.linkedItemId}>{item.linkedFeatureDisplayId}</span>
+                <span className={styles.linkedItemTitle}>{item.linkedFeatureName}</span>
+              </div>
+            ))
+          )}
         </div>
       </div>
-      <div className={styles.linkedItemsBody}>
-        {linkedItems.length === 0 ? (
-          <span className={styles.noneValue}>No linked items</span>
-        ) : (
-          linkedItems.map(item => (
-            <div key={item.id} className={styles.linkedItem}>
-              <span className={styles.linkedType}>
-                {item.type === 'depends' ? 'DEPENDS ON' : item.type === 'blocks' ? 'BLOCKS' : 'RELATED'}
-              </span>
-              <span className={styles.linkedItemIcon}>F</span>
-              <span className={styles.linkedItemId}>{item.linkedFeatureDisplayId}</span>
-              <span className={styles.linkedItemTitle}>{item.linkedFeatureName}</span>
-            </div>
-          ))
-        )}
-      </div>
-    </div>
+
+      {/* Create Dependency Dialog - uses existing component */}
+      <CreateDependencyDialog
+        open={createDialogOpen}
+        onOpenChange={handleDialogClose}
+        defaultRequestingWorkItemId={featureId}
+        defaultRequestingWorkItemType="feature"
+      />
+    </>
   );
 }

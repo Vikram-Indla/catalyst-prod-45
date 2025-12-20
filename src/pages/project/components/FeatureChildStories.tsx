@@ -1,5 +1,6 @@
 /**
  * FeatureChildStories — Child stories table with real CRUD
+ * Now includes ASSIGNEE column and uses StoryDetailPanel for row clicks.
  */
 
 import { useState } from 'react';
@@ -20,6 +21,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { StoryDetailPanel } from '@/components/stories/StoryDetailPanel';
 import styles from '../FeatureViewPage.module.css';
 
 interface Story {
@@ -31,6 +33,7 @@ interface Story {
   state: string | null;
   priority: string | null;
   assignee_id: string | null;
+  assignee?: { id: string; full_name: string } | null;
 }
 
 interface FeatureChildStoriesProps {
@@ -38,7 +41,6 @@ interface FeatureChildStoriesProps {
   featureId: string;
   projectId: string;
   totalCount: number;
-  onStoryClick?: (story: Story) => void;
   onUpdated?: () => void;
 }
 
@@ -64,10 +66,21 @@ function getStatusLabel(status: string | null, state: string | null): string {
   return 'TO DO';
 }
 
-export function FeatureChildStories({ stories, featureId, projectId, totalCount, onStoryClick, onUpdated }: FeatureChildStoriesProps) {
+function getInitials(name: string | null): string {
+  if (!name) return 'U';
+  return name
+    .split(' ')
+    .map(n => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
+}
+
+export function FeatureChildStories({ stories, featureId, projectId, totalCount, onUpdated }: FeatureChildStoriesProps) {
   const queryClient = useQueryClient();
   const [addStoryOpen, setAddStoryOpen] = useState(false);
   const [linkExistingOpen, setLinkExistingOpen] = useState(false);
+  const [selectedStory, setSelectedStory] = useState<Story | null>(null);
   
   // Add story form state
   const [newStoryTitle, setNewStoryTitle] = useState('');
@@ -76,47 +89,63 @@ export function FeatureChildStories({ stories, featureId, projectId, totalCount,
   // Link existing state
   const [selectedStoryIds, setSelectedStoryIds] = useState<string[]>([]);
 
-  // Fetch unlinked stories in project for linking
-  const { data: unlinkableStories = [], isLoading: loadingUnlinked } = useQuery({
-    queryKey: ['unlinked-stories', projectId, featureId],
+  // Fetch stories with assignee data
+  const { data: storiesWithAssignees = [] } = useQuery({
+    queryKey: ['feature-stories-with-assignees', featureId],
     queryFn: async () => {
-      // Get stories without a feature or from other features that can be reassigned
-      // For MVP: get stories in this project that don't have this feature
       const { data, error } = await supabase
         .from('stories')
         .select(`
           id,
           name,
           title,
-          feature_id,
-          features!inner(project_id)
+          status,
+          state,
+          priority,
+          assignee_id,
+          profiles:assignee_id(id, full_name)
         `)
-        .neq('feature_id', featureId)
+        .eq('feature_id', featureId)
+        .is('deleted_at', null)
+        .order('created_at', { ascending: true });
+      
+      if (error) throw error;
+      
+      return (data || []).map((s: any) => ({
+        ...s,
+        display_id: `STORY-${s.id.slice(0, 4).toUpperCase()}`,
+        assignee: s.profiles,
+      }));
+    },
+    enabled: !!featureId,
+  });
+
+  // Use fetched stories with assignees, or fall back to prop stories
+  const displayStories = storiesWithAssignees.length > 0 ? storiesWithAssignees : stories;
+
+  // Fetch unlinked stories in project for linking
+  const { data: unlinkableStories = [], isLoading: loadingUnlinked } = useQuery({
+    queryKey: ['unlinked-stories', projectId, featureId],
+    queryFn: async () => {
+      // Get all features in this project
+      const { data: allFeatures } = await supabase
+        .from('features')
+        .select('id')
+        .eq('project_id', projectId)
         .is('deleted_at', null);
       
-      if (error) {
-        // If join fails, just get all stories from all features in project
-        const { data: allFeatures } = await supabase
-          .from('features')
-          .select('id')
-          .eq('project_id', projectId)
+      if (allFeatures) {
+        const featureIds = allFeatures.map(f => f.id);
+        const { data: storiesData } = await supabase
+          .from('stories')
+          .select('id, name, title, feature_id')
+          .in('feature_id', featureIds)
+          .neq('feature_id', featureId)
           .is('deleted_at', null);
         
-        if (allFeatures) {
-          const featureIds = allFeatures.map(f => f.id);
-          const { data: storiesData } = await supabase
-            .from('stories')
-            .select('id, name, title, feature_id')
-            .in('feature_id', featureIds)
-            .neq('feature_id', featureId)
-            .is('deleted_at', null);
-          
-          return storiesData || [];
-        }
-        return [];
+        return storiesData || [];
       }
-      
-      return data || [];
+      return [];
     },
     enabled: linkExistingOpen,
   });
@@ -140,6 +169,7 @@ export function FeatureChildStories({ stories, featureId, projectId, totalCount,
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['feature-stories', featureId] });
+      queryClient.invalidateQueries({ queryKey: ['feature-stories-with-assignees', featureId] });
       queryClient.invalidateQueries({ queryKey: ['feature-view', featureId] });
       queryClient.invalidateQueries({ queryKey: ['work-items'] });
       toast.success('Story created');
@@ -164,6 +194,7 @@ export function FeatureChildStories({ stories, featureId, projectId, totalCount,
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['feature-stories', featureId] });
+      queryClient.invalidateQueries({ queryKey: ['feature-stories-with-assignees', featureId] });
       queryClient.invalidateQueries({ queryKey: ['feature-view', featureId] });
       queryClient.invalidateQueries({ queryKey: ['work-items'] });
       queryClient.invalidateQueries({ queryKey: ['unlinked-stories'] });
@@ -204,7 +235,13 @@ export function FeatureChildStories({ stories, featureId, projectId, totalCount,
   };
 
   const handleRowClick = (story: Story) => {
-    onStoryClick?.(story);
+    setSelectedStory(story);
+  };
+
+  const handleCloseStoryPanel = () => {
+    setSelectedStory(null);
+    // Refresh stories in case of updates
+    queryClient.invalidateQueries({ queryKey: ['feature-stories-with-assignees', featureId] });
   };
   
   return (
@@ -213,7 +250,7 @@ export function FeatureChildStories({ stories, featureId, projectId, totalCount,
         <div className={styles.panelHeader}>
           <h2 className={styles.panelTitle}>
             Child Stories
-            <span className={styles.panelCount}>{totalCount}</span>
+            <span className={styles.panelCount}>{totalCount || displayStories.length}</span>
           </h2>
           <div className={styles.panelActions}>
             <button className={styles.panelAction} onClick={() => setLinkExistingOpen(true)}>
@@ -227,7 +264,7 @@ export function FeatureChildStories({ stories, featureId, projectId, totalCount,
           </div>
         </div>
         <div className={styles.panelBody}>
-          {stories.length === 0 ? (
+          {displayStories.length === 0 ? (
             <div className={styles.panelBodyPadded}>
               <span className={styles.noneValue}>No stories linked to this feature.</span>
             </div>
@@ -238,11 +275,12 @@ export function FeatureChildStories({ stories, featureId, projectId, totalCount,
                   <th>ID</th>
                   <th>SUMMARY</th>
                   <th>PRIORITY</th>
+                  <th>ASSIGNEE</th>
                   <th>STATUS</th>
                 </tr>
               </thead>
               <tbody className={styles.storiesTableBody}>
-                {stories.map(story => (
+                {displayStories.map(story => (
                   <tr 
                     key={story.id} 
                     onClick={() => handleRowClick(story)}
@@ -268,6 +306,20 @@ export function FeatureChildStories({ stories, featureId, projectId, totalCount,
                       )}
                     </td>
                     <td>
+                      <div className={styles.assigneeCell}>
+                        {story.assignee ? (
+                          <>
+                            <div className={styles.avatar} style={{ width: 24, height: 24, fontSize: 10 }}>
+                              {getInitials(story.assignee.full_name)}
+                            </div>
+                            <span>{story.assignee.full_name}</span>
+                          </>
+                        ) : (
+                          <span className={styles.noneValue}>—</span>
+                        )}
+                      </div>
+                    </td>
+                    <td>
                       <span className={`${styles.storyStatusPill} ${getStatusClass(story.status, story.state)}`}>
                         {getStatusLabel(story.status, story.state)}
                       </span>
@@ -279,6 +331,21 @@ export function FeatureChildStories({ stories, featureId, projectId, totalCount,
           )}
         </div>
       </div>
+
+      {/* Story Detail Panel - existing component */}
+      {selectedStory && (
+        <StoryDetailPanel
+          story={{
+            id: selectedStory.id,
+            name: selectedStory.name || selectedStory.title || '',
+            status: (selectedStory.status || 'todo') as 'accepted' | 'blocked' | 'done' | 'in_progress' | 'todo',
+            priority: selectedStory.priority,
+            assignee_id: selectedStory.assignee_id,
+          } as any}
+          open={!!selectedStory}
+          onClose={handleCloseStoryPanel}
+        />
+      )}
 
       {/* Add Story Dialog */}
       <Dialog open={addStoryOpen} onOpenChange={setAddStoryOpen}>
