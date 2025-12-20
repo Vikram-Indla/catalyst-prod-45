@@ -392,36 +392,6 @@ export function IncidentContextRail({
             </Select>
           </FieldRow>
 
-          {/* Divider */}
-          <div className="border-t border-border my-2" />
-
-          {/* Project */}
-          <FieldRow label="Project" icon={FolderKanban}>
-            <Select 
-              value={projectId || 'default'} 
-              onValueChange={(v) => onProjectChange(v === 'default' ? '' : v)}
-              disabled={isConverted}
-            >
-              <SelectTrigger className="h-8 text-sm bg-background">
-                <SelectValue placeholder="Select project">
-                  {projectId 
-                    ? availableProjects.find(p => p.id === projectId)?.name || 'Default'
-                    : 'Default'
-                  }
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="default" className="text-sm">
-                  Default
-                </SelectItem>
-                {availableProjects.map(project => (
-                  <SelectItem key={project.id} value={project.id} className="text-sm">
-                    {project.key} — {project.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </FieldRow>
 
           {/* Environment */}
           <FieldRow label="Environment" icon={Globe}>
