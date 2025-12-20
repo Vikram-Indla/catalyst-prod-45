@@ -367,8 +367,8 @@ export function IncidentContextRail({
           {/* Release */}
           <FieldRow label="Release" icon={Tag}>
             <Select 
-              value={releaseVersionId || ''} 
-              onValueChange={onReleaseVersionChange}
+              value={releaseVersionId || '__none__'} 
+              onValueChange={(v) => onReleaseVersionChange(v === '__none__' ? '' : v)}
               disabled={isConverted}
             >
               <SelectTrigger className="h-8 text-sm bg-background">
@@ -380,7 +380,7 @@ export function IncidentContextRail({
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="" className="text-sm text-muted-foreground">
+                <SelectItem value="__none__" className="text-sm text-muted-foreground">
                   None
                 </SelectItem>
                 {availableReleaseVersions.map(version => (
