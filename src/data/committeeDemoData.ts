@@ -319,27 +319,16 @@ export function generateCommitteeDemoData(): CommitteeQueueItem[] {
   return items;
 }
 
-// Cache the shouldLoadDemoData result
-let cachedShouldLoad: boolean | null = null;
-
 /**
- * Check if demo data should be loaded (cached)
+ * Check if demo data should be loaded
+ * Now disabled by default since real data exists in the database
  */
 export function shouldLoadDemoData(): boolean {
-  if (cachedShouldLoad !== null) {
-    return cachedShouldLoad;
-  }
-  
-  // Check URL param
+  // Only load demo data if explicitly requested via URL param
   if (typeof window !== 'undefined') {
     const params = new URLSearchParams(window.location.search);
-    if (params.get('seed') === '1') {
-      cachedShouldLoad = true;
-      return true;
-    }
+    if (params.get('demo') === '1') return true;
   }
   
-  // Check if development mode
-  cachedShouldLoad = import.meta.env.DEV;
-  return cachedShouldLoad;
+  return false;
 }
