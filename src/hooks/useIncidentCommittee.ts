@@ -25,6 +25,7 @@ export interface IncidentCommittee {
   status: string;
   decision_note?: string | null;
   required_approvals?: number | null;
+  due_date?: string | null;
   created_at?: string;
   members?: IncidentCommitteeMember[];
 }

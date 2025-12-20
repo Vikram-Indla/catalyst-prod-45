@@ -125,6 +125,7 @@ export interface IncidentCommittee {
   required_approvals: number;
   decision_note?: string;
   decided_at?: string;
+  due_date?: string;
   members?: CommitteeMember[];
   votes?: CommitteeVote[];
   created_at: string;
@@ -168,6 +169,8 @@ export interface Incident {
   requires_committee: boolean;
   committee_id?: string;
   committee?: IncidentCommittee;
+  committee_set_at?: string;
+  committee_set_by?: string;
   converted_to_type?: 'business_request' | 'epic' | 'feature' | 'story';
   converted_to_id?: string;
   converted_at?: string;

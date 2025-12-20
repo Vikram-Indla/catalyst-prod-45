@@ -4833,6 +4833,8 @@ export type Database = {
           business_process_id: string | null
           closed_at: string | null
           committee_id: string | null
+          committee_set_at: string | null
+          committee_set_by: string | null
           conversion_reason: string | null
           converted_at: string | null
           converted_by: string | null
@@ -4877,6 +4879,8 @@ export type Database = {
           business_process_id?: string | null
           closed_at?: string | null
           committee_id?: string | null
+          committee_set_at?: string | null
+          committee_set_by?: string | null
           conversion_reason?: string | null
           converted_at?: string | null
           converted_by?: string | null
@@ -4921,6 +4925,8 @@ export type Database = {
           business_process_id?: string | null
           closed_at?: string | null
           committee_id?: string | null
+          committee_set_at?: string | null
+          committee_set_by?: string | null
           conversion_reason?: string | null
           converted_at?: string | null
           converted_by?: string | null
@@ -4986,6 +4992,13 @@ export type Database = {
             columns: ["committee_id"]
             isOneToOne: false
             referencedRelation: "incident_committees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_committee_set_by_fkey"
+            columns: ["committee_set_by"]
+            isOneToOne: false
+            referencedRelation: "incident_user_profiles"
             referencedColumns: ["id"]
           },
           {
