@@ -58,7 +58,7 @@ export function StatusBadge({ status, size = 'xs' }: StatusBadgeProps) {
     <Badge 
       variant="outline" 
       className={cn(
-        'font-medium px-1.5 py-0',
+        'font-medium px-1.5 py-0 whitespace-nowrap',
         size === 'xs' ? 'text-[10px]' : 'text-xs',
         config.className
       )}
