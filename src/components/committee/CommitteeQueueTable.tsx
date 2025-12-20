@@ -40,18 +40,18 @@ const CELL_META = 'text-[10px] text-muted-foreground tabular-nums';
 // Grid cell base styles - consistent box model + no header overlap
 const GRID_CELL_BASE = 'min-w-0 overflow-hidden';
 
-// Column widths optimized for content (Summary is flexible to avoid empty canvas)
-const SUMMARY_MIN_WIDTH = 260;
+// Column widths - Summary is flexible, right columns are fixed
 const FIXED_WIDTHS = {
   key: 85,
-  severity: 55,
-  major: 40,
-  status: 96,
-  progress: 70,
-  approvers: 110,
-  lastAction: 160,
-  time: 84,
-  aging: 64,
+  summary: 320,  // min width for summary
+  severity: 60,
+  major: 45,
+  status: 100,
+  progress: 75,
+  approvers: 115,
+  lastAction: 140,
+  time: 90,
+  aging: 50,
 } as const;
 
 type ColumnId =
@@ -80,9 +80,10 @@ const COLUMN_IDS: ColumnId[] = [
 ];
 
 function getGridTemplate() {
+  // All columns fixed width - no flexible columns to prevent whitespace
   return [
     `${FIXED_WIDTHS.key}px`,
-    `minmax(${SUMMARY_MIN_WIDTH}px, 1fr)`,
+    `minmax(${FIXED_WIDTHS.summary}px, auto)`,  // Summary grows with content, min 320px
     `${FIXED_WIDTHS.severity}px`,
     `${FIXED_WIDTHS.major}px`,
     `${FIXED_WIDTHS.status}px`,
@@ -95,7 +96,7 @@ function getGridTemplate() {
 }
 
 const MIN_TABLE_WIDTH =
-  Object.values(FIXED_WIDTHS).reduce((a, b) => a + b, 0) + SUMMARY_MIN_WIDTH;
+  Object.values(FIXED_WIDTHS).reduce((a, b) => a + b, 0);
 
 interface CommitteeQueueTableProps {
   items: CommitteeQueueItem[];
@@ -285,8 +286,9 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
     <TooltipProvider delayDuration={200}>
       <div className="flex flex-col h-full">
         <div className="rounded-md border border-border overflow-hidden bg-card flex-1 min-h-0">
-          {/* Single scroll container */}
-          <div className="overflow-auto w-full h-full" style={{ minWidth: `${MIN_TABLE_WIDTH}px` }}>
+          {/* Single scroll container - table is content-sized, scrolls horizontally if needed */}
+          <div className="overflow-auto h-full">
+            <div className="w-fit min-w-full">
               {/* Header */}
               <div
                 className="grid items-center h-8 sticky top-0 z-20 bg-muted border-b border-border"
@@ -408,6 +410,7 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
                   </div>
                 ))
               )}
+            </div>
           </div>
         </div>
 
