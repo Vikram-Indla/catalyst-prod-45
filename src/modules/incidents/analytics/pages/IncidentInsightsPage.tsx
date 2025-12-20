@@ -5,7 +5,7 @@
 
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
-import { Printer, Loader2, ChevronRight, AlertTriangle, Target, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { Printer, Loader2, ChevronRight, AlertTriangle, Target, TrendingUp, TrendingDown, Minus, Lightbulb, Clock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { usePeriodAnalytics } from '../hooks/usePeriodAnalytics';
@@ -15,7 +15,7 @@ import { useIncidentDetail } from '../hooks/useIncidentDetail';
 import IncidentDetailModal from '@/components/incidents/modal/IncidentDetailModal';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import type { InsightPeriod, DrilldownFilter, IncidentWithSLA } from '../types';
+import type { InsightPeriod, DrilldownFilter, IncidentWithSLA, ConversionMetrics } from '../types';
 
 const PERIOD_TABS: { value: InsightPeriod; label: string }[] = [
   { value: 'today', label: 'Today' },
@@ -59,6 +59,34 @@ function DeltaIndicator({ delta, inverted = false }: { delta: number; inverted?:
         <TrendingDown className="h-3 w-3 mr-0.5" />
       )}
       {delta > 0 ? '+' : ''}{delta}
+    </span>
+  );
+}
+
+function LatencyDeltaIndicator({ delta }: { delta: number | null }) {
+  if (delta === null || delta === 0) {
+    return (
+      <span className="inline-flex items-center text-muted-foreground text-xs">
+        <Minus className="h-3 w-3 mr-0.5" />
+        —
+      </span>
+    );
+  }
+  
+  // Negative = faster (good), Positive = slower (warning)
+  const isFaster = delta < 0;
+  
+  return (
+    <span className={cn(
+      "inline-flex items-center text-xs font-medium",
+      isFaster ? "text-muted-foreground" : "text-[hsl(var(--warning))]"
+    )}>
+      {delta > 0 ? (
+        <TrendingUp className="h-3 w-3 mr-0.5" />
+      ) : (
+        <TrendingDown className="h-3 w-3 mr-0.5" />
+      )}
+      {delta > 0 ? '+' : ''}{Math.round(delta)}h
     </span>
   );
 }
@@ -113,6 +141,120 @@ function FactStrip({
   );
 }
 
+function ChangeLearningSection({ 
+  conversionMetrics, 
+  comparisonLabel,
+  conversionDelta,
+}: { 
+  conversionMetrics: ConversionMetrics;
+  comparisonLabel: string;
+  conversionDelta: number;
+}) {
+  const { total, byType, medianLatencyHours, latencyChange, recentConversions } = conversionMetrics;
+  
+  const formatLatency = (hours: number | null): string => {
+    if (hours === null) return '—';
+    if (hours < 24) return `${Math.round(hours)}h`;
+    const days = Math.round(hours / 24);
+    return `${days}d`;
+  };
+
+  return (
+    <section className="border border-border rounded-md bg-card">
+      <div className="p-4">
+        <div className="flex items-center gap-2 mb-4">
+          <Lightbulb className="h-4 w-4 text-muted-foreground" />
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Change &amp; Learning
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-3 gap-6">
+          {/* Conversion Count */}
+          <div>
+            <div className="text-[9px] uppercase tracking-wide text-muted-foreground mb-1">
+              Incidents Converted to Change
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl font-bold tabular-nums text-foreground">
+                {total}
+              </span>
+              <DeltaIndicator delta={conversionDelta} inverted={true} />
+            </div>
+            <div className="text-[9px] text-muted-foreground mt-0.5">
+              vs {comparisonLabel}
+            </div>
+          </div>
+
+          {/* Conversion Mix */}
+          <div>
+            <div className="text-[9px] uppercase tracking-wide text-muted-foreground mb-1">
+              Conversion Mix
+            </div>
+            <div className="flex items-center gap-3 text-sm">
+              <span className="text-foreground">
+                <span className="font-semibold tabular-nums">{byType.story || 0}</span>
+                <span className="text-muted-foreground ml-1">Story</span>
+              </span>
+              <span className="text-muted-foreground">/</span>
+              <span className="text-foreground">
+                <span className="font-semibold tabular-nums">{byType.feature || 0}</span>
+                <span className="text-muted-foreground ml-1">Feature</span>
+              </span>
+              <span className="text-muted-foreground">/</span>
+              <span className="text-foreground">
+                <span className="font-semibold tabular-nums">{byType.epic || 0}</span>
+                <span className="text-muted-foreground ml-1">Epic</span>
+              </span>
+            </div>
+          </div>
+
+          {/* Median Latency */}
+          <div>
+            <div className="text-[9px] uppercase tracking-wide text-muted-foreground mb-1">
+              Median Conversion Latency
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-lg font-semibold tabular-nums text-foreground flex items-center gap-1">
+                <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                {formatLatency(medianLatencyHours)}
+              </span>
+              <LatencyDeltaIndicator delta={latencyChange} />
+            </div>
+            <div className="text-[9px] text-muted-foreground mt-0.5">
+              created → converted
+            </div>
+          </div>
+        </div>
+
+        {/* Recent Conversions */}
+        {recentConversions.length > 0 && (
+          <div className="mt-4 pt-4 border-t border-border">
+            <div className="text-[9px] uppercase tracking-wide text-muted-foreground mb-2">
+              Latest Conversions
+            </div>
+            <div className="space-y-1.5">
+              {recentConversions.map((conv) => (
+                <div key={conv.incident_id} className="flex items-center gap-2 text-sm">
+                  <span className="font-mono text-xs text-muted-foreground">{conv.incident_key}</span>
+                  <ArrowRight className="h-3 w-3 text-muted-foreground" />
+                  <span className="text-foreground capitalize">{conv.converted_to_type}</span>
+                  {conv.converted_to_key && (
+                    <span className="font-mono text-xs text-muted-foreground">{conv.converted_to_key}</span>
+                  )}
+                  <span className="text-muted-foreground text-xs ml-auto">
+                    {format(new Date(conv.converted_at), 'MMM d, HH:mm')}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
 function InsightTabContent({ 
   period,
   onDrilldown,
@@ -128,6 +270,7 @@ function InsightTabContent({
     breakdowns,
     majorIncidents,
     getFilteredIncidents,
+    conversionMetrics,
     isLoading,
   } = usePeriodAnalytics(period);
 
@@ -229,6 +372,13 @@ function InsightTabContent({
           </ol>
         </div>
       </section>
+
+      {/* Change & Learning Section */}
+      <ChangeLearningSection 
+        conversionMetrics={conversionMetrics}
+        comparisonLabel={periodRange.comparisonLabel}
+        conversionDelta={deltas.converted}
+      />
     </div>
   );
 }
