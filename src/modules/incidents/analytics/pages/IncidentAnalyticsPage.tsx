@@ -4,21 +4,57 @@
  */
 
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Printer, Loader2, ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Printer, Loader2, List, BarChart3, Lightbulb } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
 import { useIncidentAnalytics, useFilteredIncidents } from '../hooks/useIncidentAnalytics';
 import { useIncidentDetail } from '../hooks/useIncidentDetail';
 import { ExecutiveSnapshot } from '../components/ExecutiveSnapshot';
 import { BreakdownTiles } from '../components/BreakdownTiles';
-import { MajorIncidentsTable } from '../components/MajorIncidentsTable';
 import { AgingPressureBar } from '../components/AgingPressureBar';
+import { RequiresAttentionTabs } from '../components/RequiresAttentionTabs';
 import { DrilldownDrawer } from '../components/DrilldownDrawer';
 import { TimeRangeSelector } from '../components/TimeRangeSelector';
-import { ModeSwitchSegment } from '../components/ModeSwitchSegment';
 import IncidentDetailModal from '@/components/incidents/modal/IncidentDetailModal';
+import { cn } from '@/lib/utils';
 import type { TimeRange, DrilldownFilter, IncidentWithSLA } from '../types';
+
+type ViewMode = 'list' | 'analytics' | 'insights';
+
+function ViewSwitch({ currentMode }: { currentMode: ViewMode }) {
+  const navigate = useNavigate();
+  
+  const modes: { value: ViewMode; label: string; icon: React.ElementType; path: string }[] = [
+    { value: 'list', label: 'List', icon: List, path: '/release/incidents' },
+    { value: 'analytics', label: 'Analytics', icon: BarChart3, path: '/release/incidents/analytics' },
+    { value: 'insights', label: 'Insights', icon: Lightbulb, path: '/release/incidents/insights' },
+  ];
+
+  return (
+    <div className="inline-flex items-center rounded-lg border border-border bg-muted/30 p-1">
+      {modes.map((mode) => {
+        const Icon = mode.icon;
+        const isActive = currentMode === mode.value;
+        return (
+          <button
+            key={mode.value}
+            onClick={() => navigate(mode.path)}
+            className={cn(
+              "inline-flex items-center gap-2 px-3.5 py-2 text-sm font-medium rounded-md transition-all",
+              isActive 
+                ? "bg-background text-foreground shadow-sm" 
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+            )}
+          >
+            <Icon className="h-4 w-4" />
+            {mode.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 export default function IncidentAnalyticsPage() {
   const [timeRange, setTimeRange] = useState<TimeRange>('7d');
@@ -53,9 +89,9 @@ export default function IncidentAnalyticsPage() {
     setFilteredIncidentsList([]);
   };
 
-  const handleAgingDrilldown = (filter: DrilldownFilter, incidents: IncidentWithSLA[]) => {
+  const handleAgingDrilldown = (filter: DrilldownFilter, incidentList: IncidentWithSLA[]) => {
     setActiveFilter(filter);
-    setFilteredIncidentsList(incidents);
+    setFilteredIncidentsList(incidentList);
   };
 
   const handleCloseDrilldown = () => {
@@ -84,58 +120,35 @@ export default function IncidentAnalyticsPage() {
 
   return (
     <div className="h-full flex flex-col bg-background">
-      {/* Header */}
-      <div className="border-b border-border bg-card flex-shrink-0">
-        <div className="px-8 py-5">
-          {/* Breadcrumb */}
-          <nav className="flex items-center gap-1.5 text-sm text-muted-foreground mb-3">
-            <Link to="/release" className="hover:text-foreground transition-colors">
-              Release
-            </Link>
-            <ChevronRight className="h-3.5 w-3.5" />
-            <Link to="/release/incidents" className="hover:text-foreground transition-colors">
-              Incident List
-            </Link>
-            <ChevronRight className="h-3.5 w-3.5" />
-            <span className="text-foreground font-medium">Analytics</span>
-          </nav>
-          
-          {/* Title Row */}
-          <div className="flex items-start justify-between">
-            <div>
-              <h1 className="text-2xl font-semibold text-foreground tracking-tight">
-                Incident Analytics
-              </h1>
-              <p className="text-sm text-muted-foreground mt-1">
-                Operations control room
-              </p>
-            </div>
-            <div className="flex items-center gap-5">
-              <ModeSwitchSegment currentMode="analytics" />
-              <div className="h-6 w-px bg-border" />
-              <TimeRangeSelector
-                value={timeRange}
-                onChange={handleTimeRangeChange}
-                customStart={customStart}
-                customEnd={customEnd}
-              />
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="outline" size="sm" onClick={handlePrint} className="h-9">
-                    <Printer className="h-4 w-4 mr-2" />
-                    Print
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Export current view to PDF</TooltipContent>
-              </Tooltip>
-            </div>
+      <GlobalPageHeader
+        sectionLabel="RELEASE"
+        pageTitle="Incident Analytics"
+        rightActions={
+          <div className="flex items-center gap-4">
+            <ViewSwitch currentMode="analytics" />
+            <div className="h-6 w-px bg-border" />
+            <TimeRangeSelector
+              value={timeRange}
+              onChange={handleTimeRangeChange}
+              customStart={customStart}
+              customEnd={customEnd}
+            />
+            <Button variant="outline" size="sm" onClick={handlePrint} className="h-8 px-3 text-sm">
+              <Printer className="h-4 w-4 mr-2" />
+              Print
+            </Button>
           </div>
-        </div>
+        }
+      />
+
+      {/* Subtitle bar */}
+      <div className="px-6 py-2 border-b border-border bg-muted/20">
+        <p className="text-sm text-muted-foreground">Operations control room</p>
       </div>
 
-      {/* Content - Full width */}
+      {/* Content */}
       <div className="flex-1 overflow-auto">
-        <div className="px-8 py-6 max-w-[1600px]">
+        <div className="px-6 py-6 max-w-[1600px]">
           <ExecutiveSnapshot
             snapshot={snapshot}
             onDrilldown={handleDrilldown}
@@ -150,8 +163,8 @@ export default function IncidentAnalyticsPage() {
             incidents={incidents}
             onDrilldown={handleAgingDrilldown}
           />
-          <MajorIncidentsTable
-            incidents={majorIncidents}
+          <RequiresAttentionTabs
+            incidents={incidents}
             onRowClick={handleRowClick}
           />
         </div>

@@ -9854,7 +9854,9 @@ export type Database = {
       }
       sla_configs: {
         Row: {
+          at_risk_threshold_percent: number | null
           created_at: string
+          description: string | null
           id: string
           resolution_minutes: number
           response_minutes: number
@@ -9863,7 +9865,9 @@ export type Database = {
           updated_by: string | null
         }
         Insert: {
+          at_risk_threshold_percent?: number | null
           created_at?: string
+          description?: string | null
           id?: string
           resolution_minutes: number
           response_minutes: number
@@ -9872,11 +9876,43 @@ export type Database = {
           updated_by?: string | null
         }
         Update: {
+          at_risk_threshold_percent?: number | null
           created_at?: string
+          description?: string | null
           id?: string
           resolution_minutes?: number
           response_minutes?: number
           severity?: Database["public"]["Enums"]["severity_level"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      sla_global_settings: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          setting_key: string
+          setting_value: Json
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          setting_key: string
+          setting_value?: Json
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          setting_key?: string
+          setting_value?: Json
           updated_at?: string
           updated_by?: string | null
         }
