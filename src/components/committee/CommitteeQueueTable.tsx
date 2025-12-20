@@ -31,11 +31,11 @@ import type { CommitteeQueueItem, CommitteeDecisionStatus } from '@/hooks/useCom
 const PAGE_SIZE_OPTIONS = [25, 50, 100];
 const PAGE_SIZE_STORAGE_KEY = 'catalyst.committeeQueue.pageSize';
 
-// Grid + typography (match Incident List table behavior)
-const HEADER_TEXT = 'text-[10px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider';
-const CELL_TEXT = 'text-[12px] leading-4 text-[var(--text-primary)]';
-const CELL_SECONDARY = 'text-[12px] leading-4 text-[var(--text-secondary)]';
-const CELL_META = 'text-[10px] text-[var(--text-tertiary)] tabular-nums';
+// Grid + typography (match Incident List table - Tailwind tokens)
+const HEADER_TEXT = 'text-[10px] font-semibold text-muted-foreground uppercase tracking-wider';
+const CELL_TEXT = 'text-[12px] leading-4 text-foreground';
+const CELL_SECONDARY = 'text-[12px] leading-4 text-muted-foreground';
+const CELL_META = 'text-[10px] text-muted-foreground tabular-nums';
 
 // Grid cell base styles - consistent box model + no header overlap
 const GRID_CELL_BASE = 'min-w-0 overflow-hidden';
@@ -107,17 +107,14 @@ interface CommitteeQueueTableProps {
 
 function StatusBadge({ status }: { status: CommitteeDecisionStatus }) {
   const config = {
-    pending: { label: 'Pending', bg: 'var(--status-warning-bg)', fg: 'var(--status-warning)', icon: Clock },
-    approved: { label: 'Approved', bg: 'var(--status-success-bg)', fg: 'var(--status-success)', icon: CheckCircle },
-    vetoed: { label: 'Vetoed', bg: 'var(--status-danger-bg)', fg: 'var(--status-danger)', icon: XCircle },
+    pending: { label: 'Pending', className: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20', icon: Clock },
+    approved: { label: 'Approved', className: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20', icon: CheckCircle },
+    vetoed: { label: 'Vetoed', className: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20', icon: XCircle },
   } as const;
 
-  const { label, bg, fg, icon: Icon } = config[status];
+  const { label, className, icon: Icon } = config[status];
   return (
-    <span
-      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium whitespace-nowrap border"
-      style={{ background: bg, color: fg, borderColor: 'var(--border-default)' }}
-    >
+    <span className={cn("inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium whitespace-nowrap border", className)}>
       <Icon className="h-3 w-3" />
       {label}
     </span>
@@ -125,23 +122,43 @@ function StatusBadge({ status }: { status: CommitteeDecisionStatus }) {
 }
 
 function SeverityBadge({ severity }: { severity: string }) {
-  const dotBySeverity: Record<string, string> = {
-    SEV1: 'var(--status-danger)',
-    SEV2: 'var(--status-warning)',
-    SEV3: 'var(--status-info)',
-    SEV4: 'var(--text-tertiary)',
+  const dotColors: Record<string, string> = {
+    SEV1: 'bg-rose-500',
+    SEV2: 'bg-amber-500',
+    SEV3: 'bg-sky-500',
+    SEV4: 'bg-slate-400',
   };
 
-  const dot = dotBySeverity[severity] || 'var(--text-tertiary)';
+  const dotClass = dotColors[severity] || 'bg-slate-400';
 
   return (
-    <span
-      className="inline-flex items-center gap-1.5 px-1.5 py-0 h-5 rounded-full border bg-[var(--surface-subtle)] text-[10px] font-medium text-[var(--text-secondary)]"
-      style={{ borderColor: 'var(--border-default)' }}
-    >
-      <span className="w-1.5 h-1.5 rounded-full" style={{ background: dot }} />
+    <span className="inline-flex items-center gap-1.5 px-1.5 py-0 h-5 rounded-full border border-border bg-muted text-[10px] font-medium text-muted-foreground">
+      <span className={cn("w-1.5 h-1.5 rounded-full", dotClass)} />
       {severity}
     </span>
+  );
+}
+
+// Visual progress bar component
+function ProgressBar({ completed, total }: { completed: number; total: number }) {
+  const pct = total > 0 ? (completed / total) * 100 : 0;
+  const isComplete = completed >= total;
+  
+  return (
+    <div className="flex items-center gap-2 w-full">
+      <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
+        <div 
+          className={cn(
+            "h-full rounded-full transition-all",
+            isComplete ? "bg-emerald-500" : pct > 50 ? "bg-amber-500" : "bg-rose-500"
+          )}
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+      <span className="text-[10px] font-medium text-muted-foreground tabular-nums whitespace-nowrap">
+        {completed}/{total}
+      </span>
+    </div>
   );
 }
 
@@ -150,43 +167,34 @@ function ApproversAvatars({ approvers }: { approvers: CommitteeQueueItem['approv
   const visible = approvers.slice(0, 3);
   const remaining = approvers.length - 3;
 
-  const decisionStyles: Record<CommitteeDecisionStatus, { bg: string; fg: string }> = {
-    pending: { bg: 'var(--surface-subtle)', fg: 'var(--text-secondary)' },
-    approved: { bg: 'var(--status-success-bg)', fg: 'var(--status-success)' },
-    vetoed: { bg: 'var(--status-danger-bg)', fg: 'var(--status-danger)' },
+  const decisionStyles: Record<CommitteeDecisionStatus, string> = {
+    pending: 'bg-muted text-muted-foreground',
+    approved: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+    vetoed: 'bg-rose-500/10 text-rose-600 dark:text-rose-400',
   };
 
   return (
     <div className="flex items-center -space-x-1.5">
       {visible.map((a) => {
-        const s = decisionStyles[a.decision];
+        const styleClass = decisionStyles[a.decision];
         return (
           <Tooltip key={a.id}>
             <TooltipTrigger asChild>
-              <div
-                className={cn(
-                  "w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-medium border",
-                  "bg-[var(--surface-subtle)]"
-                )}
-                style={{ background: s.bg, color: s.fg, borderColor: 'var(--surface-elevated)' }}
-              >
+              <div className={cn("w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-medium border border-background", styleClass)}>
                 {a.userInitials || a.userName.charAt(0)}
               </div>
             </TooltipTrigger>
             <TooltipContent side="top" className="text-xs">
-              <div className="font-medium text-[var(--text-primary)]">{a.userName}</div>
-              <div className="capitalize text-[var(--text-tertiary)]">{a.decision}</div>
-              {a.hasVeto && <div className="text-[var(--text-warning)]">Veto power</div>}
-              {a.addedBy && <div className="text-[var(--text-tertiary)]">Added by {a.addedBy}</div>}
+              <div className="font-medium">{a.userName}</div>
+              <div className="capitalize text-muted-foreground">{a.decision}</div>
+              {a.hasVeto && <div className="text-amber-500">Veto power</div>}
+              {a.addedBy && <div className="text-muted-foreground">Added by {a.addedBy}</div>}
             </TooltipContent>
           </Tooltip>
         );
       })}
       {remaining > 0 && (
-        <div
-          className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-medium border"
-          style={{ background: 'var(--surface-subtle)', color: 'var(--text-secondary)', borderColor: 'var(--surface-elevated)' }}
-        >
+        <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-medium border border-background bg-muted text-muted-foreground">
           +{remaining}
         </div>
       )}
@@ -197,9 +205,9 @@ function ApproversAvatars({ approvers }: { approvers: CommitteeQueueItem['approv
 function LoadingSkeleton() {
   const gridTemplate = getGridTemplate();
   return (
-    <div className="rounded-md border border-[var(--border-default)] overflow-hidden bg-[var(--surface-elevated)]">
+    <div className="rounded-md border border-border overflow-hidden bg-card flex-1">
       <div
-        className="grid items-center h-8 bg-[var(--surface-subtle)] border-b border-[var(--border-default)]"
+        className="grid items-center h-8 bg-muted border-b border-border"
         style={{ gridTemplateColumns: gridTemplate }}
       >
         {COLUMN_IDS.map((col) => (
@@ -208,10 +216,10 @@ function LoadingSkeleton() {
           </div>
         ))}
       </div>
-      {[...Array(6)].map((_, i) => (
+      {[...Array(12)].map((_, i) => (
         <div
           key={i}
-          className="grid items-center h-9 border-b border-[var(--border-default)] last:border-b-0"
+          className="grid items-center h-9 border-b border-border last:border-b-0"
           style={{ gridTemplateColumns: gridTemplate }}
         >
           {COLUMN_IDS.map((col) => (
@@ -228,8 +236,8 @@ function LoadingSkeleton() {
 function EmptyState({ onLoadDemoData, includeClosedDecisions }: { onLoadDemoData?: () => void; includeClosedDecisions?: boolean }) {
   const message = includeClosedDecisions ? 'No committee items found.' : 'No open committee approvals.';
   return (
-    <div className="py-8 text-center border-t" style={{ borderColor: 'var(--border-default)' }}>
-      <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{message}</p>
+    <div className="py-8 text-center border-t border-border">
+      <p className="text-sm text-muted-foreground">{message}</p>
       {onLoadDemoData && (
         <Button variant="outline" size="sm" onClick={onLoadDemoData} className="gap-2 mt-3">
           <Database className="h-3.5 w-3.5" />
@@ -276,16 +284,13 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
   return (
     <TooltipProvider delayDuration={200}>
       <div className="flex flex-col h-full">
-        <div className="rounded-md border border-[var(--border-default)] overflow-hidden bg-[var(--surface-elevated)] flex-1 min-h-0">
-          {/* Single scroll container (keeps horizontal + vertical scroll always available) */}
-          <div
-            className="overflow-auto w-full h-full"
-            style={{ scrollbarGutter: 'stable both-edges' }}
-          >
+        <div className="rounded-md border border-border overflow-hidden bg-card flex-1 min-h-0">
+          {/* Single scroll container */}
+          <div className="overflow-auto w-full h-full">
             <div style={{ minWidth: `${MIN_TABLE_WIDTH}px`, width: '100%' }}>
               {/* Header */}
               <div
-                className="grid items-center h-8 sticky top-0 z-20 bg-[var(--surface-subtle)] border-b border-[var(--border-default)]"
+                className="grid items-center h-8 sticky top-0 z-20 bg-muted border-b border-border"
                 style={{ gridTemplateColumns: gridTemplate }}
               >
                 <div className={cn(GRID_CELL_BASE, "pl-3 pr-1 flex items-center h-full")}>
@@ -304,7 +309,7 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
                   <span className={cn(HEADER_TEXT, "truncate")}>STATUS</span>
                 </div>
                 <div className={cn(GRID_CELL_BASE, "px-1 flex items-center justify-center h-full")}>
-                  <span className={cn(HEADER_TEXT, "truncate")}>PROG</span>
+                  <span className={cn(HEADER_TEXT, "truncate")}>PROGRESS</span>
                 </div>
                 <div className={cn(GRID_CELL_BASE, "px-1 flex items-center h-full")}>
                   <span className={cn(HEADER_TEXT, "truncate")}>APPROVERS</span>
@@ -328,8 +333,8 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
                   <div
                     key={item.incident.id}
                     className={cn(
-                      'grid items-center h-9 cursor-pointer border-b border-[var(--border-default)] last:border-b-0 transition-colors',
-                      hoveredId === item.incident.id && 'bg-[var(--surface-subtle)]'
+                      'grid items-center h-9 cursor-pointer border-b border-border last:border-b-0 transition-colors',
+                      hoveredId === item.incident.id && 'bg-muted/50'
                     )}
                     style={{ gridTemplateColumns: gridTemplate }}
                     onClick={(e) => handleRowClick(item, e)}
@@ -339,7 +344,7 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
                     <div className={cn(GRID_CELL_BASE, "pl-3 pr-1 flex items-center h-full")}>
                       <Link
                         to={`/release/incidents/${item.incident.id}`}
-                        className={cn(CELL_TEXT, 'font-medium text-[var(--brand-primary)] hover:underline truncate')}
+                        className={cn(CELL_TEXT, 'font-medium text-primary hover:underline truncate')}
                         onClick={(e) => e.stopPropagation()}
                       >
                         {item.incident.incident_key}
@@ -360,7 +365,7 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
                     </div>
                     <div className={cn(GRID_CELL_BASE, "px-1 flex items-center justify-center h-full")}>
                       {item.incident.is_major_incident ? (
-                        <AlertTriangle className="h-3.5 w-3.5" style={{ color: 'var(--status-warning)' }} />
+                        <AlertTriangle className="h-3.5 w-3.5 text-amber-500" />
                       ) : (
                         <span className={cn(CELL_META, 'text-[11px]')}>—</span>
                       )}
@@ -368,10 +373,8 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
                     <div className={cn(GRID_CELL_BASE, "px-1 flex items-center justify-center h-full")}>
                       <StatusBadge status={item.committeeStatus} />
                     </div>
-                    <div className={cn(GRID_CELL_BASE, "px-1 flex items-center justify-center h-full")}>
-                      <span className={cn(CELL_SECONDARY, 'text-[11px] tabular-nums font-medium')}>
-                        {item.approvalsCompletedCount}/{item.approvalsRequiredCount}
-                      </span>
+                    <div className={cn(GRID_CELL_BASE, "px-2 flex items-center h-full")}>
+                      <ProgressBar completed={item.approvalsCompletedCount} total={item.approvalsRequiredCount} />
                     </div>
                     <div className={cn(GRID_CELL_BASE, "px-1 flex items-center h-full")}>
                       <ApproversAvatars approvers={item.approvers} />
@@ -399,9 +402,7 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
                       )}
                     </div>
                     <div className={cn(GRID_CELL_BASE, "px-1 flex items-center justify-center h-full")}>
-                      <span
-                        className={cn('text-[11px] tabular-nums font-medium', item.agingDays >= 7 ? 'text-[var(--text-warning)]' : 'text-[var(--text-secondary)]')}
-                      >
+                      <span className={cn('text-[11px] tabular-nums font-medium', item.agingDays >= 7 ? 'text-amber-500' : 'text-muted-foreground')}>
                         {item.agingDays}d
                       </span>
                     </div>
@@ -412,27 +413,27 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
           </div>
         </div>
 
-        {/* Pagination - compact */}
+        {/* Pagination */}
         {items.length > 0 && (
           <div className="flex items-center justify-between py-2">
             <div className="flex items-center gap-2">
-              <span className="text-[11px] text-[var(--text-tertiary)]">Rows:</span>
+              <span className="text-xs text-muted-foreground">Rows:</span>
               <Select value={pageSize.toString()} onValueChange={handlePageSizeChange}>
-                <SelectTrigger className="h-6 w-14 text-[11px]"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="h-7 w-16 text-xs"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {PAGE_SIZE_OPTIONS.map(s => <SelectItem key={s} value={s.toString()}>{s}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-[11px] text-[var(--text-secondary)]">
+              <span className="text-xs text-muted-foreground">
                 {startIndex + 1}–{Math.min(startIndex + pageSize, items.length)} of {items.length}
               </span>
-              <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>
-                <ChevronLeft className="h-3.5 w-3.5" />
+              <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>
+                <ChevronLeft className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page >= totalPages}>
-                <ChevronRight className="h-3.5 w-3.5" />
+              <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page >= totalPages}>
+                <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
           </div>
