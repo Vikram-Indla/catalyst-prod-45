@@ -17,7 +17,7 @@ interface InsightCardProps {
 
 function InsightCard({ label, value, highlight, icon }: InsightCardProps) {
   return (
-    <div className="flex items-center gap-2 px-4 py-2">
+    <div className="flex items-center gap-2 px-4 py-2.5">
       {icon && (
         <div className={cn(
           "flex items-center justify-center w-7 h-7 rounded-md",
@@ -30,10 +30,16 @@ function InsightCard({ label, value, highlight, icon }: InsightCardProps) {
         </div>
       )}
       <div className="flex flex-col">
-        <span className="text-base font-semibold text-primary tabular-nums leading-tight">
+        <span className={cn(
+          "text-base font-semibold tabular-nums leading-tight",
+          highlight === 'danger' ? "text-destructive" :
+          highlight === 'warning' ? "text-amber-600 dark:text-amber-400" :
+          highlight === 'success' ? "text-emerald-600 dark:text-emerald-400" :
+          "text-foreground"
+        )}>
           {value}
         </span>
-        <span className="text-[10px] font-medium text-secondary-foreground leading-tight uppercase tracking-wide">
+        <span className="text-[10px] font-medium text-muted-foreground leading-tight uppercase tracking-wide">
           {label}
         </span>
       </div>
@@ -50,8 +56,8 @@ interface ExecutiveInsightStripProps {
 export function ExecutiveInsightStrip({ title, insights, className }: ExecutiveInsightStripProps) {
   return (
     <div className={cn("border border-border rounded-md bg-card mb-4", className)}>
-      <div className="px-4 py-2 border-b border-border">
-        <h3 className="text-[10px] font-semibold text-primary uppercase tracking-wide">
+      <div className="px-4 py-2 border-b border-border bg-muted/30">
+        <h3 className="text-[10px] font-semibold text-foreground uppercase tracking-wide">
           {title}
         </h3>
       </div>
