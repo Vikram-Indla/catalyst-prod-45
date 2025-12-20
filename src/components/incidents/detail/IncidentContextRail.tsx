@@ -2,12 +2,12 @@
  * IncidentContextRail — Right panel for incident detail view
  * 
  * Design: Free-floating stacked fields (no accordions)
- * Fields: Environment, Affected System, Business Process, Owning Team, Project
+ * Fields: Reporter, Severity, Priority, Release, Project, Environment, Affected System, Business Process, Owning Team
  */
 
 import { 
   Users, Building2, Globe, FolderKanban,
-  PanelRightClose, PanelRight, Cog
+  PanelRightClose, PanelRight, Cog, User, AlertCircle, Flag, Tag
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { 
@@ -96,6 +96,7 @@ interface IncidentContextRailProps {
   // Handlers
   onStatusChange: (status: IncidentStatus) => void;
   onSeverityChange: (severity: string) => void;
+  onPriorityChange?: (priority: string) => void;
   onImpactChange: (impact: string) => void;
   onUrgencyChange: (urgency: string) => void;
   onDeliveryStageChange: (stage: string) => void;
@@ -116,12 +117,42 @@ const DELIVERY_STAGE_OPTIONS: { value: DeliveryStage; label: string }[] = [
   { value: 'prod', label: 'Production' },
 ];
 
+const SEVERITY_OPTIONS: { value: SeverityLevel; label: string }[] = [
+  { value: 'SEV1', label: 'SEV1' },
+  { value: 'SEV2', label: 'SEV2' },
+  { value: 'SEV3', label: 'SEV3' },
+  { value: 'SEV4', label: 'SEV4' },
+];
+
+const PRIORITY_OPTIONS: { value: PriorityLevel; label: string }[] = [
+  { value: 'P1', label: 'P1' },
+  { value: 'P2', label: 'P2' },
+  { value: 'P3', label: 'P3' },
+  { value: 'P4', label: 'P4' },
+];
+
 // Owning Team defaults - seeded values
 const OWNING_TEAM_DEFAULTS = [
   { id: 'delivery', name: 'Delivery' },
   { id: 'operations', name: 'Operations' },
   { id: 'business', name: 'Business' },
 ];
+
+// Severity badge colors
+const SEVERITY_COLORS: Record<SeverityLevel, string> = {
+  SEV1: 'bg-red-100 text-red-700 border-red-200',
+  SEV2: 'bg-orange-100 text-orange-700 border-orange-200',
+  SEV3: 'bg-amber-100 text-amber-700 border-amber-200',
+  SEV4: 'bg-yellow-100 text-yellow-700 border-yellow-200',
+};
+
+// Priority badge colors
+const PRIORITY_COLORS: Record<PriorityLevel, string> = {
+  P1: 'bg-red-100 text-red-700 border-red-200',
+  P2: 'bg-orange-100 text-orange-700 border-orange-200',
+  P3: 'bg-amber-100 text-amber-700 border-amber-200',
+  P4: 'bg-yellow-100 text-yellow-700 border-yellow-200',
+};
 
 function FieldRow({ 
   label, 
@@ -140,6 +171,34 @@ function FieldRow({
       </label>
       {children}
     </div>
+  );
+}
+
+function SeverityBadge({ severity, onClick }: { severity: SeverityLevel; onClick?: () => void }) {
+  return (
+    <span 
+      className={cn(
+        "inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium border",
+        SEVERITY_COLORS[severity] || 'bg-muted text-muted-foreground border-border',
+        onClick && "cursor-pointer hover:opacity-80"
+      )}
+      onClick={onClick}
+    >
+      {severity}
+    </span>
+  );
+}
+
+function PriorityBadge({ priority }: { priority: PriorityLevel }) {
+  return (
+    <span 
+      className={cn(
+        "inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium border",
+        PRIORITY_COLORS[priority] || 'bg-muted text-muted-foreground border-border'
+      )}
+    >
+      {priority}
+    </span>
   );
 }
 
@@ -173,6 +232,7 @@ export function IncidentContextRail({
   availableReleaseVersions,
   onStatusChange,
   onSeverityChange,
+  onPriorityChange,
   onImpactChange,
   onUrgencyChange,
   onDeliveryStageChange,
@@ -188,6 +248,9 @@ export function IncidentContextRail({
   
   // Merge available teams with defaults if empty
   const owningTeams = availableTeams.length > 0 ? availableTeams : OWNING_TEAM_DEFAULTS;
+
+  // Reporter display name
+  const reporterDisplay = reporter?.full_name || reporterName || 'Unknown';
 
   // Collapsed state - show thin icon strip
   if (isCollapsed) {
@@ -235,6 +298,103 @@ export function IncidentContextRail({
 
         {/* Free-floating stacked fields */}
         <div className="p-4 space-y-4 flex-1 overflow-auto">
+          {/* Reporter (read-only display) */}
+          <FieldRow label="Reporter" icon={User}>
+            <Select 
+              value={reporter?.id || ''} 
+              onValueChange={onReporterChange}
+              disabled={isConverted}
+            >
+              <SelectTrigger className="h-8 text-sm bg-background">
+                <SelectValue placeholder="Unknown">
+                  {reporterDisplay}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {availableUsers.map(user => (
+                  <SelectItem key={user.id} value={user.id} className="text-sm">
+                    {user.full_name || user.email}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </FieldRow>
+
+          {/* Severity */}
+          <FieldRow label="Severity" icon={AlertCircle}>
+            <Select 
+              value={severity} 
+              onValueChange={onSeverityChange}
+              disabled={isConverted}
+            >
+              <SelectTrigger className="h-8 text-sm bg-background">
+                <SelectValue>
+                  <SeverityBadge severity={severity} />
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {SEVERITY_OPTIONS.map(opt => (
+                  <SelectItem key={opt.value} value={opt.value} className="text-sm">
+                    <SeverityBadge severity={opt.value} />
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </FieldRow>
+
+          {/* Priority */}
+          <FieldRow label="Priority" icon={Flag}>
+            <Select 
+              value={priority || ''} 
+              onValueChange={(v) => onPriorityChange?.(v)}
+              disabled={isConverted}
+            >
+              <SelectTrigger className="h-8 text-sm bg-background">
+                <SelectValue placeholder="Select priority">
+                  {priority ? <PriorityBadge priority={priority} /> : 'Not set'}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {PRIORITY_OPTIONS.map(opt => (
+                  <SelectItem key={opt.value} value={opt.value} className="text-sm">
+                    <PriorityBadge priority={opt.value} />
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </FieldRow>
+
+          {/* Release */}
+          <FieldRow label="Release" icon={Tag}>
+            <Select 
+              value={releaseVersionId || ''} 
+              onValueChange={onReleaseVersionChange}
+              disabled={isConverted}
+            >
+              <SelectTrigger className="h-8 text-sm bg-background">
+                <SelectValue placeholder="Select release">
+                  {releaseVersionId 
+                    ? releaseVersion?.version || availableReleaseVersions.find(r => r.id === releaseVersionId)?.version || 'Unknown'
+                    : 'Not assigned'
+                  }
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="" className="text-sm text-muted-foreground">
+                  None
+                </SelectItem>
+                {availableReleaseVersions.map(version => (
+                  <SelectItem key={version.id} value={version.id} className="text-sm">
+                    {version.version}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </FieldRow>
+
+          {/* Divider */}
+          <div className="border-t border-border my-2" />
+
           {/* Project */}
           <FieldRow label="Project" icon={FolderKanban}>
             <Select 
