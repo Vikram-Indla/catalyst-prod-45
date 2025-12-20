@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Plus, Search, AlertCircle, LayoutDashboard, RefreshCw, SlidersHorizontal, ArrowUpDown, Columns3, LayoutGrid, LayoutList } from 'lucide-react';
+import { Plus, Search, AlertCircle, BarChart3, Lightbulb, RefreshCw, SlidersHorizontal, ArrowUpDown, Columns3, LayoutGrid, LayoutList } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
@@ -137,8 +137,14 @@ export default function IncidentRoomList() {
           <div className="flex items-center gap-2">
             <Link to="/release/incidents/analytics">
               <Button variant="ghost" size="sm" className="h-8 px-3 text-sm">
-                <LayoutDashboard className="h-4 w-4 mr-1.5" />
+                <BarChart3 className="h-4 w-4 mr-1.5" />
                 Analytics
+              </Button>
+            </Link>
+            <Link to="/release/incidents/insights">
+              <Button variant="ghost" size="sm" className="h-8 px-3 text-sm">
+                <Lightbulb className="h-4 w-4 mr-1.5" />
+                Insights
               </Button>
             </Link>
             <Button 
