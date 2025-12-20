@@ -20,6 +20,7 @@ import {
   FileText,
   Settings,
   Square,
+  Home,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -47,10 +48,11 @@ const menuConfigs: Record<WorkspaceType, Array<{ id: string; label: string; icon
     { id: 'reports', label: 'Reports', icon: FileText, pathTemplate: '/program/:id/reports' },
   ],
   project: [
-    { id: 'backlog', label: 'Backlog', icon: Square, pathTemplate: '/programs/:id/backlog' },
-    { id: 'roadmap', label: 'Roadmap', icon: Map, pathTemplate: '/programs/:id/roadmap' },
-    { id: 'dependencies', label: 'Dependencies', icon: GitBranch, pathTemplate: '/programs/:id/dependencies' },
-    { id: 'reports', label: 'Reports', icon: FileText, pathTemplate: '/programs/:id/reports' },
+    { id: 'project-room', label: 'Project Room', icon: Home, pathTemplate: '/projects/:id/work' },
+    { id: 'backlog', label: 'Backlog', icon: Square, pathTemplate: '/projects/:id/backlog' },
+    { id: 'roadmap', label: 'Roadmap', icon: Map, pathTemplate: '/projects/:id/roadmap' },
+    { id: 'dependencies', label: 'Dependencies', icon: GitBranch, pathTemplate: '/projects/:id/dependencies' },
+    { id: 'reports', label: 'Reports', icon: FileText, pathTemplate: '/projects/:id/reports' },
   ],
 };
 
