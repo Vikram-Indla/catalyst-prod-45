@@ -51,9 +51,9 @@ export function DrawerMetadataChips({
         <div
           className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[12px] font-medium"
           style={{
-            background: 'rgba(92, 124, 92, 0.1)',
-            border: '1px solid rgba(92, 124, 92, 0.3)',
-            color: '#5C7C5C',
+            background: 'var(--status-success-bg)',
+            border: '1px solid var(--status-success-border)',
+            color: 'var(--status-success)',
           }}
         >
           <Hash className="h-3.5 w-3.5" />

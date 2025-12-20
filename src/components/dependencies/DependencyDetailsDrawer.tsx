@@ -677,9 +677,9 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                       <Button
                         size="sm"
                         className="h-8 px-3 text-[13px] font-medium text-white"
-                        style={{ background: '#5C7C5C', boxShadow: '0 2px 4px rgba(92, 124, 92, 0.25)' }}
-                        onMouseEnter={(e) => e.currentTarget.style.background = '#4A6A4A'}
-                        onMouseLeave={(e) => e.currentTarget.style.background = '#5C7C5C'}
+                        style={{ background: 'var(--status-success)', boxShadow: '0 2px 4px var(--status-success-border)' }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = 'var(--status-success-light)'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = 'var(--status-success)'}
                       >
                         {isEdit ? 'Save' : 'Create'}
                         <ChevronDown className="h-3.5 w-3.5 ml-1" />

@@ -93,19 +93,19 @@ function SnapshotTableRow({
     switch (snapshot.status) {
       case 'ACTIVE':
         return (
-          <Badge className="bg-[rgba(92,124,92,0.1)] dark:bg-[rgba(92,124,92,0.15)] text-[#5C7C5C] dark:text-[#7DA37D] border border-[rgba(92,124,92,0.3)] text-[10px] font-semibold uppercase tracking-wider">
+          <Badge className="bg-[var(--status-success-bg)] text-[var(--status-success)] border border-[var(--status-success-border)] text-[10px] font-semibold uppercase tracking-wider">
             ACTIVE
           </Badge>
         );
       case 'ARCHIVED':
         return (
-          <Badge className="bg-[#F6F8FA] dark:bg-[#21262D] text-[#57606A] dark:text-[#8B949E] border border-[#E1E4E8] dark:border-[#30363D] text-[10px] font-semibold uppercase tracking-wider">
+          <Badge className="bg-[var(--status-muted-bg)] text-[var(--status-muted)] border border-[var(--status-muted-border)] text-[10px] font-semibold uppercase tracking-wider">
             ARCHIVED
           </Badge>
         );
       default:
         return (
-          <Badge className="bg-[#F6F8FA] dark:bg-[#21262D] text-[#57606A] dark:text-[#8B949E] border border-[#E1E4E8] dark:border-[#30363D] text-[10px] font-semibold uppercase tracking-wider">
+          <Badge className="bg-[var(--status-muted-bg)] text-[var(--status-muted)] border border-[var(--status-muted-border)] text-[10px] font-semibold uppercase tracking-wider">
             DRAFT
           </Badge>
         );
@@ -124,13 +124,13 @@ function SnapshotTableRow({
         "border-b border-[#E8E4DC] dark:border-[#21262D]",
         // Hover state with champagne left border
         "hover:bg-[rgba(198,156,109,0.06)] dark:hover:bg-[rgba(198,156,109,0.08)]",
-        "hover:border-l-[3px] hover:border-l-[#D4B896]",
+        "hover:border-l-[3px] hover:border-l-[var(--status-warning)]",
         // Active snapshot styling
-        isActive && "border-l-[3px] border-l-[#5C7C5C] bg-[rgba(92,124,92,0.05)]",
+        isActive && "border-l-[3px] border-l-[var(--status-success)] bg-[var(--status-success-bg)]",
         // Selected state (when drawer open)
         isSelected && !isActive && [
-          "bg-[rgba(198,156,109,0.08)] dark:bg-[rgba(198,156,109,0.12)]",
-          "border-l-[3px] border-l-[#C69C6D]"
+          "bg-[var(--status-info-bg)]",
+          "border-l-[3px] border-l-[var(--status-info)]"
         ]
       )}
       onClick={() => onSelect(snapshot)}

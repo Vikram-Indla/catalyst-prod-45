@@ -154,9 +154,9 @@ export function KeyResultsTabV2({ objectiveId, onMutation }: KeyResultsTabV2Prop
                       <span className="text-[#8B949E] dark:text-[#6E7681]">Progress</span>
                       <span className="font-semibold text-[#24292F] dark:text-[#E6EDF3]">{Math.round(kr.progress)}%</span>
                     </div>
-                    <div className="h-2 rounded-full bg-[#E1E4E8] dark:bg-[#30363D] overflow-hidden">
+                    <div className="h-2 rounded-full bg-muted overflow-hidden">
                       <div 
-                        className="h-full rounded-full bg-[#5C7C5C] transition-all duration-300"
+                        className="h-full rounded-full bg-[var(--status-success)] transition-all duration-300"
                         style={{ width: `${kr.progress}%` }}
                       />
                     </div>

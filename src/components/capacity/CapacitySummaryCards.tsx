@@ -40,15 +40,15 @@ export function CapacitySummaryCards({
       label: 'Fully Allocated', 
       value: fullyAllocated, 
       icon: CheckCircle, 
-      iconBg: 'bg-[#5c7c5c]/10', 
-      iconColor: 'text-[#5c7c5c]', // Olive
+      iconBg: 'bg-[var(--status-success)]/10', 
+      iconColor: 'text-[var(--status-success)]', // Olive
     },
     { 
       label: 'Overallocated', 
       value: overallocated, 
       icon: CircleDot, 
-      iconBg: 'bg-[#c69c6d]/10', 
-      iconColor: 'text-[#c69c6d]', // Gold
+      iconBg: 'bg-[var(--status-info)]/10', 
+      iconColor: 'text-[var(--status-info)]', // Gold
     },
     { 
       label: 'Open Vacancies', 

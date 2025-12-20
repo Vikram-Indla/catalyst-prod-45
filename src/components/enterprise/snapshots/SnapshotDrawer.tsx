@@ -288,23 +288,23 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
       case 'ACTIVE':
         return { 
           label: 'on track', 
-          bgClass: 'bg-[rgba(92,124,92,0.12)]', 
-          textClass: 'text-[#5C7C5C]',
-          healthColor: '#5C7C5C'
+          bgClass: 'bg-[var(--status-success-bg)]', 
+          textClass: 'text-[var(--status-success)]',
+          healthColor: 'var(--status-success)'
         };
       case 'ARCHIVED':
         return { 
           label: 'archived', 
           bgClass: 'bg-muted', 
           textClass: 'text-muted-foreground',
-          healthColor: '#8B949E'
+          healthColor: 'var(--status-muted)'
         };
       default:
         return { 
           label: 'draft', 
           bgClass: 'bg-muted', 
           textClass: 'text-muted-foreground',
-          healthColor: '#8B949E'
+          healthColor: 'var(--status-muted)'
         };
     }
   };
@@ -677,7 +677,7 @@ export function SnapshotDrawer({ isOpen, onClose, snapshotId, onSave }: Snapshot
                       className={cn(
                         'flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors',
                         isSelected 
-                          ? 'bg-[rgba(92,124,92,0.08)] border-brand-primary/30' 
+                          ? 'bg-[var(--status-success-bg)] border-brand-primary/30' 
                           : 'bg-background border-border hover:border-brand-primary/20'
                       )}
                     >
