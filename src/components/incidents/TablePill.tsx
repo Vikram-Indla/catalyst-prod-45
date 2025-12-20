@@ -1,14 +1,15 @@
 /**
  * TablePill — Enterprise-grade table pill/badge component
  * 
- * Design specs (Jira-quality) - A4 spec:
+ * Design specs (Jira-quality):
  * - Fixed height: 20px (strict compact density)
  * - Horizontal padding: 8px (px-2)
  * - Font size: 11px
- * - Line height: 20px (leading-[20px])
+ * - Line height: 20px (leading-5)
  * - Border radius: full pill
- * - Consistent vertical centering
+ * - Consistent vertical centering in 36px row
  * - Low saturation colors for calm enterprise feel
+ * - Truncates content if column is too narrow
  */
 
 import { cn } from '@/lib/utils';
@@ -53,16 +54,15 @@ export function TablePill({
   return (
     <span
       className={cn(
-        // Fixed 20px height for strict compact density (per A4 spec)
-        'inline-flex items-center justify-center',
-        'h-5 min-h-5 max-h-5', // 20px
+        // Fixed 20px height for strict compact density
+        'inline-flex items-center',
+        'h-5', // 20px height
         'px-2', // 8px horizontal padding
         'rounded-full', // Pill shape
-        // Typography - 11px, line-height 20px for perfect centering
-        'text-[11px] font-medium',
-        'leading-5', // 20px line height matches height
+        // Typography - 11px, line-height for perfect centering
+        'text-[11px] font-medium leading-5',
         // CRITICAL: Prevent pill from exceeding column width
-        'max-w-full min-w-0 overflow-hidden',
+        'max-w-full overflow-hidden whitespace-nowrap',
         // Variant styling
         variantStyles[variant] || variantStyles.default,
         className
@@ -81,7 +81,7 @@ export function TablePill({
   );
 }
 
-// Status pill - compact with colored dot indicator only
+// Status pill - compact with colored dot indicator
 export function StatusPill({ status }: { status: string }) {
   const statusConfig: Record<string, { label: string; variant: TablePillProps['variant']; dot?: boolean }> = {
     open: { label: 'Open', variant: 'muted' },
@@ -130,9 +130,9 @@ export function SlaPill({ status }: { status: 'breached' | 'at_risk' | 'on_track
 
   const config = slaConfig[status];
   
-  // Return plain text with subtle color - no pill/badge, 11px font
+  // Return plain text with subtle color - 11px font, no pill
   return (
-    <span className={cn('text-[11px] font-medium whitespace-nowrap leading-5', config.className)}>
+    <span className={cn('text-[11px] font-medium whitespace-nowrap leading-5 truncate', config.className)}>
       {config.label}
     </span>
   );
@@ -161,7 +161,7 @@ export function CommitteePill({ status, label }: { status: string; label: string
     : 'text-muted-foreground';
   
   return (
-    <span className={cn('text-[11px] font-medium whitespace-nowrap leading-5', colorClass)}>
+    <span className={cn('text-[11px] font-medium whitespace-nowrap leading-5 truncate', colorClass)}>
       {label}
     </span>
   );

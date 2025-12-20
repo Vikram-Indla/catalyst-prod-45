@@ -2,8 +2,8 @@
  * Hook for managing incident table column widths with localStorage persistence
  * Enterprise-grade stable column widths for Jira-quality density
  * 
- * Updated defaults per A6 spec:
- * - Summary: 480px (was 320px) - fixed, not flexible
+ * Updated defaults for enterprise-grade table:
+ * - Summary: 360px default, resizable up to 900px
  * - Better width distribution across columns
  * - All columns resizable with proper min/max constraints
  */
@@ -11,12 +11,12 @@ import { useState, useCallback } from 'react';
 
 const STORAGE_KEY = 'catalyst-incident-list-column-widths';
 
-// Default column widths - enterprise-grade fixed widths per spec A6
-// Summary is NOT flexible; all columns use explicit pixel widths
+// Default column widths - enterprise-grade fixed widths
+// Summary is fixed width (not flex), resizable like all other columns
 export const DEFAULT_COLUMN_WIDTHS: Record<string, number> = {
   key: 110,           // Fixed key column
-  summary: 420,       // Fixed width (NOT flex), resizable up to 900
-  severity: 90,       // Compact severity with dot
+  summary: 360,       // Fixed width, resizable up to 900
+  severity: 90,       // Compact severity pill with dot
   level: 60,          // Plain text L1/L2/L3
   status: 130,        // Compact status pill
   assignee: 170,      // Avatar + truncated name
@@ -44,14 +44,14 @@ export const MIN_COLUMN_WIDTHS: Record<string, number> = {
   actions: 40,
 };
 
-// Maximum widths to prevent over-expansion
+// Maximum widths - per-column clamp rules as specified
 export const MAX_COLUMN_WIDTHS: Record<string, number> = {
-  key: 160,
-  summary: 1000,      // Allow wide summary for long titles (was 600, too tight)
+  key: 160,           // Key max: 160
+  summary: 900,       // Summary max: 900 (not 600, that's too tight)
   severity: 140,
   level: 100,
   status: 200,
-  assignee: 280,
+  assignee: 260,      // Assignee max: 260
   age: 100,
   sla: 140,
   releaseVersion: 180,

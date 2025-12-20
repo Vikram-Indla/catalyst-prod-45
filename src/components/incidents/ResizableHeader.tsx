@@ -2,7 +2,8 @@
  * ResizableHeader — Enterprise-grade column resize for Incident List (Grid version)
  * 
  * Updated for CSS Grid layout:
- * - All columns use explicit width (no flex-1)
+ * - DOES NOT set its own width (grid cell controls width via gridTemplateColumns)
+ * - Fills grid cell completely with width: 100%
  * - Resize handle with proper hit zone (8px)
  * - Subtle vertical line on hover, prominent on drag
  * - Cursor col-resize
@@ -73,18 +74,17 @@ export function ResizableHeader({
   return (
     <div
       className={cn(
-        // CRITICAL: min-w-0 prevents grid cell from expanding beyond its allocated width
-        "relative select-none flex items-center h-full min-w-0 overflow-hidden",
+        // CRITICAL: Fill grid cell completely - DO NOT set width here, grid controls it
+        "relative select-none flex items-center h-full w-full min-w-0 overflow-hidden",
         className
       )}
-      // Explicit width - NO flex-1, NO isFlexible behavior
-      style={{ width: `${width}px` }}
+      // NO width style - gridTemplateColumns controls the width
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => !isResizing && setIsHovered(false)}
     >
       <span className="truncate">{children}</span>
       
-      {/* Resize handle - 8px hit zone, subtle visual */}
+      {/* Resize handle - 8px hit zone, positioned at right edge of grid cell */}
       <div
         className="absolute right-0 top-0 h-full w-2 z-10 flex items-center justify-end"
         style={{ cursor: 'col-resize' }}
