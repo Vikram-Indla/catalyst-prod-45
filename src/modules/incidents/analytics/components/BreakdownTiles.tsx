@@ -1,7 +1,7 @@
 /**
  * Breakdown Tiles
- * Clickable tiles for severity, level, status, SLA state
- * Token-only styling, uniform appearance, semantic color for SLA only
+ * Uniform card-based grid for severity, level, status, SLA state
+ * Token-only styling, premium enterprise appearance
  */
 
 import { cn } from '@/lib/utils';
@@ -19,7 +19,7 @@ const STATUS_ORDER = ['open', 'triage', 'in_progress', 'to_committee', 'resolved
 const STATUS_LABELS: Record<string, string> = {
   open: 'Open',
   triage: 'Triage',
-  in_progress: 'In progress',
+  in_progress: 'In Progress',
   to_committee: 'Committee',
   resolved: 'Resolved',
   closed: 'Closed',
@@ -45,19 +45,36 @@ function Tile({ label, value, isActive, valueClassName, onClick }: TileProps) {
     <button
       onClick={onClick}
       className={cn(
-        "p-2.5 rounded-md border text-left transition-all cursor-pointer",
-        "hover:shadow-sm hover:border-[var(--brand-primary)]",
+        "p-4 rounded-lg border text-left transition-all cursor-pointer min-h-[72px]",
+        "hover:shadow-sm hover:border-[var(--brand-primary)] hover:-translate-y-0.5",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)]",
         "bg-card border-border",
-        isActive && "ring-2 ring-[var(--brand-primary)] border-[var(--brand-primary)]"
+        isActive && "ring-2 ring-[var(--brand-primary)] border-[var(--brand-primary)] shadow-sm"
       )}
     >
-      <div className="text-[9px] font-medium uppercase tracking-wide text-muted-foreground mb-0.5">
+      <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-1.5">
         {label}
       </div>
-      <div className={cn("text-lg font-bold tabular-nums text-foreground", valueClassName)}>
+      <div className={cn("text-2xl font-bold tabular-nums text-foreground leading-none", valueClassName)}>
         {value}
       </div>
     </button>
+  );
+}
+
+interface BreakdownCardProps {
+  title: string;
+  children: React.ReactNode;
+}
+
+function BreakdownCard({ title, children }: BreakdownCardProps) {
+  return (
+    <div className="bg-card border border-border rounded-lg p-4">
+      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+        {title}
+      </h3>
+      {children}
+    </div>
   );
 }
 
@@ -71,81 +88,74 @@ export function BreakdownTiles({ breakdowns, onDrilldown, activeFilter }: Breakd
   };
 
   return (
-    <section className="mb-6 grid grid-cols-4 gap-5">
-      {/* Severity Breakdown */}
-      <div>
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-          Severity
-        </h3>
-        <div className="grid grid-cols-2 gap-2">
-          {SEVERITY_ORDER.map(sev => (
-            <Tile
-              key={sev}
-              label={sev}
-              value={breakdowns.severity[sev] || 0}
-              isActive={activeFilter?.type === 'severity' && activeFilter.value === sev}
-              onClick={() => onDrilldown({ type: 'severity', value: sev, label: sev })}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* Level Breakdown */}
-      <div>
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-          Level
-        </h3>
-        <div className="grid grid-cols-3 gap-2">
-          {LEVEL_ORDER.map(level => (
-            <Tile
-              key={level}
-              label={level}
-              value={breakdowns.level[level] || 0}
-              isActive={activeFilter?.type === 'level' && activeFilter.value === level}
-              onClick={() => onDrilldown({ type: 'level', value: level, label: level })}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* Status Breakdown */}
-      <div>
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-          Status
-        </h3>
-        <div className="grid grid-cols-3 gap-2">
-          {STATUS_ORDER.map(status => (
-            <Tile
-              key={status}
-              label={STATUS_LABELS[status]}
-              value={breakdowns.status[status] || 0}
-              isActive={activeFilter?.type === 'status' && activeFilter.value === status}
-              onClick={() => onDrilldown({ type: 'status', value: status, label: STATUS_LABELS[status] })}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* SLA State Breakdown - Semantic colors only here */}
-      <div>
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-          SLA State
-        </h3>
-        <div className="grid grid-cols-2 gap-2">
-          {SLA_ORDER.map(state => {
-            const value = breakdowns.sla_state[state] || 0;
-            return (
+    <section className="mb-8">
+      <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+        Operational Distribution
+      </h2>
+      <div className="grid grid-cols-4 gap-5">
+        {/* Severity Breakdown */}
+        <BreakdownCard title="Severity">
+          <div className="grid grid-cols-2 gap-3">
+            {SEVERITY_ORDER.map(sev => (
               <Tile
-                key={state}
-                label={SLA_LABELS[state]}
-                value={value}
-                isActive={activeFilter?.type === 'sla_state' && activeFilter.value === state}
-                valueClassName={getSLAValueClass(state, value)}
-                onClick={() => onDrilldown({ type: 'sla_state', value: state, label: SLA_LABELS[state] })}
+                key={sev}
+                label={sev}
+                value={breakdowns.severity[sev] || 0}
+                isActive={activeFilter?.type === 'severity' && activeFilter.value === sev}
+                onClick={() => onDrilldown({ type: 'severity', value: sev, label: sev })}
               />
-            );
-          })}
-        </div>
+            ))}
+          </div>
+        </BreakdownCard>
+
+        {/* Level Breakdown */}
+        <BreakdownCard title="Support Level">
+          <div className="grid grid-cols-3 gap-3">
+            {LEVEL_ORDER.map(level => (
+              <Tile
+                key={level}
+                label={level}
+                value={breakdowns.level[level] || 0}
+                isActive={activeFilter?.type === 'level' && activeFilter.value === level}
+                onClick={() => onDrilldown({ type: 'level', value: level, label: level })}
+              />
+            ))}
+          </div>
+        </BreakdownCard>
+
+        {/* Status Breakdown */}
+        <BreakdownCard title="Status">
+          <div className="grid grid-cols-3 gap-3">
+            {STATUS_ORDER.map(status => (
+              <Tile
+                key={status}
+                label={STATUS_LABELS[status]}
+                value={breakdowns.status[status] || 0}
+                isActive={activeFilter?.type === 'status' && activeFilter.value === status}
+                onClick={() => onDrilldown({ type: 'status', value: status, label: STATUS_LABELS[status] })}
+              />
+            ))}
+          </div>
+        </BreakdownCard>
+
+        {/* SLA State Breakdown - Semantic colors only here */}
+        <BreakdownCard title="SLA State">
+          <div className="grid grid-cols-2 gap-3">
+            {SLA_ORDER.map(state => {
+              const value = breakdowns.sla_state[state] || 0;
+              return (
+                <Tile
+                  key={state}
+                  label={SLA_LABELS[state]}
+                  value={value}
+                  isActive={activeFilter?.type === 'sla_state' && activeFilter.value === state}
+                  valueClassName={getSLAValueClass(state, value)}
+                  onClick={() => onDrilldown({ type: 'sla_state', value: state, label: SLA_LABELS[state] })}
+                />
+              );
+            })}
+          </div>
+        </BreakdownCard>
       </div>
     </section>
   );

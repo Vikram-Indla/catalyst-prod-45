@@ -1,7 +1,7 @@
 /**
  * Executive Snapshot KPIs
- * Clickable KPI cards for the analytics control room
- * Neutral by default, semantic emphasis only for urgent items
+ * Premium hero-level KPI row for the analytics control room
+ * Large numbers, strong visual presence, semantic emphasis for risk only
  */
 
 import { cn } from '@/lib/utils';
@@ -14,21 +14,21 @@ interface ExecutiveSnapshotProps {
 }
 
 const KPI_CONFIG = [
-  { key: 'open', label: 'Open', filterType: 'open', urgency: 'none' },
-  { key: 'major_active', label: 'Major Active', filterType: 'major_active', urgency: 'critical' },
-  { key: 'sla_breached', label: 'SLA Breached', filterType: 'sla_breached', urgency: 'critical' },
-  { key: 'sla_at_risk', label: 'SLA At Risk', filterType: 'sla_at_risk', urgency: 'warning' },
-  { key: 'committee', label: 'Committee', filterType: 'committee', urgency: 'none' },
+  { key: 'open', label: 'Open', filterType: 'open', urgency: 'none', description: 'Total open incidents' },
+  { key: 'major_active', label: 'Major Active', filterType: 'major_active', urgency: 'critical', description: 'Major incidents in progress' },
+  { key: 'sla_breached', label: 'SLA Breached', filterType: 'sla_breached', urgency: 'critical', description: 'Past resolution target' },
+  { key: 'sla_at_risk', label: 'SLA At Risk', filterType: 'sla_at_risk', urgency: 'warning', description: 'Approaching deadline' },
+  { key: 'committee', label: 'Committee', filterType: 'committee', urgency: 'none', description: 'Pending committee decision' },
 ] as const;
 
 export function ExecutiveSnapshot({ snapshot, onDrilldown, activeFilter }: ExecutiveSnapshotProps) {
   return (
-    <section className="mb-6">
-      <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+    <section className="mb-8">
+      <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
         Executive Snapshot
       </h2>
-      <div className="grid grid-cols-5 gap-3">
-        {KPI_CONFIG.map(({ key, label, filterType, urgency }) => {
+      <div className="grid grid-cols-5 gap-4">
+        {KPI_CONFIG.map(({ key, label, filterType, urgency, description }) => {
           const value = snapshot[key as keyof AnalyticsSnapshot];
           const isActive = activeFilter?.type === filterType;
           
@@ -41,23 +41,46 @@ export function ExecutiveSnapshot({ snapshot, onDrilldown, activeFilter }: Execu
               key={key}
               onClick={() => onDrilldown({ type: filterType, label })}
               className={cn(
-                "p-4 rounded-md border text-left transition-all cursor-pointer h-[72px]",
-                "hover:shadow-sm hover:border-[var(--brand-primary)]",
+                "group relative p-5 rounded-lg border text-left transition-all cursor-pointer",
+                "hover:shadow-md hover:border-[var(--brand-primary)] hover:-translate-y-0.5",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)] focus-visible:ring-offset-2",
                 "bg-card border-border",
-                isActive && "ring-2 ring-[var(--brand-primary)] border-[var(--brand-primary)]"
+                isActive && "ring-2 ring-[var(--brand-primary)] border-[var(--brand-primary)] shadow-md"
               )}
             >
-              <div className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground mb-1">
+              {/* Label */}
+              <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
                 {label}
               </div>
+              
+              {/* Value - Large and prominent */}
               <div className={cn(
-                "text-2xl font-bold tabular-nums",
+                "text-4xl font-bold tabular-nums leading-none",
                 showCritical && "text-destructive",
                 showWarning && "text-[hsl(var(--warning))]",
                 !showCritical && !showWarning && "text-foreground"
               )}>
                 {value}
               </div>
+
+              {/* Description on hover */}
+              <div className="mt-2 text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+                {description}
+              </div>
+
+              {/* Active indicator */}
+              {isActive && (
+                <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[var(--brand-primary)]" />
+              )}
+
+              {/* Urgency indicator bar at bottom */}
+              {value > 0 && urgency !== 'none' && (
+                <div className={cn(
+                  "absolute bottom-0 left-0 right-0 h-1 rounded-b-lg",
+                  showCritical && "bg-destructive",
+                  showWarning && "bg-[hsl(var(--warning))]"
+                )} />
+              )}
             </button>
           );
         })}
