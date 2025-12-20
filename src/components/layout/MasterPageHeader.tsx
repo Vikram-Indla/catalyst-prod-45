@@ -36,14 +36,14 @@ export function MasterPageHeader({
         <div className="flex items-baseline gap-2.5">
           <h1 
             className="text-xl font-bold m-0 leading-tight"
-            style={{ color: '#5c7c5c' }} // Olive color per spec
+            style={{ color: 'var(--text-1)' }}
           >
             {title}
           </h1>
           {count && (
             <span 
               className="text-[13px] font-medium"
-              style={{ color: '#6b7280' }} // Grey-500 per spec
+              style={{ color: 'var(--text-3)' }}
             >
               {count}
             </span>
@@ -56,7 +56,7 @@ export function MasterPageHeader({
         className="flex items-center px-6"
         style={{ 
           height: '52px',
-          borderBottom: '1px solid #e5e7eb' // Grey-200 per spec
+          borderBottom: '1px solid var(--divider)'
         }}
       >
         <div 

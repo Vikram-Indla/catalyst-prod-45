@@ -221,7 +221,7 @@ export function CatalystHeader() {
                 cursor: 'pointer',
                 transition: 'background 0.15s ease, color 0.15s ease',
                 border: 'none',
-                background: isActive ? 'rgba(92, 124, 92, 0.08)' : 'transparent',
+                background: isActive ? 'var(--nav-active-bg)' : 'transparent',
                 position: 'relative' as const,
                 fontFamily: 'inherit',
                 outline: 'none',
@@ -249,8 +249,8 @@ export function CatalystHeader() {
                     singleItemNav.product.hasSingleItem && singleItemNav.product.directPath ? (
                       <button
                         style={navButtonStyle}
-                        onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = 'rgba(92, 124, 92, 0.08)'; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.background = isActive ? 'rgba(92, 124, 92, 0.08)' : 'transparent'; }}
+                        onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = isActive ? 'var(--nav-active-bg)' : 'transparent'; }}
                         onClick={() => navigate(singleItemNav.product.directPath!)}
                       >
                         {item.label}
@@ -264,8 +264,8 @@ export function CatalystHeader() {
                         <PopoverTrigger asChild>
                           <button 
                             style={navButtonStyle}
-                            onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = 'rgba(92, 124, 92, 0.08)'; }}
-                            onMouseLeave={(e) => { e.currentTarget.style.background = isActive ? 'rgba(92, 124, 92, 0.08)' : 'transparent'; }}
+                            onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.background = isActive ? 'var(--nav-active-bg)' : 'transparent'; }}
                           >
                             {item.label}
                             <ChevronDown style={{ width: '16px', height: '16px' }} />
@@ -287,8 +287,8 @@ export function CatalystHeader() {
                     singleItemNav.program.hasSingleItem && singleItemNav.program.directPath ? (
                       <button
                         style={navButtonStyle}
-                        onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = 'rgba(92, 124, 92, 0.08)'; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.background = isActive ? 'rgba(92, 124, 92, 0.08)' : 'transparent'; }}
+                        onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = isActive ? 'var(--nav-active-bg)' : 'transparent'; }}
                         onClick={() => navigate(singleItemNav.program.directPath!)}
                       >
                         {item.label}
@@ -302,8 +302,8 @@ export function CatalystHeader() {
                         <PopoverTrigger asChild>
                           <button 
                             style={navButtonStyle}
-                            onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = 'rgba(92, 124, 92, 0.08)'; }}
-                            onMouseLeave={(e) => { e.currentTarget.style.background = isActive ? 'rgba(92, 124, 92, 0.08)' : 'transparent'; }}
+                            onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.background = isActive ? 'var(--nav-active-bg)' : 'transparent'; }}
                           >
                             {item.label}
                             <ChevronDown style={{ width: '16px', height: '16px' }} />
@@ -325,8 +325,8 @@ export function CatalystHeader() {
                     singleItemNav.project.hasSingleItem && singleItemNav.project.directPath ? (
                       <button
                         style={navButtonStyle}
-                        onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = 'rgba(92, 124, 92, 0.08)'; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.background = isActive ? 'rgba(92, 124, 92, 0.08)' : 'transparent'; }}
+                        onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = isActive ? 'var(--nav-active-bg)' : 'transparent'; }}
                         onClick={() => navigate(singleItemNav.project.directPath!)}
                       >
                         {item.label}
@@ -340,8 +340,8 @@ export function CatalystHeader() {
                         <PopoverTrigger asChild>
                           <button 
                             style={navButtonStyle}
-                            onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = 'rgba(92, 124, 92, 0.08)'; }}
-                            onMouseLeave={(e) => { e.currentTarget.style.background = isActive ? 'rgba(92, 124, 92, 0.08)' : 'transparent'; }}
+                            onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.background = isActive ? 'var(--nav-active-bg)' : 'transparent'; }}
                           >
                             {item.label}
                             <ChevronDown style={{ width: '16px', height: '16px' }} />
@@ -366,10 +366,10 @@ export function CatalystHeader() {
                           ...navButtonStyle,
                           color: location.pathname.startsWith('/release') ? 'var(--text-primary)' : navButtonStyle.color,
                           fontWeight: location.pathname.startsWith('/release') ? 600 : navButtonStyle.fontWeight,
-                          background: location.pathname.startsWith('/release') ? 'rgba(92, 124, 92, 0.08)' : 'transparent',
+                          background: location.pathname.startsWith('/release') ? 'var(--nav-active-bg)' : 'transparent',
                         }}
-                        onMouseEnter={(e) => { if (!location.pathname.startsWith('/release')) e.currentTarget.style.background = 'rgba(92, 124, 92, 0.08)'; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.background = location.pathname.startsWith('/release') ? 'rgba(92, 124, 92, 0.08)' : 'transparent'; }}
+                        onMouseEnter={(e) => { if (!location.pathname.startsWith('/release')) e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background = location.pathname.startsWith('/release') ? 'var(--nav-active-bg)' : 'transparent'; }}
                         onClick={() => navigate(singleItemNav.release.directPath!)}
                       >
                         {item.label}
@@ -398,10 +398,10 @@ export function CatalystHeader() {
                               ...navButtonStyle,
                               color: location.pathname.startsWith('/release') ? 'var(--text-primary)' : navButtonStyle.color,
                               fontWeight: location.pathname.startsWith('/release') ? 600 : navButtonStyle.fontWeight,
-                              background: location.pathname.startsWith('/release') ? 'rgba(92, 124, 92, 0.08)' : 'transparent',
+                              background: location.pathname.startsWith('/release') ? 'var(--nav-active-bg)' : 'transparent',
                             }}
-                            onMouseEnter={(e) => { if (!location.pathname.startsWith('/release')) e.currentTarget.style.background = 'rgba(92, 124, 92, 0.08)'; }}
-                            onMouseLeave={(e) => { e.currentTarget.style.background = location.pathname.startsWith('/release') ? 'rgba(92, 124, 92, 0.08)' : 'transparent'; }}
+                            onMouseEnter={(e) => { if (!location.pathname.startsWith('/release')) e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.background = location.pathname.startsWith('/release') ? 'var(--nav-active-bg)' : 'transparent'; }}
                           >
                             {item.label}
                             <ChevronDown style={{ width: '16px', height: '16px' }} />
@@ -430,8 +430,8 @@ export function CatalystHeader() {
                   ) : (
                     <button
                       style={navButtonStyle}
-                      onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = 'rgba(92, 124, 92, 0.08)'; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.background = isActive ? 'rgba(92, 124, 92, 0.08)' : 'transparent'; }}
+                      onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = isActive ? 'var(--nav-active-bg)' : 'transparent'; }}
                       onClick={() => item.path && navigate(item.path)}
                     >
                       {item.label}

@@ -30,7 +30,7 @@ export function MasterPageLayout({
       {/* Page Body - scrollable, fills remaining space */}
       <div 
         className="flex-1 overflow-auto"
-        style={{ backgroundColor: '#f7f8fa' }} // bg-page per spec
+        style={{ backgroundColor: 'var(--bg)' }}
       >
         {children}
       </div>
