@@ -454,19 +454,15 @@ export function CreateIncidentModal({ isOpen, onClose, onSubmit }: CreateInciden
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-[900px] max-h-[90vh] overflow-hidden flex flex-col p-0 gap-0">
+      <DialogContent className="max-w-[700px] max-h-[90vh] overflow-hidden flex flex-col p-0 gap-0">
         {/* Header */}
         <DialogHeader className="px-6 py-4 border-b border-border flex-shrink-0">
-          <div className="flex items-start justify-between">
-            <div>
-              <DialogTitle className="text-lg font-semibold text-foreground">
-                Create Incident
-              </DialogTitle>
-              <DialogDescription className="text-sm text-muted-foreground mt-1">
-                Log an operational incident for tracking and resolution
-              </DialogDescription>
-            </div>
-          </div>
+          <DialogTitle className="text-lg font-semibold text-foreground">
+            Create Incident
+          </DialogTitle>
+          <DialogDescription className="text-sm text-muted-foreground">
+            Log an operational incident for tracking and resolution
+          </DialogDescription>
         </DialogHeader>
 
         {/* Error Summary */}
@@ -495,591 +491,524 @@ export function CreateIncidentModal({ isOpen, onClose, onSubmit }: CreateInciden
           </div>
         )}
 
-        {/* Scrollable Content */}
+        {/* Scrollable Content - Single Column Layout */}
         <ScrollArea className="flex-1">
-          <div className="px-6 py-5">
-            {/* Two-column layout */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="px-6 py-6 space-y-6">
+            
+            {/* ============================================ */}
+            {/* SECTION 1: SUMMARY (Title + Description) */}
+            {/* ============================================ */}
+            <section>
+              <h3 className="text-sm font-semibold text-foreground mb-4">Summary</h3>
               
-              {/* LEFT COLUMN: Incident Details & Impact */}
-              <div className="space-y-6">
-                
-                {/* SECTION 1: Context */}
-                <section>
-                  <SectionHeader 
-                    title="Context" 
-                    description="Where does this incident belong?"
-                  />
-                  
-                  {/* Project */}
-                  <div id="field-project_id" className="mb-4">
-                    <FieldLabel required>Project</FieldLabel>
-                    <Select
-                      value={formData.project_id}
-                      onValueChange={(value) => {
-                        setFormData(prev => ({ ...prev, project_id: value }));
-                        handleBlur('project_id');
-                      }}
-                    >
-                      <SelectTrigger className={cn(
-                        "bg-background border-input",
-                        touched.project_id && errors.project_id && "border-destructive"
-                      )}>
-                        <SelectValue placeholder="Select project..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {projects.map((project) => (
-                          <SelectItem key={project.id} value={project.id}>
-                            <span className="font-medium">{project.name}</span>
-                            {project.key && <span className="text-muted-foreground ml-1">({project.key})</span>}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {touched.project_id && errors.project_id && (
-                      <span className="text-xs text-destructive mt-1 block">{errors.project_id}</span>
-                    )}
-                  </div>
+              {/* Title */}
+              <div id="field-title" className="mb-4">
+                <FieldLabel required>Title</FieldLabel>
+                <Input
+                  value={formData.title || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                  onBlur={() => handleBlur('title')}
+                  placeholder="e.g., Payment processing failing for credit cards"
+                  maxLength={255}
+                  className={cn(
+                    "bg-background border-input h-10",
+                    touched.title && errors.title && "border-destructive"
+                  )}
+                />
+                <div className="flex justify-between mt-1">
+                  {touched.title && errors.title ? (
+                    <span className="text-xs text-destructive">{errors.title}</span>
+                  ) : (
+                    <span />
+                  )}
+                  <span className="text-xs text-muted-foreground">{formData.title?.length || 0} / 255</span>
+                </div>
+              </div>
 
-                  {/* Release */}
-                  <div id="field-release_version_id" className="mb-4">
-                    <FieldLabel required>Release</FieldLabel>
-                    <Select
-                      value={formData.release_version_id}
-                      onValueChange={(value) => {
-                        setFormData(prev => ({ ...prev, release_version_id: value }));
-                        handleBlur('release_version_id');
-                      }}
-                    >
-                      <SelectTrigger className={cn(
-                        "bg-background border-input",
-                        touched.release_version_id && errors.release_version_id && "border-destructive"
-                      )}>
-                        <SelectValue placeholder="Select release..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {filteredReleases.map((release) => (
-                          <SelectItem key={release.id} value={release.id}>
-                            {release.version} {release.name && `- ${release.name}`}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {touched.release_version_id && errors.release_version_id && (
-                      <span className="text-xs text-destructive mt-1 block">{errors.release_version_id}</span>
-                    )}
-                  </div>
+              {/* Description with Rich Text */}
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <FieldLabel>Description</FieldLabel>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={insertTemplate}
+                    className="h-7 text-xs gap-1 text-muted-foreground hover:text-foreground"
+                  >
+                    <FileText className="h-3 w-3" />
+                    Insert template
+                  </Button>
+                </div>
+                <RichTextEditor
+                  value={formData.description || ''}
+                  onChange={(value) => setFormData(prev => ({ ...prev, description: value }))}
+                  placeholder="Describe the incident in detail..."
+                  minHeight="200px"
+                />
+              </div>
+            </section>
 
-                  {/* Type */}
-                  <div id="field-incident_type" className="mb-2">
-                    <FieldLabel required>Type</FieldLabel>
-                    <Select
-                      value={formData.incident_type}
-                      onValueChange={(value) => {
-                        setFormData(prev => ({ ...prev, incident_type: value }));
-                        handleBlur('incident_type');
-                      }}
-                    >
-                      <SelectTrigger className={cn(
-                        "bg-background border-input",
-                        touched.incident_type && errors.incident_type && "border-destructive"
-                      )}>
-                        <SelectValue placeholder="Select type..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {INCIDENT_TYPE_OPTIONS.map((type) => (
-                          <SelectItem key={type.value} value={type.value}>
-                            {type.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {touched.incident_type && errors.incident_type && (
-                      <span className="text-xs text-destructive mt-1 block">{errors.incident_type}</span>
-                    )}
-                  </div>
-                  
-                  <p className="text-xs text-muted-foreground">
-                    Projects define ownership and reporting. Release defines deployment context.
-                  </p>
-                </section>
+            <div className="border-t border-border" />
 
-                <div className="border-t border-border" />
+            {/* ============================================ */}
+            {/* SECTION 2: CONTEXT */}
+            {/* ============================================ */}
+            <section>
+              <h3 className="text-sm font-semibold text-foreground mb-4">Context</h3>
+              
+              <div className="grid grid-cols-3 gap-4">
+                {/* Project */}
+                <div id="field-project_id">
+                  <FieldLabel required>Project</FieldLabel>
+                  <Select
+                    value={formData.project_id}
+                    onValueChange={(value) => {
+                      setFormData(prev => ({ ...prev, project_id: value }));
+                      handleBlur('project_id');
+                    }}
+                  >
+                    <SelectTrigger className={cn(
+                      "bg-background border-input",
+                      touched.project_id && errors.project_id && "border-destructive"
+                    )}>
+                      <SelectValue placeholder="Select..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {projects.map((project) => (
+                        <SelectItem key={project.id} value={project.id}>
+                          {project.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {touched.project_id && errors.project_id && (
+                    <span className="text-xs text-destructive mt-1 block">{errors.project_id}</span>
+                  )}
+                </div>
 
-                {/* SECTION 2: Summary */}
-                <section>
-                  <SectionHeader 
-                    title="Summary" 
-                    description="Core incident details"
-                  />
+                {/* Release */}
+                <div id="field-release_version_id">
+                  <FieldLabel required>Release</FieldLabel>
+                  <Select
+                    value={formData.release_version_id}
+                    onValueChange={(value) => {
+                      setFormData(prev => ({ ...prev, release_version_id: value }));
+                      handleBlur('release_version_id');
+                    }}
+                  >
+                    <SelectTrigger className={cn(
+                      "bg-background border-input",
+                      touched.release_version_id && errors.release_version_id && "border-destructive"
+                    )}>
+                      <SelectValue placeholder="Select..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {filteredReleases.map((release) => (
+                        <SelectItem key={release.id} value={release.id}>
+                          {release.version}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {touched.release_version_id && errors.release_version_id && (
+                    <span className="text-xs text-destructive mt-1 block">{errors.release_version_id}</span>
+                  )}
+                </div>
 
-                  {/* Title */}
-                  <div id="field-title" className="mb-4">
-                    <FieldLabel required>Title</FieldLabel>
-                    <Input
-                      value={formData.title || ''}
-                      onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                      onBlur={() => handleBlur('title')}
-                      placeholder="e.g., Payment processing failing for credit cards"
-                      maxLength={255}
-                      className={cn(
-                        "bg-background border-input",
-                        touched.title && errors.title && "border-destructive"
-                      )}
-                    />
-                    <div className="flex justify-between mt-1">
-                      {touched.title && errors.title ? (
-                        <span className="text-xs text-destructive">{errors.title}</span>
-                      ) : (
-                        <span />
-                      )}
-                      <span className="text-xs text-muted-foreground">{formData.title?.length || 0} / 255</span>
-                    </div>
-                  </div>
+                {/* Type */}
+                <div id="field-incident_type">
+                  <FieldLabel required>Type</FieldLabel>
+                  <Select
+                    value={formData.incident_type}
+                    onValueChange={(value) => {
+                      setFormData(prev => ({ ...prev, incident_type: value }));
+                      handleBlur('incident_type');
+                    }}
+                  >
+                    <SelectTrigger className={cn(
+                      "bg-background border-input",
+                      touched.incident_type && errors.incident_type && "border-destructive"
+                    )}>
+                      <SelectValue placeholder="Select..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {INCIDENT_TYPE_OPTIONS.map((type) => (
+                        <SelectItem key={type.value} value={type.value}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {touched.incident_type && errors.incident_type && (
+                    <span className="text-xs text-destructive mt-1 block">{errors.incident_type}</span>
+                  )}
+                </div>
+              </div>
+            </section>
 
-                  {/* Description with Rich Text */}
-                  <div className="mb-4">
-                    <div className="flex items-center justify-between mb-1.5">
-                      <FieldLabel>Description</FieldLabel>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={insertTemplate}
-                        className="h-7 text-xs gap-1 text-muted-foreground hover:text-foreground"
-                      >
-                        <FileText className="h-3 w-3" />
-                        Insert template
-                      </Button>
-                    </div>
-                    <RichTextEditor
-                      value={formData.description || ''}
-                      onChange={(value) => setFormData(prev => ({ ...prev, description: value }))}
-                      placeholder="Describe the incident in detail..."
-                      minHeight="160px"
-                    />
-                  </div>
+            <div className="border-t border-border" />
 
-                  {/* Attachments */}
-                  <div className="mb-2">
-                    <FieldLabel>Attachments</FieldLabel>
-                    
-                    {/* File List */}
-                    {formData.attachments && formData.attachments.length > 0 && (
-                      <div className="mb-2 space-y-1.5">
-                        {formData.attachments.map((attachment) => (
-                          <div
-                            key={attachment.id}
-                            className="flex items-center justify-between p-2 bg-muted/50 rounded-md border border-border"
+            {/* ============================================ */}
+            {/* SECTION 3: CLASSIFICATION */}
+            {/* ============================================ */}
+            <section>
+              <h3 className="text-sm font-semibold text-foreground mb-4">Classification</h3>
+              
+              {/* Severity */}
+              <div id="field-severity" className="mb-4">
+                <FieldLabel required>Severity</FieldLabel>
+                <div className="grid grid-cols-4 gap-2">
+                  {SEVERITY_OPTIONS.map((option) => (
+                    <TooltipProvider key={option.value}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setFormData(prev => ({ ...prev, severity: option.value as IncidentFormData['severity'] }));
+                              handleBlur('severity');
+                            }}
+                            className={cn(
+                              "p-2.5 rounded-md border text-center transition-all text-sm font-medium",
+                              formData.severity === option.value
+                                ? getSeverityColor(option.value) + " border-transparent"
+                                : "bg-background border-input hover:border-muted-foreground/50 text-foreground"
+                            )}
                           >
-                            <div className="flex items-center gap-2 min-w-0">
-                              <Paperclip className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-                              <span className="text-sm text-foreground truncate">{attachment.name}</span>
-                              <span className="text-xs text-muted-foreground">({formatFileSize(attachment.size)})</span>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveAttachment(attachment.id)}
-                              className="p-1 text-muted-foreground hover:text-destructive transition-colors"
-                            >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                            {option.label}
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-[200px]">
+                          <p className="text-xs">{option.description}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  ))}
+                </div>
+                {touched.severity && errors.severity && (
+                  <span className="text-xs text-destructive mt-1 block">{errors.severity}</span>
+                )}
+              </div>
 
-                    {/* Drop Zone */}
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      multiple
-                      onChange={(e) => handleFileSelect(e.target.files)}
-                      className="hidden"
-                      accept={ALLOWED_FILE_TYPES.join(',')}
-                    />
+              {/* Impact, Urgency, Priority Row */}
+              <div className="grid grid-cols-3 gap-4">
+                <div id="field-impact">
+                  <FieldLabel required>Impact</FieldLabel>
+                  <Select
+                    value={formData.impact}
+                    onValueChange={(value) => {
+                      setFormData(prev => ({ ...prev, impact: value as IncidentFormData['impact'] }));
+                      handleBlur('impact');
+                    }}
+                  >
+                    <SelectTrigger className={cn(
+                      "bg-background border-input",
+                      touched.impact && errors.impact && "border-destructive"
+                    )}>
+                      <SelectValue placeholder="Select..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {IMPACT_OPTIONS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {touched.impact && errors.impact && (
+                    <span className="text-xs text-destructive mt-1 block">{errors.impact}</span>
+                  )}
+                </div>
+
+                <div id="field-urgency">
+                  <FieldLabel required>Urgency</FieldLabel>
+                  <Select
+                    value={formData.urgency}
+                    onValueChange={(value) => {
+                      setFormData(prev => ({ ...prev, urgency: value as IncidentFormData['urgency'] }));
+                      handleBlur('urgency');
+                    }}
+                  >
+                    <SelectTrigger className={cn(
+                      "bg-background border-input",
+                      touched.urgency && errors.urgency && "border-destructive"
+                    )}>
+                      <SelectValue placeholder="Select..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {URGENCY_OPTIONS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {touched.urgency && errors.urgency && (
+                    <span className="text-xs text-destructive mt-1 block">{errors.urgency}</span>
+                  )}
+                </div>
+
+                {/* Priority (Read-only) */}
+                <div>
+                  <FieldLabel tooltip="Priority is derived from Impact × Urgency">Priority</FieldLabel>
+                  <div className="flex items-center justify-between p-2 h-10 bg-muted/50 rounded-md border border-border">
+                    {calculatedPriority ? (
+                      <Badge className={cn("text-xs", getPriorityColor(calculatedPriority))}>
+                        {calculatedPriority}
+                      </Badge>
+                    ) : (
+                      <span className="text-sm text-muted-foreground">—</span>
+                    )}
+                    <span className="text-xs text-muted-foreground">Auto</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <div className="border-t border-border" />
+
+            {/* ============================================ */}
+            {/* SECTION 4: ASSIGNMENT */}
+            {/* ============================================ */}
+            <section>
+              <h3 className="text-sm font-semibold text-foreground mb-4">Assignment</h3>
+              
+              <div className="grid grid-cols-3 gap-4">
+                {/* Support Level */}
+                <div id="field-support_level">
+                  <FieldLabel required>Support Level</FieldLabel>
+                  <Select
+                    value={formData.support_level}
+                    onValueChange={(value) => {
+                      setFormData(prev => ({ ...prev, support_level: value as IncidentFormData['support_level'] }));
+                      handleBlur('support_level');
+                    }}
+                  >
+                    <SelectTrigger className={cn(
+                      "bg-background border-input",
+                      touched.support_level && errors.support_level && "border-destructive"
+                    )}>
+                      <SelectValue placeholder="Select..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {SUPPORT_LEVEL_OPTIONS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label} – {option.description}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {touched.support_level && errors.support_level && (
+                    <span className="text-xs text-destructive mt-1 block">{errors.support_level}</span>
+                  )}
+                </div>
+
+                {/* Assignee */}
+                <div>
+                  <FieldLabel>Assignee</FieldLabel>
+                  <Select
+                    value={formData.assigneeId}
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, assigneeId: value }))}
+                  >
+                    <SelectTrigger className="bg-background border-input">
+                      <SelectValue placeholder="Select..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {userProfiles.map((user) => (
+                        <SelectItem key={user.id} value={user.id}>
+                          {user.full_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Reporter */}
+                <div>
+                  <FieldLabel>Reporter</FieldLabel>
+                  <div className="flex items-center gap-2 p-2 h-10 bg-muted/50 rounded-md border border-border">
+                    <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-medium text-primary">
+                      {currentUser?.full_name?.split(' ').map(n => n[0]).join('').slice(0, 2) || 'U'}
+                    </div>
+                    <span className="text-sm text-foreground truncate">{currentUser?.full_name || 'Loading...'}</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <div className="border-t border-border" />
+
+            {/* ============================================ */}
+            {/* SECTION 5: ATTACHMENTS */}
+            {/* ============================================ */}
+            <section>
+              <h3 className="text-sm font-semibold text-foreground mb-4">Attachments</h3>
+              
+              {/* File List */}
+              {formData.attachments && formData.attachments.length > 0 && (
+                <div className="mb-3 space-y-2">
+                  {formData.attachments.map((attachment) => (
                     <div
-                      ref={dropZoneRef}
-                      onDragOver={handleDragOver}
-                      onDragLeave={handleDragLeave}
-                      onDrop={handleDrop}
-                      onClick={() => fileInputRef.current?.click()}
-                      className={cn(
-                        "flex items-center justify-center gap-2 p-4 border-2 border-dashed rounded-lg cursor-pointer transition-colors",
-                        isDragging 
-                          ? "border-primary bg-primary/5" 
-                          : "border-border hover:border-muted-foreground/50 hover:bg-muted/30"
-                      )}
+                      key={attachment.id}
+                      className="flex items-center justify-between p-2.5 bg-muted/50 rounded-md border border-border"
                     >
-                      <Upload className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">
-                        Drop files here or click to browse
+                      <div className="flex items-center gap-2 min-w-0">
+                        <Paperclip className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                        <span className="text-sm text-foreground truncate">{attachment.name}</span>
+                        <span className="text-xs text-muted-foreground">({formatFileSize(attachment.size)})</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveAttachment(attachment.id)}
+                        className="p-1.5 text-muted-foreground hover:text-destructive transition-colors"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Drop Zone */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                onChange={(e) => handleFileSelect(e.target.files)}
+                className="hidden"
+                accept={ALLOWED_FILE_TYPES.join(',')}
+              />
+              <div
+                ref={dropZoneRef}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                onClick={() => fileInputRef.current?.click()}
+                className={cn(
+                  "flex items-center justify-center gap-2 p-6 border-2 border-dashed rounded-lg cursor-pointer transition-colors",
+                  isDragging 
+                    ? "border-primary bg-primary/5" 
+                    : "border-border hover:border-muted-foreground/50 hover:bg-muted/30"
+                )}
+              >
+                <Upload className="h-5 w-5 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">
+                  Drop files here or click to browse
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                Allowed: PNG, JPG, PDF, TXT, LOG, CSV, DOC
+              </p>
+            </section>
+
+            <div className="border-t border-border" />
+
+            {/* ============================================ */}
+            {/* SECTION 6: MAJOR INCIDENT FLAG */}
+            {/* ============================================ */}
+            <section>
+              <div className={cn(
+                "p-4 rounded-lg border transition-colors",
+                formData.is_major_incident 
+                  ? "bg-destructive/5 border-destructive/30" 
+                  : "bg-muted/30 border-border"
+              )}>
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle className={cn(
+                        "h-4 w-4",
+                        formData.is_major_incident ? "text-destructive" : "text-muted-foreground"
+                      )} />
+                      <span className={cn(
+                        "text-sm font-semibold",
+                        formData.is_major_incident ? "text-destructive" : "text-foreground"
+                      )}>
+                        Major Incident
                       </span>
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">
-                      Allowed: PNG, JPG, PDF, TXT, LOG, CSV, DOC
+                      High-visibility incident requiring executive attention (4-hour SLA)
                     </p>
                   </div>
-                </section>
-              </div>
-
-              {/* RIGHT COLUMN: Classification & Routing */}
-              <div className="space-y-6">
-
-                {/* SECTION 3: Classification */}
-                <section>
-                  <SectionHeader 
-                    title="Classification" 
-                    description="Ops triage settings"
+                  <Switch
+                    checked={formData.is_major_incident || false}
+                    onCheckedChange={(checked) => {
+                      setFormData(prev => ({
+                        ...prev,
+                        is_major_incident: checked,
+                        ...(checked ? { impact: 'high' as const, urgency: 'high' as const } : {}),
+                      }));
+                      setShowMajorIncidentDetails(checked);
+                    }}
                   />
+                </div>
 
-                  {/* Severity */}
-                  <div id="field-severity" className="mb-4">
-                    <FieldLabel required>Severity</FieldLabel>
-                    <div className="grid grid-cols-4 gap-2">
-                      {SEVERITY_OPTIONS.map((option) => (
-                        <TooltipProvider key={option.value}>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setFormData(prev => ({ ...prev, severity: option.value as IncidentFormData['severity'] }));
-                                  handleBlur('severity');
-                                }}
-                                className={cn(
-                                  "p-2 rounded-md border text-center transition-all text-sm font-medium",
-                                  formData.severity === option.value
-                                    ? getSeverityColor(option.value) + " border-transparent"
-                                    : "bg-background border-input hover:border-muted-foreground/50 text-foreground"
-                                )}
-                              >
-                                {option.label}
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipContent className="max-w-[200px]">
-                              <p className="text-xs">{option.description}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      ))}
-                    </div>
-                    {touched.severity && errors.severity && (
-                      <span className="text-xs text-destructive mt-1 block">{errors.severity}</span>
-                    )}
-                  </div>
-
-                  {/* Impact & Urgency Row */}
-                  <div className="grid grid-cols-2 gap-3 mb-4">
-                    <div id="field-impact">
-                      <FieldLabel required>Impact</FieldLabel>
-                      <Select
-                        value={formData.impact}
-                        onValueChange={(value) => {
-                          setFormData(prev => ({ ...prev, impact: value as IncidentFormData['impact'] }));
-                          handleBlur('impact');
-                        }}
-                      >
-                        <SelectTrigger className={cn(
-                          "bg-background border-input",
-                          touched.impact && errors.impact && "border-destructive"
-                        )}>
-                          <SelectValue placeholder="Select..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {IMPACT_OPTIONS.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      {touched.impact && errors.impact && (
-                        <span className="text-xs text-destructive mt-1 block">{errors.impact}</span>
-                      )}
+                {/* Major Incident Details */}
+                {formData.is_major_incident && (
+                  <>
+                    <div className="mt-3 p-2 bg-destructive/10 rounded text-xs text-destructive">
+                      Major SLA applies (4 hours). Ensure owner and comms are assigned.
                     </div>
 
-                    <div id="field-urgency">
-                      <FieldLabel required>Urgency</FieldLabel>
-                      <Select
-                        value={formData.urgency}
-                        onValueChange={(value) => {
-                          setFormData(prev => ({ ...prev, urgency: value as IncidentFormData['urgency'] }));
-                          handleBlur('urgency');
-                        }}
-                      >
-                        <SelectTrigger className={cn(
-                          "bg-background border-input",
-                          touched.urgency && errors.urgency && "border-destructive"
-                        )}>
-                          <SelectValue placeholder="Select..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {URGENCY_OPTIONS.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      {touched.urgency && errors.urgency && (
-                        <span className="text-xs text-destructive mt-1 block">{errors.urgency}</span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Priority (Read-only) */}
-                  <div className="mb-2">
-                    <FieldLabel tooltip="Priority is derived from Impact × Urgency">Priority</FieldLabel>
-                    <div className="flex items-center justify-between p-2.5 bg-muted/50 rounded-md border border-border">
-                      <div className="flex items-center gap-2">
-                        {calculatedPriority ? (
-                          <Badge className={cn("text-xs", getPriorityColor(calculatedPriority))}>
-                            {calculatedPriority}
-                          </Badge>
-                        ) : (
-                          <span className="text-sm text-muted-foreground">Select Impact and Urgency</span>
-                        )}
-                      </div>
-                      <span className="text-xs text-muted-foreground">Auto-calculated</span>
-                    </div>
-                  </div>
-                </section>
-
-                <div className="border-t border-border" />
-
-                {/* SECTION 4: Support Routing */}
-                <section>
-                  <SectionHeader 
-                    title="Support Routing" 
-                    description="Ops ownership and assignment"
-                  />
-
-                  {/* Support Level */}
-                  <div id="field-support_level" className="mb-4">
-                    <FieldLabel required>Support Level</FieldLabel>
-                    <Select
-                      value={formData.support_level}
-                      onValueChange={(value) => {
-                        setFormData(prev => ({ ...prev, support_level: value as IncidentFormData['support_level'] }));
-                        handleBlur('support_level');
-                      }}
+                    <button
+                      type="button"
+                      onClick={() => setShowMajorIncidentDetails(!showMajorIncidentDetails)}
+                      className="flex items-center gap-1 mt-3 text-xs text-muted-foreground hover:text-foreground"
                     >
-                      <SelectTrigger className={cn(
-                        "bg-background border-input",
-                        touched.support_level && errors.support_level && "border-destructive"
-                      )}>
-                        <SelectValue placeholder="Select support level..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {SUPPORT_LEVEL_OPTIONS.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            <span className="font-medium">{option.label}</span>
-                            <span className="text-muted-foreground ml-2">– {option.description}</span>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {touched.support_level && errors.support_level && (
-                      <span className="text-xs text-destructive mt-1 block">{errors.support_level}</span>
-                    )}
-                  </div>
+                      {showMajorIncidentDetails ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                      {showMajorIncidentDetails ? 'Hide details' : 'Show optional fields'}
+                    </button>
 
-                  {/* Assignee */}
-                  <div className="mb-4">
-                    <FieldLabel>Assignee</FieldLabel>
-                    <Select
-                      value={formData.assigneeId}
-                      onValueChange={(value) => setFormData(prev => ({ ...prev, assigneeId: value }))}
-                    >
-                      <SelectTrigger className="bg-background border-input">
-                        <SelectValue placeholder="Select assignee..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {userProfiles.map((user) => (
-                          <SelectItem key={user.id} value={user.id}>
-                            {user.full_name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Reporter (Read-only, default to current user) */}
-                  <div className="mb-2">
-                    <FieldLabel>Reporter</FieldLabel>
-                    <div className="flex items-center gap-2 p-2.5 bg-muted/50 rounded-md border border-border">
-                      <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-xs font-medium text-primary">
-                        {currentUser?.full_name?.split(' ').map(n => n[0]).join('').slice(0, 2) || 'U'}
-                      </div>
-                      <div>
-                        <div className="text-sm text-foreground">{currentUser?.full_name || 'Loading...'}</div>
-                        <div className="text-xs text-muted-foreground">{currentUser?.email || ''}</div>
-                      </div>
-                    </div>
-                  </div>
-                </section>
-
-                <div className="border-t border-border" />
-
-                {/* SECTION 5: SLA & Targets */}
-                {formData.severity && formData.severity !== 'SEV4' && (
-                  <section>
-                    <SectionHeader 
-                      title="SLA & Targets" 
-                      description="Ops governance"
-                    />
-
-                    {/* Target Resolution Date (optional) */}
-                    <div className="mb-4">
-                      <FieldLabel>Target Resolution Date</FieldLabel>
-                      <Input
-                        type="datetime-local"
-                        value={formData.target_resolution_date || ''}
-                        onChange={(e) => setFormData(prev => ({ ...prev, target_resolution_date: e.target.value }))}
-                        className="bg-background border-input"
-                      />
-                    </div>
-
-                    {/* SLA Preview */}
-                    {slaTarget && (
-                      <div className="p-3 bg-muted/50 rounded-md border border-border">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-xs font-medium text-muted-foreground uppercase">SLA Target</span>
-                          <Badge variant="outline" className="text-xs bg-green-500/10 text-green-700 border-green-500/30">
-                            On Track
-                          </Badge>
+                    {showMajorIncidentDetails && (
+                      <div className="mt-4 grid grid-cols-2 gap-4">
+                        {/* Executive Owner */}
+                        <div>
+                          <FieldLabel>Executive Owner</FieldLabel>
+                          <Select
+                            value={formData.executive_owner_id}
+                            onValueChange={(value) => setFormData(prev => ({ ...prev, executive_owner_id: value }))}
+                          >
+                            <SelectTrigger className="bg-background border-input">
+                              <SelectValue placeholder="Select..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {userProfiles.map((user) => (
+                                <SelectItem key={user.id} value={user.id}>
+                                  {user.full_name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </div>
-                        <div className="text-sm font-medium text-foreground">
-                          {slaTargetDate ? format(slaTargetDate, 'MMM d, yyyy h:mm a') : '–'}
-                        </div>
-                        <div className="text-xs text-muted-foreground mt-0.5">
-                          {slaTarget.label}
+
+                        {/* Communications Lead */}
+                        <div>
+                          <FieldLabel>Communications Lead</FieldLabel>
+                          <Select
+                            value={formData.comms_lead_id}
+                            onValueChange={(value) => setFormData(prev => ({ ...prev, comms_lead_id: value }))}
+                          >
+                            <SelectTrigger className="bg-background border-input">
+                              <SelectValue placeholder="Select..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {userProfiles.map((user) => (
+                                <SelectItem key={user.id} value={user.id}>
+                                  {user.full_name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </div>
                       </div>
                     )}
-
-                    <div className="border-t border-border my-4" />
-                  </section>
+                  </>
                 )}
-
-                {/* SECTION 6: Major Incident */}
-                <section>
-                  <div className={cn(
-                    "p-4 rounded-lg border transition-colors",
-                    formData.is_major_incident 
-                      ? "bg-destructive/5 border-destructive/30" 
-                      : "bg-muted/30 border-border"
-                  )}>
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <AlertTriangle className={cn(
-                            "h-4 w-4",
-                            formData.is_major_incident ? "text-destructive" : "text-muted-foreground"
-                          )} />
-                          <span className={cn(
-                            "text-sm font-semibold",
-                            formData.is_major_incident ? "text-destructive" : "text-foreground"
-                          )}>
-                            Major Incident
-                          </span>
-                        </div>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          High-visibility incident requiring executive attention (4-hour SLA)
-                        </p>
-                      </div>
-                      <Switch
-                        checked={formData.is_major_incident || false}
-                        onCheckedChange={(checked) => {
-                          setFormData(prev => ({
-                            ...prev,
-                            is_major_incident: checked,
-                            ...(checked ? { impact: 'high' as const, urgency: 'high' as const } : {}),
-                          }));
-                          setShowMajorIncidentDetails(checked);
-                        }}
-                      />
-                    </div>
-
-                    {/* Major Incident Details (progressive disclosure) */}
-                    {formData.is_major_incident && (
-                      <>
-                        <div className="mt-3 p-2 bg-destructive/10 rounded text-xs text-destructive">
-                          Major SLA applies (4 hours). Ensure owner and comms are assigned.
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={() => setShowMajorIncidentDetails(!showMajorIncidentDetails)}
-                          className="flex items-center gap-1 mt-3 text-xs text-muted-foreground hover:text-foreground"
-                        >
-                          {showMajorIncidentDetails ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-                          {showMajorIncidentDetails ? 'Hide details' : 'Show optional fields'}
-                        </button>
-
-                        {showMajorIncidentDetails && (
-                          <div className="mt-3 space-y-3">
-                            {/* Executive Owner */}
-                            <div>
-                              <FieldLabel>Executive Owner</FieldLabel>
-                              <Select
-                                value={formData.executive_owner_id}
-                                onValueChange={(value) => setFormData(prev => ({ ...prev, executive_owner_id: value }))}
-                              >
-                                <SelectTrigger className="bg-background border-input">
-                                  <SelectValue placeholder="Select executive owner..." />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {userProfiles.map((user) => (
-                                    <SelectItem key={user.id} value={user.id}>
-                                      {user.full_name}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-
-                            {/* Communications Lead */}
-                            <div>
-                              <FieldLabel>Communications Lead</FieldLabel>
-                              <Select
-                                value={formData.comms_lead_id}
-                                onValueChange={(value) => setFormData(prev => ({ ...prev, comms_lead_id: value }))}
-                              >
-                                <SelectTrigger className="bg-background border-input">
-                                  <SelectValue placeholder="Select comms lead..." />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {userProfiles.map((user) => (
-                                    <SelectItem key={user.id} value={user.id}>
-                                      {user.full_name}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-
-                            {/* External Impact */}
-                            <div className="flex items-center gap-2">
-                              <Switch
-                                id="external-impact"
-                                checked={formData.has_external_impact || false}
-                                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, has_external_impact: checked }))}
-                              />
-                              <Label htmlFor="external-impact" className="text-sm text-foreground cursor-pointer">
-                                Has external customer impact
-                              </Label>
-                            </div>
-                          </div>
-                        )}
-                      </>
-                    )}
-                  </div>
-                </section>
-
               </div>
-            </div>
+            </section>
+
           </div>
         </ScrollArea>
 
