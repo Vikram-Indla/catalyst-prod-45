@@ -102,35 +102,31 @@ const DEFAULT_VISIBLE_COLUMNS: ColumnConfig[] = [
 function LoadingSkeleton() {
   return (
     <div className="rounded-md border border-border overflow-hidden bg-card">
-      {/* Header - 32px */}
-      <div className="flex items-center h-8 px-3 bg-muted/30 border-b border-border">
-        <div className="w-[110px] shrink-0"><span className={HEADER_TEXT}>Key</span></div>
-        <div className="flex-1 min-w-[180px]"><span className={HEADER_TEXT}>Summary</span></div>
-        <div className="shrink-0 flex items-center gap-0">
-          <span className={cn(HEADER_TEXT, 'w-[80px] px-2')}>Sev</span>
-          <span className={cn(HEADER_TEXT, 'w-[50px] px-2')}>Lvl</span>
-          <span className={cn(HEADER_TEXT, 'w-[110px] px-2')}>Status</span>
-          <span className={cn(HEADER_TEXT, 'w-[160px] px-2')}>Assignee</span>
-          <span className={cn(HEADER_TEXT, 'w-[55px] px-2')}>Age</span>
-          <span className={cn(HEADER_TEXT, 'w-[70px] px-2')}>SLA</span>
-          <span className={cn(HEADER_TEXT, 'w-[90px] px-2')}>Committee</span>
-        </div>
+      {/* Header - exactly 32px */}
+      <div className="flex items-center h-8 bg-muted/40 border-b border-border">
+        <div className="w-[110px] shrink-0 pl-3 pr-2"><span className={HEADER_TEXT}>KEY</span></div>
+        <div className="w-[320px] shrink-0 pr-2"><span className={HEADER_TEXT}>SUMMARY</span></div>
+        <div className="w-[80px] shrink-0 px-2"><span className={HEADER_TEXT}>SEV</span></div>
+        <div className="w-[50px] shrink-0 px-2"><span className={HEADER_TEXT}>LVL</span></div>
+        <div className="w-[110px] shrink-0 px-2"><span className={HEADER_TEXT}>STATUS</span></div>
+        <div className="w-[160px] shrink-0 px-2"><span className={HEADER_TEXT}>ASSIGNEE</span></div>
+        <div className="w-[55px] shrink-0 px-2"><span className={HEADER_TEXT}>AGE</span></div>
+        <div className="w-[70px] shrink-0 px-2"><span className={HEADER_TEXT}>SLA</span></div>
+        <div className="w-[90px] shrink-0 px-2"><span className={HEADER_TEXT}>COMMITTEE</span></div>
         <div className="w-8 shrink-0"></div>
       </div>
-      {/* Skeleton rows - 36px each */}
+      {/* Skeleton rows - exactly 36px each */}
       {[...Array(12)].map((_, i) => (
-        <div key={i} className="flex items-center h-9 px-3 border-b border-border last:border-b-0">
-          <div className="w-[110px] shrink-0"><Skeleton className="h-3.5 w-14" /></div>
-          <div className="flex-1 min-w-[180px] pr-2"><Skeleton className="h-3.5 w-full" /></div>
-          <div className="shrink-0 flex items-center gap-0">
-            <div className="w-[80px] px-2"><Skeleton className="h-5 w-12 rounded-full" /></div>
-            <div className="w-[50px] px-2"><Skeleton className="h-3.5 w-5" /></div>
-            <div className="w-[110px] px-2"><Skeleton className="h-5 w-16 rounded-full" /></div>
-            <div className="w-[160px] px-2"><Skeleton className="h-4 w-20" /></div>
-            <div className="w-[55px] px-2"><Skeleton className="h-3.5 w-6" /></div>
-            <div className="w-[70px] px-2"><Skeleton className="h-3.5 w-12" /></div>
-            <div className="w-[90px] px-2"><Skeleton className="h-3.5 w-12" /></div>
-          </div>
+        <div key={i} className="flex items-center h-9 border-b border-border last:border-b-0">
+          <div className="w-[110px] shrink-0 pl-3 pr-2 flex items-center h-full"><Skeleton className="h-3.5 w-14" /></div>
+          <div className="w-[320px] shrink-0 pr-2 flex items-center h-full"><Skeleton className="h-3.5 w-full" /></div>
+          <div className="w-[80px] shrink-0 px-2 flex items-center h-full"><Skeleton className="h-5 w-12 rounded-full" /></div>
+          <div className="w-[50px] shrink-0 px-2 flex items-center h-full"><Skeleton className="h-3.5 w-5" /></div>
+          <div className="w-[110px] shrink-0 px-2 flex items-center h-full"><Skeleton className="h-5 w-16 rounded-full" /></div>
+          <div className="w-[160px] shrink-0 px-2 flex items-center h-full"><Skeleton className="h-4 w-20" /></div>
+          <div className="w-[55px] shrink-0 px-2 flex items-center h-full"><Skeleton className="h-3.5 w-6" /></div>
+          <div className="w-[70px] shrink-0 px-2 flex items-center h-full"><Skeleton className="h-3.5 w-12" /></div>
+          <div className="w-[90px] shrink-0 px-2 flex items-center h-full"><Skeleton className="h-3.5 w-12" /></div>
           <div className="w-8 shrink-0"></div>
         </div>
       ))}
@@ -200,9 +196,9 @@ export function IncidentListTable({
     return null;
   };
 
-  // Calculate minimum table width
-  const getMinTableWidth = () => {
-    let width = 32;
+  // Calculate exact table width - no flexible columns, strict widths
+  const getTableWidth = () => {
+    let width = 0;
     if (isColumnVisible('key')) width += columnWidths.key;
     if (isColumnVisible('summary')) width += columnWidths.summary;
     if (isColumnVisible('severity')) width += columnWidths.severity;
@@ -214,17 +210,19 @@ export function IncidentListTable({
     if (isColumnVisible('releaseVersion')) width += columnWidths.releaseVersion;
     if (isColumnVisible('major')) width += columnWidths.major;
     if (isColumnVisible('committee')) width += columnWidths.committee;
-    return Math.max(width + 32, 800);
+    width += 32; // Actions column
+    return width;
   };
 
   return (
     <TooltipProvider delayDuration={200}>
       <div className="flex flex-col h-full">
-        {/* Table container */}
+        {/* Table container - horizontal scroll enabled */}
         <div className="rounded-md border border-border overflow-hidden bg-card flex-1">
           <div className="overflow-x-auto">
-            <div style={{ minWidth: `${getMinTableWidth()}px` }}>
-              {/* Header - 32px height, perfect alignment */}
+            {/* Fixed width table - no flexible columns, enable horizontal scroll */}
+            <div style={{ width: `${getTableWidth()}px`, minWidth: `${getTableWidth()}px` }}>
+              {/* Header - exactly 32px height, sticky, no shading blocks */}
               <div className="flex items-center h-8 sticky top-0 z-20 bg-muted/40 border-b border-border">
                 {/* Key */}
                 {isColumnVisible('key') && (
@@ -238,7 +236,7 @@ export function IncidentListTable({
                     <span className={HEADER_TEXT}>KEY</span>
                   </ResizableHeader>
                 )}
-                {/* Summary */}
+                {/* Summary - FIXED width, NOT flexible */}
                 {isColumnVisible('summary') && (
                   <ResizableHeader
                     columnId="summary"
@@ -246,7 +244,6 @@ export function IncidentListTable({
                     minWidth={MIN_COLUMN_WIDTHS.summary}
                     onResize={handleColumnResize}
                     className="pr-2"
-                    isFlexible
                   >
                     <span className={HEADER_TEXT}>SUMMARY</span>
                   </ResizableHeader>
@@ -359,8 +356,8 @@ export function IncidentListTable({
                     <span className={HEADER_TEXT}>COMMITTEE</span>
                   </ResizableHeader>
                 )}
-                {/* Actions spacer */}
-                <div className="w-8 shrink-0 pr-3"></div>
+                {/* Actions header - fixed 32px */}
+                <div className="w-8 shrink-0 flex items-center h-full"></div>
               </div>
 
               {/* Body */}
@@ -416,11 +413,11 @@ export function IncidentListTable({
                         </div>
                       )}
                       
-                      {/* Summary - single line, ellipsis, tooltip on hover */}
+                      {/* Summary - FIXED width, single line, ellipsis, tooltip on hover */}
                       {isColumnVisible('summary') && (
                         <div 
-                          className="flex-1 pr-2 flex items-center h-full overflow-hidden" 
-                          style={{ minWidth: `${columnWidths.summary}px` }}
+                          className="shrink-0 pr-2 flex items-center h-full overflow-hidden" 
+                          style={{ width: `${columnWidths.summary}px` }}
                           data-inline-edit
                         >
                           <InlineEditCell
@@ -429,9 +426,9 @@ export function IncidentListTable({
                             displayValue={
                               <Tooltip>
                                 <TooltipTrigger asChild>
-                                  <span className={cn(CELL_TEXT, "truncate font-medium cursor-pointer block")}>{incident.title}</span>
+                                  <span className={cn(CELL_TEXT, "truncate font-medium cursor-pointer block max-w-full")}>{incident.title}</span>
                                 </TooltipTrigger>
-                                <TooltipContent side="top" className="text-xs max-w-sm">{incident.title}</TooltipContent>
+                                <TooltipContent side="top" className="text-xs max-w-md break-words">{incident.title}</TooltipContent>
                               </Tooltip>
                             }
                             onSave={(val) => handleInlineUpdate(incident.id, 'title', val)}

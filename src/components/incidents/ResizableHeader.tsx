@@ -18,7 +18,6 @@ interface ResizableHeaderProps {
   onResize: (columnId: string, width: number) => void;
   children: React.ReactNode;
   className?: string;
-  isFlexible?: boolean; // For Summary column - grows but still resizable
 }
 
 export function ResizableHeader({
@@ -28,7 +27,6 @@ export function ResizableHeader({
   onResize,
   children,
   className,
-  isFlexible = false,
 }: ResizableHeaderProps) {
   const [isResizing, setIsResizing] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -74,12 +72,11 @@ export function ResizableHeader({
   return (
     <div
       className={cn(
-        "relative shrink-0 select-none",
-        isFlexible && "flex-1",
+        "relative shrink-0 select-none flex items-center h-full",
         className
       )}
       style={{ 
-        width: isFlexible ? undefined : `${width}px`,
+        width: `${width}px`,
         minWidth: `${minWidth}px`,
       }}
       onMouseEnter={() => setIsHovered(true)}
