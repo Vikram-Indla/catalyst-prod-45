@@ -1,12 +1,11 @@
 /**
- * ResizableHeader — Enterprise-grade column resize for Incident List
+ * ResizableHeader — Enterprise-grade column resize for Incident List (Grid version)
  * 
- * Affordance spec:
- * - Resize handle invisible by default
- * - On header hover: cursor col-resize, 1px vertical line appears
- * - On drag: line slightly higher contrast
- * - No background shading, no header highlight blocks
- * - Feels discovered, not advertised
+ * Updated for CSS Grid layout:
+ * - All columns use explicit width (no flex-1)
+ * - Resize handle with proper hit zone (8px)
+ * - Subtle vertical line on hover, prominent on drag
+ * - Cursor col-resize
  */
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
@@ -15,6 +14,7 @@ interface ResizableHeaderProps {
   columnId: string;
   width: number;
   minWidth: number;
+  maxWidth?: number;
   onResize: (columnId: string, width: number) => void;
   children: React.ReactNode;
   className?: string;
@@ -24,6 +24,7 @@ export function ResizableHeader({
   columnId,
   width,
   minWidth,
+  maxWidth = 900,
   onResize,
   children,
   className,
@@ -45,9 +46,9 @@ export function ResizableHeader({
     if (!isResizing) return;
     
     const delta = e.clientX - startXRef.current;
-    const newWidth = Math.max(minWidth, Math.min(600, startWidthRef.current + delta));
+    const newWidth = Math.max(minWidth, Math.min(maxWidth, startWidthRef.current + delta));
     onResize(columnId, newWidth);
-  }, [isResizing, columnId, minWidth, onResize]);
+  }, [isResizing, columnId, minWidth, maxWidth, onResize]);
 
   const handleMouseUp = useCallback(() => {
     setIsResizing(false);
@@ -72,34 +73,30 @@ export function ResizableHeader({
   return (
     <div
       className={cn(
-        "relative shrink-0 select-none flex items-center h-full",
+        "relative select-none flex items-center h-full overflow-hidden",
         className
       )}
-      style={{ 
-        width: `${width}px`,
-        minWidth: `${minWidth}px`,
-      }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => !isResizing && setIsHovered(false)}
     >
       {children}
       
-      {/* Resize handle - subtle but visible, more prominent on hover */}
+      {/* Resize handle - 8px hit zone, subtle visual */}
       <div
-        className="absolute right-0 top-0 h-full w-3 z-10 flex items-center justify-center"
+        className="absolute right-0 top-0 h-full w-2 z-10 flex items-center justify-end"
         style={{ cursor: 'col-resize' }}
         onMouseDown={handleMouseDown}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* 2px vertical line - always subtly visible, stronger on hover/drag */}
+        {/* 1px vertical line - visible on hover, stronger on drag */}
         <div 
           className={cn(
-            "h-4 w-0.5 rounded-full transition-all duration-150",
+            "h-4 w-px transition-all duration-100",
             isResizing 
               ? "bg-primary h-5" 
               : isHovered 
-                ? "bg-muted-foreground/60 h-5" 
-                : "bg-border/60"
+                ? "bg-muted-foreground/50 h-4" 
+                : "bg-transparent"
           )}
         />
       </div>

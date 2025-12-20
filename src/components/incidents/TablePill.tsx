@@ -1,10 +1,11 @@
 /**
  * TablePill — Enterprise-grade table pill/badge component
  * 
- * Design specs (Jira-quality):
- * - Fixed height: 22px (compact density)
- * - Horizontal padding: 8px
+ * Design specs (Jira-quality) - A4 spec:
+ * - Fixed height: 20px (strict compact density)
+ * - Horizontal padding: 8px (px-2)
  * - Font size: 11px
+ * - Line height: 20px (leading-[20px])
  * - Border radius: full pill
  * - Consistent vertical centering
  * - Low saturation colors for calm enterprise feel
@@ -52,14 +53,14 @@ export function TablePill({
   return (
     <span
       className={cn(
-        // Fixed 22px height for compact enterprise density
+        // Fixed 20px height for strict compact density (per A4 spec)
         'inline-flex items-center justify-center',
-        'h-[22px] min-h-[22px] max-h-[22px]',
+        'h-5 min-h-5 max-h-5', // 20px
         'px-2', // 8px horizontal padding
         'rounded-full', // Pill shape
-        // Typography - 11px for compact feel
+        // Typography - 11px, line-height 20px for perfect centering
         'text-[11px] font-medium',
-        'leading-none', // Vertically centered text
+        'leading-5', // 20px line height matches height
         'whitespace-nowrap',
         // Variant styling
         variantStyles[variant] || variantStyles.default,
@@ -128,9 +129,9 @@ export function SlaPill({ status }: { status: 'breached' | 'at_risk' | 'on_track
 
   const config = slaConfig[status];
   
-  // Return plain text with subtle color - no pill/badge
+  // Return plain text with subtle color - no pill/badge, 11px font
   return (
-    <span className={cn('text-[11px] font-medium whitespace-nowrap', config.className)}>
+    <span className={cn('text-[11px] font-medium whitespace-nowrap leading-5', config.className)}>
       {config.label}
     </span>
   );
@@ -139,7 +140,7 @@ export function SlaPill({ status }: { status: 'breached' | 'at_risk' | 'on_track
 // Major - small neutral badge only when applicable, otherwise "—"
 export function MajorPill({ isMajor }: { isMajor: boolean }) {
   if (!isMajor) {
-    return <span className="text-[11px] text-muted-foreground">—</span>;
+    return <span className="text-[11px] text-muted-foreground leading-5">—</span>;
   }
   
   return (
@@ -159,7 +160,7 @@ export function CommitteePill({ status, label }: { status: string; label: string
     : 'text-muted-foreground';
   
   return (
-    <span className={cn('text-[11px] font-medium whitespace-nowrap', colorClass)}>
+    <span className={cn('text-[11px] font-medium whitespace-nowrap leading-5', colorClass)}>
       {label}
     </span>
   );

@@ -1,15 +1,16 @@
 /**
  * IncidentListTable — Enterprise-grade incident tracking table
  * 
- * Design: Jira-quality dense enterprise list view
+ * Design: Jira-quality dense enterprise list view using CSS Grid
+ * - CSS Grid layout for perfect column alignment (header + body share same template)
  * - Compact row height (36px body, 32px header)
+ * - All columns fixed width (no flex-1), resizable
+ * - Horizontal scroll when content exceeds viewport
  * - Perfect vertical alignment across all cells
- * - Consistent text baseline alignment
  * - Single-line summary with ellipsis/tooltip
- * - No visual noise, calm enterprise aesthetic
  */
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { MoreHorizontal, Eye, Pencil, Trash2, AlertTriangle, Copy } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -32,7 +33,7 @@ import { InlineUserPicker } from './InlineUserPicker';
 import { InlineReleasePicker } from './InlineReleasePicker';
 import { DeleteIncidentDialog } from './DeleteIncidentDialog';
 import { ResizableHeader } from './ResizableHeader';
-import { useIncidentColumnWidths, MIN_COLUMN_WIDTHS } from './useIncidentColumnWidths';
+import { useIncidentColumnWidths, MIN_COLUMN_WIDTHS, MAX_COLUMN_WIDTHS } from './useIncidentColumnWidths';
 import { toast } from '@/components/ui/catalyst-toast';
 import { getCommitteeDisplayStatus } from '@/utils/committeeStatus';
 import { useUpdateIncident } from '@/hooks/useIncidents';
@@ -99,35 +100,64 @@ const DEFAULT_VISIBLE_COLUMNS: ColumnConfig[] = [
   { id: 'committee', label: 'Committee', visible: true },
 ];
 
-function LoadingSkeleton() {
+// Column order for grid template
+const COLUMN_ORDER = ['key', 'summary', 'severity', 'level', 'status', 'assignee', 'age', 'sla', 'releaseVersion', 'major', 'committee', 'actions'];
+
+function LoadingSkeleton({ columnWidths, visibleColumns }: { columnWidths: Record<string, number>; visibleColumns: ColumnConfig[] }) {
+  const isColumnVisible = (colId: string) => visibleColumns.some(c => c.id === colId && c.visible !== false);
+  
+  // Build grid template
+  const gridTemplate = useMemo(() => {
+    const cols: string[] = [];
+    COLUMN_ORDER.forEach(colId => {
+      if (colId === 'actions') {
+        cols.push('40px');
+      } else if (isColumnVisible(colId)) {
+        cols.push(`${columnWidths[colId]}px`);
+      }
+    });
+    return cols.join(' ');
+  }, [columnWidths, visibleColumns]);
+
   return (
     <div className="rounded-md border border-border overflow-hidden bg-card">
       {/* Header - exactly 32px */}
-      <div className="flex items-center h-8 bg-muted/40 border-b border-border">
-        <div className="w-[110px] shrink-0 pl-3 pr-2"><span className={HEADER_TEXT}>KEY</span></div>
-        <div className="w-[320px] shrink-0 pr-2"><span className={HEADER_TEXT}>SUMMARY</span></div>
-        <div className="w-[80px] shrink-0 px-2"><span className={HEADER_TEXT}>SEV</span></div>
-        <div className="w-[50px] shrink-0 px-2"><span className={HEADER_TEXT}>LVL</span></div>
-        <div className="w-[110px] shrink-0 px-2"><span className={HEADER_TEXT}>STATUS</span></div>
-        <div className="w-[160px] shrink-0 px-2"><span className={HEADER_TEXT}>ASSIGNEE</span></div>
-        <div className="w-[55px] shrink-0 px-2"><span className={HEADER_TEXT}>AGE</span></div>
-        <div className="w-[70px] shrink-0 px-2"><span className={HEADER_TEXT}>SLA</span></div>
-        <div className="w-[90px] shrink-0 px-2"><span className={HEADER_TEXT}>COMMITTEE</span></div>
-        <div className="w-8 shrink-0"></div>
+      <div 
+        className="grid items-center h-8 bg-muted/40 border-b border-border"
+        style={{ gridTemplateColumns: gridTemplate }}
+      >
+        {isColumnVisible('key') && <div className="pl-3 pr-2 flex items-center h-full"><span className={HEADER_TEXT}>KEY</span></div>}
+        {isColumnVisible('summary') && <div className="pr-2 flex items-center h-full"><span className={HEADER_TEXT}>SUMMARY</span></div>}
+        {isColumnVisible('severity') && <div className="px-2 flex items-center h-full"><span className={HEADER_TEXT}>SEV</span></div>}
+        {isColumnVisible('level') && <div className="px-2 flex items-center h-full"><span className={HEADER_TEXT}>LVL</span></div>}
+        {isColumnVisible('status') && <div className="px-2 flex items-center h-full"><span className={HEADER_TEXT}>STATUS</span></div>}
+        {isColumnVisible('assignee') && <div className="px-2 flex items-center h-full"><span className={HEADER_TEXT}>ASSIGNEE</span></div>}
+        {isColumnVisible('age') && <div className="px-2 flex items-center h-full"><span className={HEADER_TEXT}>AGE</span></div>}
+        {isColumnVisible('sla') && <div className="px-2 flex items-center h-full"><span className={HEADER_TEXT}>SLA</span></div>}
+        {isColumnVisible('releaseVersion') && <div className="px-2 flex items-center h-full"><span className={HEADER_TEXT}>RELEASE</span></div>}
+        {isColumnVisible('major') && <div className="px-2 flex items-center h-full"><span className={HEADER_TEXT}>MAJOR</span></div>}
+        {isColumnVisible('committee') && <div className="px-2 flex items-center h-full"><span className={HEADER_TEXT}>COMMITTEE</span></div>}
+        <div className="flex items-center h-full"></div>
       </div>
       {/* Skeleton rows - exactly 36px each */}
       {[...Array(12)].map((_, i) => (
-        <div key={i} className="flex items-center h-9 border-b border-border last:border-b-0">
-          <div className="w-[110px] shrink-0 pl-3 pr-2 flex items-center h-full"><Skeleton className="h-3.5 w-14" /></div>
-          <div className="w-[320px] shrink-0 pr-2 flex items-center h-full"><Skeleton className="h-3.5 w-full" /></div>
-          <div className="w-[80px] shrink-0 px-2 flex items-center h-full"><Skeleton className="h-5 w-12 rounded-full" /></div>
-          <div className="w-[50px] shrink-0 px-2 flex items-center h-full"><Skeleton className="h-3.5 w-5" /></div>
-          <div className="w-[110px] shrink-0 px-2 flex items-center h-full"><Skeleton className="h-5 w-16 rounded-full" /></div>
-          <div className="w-[160px] shrink-0 px-2 flex items-center h-full"><Skeleton className="h-4 w-20" /></div>
-          <div className="w-[55px] shrink-0 px-2 flex items-center h-full"><Skeleton className="h-3.5 w-6" /></div>
-          <div className="w-[70px] shrink-0 px-2 flex items-center h-full"><Skeleton className="h-3.5 w-12" /></div>
-          <div className="w-[90px] shrink-0 px-2 flex items-center h-full"><Skeleton className="h-3.5 w-12" /></div>
-          <div className="w-8 shrink-0"></div>
+        <div 
+          key={i} 
+          className="grid items-center h-9 border-b border-border last:border-b-0"
+          style={{ gridTemplateColumns: gridTemplate }}
+        >
+          {isColumnVisible('key') && <div className="pl-3 pr-2 flex items-center h-full"><Skeleton className="h-3.5 w-14" /></div>}
+          {isColumnVisible('summary') && <div className="pr-2 flex items-center h-full"><Skeleton className="h-3.5 w-full max-w-[90%]" /></div>}
+          {isColumnVisible('severity') && <div className="px-2 flex items-center h-full"><Skeleton className="h-5 w-14 rounded-full" /></div>}
+          {isColumnVisible('level') && <div className="px-2 flex items-center h-full"><Skeleton className="h-3.5 w-6" /></div>}
+          {isColumnVisible('status') && <div className="px-2 flex items-center h-full"><Skeleton className="h-5 w-20 rounded-full" /></div>}
+          {isColumnVisible('assignee') && <div className="px-2 flex items-center h-full"><Skeleton className="h-4 w-24" /></div>}
+          {isColumnVisible('age') && <div className="px-2 flex items-center h-full"><Skeleton className="h-3.5 w-8" /></div>}
+          {isColumnVisible('sla') && <div className="px-2 flex items-center h-full"><Skeleton className="h-3.5 w-14" /></div>}
+          {isColumnVisible('releaseVersion') && <div className="px-2 flex items-center h-full"><Skeleton className="h-3.5 w-16" /></div>}
+          {isColumnVisible('major') && <div className="px-2 flex items-center h-full"><Skeleton className="h-3.5 w-10" /></div>}
+          {isColumnVisible('committee') && <div className="px-2 flex items-center h-full"><Skeleton className="h-3.5 w-16" /></div>}
+          <div className="flex items-center h-full"></div>
         </div>
       ))}
     </div>
@@ -154,12 +184,36 @@ export function IncidentListTable({
   });
   
   const { columnWidths, handleColumnResize } = useIncidentColumnWidths();
-  
-  if (isLoading) {
-    return <LoadingSkeleton />;
-  }
 
   const isColumnVisible = (colId: string) => visibleColumns.some(c => c.id === colId && c.visible !== false);
+
+  // Build CSS Grid template string from column widths - shared by header and body
+  const gridTemplate = useMemo(() => {
+    const cols: string[] = [];
+    COLUMN_ORDER.forEach(colId => {
+      if (colId === 'actions') {
+        cols.push('40px');
+      } else if (isColumnVisible(colId)) {
+        cols.push(`${columnWidths[colId]}px`);
+      }
+    });
+    return cols.join(' ');
+  }, [columnWidths, visibleColumns]);
+
+  // Calculate total table width for horizontal scroll
+  const tableWidth = useMemo(() => {
+    let width = 40; // Actions column
+    COLUMN_ORDER.forEach(colId => {
+      if (colId !== 'actions' && isColumnVisible(colId)) {
+        width += columnWidths[colId];
+      }
+    });
+    return width;
+  }, [columnWidths, visibleColumns]);
+  
+  if (isLoading) {
+    return <LoadingSkeleton columnWidths={columnWidths} visibleColumns={visibleColumns} />;
+  }
 
   const handleRowClick = (incidentId: string, e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
@@ -196,52 +250,39 @@ export function IncidentListTable({
     return null;
   };
 
-  // Calculate exact table width - no flexible columns, strict widths
-  const getTableWidth = () => {
-    let width = 0;
-    if (isColumnVisible('key')) width += columnWidths.key;
-    if (isColumnVisible('summary')) width += columnWidths.summary;
-    if (isColumnVisible('severity')) width += columnWidths.severity;
-    if (isColumnVisible('level')) width += columnWidths.level;
-    if (isColumnVisible('status')) width += columnWidths.status;
-    if (isColumnVisible('assignee')) width += columnWidths.assignee;
-    if (isColumnVisible('age')) width += columnWidths.age;
-    if (isColumnVisible('sla')) width += columnWidths.sla;
-    if (isColumnVisible('releaseVersion')) width += columnWidths.releaseVersion;
-    if (isColumnVisible('major')) width += columnWidths.major;
-    if (isColumnVisible('committee')) width += columnWidths.committee;
-    width += 32; // Actions column
-    return width;
-  };
-
   return (
     <TooltipProvider delayDuration={200}>
       <div className="flex flex-col h-full">
         {/* Table container - horizontal scroll enabled */}
         <div className="rounded-md border border-border overflow-hidden bg-card flex-1">
           <div className="overflow-x-auto">
-            {/* Fixed width table - no flexible columns, enable horizontal scroll */}
-            <div style={{ width: `${getTableWidth()}px`, minWidth: `${getTableWidth()}px` }}>
-              {/* Header - exactly 32px height, sticky, no shading blocks */}
-              <div className="flex items-center h-8 sticky top-0 z-20 bg-muted/40 border-b border-border">
+            {/* Fixed width table using CSS Grid */}
+            <div style={{ width: `${tableWidth}px`, minWidth: `${tableWidth}px` }}>
+              {/* Header row - exactly 32px height, CSS Grid layout */}
+              <div 
+                className="grid items-center h-8 sticky top-0 z-20 bg-muted/40 border-b border-border"
+                style={{ gridTemplateColumns: gridTemplate }}
+              >
                 {/* Key */}
                 {isColumnVisible('key') && (
                   <ResizableHeader
                     columnId="key"
                     width={columnWidths.key}
                     minWidth={MIN_COLUMN_WIDTHS.key}
+                    maxWidth={MAX_COLUMN_WIDTHS.key}
                     onResize={handleColumnResize}
                     className="pl-3 pr-2"
                   >
                     <span className={HEADER_TEXT}>KEY</span>
                   </ResizableHeader>
                 )}
-                {/* Summary - FIXED width, NOT flexible */}
+                {/* Summary - FIXED width, resizable like any other column */}
                 {isColumnVisible('summary') && (
                   <ResizableHeader
                     columnId="summary"
                     width={columnWidths.summary}
                     minWidth={MIN_COLUMN_WIDTHS.summary}
+                    maxWidth={MAX_COLUMN_WIDTHS.summary}
                     onResize={handleColumnResize}
                     className="pr-2"
                   >
@@ -254,6 +295,7 @@ export function IncidentListTable({
                     columnId="severity"
                     width={columnWidths.severity}
                     minWidth={MIN_COLUMN_WIDTHS.severity}
+                    maxWidth={MAX_COLUMN_WIDTHS.severity}
                     onResize={handleColumnResize}
                     className="px-2"
                   >
@@ -266,6 +308,7 @@ export function IncidentListTable({
                     columnId="level"
                     width={columnWidths.level}
                     minWidth={MIN_COLUMN_WIDTHS.level}
+                    maxWidth={MAX_COLUMN_WIDTHS.level}
                     onResize={handleColumnResize}
                     className="px-2"
                   >
@@ -278,6 +321,7 @@ export function IncidentListTable({
                     columnId="status"
                     width={columnWidths.status}
                     minWidth={MIN_COLUMN_WIDTHS.status}
+                    maxWidth={MAX_COLUMN_WIDTHS.status}
                     onResize={handleColumnResize}
                     className="px-2"
                   >
@@ -290,6 +334,7 @@ export function IncidentListTable({
                     columnId="assignee"
                     width={columnWidths.assignee}
                     minWidth={MIN_COLUMN_WIDTHS.assignee}
+                    maxWidth={MAX_COLUMN_WIDTHS.assignee}
                     onResize={handleColumnResize}
                     className="px-2"
                   >
@@ -302,6 +347,7 @@ export function IncidentListTable({
                     columnId="age"
                     width={columnWidths.age}
                     minWidth={MIN_COLUMN_WIDTHS.age}
+                    maxWidth={MAX_COLUMN_WIDTHS.age}
                     onResize={handleColumnResize}
                     className="px-2"
                   >
@@ -314,6 +360,7 @@ export function IncidentListTable({
                     columnId="sla"
                     width={columnWidths.sla}
                     minWidth={MIN_COLUMN_WIDTHS.sla}
+                    maxWidth={MAX_COLUMN_WIDTHS.sla}
                     onResize={handleColumnResize}
                     className="px-2"
                   >
@@ -326,6 +373,7 @@ export function IncidentListTable({
                     columnId="releaseVersion"
                     width={columnWidths.releaseVersion}
                     minWidth={MIN_COLUMN_WIDTHS.releaseVersion}
+                    maxWidth={MAX_COLUMN_WIDTHS.releaseVersion}
                     onResize={handleColumnResize}
                     className="px-2"
                   >
@@ -338,6 +386,7 @@ export function IncidentListTable({
                     columnId="major"
                     width={columnWidths.major}
                     minWidth={MIN_COLUMN_WIDTHS.major}
+                    maxWidth={MAX_COLUMN_WIDTHS.major}
                     onResize={handleColumnResize}
                     className="px-2"
                   >
@@ -350,14 +399,15 @@ export function IncidentListTable({
                     columnId="committee"
                     width={columnWidths.committee}
                     minWidth={MIN_COLUMN_WIDTHS.committee}
+                    maxWidth={MAX_COLUMN_WIDTHS.committee}
                     onResize={handleColumnResize}
                     className="px-2"
                   >
                     <span className={HEADER_TEXT}>COMMITTEE</span>
                   </ResizableHeader>
                 )}
-                {/* Actions header - fixed 32px */}
-                <div className="w-8 shrink-0 flex items-center h-full"></div>
+                {/* Actions header - fixed 40px */}
+                <div className="flex items-center h-full"></div>
               </div>
 
               {/* Body */}
@@ -377,10 +427,11 @@ export function IncidentListTable({
                     <div 
                       key={incident.id} 
                       className={cn(
-                        // Fixed 36px row height for compact enterprise density
-                        'flex items-center h-9 transition-colors cursor-pointer border-b border-border last:border-b-0',
+                        // CSS Grid row - exactly 36px height
+                        'grid items-center h-9 transition-colors cursor-pointer border-b border-border last:border-b-0',
                         isHovered && 'bg-muted/30'
                       )}
+                      style={{ gridTemplateColumns: gridTemplate }}
                       onClick={(e) => handleRowClick(incident.id, e)}
                       onMouseEnter={() => setHoveredId(incident.id)}
                       onMouseLeave={() => setHoveredId(null)}
@@ -389,12 +440,9 @@ export function IncidentListTable({
                         if (e.key === 'Enter' && incident.id) navigate(`/release/incidents/${incident.id}`);
                       }}
                     >
-                      {/* Key - aligned with header */}
+                      {/* Key */}
                       {isColumnVisible('key') && (
-                        <div 
-                          className="shrink-0 pl-3 pr-2 flex items-center h-full"
-                          style={{ width: `${columnWidths.key}px` }}
-                        >
+                        <div className="pl-3 pr-2 flex items-center h-full overflow-hidden">
                           <Link 
                             to={`/release/incidents/${incident.id}`} 
                             className={cn(CELL_TEXT, "font-medium text-primary hover:underline truncate")}
@@ -413,11 +461,10 @@ export function IncidentListTable({
                         </div>
                       )}
                       
-                      {/* Summary - FIXED width, single line, ellipsis, tooltip on hover */}
+                      {/* Summary - single line, ellipsis, tooltip on hover */}
                       {isColumnVisible('summary') && (
                         <div 
-                          className="shrink-0 pr-2 flex items-center h-full overflow-hidden" 
-                          style={{ width: `${columnWidths.summary}px` }}
+                          className="pr-2 flex items-center h-full overflow-hidden" 
                           data-inline-edit
                         >
                           <InlineEditCell
@@ -426,7 +473,7 @@ export function IncidentListTable({
                             displayValue={
                               <Tooltip>
                                 <TooltipTrigger asChild>
-                                  <span className={cn(CELL_TEXT, "truncate font-medium cursor-pointer block max-w-full")}>{incident.title}</span>
+                                  <span className={cn(CELL_TEXT, "truncate font-medium cursor-pointer block w-full")}>{incident.title}</span>
                                 </TooltipTrigger>
                                 <TooltipContent side="top" className="text-xs max-w-md break-words">{incident.title}</TooltipContent>
                               </Tooltip>
@@ -441,8 +488,7 @@ export function IncidentListTable({
                       {/* Severity - small neutral pill with colored dot */}
                       {isColumnVisible('severity') && (
                         <div 
-                          className="shrink-0 px-2 flex items-center h-full" 
-                          style={{ width: `${columnWidths.severity}px` }}
+                          className="px-2 flex items-center h-full overflow-hidden" 
                           data-inline-edit
                         >
                           <InlineEditCell
@@ -457,11 +503,10 @@ export function IncidentListTable({
                         </div>
                       )}
                       
-                      {/* Level - plain text only, no pill */}
+                      {/* Level - plain text only, no pill, distinct column */}
                       {isColumnVisible('level') && (
                         <div 
-                          className="shrink-0 px-2 flex items-center h-full" 
-                          style={{ width: `${columnWidths.level}px` }}
+                          className="px-2 flex items-center h-full overflow-hidden" 
                           data-inline-edit
                         >
                           <InlineEditCell
@@ -470,7 +515,7 @@ export function IncidentListTable({
                             options={SUPPORT_OPTIONS}
                             displayValue={
                               incident.support_level ? (
-                                <span className={CELL_MUTED}>{incident.support_level}</span>
+                                <span className={cn(CELL_MUTED, "tabular-nums")}>{incident.support_level}</span>
                               ) : (
                                 <span className={cn(CELL_MUTED, "opacity-50")}>—</span>
                               )
@@ -485,8 +530,7 @@ export function IncidentListTable({
                       {/* Status - compact pill */}
                       {isColumnVisible('status') && (
                         <div 
-                          className="shrink-0 px-2 flex items-center h-full" 
-                          style={{ width: `${columnWidths.status}px` }}
+                          className="px-2 flex items-center h-full overflow-hidden" 
                           data-inline-edit
                         >
                           <InlineEditCell
@@ -501,11 +545,10 @@ export function IncidentListTable({
                         </div>
                       )}
                       
-                      {/* Assignee - avatar + name inline, consistent height */}
+                      {/* Assignee - avatar + name inline */}
                       {isColumnVisible('assignee') && (
                         <div 
-                          className="shrink-0 px-2 flex items-center h-full"
-                          style={{ width: `${columnWidths.assignee}px` }}
+                          className="px-2 flex items-center h-full overflow-hidden"
                           data-inline-edit
                         >
                           <InlineUserPicker
@@ -519,20 +562,14 @@ export function IncidentListTable({
                       
                       {/* Age - numeric text */}
                       {isColumnVisible('age') && (
-                        <div 
-                          className="shrink-0 px-2 flex items-center h-full"
-                          style={{ width: `${columnWidths.age}px` }}
-                        >
+                        <div className="px-2 flex items-center h-full overflow-hidden">
                           <span className={cn(CELL_MUTED, "tabular-nums text-[11px]")}>{age}</span>
                         </div>
                       )}
                       
                       {/* SLA - subtle text color only */}
                       {isColumnVisible('sla') && (
-                        <div 
-                          className="shrink-0 px-2 flex items-center h-full"
-                          style={{ width: `${columnWidths.sla}px` }}
-                        >
+                        <div className="px-2 flex items-center h-full overflow-hidden">
                           {slaStatus ? (
                             <SlaPill status={slaStatus} />
                           ) : (
@@ -544,8 +581,7 @@ export function IncidentListTable({
                       {/* Release - plain text */}
                       {isColumnVisible('releaseVersion') && (
                         <div 
-                          className="shrink-0 px-2 flex items-center h-full"
-                          style={{ width: `${columnWidths.releaseVersion}px` }}
+                          className="px-2 flex items-center h-full overflow-hidden"
                           data-inline-edit
                         >
                           <InlineReleasePicker
@@ -560,8 +596,7 @@ export function IncidentListTable({
                       {/* Major - small badge or "—" */}
                       {isColumnVisible('major') && (
                         <div 
-                          className="shrink-0 px-2 flex items-center h-full" 
-                          style={{ width: `${columnWidths.major}px` }}
+                          className="px-2 flex items-center h-full overflow-hidden" 
                           data-inline-edit
                         >
                           <InlineEditCell
@@ -577,21 +612,18 @@ export function IncidentListTable({
 
                       {/* Committee - text only */}
                       {isColumnVisible('committee') && (
-                        <div 
-                          className="shrink-0 px-2 flex items-center h-full"
-                          style={{ width: `${columnWidths.committee}px` }}
-                        >
+                        <div className="px-2 flex items-center h-full overflow-hidden">
                           <CommitteePill status={committeeStatus.status} label={committeeStatus.label} />
                         </div>
                       )}
 
                       {/* Actions */}
-                      <div className="w-8 shrink-0 flex items-center justify-end pr-3">
+                      <div className="flex items-center justify-center h-full">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                             <button 
                               className={cn(
-                                "w-5 h-5 rounded flex items-center justify-center transition-opacity",
+                                "w-6 h-6 rounded flex items-center justify-center transition-opacity",
                                 "hover:bg-muted text-muted-foreground",
                                 "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
                                 isHovered ? "opacity-100" : "opacity-0"
