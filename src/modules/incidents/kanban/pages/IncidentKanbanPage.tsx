@@ -5,7 +5,7 @@
 
 import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Loader2, AlertCircle, RefreshCw, Settings2, ChevronsLeftRight, ChevronsRightLeft } from 'lucide-react';
+import { Loader2, AlertCircle, RefreshCw, Settings2, ChevronsLeftRight, ChevronsRightLeft, MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -261,50 +261,48 @@ export default function IncidentKanbanPage() {
         <IncidentCommandBar
           onCreateClick={() => setCreateDialogOpen(true)}
           additionalActions={
-            <div className="flex items-center gap-1">
-              {/* Board Settings Menu */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-9 px-3 text-sm">
-                    <Settings2 className="h-4 w-4 mr-2" />
-                    Board Settings
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  {hasCollapsedColumns ? (
-                    <DropdownMenuItem onClick={expandAll}>
-                      <ChevronsRightLeft className="h-4 w-4 mr-2" />
-                      Expand All Columns
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                >
+                  <MoreVertical className="h-4 w-4" />
+                  <span className="sr-only">More actions</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={() => refetch()}>
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Refresh
+                </DropdownMenuItem>
+                
+                <DropdownMenuSeparator />
+                
+                {hasCollapsedColumns ? (
+                  <DropdownMenuItem onClick={expandAll}>
+                    <ChevronsRightLeft className="h-4 w-4 mr-2" />
+                    Expand All Columns
+                  </DropdownMenuItem>
+                ) : (
+                  <DropdownMenuItem onClick={() => collapseAll(visibleStatuses)}>
+                    <ChevronsLeftRight className="h-4 w-4 mr-2" />
+                    Collapse All Columns
+                  </DropdownMenuItem>
+                )}
+                
+                {isAdmin && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => setManageColumnsOpen(true)}>
+                      <Settings2 className="h-4 w-4 mr-2" />
+                      Manage Columns
                     </DropdownMenuItem>
-                  ) : (
-                    <DropdownMenuItem onClick={() => collapseAll(visibleStatuses)}>
-                      <ChevronsLeftRight className="h-4 w-4 mr-2" />
-                      Collapse All Columns
-                    </DropdownMenuItem>
-                  )}
-                  
-                  {isAdmin && (
-                    <>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => setManageColumnsOpen(true)}>
-                        <Settings2 className="h-4 w-4 mr-2" />
-                        Manage Columns
-                      </DropdownMenuItem>
-                    </>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-9 px-3 text-sm"
-                onClick={() => refetch()}
-              >
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Refresh
-              </Button>
-            </div>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           }
         />
 
