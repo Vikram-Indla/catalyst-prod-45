@@ -1305,6 +1305,35 @@
 .linkedItemTitle {
   font-size: 12px;
   color: hsl(var(--foreground));
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.linkedItemAction {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+  color: hsl(var(--muted-foreground));
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.linkedItemAction:hover:not(:disabled) {
+  background: hsl(var(--accent));
+  color: hsl(var(--foreground));
+}
+
+.linkedItemAction:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Activity (legacy) */
