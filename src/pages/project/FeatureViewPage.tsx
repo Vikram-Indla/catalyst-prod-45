@@ -4,10 +4,11 @@
  * This is a dedicated delivery workspace view for Features within a Project.
  * Layout: Breadcrumb → Split (Content + Sidebar)
  * 
+ * Route: /projects/:projectId/features/:featureId
+ * 
  * DO NOT use drawer patterns here. This is the Project module full-page view.
  */
 
-import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -45,7 +46,7 @@ interface FeatureWithRelations {
   owner?: { id: string; name: string } | null;
   epic?: { id: string; display_id: string; name: string } | null;
   project?: { id: string; name: string } | null;
-  // Additional fields for sidebar
+  // Additional fields for sidebar - fetched from DB or null
   priority?: string | null;
   reporter_id?: string | null;
   reporter?: { id: string; name: string } | null;
@@ -124,11 +125,12 @@ export default function FeatureViewPage() {
         owner,
         epic,
         project,
-        // Mock additional data for demonstration
-        priority: 'high',
-        labels: ['security', 'infrastructure', 'Q1-2025'],
-        component: 'Identity Services',
-        release: 'v2.4.0',
+        // These fields are not in DB schema yet - show as null/empty
+        priority: null,
+        labels: [],
+        component: null,
+        release: null,
+        reporter: null,
       };
     },
     enabled: !!featureId,
@@ -195,13 +197,13 @@ export default function FeatureViewPage() {
     return (
       <div className={styles.featureViewPage}>
         <div className={styles.breadcrumbRow}>
-          <Link to={`/project/${projectId}/features`} className={styles.breadcrumbLink}>
+          <Link to={`/projects/${projectId}/features`} className={styles.breadcrumbLink}>
             Features
           </Link>
         </div>
         <div className={styles.notFoundContainer}>
           <span>Feature not found</span>
-          <Link to={`/project/${projectId}/features`} className={styles.breadcrumbLink}>
+          <Link to={`/projects/${projectId}/features`} className={styles.breadcrumbLink}>
             ← Back to Features
           </Link>
         </div>
@@ -211,12 +213,16 @@ export default function FeatureViewPage() {
   
   return (
     <div className={styles.featureViewPage}>
-      {/* Breadcrumb Row */}
+      {/* Breadcrumb Row - navigates to Project workspace views */}
       <div className={styles.breadcrumbRow}>
-        <Link to="/spaces" className={styles.breadcrumbLink}>Spaces</Link>
+        <Link to="/projects" className={styles.breadcrumbLink}>Projects</Link>
         <span className={styles.breadcrumbSeparator}>/</span>
-        <Link to={`/project/${projectId}`} className={styles.breadcrumbLink}>
+        <Link to={`/projects/${projectId}`} className={styles.breadcrumbLink}>
           {feature.project?.name || 'Project'}
+        </Link>
+        <span className={styles.breadcrumbSeparator}>/</span>
+        <Link to={`/projects/${projectId}/features`} className={styles.breadcrumbLink}>
+          Features
         </Link>
         <span className={styles.breadcrumbSeparator}>/</span>
         <span className={styles.breadcrumbCurrent}>{feature.display_id || feature.id}</span>
