@@ -5,7 +5,7 @@
  * Uses demo data when real data is empty.
  */
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, AlertTriangle, Clock, CheckCircle, XCircle, Database } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -40,19 +40,33 @@ const CELL_META = 'text-[10px] text-muted-foreground tabular-nums';
 // Grid cell base styles - consistent box model + no header overlap
 const GRID_CELL_BASE = 'min-w-0 overflow-hidden';
 
-// Column widths - Summary is flexible, right columns are fixed
-const FIXED_WIDTHS = {
+// Default column widths - all resizable
+const DEFAULT_WIDTHS: Record<ColumnId, number> = {
   key: 85,
-  summary: 320,  // min width for summary
-  severity: 60,
-  major: 45,
+  summary: 350,
+  severity: 65,
+  major: 50,
   status: 100,
-  progress: 75,
-  approvers: 115,
-  lastAction: 140,
-  time: 90,
-  aging: 50,
-} as const;
+  progress: 80,
+  approvers: 120,
+  lastAction: 150,
+  time: 95,
+  aging: 55,
+};
+
+// Minimum column widths
+const MIN_WIDTHS: Record<ColumnId, number> = {
+  key: 70,
+  summary: 200,
+  severity: 50,
+  major: 40,
+  status: 80,
+  progress: 60,
+  approvers: 80,
+  lastAction: 100,
+  time: 70,
+  aging: 45,
+};
 
 type ColumnId =
   | 'key'
@@ -79,24 +93,15 @@ const COLUMN_IDS: ColumnId[] = [
   'aging',
 ];
 
-function getGridTemplate() {
-  // All columns fixed width - no flexible columns to prevent whitespace
-  return [
-    `${FIXED_WIDTHS.key}px`,
-    `minmax(${FIXED_WIDTHS.summary}px, auto)`,  // Summary grows with content, min 320px
-    `${FIXED_WIDTHS.severity}px`,
-    `${FIXED_WIDTHS.major}px`,
-    `${FIXED_WIDTHS.status}px`,
-    `${FIXED_WIDTHS.progress}px`,
-    `${FIXED_WIDTHS.approvers}px`,
-    `${FIXED_WIDTHS.lastAction}px`,
-    `${FIXED_WIDTHS.time}px`,
-    `${FIXED_WIDTHS.aging}px`,
-  ].join(' ');
+const COLUMN_WIDTHS_STORAGE_KEY = 'catalyst.committeeQueue.columnWidths';
+
+function getGridTemplate(widths: Record<ColumnId, number>) {
+  return COLUMN_IDS.map(col => `${widths[col]}px`).join(' ');
 }
 
-const MIN_TABLE_WIDTH =
-  Object.values(FIXED_WIDTHS).reduce((a, b) => a + b, 0);
+function getMinTableWidth(widths: Record<ColumnId, number>) {
+  return Object.values(widths).reduce((a, b) => a + b, 0);
+}
 
 interface CommitteeQueueTableProps {
   items: CommitteeQueueItem[];
@@ -204,7 +209,7 @@ function ApproversAvatars({ approvers }: { approvers: CommitteeQueueItem['approv
 }
 
 function LoadingSkeleton() {
-  const gridTemplate = getGridTemplate();
+  const gridTemplate = getGridTemplate(DEFAULT_WIDTHS);
   return (
     <div className="rounded-md border border-border overflow-hidden bg-card flex-1">
       <div
@@ -261,6 +266,43 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
     return 25;
   });
 
+  // Resizable column widths
+  const [columnWidths, setColumnWidths] = useState<Record<ColumnId, number>>(() => {
+    try {
+      const saved = localStorage.getItem(COLUMN_WIDTHS_STORAGE_KEY);
+      if (saved) return { ...DEFAULT_WIDTHS, ...JSON.parse(saved) };
+    } catch {}
+    return { ...DEFAULT_WIDTHS };
+  });
+
+  const resizingRef = useRef<{ col: ColumnId; startX: number; startWidth: number } | null>(null);
+
+  const handleResizeStart = useCallback((col: ColumnId, e: React.MouseEvent) => {
+    e.preventDefault();
+    resizingRef.current = { col, startX: e.clientX, startWidth: columnWidths[col] };
+    
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      if (!resizingRef.current) return;
+      const delta = moveEvent.clientX - resizingRef.current.startX;
+      const newWidth = Math.max(MIN_WIDTHS[resizingRef.current.col], resizingRef.current.startWidth + delta);
+      setColumnWidths(prev => ({ ...prev, [resizingRef.current!.col]: newWidth }));
+    };
+
+    const handleMouseUp = () => {
+      if (resizingRef.current) {
+        try {
+          localStorage.setItem(COLUMN_WIDTHS_STORAGE_KEY, JSON.stringify(columnWidths));
+        } catch {}
+      }
+      resizingRef.current = null;
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  }, [columnWidths]);
+
   const totalPages = Math.ceil(items.length / pageSize);
   const startIndex = (page - 1) * pageSize;
   const paginatedItems = items.slice(startIndex, startIndex + pageSize);
@@ -274,11 +316,11 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
 
   const handleRowClick = useCallback((item: CommitteeQueueItem, e: React.MouseEvent) => {
     const t = e.target as HTMLElement;
-    if (t.closest('a') || t.closest('button')) return;
+    if (t.closest('a') || t.closest('button') || t.closest('.resize-handle')) return;
     onRowClick ? onRowClick(item) : navigate(`/release/incidents/${item.incident.id}`);
   }, [navigate, onRowClick]);
 
-  const gridTemplate = useMemo(() => getGridTemplate(), []);
+  const gridTemplate = useMemo(() => getGridTemplate(columnWidths), [columnWidths]);
 
   if (isLoading) return <LoadingSkeleton />;
 
@@ -289,41 +331,42 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
           {/* Single scroll container - table is content-sized, scrolls horizontally if needed */}
           <div className="overflow-auto h-full">
             <div className="w-fit min-w-full">
-              {/* Header */}
+              {/* Header with resize handles */}
               <div
                 className="grid items-center h-8 sticky top-0 z-20 bg-muted border-b border-border"
                 style={{ gridTemplateColumns: gridTemplate }}
               >
-                <div className={cn(GRID_CELL_BASE, "pl-3 pr-1 flex items-center h-full")}>
-                  <span className={cn(HEADER_TEXT, "truncate")}>KEY</span>
-                </div>
-                <div className={cn(GRID_CELL_BASE, "px-1 flex items-center h-full")}>
-                  <span className={cn(HEADER_TEXT, "truncate")}>SUMMARY</span>
-                </div>
-                <div className={cn(GRID_CELL_BASE, "px-1 flex items-center justify-center h-full")}>
-                  <span className={cn(HEADER_TEXT, "truncate")}>SEV</span>
-                </div>
-                <div className={cn(GRID_CELL_BASE, "px-1 flex items-center justify-center h-full")}>
-                  <span className={cn(HEADER_TEXT, "truncate")}>MAJ</span>
-                </div>
-                <div className={cn(GRID_CELL_BASE, "px-1 flex items-center justify-center h-full")}>
-                  <span className={cn(HEADER_TEXT, "truncate")}>STATUS</span>
-                </div>
-                <div className={cn(GRID_CELL_BASE, "px-1 flex items-center justify-center h-full")}>
-                  <span className={cn(HEADER_TEXT, "truncate")}>PROGRESS</span>
-                </div>
-                <div className={cn(GRID_CELL_BASE, "px-1 flex items-center h-full")}>
-                  <span className={cn(HEADER_TEXT, "truncate")}>APPROVERS</span>
-                </div>
-                <div className={cn(GRID_CELL_BASE, "px-1 flex items-center h-full")}>
-                  <span className={cn(HEADER_TEXT, "truncate")}>LAST ACTION</span>
-                </div>
-                <div className={cn(GRID_CELL_BASE, "px-1 flex items-center justify-center h-full")}>
-                  <span className={cn(HEADER_TEXT, "truncate")}>TIME</span>
-                </div>
-                <div className={cn(GRID_CELL_BASE, "px-1 flex items-center justify-center h-full")}>
-                  <span className={cn(HEADER_TEXT, "truncate")}>AGE</span>
-                </div>
+                {COLUMN_IDS.map((col, idx) => {
+                  const labels: Record<ColumnId, string> = {
+                    key: 'KEY', summary: 'SUMMARY', severity: 'SEV', major: 'MAJ',
+                    status: 'STATUS', progress: 'PROGRESS', approvers: 'APPROVERS',
+                    lastAction: 'LAST ACTION', time: 'TIME', aging: 'AGE',
+                  };
+                  const isCenter = ['severity', 'major', 'status', 'progress', 'time', 'aging'].includes(col);
+                  const isFirst = idx === 0;
+                  const isLast = idx === COLUMN_IDS.length - 1;
+
+                  return (
+                    <div
+                      key={col}
+                      className={cn(
+                        GRID_CELL_BASE,
+                        "relative flex items-center h-full group",
+                        isFirst ? "pl-3 pr-1" : "px-1",
+                        isCenter && "justify-center"
+                      )}
+                    >
+                      <span className={cn(HEADER_TEXT, "truncate")}>{labels[col]}</span>
+                      {/* Resize handle - not on last column */}
+                      {!isLast && (
+                        <div
+                          className="resize-handle absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-primary/30 active:bg-primary/50 z-30"
+                          onMouseDown={(e) => handleResizeStart(col, e)}
+                        />
+                      )}
+                    </div>
+                  );
+                })}
               </div>
 
               {/* Rows */}
