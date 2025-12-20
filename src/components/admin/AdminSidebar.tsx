@@ -80,6 +80,7 @@ const adminSections = [
     title: 'Incident Management',
     items: [
       { label: 'Workgroups', path: '/admin/incidents/workgroups', icon: Users },
+      { label: 'Owning Teams', path: '/admin/incidents/owning-teams', icon: Users },
       { label: 'Field Configuration', path: '/admin/incidents/fields', icon: Settings },
       { label: 'SLA Policies', path: '/admin/incidents/sla', icon: Activity },
       { label: 'CAP Committee', path: '/admin/incidents/cap-policy', icon: Shield },

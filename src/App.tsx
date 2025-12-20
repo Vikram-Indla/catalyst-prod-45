@@ -149,6 +149,7 @@ import {
   IncidentCAPPolicy,
   IncidentConversionRules,
   IncidentAuditCompliance,
+  IncidentOwningTeams,
 } from "./pages/admin/incident";
 import UIQARoute from "./pages/UIQARoute";
 import ThemeAuditProbe from "./pages/ThemeAuditProbe";
@@ -716,6 +717,7 @@ const App = () => (
                 <Route path="incidents/cap-policy" element={<IncidentCAPPolicy />} />
                 <Route path="incidents/conversion" element={<IncidentConversionRules />} />
                 <Route path="incidents/audit" element={<IncidentAuditCompliance />} />
+                <Route path="incidents/owning-teams" element={<IncidentOwningTeams />} />
               </Route>
 
               <Route path="/items/epics/:epicId/status-report" element={<EpicStatusReport />} />
