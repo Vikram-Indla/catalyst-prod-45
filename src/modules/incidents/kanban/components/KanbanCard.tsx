@@ -1,5 +1,6 @@
 /**
- * Incident Kanban Card - Compact design for high-volume boards
+ * Incident Kanban Card - Compact, operational design
+ * Left accent indicates SLA health (breached/at-risk only)
  */
 
 import { memo } from 'react';
@@ -9,13 +10,12 @@ import {
   Users, 
   Paperclip, 
   ArrowRightLeft,
-  Clock
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import type { Incident } from '@/types/incident';
-import { getSlaHealth, formatAge, getTimeInStatus, SLA_HEALTH_CONFIG } from '../types';
+import { getSlaHealth, formatAge, SLA_HEALTH_CONFIG } from '../types';
 
 interface KanbanCardProps {
   incident: Incident;
@@ -33,7 +33,6 @@ export const KanbanCard = memo(function KanbanCard({
   const navigate = useNavigate();
   const slaHealth = getSlaHealth(incident);
   const slaConfig = SLA_HEALTH_CONFIG[slaHealth];
-  const timeInStatus = getTimeInStatus(incident.updated_at);
   const age = formatAge(incident.created_at);
 
   const handleClick = () => {
@@ -51,17 +50,23 @@ export const KanbanCard = memo(function KanbanCard({
     onDragStart?.(e, incident);
   };
 
-  // Severity colors
+  // Left accent color based on SLA
+  const getAccentClass = () => {
+    if (slaHealth === 'breached') return 'border-l-destructive';
+    if (slaHealth === 'at_risk') return 'border-l-[hsl(var(--warning))]';
+    return 'border-l-transparent';
+  };
+
+  // Severity styling - compact
   const getSeverityClass = () => {
     switch (incident.severity) {
-      case 'SEV1': return 'text-destructive font-bold';
-      case 'SEV2': return 'text-[hsl(var(--warning))] font-semibold';
-      case 'SEV3': return 'text-[hsl(var(--b400))]';
+      case 'SEV1': return 'text-destructive font-semibold';
+      case 'SEV2': return 'text-[hsl(var(--warning))] font-medium';
       default: return 'text-muted-foreground';
     }
   };
 
-  // SLA indicator
+  // SLA text styling
   const getSlaClass = () => {
     if (slaHealth === 'breached') return 'text-destructive';
     if (slaHealth === 'at_risk') return 'text-[hsl(var(--warning))]';
@@ -75,63 +80,64 @@ export const KanbanCard = memo(function KanbanCard({
       onDragStart={handleDragStart}
       onDragEnd={onDragEnd}
       className={cn(
-        "p-2.5 bg-card border border-border rounded cursor-grab active:cursor-grabbing",
-        "hover:shadow-md hover:border-[var(--brand-primary)] transition-all",
+        "px-2 py-1.5 bg-card border border-border/60 rounded-sm cursor-grab active:cursor-grabbing",
+        "border-l-2",
+        getAccentClass(),
+        "hover:bg-accent/30 hover:border-border transition-colors",
         "group select-none",
-        isDragging && "opacity-50 shadow-lg border-[var(--brand-primary)]"
+        isDragging && "opacity-50 shadow-md"
       )}
     >
       {/* Row 1: Key + Indicators */}
-      <div className="flex items-center justify-between gap-2 mb-1.5">
+      <div className="flex items-center justify-between gap-1.5 mb-0.5">
         <button
           onClick={handleKeyClick}
-          className="text-xs font-mono text-[var(--brand-primary)] hover:underline truncate"
+          className="text-[11px] font-mono text-primary hover:underline truncate"
         >
           {incident.incident_key}
         </button>
+        
+        {/* Top-right indicators */}
         <div className="flex items-center gap-1 flex-shrink-0">
-          {/* Major indicator */}
           {incident.is_major_incident && (
             <Tooltip>
               <TooltipTrigger asChild>
-                <span className="text-destructive">
+                <span className="flex items-center gap-0.5 text-destructive">
                   <AlertTriangle className="h-3 w-3" />
+                  <span className="text-[9px] font-medium">Major</span>
                 </span>
               </TooltipTrigger>
               <TooltipContent side="top" className="text-xs">Major Incident</TooltipContent>
             </Tooltip>
           )}
           
-          {/* Committee indicator (governance, not status) */}
           {incident.requires_committee && (
             <Tooltip>
               <TooltipTrigger asChild>
-                <span className="text-[hsl(var(--secondary-bronze))]">
+                <span className="flex items-center gap-0.5 text-muted-foreground">
                   <Users className="h-3 w-3" />
+                  <span className="text-[9px]">CAB</span>
                 </span>
               </TooltipTrigger>
               <TooltipContent side="top" className="text-xs">Requires Committee</TooltipContent>
             </Tooltip>
           )}
           
-          {/* Attachments indicator */}
           {incident.attachments && incident.attachments.length > 0 && (
             <Tooltip>
               <TooltipTrigger asChild>
-                <span className="text-muted-foreground">
-                  <Paperclip className="h-3 w-3" />
-                </span>
+                <Paperclip className="h-3 w-3 text-muted-foreground/60" />
               </TooltipTrigger>
               <TooltipContent side="top" className="text-xs">{incident.attachments.length} attachments</TooltipContent>
             </Tooltip>
           )}
           
-          {/* Converted indicator */}
           {incident.converted_to_id && (
             <Tooltip>
               <TooltipTrigger asChild>
-                <span className="text-[hsl(var(--info))]">
+                <span className="flex items-center gap-0.5 text-muted-foreground">
                   <ArrowRightLeft className="h-3 w-3" />
+                  <span className="text-[9px] font-mono">{incident.converted_to_type?.slice(0, 3)}</span>
                 </span>
               </TooltipTrigger>
               <TooltipContent side="top" className="text-xs">
@@ -143,24 +149,24 @@ export const KanbanCard = memo(function KanbanCard({
       </div>
 
       {/* Row 2: Summary (2 lines max) */}
-      <p className="text-sm font-medium text-foreground line-clamp-2 mb-1.5 leading-tight">
+      <p className="text-[13px] font-medium text-foreground line-clamp-2 leading-snug mb-1">
         {incident.title}
       </p>
 
-      {/* Row 3: Metadata line */}
-      <div className="flex items-center gap-1.5 text-[11px] mb-1.5">
+      {/* Row 3: Compact metadata line */}
+      <div className="flex items-center gap-1 text-[10px] text-muted-foreground mb-1">
         <span className={getSeverityClass()}>{incident.severity}</span>
-        <span className="text-muted-foreground/50">·</span>
-        <span className="text-muted-foreground">{incident.support_level || '—'}</span>
-        <span className="text-muted-foreground/50">·</span>
-        <span className="text-muted-foreground">{age}</span>
-        <span className="text-muted-foreground/50">·</span>
+        <span className="opacity-40">·</span>
+        <span>{incident.support_level || '—'}</span>
+        <span className="opacity-40">·</span>
+        <span>{age}</span>
+        <span className="opacity-40">·</span>
         <span className={getSlaClass()}>{slaConfig.label}</span>
       </div>
 
-      {/* Row 4: Assignee + Release + Time in status */}
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-1.5 min-w-0 flex-1">
+      {/* Row 4: Assignee + Release */}
+      <div className="flex items-center justify-between gap-1.5">
+        <div className="flex items-center gap-1 min-w-0 flex-1">
           {incident.assignee ? (
             <>
               <Avatar className="h-4 w-4 flex-shrink-0">
@@ -168,37 +174,21 @@ export const KanbanCard = memo(function KanbanCard({
                   {incident.assignee.avatar_initials || incident.assignee.full_name.slice(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              <span className="text-[11px] text-muted-foreground truncate">
+              <span className="text-[10px] text-muted-foreground truncate">
                 {incident.assignee.full_name.split(' ')[0]}
               </span>
             </>
           ) : (
-            <span className="text-[11px] text-muted-foreground/60 italic">Unassigned</span>
-          )}
-          
-          {/* Release tag */}
-          {incident.release_version && (
-            <>
-              <span className="text-muted-foreground/30">·</span>
-              <span className="text-[10px] text-muted-foreground bg-muted px-1 py-0.5 rounded truncate max-w-[60px]">
-                {incident.release_version.version}
-              </span>
-            </>
+            <span className="text-[10px] text-muted-foreground/50 italic">Unassigned</span>
           )}
         </div>
         
-        {/* Time in status - subtle */}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground/60 flex-shrink-0">
-              <Clock className="h-2.5 w-2.5" />
-              {timeInStatus}
-            </span>
-          </TooltipTrigger>
-          <TooltipContent side="bottom" className="text-xs">
-            In current status: {timeInStatus}
-          </TooltipContent>
-        </Tooltip>
+        {/* Release tag */}
+        {incident.release_version && (
+          <span className="text-[9px] text-muted-foreground/70 bg-muted/50 px-1 py-0.5 rounded-sm truncate max-w-[56px]">
+            {incident.release_version.version}
+          </span>
+        )}
       </div>
     </div>
   );
