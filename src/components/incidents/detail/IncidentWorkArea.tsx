@@ -176,7 +176,7 @@ export function IncidentWorkArea({
   isCommentPending,
   isVotePending,
 }: IncidentWorkAreaProps) {
-  const [activeTab, setActiveTab] = useState('sla');
+  const [activeTab, setActiveTab] = useState('comments');
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [editedDescription, setEditedDescription] = useState('');
   const [commentText, setCommentText] = useState('');
@@ -357,72 +357,19 @@ export function IncidentWorkArea({
         </div>
       </section>
 
-      {/* ========== 4. COMMENTS ========== */}
-      <section className="border border-border rounded-lg overflow-hidden bg-background">
-        <SectionHeader 
-          title="Comments" 
-          icon={MessageSquare}
-          count={userComments.length}
-        />
-        
-        {/* Comment composer */}
-        <div className="border-b border-border p-4 bg-muted/20">
-          <div className="flex gap-3">
-            <Avatar className="h-8 w-8 flex-shrink-0">
-              <AvatarFallback className="text-xs bg-primary text-primary-foreground">U</AvatarFallback>
-            </Avatar>
-            <div className="flex-1 space-y-2">
-              <Textarea
-                placeholder="Add an update for the team..."
-                value={commentText}
-                onChange={(e) => setCommentText(e.target.value)}
-                className="min-h-[80px] resize-none text-sm"
-                disabled={isConverted}
-              />
-              <div className="flex items-center justify-between">
-                <Select value={commentType} onValueChange={(v) => setCommentType(v as CommentType)}>
-                  <SelectTrigger className="w-32 h-8 text-sm">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {COMMENT_TYPE_OPTIONS.map(opt => (
-                      <SelectItem key={opt.value} value={opt.value} className="text-sm">
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Button 
-                  size="sm"
-                  className="h-8 px-4 text-sm"
-                  onClick={handlePostComment} 
-                  disabled={!commentText.trim() || isCommentPending || isConverted}
-                >
-                  Add comment
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Comments list */}
-        <div className="divide-y divide-border max-h-[400px] overflow-auto">
-          {userComments.length > 0 ? (
-            userComments.map(comment => (
-              <CommentItem key={comment.id} comment={comment} />
-            ))
-          ) : (
-            <p className="text-sm text-muted-foreground p-4">
-              No comments yet. Add an update for the team.
-            </p>
-          )}
-        </div>
-      </section>
-
-      {/* ========== 5. SECONDARY TABS ========== */}
-      <section className="border border-border rounded-lg overflow-hidden bg-background flex-1 flex flex-col min-h-[280px]">
+      {/* ========== 4. ACTIVITY (Comments, SLA, Committee, Audit) ========== */}
+      <section className="border border-border rounded-lg overflow-hidden bg-background flex-1 flex flex-col min-h-[400px]">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
           <TabsList className="w-full justify-start rounded-none border-b border-border bg-muted/30 px-2 h-10">
+            <TabsTrigger value="comments" className="text-sm h-8 px-3 data-[state=active]:bg-background">
+              <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
+              Comments
+              {userComments.length > 0 && (
+                <Badge variant="secondary" className="ml-1.5 text-[10px] px-1 py-0 h-4">
+                  {userComments.length}
+                </Badge>
+              )}
+            </TabsTrigger>
             <TabsTrigger value="sla" className="text-sm h-8 px-3 data-[state=active]:bg-background">
               <Clock className="h-3.5 w-3.5 mr-1.5" />
               SLA
@@ -430,11 +377,6 @@ export function IncidentWorkArea({
             <TabsTrigger value="committee-log" className="text-sm h-8 px-3 data-[state=active]:bg-background">
               <Users className="h-3.5 w-3.5 mr-1.5" />
               Committee Log
-              {committee?.members && committee.members.length > 0 && (
-                <Badge variant="secondary" className="ml-1.5 text-[10px] px-1 py-0 h-4">
-                  {committee.members.length}
-                </Badge>
-              )}
             </TabsTrigger>
             <TabsTrigger value="audit-log" className="text-sm h-8 px-3 data-[state=active]:bg-background">
               <History className="h-3.5 w-3.5 mr-1.5" />
@@ -446,6 +388,62 @@ export function IncidentWorkArea({
               )}
             </TabsTrigger>
           </TabsList>
+
+          {/* Comments Tab */}
+          <TabsContent value="comments" className="flex-1 overflow-auto p-0 m-0 flex flex-col">
+            {/* Comment composer */}
+            <div className="border-b border-border p-4 bg-muted/20">
+              <div className="flex gap-3">
+                <Avatar className="h-8 w-8 flex-shrink-0">
+                  <AvatarFallback className="text-xs bg-primary text-primary-foreground">U</AvatarFallback>
+                </Avatar>
+                <div className="flex-1 space-y-2">
+                  <Textarea
+                    placeholder="Add an update for the team..."
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
+                    className="min-h-[80px] resize-none text-sm"
+                    disabled={isConverted}
+                  />
+                  <div className="flex items-center justify-between">
+                    <Select value={commentType} onValueChange={(v) => setCommentType(v as CommentType)}>
+                      <SelectTrigger className="w-32 h-8 text-sm">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {COMMENT_TYPE_OPTIONS.map(opt => (
+                          <SelectItem key={opt.value} value={opt.value} className="text-sm">
+                            {opt.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button 
+                      size="sm"
+                      className="h-8 px-4 text-sm"
+                      onClick={handlePostComment} 
+                      disabled={!commentText.trim() || isCommentPending || isConverted}
+                    >
+                      Add comment
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Comments list */}
+            <div className="divide-y divide-border flex-1 overflow-auto">
+              {userComments.length > 0 ? (
+                userComments.map(comment => (
+                  <CommentItem key={comment.id} comment={comment} />
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground p-4">
+                  No comments yet. Add an update for the team.
+                </p>
+              )}
+            </div>
+          </TabsContent>
 
           {/* SLA Tab */}
           <TabsContent value="sla" className="flex-1 overflow-auto p-4 m-0">
