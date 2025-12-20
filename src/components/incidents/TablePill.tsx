@@ -1,13 +1,13 @@
 /**
- * TablePill — Standardized enterprise table chip/pill component
+ * TablePill — Enterprise-grade table pill/badge component
  * 
- * Design specs:
- * - Fixed height: 24px
- * - Horizontal padding: 10-12px
- * - Font size: 12-13px
- * - Border radius: pill (full)
- * - Line-height vertically centers text
- * - Consistent across all status-like content
+ * Design specs (Jira-quality):
+ * - Fixed height: 22px (compact density)
+ * - Horizontal padding: 8px
+ * - Font size: 11px
+ * - Border radius: full pill
+ * - Consistent vertical centering
+ * - Low saturation colors for calm enterprise feel
  */
 
 import { cn } from '@/lib/utils';
@@ -21,24 +21,24 @@ export interface TablePillProps {
   className?: string;
 }
 
-// Variant styling using theme tokens - no hard-coded colors
+// Low-saturation variant styles for enterprise calm aesthetic
 const variantStyles: Record<string, string> = {
-  default: 'bg-muted text-foreground',
-  success: 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400',
-  warning: 'bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400',
-  danger: 'bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-400',
-  info: 'bg-sky-50 dark:bg-sky-950/30 text-sky-700 dark:text-sky-400',
-  muted: 'bg-muted text-muted-foreground',
-  accent: 'bg-violet-50 dark:bg-violet-950/30 text-violet-700 dark:text-violet-400',
+  default: 'bg-muted/60 text-foreground',
+  success: 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400',
+  warning: 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400',
+  danger: 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400',
+  info: 'bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-400',
+  muted: 'bg-muted/50 text-muted-foreground',
+  accent: 'bg-violet-50 dark:bg-violet-950/40 text-violet-700 dark:text-violet-400',
 };
 
 const dotStyles: Record<string, string> = {
-  default: 'bg-foreground/50',
+  default: 'bg-foreground/40',
   success: 'bg-emerald-500',
   warning: 'bg-amber-500',
   danger: 'bg-rose-500',
   info: 'bg-sky-500',
-  muted: 'bg-muted-foreground/50',
+  muted: 'bg-muted-foreground/40',
   accent: 'bg-violet-500',
 };
 
@@ -52,14 +52,14 @@ export function TablePill({
   return (
     <span
       className={cn(
-        // Fixed height and alignment
+        // Fixed 22px height for compact enterprise density
         'inline-flex items-center justify-center',
-        'h-6 min-h-6 max-h-6', // 24px fixed height
-        'px-2.5', // 10px horizontal padding
+        'h-[22px] min-h-[22px] max-h-[22px]',
+        'px-2', // 8px horizontal padding
         'rounded-full', // Pill shape
-        // Typography
-        'text-xs font-medium', // 12px font size
-        'leading-none', // Ensure text is vertically centered
+        // Typography - 11px for compact feel
+        'text-[11px] font-medium',
+        'leading-none', // Vertically centered text
         'whitespace-nowrap',
         // Variant styling
         variantStyles[variant] || variantStyles.default,
@@ -79,7 +79,7 @@ export function TablePill({
   );
 }
 
-// Pre-configured pills for common incident statuses
+// Status pill - compact with colored dot indicator only
 export function StatusPill({ status }: { status: string }) {
   const statusConfig: Record<string, { label: string; variant: TablePillProps['variant']; dot?: boolean }> = {
     open: { label: 'Open', variant: 'muted' },
@@ -100,64 +100,67 @@ export function StatusPill({ status }: { status: string }) {
   );
 }
 
+// Severity - small neutral pill with colored dot only (not full background)
 export function SeverityPill({ severity }: { severity: string }) {
-  const severityConfig: Record<string, { label: string; variant: TablePillProps['variant'] }> = {
-    SEV1: { label: 'SEV1', variant: 'danger' },
-    SEV2: { label: 'SEV2', variant: 'warning' },
-    SEV3: { label: 'SEV3', variant: 'muted' },
-    SEV4: { label: 'SEV4', variant: 'muted' },
+  const severityConfig: Record<string, { label: string; dotColor: string }> = {
+    SEV1: { label: 'SEV1', dotColor: 'bg-rose-500' },
+    SEV2: { label: 'SEV2', dotColor: 'bg-amber-500' },
+    SEV3: { label: 'SEV3', dotColor: 'bg-sky-400' },
+    SEV4: { label: 'SEV4', dotColor: 'bg-muted-foreground/50' },
   };
 
-  const config = severityConfig[severity] || { label: severity, variant: 'muted' as const };
+  const config = severityConfig[severity] || { label: severity, dotColor: 'bg-muted-foreground/50' };
   
   return (
-    <TablePill variant={config.variant}>
+    <TablePill variant="muted" dot dotColor={config.dotColor}>
       {config.label}
     </TablePill>
   );
 }
 
+// SLA - subtle text coloring, no heavy badges
 export function SlaPill({ status }: { status: 'breached' | 'at_risk' | 'on_track' }) {
-  const slaConfig: Record<string, { label: string; variant: TablePillProps['variant'] }> = {
-    breached: { label: 'Breached', variant: 'danger' },
-    at_risk: { label: 'At Risk', variant: 'warning' },
-    on_track: { label: 'On Track', variant: 'success' },
+  const slaConfig: Record<string, { label: string; className: string }> = {
+    breached: { label: 'Breached', className: 'text-rose-600 dark:text-rose-400' },
+    at_risk: { label: 'At Risk', className: 'text-amber-600 dark:text-amber-400' },
+    on_track: { label: 'On Track', className: 'text-emerald-600 dark:text-emerald-400' },
   };
 
   const config = slaConfig[status];
   
+  // Return plain text with subtle color - no pill/badge
   return (
-    <TablePill variant={config.variant}>
+    <span className={cn('text-[11px] font-medium whitespace-nowrap', config.className)}>
       {config.label}
-    </TablePill>
+    </span>
   );
 }
 
+// Major - small neutral badge only when applicable, otherwise "—"
 export function MajorPill({ isMajor }: { isMajor: boolean }) {
   if (!isMajor) {
-    return <span className="text-xs text-muted-foreground">—</span>;
+    return <span className="text-[11px] text-muted-foreground">—</span>;
   }
   
   return (
-    <TablePill variant="warning">
+    <TablePill variant="muted">
       Major
     </TablePill>
   );
 }
 
+// Committee - text only, no icons, no pills
 export function CommitteePill({ status, label }: { status: string; label: string }) {
-  const committeeConfig: Record<string, TablePillProps['variant']> = {
-    not_applicable: 'muted',
-    in_progress: 'warning',
-    approved: 'success',
-    rejected: 'danger',
-  };
-
-  const variant = committeeConfig[status] || 'muted';
+  // Plain text only as per spec
+  const colorClass = status === 'approved' 
+    ? 'text-emerald-600 dark:text-emerald-400'
+    : status === 'rejected'
+    ? 'text-rose-600 dark:text-rose-400'
+    : 'text-muted-foreground';
   
   return (
-    <TablePill variant={variant}>
+    <span className={cn('text-[11px] font-medium whitespace-nowrap', colorClass)}>
       {label}
-    </TablePill>
+    </span>
   );
 }

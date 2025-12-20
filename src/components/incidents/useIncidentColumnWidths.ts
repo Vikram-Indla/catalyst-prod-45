@@ -1,39 +1,39 @@
 /**
  * Hook for managing incident table column widths with localStorage persistence
- * Stores widths per-user, per-view (Incident List)
+ * Enterprise-grade stable column widths for Jira-quality density
  */
 import { useState, useCallback } from 'react';
 
 const STORAGE_KEY = 'catalyst-incident-list-column-widths';
 
-// Default column widths - enterprise-grade stable widths per spec
+// Default column widths - enterprise-grade stable widths
 export const DEFAULT_COLUMN_WIDTHS: Record<string, number> = {
-  key: 130,         // 120-140px range
-  summary: 320,     // Flexible (takes remaining space)
-  severity: 110,    // 110px per spec
-  level: 60,        // Compact level indicator
-  status: 140,      // 140px per spec
-  assignee: 180,    // 180px per spec
-  age: 70,          // 70px per spec
-  sla: 90,          // 90px per spec
-  releaseVersion: 110, // 110px per spec
-  major: 110,       // 110px per spec
-  committee: 120,   // 120px per spec
+  key: 110,         // Compact key column
+  summary: 280,     // Flexible - takes remaining space
+  severity: 80,     // Compact severity with dot
+  level: 50,        // Plain text L1/L2/L3
+  status: 110,      // Compact status pill
+  assignee: 160,    // Avatar + truncated name
+  age: 55,          // Compact numeric
+  sla: 70,          // Subtle text
+  releaseVersion: 90, // Plain text version
+  major: 60,        // Small badge or "—"
+  committee: 90,    // Text only
 };
 
 // Minimum widths to prevent collapse
 export const MIN_COLUMN_WIDTHS: Record<string, number> = {
-  key: 100,
-  summary: 200,
-  severity: 80,
-  level: 50,
-  status: 100,
-  assignee: 120,
-  age: 60,
-  sla: 70,
-  releaseVersion: 90,
-  major: 80,
-  committee: 100,
+  key: 80,
+  summary: 180,
+  severity: 65,
+  level: 40,
+  status: 90,
+  assignee: 100,
+  age: 45,
+  sla: 55,
+  releaseVersion: 70,
+  major: 50,
+  committee: 70,
 };
 
 export function useIncidentColumnWidths() {
@@ -51,7 +51,7 @@ export function useIncidentColumnWidths() {
 
   const handleColumnResize = useCallback((columnId: string, width: number) => {
     const minWidth = MIN_COLUMN_WIDTHS[columnId] || 40;
-    const clampedWidth = Math.max(minWidth, Math.min(600, width));
+    const clampedWidth = Math.max(minWidth, Math.min(500, width));
     
     setColumnWidths(prev => {
       const newWidths = { ...prev, [columnId]: clampedWidth };
