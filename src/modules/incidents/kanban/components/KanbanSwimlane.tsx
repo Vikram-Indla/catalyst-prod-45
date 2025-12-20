@@ -74,7 +74,7 @@ export const KanbanSwimlane = memo(function KanbanSwimlane({
 
   return (
     <div className="border-b border-border/40 last:border-b-0">
-      {/* Swimlane Header - Sticky, clean */}
+      {/* Swimlane Header - Sticky, clean, READABLE typography */}
       <button
         onClick={handleToggle}
         className={cn(
@@ -82,18 +82,18 @@ export const KanbanSwimlane = memo(function KanbanSwimlane({
           "hover:bg-muted/30 transition-colors sticky top-0 z-10 text-left"
         )}
       >
-        {/* Collapse chevron - subtle */}
+        {/* Collapse chevron - secondary (not muted) */}
         {isExpanded ? (
-          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground/50 flex-shrink-0" />
+          <ChevronDown className="h-3.5 w-3.5 text-[var(--text-3)] flex-shrink-0" />
         ) : (
-          <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/50 flex-shrink-0" />
+          <ChevronRight className="h-3.5 w-3.5 text-[var(--text-3)] flex-shrink-0" />
         )}
         
-        {/* Lane name */}
-        <span className="text-sm font-medium text-foreground">{group.label}</span>
+        {/* Lane name - PRIMARY text */}
+        <span className="text-sm font-medium text-[var(--text-1)]">{group.label}</span>
         
-        {/* Total count */}
-        <span className="text-xs text-muted-foreground">
+        {/* Total count - SECONDARY (readable) */}
+        <span className="text-xs text-[var(--text-2)]">
           ({group.incidents.length})
         </span>
 
@@ -101,15 +101,15 @@ export const KanbanSwimlane = memo(function KanbanSwimlane({
         <div className="flex-1" />
 
         {/* Muted SLA counters - only if > 0 */}
-        <div className="flex items-center gap-3 text-[11px] text-muted-foreground/70">
+        <div className="flex items-center gap-3 text-[11px] text-[var(--text-3)]">
           {laneStats.atRisk > 0 && (
             <span>
-              At Risk: <span className="font-medium text-muted-foreground">{laneStats.atRisk}</span>
+              At Risk: <span className="font-medium text-[var(--text-2)]">{laneStats.atRisk}</span>
             </span>
           )}
           {laneStats.breached > 0 && (
             <span>
-              Breached: <span className="font-medium text-muted-foreground">{laneStats.breached}</span>
+              Breached: <span className="font-medium text-[var(--text-2)]">{laneStats.breached}</span>
             </span>
           )}
         </div>
@@ -179,12 +179,12 @@ const SwimlaneColumn = memo(function SwimlaneColumn({
       onDragOver={onDragOver}
       onDrop={onDrop}
     >
-      {/* Mini Column Header */}
+      {/* Mini Column Header - READABLE typography */}
       <div className="flex items-center gap-1.5 px-2 py-1.5 border-b border-border/30 bg-muted/20">
-        <span className="text-xs font-medium text-muted-foreground flex-1 truncate">
+        <span className="text-xs font-medium text-[var(--text-2)] flex-1 truncate">
           {config.label}
         </span>
-        <span className="text-[10px] text-muted-foreground/60">
+        <span className="text-[10px] text-[var(--text-3)]">
           {columnStats.total}
         </span>
       </div>
