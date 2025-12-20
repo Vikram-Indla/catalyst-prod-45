@@ -5,7 +5,6 @@
 
 import { Pencil, AlertTriangle } from 'lucide-react';
 import { format } from 'date-fns';
-import { toast } from 'sonner';
 import styles from '../FeatureViewPage.module.css';
 
 interface Feature {
@@ -44,137 +43,142 @@ function formatDate(dateStr: string | null): string {
 }
 
 export function FeatureDetailsSidebar({ feature }: FeatureDetailsSidebarProps) {
-  const handleEdit = () => {
-    toast.info('Edit details');
-  };
-  
   return (
-    <aside className={styles.sidebar}>
+    <aside className={styles.detailsSidebar}>
       <div className={styles.sidebarHeader}>
         <h3 className={styles.sidebarTitle}>DETAILS</h3>
-        <button className={styles.editBtn} onClick={handleEdit} aria-label="Edit details">
-          <Pencil size={12} />
-        </button>
       </div>
       
-      {/* Priority */}
-      <div className={styles.sidebarField}>
-        <span className={styles.sidebarFieldLabel}>Priority</span>
-        <span className={styles.sidebarFieldValue}>
-          {feature.priority?.toLowerCase() === 'high' ? (
-            <span className={styles.priorityValue}>
-              <AlertTriangle size={12} />
-              High
-            </span>
-          ) : feature.priority ? (
-            feature.priority
-          ) : (
-            <span className={styles.noneValue}>—</span>
-          )}
-        </span>
-      </div>
-      
-      {/* Assignee */}
-      <div className={styles.sidebarField}>
-        <span className={styles.sidebarFieldLabel}>Assignee</span>
-        <span className={styles.sidebarFieldValue}>
-          {feature.owner ? (
-            <>
-              <div className={styles.avatar} style={{ width: 20, height: 20, fontSize: 9 }}>
-                {getInitials(feature.owner.name)}
+      <div className={styles.fieldList}>
+        {/* Priority */}
+        <div className={styles.fieldRow}>
+          <span className={styles.fieldLabel}>Priority</span>
+          <span className={styles.fieldValue}>
+            {feature.priority?.toLowerCase() === 'high' ? (
+              <span className={styles.priorityHigh}>
+                <AlertTriangle size={12} />
+                High
+              </span>
+            ) : feature.priority ? (
+              feature.priority
+            ) : (
+              <span className={styles.fieldValueEmpty}>—</span>
+            )}
+          </span>
+        </div>
+        
+        {/* Assignee / Owner */}
+        <div className={styles.fieldRow}>
+          <span className={styles.fieldLabel}>Assignee</span>
+          <span className={styles.fieldValue}>
+            {feature.owner ? (
+              <div className={styles.ownerField}>
+                <div className={styles.avatar} style={{ width: 20, height: 20, fontSize: 9 }}>
+                  {getInitials(feature.owner.name)}
+                </div>
+                <span className={styles.ownerName}>{feature.owner.name}</span>
               </div>
-              {feature.owner.name}
-            </>
-          ) : (
-            <span className={styles.noneValue}>Unassigned</span>
-          )}
-        </span>
-      </div>
-      
-      {/* Reporter */}
-      <div className={styles.sidebarField}>
-        <span className={styles.sidebarFieldLabel}>Reporter</span>
-        <span className={styles.sidebarFieldValue}>
-          {feature.reporter ? (
-            <>
-              <div className={styles.avatar} style={{ width: 20, height: 20, fontSize: 9 }}>
-                {getInitials(feature.reporter.name)}
+            ) : (
+              <span className={styles.fieldValueEmpty}>Unassigned</span>
+            )}
+          </span>
+        </div>
+        
+        {/* Reporter */}
+        <div className={styles.fieldRow}>
+          <span className={styles.fieldLabel}>Reporter</span>
+          <span className={styles.fieldValue}>
+            {feature.reporter ? (
+              <div className={styles.ownerField}>
+                <div className={styles.avatar} style={{ width: 20, height: 20, fontSize: 9 }}>
+                  {getInitials(feature.reporter.name)}
+                </div>
+                <span>{feature.reporter.name}</span>
               </div>
-              {feature.reporter.name}
-            </>
-          ) : (
-            <span className={styles.noneValue}>—</span>
-          )}
-        </span>
+            ) : (
+              <span className={styles.fieldValueEmpty}>—</span>
+            )}
+          </span>
+        </div>
+        
+        {/* Start Date */}
+        <div className={styles.fieldRow}>
+          <span className={styles.fieldLabel}>Start Date</span>
+          <span className={styles.fieldValue}>
+            {formatDate(feature.planned_start_date)}
+          </span>
+        </div>
+        
+        {/* Due Date */}
+        <div className={styles.fieldRow}>
+          <span className={styles.fieldLabel}>Due Date</span>
+          <span className={styles.fieldValue}>
+            {formatDate(feature.planned_end_date)}
+          </span>
+        </div>
+        
+        {/* Labels */}
+        <div className={styles.fieldRow}>
+          <span className={styles.fieldLabel}>Labels</span>
+          <span className={styles.fieldValue}>
+            {feature.labels && feature.labels.length > 0 ? (
+              <div className={styles.labelsList}>
+                {feature.labels.map((label, i) => (
+                  <span key={i} className={styles.labelTag}>{label}</span>
+                ))}
+              </div>
+            ) : (
+              <span className={styles.fieldValueEmpty}>None</span>
+            )}
+          </span>
+        </div>
       </div>
       
-      {/* Start Date */}
-      <div className={styles.sidebarField}>
-        <span className={styles.sidebarFieldLabel}>Start Date</span>
-        <span className={styles.sidebarFieldValue}>
-          {formatDate(feature.planned_start_date)}
-        </span>
-      </div>
-      
-      {/* Due Date */}
-      <div className={styles.sidebarField}>
-        <span className={styles.sidebarFieldLabel}>Due Date</span>
-        <span className={styles.sidebarFieldValue}>
-          {formatDate(feature.planned_end_date)}
-        </span>
-      </div>
-      
-      {/* Labels */}
-      <div className={styles.sidebarField}>
-        <span className={styles.sidebarFieldLabel}>Labels</span>
-        <span className={styles.sidebarFieldValue}>
-          {feature.labels && feature.labels.length > 0 ? (
-            feature.labels.map((label, i) => (
-              <span key={i} className={styles.labelTag}>{label}</span>
-            ))
-          ) : (
-            <span className={styles.noneValue}>None</span>
-          )}
-        </span>
-      </div>
+      <div className={styles.sidebarDivider} />
       
       {/* Additional Fields Section */}
-      <div className={styles.sidebarSectionTitle}>ADDITIONAL FIELDS</div>
+      <div className={styles.futureFieldsHeader}>ADDITIONAL FIELDS</div>
       
-      {/* Component */}
-      <div className={styles.sidebarField}>
-        <span className={styles.sidebarFieldLabel}>Component</span>
-        <span className={styles.sidebarFieldValue}>
-          {feature.component || <span className={styles.noneValue}>Not configured</span>}
-        </span>
-      </div>
-      
-      {/* Theme */}
-      <div className={styles.sidebarField}>
-        <span className={styles.sidebarFieldLabel}>Theme</span>
-        <span className={styles.sidebarFieldValue}>
-          <span className={styles.noneValue}>Not configured</span>
-        </span>
-      </div>
-      
-      {/* Release */}
-      <div className={styles.sidebarField}>
-        <span className={styles.sidebarFieldLabel}>Release</span>
-        <span className={styles.sidebarFieldValue}>
-          {feature.release || <span className={styles.noneValue}>Not configured</span>}
-        </span>
-      </div>
-      
-      {/* Req. Status */}
-      <div className={styles.sidebarField}>
-        <span className={styles.sidebarFieldLabel}>Req. Status</span>
-        <span className={styles.sidebarFieldValue}>—</span>
-      </div>
-      
-      {/* Complexity */}
-      <div className={styles.sidebarField}>
-        <span className={styles.sidebarFieldLabel}>Complexity</span>
-        <span className={styles.sidebarFieldValue}>—</span>
+      <div className={`${styles.fieldList} ${styles.futureFields}`}>
+        {/* Component */}
+        <div className={styles.fieldRow}>
+          <span className={styles.fieldLabel}>Component</span>
+          <span className={styles.fieldValue}>
+            {feature.component || <span className={styles.fieldValueDeemphasized}>Not configured</span>}
+          </span>
+        </div>
+        
+        {/* Theme */}
+        <div className={styles.fieldRow}>
+          <span className={styles.fieldLabel}>Theme</span>
+          <span className={styles.fieldValue}>
+            <span className={styles.fieldValueDeemphasized}>Not configured</span>
+          </span>
+        </div>
+        
+        {/* Release */}
+        <div className={styles.fieldRow}>
+          <span className={styles.fieldLabel}>Release</span>
+          <span className={styles.fieldValue}>
+            {feature.release || <span className={styles.fieldValueDeemphasized}>Not configured</span>}
+          </span>
+        </div>
+        
+        {/* Req. Status */}
+        <div className={styles.fieldRow}>
+          <span className={styles.fieldLabel}>Req. Status</span>
+          <span className={styles.fieldValue}>
+            <span className={styles.fieldValueDeemphasized}>—</span>
+          </span>
+        </div>
+        
+        {/* Complexity */}
+        <div className={styles.fieldRow}>
+          <span className={styles.fieldLabel}>Complexity</span>
+          <span className={styles.fieldValue}>
+            <span className={styles.fieldValueDeemphasized}>—</span>
+          </span>
+        </div>
       </div>
     </aside>
   );

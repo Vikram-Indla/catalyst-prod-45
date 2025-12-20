@@ -338,10 +338,10 @@ export function FeatureChildStories({ stories, featureId, projectId, totalCount,
           story={{
             id: selectedStory.id,
             name: selectedStory.name || selectedStory.title || '',
+            feature_id: featureId,
             status: (selectedStory.status || 'todo') as 'accepted' | 'blocked' | 'done' | 'in_progress' | 'todo',
-            priority: selectedStory.priority,
             assignee_id: selectedStory.assignee_id,
-          } as any}
+          }}
           open={!!selectedStory}
           onClose={handleCloseStoryPanel}
         />
