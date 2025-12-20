@@ -20,6 +20,7 @@ import { IncidentWorkArea } from '@/components/incidents/detail/IncidentWorkArea
 import { IncidentContextRail } from '@/components/incidents/detail/IncidentContextRail';
 import { LinkWorkItemModal } from '@/components/incidents/detail/LinkWorkItemModal';
 import { ResolutionModal } from '@/components/incidents/detail/ResolutionModal';
+import { CommitteeModal } from '@/components/incidents/detail/CommitteeModal';
 
 import { supabase } from '@/integrations/supabase/client';
 import type { IncidentStatus, CommentType } from '@/types/incident';
@@ -646,6 +647,49 @@ export default function IncidentRoomDetail() {
         incidentKey={incident.incident_key}
         targetStatus={pendingStatus || 'resolved'}
         onSubmit={handleResolutionSubmit}
+        isSubmitting={isSubmitting}
+      />
+
+      {/* Committee Modal */}
+      <CommitteeModal
+        open={committeeDialogOpen}
+        onOpenChange={setCommitteeDialogOpen}
+        incidentKey={incident.incident_key}
+        committee={committeeRecord || incident.committee ? {
+          id: (committeeRecord?.id || incident.committee?.id) as string,
+          status: ((committeeRecord?.status || incident.committee?.status || 'pending') as 'pending' | 'approved' | 'rejected' | 'vetoed'),
+          members: (committeeRecord?.members || incident.committee?.members || []).map((m: any) => ({
+            id: m.id,
+            user_id: m.user_id,
+            full_name: m.full_name || m.user?.full_name || 'Unknown',
+            avatar_initials: m.avatar_initials || m.user?.avatar_initials,
+            has_veto: m.has_veto || false,
+            role: m.role,
+            vote_status: m.vote?.vote || 'pending',
+            voted_at: m.vote?.voted_at,
+            comment: m.vote?.comment,
+          })),
+        } : null}
+        availableApprovers={availableApprovers}
+        historyLog={(incident.history || [])
+          .filter((h: any) => h.field_name?.includes('committee'))
+          .map((h: any) => ({
+            id: h.id,
+            user_name: h.changed_by_name || 'System',
+            action: h.field_name,
+            status: h.new_value || '',
+            justification: h.old_value,
+            timestamp: h.changed_at,
+          }))}
+        onAddApprover={handleAddApprover}
+        onRemoveApprover={async (memberId) => {
+          // Remove approver logic
+          await supabase.from('committee_members').delete().eq('id', memberId);
+          queryClient.invalidateQueries({ queryKey: ['incident', incidentId] });
+          queryClient.invalidateQueries({ queryKey: ['incident-committee', incidentId] });
+        }}
+        onVote={handleVote}
+        onCreateCommittee={handleCreateCommittee}
         isSubmitting={isSubmitting}
       />
     </div>

@@ -316,7 +316,7 @@ export function IncidentStickyHeader({
 
           {/* Row 4: Editable fields row - compact triage bar */}
           <div className="flex items-center gap-3 flex-wrap">
-            {/* Status Dropdown */}
+            {/* Status Dropdown - FIXED visibility */}
             <div className="flex items-center gap-1.5">
               <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Status</span>
               <Select 
@@ -324,10 +324,27 @@ export function IncidentStickyHeader({
                 onValueChange={(v) => onStatusChange(v as IncidentStatus)}
                 disabled={isConverted || status === 'closed'}
               >
-                <SelectTrigger className={cn('h-7 w-auto min-w-[100px] text-xs font-medium', statusConfig.className)}>
-                  <SelectValue />
+                <SelectTrigger 
+                  className={cn(
+                    'h-7 w-auto min-w-[110px] text-xs font-medium border',
+                    // Ensure text is always visible with proper foreground color
+                    'bg-background text-foreground',
+                    // Apply status-specific background colors while keeping text visible
+                    status === 'open' && 'bg-slate-100 dark:bg-slate-900',
+                    status === 'triage' && 'bg-amber-50 dark:bg-amber-950/50',
+                    status === 'to_committee' && 'bg-violet-50 dark:bg-violet-950/50',
+                    status === 'in_progress' && 'bg-sky-50 dark:bg-sky-950/50',
+                    status === 'resolved' && 'bg-emerald-50 dark:bg-emerald-950/50',
+                    (status === 'converted' || status === 'closed') && 'bg-muted'
+                  )}
+                >
+                  <SelectValue placeholder="Select status">
+                    <span className="text-foreground font-medium">
+                      {STATUS_CONFIG[status]?.label || status}
+                    </span>
+                  </SelectValue>
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-popover">
                   {allowedTransitions.map(t => (
                     <SelectItem key={t.targetStatus} value={t.targetStatus} className="text-xs">
                       {STATUS_CONFIG[t.targetStatus].label}
@@ -358,7 +375,7 @@ export function IncidentStickyHeader({
                     <ChevronDown className="h-3 w-3 text-muted-foreground" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-52 max-h-64 overflow-auto">
+                <DropdownMenuContent align="start" className="w-52 max-h-64 overflow-auto bg-popover">
                   {availableUsers.map((user) => (
                     <DropdownMenuItem
                       key={user.id}
@@ -407,7 +424,7 @@ export function IncidentStickyHeader({
                 <SelectTrigger className={cn('h-7 w-auto min-w-[80px] text-xs font-medium', severityConfig.className)}>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-popover">
                   {Object.entries(SEVERITY_CONFIG).map(([value, config]) => (
                     <SelectItem key={value} value={value} className="text-xs">
                       {config.label}
@@ -431,31 +448,7 @@ export function IncidentStickyHeader({
               </Badge>
             </div>
 
-            {/* Project Dropdown */}
-            <div className="flex items-center gap-1.5">
-              <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Project</span>
-              <Select 
-                value={projectId || 'default'} 
-                onValueChange={(v) => onProjectChange(v === 'default' ? '' : v)}
-                disabled={isConverted}
-              >
-                <SelectTrigger className="h-7 w-auto min-w-[100px] text-xs">
-                  <SelectValue placeholder="Select project" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="default" className="text-xs">
-                    Default
-                  </SelectItem>
-                  {availableProjects.map(project => (
-                    <SelectItem key={project.id} value={project.id} className="text-xs">
-                      {project.key} — {project.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Release Version Dropdown (if applicable) */}
+            {/* Release Version Dropdown (if applicable) - Project moved to right panel */}
             {availableReleaseVersions.length > 0 && (
               <div className="flex items-center gap-1.5">
                 <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Release</span>
@@ -464,10 +457,10 @@ export function IncidentStickyHeader({
                   onValueChange={(v) => onReleaseVersionChange(v === 'none' ? '' : v)}
                   disabled={isConverted}
                 >
-                  <SelectTrigger className="h-7 w-auto min-w-[80px] text-xs">
+                  <SelectTrigger className="h-7 w-auto min-w-[80px] text-xs bg-background">
                     <SelectValue placeholder="—" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-popover">
                     <SelectItem value="none" className="text-xs text-muted-foreground">
                       None
                     </SelectItem>
