@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Globe, Grid3X3, List, Package, Archive, Users, MoreHorizontal, ChevronRight } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -20,6 +20,7 @@ import { WorkHubFilters, WorkItem, WorkItemType, WorkHubTab } from './types';
 
 export const ProjectWorkHubPage: React.FC = () => {
   const { projectId = 'default' } = useParams();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<WorkHubTab>('summary');
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<WorkItem | null>(null);
@@ -39,6 +40,12 @@ export const ProjectWorkHubPage: React.FC = () => {
   const projectName = 'ESS Defects Kanban';
 
   const handleItemClick = (item: WorkItem) => {
+    // Feature: Navigate to full-page view instead of drawer
+    if (item.type === 'FEATURE') {
+      navigate(`/projects/${projectId}/features/${item.id}`);
+      return;
+    }
+    // Other types: Open drawer for now
     setSelectedItem(item);
   };
 
