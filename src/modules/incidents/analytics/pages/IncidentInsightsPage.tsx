@@ -1,11 +1,16 @@
 /**
  * Incident Insights Page
- * Premium Executive Operational Report for CIOs
+ * McKinsey-style Executive Operational Report
+ * Boardroom-ready, print-optimized
  */
 
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import { Printer, Loader2, AlertTriangle, Target, TrendingUp, TrendingDown, Minus, Lightbulb, Clock, ArrowRight, FileText, Users, Zap, List, BarChart3 } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { 
+  Printer, Loader2, AlertTriangle, TrendingUp, TrendingDown, Minus, 
+  Lightbulb, Clock, ArrowRight, FileText, List, BarChart3, 
+  ChevronUp, ChevronDown, ExternalLink
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
@@ -20,7 +25,7 @@ import type { InsightPeriod, DrilldownFilter, IncidentWithSLA, ConversionMetrics
 
 const PERIOD_TABS: { value: InsightPeriod; label: string }[] = [
   { value: 'today', label: 'Today' },
-  { value: 'this_week', label: 'This Week' },
+  { value: 'this_week', label: 'This Week (WTD)' },
   { value: 'last_week', label: 'Last Week' },
 ];
 
@@ -28,12 +33,25 @@ const PERIOD_TABS: { value: InsightPeriod; label: string }[] = [
 // DELTA INDICATORS
 // ============================================================================
 
-function DeltaIndicator({ delta, inverted = false }: { delta: number; inverted?: boolean }) {
+function DeltaIndicator({ 
+  delta, 
+  inverted = false, 
+  showLabel = false,
+  size = 'sm' 
+}: { 
+  delta: number; 
+  inverted?: boolean;
+  showLabel?: boolean;
+  size?: 'sm' | 'lg';
+}) {
   if (delta === 0) {
     return (
-      <span className="inline-flex items-center text-muted-foreground text-sm">
-        <Minus className="h-3.5 w-3.5 mr-1" />
-        0
+      <span className={cn(
+        "inline-flex items-center text-muted-foreground",
+        size === 'lg' ? "text-base" : "text-sm"
+      )}>
+        <Minus className={cn(size === 'lg' ? "h-4 w-4" : "h-3.5 w-3.5", "mr-1")} />
+        {showLabel ? 'No change' : '0'}
       </span>
     );
   }
@@ -43,122 +61,99 @@ function DeltaIndicator({ delta, inverted = false }: { delta: number; inverted?:
   
   return (
     <span className={cn(
-      "inline-flex items-center text-sm font-medium",
+      "inline-flex items-center font-medium",
+      size === 'lg' ? "text-base" : "text-sm",
       isPositive && "text-[hsl(var(--warning))]",
-      isNegative && "text-muted-foreground"
+      isNegative && "text-emerald-600 dark:text-emerald-400"
     )}>
       {delta > 0 ? (
-        <TrendingUp className="h-3.5 w-3.5 mr-1" />
+        <TrendingUp className={cn(size === 'lg' ? "h-4 w-4" : "h-3.5 w-3.5", "mr-1")} />
       ) : (
-        <TrendingDown className="h-3.5 w-3.5 mr-1" />
+        <TrendingDown className={cn(size === 'lg' ? "h-4 w-4" : "h-3.5 w-3.5", "mr-1")} />
       )}
       {delta > 0 ? '+' : ''}{delta}
-    </span>
-  );
-}
-
-function LatencyDeltaIndicator({ delta }: { delta: number | null }) {
-  if (delta === null || delta === 0) {
-    return (
-      <span className="inline-flex items-center text-muted-foreground text-sm">
-        <Minus className="h-3.5 w-3.5 mr-1" />
-        —
-      </span>
-    );
-  }
-  
-  const isFaster = delta < 0;
-  
-  return (
-    <span className={cn(
-      "inline-flex items-center text-sm font-medium",
-      isFaster ? "text-muted-foreground" : "text-[hsl(var(--warning))]"
-    )}>
-      {delta > 0 ? (
-        <TrendingUp className="h-3.5 w-3.5 mr-1" />
-      ) : (
-        <TrendingDown className="h-3.5 w-3.5 mr-1" />
-      )}
-      {delta > 0 ? '+' : ''}{Math.round(delta)}h
+      {showLabel && (delta > 0 ? ' increase' : ' decrease')}
     </span>
   );
 }
 
 // ============================================================================
-// EXECUTIVE SUMMARY HERO
+// SECTION 1: EXECUTIVE POSTURE (HERO BLOCK)
 // ============================================================================
 
-interface ExecutiveSummaryHeroProps {
+interface ExecutivePostureProps {
   summary: string;
   generatedAt: Date;
   metrics: PeriodMetrics;
   deltas: PeriodComparison;
   comparisonLabel: string;
+  periodLabel: string;
   onMetricClick: (type: DrilldownFilter['type'], label: string) => void;
 }
 
-function ExecutiveSummaryHero({ 
+function ExecutivePosture({ 
   summary, 
   generatedAt, 
   metrics, 
   deltas, 
   comparisonLabel,
+  periodLabel,
   onMetricClick 
-}: ExecutiveSummaryHeroProps) {
+}: ExecutivePostureProps) {
   const deltaMetrics = [
-    { key: 'backlog', label: 'Backlog Δ', value: metrics.backlog_delta, delta: deltas.backlog_delta, type: 'open' as const },
-    { key: 'breached', label: 'SLA Breached', value: metrics.sla_breached, delta: deltas.sla_breached, type: 'sla_breached' as const, isUrgent: true },
-    { key: 'at_risk', label: 'SLA At Risk', value: metrics.sla_at_risk, delta: deltas.sla_at_risk, type: 'sla_at_risk' as const, isWarning: true },
-    { key: 'major', label: 'Major Active', value: metrics.major_active, delta: deltas.major_active, type: 'major_active' as const, isUrgent: true },
+    { key: 'backlog', label: 'Backlog', value: deltas.backlog_delta, prefix: deltas.backlog_delta > 0 ? '+' : '' },
+    { key: 'breached', label: 'Breached', value: deltas.sla_breached, prefix: deltas.sla_breached > 0 ? '+' : '' },
+    { key: 'at_risk', label: 'At Risk', value: deltas.sla_at_risk, prefix: deltas.sla_at_risk > 0 ? '+' : '' },
+    { key: 'major', label: 'Major', value: deltas.major_active, prefix: deltas.major_active > 0 ? '+' : '' },
   ];
 
   return (
-    <section className="border border-border rounded-lg bg-card mb-8">
-      <div className="p-6 flex gap-8">
-        {/* Left: Executive Summary */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-3">
-            <FileText className="h-4 w-4 text-muted-foreground" />
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-              Operational Posture
-            </h2>
+    <section className="mb-10 print:mb-8">
+      <div className="border-l-4 border-[var(--brand-primary)] bg-card rounded-r-lg p-8 print:p-6">
+        <div className="flex items-start justify-between gap-8">
+          {/* Left: Executive Summary Text */}
+          <div className="flex-1 max-w-3xl">
+            <div className="flex items-center gap-3 mb-4">
+              <FileText className="h-5 w-5 text-[var(--brand-primary)]" />
+              <h2 className="text-lg font-bold uppercase tracking-wide text-foreground">
+                Executive Posture
+              </h2>
+            </div>
+            <p className="text-lg leading-relaxed text-foreground mb-6 print:text-base">
+              {summary}
+            </p>
+            <div className="flex items-center gap-6 text-sm text-muted-foreground">
+              <span className="flex items-center gap-1.5">
+                <Clock className="h-4 w-4" />
+                Generated {format(generatedAt, 'MMM d, yyyy HH:mm')}
+              </span>
+              <span className="text-muted-foreground/50">|</span>
+              <span>Period: {periodLabel}</span>
+            </div>
           </div>
-          <p className="text-base text-foreground leading-relaxed mb-4">
-            {summary}
-          </p>
-          <p className="text-xs text-muted-foreground">
-            Generated {format(generatedAt, 'MMM d, yyyy HH:mm')}
-          </p>
-        </div>
-        
-        {/* Right: Change vs Baseline */}
-        <div className="flex-shrink-0 w-[280px] border-l border-border pl-6">
-          <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">
-            Change vs {comparisonLabel}
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            {deltaMetrics.map(metric => (
-              <button
-                key={metric.key}
-                onClick={() => onMetricClick(metric.type, metric.label)}
-                className="text-left p-2 -m-2 rounded-md hover:bg-muted/50 transition-colors"
-              >
-                <div className="text-xs text-muted-foreground mb-1">
-                  {metric.label}
-                </div>
-                <div className="flex items-baseline gap-2">
-                  <span className={cn(
-                    "text-xl font-bold tabular-nums",
-                    metric.isUrgent && metric.value > 0 && "text-destructive",
-                    metric.isWarning && metric.value > 0 && "text-[hsl(var(--warning))]",
-                    !metric.isUrgent && !metric.isWarning && "text-foreground"
+          
+          {/* Right: Change vs Period Mini-Metrics */}
+          <div className="flex-shrink-0 min-w-[200px] border-l border-border pl-8 print:pl-6">
+            <div className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+              Δ vs {comparisonLabel}
+            </div>
+            <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+              {deltaMetrics.map(metric => (
+                <div key={metric.key} className="text-center">
+                  <div className={cn(
+                    "text-2xl font-bold tabular-nums",
+                    metric.value > 0 && "text-[hsl(var(--warning))]",
+                    metric.value < 0 && "text-emerald-600 dark:text-emerald-400",
+                    metric.value === 0 && "text-muted-foreground"
                   )}>
-                    {metric.value}
-                  </span>
-                  <DeltaIndicator delta={metric.delta} inverted={metric.key === 'resolved'} />
+                    {metric.prefix}{metric.value}
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-0.5">
+                    {metric.label}
+                  </div>
                 </div>
-              </button>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -167,7 +162,7 @@ function ExecutiveSummaryHero({
 }
 
 // ============================================================================
-// KPI SCOREBOARD
+// SECTION 2: KPI SCOREBOARD
 // ============================================================================
 
 interface KPIScoreboardProps {
@@ -187,26 +182,27 @@ function KPIScoreboard({ metrics, deltas, onMetricClick }: KPIScoreboardProps) {
   ];
 
   return (
-    <section className="mb-8">
-      <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+    <section className="mb-10 print:mb-8">
+      <h2 className="text-base font-bold uppercase tracking-wider text-foreground mb-5 flex items-center gap-2">
+        <span className="w-1 h-5 bg-[var(--brand-primary)] rounded-full" />
         KPI Scoreboard
       </h2>
-      <div className="grid grid-cols-6 gap-4">
+      <div className="grid grid-cols-6 gap-4 print:gap-3">
         {kpis.map(kpi => (
           <button
             key={kpi.key}
             onClick={() => onMetricClick(kpi.type, kpi.label)}
             className={cn(
-              "p-5 rounded-lg border text-left transition-all cursor-pointer",
-              "hover:shadow-md hover:border-[var(--brand-primary)] hover:-translate-y-0.5",
+              "p-6 rounded-lg border text-left transition-all cursor-pointer print:p-4",
+              "hover:shadow-lg hover:border-[var(--brand-primary)] hover:-translate-y-1",
               "bg-card border-border"
             )}
           >
-            <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-2">
+            <div className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">
               {kpi.label}
             </div>
             <div className={cn(
-              "text-3xl font-bold tabular-nums leading-none mb-2",
+              "text-4xl font-bold tabular-nums leading-none mb-3 print:text-3xl",
               kpi.isUrgent && kpi.value > 0 && "text-destructive",
               kpi.isWarning && kpi.value > 0 && "text-[hsl(var(--warning))]",
               !kpi.isUrgent && !kpi.isWarning && "text-foreground"
@@ -222,130 +218,190 @@ function KPIScoreboard({ metrics, deltas, onMetricClick }: KPIScoreboardProps) {
 }
 
 // ============================================================================
-// OPERATIONAL NARRATIVE CARDS
+// SECTION 3: FACTS & RISKS (SIDE-BY-SIDE)
 // ============================================================================
 
-interface NarrativeCardsProps {
+interface FactsAndRisksProps {
   keyFacts: string[];
-  requiredActions: string[];
+  operationalRisks: string[];
 }
 
-function NarrativeCards({ keyFacts, requiredActions }: NarrativeCardsProps) {
-  // Group facts into categories
-  const slaFacts = keyFacts.filter(f => f.toLowerCase().includes('sla') || f.toLowerCase().includes('breach') || f.toLowerCase().includes('risk'));
-  const flowFacts = keyFacts.filter(f => f.toLowerCase().includes('backlog') || f.toLowerCase().includes('flow') || f.toLowerCase().includes('created') || f.toLowerCase().includes('resolved'));
-  const ownershipFacts = keyFacts.filter(f => f.toLowerCase().includes('assign') || f.toLowerCase().includes('escalat') || f.toLowerCase().includes('major') || f.toLowerCase().includes('committee'));
+function FactsAndRisks({ keyFacts, operationalRisks }: FactsAndRisksProps) {
+  // Derive operational risks from key facts if not provided separately
+  const risks = operationalRisks.length > 0 ? operationalRisks : keyFacts.filter(f => 
+    f.toLowerCase().includes('breach') || 
+    f.toLowerCase().includes('risk') || 
+    f.toLowerCase().includes('unassign') ||
+    f.toLowerCase().includes('escalat') ||
+    f.toLowerCase().includes('major')
+  );
 
-  const narrativeCards = [
-    { 
-      title: 'SLA & Risk', 
-      icon: AlertTriangle, 
-      facts: slaFacts.length > 0 ? slaFacts : keyFacts.slice(0, 2),
-      color: 'text-destructive' 
-    },
-    { 
-      title: 'Flow & Backlog', 
-      icon: Zap, 
-      facts: flowFacts.length > 0 ? flowFacts : keyFacts.slice(2, 4),
-      color: 'text-[hsl(var(--warning))]' 
-    },
-    { 
-      title: 'Ownership & Escalation', 
-      icon: Users, 
-      facts: ownershipFacts.length > 0 ? ownershipFacts : keyFacts.slice(4, 6),
-      color: 'text-muted-foreground' 
-    },
-  ];
+  const facts = keyFacts.filter(f => !risks.includes(f)).slice(0, 5);
 
   return (
-    <section className="mb-8">
-      <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
-        Operational Narrative
-      </h2>
-      <div className="grid grid-cols-3 gap-5">
-        {narrativeCards.map(card => (
-          <div key={card.title} className="border border-border rounded-lg bg-card p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <card.icon className={cn("h-4 w-4", card.color)} />
-              <h3 className="text-sm font-semibold text-foreground">
-                {card.title}
-              </h3>
-            </div>
-            <ul className="space-y-2">
-              {card.facts.slice(0, 4).map((fact, idx) => (
-                <li key={idx} className="text-sm text-foreground leading-snug flex items-start gap-2">
-                  <span className="text-muted-foreground select-none mt-0.5">•</span>
-                  <span>{fact}</span>
-                </li>
-              ))}
-              {card.facts.length === 0 && (
-                <li className="text-sm text-muted-foreground italic">No notable items</li>
-              )}
-            </ul>
+    <section className="mb-10 print:mb-8">
+      <div className="grid grid-cols-2 gap-6 print:gap-4">
+        {/* KEY FACTS */}
+        <div className="border border-border rounded-lg bg-card p-6 print:p-4">
+          <h3 className="text-base font-bold uppercase tracking-wider text-foreground mb-5 flex items-center gap-2">
+            <span className="w-1 h-5 bg-[var(--brand-primary)] rounded-full" />
+            Key Facts
+          </h3>
+          <div className="space-y-4">
+            {facts.length > 0 ? facts.map((fact, idx) => (
+              <div key={idx} className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs font-bold text-muted-foreground">
+                  {idx + 1}
+                </span>
+                <p className="text-base text-foreground leading-relaxed print:text-sm">
+                  {fact}
+                </p>
+              </div>
+            )) : (
+              <p className="text-base text-muted-foreground italic">No significant facts to report.</p>
+            )}
           </div>
-        ))}
+        </div>
+
+        {/* OPERATIONAL RISKS */}
+        <div className="border border-destructive/30 rounded-lg bg-destructive/5 p-6 print:p-4">
+          <h3 className="text-base font-bold uppercase tracking-wider text-destructive mb-5 flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5" />
+            Operational Risks
+          </h3>
+          <div className="space-y-4">
+            {risks.length > 0 ? risks.slice(0, 5).map((risk, idx) => (
+              <div key={idx} className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-destructive/20 flex items-center justify-center text-xs font-bold text-destructive">
+                  !
+                </span>
+                <p className="text-base text-foreground leading-relaxed print:text-sm">
+                  {risk}
+                </p>
+              </div>
+            )) : (
+              <p className="text-base text-muted-foreground italic">No operational risks identified.</p>
+            )}
+          </div>
+        </div>
       </div>
     </section>
   );
 }
 
 // ============================================================================
-// ACTION REGISTER
+// SECTION 4: REQUIRED ACTIONS (TABLE)
 // ============================================================================
 
-interface ActionRegisterProps {
+interface RequiredActionsTableProps {
   actions: string[];
+  metrics: PeriodMetrics;
   onActionClick: (action: string) => void;
 }
 
-function ActionRegister({ actions, onActionClick }: ActionRegisterProps) {
+function RequiredActionsTable({ actions, metrics, onActionClick }: RequiredActionsTableProps) {
+  // Map actions to structured format with trigger metrics
+  const structuredActions = actions.slice(0, 6).map((action, idx) => {
+    let triggerMetric = '—';
+    let relatedCount = 0;
+    let filterType: DrilldownFilter['type'] = 'open';
+
+    if (action.toLowerCase().includes('breach')) {
+      triggerMetric = `${metrics.sla_breached} breached`;
+      relatedCount = metrics.sla_breached;
+      filterType = 'sla_breached';
+    } else if (action.toLowerCase().includes('risk') || action.toLowerCase().includes('at-risk')) {
+      triggerMetric = `${metrics.sla_at_risk} at risk`;
+      relatedCount = metrics.sla_at_risk;
+      filterType = 'sla_at_risk';
+    } else if (action.toLowerCase().includes('major')) {
+      triggerMetric = `${metrics.major_active} major`;
+      relatedCount = metrics.major_active;
+      filterType = 'major_active';
+    } else if (action.toLowerCase().includes('assign')) {
+      triggerMetric = 'Unassigned backlog';
+      relatedCount = metrics.backlog_delta > 0 ? metrics.backlog_delta : 0;
+      filterType = 'open';
+    } else if (action.toLowerCase().includes('committee')) {
+      triggerMetric = 'Committee queue';
+      filterType = 'committee';
+    }
+
+    return {
+      priority: idx + 1,
+      action,
+      triggerMetric,
+      relatedCount,
+      filterType,
+    };
+  });
+
   return (
-    <section className="mb-8">
-      <div className="flex items-center gap-2 mb-4">
-        <Target className="h-4 w-4 text-destructive" />
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-destructive">
-          Required Actions
-        </h2>
-      </div>
+    <section className="mb-10 print:mb-8">
+      <h2 className="text-base font-bold uppercase tracking-wider text-destructive mb-5 flex items-center gap-2">
+        <AlertTriangle className="h-5 w-5" />
+        Required Actions
+      </h2>
       
-      {actions.length === 0 ? (
-        <div className="border border-border rounded-lg bg-card p-8 text-center">
-          <p className="text-sm text-muted-foreground">No immediate actions required</p>
+      {structuredActions.length === 0 ? (
+        <div className="border border-border rounded-lg bg-card p-10 text-center">
+          <p className="text-base text-muted-foreground">No immediate actions required.</p>
         </div>
       ) : (
         <div className="border border-border rounded-lg bg-card overflow-hidden">
           <table className="w-full">
             <thead className="bg-muted/50">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-border w-[60px]">
+                <th className="px-5 py-4 text-left text-sm font-bold uppercase tracking-wider text-muted-foreground border-b border-border w-[80px]">
                   Priority
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-border">
+                <th className="px-5 py-4 text-left text-sm font-bold uppercase tracking-wider text-muted-foreground border-b border-border">
                   Action
+                </th>
+                <th className="px-5 py-4 text-left text-sm font-bold uppercase tracking-wider text-muted-foreground border-b border-border w-[180px]">
+                  Trigger Metric
+                </th>
+                <th className="px-5 py-4 text-left text-sm font-bold uppercase tracking-wider text-muted-foreground border-b border-border w-[140px]">
+                  Related Incidents
                 </th>
               </tr>
             </thead>
             <tbody>
-              {actions.slice(0, 7).map((action, idx) => (
+              {structuredActions.map((item) => (
                 <tr 
-                  key={idx}
-                  onClick={() => onActionClick(action)}
+                  key={item.priority}
+                  onClick={() => onActionClick(item.action)}
                   className="hover:bg-muted/30 cursor-pointer border-b border-border last:border-b-0"
                 >
-                  <td className="px-4 py-3 align-middle">
+                  <td className="px-5 py-4 align-middle">
                     <span className={cn(
-                      "inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold",
-                      idx === 0 && "bg-destructive/10 text-destructive",
-                      idx === 1 && "bg-[hsl(var(--warning)/0.15)] text-[hsl(var(--warning))]",
-                      idx > 1 && "bg-muted text-muted-foreground"
+                      "inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold",
+                      item.priority === 1 && "bg-destructive text-destructive-foreground",
+                      item.priority === 2 && "bg-[hsl(var(--warning))] text-white",
+                      item.priority > 2 && "bg-muted text-muted-foreground"
                     )}>
-                      {idx + 1}
+                      {item.priority}
                     </span>
                   </td>
-                  <td className="px-4 py-3 align-middle">
-                    <span className="text-sm text-foreground font-medium">
-                      {action}
+                  <td className="px-5 py-4 align-middle">
+                    <span className="text-base font-medium text-foreground print:text-sm">
+                      {item.action}
                     </span>
+                  </td>
+                  <td className="px-5 py-4 align-middle">
+                    <span className="text-sm text-muted-foreground">
+                      {item.triggerMetric}
+                    </span>
+                  </td>
+                  <td className="px-5 py-4 align-middle">
+                    {item.relatedCount > 0 ? (
+                      <span className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--brand-primary)] hover:underline">
+                        {item.relatedCount} incidents
+                        <ExternalLink className="h-3.5 w-3.5" />
+                      </span>
+                    ) : (
+                      <span className="text-sm text-muted-foreground">—</span>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -358,7 +414,7 @@ function ActionRegister({ actions, onActionClick }: ActionRegisterProps) {
 }
 
 // ============================================================================
-// CHANGE & LEARNING SECTION
+// SECTION 5: CHANGE & LEARNING
 // ============================================================================
 
 interface ChangeLearningProps {
@@ -382,117 +438,267 @@ function ChangeLearningSection({
   };
 
   return (
-    <section className="mb-8">
-      <div className="flex items-center gap-2 mb-4">
-        <Lightbulb className="h-4 w-4 text-muted-foreground" />
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-          Change & Learning
-        </h2>
-      </div>
+    <section className="mb-10 print:mb-8">
+      <h2 className="text-base font-bold uppercase tracking-wider text-foreground mb-5 flex items-center gap-2">
+        <span className="w-1 h-5 bg-[var(--brand-primary)] rounded-full" />
+        Change & Learning
+      </h2>
 
-      <div className="border border-border rounded-lg bg-card p-6">
+      <div className="border border-border rounded-lg bg-card p-6 print:p-4">
         {total === 0 ? (
-          <div className="text-center py-6">
-            <Lightbulb className="h-10 w-10 mx-auto mb-3 text-muted-foreground/30" />
-            <p className="text-base font-medium text-foreground mb-1">
+          <div className="py-8 text-center">
+            <Lightbulb className="h-12 w-12 mx-auto mb-4 text-muted-foreground/30" />
+            <p className="text-lg font-semibold text-foreground mb-2">
               No incidents converted to change items
             </p>
-            <p className="text-sm text-muted-foreground max-w-md mx-auto">
-              Consider reviewing resolved incidents for recurring patterns that could be addressed through stories, features, or epics to prevent future occurrences.
+            <p className="text-base text-muted-foreground max-w-lg mx-auto print:text-sm">
+              Zero conversions indicates that resolved incidents are not being analyzed for systemic patterns. 
+              Recurring issues may continue without preventive action through Stories, Features, or Epics.
             </p>
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-3 gap-8 mb-6">
+            <div className="grid grid-cols-3 gap-8 mb-8 print:gap-6">
               {/* Conversion Count */}
               <div>
-                <div className="text-xs uppercase tracking-wide text-muted-foreground mb-2">
+                <div className="text-sm uppercase tracking-wide text-muted-foreground mb-2 font-semibold">
                   Incidents Converted to Change
                 </div>
-                <div className="flex items-baseline gap-3">
-                  <span className="text-3xl font-bold tabular-nums text-foreground">
+                <div className="flex items-baseline gap-4">
+                  <span className="text-4xl font-bold tabular-nums text-foreground print:text-3xl">
                     {total}
                   </span>
-                  <DeltaIndicator delta={conversionDelta} inverted={true} />
+                  <DeltaIndicator delta={conversionDelta} inverted={true} size="lg" />
                 </div>
-                <div className="text-xs text-muted-foreground mt-1">
+                <div className="text-sm text-muted-foreground mt-1">
                   vs {comparisonLabel}
                 </div>
               </div>
 
               {/* Conversion Mix */}
               <div>
-                <div className="text-xs uppercase tracking-wide text-muted-foreground mb-2">
+                <div className="text-sm uppercase tracking-wide text-muted-foreground mb-2 font-semibold">
                   Conversion Mix
                 </div>
-                <div className="flex items-center gap-4 text-base">
+                <div className="flex items-center gap-6 text-lg">
                   <span className="text-foreground">
-                    <span className="font-bold tabular-nums text-xl">{byType.story || 0}</span>
-                    <span className="text-muted-foreground ml-1.5">Story</span>
+                    <span className="font-bold tabular-nums text-2xl">{byType.story || 0}</span>
+                    <span className="text-muted-foreground ml-2 text-base">Story</span>
                   </span>
-                  <span className="text-muted-foreground/50">/</span>
+                  <span className="text-muted-foreground/30">|</span>
                   <span className="text-foreground">
-                    <span className="font-bold tabular-nums text-xl">{byType.feature || 0}</span>
-                    <span className="text-muted-foreground ml-1.5">Feature</span>
+                    <span className="font-bold tabular-nums text-2xl">{byType.feature || 0}</span>
+                    <span className="text-muted-foreground ml-2 text-base">Feature</span>
                   </span>
-                  <span className="text-muted-foreground/50">/</span>
+                  <span className="text-muted-foreground/30">|</span>
                   <span className="text-foreground">
-                    <span className="font-bold tabular-nums text-xl">{byType.epic || 0}</span>
-                    <span className="text-muted-foreground ml-1.5">Epic</span>
+                    <span className="font-bold tabular-nums text-2xl">{byType.epic || 0}</span>
+                    <span className="text-muted-foreground ml-2 text-base">Epic</span>
                   </span>
                 </div>
               </div>
 
               {/* Median Latency */}
               <div>
-                <div className="text-xs uppercase tracking-wide text-muted-foreground mb-2">
+                <div className="text-sm uppercase tracking-wide text-muted-foreground mb-2 font-semibold">
                   Median Conversion Latency
                 </div>
-                <div className="flex items-baseline gap-3">
-                  <span className="text-2xl font-bold tabular-nums text-foreground flex items-center gap-2">
-                    <Clock className="h-5 w-5 text-muted-foreground" />
+                <div className="flex items-baseline gap-4">
+                  <span className="text-4xl font-bold tabular-nums text-foreground flex items-center gap-3 print:text-3xl">
+                    <Clock className="h-7 w-7 text-muted-foreground" />
                     {formatLatency(medianLatencyHours)}
                   </span>
-                  <LatencyDeltaIndicator delta={latencyChange} />
                 </div>
-                <div className="text-xs text-muted-foreground mt-1">
-                  created → converted
+                <div className="text-sm text-muted-foreground mt-1">
+                  incident created → converted to change
                 </div>
               </div>
             </div>
 
             {/* Recent Conversions Table */}
             {recentConversions.length > 0 && (
-              <div className="border-t border-border pt-5">
-                <div className="text-xs uppercase tracking-wide text-muted-foreground mb-3">
-                  Latest Conversions
+              <div className="border-t border-border pt-6">
+                <div className="text-sm uppercase tracking-wide text-muted-foreground mb-4 font-semibold">
+                  Recent Conversions
                 </div>
-                <div className="space-y-2">
-                  {recentConversions.map((conv) => (
-                    <div key={conv.incident_id} className="flex items-center gap-3 text-sm py-1">
-                      <span className="font-mono text-xs text-[var(--brand-primary)] font-medium">
-                        {conv.incident_key}
-                      </span>
-                      <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" />
-                      <span className="text-foreground capitalize font-medium">
-                        {conv.converted_to_type}
-                      </span>
-                      {conv.converted_to_key && (
-                        <span className="font-mono text-xs text-muted-foreground">
-                          {conv.converted_to_key}
-                        </span>
-                      )}
-                      <span className="text-muted-foreground text-xs ml-auto">
-                        {format(new Date(conv.converted_at), 'MMM d, HH:mm')}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-border">
+                      <th className="pb-2 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground">Incident</th>
+                      <th className="pb-2 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground">→</th>
+                      <th className="pb-2 text-left text-xs font-bold uppercase tracking-wider text-muted-foreground">Change Item</th>
+                      <th className="pb-2 text-right text-xs font-bold uppercase tracking-wider text-muted-foreground">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recentConversions.slice(0, 5).map((conv) => (
+                      <tr key={conv.incident_id} className="border-b border-border last:border-b-0">
+                        <td className="py-3">
+                          <span className="font-mono text-sm font-medium text-[var(--brand-primary)]">
+                            {conv.incident_key}
+                          </span>
+                        </td>
+                        <td className="py-3">
+                          <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                        </td>
+                        <td className="py-3">
+                          <span className="text-sm font-medium text-foreground capitalize">
+                            {conv.converted_to_type}
+                          </span>
+                          {conv.converted_to_key && (
+                            <span className="font-mono text-xs text-muted-foreground ml-2">
+                              {conv.converted_to_key}
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-3 text-right">
+                          <span className="text-sm text-muted-foreground">
+                            {format(new Date(conv.converted_at), 'MMM d, HH:mm')}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
           </>
         )}
       </div>
+    </section>
+  );
+}
+
+// ============================================================================
+// SECTION 6: WHAT CHANGED VS LAST PERIOD
+// ============================================================================
+
+interface WhatChangedProps {
+  deltas: PeriodComparison;
+  comparisonLabel: string;
+  metrics: PeriodMetrics;
+}
+
+function WhatChangedSection({ deltas, comparisonLabel, metrics }: WhatChangedProps) {
+  const increases: { label: string; delta: number; current: number }[] = [];
+  const decreases: { label: string; delta: number; current: number }[] = [];
+  const emerging: string[] = [];
+
+  // Categorize changes
+  if (deltas.created > 0) increases.push({ label: 'Incidents Created', delta: deltas.created, current: metrics.created });
+  if (deltas.created < 0) decreases.push({ label: 'Incidents Created', delta: deltas.created, current: metrics.created });
+  
+  if (deltas.sla_breached > 0) increases.push({ label: 'SLA Breached', delta: deltas.sla_breached, current: metrics.sla_breached });
+  if (deltas.sla_breached < 0) decreases.push({ label: 'SLA Breached', delta: deltas.sla_breached, current: metrics.sla_breached });
+  
+  if (deltas.sla_at_risk > 0) increases.push({ label: 'SLA At Risk', delta: deltas.sla_at_risk, current: metrics.sla_at_risk });
+  if (deltas.sla_at_risk < 0) decreases.push({ label: 'SLA At Risk', delta: deltas.sla_at_risk, current: metrics.sla_at_risk });
+  
+  if (deltas.major_active > 0) increases.push({ label: 'Major Incidents', delta: deltas.major_active, current: metrics.major_active });
+  if (deltas.major_active < 0) decreases.push({ label: 'Major Incidents', delta: deltas.major_active, current: metrics.major_active });
+  
+  if (deltas.resolved > 0) increases.push({ label: 'Resolved', delta: deltas.resolved, current: metrics.resolved });
+  if (deltas.resolved < 0) decreases.push({ label: 'Resolved', delta: deltas.resolved, current: metrics.resolved });
+  
+  if (deltas.backlog_delta > 0) increases.push({ label: 'Backlog Growth', delta: deltas.backlog_delta, current: metrics.backlog_delta });
+  if (deltas.backlog_delta < 0) decreases.push({ label: 'Backlog Growth', delta: deltas.backlog_delta, current: metrics.backlog_delta });
+
+  // Emerging risks
+  if (metrics.sla_breached > 0 && deltas.sla_breached > 0) {
+    emerging.push(`SLA breach rate increasing (+${deltas.sla_breached})`);
+  }
+  if (metrics.major_active > 0 && deltas.major_active > 0) {
+    emerging.push(`Major incident count rising (+${deltas.major_active})`);
+  }
+  if (metrics.backlog_delta > 5) {
+    emerging.push(`Backlog accumulation exceeding resolution capacity`);
+  }
+
+  const hasChanges = increases.length > 0 || decreases.length > 0 || emerging.length > 0;
+
+  return (
+    <section className="mb-10 print:mb-8">
+      <h2 className="text-base font-bold uppercase tracking-wider text-foreground mb-5 flex items-center gap-2">
+        <span className="w-1 h-5 bg-[var(--brand-primary)] rounded-full" />
+        What Changed vs {comparisonLabel}
+      </h2>
+
+      {!hasChanges ? (
+        <div className="border border-border rounded-lg bg-card p-10 text-center">
+          <p className="text-base text-muted-foreground">No significant changes from the comparison period.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-3 gap-6 print:gap-4">
+          {/* Increases */}
+          <div className="border border-[hsl(var(--warning))]/30 rounded-lg bg-[hsl(var(--warning))]/5 p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <TrendingUp className="h-5 w-5 text-[hsl(var(--warning))]" />
+              <h3 className="text-sm font-bold uppercase tracking-wider text-[hsl(var(--warning))]">
+                Increases
+              </h3>
+            </div>
+            {increases.length > 0 ? (
+              <div className="space-y-3">
+                {increases.map((item, idx) => (
+                  <div key={idx} className="flex items-center justify-between">
+                    <span className="text-sm text-foreground">{item.label}</span>
+                    <span className="text-sm font-bold text-[hsl(var(--warning))] tabular-nums">
+                      +{item.delta}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground italic">No increases</p>
+            )}
+          </div>
+
+          {/* Decreases */}
+          <div className="border border-emerald-500/30 rounded-lg bg-emerald-500/5 p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <TrendingDown className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+              <h3 className="text-sm font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                Decreases
+              </h3>
+            </div>
+            {decreases.length > 0 ? (
+              <div className="space-y-3">
+                {decreases.map((item, idx) => (
+                  <div key={idx} className="flex items-center justify-between">
+                    <span className="text-sm text-foreground">{item.label}</span>
+                    <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
+                      {item.delta}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground italic">No decreases</p>
+            )}
+          </div>
+
+          {/* Emerging Risks */}
+          <div className="border border-destructive/30 rounded-lg bg-destructive/5 p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
+              <h3 className="text-sm font-bold uppercase tracking-wider text-destructive">
+                Emerging Risks
+              </h3>
+            </div>
+            {emerging.length > 0 ? (
+              <div className="space-y-3">
+                {emerging.map((risk, idx) => (
+                  <p key={idx} className="text-sm text-foreground">
+                    {risk}
+                  </p>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground italic">No new risks identified</p>
+            )}
+          </div>
+        </div>
+      )}
     </section>
   );
 }
@@ -551,130 +757,123 @@ function TopRiskIncidents({ incidents, onRowClick }: TopRiskIncidentsProps) {
     setCurrentPage(1);
   };
 
+  if (incidents.length === 0) {
+    return null;
+  }
+
   return (
-    <section>
-      <div className="flex items-center gap-2 mb-4">
-        <AlertTriangle className="h-4 w-4 text-muted-foreground" />
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-          Top Risk Incidents
-        </h2>
-      </div>
+    <section className="mb-10 print:mb-8">
+      <h2 className="text-base font-bold uppercase tracking-wider text-foreground mb-5 flex items-center gap-2">
+        <AlertTriangle className="h-5 w-5 text-muted-foreground" />
+        Top Risk Incidents
+      </h2>
 
       <div className="border border-border rounded-lg bg-card overflow-hidden">
         <table className="w-full" style={{ tableLayout: 'fixed' }}>
           <colgroup>
-            <col style={{ width: '8%' }} />
-            <col style={{ width: '35%' }} />
+            <col style={{ width: '10%' }} />
+            <col style={{ width: '32%' }} />
             <col style={{ width: '10%' }} />
             <col style={{ width: '12%' }} />
-            <col style={{ width: '7%' }} />
+            <col style={{ width: '8%' }} />
             <col style={{ width: '12%' }} />
             <col style={{ width: '16%' }} />
           </colgroup>
           <thead className="bg-muted/50">
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-border">
+              <th className="px-5 py-4 text-left text-sm font-bold uppercase tracking-wider text-muted-foreground border-b border-border">
                 ID
               </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-border">
+              <th className="px-5 py-4 text-left text-sm font-bold uppercase tracking-wider text-muted-foreground border-b border-border">
                 Summary
               </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-border">
+              <th className="px-5 py-4 text-left text-sm font-bold uppercase tracking-wider text-muted-foreground border-b border-border">
                 Severity
               </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-border">
+              <th className="px-5 py-4 text-left text-sm font-bold uppercase tracking-wider text-muted-foreground border-b border-border">
                 Status
               </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-border">
+              <th className="px-5 py-4 text-left text-sm font-bold uppercase tracking-wider text-muted-foreground border-b border-border">
                 Age
               </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-border">
+              <th className="px-5 py-4 text-left text-sm font-bold uppercase tracking-wider text-muted-foreground border-b border-border">
                 SLA State
               </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-border">
+              <th className="px-5 py-4 text-left text-sm font-bold uppercase tracking-wider text-muted-foreground border-b border-border">
                 Assignee
               </th>
             </tr>
           </thead>
           <tbody>
-            {paginatedIncidents.length === 0 ? (
-              <tr>
-                <td colSpan={7} className="px-4 py-12 text-center text-muted-foreground text-sm">
-                  No high-risk incidents at this time
-                </td>
-              </tr>
-            ) : (
-              paginatedIncidents.map((incident) => {
-                const slaConfig = SLA_STATE_CONFIG[incident.sla_state.state] || SLA_STATE_CONFIG.n_a;
+            {paginatedIncidents.map((incident) => {
+              const slaConfig = SLA_STATE_CONFIG[incident.sla_state.state] || SLA_STATE_CONFIG.n_a;
 
-                return (
-                  <tr
-                    key={incident.id}
-                    onClick={() => onRowClick(incident.id)}
-                    className="hover:bg-muted/30 cursor-pointer border-b border-border last:border-b-0"
-                  >
-                    <td className="px-4 py-3 align-middle">
-                      <span className="font-mono text-sm font-medium text-[var(--brand-primary)]">
-                        {incident.incident_key}
+              return (
+                <tr
+                  key={incident.id}
+                  onClick={() => onRowClick(incident.id)}
+                  className="hover:bg-muted/30 cursor-pointer border-b border-border last:border-b-0"
+                >
+                  <td className="px-5 py-4 align-middle">
+                    <span className="font-mono text-sm font-medium text-[var(--brand-primary)]">
+                      {incident.incident_key}
+                    </span>
+                  </td>
+                  <td className="px-5 py-4 align-middle">
+                    <span className="text-sm text-foreground line-clamp-1">
+                      {incident.title}
+                    </span>
+                  </td>
+                  <td className="px-5 py-4 align-middle">
+                    <span className={cn(
+                      "text-sm font-bold",
+                      incident.severity === 'SEV1' && "text-destructive",
+                      incident.severity === 'SEV2' && "text-[hsl(var(--warning))]"
+                    )}>
+                      {incident.severity}
+                    </span>
+                  </td>
+                  <td className="px-5 py-4 align-middle">
+                    <span className="text-sm text-foreground">
+                      {STATUS_LABELS[incident.status] || incident.status}
+                    </span>
+                  </td>
+                  <td className="px-5 py-4 align-middle">
+                    <span className="text-sm font-mono tabular-nums text-muted-foreground">
+                      {formatAge(incident.age_hours)}
+                    </span>
+                  </td>
+                  <td className="px-5 py-4 align-middle">
+                    <span className={cn("text-sm", slaConfig.className)}>
+                      {slaConfig.label}
+                    </span>
+                  </td>
+                  <td className="px-5 py-4 align-middle">
+                    {incident.assignee_name ? (
+                      <span className="text-sm text-foreground truncate block max-w-[140px]">
+                        {incident.assignee_name}
                       </span>
-                    </td>
-                    <td className="px-4 py-3 align-middle">
-                      <span className="text-sm text-foreground line-clamp-1">
-                        {incident.title}
+                    ) : (
+                      <span className="text-sm text-destructive/80 italic">
+                        Unassigned
                       </span>
-                    </td>
-                    <td className="px-4 py-3 align-middle">
-                      <span className={cn(
-                        "text-sm font-semibold",
-                        incident.severity === 'SEV1' && "text-destructive",
-                        incident.severity === 'SEV2' && "text-[hsl(var(--warning))]"
-                      )}>
-                        {incident.severity}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 align-middle">
-                      <span className="text-sm text-foreground">
-                        {STATUS_LABELS[incident.status] || incident.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 align-middle">
-                      <span className="text-sm font-mono tabular-nums text-muted-foreground">
-                        {formatAge(incident.age_hours)}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 align-middle">
-                      <span className={cn("text-sm", slaConfig.className)}>
-                        {slaConfig.label}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 align-middle">
-                      {incident.assignee_name ? (
-                        <span className="text-sm text-foreground truncate block max-w-[120px]">
-                          {incident.assignee_name}
-                        </span>
-                      ) : (
-                        <span className="text-sm text-destructive/80 italic">
-                          Unassigned
-                        </span>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })
-            )}
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
 
-        {/* Enterprise Pagination Footer */}
-        {totalItems > 0 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-border bg-muted/30">
-            {/* Left: Page size selector */}
+        {/* Pagination Footer */}
+        {totalItems > 10 && (
+          <div className="flex items-center justify-between px-5 py-4 border-t border-border bg-muted/30 print:hidden">
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">Rows per page:</span>
               <select
                 value={pageSize}
                 onChange={(e) => handlePageSizeChange(Number(e.target.value))}
-                className="h-8 px-2 text-sm border border-border rounded bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                className="h-9 px-3 text-sm border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               >
                 {PAGE_SIZE_OPTIONS.map((size) => (
                   <option key={size} value={size}>{size}</option>
@@ -682,19 +881,17 @@ function TopRiskIncidents({ incidents, onRowClick }: TopRiskIncidentsProps) {
               </select>
             </div>
 
-            {/* Center: Page info */}
             <div className="text-sm text-muted-foreground tabular-nums">
               {startIndex + 1}–{endIndex} of {totalItems}
             </div>
 
-            {/* Right: Navigation controls */}
             <div className="flex items-center gap-1">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => handlePageChange(1)}
                 disabled={currentPage === 1}
-                className="h-8 w-8 p-0"
+                className="h-9 w-9 p-0"
               >
                 <span className="sr-only">First page</span>
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -706,14 +903,14 @@ function TopRiskIncidents({ incidents, onRowClick }: TopRiskIncidentsProps) {
                 size="sm"
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="h-8 w-8 p-0"
+                className="h-9 w-9 p-0"
               >
                 <span className="sr-only">Previous page</span>
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </Button>
-              <span className="px-2 text-sm text-foreground tabular-nums">
+              <span className="px-3 text-sm text-foreground tabular-nums">
                 Page {currentPage} of {totalPages || 1}
               </span>
               <Button
@@ -721,7 +918,7 @@ function TopRiskIncidents({ incidents, onRowClick }: TopRiskIncidentsProps) {
                 size="sm"
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage >= totalPages}
-                className="h-8 w-8 p-0"
+                className="h-9 w-9 p-0"
               >
                 <span className="sr-only">Next page</span>
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -733,7 +930,7 @@ function TopRiskIncidents({ incidents, onRowClick }: TopRiskIncidentsProps) {
                 size="sm"
                 onClick={() => handlePageChange(totalPages)}
                 disabled={currentPage >= totalPages}
-                className="h-8 w-8 p-0"
+                className="h-9 w-9 p-0"
               >
                 <span className="sr-only">Last page</span>
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -780,8 +977,8 @@ function InsightTabContent({ period, onDrilldown, onRowClick }: InsightTabConten
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      <div className="flex items-center justify-center py-24">
+        <Loader2 className="h-10 w-10 animate-spin text-muted-foreground" />
       </div>
     );
   }
@@ -792,7 +989,6 @@ function InsightTabContent({ period, onDrilldown, onRowClick }: InsightTabConten
   };
 
   const handleActionClick = (action: string) => {
-    // Try to determine which filter to apply based on action text
     if (action.toLowerCase().includes('breach')) {
       handleMetricClick('sla_breached', 'SLA Breached');
     } else if (action.toLowerCase().includes('risk')) {
@@ -801,23 +997,30 @@ function InsightTabContent({ period, onDrilldown, onRowClick }: InsightTabConten
       handleMetricClick('major_active', 'Major Active');
     } else if (action.toLowerCase().includes('committee')) {
       handleMetricClick('committee', 'Committee');
+    } else {
+      handleMetricClick('open', 'Open Incidents');
     }
   };
 
+  // Derive operational risks from insights
+  const operationalRisks = insights.keyFacts.filter(f => 
+    f.toLowerCase().includes('breach') || 
+    f.toLowerCase().includes('risk') || 
+    f.toLowerCase().includes('unassign') ||
+    f.toLowerCase().includes('escalat') ||
+    f.toLowerCase().includes('major') ||
+    f.toLowerCase().includes('critical')
+  );
+
   return (
     <div>
-      {/* Period Info */}
-      <div className="text-sm text-muted-foreground mb-6 flex items-center gap-2">
-        <Clock className="h-4 w-4" />
-        {format(periodRange.start, 'MMM d, yyyy HH:mm')} – {format(periodRange.end, 'MMM d, yyyy HH:mm')}
-      </div>
-
-      <ExecutiveSummaryHero
+      <ExecutivePosture
         summary={insights.executiveSummary}
         generatedAt={insights.generatedAt}
         metrics={currentMetrics}
         deltas={deltas}
         comparisonLabel={periodRange.comparisonLabel}
+        periodLabel={periodRange.label}
         onMetricClick={handleMetricClick}
       />
 
@@ -827,13 +1030,14 @@ function InsightTabContent({ period, onDrilldown, onRowClick }: InsightTabConten
         onMetricClick={handleMetricClick}
       />
 
-      <NarrativeCards
+      <FactsAndRisks
         keyFacts={insights.keyFacts}
-        requiredActions={insights.requiredActions}
+        operationalRisks={operationalRisks}
       />
 
-      <ActionRegister
+      <RequiredActionsTable
         actions={insights.requiredActions}
+        metrics={currentMetrics}
         onActionClick={handleActionClick}
       />
 
@@ -841,6 +1045,12 @@ function InsightTabContent({ period, onDrilldown, onRowClick }: InsightTabConten
         conversionMetrics={conversionMetrics}
         comparisonLabel={periodRange.comparisonLabel}
         conversionDelta={deltas.converted}
+      />
+
+      <WhatChangedSection
+        deltas={deltas}
+        comparisonLabel={periodRange.comparisonLabel}
+        metrics={currentMetrics}
       />
 
       <TopRiskIncidents
@@ -852,7 +1062,7 @@ function InsightTabContent({ period, onDrilldown, onRowClick }: InsightTabConten
 }
 
 // ============================================================================
-// MAIN PAGE
+// VIEW SWITCH
 // ============================================================================
 
 type ViewMode = 'list' | 'analytics' | 'insights';
@@ -867,7 +1077,7 @@ function ViewSwitch({ currentMode }: { currentMode: ViewMode }) {
   ];
 
   return (
-    <div className="inline-flex items-center rounded-lg border border-border bg-muted/30 p-1">
+    <div className="inline-flex items-center rounded-lg border border-border bg-muted/30 p-1 print:hidden">
       {modes.map((mode) => {
         const Icon = mode.icon;
         const isActive = currentMode === mode.value;
@@ -876,7 +1086,7 @@ function ViewSwitch({ currentMode }: { currentMode: ViewMode }) {
             key={mode.value}
             onClick={() => navigate(mode.path)}
             className={cn(
-              "inline-flex items-center gap-2 px-3.5 py-2 text-sm font-medium rounded-md transition-all",
+              "inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-all",
               isActive 
                 ? "bg-background text-foreground shadow-sm" 
                 : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
@@ -890,6 +1100,78 @@ function ViewSwitch({ currentMode }: { currentMode: ViewMode }) {
     </div>
   );
 }
+
+// ============================================================================
+// PRINT STYLES
+// ============================================================================
+
+const printStyles = `
+@media print {
+  body {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  .print\\:hidden {
+    display: none !important;
+  }
+  
+  nav, aside, [data-sidebar], [role="navigation"] {
+    display: none !important;
+  }
+  
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+  
+  .print\\:mb-8 {
+    margin-bottom: 2rem !important;
+  }
+  
+  .print\\:p-4 {
+    padding: 1rem !important;
+  }
+  
+  .print\\:p-6 {
+    padding: 1.5rem !important;
+  }
+  
+  .print\\:text-sm {
+    font-size: 0.875rem !important;
+  }
+  
+  .print\\:text-base {
+    font-size: 1rem !important;
+  }
+  
+  .print\\:text-3xl {
+    font-size: 1.875rem !important;
+  }
+  
+  .print\\:gap-3 {
+    gap: 0.75rem !important;
+  }
+  
+  .print\\:gap-4 {
+    gap: 1rem !important;
+  }
+  
+  .print\\:gap-6 {
+    gap: 1.5rem !important;
+  }
+  
+  @page {
+    margin: 1.5cm;
+    size: A4 portrait;
+  }
+}
+`;
+
+// ============================================================================
+// MAIN PAGE
+// ============================================================================
 
 export default function IncidentInsightsPage() {
   const navigate = useNavigate();
@@ -919,72 +1201,86 @@ export default function IncidentInsightsPage() {
   };
 
   return (
-    <div className="h-full flex flex-col bg-background">
-      <GlobalPageHeader
-        sectionLabel="RELEASE"
-        pageTitle="Incident Insights"
-        showDivider={false}
-        rightActions={
-          <div className="flex items-center gap-4">
-            <ViewSwitch currentMode="insights" />
-            <div className="h-6 w-px bg-border" />
-            <Button variant="outline" size="sm" onClick={handlePrint} className="h-8 px-3 text-sm">
-              <Printer className="h-4 w-4 mr-2" />
-              Print / PDF
-            </Button>
-          </div>
-        }
-      />
-
-
-      {/* Content with Tabs */}
-      <div className="flex-1 overflow-auto">
-        <div className="px-6 py-6 max-w-[1600px]">
-          <Tabs value={activePeriod} onValueChange={(v) => setActivePeriod(v as InsightPeriod)}>
-            <TabsList className="mb-8 p-1 bg-muted/40 border border-border h-10">
-              {PERIOD_TABS.map(tab => (
-                <TabsTrigger 
-                  key={tab.value} 
-                  value={tab.value} 
-                  className="px-6 py-2 text-sm font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm"
-                >
-                  {tab.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-
-            {PERIOD_TABS.map(tab => (
-              <TabsContent key={tab.value} value={tab.value} className="mt-0">
-                <InsightTabContent 
-                  period={tab.value} 
-                  onDrilldown={handleDrilldown}
-                  onRowClick={handleRowClick}
-                />
-              </TabsContent>
-            ))}
-          </Tabs>
-        </div>
-      </div>
-
-      {/* Drilldown Drawer */}
-      <DrilldownDrawer
-        isOpen={!!activeFilter}
-        filter={activeFilter}
-        incidents={filteredIncidents}
-        timeRange="7d"
-        onClose={handleCloseDrilldown}
-        onClear={handleCloseDrilldown}
-        onRowClick={handleRowClick}
-      />
-
-      {/* Incident Detail Modal */}
-      {selectedIncident && (
-        <IncidentDetailModal
-          incident={selectedIncident}
-          isOpen={!!selectedIncidentId}
-          onClose={() => setSelectedIncidentId(null)}
+    <>
+      <style>{printStyles}</style>
+      <div className="h-full flex flex-col bg-background">
+        <GlobalPageHeader
+          sectionLabel="RELEASE"
+          pageTitle="Incident Insights"
+          showDivider={false}
+          rightActions={
+            <div className="flex items-center gap-4">
+              <ViewSwitch currentMode="insights" />
+              <div className="h-6 w-px bg-border print:hidden" />
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handlePrint} 
+                className="h-9 px-4 text-sm font-medium print:hidden"
+              >
+                <Printer className="h-4 w-4 mr-2" />
+                Print / PDF
+              </Button>
+            </div>
+          }
         />
-      )}
-    </div>
+
+        {/* Subtitle */}
+        <div className="px-6 pt-2 pb-4 border-b border-border">
+          <p className="text-sm text-muted-foreground uppercase tracking-wider font-medium">
+            Executive Operational Report
+          </p>
+        </div>
+
+        {/* Content with Tabs */}
+        <div className="flex-1 overflow-auto">
+          <div className="px-6 py-8 max-w-[1800px]">
+            <Tabs value={activePeriod} onValueChange={(v) => setActivePeriod(v as InsightPeriod)}>
+              <TabsList className="mb-10 p-1.5 bg-muted/40 border border-border h-12">
+                {PERIOD_TABS.map(tab => (
+                  <TabsTrigger 
+                    key={tab.value} 
+                    value={tab.value} 
+                    className="px-8 py-2.5 text-sm font-semibold data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                  >
+                    {tab.label}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+
+              {PERIOD_TABS.map(tab => (
+                <TabsContent key={tab.value} value={tab.value} className="mt-0">
+                  <InsightTabContent 
+                    period={tab.value} 
+                    onDrilldown={handleDrilldown}
+                    onRowClick={handleRowClick}
+                  />
+                </TabsContent>
+              ))}
+            </Tabs>
+          </div>
+        </div>
+
+        {/* Drilldown Drawer */}
+        <DrilldownDrawer
+          isOpen={!!activeFilter}
+          filter={activeFilter}
+          incidents={filteredIncidents}
+          timeRange="7d"
+          onClose={handleCloseDrilldown}
+          onClear={handleCloseDrilldown}
+          onRowClick={handleRowClick}
+        />
+
+        {/* Incident Detail Modal */}
+        {selectedIncident && (
+          <IncidentDetailModal
+            incident={selectedIncident}
+            isOpen={!!selectedIncidentId}
+            onClose={() => setSelectedIncidentId(null)}
+          />
+        )}
+      </div>
+    </>
   );
 }
