@@ -237,20 +237,23 @@ export default function FeatureViewPage() {
             feature={feature} 
           />
           
-          {/* Key Details Grid */}
-          <FeatureKeyDetails 
-            feature={feature}
-          />
-          
-          {/* Blocked Banner */}
-          {feature.blocked && feature.blocked_reason && (
-            <FeatureBlockedBanner reason={feature.blocked_reason} />
-          )}
-          
-          {/* Story Progress */}
-          {progress && progress.totalStories > 0 && (
-            <FeatureStoryProgress progress={progress} />
-          )}
+          {/* Key Details Card - Contains Epic, Owner, Planned Dates, Story Progress */}
+          <div className={styles.keyDetailsCard}>
+            {/* Key Details Grid */}
+            <FeatureKeyDetails 
+              feature={feature}
+            />
+            
+            {/* Blocked Banner */}
+            {feature.blocked && feature.blocked_reason && (
+              <FeatureBlockedBanner reason={feature.blocked_reason} />
+            )}
+            
+            {/* Story Progress */}
+            {progress && progress.totalStories > 0 && (
+              <FeatureStoryProgress progress={progress} />
+            )}
+          </div>
           
           {/* Description */}
           <FeatureDescription 
