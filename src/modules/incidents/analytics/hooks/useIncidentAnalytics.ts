@@ -42,7 +42,12 @@ function getTimeRangeFilter(range: TimeRange, customStart?: Date, customEnd?: Da
 
 export function useIncidentAnalytics(timeRange: TimeRange, customStart?: Date, customEnd?: Date) {
   const { data: slaConfig, isLoading: slaConfigLoading } = useSLAConfig();
-  const { start, end } = getTimeRangeFilter(timeRange, customStart, customEnd);
+  
+  // Memoize the time range to prevent infinite re-renders
+  const { start, end } = useMemo(() => 
+    getTimeRangeFilter(timeRange, customStart, customEnd),
+    [timeRange, customStart?.getTime(), customEnd?.getTime()]
+  );
 
   const { data: rawIncidents, isLoading: incidentsLoading, error } = useQuery({
     queryKey: ['incident-analytics', timeRange, start.toISOString(), end.toISOString()],
