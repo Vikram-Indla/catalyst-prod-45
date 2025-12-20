@@ -832,10 +832,6 @@ export default function IncidentInsightsPage() {
         }
       />
 
-      {/* Subtitle bar */}
-      <div className="px-6 py-2 border-b border-border bg-muted/20">
-        <p className="text-sm text-muted-foreground">Executive operational report</p>
-      </div>
 
       {/* Content with Tabs */}
       <div className="flex-1 overflow-auto">
