@@ -75,6 +75,9 @@ function createIncident(
   };
 }
 
+// Stable ID counter for demo data
+let approverIdCounter = 0;
+
 // Create approver
 function createApprover(
   userId: string,
@@ -86,9 +89,10 @@ function createApprover(
 ): CommitteeApprover {
   const user = DEMO_USERS.find(u => u.id === userId)!;
   const adder = addedBy ? ADDERS.find(a => a.id === addedBy) : ADDERS[0];
+  approverIdCounter++;
   
   return {
-    id: `approver-${userId}-${Math.random().toString(36).substr(2, 6)}`,
+    id: `approver-${userId}-${approverIdCounter}`,
     userId,
     userName: user.name,
     userInitials: user.initials,
@@ -175,10 +179,21 @@ function createQueueItem(
   };
 }
 
+// Cache generated demo data to avoid regeneration
+let cachedDemoData: CommitteeQueueItem[] | null = null;
+
 /**
- * Generate all demo scenarios
+ * Generate all demo scenarios (cached)
  */
 export function generateCommitteeDemoData(): CommitteeQueueItem[] {
+  // Return cached data if available
+  if (cachedDemoData) {
+    return cachedDemoData;
+  }
+
+  // Reset counter for stable IDs
+  approverIdCounter = 0;
+  
   const items: CommitteeQueueItem[] = [];
 
   // SCENARIO A — Pending (majority not reached)
@@ -298,21 +313,33 @@ export function generateCommitteeDemoData(): CommitteeQueueItem[] {
     'Incident Lead'
   ));
 
+  // Cache the generated data
+  cachedDemoData = items;
+  
   return items;
 }
 
+// Cache the shouldLoadDemoData result
+let cachedShouldLoad: boolean | null = null;
+
 /**
- * Check if demo data should be loaded
+ * Check if demo data should be loaded (cached)
  */
 export function shouldLoadDemoData(): boolean {
+  if (cachedShouldLoad !== null) {
+    return cachedShouldLoad;
+  }
+  
   // Check URL param
   if (typeof window !== 'undefined') {
     const params = new URLSearchParams(window.location.search);
-    if (params.get('seed') === '1') return true;
+    if (params.get('seed') === '1') {
+      cachedShouldLoad = true;
+      return true;
+    }
   }
   
   // Check if development mode
-  if (import.meta.env.DEV) return true;
-  
-  return false;
+  cachedShouldLoad = import.meta.env.DEV;
+  return cachedShouldLoad;
 }
