@@ -1,6 +1,6 @@
 /**
  * Quick Filter Chips - Executive-grade filter bar for Kanban
- * Compact, token-based, control-room quality
+ * Control-room quality typography: strong, readable, no muted text
  */
 
 import { memo } from 'react';
@@ -24,9 +24,9 @@ export const QuickFilterChips = memo(function QuickFilterChips({
   counts,
 }: QuickFilterChipsProps) {
   return (
-    <div className="bg-[var(--surface-2)] border border-[var(--border-color)] rounded-lg px-2 py-1 max-w-full overflow-hidden">
+    <div className="bg-[var(--surface-2)] border border-[var(--border-color)] rounded-lg px-2 py-1.5 max-w-full overflow-hidden">
       <ScrollArea className="w-full">
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
           {QUICK_FILTERS.map(filter => {
             const isActive = activeFilters.includes(filter.key);
             const count = counts?.[filter.key] ?? 0;
@@ -36,34 +36,42 @@ export const QuickFilterChips = memo(function QuickFilterChips({
                 key={filter.key}
                 onClick={() => onToggle(filter.key)}
                 className={cn(
-                  // Base chip styles
-                  "inline-flex items-center gap-1.5 h-7 px-2.5 py-1 rounded-md",
-                  "text-[12px] font-normal whitespace-nowrap",
+                  // Base chip styles - STRONG typography
+                  "inline-flex items-center gap-2 h-8 px-3 py-1.5 rounded-md",
+                  "text-sm font-medium whitespace-nowrap",
                   "transition-all duration-150 border",
-                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-gold)]/50",
+                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--g300))]/50",
                   
-                  // State styles
+                  // State styles - NO muted text, always readable
                   isActive
-                    ? "bg-[var(--surface-1)] border-[var(--brand-gold)]/30 text-[var(--text-1)] shadow-sm"
-                    : "bg-transparent border-transparent text-[var(--text-3)] hover:bg-[var(--surface-3)] hover:text-[var(--text-2)]"
+                    ? [
+                        "bg-[hsl(var(--g300)/0.08)] border-[hsl(var(--g300)/0.3)]",
+                        "text-[var(--text-1)] font-semibold",
+                        "shadow-[inset_0_-2px_0_0_hsl(var(--g300))]", // Bottom accent
+                      ]
+                    : [
+                        "bg-[var(--surface-1)] border-[var(--border-color)]",
+                        "text-[var(--text-1)]",
+                        "hover:bg-[var(--surface-3)] hover:border-[var(--border-strong)]",
+                      ]
                 )}
               >
                 {/* Checkmark for selected state */}
                 {isActive && (
-                  <Check className="h-3 w-3 text-[var(--brand-gold)] flex-shrink-0" />
+                  <Check className="h-3.5 w-3.5 text-[hsl(var(--g300))] flex-shrink-0" />
                 )}
                 
-                {/* Label */}
+                {/* Label - ALWAYS primary text, never muted */}
                 <span>{filter.label}</span>
                 
-                {/* Count badge */}
+                {/* Count badge - strong visibility */}
                 {count > 0 && (
                   <span className={cn(
-                    "inline-flex items-center justify-center min-w-[18px] h-[18px] px-1.5",
-                    "text-[10px] font-medium tabular-nums rounded-full",
+                    "inline-flex items-center justify-center min-w-[20px] h-5 px-1.5",
+                    "text-xs font-semibold tabular-nums rounded-full",
                     isActive
-                      ? "bg-[var(--brand-gold)]/15 text-[var(--brand-gold)]"
-                      : "bg-[var(--surface-3)] text-[var(--text-3)]"
+                      ? "bg-[hsl(var(--g300)/0.15)] text-[hsl(var(--g300))]"
+                      : "bg-[var(--surface-3)] text-[var(--text-1)]"
                   )}>
                     {count}
                   </span>
