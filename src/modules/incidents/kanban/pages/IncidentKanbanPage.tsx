@@ -301,6 +301,9 @@ export default function IncidentKanbanPage() {
       }
 
       // 3. Update incident: link committee and set status
+      // Backend trigger validates: committee must exist with at least 1 approver
+      // Backend trigger also sets: committee_set_at, committee_set_by, requires_committee
+      // Backend trigger also logs: status change and committee configuration to incident_history
       const { error: updateError } = await supabase
         .from('incidents')
         .update({
@@ -310,24 +313,13 @@ export default function IncidentKanbanPage() {
         })
         .eq('id', incidentId);
 
-      if (updateError) throw updateError;
-
-      // 4. Log history
-      await supabase.from('incident_history').insert({
-        incident_id: incidentId,
-        field_name: 'status',
-        old_value: pending.previousStatus,
-        new_value: 'to_committee',
-        changed_by: user?.id,
-      });
-
-      await supabase.from('incident_history').insert({
-        incident_id: incidentId,
-        field_name: 'committee',
-        old_value: null,
-        new_value: `Committee created with ${data.approverIds.length} approver(s)`,
-        changed_by: user?.id,
-      });
+      if (updateError) {
+        // Backend validation failed - show specific message
+        const message = updateError.message?.includes('approver') 
+          ? 'Add at least one approver to place in Committee'
+          : updateError.message || 'Failed to update status';
+        throw new Error(message);
+      }
 
       // Clear optimistic update and pending context
       setOptimisticUpdates(prev => {
