@@ -1,7 +1,7 @@
 /**
  * IncidentCommandBar
- * Standardized header control for the Incident module
- * Used across List, Analytics, and Insights pages
+ * Executive-grade control strip for the Incident module
+ * Branded, accessible, and enterprise-ready
  */
 
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -13,7 +13,7 @@ type ViewMode = 'list' | 'analytics' | 'insights' | 'kanban';
 
 interface IncidentCommandBarProps {
   onCreateClick: () => void;
-  /** Optional additional actions to show after the Create button */
+  /** Optional additional actions to show before the Create button */
   additionalActions?: React.ReactNode;
 }
 
@@ -46,10 +46,22 @@ export function IncidentCommandBar({ onCreateClick, additionalActions }: Inciden
   };
 
   return (
-    <div className="px-4 sm:px-6 py-3 border-b border-border bg-card/50 shadow-sm print:hidden">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
-        {/* Left: View Mode Segmented Control */}
-        <div className="inline-flex items-center rounded-lg border border-border bg-muted/40 p-1 w-full sm:w-auto">
+    <div className="px-4 sm:px-6 py-3 print:hidden">
+      {/* Command Strip Container - Executive Surface */}
+      <div 
+        className={cn(
+          "flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4",
+          "px-4 py-2.5 rounded-lg",
+          "bg-[var(--surface-2)] border border-[var(--border-subtle)]",
+          "border-t-[1px] border-t-[var(--brand-gold)]"
+        )}
+      >
+        {/* Left: View Mode Control Strip */}
+        <nav 
+          className="inline-flex items-center gap-0.5 w-full sm:w-auto"
+          role="tablist"
+          aria-label="Incident views"
+        >
           {VIEW_MODES.map((mode) => {
             const Icon = mode.icon;
             const isActive = currentMode === mode.value;
@@ -57,19 +69,45 @@ export function IncidentCommandBar({ onCreateClick, additionalActions }: Inciden
               <button
                 key={mode.value}
                 onClick={() => handleModeChange(mode.value)}
+                role="tab"
+                aria-selected={isActive}
+                aria-controls={`${mode.value}-panel`}
                 className={cn(
-                  "flex-1 sm:flex-none inline-flex items-center justify-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 text-xs sm:text-sm font-medium rounded-md transition-all",
+                  "relative flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5",
+                  "px-3 py-2 text-sm transition-colors rounded-md",
                   isActive 
-                    ? "bg-background text-foreground shadow-sm border border-border/50" 
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                    ? [
+                        "bg-[var(--surface-1)] font-semibold",
+                        "text-[var(--text-primary)]",
+                      ]
+                    : [
+                        "bg-transparent font-medium",
+                        "text-[var(--text-muted)]",
+                        "hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]",
+                      ]
                 )}
               >
-                <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <Icon 
+                  className={cn(
+                    "h-4 w-4 flex-shrink-0 transition-colors",
+                    isActive 
+                      ? "text-[var(--brand-gold)]" 
+                      : "text-current"
+                  )} 
+                />
                 <span className="hidden xs:inline sm:inline">{mode.label}</span>
+                
+                {/* Active indicator - gold bottom border */}
+                {isActive && (
+                  <span 
+                    className="absolute bottom-0 left-2 right-2 h-0.5 rounded-full bg-[var(--brand-gold)]"
+                    aria-hidden="true"
+                  />
+                )}
               </button>
             );
           })}
-        </div>
+        </nav>
 
         {/* Right: Actions */}
         <div className="flex items-center gap-2 sm:gap-3 flex-wrap sm:flex-nowrap">
@@ -80,7 +118,11 @@ export function IncidentCommandBar({ onCreateClick, additionalActions }: Inciden
           <Button 
             size="sm"
             onClick={onCreateClick}
-            className="h-9 px-3 sm:px-4 text-xs sm:text-sm font-medium bg-primary hover:bg-primary/90 text-primary-foreground"
+            className={cn(
+              "h-9 px-4 text-sm font-semibold",
+              "bg-[var(--brand-primary)] hover:bg-[var(--brand-primary-hover)]",
+              "text-white border-0"
+            )}
           >
             <span className="whitespace-nowrap">+ Create Incident</span>
           </Button>
