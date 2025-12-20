@@ -7,6 +7,7 @@
  * - Persist: Saves user's resized widths to localStorage
  * - Restore: On reload, uses saved widths (user's manual layout becomes default)
  * - Stretch: Distributes leftover space to stretchable columns using weights
+ * - Single getGridTemplate function for header AND rows alignment
  */
 import { useState, useCallback, useRef, useLayoutEffect } from 'react';
 
@@ -73,11 +74,62 @@ export const DEFAULT_COLUMN_WIDTHS: Record<string, number> = {
   actions: 40,
 };
 
-// Column order for iteration
-export const COLUMN_ORDER = ['key', 'summary', 'severity', 'level', 'status', 'assignee', 'age', 'sla', 'releaseVersion', 'major', 'committee', 'actions'];
+// Column order for iteration - EXACT ORDER for header and rows
+// KEY, SUMMARY, SEV, LVL, STATUS, ASSIGNEE, AGE, SLA, RELEASE, MAJOR, COMMITTEE, ACTIONS
+export const COLUMN_ORDER = [
+  'key', 
+  'summary', 
+  'severity', 
+  'level', 
+  'status', 
+  'assignee', 
+  'age', 
+  'sla', 
+  'releaseVersion', 
+  'major', 
+  'committee', 
+  'actions'
+];
 
-// Center-aligned columns (SEV onward)
-export const CENTER_ALIGNED_COLUMNS = ['severity', 'level', 'status', 'assignee', 'age', 'sla', 'releaseVersion', 'major', 'committee'];
+// Center-aligned columns (SEV onward - everything except KEY and SUMMARY)
+export const CENTER_ALIGNED_COLUMNS = [
+  'severity', 
+  'level', 
+  'status', 
+  'assignee', 
+  'age', 
+  'sla', 
+  'releaseVersion', 
+  'major', 
+  'committee'
+];
+
+/**
+ * SINGLE SOURCE OF TRUTH: Generate grid template columns string
+ * This EXACT string must be used by BOTH header row and data rows
+ * 
+ * @param columnWidths - Current column widths
+ * @param isColumnVisible - Function to check if column is visible
+ * @returns CSS gridTemplateColumns string
+ */
+export function getGridTemplate(
+  columnWidths: Record<string, number>,
+  isColumnVisible: (colId: string) => boolean
+): string {
+  const cols: string[] = [];
+  
+  COLUMN_ORDER.forEach(colId => {
+    if (colId === 'actions') {
+      // Actions column is always 40px fixed
+      cols.push('40px');
+    } else if (isColumnVisible(colId)) {
+      const width = columnWidths[colId] || DEFAULT_COLUMN_WIDTHS[colId] || 100;
+      cols.push(`${width}px`);
+    }
+  });
+  
+  return cols.join(' ');
+}
 
 interface UseIncidentColumnWidthsOptions {
   containerRef?: React.RefObject<HTMLElement>;
@@ -142,11 +194,15 @@ function calculateAutoFitWidths(
     widths[colId] = Math.max(min, Math.min(max, measured));
   });
   
+  // Always include actions column
+  widths['actions'] = 40;
+  
   // Step 2: Calculate total ideal width
   let totalIdeal = 0;
   visibleColumns.forEach(colId => {
     totalIdeal += widths[colId];
   });
+  totalIdeal += 40; // Actions column
   
   // Step 3: If totalIdeal < containerWidth, distribute leftover to stretchable columns
   if (totalIdeal < containerWidth) {

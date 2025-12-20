@@ -2,7 +2,7 @@
  * IncidentListTable — Enterprise-grade incident tracking table
  * 
  * Design: Jira-quality dense enterprise list view using CSS Grid
- * - CSS Grid layout for perfect column alignment (header + body share same template)
+ * - CSS Grid layout with shared template between header and body rows
  * - Compact row height (36px body, 32px header)
  * - Auto-fit column widths on first load, with weighted stretch to fill container
  * - Resize + persist + restore pattern
@@ -10,9 +10,9 @@
  * - Center alignment for SEV onward columns
  */
 
-import { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { MoreHorizontal, Eye, Pencil, Trash2, AlertTriangle, Copy } from 'lucide-react';
+import { MoreHorizontal, Eye, Pencil, Trash2, AlertTriangle, Copy, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import {
@@ -28,6 +28,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { InlineEditCell } from './InlineEditCell';
 import { InlineUserPicker } from './InlineUserPicker';
 import { InlineReleasePicker } from './InlineReleasePicker';
@@ -39,6 +46,7 @@ import {
   MAX_COLUMN_WIDTHS, 
   COLUMN_ORDER,
   CENTER_ALIGNED_COLUMNS,
+  getGridTemplate,
 } from './useIncidentColumnWidths';
 import { toast } from '@/components/ui/catalyst-toast';
 import { getCommitteeDisplayStatus } from '@/utils/committeeStatus';
@@ -49,6 +57,10 @@ import { cn } from '@/lib/utils';
 import { getAgingTime } from '@/components/incidents/badges/IncidentBadges';
 import { StatusPill, SeverityPill, SlaPill, MajorPill, CommitteePill } from './TablePill';
 
+// Page size storage key
+const PAGE_SIZE_STORAGE_KEY = 'catalyst.incidentList.pageSize';
+const PAGE_SIZE_OPTIONS = [10, 25, 50, 100];
+
 interface IncidentListTableProps {
   incidents: Incident[];
   isLoading?: boolean;
@@ -56,6 +68,7 @@ interface IncidentListTableProps {
   pageSize?: number;
   totalCount?: number;
   onPageChange?: (page: number) => void;
+  onPageSizeChange?: (size: number) => void;
   visibleColumns?: ColumnConfig[];
   density?: TableDensity;
 }
@@ -64,6 +77,9 @@ interface IncidentListTableProps {
 const HEADER_TEXT = 'text-[10px] font-semibold text-muted-foreground uppercase tracking-wider';
 const CELL_TEXT = 'text-[12px] leading-4 text-foreground';
 const CELL_MUTED = 'text-[12px] leading-4 text-muted-foreground';
+
+// Grid cell base styles - ensure consistent box model
+const GRID_CELL_BASE = 'min-w-0 overflow-hidden';
 
 // Status options for inline editing
 const STATUS_OPTIONS = [
@@ -106,22 +122,14 @@ const DEFAULT_VISIBLE_COLUMNS: ColumnConfig[] = [
   { id: 'committee', label: 'Committee', visible: true },
 ];
 
-function LoadingSkeleton({ columnWidths, visibleColumns }: { columnWidths: Record<string, number>; visibleColumns: ColumnConfig[] }) {
+function LoadingSkeleton({ 
+  gridTemplate, 
+  visibleColumns 
+}: { 
+  gridTemplate: string; 
+  visibleColumns: ColumnConfig[];
+}) {
   const isColumnVisible = (colId: string) => visibleColumns.some(c => c.id === colId && c.visible !== false);
-  
-  // Build grid template - ALL columns use fixed pixel widths
-  const gridTemplate = useMemo(() => {
-    const cols: string[] = [];
-    COLUMN_ORDER.forEach(colId => {
-      if (colId === 'actions') {
-        cols.push('40px');
-      } else if (isColumnVisible(colId)) {
-        cols.push(`${columnWidths[colId]}px`);
-      }
-    });
-    return cols.join(' ');
-  }, [columnWidths, visibleColumns]);
-
   const isCentered = (colId: string) => CENTER_ALIGNED_COLUMNS.includes(colId);
 
   return (
@@ -131,18 +139,62 @@ function LoadingSkeleton({ columnWidths, visibleColumns }: { columnWidths: Recor
         className="grid items-center h-8 bg-muted/40 border-b border-border"
         style={{ gridTemplateColumns: gridTemplate }}
       >
-        {isColumnVisible('key') && <div className="pl-3 pr-2 flex items-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>KEY</span></div>}
-        {isColumnVisible('summary') && <div className="pr-2 flex items-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>SUMMARY</span></div>}
-        {isColumnVisible('severity') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>SEV</span></div>}
-        {isColumnVisible('level') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>LVL</span></div>}
-        {isColumnVisible('status') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>STATUS</span></div>}
-        {isColumnVisible('assignee') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>ASSIGNEE</span></div>}
-        {isColumnVisible('age') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>AGE</span></div>}
-        {isColumnVisible('sla') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>SLA</span></div>}
-        {isColumnVisible('releaseVersion') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>RELEASE</span></div>}
-        {isColumnVisible('major') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>MAJOR</span></div>}
-        {isColumnVisible('committee') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>COMMITTEE</span></div>}
-        <div className="flex items-center h-full min-w-0"></div>
+        {isColumnVisible('key') && (
+          <div className={cn(GRID_CELL_BASE, "pl-3 pr-2 flex items-center h-full")}>
+            <span className={cn(HEADER_TEXT, "truncate")}>KEY</span>
+          </div>
+        )}
+        {isColumnVisible('summary') && (
+          <div className={cn(GRID_CELL_BASE, "pr-2 flex items-center h-full")}>
+            <span className={cn(HEADER_TEXT, "truncate")}>SUMMARY</span>
+          </div>
+        )}
+        {isColumnVisible('severity') && (
+          <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
+            <span className={cn(HEADER_TEXT, "truncate")}>SEV</span>
+          </div>
+        )}
+        {isColumnVisible('level') && (
+          <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
+            <span className={cn(HEADER_TEXT, "truncate")}>LVL</span>
+          </div>
+        )}
+        {isColumnVisible('status') && (
+          <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
+            <span className={cn(HEADER_TEXT, "truncate")}>STATUS</span>
+          </div>
+        )}
+        {isColumnVisible('assignee') && (
+          <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
+            <span className={cn(HEADER_TEXT, "truncate")}>ASSIGNEE</span>
+          </div>
+        )}
+        {isColumnVisible('age') && (
+          <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
+            <span className={cn(HEADER_TEXT, "truncate")}>AGE</span>
+          </div>
+        )}
+        {isColumnVisible('sla') && (
+          <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
+            <span className={cn(HEADER_TEXT, "truncate")}>SLA</span>
+          </div>
+        )}
+        {isColumnVisible('releaseVersion') && (
+          <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
+            <span className={cn(HEADER_TEXT, "truncate")}>RELEASE</span>
+          </div>
+        )}
+        {isColumnVisible('major') && (
+          <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
+            <span className={cn(HEADER_TEXT, "truncate")}>MAJOR</span>
+          </div>
+        )}
+        {isColumnVisible('committee') && (
+          <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
+            <span className={cn(HEADER_TEXT, "truncate")}>COMMITTEE</span>
+          </div>
+        )}
+        <div className={cn(GRID_CELL_BASE, "flex items-center h-full")}></div>
       </div>
       {/* Skeleton rows - exactly 36px each */}
       {[...Array(12)].map((_, i) => (
@@ -151,18 +203,62 @@ function LoadingSkeleton({ columnWidths, visibleColumns }: { columnWidths: Recor
           className="grid items-center h-9 border-b border-border last:border-b-0"
           style={{ gridTemplateColumns: gridTemplate }}
         >
-          {isColumnVisible('key') && <div className="pl-3 pr-2 flex items-center h-full min-w-0 overflow-hidden"><Skeleton className="h-3.5 w-14" /></div>}
-          {isColumnVisible('summary') && <div className="pr-2 flex items-center h-full min-w-0 overflow-hidden"><Skeleton className="h-3.5 w-full max-w-[90%]" /></div>}
-          {isColumnVisible('severity') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><Skeleton className="h-5 w-14 rounded-full" /></div>}
-          {isColumnVisible('level') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><Skeleton className="h-3.5 w-6" /></div>}
-          {isColumnVisible('status') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><Skeleton className="h-5 w-20 rounded-full" /></div>}
-          {isColumnVisible('assignee') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><Skeleton className="h-4 w-24" /></div>}
-          {isColumnVisible('age') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><Skeleton className="h-3.5 w-8" /></div>}
-          {isColumnVisible('sla') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><Skeleton className="h-3.5 w-14" /></div>}
-          {isColumnVisible('releaseVersion') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><Skeleton className="h-3.5 w-16" /></div>}
-          {isColumnVisible('major') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><Skeleton className="h-3.5 w-10" /></div>}
-          {isColumnVisible('committee') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><Skeleton className="h-3.5 w-16" /></div>}
-          <div className="flex items-center h-full min-w-0"></div>
+          {isColumnVisible('key') && (
+            <div className={cn(GRID_CELL_BASE, "pl-3 pr-2 flex items-center h-full")}>
+              <Skeleton className="h-3.5 w-14" />
+            </div>
+          )}
+          {isColumnVisible('summary') && (
+            <div className={cn(GRID_CELL_BASE, "pr-2 flex items-center h-full")}>
+              <Skeleton className="h-3.5 w-full max-w-[90%]" />
+            </div>
+          )}
+          {isColumnVisible('severity') && (
+            <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
+              <Skeleton className="h-5 w-14 rounded-full" />
+            </div>
+          )}
+          {isColumnVisible('level') && (
+            <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
+              <Skeleton className="h-3.5 w-6" />
+            </div>
+          )}
+          {isColumnVisible('status') && (
+            <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
+              <Skeleton className="h-5 w-20 rounded-full" />
+            </div>
+          )}
+          {isColumnVisible('assignee') && (
+            <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
+              <Skeleton className="h-4 w-24" />
+            </div>
+          )}
+          {isColumnVisible('age') && (
+            <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
+              <Skeleton className="h-3.5 w-8" />
+            </div>
+          )}
+          {isColumnVisible('sla') && (
+            <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
+              <Skeleton className="h-3.5 w-14" />
+            </div>
+          )}
+          {isColumnVisible('releaseVersion') && (
+            <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
+              <Skeleton className="h-3.5 w-16" />
+            </div>
+          )}
+          {isColumnVisible('major') && (
+            <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
+              <Skeleton className="h-3.5 w-10" />
+            </div>
+          )}
+          {isColumnVisible('committee') && (
+            <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
+              <Skeleton className="h-3.5 w-16" />
+            </div>
+          )}
+          <div className={cn(GRID_CELL_BASE, "flex items-center h-full")}></div>
         </div>
       ))}
     </div>
@@ -173,9 +269,10 @@ export function IncidentListTable({
   incidents, 
   isLoading,
   page = 1,
-  pageSize = 40,
+  pageSize: externalPageSize,
   totalCount,
   onPageChange,
+  onPageSizeChange,
   visibleColumns = DEFAULT_VISIBLE_COLUMNS,
   density = 'compact',
 }: IncidentListTableProps) {
@@ -187,6 +284,23 @@ export function IncidentListTable({
     id: '', 
     key: '' 
   });
+  
+  // Local page size state with localStorage persistence
+  const [localPageSize, setLocalPageSize] = useState<number>(() => {
+    try {
+      const saved = localStorage.getItem(PAGE_SIZE_STORAGE_KEY);
+      if (saved) {
+        const parsed = parseInt(saved, 10);
+        if (PAGE_SIZE_OPTIONS.includes(parsed)) return parsed;
+      }
+    } catch (e) {
+      // Ignore
+    }
+    return externalPageSize || 25;
+  });
+  
+  // Use external page size if provided, otherwise use local
+  const effectivePageSize = externalPageSize || localPageSize;
   
   const containerRef = useRef<HTMLDivElement>(null);
   
@@ -215,36 +329,49 @@ export function IncidentListTable({
     return () => resizeObserver.disconnect();
   }, [recalculateWidths]);
 
-  const isColumnVisible = (colId: string) => visibleColumns.some(c => c.id === colId && c.visible !== false);
-  const isCentered = (colId: string) => CENTER_ALIGNED_COLUMNS.includes(colId);
-
-  // Build CSS Grid template string - shared by header and body
-  // Uses width: 100% on container to fill available space
-  const gridTemplate = useMemo(() => {
-    const cols: string[] = [];
-    COLUMN_ORDER.forEach(colId => {
-      if (colId === 'actions') {
-        cols.push('40px');
-      } else if (isColumnVisible(colId)) {
-        cols.push(`${columnWidths[colId]}px`);
-      }
-    });
-    return cols.join(' ');
-  }, [columnWidths, visibleColumns]);
+  const isColumnVisible = useCallback((colId: string) => 
+    visibleColumns.some(c => c.id === colId && c.visible !== false),
+    [visibleColumns]
+  );
+  
+  // Build CSS Grid template string using the shared function - SINGLE SOURCE OF TRUTH
+  const gridTemplate = useMemo(() => 
+    getGridTemplate(columnWidths, isColumnVisible),
+    [columnWidths, isColumnVisible]
+  );
 
   // Calculate total table width
   const totalTableWidth = useMemo(() => {
     let width = 40; // Actions column
     COLUMN_ORDER.forEach(colId => {
       if (colId !== 'actions' && isColumnVisible(colId)) {
-        width += columnWidths[colId];
+        width += columnWidths[colId] || MIN_COLUMN_WIDTHS[colId] || 60;
       }
     });
     return width;
-  }, [columnWidths, visibleColumns]);
+  }, [columnWidths, isColumnVisible]);
+  
+  // Pagination calculations
+  const totalPages = totalCount ? Math.ceil(totalCount / effectivePageSize) : 1;
+  const startItem = ((page - 1) * effectivePageSize) + 1;
+  const endItem = Math.min(page * effectivePageSize, totalCount || 0);
+  
+  // Handle page size change
+  const handlePageSizeChange = useCallback((newSize: string) => {
+    const size = parseInt(newSize, 10);
+    setLocalPageSize(size);
+    try {
+      localStorage.setItem(PAGE_SIZE_STORAGE_KEY, newSize);
+    } catch (e) {
+      // Ignore
+    }
+    onPageSizeChange?.(size);
+    // Reset to page 1 when page size changes
+    onPageChange?.(1);
+  }, [onPageSizeChange, onPageChange]);
   
   if (isLoading) {
-    return <LoadingSkeleton columnWidths={columnWidths} visibleColumns={visibleColumns} />;
+    return <LoadingSkeleton gridTemplate={gridTemplate} visibleColumns={visibleColumns} />;
   }
 
   const handleRowClick = (incidentId: string, e: React.MouseEvent) => {
@@ -290,7 +417,7 @@ export function IncidentListTable({
           ref={containerRef}
           className="rounded-md border border-border overflow-hidden bg-card flex-1"
         >
-          <div className="overflow-x-auto w-full">
+          <div className="overflow-x-auto w-full h-full">
             {/* Grid table - min-width ensures it can grow for horizontal scroll */}
             <div style={{ minWidth: `${totalTableWidth}px`, width: '100%' }}>
               {/* Header row - exactly 32px height, CSS Grid layout */}
@@ -306,7 +433,7 @@ export function IncidentListTable({
                     minWidth={MIN_COLUMN_WIDTHS.key}
                     maxWidth={MAX_COLUMN_WIDTHS.key}
                     onResize={handleColumnResize}
-                    className="pl-3 pr-2"
+                    className={cn(GRID_CELL_BASE, "pl-3 pr-2")}
                   >
                     <span className={HEADER_TEXT}>KEY</span>
                   </ResizableHeader>
@@ -319,7 +446,7 @@ export function IncidentListTable({
                     minWidth={MIN_COLUMN_WIDTHS.summary}
                     maxWidth={MAX_COLUMN_WIDTHS.summary}
                     onResize={handleColumnResize}
-                    className="pr-2"
+                    className={cn(GRID_CELL_BASE, "pr-2")}
                   >
                     <span className={HEADER_TEXT}>SUMMARY</span>
                   </ResizableHeader>
@@ -332,7 +459,7 @@ export function IncidentListTable({
                     minWidth={MIN_COLUMN_WIDTHS.severity}
                     maxWidth={MAX_COLUMN_WIDTHS.severity}
                     onResize={handleColumnResize}
-                    className="px-2 justify-center"
+                    className={cn(GRID_CELL_BASE, "px-2")}
                     centered
                   >
                     <span className={HEADER_TEXT}>SEV</span>
@@ -346,7 +473,7 @@ export function IncidentListTable({
                     minWidth={MIN_COLUMN_WIDTHS.level}
                     maxWidth={MAX_COLUMN_WIDTHS.level}
                     onResize={handleColumnResize}
-                    className="px-2 justify-center"
+                    className={cn(GRID_CELL_BASE, "px-2")}
                     centered
                   >
                     <span className={HEADER_TEXT}>LVL</span>
@@ -360,7 +487,7 @@ export function IncidentListTable({
                     minWidth={MIN_COLUMN_WIDTHS.status}
                     maxWidth={MAX_COLUMN_WIDTHS.status}
                     onResize={handleColumnResize}
-                    className="px-2 justify-center"
+                    className={cn(GRID_CELL_BASE, "px-2")}
                     centered
                   >
                     <span className={HEADER_TEXT}>STATUS</span>
@@ -374,7 +501,7 @@ export function IncidentListTable({
                     minWidth={MIN_COLUMN_WIDTHS.assignee}
                     maxWidth={MAX_COLUMN_WIDTHS.assignee}
                     onResize={handleColumnResize}
-                    className="px-2 justify-center"
+                    className={cn(GRID_CELL_BASE, "px-2")}
                     centered
                   >
                     <span className={HEADER_TEXT}>ASSIGNEE</span>
@@ -388,7 +515,7 @@ export function IncidentListTable({
                     minWidth={MIN_COLUMN_WIDTHS.age}
                     maxWidth={MAX_COLUMN_WIDTHS.age}
                     onResize={handleColumnResize}
-                    className="px-2 justify-center"
+                    className={cn(GRID_CELL_BASE, "px-2")}
                     centered
                   >
                     <span className={HEADER_TEXT}>AGE</span>
@@ -402,7 +529,7 @@ export function IncidentListTable({
                     minWidth={MIN_COLUMN_WIDTHS.sla}
                     maxWidth={MAX_COLUMN_WIDTHS.sla}
                     onResize={handleColumnResize}
-                    className="px-2 justify-center"
+                    className={cn(GRID_CELL_BASE, "px-2")}
                     centered
                   >
                     <span className={HEADER_TEXT}>SLA</span>
@@ -416,7 +543,7 @@ export function IncidentListTable({
                     minWidth={MIN_COLUMN_WIDTHS.releaseVersion}
                     maxWidth={MAX_COLUMN_WIDTHS.releaseVersion}
                     onResize={handleColumnResize}
-                    className="px-2 justify-center"
+                    className={cn(GRID_CELL_BASE, "px-2")}
                     centered
                   >
                     <span className={HEADER_TEXT}>RELEASE</span>
@@ -430,7 +557,7 @@ export function IncidentListTable({
                     minWidth={MIN_COLUMN_WIDTHS.major}
                     maxWidth={MAX_COLUMN_WIDTHS.major}
                     onResize={handleColumnResize}
-                    className="px-2 justify-center"
+                    className={cn(GRID_CELL_BASE, "px-2")}
                     centered
                   >
                     <span className={HEADER_TEXT}>MAJOR</span>
@@ -444,14 +571,14 @@ export function IncidentListTable({
                     minWidth={MIN_COLUMN_WIDTHS.committee}
                     maxWidth={MAX_COLUMN_WIDTHS.committee}
                     onResize={handleColumnResize}
-                    className="px-2 justify-center"
+                    className={cn(GRID_CELL_BASE, "px-2")}
                     centered
                   >
                     <span className={HEADER_TEXT}>COMMITTEE</span>
                   </ResizableHeader>
                 )}
                 {/* Actions header - fixed 40px */}
-                <div className="flex items-center h-full"></div>
+                <div className={cn(GRID_CELL_BASE, "flex items-center h-full")}></div>
               </div>
 
               {/* Body */}
@@ -484,9 +611,9 @@ export function IncidentListTable({
                         if (e.key === 'Enter' && incident.id) navigate(`/release/incidents/${incident.id}`);
                       }}
                     >
-                      {/* Key - left aligned, min-w-0 prevents grid cell bleed */}
+                      {/* Key - left aligned */}
                       {isColumnVisible('key') && (
-                        <div className="pl-3 pr-2 flex items-center h-full min-w-0 overflow-hidden">
+                        <div className={cn(GRID_CELL_BASE, "pl-3 pr-2 flex items-center h-full")}>
                           <Link 
                             to={`/release/incidents/${incident.id}`} 
                             className={cn(CELL_TEXT, "font-medium text-primary hover:underline truncate")}
@@ -505,10 +632,10 @@ export function IncidentListTable({
                         </div>
                       )}
                       
-                      {/* Summary - left aligned, single line, ellipsis, tooltip on hover */}
+                      {/* Summary - left aligned */}
                       {isColumnVisible('summary') && (
                         <div 
-                          className="pr-2 flex items-center h-full min-w-0 overflow-hidden" 
+                          className={cn(GRID_CELL_BASE, "pr-2 flex items-center h-full")} 
                           data-inline-edit
                         >
                           <InlineEditCell
@@ -532,7 +659,7 @@ export function IncidentListTable({
                       {/* Severity - center aligned */}
                       {isColumnVisible('severity') && (
                         <div 
-                          className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden" 
+                          className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")} 
                           data-inline-edit
                         >
                           <InlineEditCell
@@ -550,7 +677,7 @@ export function IncidentListTable({
                       {/* Level - center aligned */}
                       {isColumnVisible('level') && (
                         <div 
-                          className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden" 
+                          className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")} 
                           data-inline-edit
                         >
                           <InlineEditCell
@@ -574,7 +701,7 @@ export function IncidentListTable({
                       {/* Status - center aligned */}
                       {isColumnVisible('status') && (
                         <div 
-                          className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden" 
+                          className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")} 
                           data-inline-edit
                         >
                           <InlineEditCell
@@ -592,7 +719,7 @@ export function IncidentListTable({
                       {/* Assignee - center aligned */}
                       {isColumnVisible('assignee') && (
                         <div 
-                          className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"
+                          className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}
                           data-inline-edit
                         >
                           <InlineUserPicker
@@ -606,14 +733,14 @@ export function IncidentListTable({
                       
                       {/* Age - center aligned */}
                       {isColumnVisible('age') && (
-                        <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden">
+                        <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
                           <span className={cn(CELL_MUTED, "tabular-nums text-[11px] truncate")}>{age}</span>
                         </div>
                       )}
                       
                       {/* SLA - center aligned */}
                       {isColumnVisible('sla') && (
-                        <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden">
+                        <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
                           {slaStatus ? (
                             <SlaPill status={slaStatus} />
                           ) : (
@@ -625,7 +752,7 @@ export function IncidentListTable({
                       {/* Release - center aligned */}
                       {isColumnVisible('releaseVersion') && (
                         <div 
-                          className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"
+                          className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}
                           data-inline-edit
                         >
                           <InlineReleasePicker
@@ -640,7 +767,7 @@ export function IncidentListTable({
                       {/* Major - center aligned */}
                       {isColumnVisible('major') && (
                         <div 
-                          className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden" 
+                          className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")} 
                           data-inline-edit
                         >
                           <InlineEditCell
@@ -656,13 +783,13 @@ export function IncidentListTable({
 
                       {/* Committee - center aligned */}
                       {isColumnVisible('committee') && (
-                        <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden">
+                        <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
                           <CommitteePill status={committeeStatus.status} label={committeeStatus.label} />
                         </div>
                       )}
 
                       {/* Actions */}
-                      <div className="flex items-center justify-center h-full">
+                      <div className={cn(GRID_CELL_BASE, "flex items-center justify-center h-full")}>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                             <button 
@@ -733,40 +860,62 @@ export function IncidentListTable({
           </div>
         </div>
 
-        {/* Pagination */}
+        {/* Pagination Footer */}
         {totalCount !== undefined && totalCount > 0 && (
-          <div className="flex items-center justify-between px-3 py-2 border-t border-border bg-card flex-shrink-0 mt-2 rounded-md">
-            <span className="text-xs text-muted-foreground">
-              {totalCount > pageSize 
-                ? `${((page - 1) * pageSize) + 1}–${Math.min(page * pageSize, totalCount)} of ${totalCount}`
-                : `${totalCount} incident${totalCount !== 1 ? 's' : ''}`
-              }
-            </span>
-            {totalCount > pageSize && onPageChange && (
+          <div className="flex items-center justify-between px-4 py-2.5 border-t border-border bg-card flex-shrink-0 mt-2 rounded-md">
+            {/* Left side: Range text */}
+            <div className="flex items-center gap-4">
+              <span className="text-xs text-muted-foreground">
+                Showing {startItem}–{endItem} of {totalCount} incident{totalCount !== 1 ? 's' : ''}
+              </span>
+            </div>
+
+            {/* Center: Page size selector */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground">Rows per page:</span>
+              <Select 
+                value={effectivePageSize.toString()} 
+                onValueChange={handlePageSizeChange}
+              >
+                <SelectTrigger className="h-7 w-16 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PAGE_SIZE_OPTIONS.map(size => (
+                    <SelectItem key={size} value={size.toString()} className="text-xs">
+                      {size}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Right side: Page navigation */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground">
+                Page {page} of {totalPages}
+              </span>
               <div className="flex items-center gap-1">
                 <Button
                   variant="outline"
                   size="sm"
-                  className="h-7 px-2 text-xs"
+                  className="h-7 w-7 p-0"
                   disabled={page <= 1}
-                  onClick={() => onPageChange(page - 1)}
+                  onClick={() => onPageChange?.(page - 1)}
                 >
-                  Previous
+                  <ChevronLeft className="h-4 w-4" />
                 </Button>
-                <span className="text-xs text-muted-foreground px-2">
-                  {page} / {Math.ceil(totalCount / pageSize)}
-                </span>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="h-7 px-2 text-xs"
-                  disabled={page * pageSize >= totalCount}
-                  onClick={() => onPageChange(page + 1)}
+                  className="h-7 w-7 p-0"
+                  disabled={page >= totalPages}
+                  onClick={() => onPageChange?.(page + 1)}
                 >
-                  Next
+                  <ChevronRight className="h-4 w-4" />
                 </Button>
               </div>
-            )}
+            </div>
           </div>
         )}
       </div>
