@@ -1,9 +1,20 @@
+/**
+ * FeatureTable — Slim Framework
+ * 
+ * Columns (essential only):
+ * - ID, Name, Epic, Status, Health, Blocked (icon), Progress (story-driven), Owner
+ * 
+ * REMOVED: Points, WSJF, PI/Iteration, Budget, Program, Team
+ */
+
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { HealthBadge } from '@/components/shared/HealthBadge';
-import { ArrowUpDown } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { ArrowUpDown, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useMultipleFeatureProgress } from '@/hooks/useFeatureProgress';
 import type { Feature } from '@/types/feature.types';
 
 interface FeatureTableProps {
@@ -21,6 +32,9 @@ export function FeatureTable({
   onRowClick,
   onSortChange,
 }: FeatureTableProps) {
+  // Batch fetch progress for all features
+  const { data: progressMap } = useMultipleFeatureProgress(features.map(f => f.id));
+
   const toggleSelectAll = () => {
     if (selectedIds.length === features.length) {
       onSelectionChange([]);
@@ -41,102 +55,113 @@ export function FeatureTable({
     if (!status) return <Badge variant="secondary">New</Badge>;
     const variants: Record<string, "default" | "destructive" | "outline" | "secondary"> = {
       'funnel': 'secondary',
+      'analyzing': 'outline',
       'backlog': 'outline',
       'implementing': 'default',
-      'validating': 'default',
-      'deploying': 'default',
-      'done': 'outline',
+      'done': 'secondary',
     };
-    return <Badge variant={variants[status] || 'secondary'}>{status.replace(/_/g, ' ')}</Badge>;
+    const labels: Record<string, string> = {
+      'funnel': 'Funnel',
+      'analyzing': 'Analyzing',
+      'backlog': 'Backlog',
+      'implementing': 'Implementing',
+      'done': 'Done',
+    };
+    return <Badge variant={variants[status] || 'secondary'}>{labels[status] || status}</Badge>;
   };
 
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-12">
+          <TableHead className="w-10">
             <Checkbox
               checked={selectedIds.length === features.length && features.length > 0}
               onCheckedChange={toggleSelectAll}
             />
           </TableHead>
-          <TableHead>
+          <TableHead className="w-24">
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 px-2"
+              className="h-8 px-2 -ml-2"
               onClick={() => onSortChange('display_id', 'asc')}
             >
               ID
-              <ArrowUpDown className="ml-2 h-3 w-3" />
+              <ArrowUpDown className="ml-1 h-3 w-3" />
             </Button>
           </TableHead>
-          <TableHead>
+          <TableHead className="min-w-[200px]">
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 px-2"
+              className="h-8 px-2 -ml-2"
               onClick={() => onSortChange('name', 'asc')}
             >
               Name
-              <ArrowUpDown className="ml-2 h-3 w-3" />
+              <ArrowUpDown className="ml-1 h-3 w-3" />
             </Button>
           </TableHead>
           <TableHead>Epic</TableHead>
-          <TableHead>Program</TableHead>
-          <TableHead>Team</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Health</TableHead>
-          <TableHead>Points</TableHead>
-          <TableHead>Progress</TableHead>
+          <TableHead className="w-10 text-center">
+            <span title="Blocked">🚫</span>
+          </TableHead>
+          <TableHead className="w-32">Progress</TableHead>
+          <TableHead>Owner</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {features.map((feature) => (
-          <TableRow
-            key={feature.id}
-            className="cursor-pointer hover:bg-muted/50"
-            onClick={() => onRowClick(feature.id)}
-          >
-            <TableCell onClick={(e) => e.stopPropagation()}>
-              <Checkbox
-                checked={selectedIds.includes(feature.id)}
-                onCheckedChange={() => toggleRowSelection(feature.id)}
-              />
-            </TableCell>
-            <TableCell className="font-mono text-sm">
-              {feature.display_id || feature.id.slice(0, 8)}
-            </TableCell>
-            <TableCell className="font-medium">{feature.name}</TableCell>
-            <TableCell className="text-sm text-muted-foreground">
-              {(feature as any).epics?.name || '-'}
-            </TableCell>
-            <TableCell className="text-sm text-muted-foreground">
-              {(feature as any).programs?.name || '-'}
-            </TableCell>
-            <TableCell className="text-sm text-muted-foreground">
-              {(feature as any).teams?.name || '-'}
-            </TableCell>
-            <TableCell>{getStatusBadge(feature.status)}</TableCell>
-            <TableCell>
-              <HealthBadge health={(feature.health as 'green' | 'yellow' | 'red') || 'green'} />
-            </TableCell>
-            <TableCell>{feature.estimate_points || 0}</TableCell>
-            <TableCell>
-              <div className="w-24">
-                <div className="text-xs text-muted-foreground mb-1">
-                  {feature.progress_pct || 0}%
-                </div>
-                <div className="h-2 bg-muted rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-primary transition-all"
-                    style={{ width: `${feature.progress_pct || 0}%` }}
-                  />
-                </div>
-              </div>
-            </TableCell>
-          </TableRow>
-        ))}
+        {features.map((feature) => {
+          const progress = progressMap?.[feature.id];
+          return (
+            <TableRow
+              key={feature.id}
+              className="cursor-pointer hover:bg-muted/50"
+              onClick={() => onRowClick(feature.id)}
+            >
+              <TableCell onClick={(e) => e.stopPropagation()}>
+                <Checkbox
+                  checked={selectedIds.includes(feature.id)}
+                  onCheckedChange={() => toggleRowSelection(feature.id)}
+                />
+              </TableCell>
+              <TableCell className="font-mono text-xs text-muted-foreground">
+                {feature.display_id || feature.id.slice(0, 8)}
+              </TableCell>
+              <TableCell className="font-medium">{feature.name}</TableCell>
+              <TableCell className="text-sm text-muted-foreground">
+                {(feature as any).epics?.name || '-'}
+              </TableCell>
+              <TableCell>{getStatusBadge(feature.status)}</TableCell>
+              <TableCell>
+                <HealthBadge health={(feature.health as 'green' | 'yellow' | 'red') || 'green'} />
+              </TableCell>
+              <TableCell className="text-center">
+                {feature.blocked && (
+                  <AlertCircle className="h-4 w-4 text-destructive mx-auto" />
+                )}
+              </TableCell>
+              <TableCell>
+                {progress ? (
+                  <div className="w-full space-y-0.5">
+                    <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+                      <span>{progress.completedStories}/{progress.totalStories}</span>
+                      <span>{progress.completionPercent}%</span>
+                    </div>
+                    <Progress value={progress.completionPercent} className="h-1.5" />
+                  </div>
+                ) : (
+                  <span className="text-xs text-muted-foreground">—</span>
+                )}
+              </TableCell>
+              <TableCell className="text-sm text-muted-foreground">
+                {(feature as any).owner?.full_name || '-'}
+              </TableCell>
+            </TableRow>
+          );
+        })}
       </TableBody>
     </Table>
   );
