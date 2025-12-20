@@ -5,7 +5,7 @@
  */
 
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Plus, List, BarChart3, Lightbulb, Kanban } from 'lucide-react';
+import { List, BarChart3, Lightbulb, Kanban } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -73,21 +73,16 @@ export function IncidentCommandBar({ onCreateClick, additionalActions }: Inciden
 
         {/* Right: Actions */}
         <div className="flex items-center gap-2 sm:gap-3 flex-wrap sm:flex-nowrap">
-          {additionalActions && (
-            <>
-              {additionalActions}
-              <div className="hidden sm:block h-6 w-px bg-border" />
-            </>
-          )}
+          {/* Secondary actions - rendered with lower emphasis */}
+          {additionalActions}
           
           {/* Primary CTA: Create Incident */}
           <Button 
             size="sm"
             onClick={onCreateClick}
-            className="h-9 px-3 sm:px-4 text-xs sm:text-sm font-medium bg-brand-primary hover:bg-brand-primary-hover text-white"
+            className="h-9 px-3 sm:px-4 text-xs sm:text-sm font-medium bg-primary hover:bg-primary/90 text-primary-foreground"
           >
-            <Plus className="h-4 w-4 mr-1 sm:mr-1.5 flex-shrink-0" />
-            <span className="whitespace-nowrap">Create Incident</span>
+            <span className="whitespace-nowrap">+ Create Incident</span>
           </Button>
         </div>
       </div>
