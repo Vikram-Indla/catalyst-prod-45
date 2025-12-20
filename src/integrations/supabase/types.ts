@@ -4470,6 +4470,7 @@ export type Database = {
           created_by: string | null
           decided_at: string | null
           decision_note: string | null
+          due_date: string | null
           id: string
           incident_id: string | null
           required_approvals: number | null
@@ -4481,6 +4482,7 @@ export type Database = {
           created_by?: string | null
           decided_at?: string | null
           decision_note?: string | null
+          due_date?: string | null
           id?: string
           incident_id?: string | null
           required_approvals?: number | null
@@ -4492,6 +4494,7 @@ export type Database = {
           created_by?: string | null
           decided_at?: string | null
           decision_note?: string | null
+          due_date?: string | null
           id?: string
           incident_id?: string | null
           required_approvals?: number | null

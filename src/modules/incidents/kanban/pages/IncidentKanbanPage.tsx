@@ -3,7 +3,7 @@
  * Production-grade Kanban board for Incident management
  */
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Loader2, AlertCircle, RefreshCw, Settings2, ChevronsLeftRight, ChevronsRightLeft, MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -29,12 +29,15 @@ import { IncidentCommandBar } from '@/components/incidents/IncidentCommandBar';
 import { CreateIncidentModal, IncidentFormData } from '@/components/incidents/CreateIncidentModal';
 import { useIncidents, useUpdateIncident, useCreateIncident } from '@/hooks/useIncidents';
 import { useUserRole } from '@/hooks/useUserRole';
+import { useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 import { KanbanColumn } from '../components/KanbanColumn';
 import { KanbanSwimlane } from '../components/KanbanSwimlane';
 import { ManageColumnsDialog } from '../components/ManageColumnsDialog';
 import { QuickFilterChips } from '../components/QuickFilterChips';
+import { SetCommitteeApproversModal, CommitteeSetupData } from '../components/SetCommitteeApproversModal';
 import { useKanbanColumnPrefs } from '../hooks/useKanbanColumnPrefs';
 import { useKanbanColumnConfig } from '../hooks/useKanbanColumnConfig';
 import {
@@ -49,8 +52,16 @@ import {
 } from '../types';
 import type { Incident, IncidentStatus } from '@/types/incident';
 
+// Pending committee drop context
+interface PendingCommitteeDrop {
+  incidentId: string;
+  incident: Incident;
+  previousStatus: IncidentStatus;
+}
+
 export default function IncidentKanbanPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { isAdmin } = useUserRole();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [manageColumnsOpen, setManageColumnsOpen] = useState(false);
@@ -59,6 +70,10 @@ export default function IncidentKanbanPage() {
   const [quickFilters, setQuickFilters] = useState<QuickFilterKey[]>([]);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [optimisticUpdates, setOptimisticUpdates] = useState<Record<string, IncidentStatus>>({});
+  
+  // Committee modal state
+  const [committeeModalOpen, setCommitteeModalOpen] = useState(false);
+  const pendingCommitteeDrop = useRef<PendingCommitteeDrop | null>(null);
 
   const { data: incidents, isLoading, error, refetch } = useIncidents({});
   const updateIncident = useUpdateIncident();
@@ -177,11 +192,28 @@ export default function IncidentKanbanPage() {
     setDraggingId(null);
   }, []);
 
-  // Drop handler with optimistic update
+  // Drop handler with optimistic update - GATED for Committee column
   const handleDrop = useCallback(async (incidentId: string, newStatus: IncidentStatus) => {
     const incident = incidents?.find(i => i.id === incidentId);
     if (!incident || incident.status === newStatus) return;
 
+    // GATED: If dropping to Committee, show modal first
+    if (newStatus === 'to_committee') {
+      // Store the pending drop context
+      pendingCommitteeDrop.current = {
+        incidentId,
+        incident,
+        previousStatus: incident.status,
+      };
+      // Apply optimistic update to show card in Committee column
+      setOptimisticUpdates(prev => ({ ...prev, [incidentId]: newStatus }));
+      setDraggingId(null);
+      // Open the modal
+      setCommitteeModalOpen(true);
+      return;
+    }
+
+    // Normal drop flow for non-Committee statuses
     setOptimisticUpdates(prev => ({ ...prev, [incidentId]: newStatus }));
     setDraggingId(null);
 
@@ -208,6 +240,138 @@ export default function IncidentKanbanPage() {
       toast.error(`Failed to update status: ${err?.message || 'Unknown error'}`);
     }
   }, [incidents, updateIncident]);
+
+  // Handle Committee modal confirm
+  const handleCommitteeConfirm = useCallback(async (data: CommitteeSetupData) => {
+    const pending = pendingCommitteeDrop.current;
+    if (!pending) return;
+
+    const { incidentId, incident } = pending;
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      // 1. Create the committee record
+      const { data: newCommittee, error: createError } = await supabase
+        .from('incident_committees')
+        .insert({
+          incident_id: incidentId,
+          status: 'pending',
+          required_approvals: data.approverIds.length,
+          created_by: user?.id,
+          decision_note: data.notes || null,
+          due_date: data.dueDate || null,
+        })
+        .select()
+        .single();
+
+      if (createError) throw createError;
+
+      // 2. Add committee members
+      for (const userId of data.approverIds) {
+        const { error: memberError } = await supabase
+          .from('committee_members')
+          .insert({
+            committee_id: newCommittee.id,
+            user_id: userId,
+            has_veto: false,
+            role: null,
+          });
+
+        if (memberError) {
+          console.error('Failed to add member:', memberError);
+          continue;
+        }
+
+        // Create vote record for member
+        const { data: member } = await supabase
+          .from('committee_members')
+          .select('id')
+          .eq('committee_id', newCommittee.id)
+          .eq('user_id', userId)
+          .single();
+
+        if (member) {
+          await supabase.from('committee_votes').insert({
+            committee_id: newCommittee.id,
+            member_id: member.id,
+            vote: 'pending',
+          });
+        }
+      }
+
+      // 3. Update incident: link committee and set status
+      const { error: updateError } = await supabase
+        .from('incidents')
+        .update({
+          committee_id: newCommittee.id,
+          status: 'to_committee',
+          requires_committee: true,
+        })
+        .eq('id', incidentId);
+
+      if (updateError) throw updateError;
+
+      // 4. Log history
+      await supabase.from('incident_history').insert({
+        incident_id: incidentId,
+        field_name: 'status',
+        old_value: pending.previousStatus,
+        new_value: 'to_committee',
+        changed_by: user?.id,
+      });
+
+      await supabase.from('incident_history').insert({
+        incident_id: incidentId,
+        field_name: 'committee',
+        old_value: null,
+        new_value: `Committee created with ${data.approverIds.length} approver(s)`,
+        changed_by: user?.id,
+      });
+
+      // Clear optimistic update and pending context
+      setOptimisticUpdates(prev => {
+        const next = { ...prev };
+        delete next[incidentId];
+        return next;
+      });
+      pendingCommitteeDrop.current = null;
+      setCommitteeModalOpen(false);
+
+      // Invalidate queries to refresh data
+      queryClient.invalidateQueries({ queryKey: ['incidents'] });
+      queryClient.invalidateQueries({ queryKey: ['incident-committee', incidentId] });
+
+      toast.success('Moved to Committee with approvers configured');
+    } catch (err: any) {
+      console.error('Failed to set up committee:', err);
+      toast.error(`Failed to set up committee: ${err?.message || 'Unknown error'}`);
+      
+      // Revert optimistic update on error
+      setOptimisticUpdates(prev => {
+        const next = { ...prev };
+        delete next[incidentId];
+        return next;
+      });
+      pendingCommitteeDrop.current = null;
+      setCommitteeModalOpen(false);
+    }
+  }, [queryClient]);
+
+  // Handle Committee modal cancel - revert the drop
+  const handleCommitteeCancel = useCallback(() => {
+    const pending = pendingCommitteeDrop.current;
+    if (pending) {
+      // Revert optimistic update
+      setOptimisticUpdates(prev => {
+        const next = { ...prev };
+        delete next[pending.incidentId];
+        return next;
+      });
+      pendingCommitteeDrop.current = null;
+    }
+    setCommitteeModalOpen(false);
+  }, []);
 
   // Create incident handler
   const handleCreateIncident = async (formData: IncidentFormData) => {
@@ -432,6 +596,15 @@ export default function IncidentKanbanPage() {
             canRemove={canRemove}
           />
         )}
+
+        {/* Set Committee Approvers Modal */}
+        <SetCommitteeApproversModal
+          open={committeeModalOpen}
+          incidentKey={pendingCommitteeDrop.current?.incident?.incident_key}
+          incidentTitle={pendingCommitteeDrop.current?.incident?.title}
+          onConfirm={handleCommitteeConfirm}
+          onCancel={handleCommitteeCancel}
+        />
       </div>
     </TooltipProvider>
   );
