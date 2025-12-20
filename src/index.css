@@ -263,14 +263,20 @@
   --border-accent: rgba(92, 124, 92, 0.3);
   --border-card: rgba(92, 124, 92, 0.25);
   
-  /* Text */
-  --text-primary: #24292F;
-  --text-secondary: #4A5568;
-  --text-secondary-strong: #3D4852;
-  --text-muted: #6B7785;
-  --text-faint: #B1B8C0;
+  /* Text - SEMANTIC TYPOGRAPHY CONTRACT */
+  --text-primary: #24292F;       /* Highest contrast - body, titles, values */
+  --text-secondary: #4A5568;     /* Normal UI labels, nav items, tabs, table headers */
+  --text-tertiary: #6B7785;      /* METADATA ONLY: timestamps, hints, helper text */
+  --text-disabled: #A0AEC0;      /* Disabled states ONLY */
+  --text-muted: #6B7785;         /* DEPRECATED: Use --text-tertiary instead */
+  --text-faint: #B1B8C0;         /* Decorative only */
   --text-link: #5C7C5C;
   --text-link-hover: #4A6A4A;
+  
+  /* Status Text Colors - readable contrast */
+  --text-danger: #B85C5C;
+  --text-warning: #9A7B4F;
+  --text-success: #4A6A4A;
   
   /* Shadows */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
@@ -394,19 +400,26 @@
   --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.2);
   
   /* ═══════════════════════════════════════════════════════════════
-     TEXT COLORS (WCAG AA Compliant)
+     TEXT COLORS (WCAG AA Compliant) - SEMANTIC TYPOGRAPHY CONTRACT
      ═══════════════════════════════════════════════════════════════ */
   --text-1: #E6EDF3;            /* Contrast: 15.4:1 */
   --text-2: #A8B4C2;            /* Contrast: 7.8:1 */
   --text-3: #768390;            /* Contrast: 4.8:1 */
   --text-inverse: #0D1117;
   --nav-text: #A8B4C2;
-  --text-primary: #E6EDF3;
-  --text-secondary: #A8B4C2;
+  --text-primary: #E6EDF3;       /* Highest contrast - body, titles, values */
+  --text-secondary: #A8B4C2;     /* Normal UI labels, nav items, tabs, headers */
+  --text-tertiary: #8B96A4;      /* METADATA ONLY: timestamps, hints, helper text */
+  --text-disabled: #545D68;      /* Disabled states ONLY */
   --text-secondary-strong: #B8C4D2;
-  --text-muted: #8B96A4;
-  --text-faint: #545D68;        /* Decorative only */
+  --text-muted: #8B96A4;         /* DEPRECATED: Use --text-tertiary instead */
+  --text-faint: #545D68;         /* Decorative only */
   --text-link: #6B8E6B;
+  
+  /* Status Text Colors - readable contrast for dark mode */
+  --text-danger: #E57373;
+  --text-warning: #D4A855;
+  --text-success: #7DA37D;
   --text-link-hover: #7DA37D;
   
   /* ═══════════════════════════════════════════════════════════════
@@ -1083,7 +1096,7 @@ input[type="checkbox"]:focus-visible {
   color: var(--text-primary);
 }
 
-/* Icon Button */
+/* Icon Button - FIXED: Use secondary not muted */
 .btn-icon {
   width: 36px;
   height: 36px;
@@ -1093,7 +1106,7 @@ input[type="checkbox"]:focus-visible {
   border-radius: var(--radius-md);
   background: transparent;
   border: none;
-  color: var(--text-muted);
+  color: var(--text-secondary); /* FIXED: was --text-muted, icons must be visible */
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -1203,14 +1216,14 @@ input[type="checkbox"]:focus-visible {
   background: var(--row-selected);
 }
 
-/* Date Group Divider */
+/* Date Group Divider - uses tertiary (acceptable for metadata) */
 .catalyst-date-divider {
   padding: var(--space-3) var(--space-4);
   font-size: var(--text-xs);
   font-weight: var(--font-semibold);
   text-transform: uppercase;
   letter-spacing: var(--tracking-wide);
-  color: var(--text-muted);
+  color: var(--text-tertiary); /* OK: this is a timestamp/date, tertiary is allowed */
   background: var(--surface-subtle);
   border-bottom: 1px solid var(--border-subtle);
 }
@@ -1247,11 +1260,11 @@ input[type="checkbox"]:focus-visible {
 
 .catalyst-card-subtitle {
   font-size: 13px;
-  color: var(--text-muted);
+  color: var(--text-tertiary); /* OK: subtitle is metadata */
 }
 
 .catalyst-card-body {
-  color: var(--text-secondary);
+  color: var(--text-primary); /* FIXED: body text must be primary */
 }
 
 /* Section Cards (with Left Border Accent) */
@@ -1338,7 +1351,7 @@ input[type="checkbox"]:focus-visible {
 .catalyst-badge-neutral,
 .catalyst-badge-draft {
   background: var(--surface-subtle);
-  color: var(--text-muted);
+  color: var(--text-secondary); /* FIXED: was --text-muted, neutral badges must be readable */
 }
 
 /* Count Badge */
@@ -1909,14 +1922,15 @@ input[type="checkbox"]:focus-visible {
   border-bottom: 1px solid var(--border-default);
 }
 
+/* FIXED: Dark mode tabs - use secondary not muted */
 [data-theme="dark"] .tab,
 .dark .tab {
-  color: var(--text-muted);
+  color: var(--text-secondary); /* FIXED: was --text-muted */
 }
 
 [data-theme="dark"] .tab:hover,
 .dark .tab:hover {
-  color: var(--text-secondary);
+  color: var(--text-primary);
 }
 
 [data-theme="dark"] .tab.active,
@@ -1929,11 +1943,11 @@ input[type="checkbox"]:focus-visible {
   background: var(--brand-primary);
 }
 
-/* Dark mode table styling */
+/* Dark mode table styling - FIXED: use secondary not muted */
 [data-theme="dark"] table th,
 .dark table th {
   background: var(--bg-surface-2);
-  color: var(--text-muted);
+  color: var(--text-secondary); /* FIXED: was --text-muted */
   border-bottom: 1px solid var(--border-default);
 }
 
@@ -2032,4 +2046,91 @@ input[type="checkbox"]:focus-visible {
   * {
     box-shadow: none !important;
   }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   TYPOGRAPHY GUARDRAILS — PREVENT REGRESSION
+   These rules ensure interactive controls NEVER use tertiary/muted text
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* GUARDRAIL: All interactive elements default to at least secondary text */
+.catalyst-tab,
+.catalyst-nav-item,
+.catalyst-chip,
+.catalyst-sidebar-item,
+.btn-ghost,
+.btn-secondary,
+.btn-icon,
+.filter-chip,
+.toolbar-label,
+[role="tab"],
+[role="menuitem"],
+[role="button"] {
+  /* Minimum contrast for interactive elements */
+  --_interactive-text: var(--text-secondary);
+}
+
+/* GUARDRAIL: Table headers are ALWAYS secondary, NEVER muted/tertiary */
+.catalyst-table th,
+.table-header-text,
+th[scope="col"],
+th {
+  color: var(--text-secondary) !important;
+  font-weight: var(--font-semibold) !important;
+}
+
+/* GUARDRAIL: Labels on forms/fields are ALWAYS secondary */
+label,
+.form-label,
+.field-label,
+[data-label] {
+  color: var(--text-secondary);
+}
+
+/* GUARDRAIL: Active states always use primary text */
+.active,
+[data-state="active"],
+[aria-selected="true"],
+[aria-current="page"] {
+  color: var(--text-primary);
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   UTILITY CLASSES FOR TYPOGRAPHY (use instead of text-muted-foreground)
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* Primary text - for body content, values, important labels */
+.text-1,
+.text-primary-contrast {
+  color: var(--text-primary) !important;
+}
+
+/* Secondary text - for UI labels, nav, tabs, headers */
+.text-2,
+.text-secondary-contrast {
+  color: var(--text-secondary) !important;
+}
+
+/* Tertiary text - ONLY for timestamps, hints, helper text */
+.text-3,
+.text-meta {
+  color: var(--text-tertiary) !important;
+}
+
+/* Disabled text - ONLY for disabled states */
+.text-disabled-state {
+  color: var(--text-disabled) !important;
+}
+
+/* Status text colors */
+.text-status-danger {
+  color: var(--text-danger) !important;
+}
+
+.text-status-warning {
+  color: var(--text-warning) !important;
+}
+
+.text-status-success {
+  color: var(--text-success) !important;
 }

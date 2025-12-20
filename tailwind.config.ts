@@ -138,16 +138,21 @@ export default {
         },
         
         /* ══════════════════════════════════════════════════════════
-           TEXT COLORS (V2)
+           TEXT COLORS (V2) - SEMANTIC TYPOGRAPHY CONTRACT
            ══════════════════════════════════════════════════════════ */
         text: {
-          primary: "var(--text-primary)",
-          secondary: "var(--text-secondary)",
+          primary: "var(--text-primary)",       // Highest contrast - body, titles, values
+          secondary: "var(--text-secondary)",   // UI labels, nav, tabs, headers
+          tertiary: "var(--text-tertiary)",     // METADATA ONLY: timestamps, hints
+          disabled: "var(--text-disabled)",     // Disabled states ONLY
           "secondary-strong": "var(--text-secondary-strong)",
-          muted: "var(--text-muted)",
+          muted: "var(--text-muted)",           // DEPRECATED: use tertiary
           faint: "var(--text-faint)",
           link: "var(--text-link)",
           "link-hover": "var(--text-link-hover)",
+          danger: "var(--text-danger)",
+          warning: "var(--text-warning)",
+          success: "var(--text-success)",
         },
         
         /* ══════════════════════════════════════════════════════════
