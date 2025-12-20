@@ -123,6 +123,7 @@ export default function IncidentAnalyticsPage() {
       <GlobalPageHeader
         sectionLabel="RELEASE"
         pageTitle="Incident Analytics"
+        showDivider={false}
         rightActions={
           <div className="flex items-center gap-4">
             <ViewSwitch currentMode="analytics" />
