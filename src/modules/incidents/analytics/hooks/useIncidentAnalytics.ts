@@ -42,15 +42,16 @@ function getTimeRangeFilter(range: TimeRange, customStart?: Date, customEnd?: Da
 
 export function useIncidentAnalytics(timeRange: TimeRange, customStart?: Date, customEnd?: Date) {
   const { data: slaConfig, isLoading: slaConfigLoading } = useSLAConfig();
-  
-  // Memoize the time range to prevent infinite re-renders
-  const { start, end } = useMemo(() => 
-    getTimeRangeFilter(timeRange, customStart, customEnd),
-    [timeRange, customStart?.getTime(), customEnd?.getTime()]
-  );
+  const { start, end } = getTimeRangeFilter(timeRange, customStart, customEnd);
 
   const { data: rawIncidents, isLoading: incidentsLoading, error } = useQuery({
-    queryKey: ['incident-analytics', timeRange, start.toISOString(), end.toISOString()],
+    // Keep the query key stable to avoid infinite refetch loops
+    queryKey: [
+      'incident-analytics',
+      timeRange,
+      customStart ? customStart.getTime() : null,
+      customEnd ? customEnd.getTime() : null,
+    ],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('incidents')
