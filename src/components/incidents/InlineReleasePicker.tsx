@@ -53,7 +53,7 @@ export function InlineReleasePicker({
 
   if (disabled) {
     return (
-      <div className={cn(textSize, 'text-muted-foreground cursor-not-allowed truncate')}>
+      <div className={cn(textSize, 'text-muted-foreground cursor-not-allowed truncate text-center')}>
         {value?.version || '—'}
       </div>
     );
@@ -64,7 +64,7 @@ export function InlineReleasePicker({
       <PopoverTrigger asChild>
         <button
           className={cn(
-            'w-full flex items-center gap-1 rounded px-1 -mx-1 py-0.5 hover:bg-muted/80 transition-colors text-left cursor-pointer',
+            'w-full flex items-center justify-center gap-1 rounded px-1 py-0.5 hover:bg-muted/80 transition-colors cursor-pointer',
             textSize
           )}
           onClick={(e) => e.stopPropagation()}
@@ -72,7 +72,6 @@ export function InlineReleasePicker({
           <span className={value ? 'text-[var(--text-2)] truncate' : 'text-[var(--text-3)]'}>
             {value?.version || '—'}
           </span>
-          <ChevronDown className="h-3 w-3 text-[var(--text-3)] flex-shrink-0 opacity-0 group-hover:opacity-100" />
         </button>
       </PopoverTrigger>
       <PopoverContent 
