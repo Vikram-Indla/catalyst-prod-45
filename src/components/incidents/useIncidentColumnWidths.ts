@@ -12,10 +12,10 @@ import { useState, useCallback } from 'react';
 const STORAGE_KEY = 'catalyst-incident-list-column-widths';
 
 // Default column widths - enterprise-grade CSS Grid widths
-// Summary uses minmax(width, 1fr) in grid template for flexible growth
+// ALL columns use fixed pixel widths (no fr units) for proper resizing
 export const DEFAULT_COLUMN_WIDTHS: Record<string, number> = {
   key: 90,            // Fixed key column
-  summary: 320,       // minmax(320px, 1fr) - grows to fill space
+  summary: 520,       // Default wider summary - resizable
   severity: 70,       // Compact severity pill with dot
   level: 70,          // Plain text L1/L2/L3
   status: 140,        // Compact status pill
@@ -31,32 +31,32 @@ export const DEFAULT_COLUMN_WIDTHS: Record<string, number> = {
 // Minimum widths to prevent collapse
 export const MIN_COLUMN_WIDTHS: Record<string, number> = {
   key: 70,
-  summary: 200,       // Minimum readable summary width
+  summary: 240,       // Minimum readable summary width
   severity: 60,
-  level: 50,
-  status: 100,
-  assignee: 100,
-  age: 50,
-  sla: 70,
+  level: 60,
+  status: 120,
+  assignee: 140,
+  age: 60,
+  sla: 80,
   releaseVersion: 80,
-  major: 60,
-  committee: 80,
+  major: 70,
+  committee: 90,
   actions: 40,
 };
 
-// Maximum widths - per-column clamp rules
+// Maximum widths - generous limits for enterprise flexibility
 export const MAX_COLUMN_WIDTHS: Record<string, number> = {
-  key: 160,           // Key max: 160
-  summary: 900,       // Summary max: 900
-  severity: 120,
-  level: 100,
-  status: 200,
-  assignee: 260,      // Assignee max: 260
-  age: 100,
-  sla: 160,
-  releaseVersion: 180,
-  major: 120,
-  committee: 200,
+  key: 180,
+  summary: 1200,      // Summary can grow very wide
+  severity: 140,
+  level: 120,
+  status: 220,
+  assignee: 300,
+  age: 120,
+  sla: 200,
+  releaseVersion: 220,
+  major: 160,
+  committee: 240,
   actions: 40,
 };
 
