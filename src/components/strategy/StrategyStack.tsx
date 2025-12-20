@@ -305,13 +305,13 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
         <div className="flex items-center gap-2">
           {/* Stale data indicator - CATALYST STANDARD */}
           {showStaleIndicator && (
-            <span className="text-[11px] text-muted-foreground italic">
+            <span className="text-[11px] text-gray-500 dark:text-gray-400 italic">
               Data may be stale
             </span>
           )}
           {/* Refreshing indicator - CATALYST STANDARD */}
           {isRefreshing && (
-            <div className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+            <div className="text-[11px] text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
               <Loader2 size={12} className="animate-spin" />
               <span>Refreshing…</span>
             </div>

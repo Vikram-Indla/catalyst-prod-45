@@ -96,21 +96,22 @@ export const TYPOGRAPHY = {
 // ─────────────────────────────────────────────────
 // COLOR CLASSES — LOCKED
 // Use ONLY these Tailwind classes for text colors
+// Using explicit Tailwind grey classes for reliability
 // ─────────────────────────────────────────────────
 
 export const TEXT_COLORS = {
   // Primary content - highest contrast, always readable
-  // Maps to --foreground in both light and dark themes
+  // Explicit grey scale for guaranteed visibility
   // ⚠️ KPI VALUES MUST use this — NEVER muted
-  primary: 'text-foreground',
+  primary: 'text-gray-900 dark:text-gray-100',
   
   // Secondary-strong - labels, descriptors that must be readable
   // Darker than muted, used for card labels, status text
-  secondaryStrong: 'text-[hsl(var(--text-secondary-strong))]',
+  secondaryStrong: 'text-gray-700 dark:text-gray-300',
   
   // Secondary/muted content - supporting text, still clearly readable
-  // Maps to --muted-foreground in both light and dark themes
-  muted: 'text-muted-foreground',
+  // Medium grey for both light and dark modes
+  muted: 'text-gray-500 dark:text-gray-400',
 } as const;
 
 // ─────────────────────────────────────────────────

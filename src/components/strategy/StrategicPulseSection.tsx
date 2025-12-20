@@ -134,13 +134,13 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
         <div className="flex items-center gap-2">
           {/* Stale data indicator - CATALYST STANDARD */}
           {showStaleIndicator && (
-            <span className="text-[11px] text-muted-foreground italic">
+            <span className="text-[11px] text-gray-500 dark:text-gray-400 italic">
               Data may be stale
             </span>
           )}
           {/* Refreshing indicator - CATALYST STANDARD: small spinner + text */}
           {isUpdating && (
-            <div className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+            <div className="text-[11px] text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
               <Loader2 size={12} className="animate-spin" />
               <span>Refreshing…</span>
             </div>
@@ -152,7 +152,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
         <div className="flex flex-col lg:flex-row gap-3">
           {/* PRIMARY CARD: Strategy Health */}
           <div 
-            className="lg:w-[220px] flex-shrink-0 p-4 rounded-md flex flex-col justify-between bg-muted border border-border"
+            className="lg:w-[220px] flex-shrink-0 p-4 rounded-md flex flex-col justify-between bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700"
             style={{
               borderLeftWidth: '4px',
               borderLeftColor: displayData.overallStatus === 'on-track' 
@@ -194,7 +194,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
             </div>
 
             {/* Trend indicator */}
-            <div className="flex items-center gap-1.5 mt-3 pt-2 border-t border-border">
+            <div className="flex items-center gap-1.5 mt-3 pt-2 border-t border-gray-200 dark:border-gray-700">
               <TrendIcon size={16} className={config.textClass} />
               <span className={cn(TYPOGRAPHY.subtext, 'font-medium', TEXT_COLORS.secondaryStrong)}>
                 {overallProgress}% · {trendLabel}
@@ -294,9 +294,9 @@ function CompactKPITile({
     <button
       onClick={onClick}
       className={cn(
-        "p-3 rounded-md text-left relative group w-full bg-muted border border-border",
+        "p-3 rounded-md text-left relative group w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700",
         "transition-[background-color,border-color] duration-150 ease-out",
-        "hover:bg-accent/60 hover:border-border",
+        "hover:bg-gray-100 dark:hover:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
       )}
       style={{
@@ -340,7 +340,7 @@ function CompactKPITile({
       {/* Subtle chevron on hover - discoverable but restrained */}
       <ChevronRight 
         size={14} 
-        className="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-60 transition-opacity duration-150 text-muted-foreground" 
+        className="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-60 transition-opacity duration-150 text-gray-500 dark:text-gray-400" 
       />
     </button>
   );

@@ -146,13 +146,13 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
         <div className="flex items-center gap-2">
           {/* Stale data indicator - CATALYST STANDARD */}
           {showStaleIndicator && (
-            <span className="text-[11px] text-muted-foreground italic">
+            <span className="text-[11px] text-gray-500 dark:text-gray-400 italic">
               Data may be stale
             </span>
           )}
           {/* Refreshing indicator - CATALYST STANDARD */}
           {isUpdating && (
-            <div className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+            <div className="text-[11px] text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
               <Loader2 size={12} className="animate-spin" />
               <span>Refreshing…</span>
             </div>
@@ -194,7 +194,7 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
             </div>
 
             {displayData.overdueRisks > 0 && (
-              <div className="pt-2 mt-2 border-t border-border">
+            <div className="pt-2 mt-2 border-t border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <Clock size={14} className="text-destructive" />
@@ -229,7 +229,7 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
               />
             </div>
 
-            <div className="pt-2 mt-2 border-t border-border">
+            <div className="pt-2 mt-2 border-t border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between">
                 <span className={cn(TYPOGRAPHY.cardLabel, TEXT_COLORS.secondaryStrong)}>Total gaps</span>
                 <span className={cn(
@@ -284,9 +284,9 @@ interface CockpitCardProps {
 
 function CockpitCard({ title, icon, iconColor, children, cta }: CockpitCardProps) {
   return (
-    <div className="rounded-md overflow-hidden flex flex-col bg-muted border border-border min-h-[150px]">
+    <div className="rounded-md overflow-hidden flex flex-col bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 min-h-[150px]">
       {/* Card header */}
-      <div className="px-3 py-2.5 flex items-center gap-2 border-b border-border bg-muted">
+      <div className="px-3 py-2.5 flex items-center gap-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
         <span className={iconColor}>{icon}</span>
         <span className={cn(TYPOGRAPHY.sectionTitle, TEXT_COLORS.primary)}>
           {title}
@@ -303,9 +303,9 @@ function CockpitCard({ title, icon, iconColor, children, cta }: CockpitCardProps
             size="sm"
             className={cn(
               TYPOGRAPHY.ctaButton, 
-              "w-full h-8 text-muted-foreground",
+              "w-full h-8 text-gray-600 dark:text-gray-400",
               "transition-[background-color,color] duration-150",
-              "hover:bg-accent/50 hover:text-foreground",
+              "hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100",
               "focus-visible:ring-1"
             )}
             onClick={cta.onClick}
@@ -409,7 +409,7 @@ function AttentionRow({ item, onClick, index }: { item: AttentionItem; onClick: 
       </div>
       <ChevronRight 
         size={14} 
-        className="opacity-0 group-hover:opacity-60 transition-opacity duration-100 flex-shrink-0 text-muted-foreground" 
+        className="opacity-0 group-hover:opacity-60 transition-opacity duration-100 flex-shrink-0 text-gray-500 dark:text-gray-400" 
       />
     </button>
   );
