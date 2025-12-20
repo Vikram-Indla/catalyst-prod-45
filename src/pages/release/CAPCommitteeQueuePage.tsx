@@ -47,14 +47,21 @@ export default function CAPCommitteeQueuePage() {
   const [useDemoData, setUseDemoData] = useState(shouldLoadDemoData);
 
   // Include closed decisions when in history mode
-  const { data: realItems = [], isLoading } = useCommitteeQueue({ includeClosedDecisions: showDecisionHistory });
+  const { data: realItems = [], isLoading: queryLoading } = useCommitteeQueue({ includeClosedDecisions: showDecisionHistory });
 
+  // Use demo data immediately if configured, or if query returned empty
   const items = useMemo(() => {
-    if (useDemoData || (realItems.length === 0 && !isLoading)) {
+    if (useDemoData) {
+      return generateCommitteeDemoData();
+    }
+    if (!queryLoading && realItems.length === 0) {
       return generateCommitteeDemoData();
     }
     return realItems;
-  }, [realItems, isLoading, useDemoData]);
+  }, [realItems, queryLoading, useDemoData]);
+
+  // Only show loading if we're waiting for real data AND not using demo
+  const isLoading = queryLoading && !useDemoData && realItems.length === 0;
 
   // Counts
   const openCount = items.filter((i) => i.committeeStatus === 'pending').length;
@@ -109,16 +116,8 @@ export default function CAPCommitteeQueuePage() {
     setDrawerOpen(true);
   };
 
-  if (isLoading && !useDemoData) {
-    return (
-      <div className="h-full flex items-center justify-center">
-        <div
-          className="animate-spin h-6 w-6 border-2 rounded-full"
-          style={{ borderColor: 'var(--brand-primary)', borderTopColor: 'transparent' }}
-        />
-      </div>
-    );
-  }
+  // No full-page loading spinner - table has its own skeleton state
+  // This ensures the UI is always responsive
 
   return (
     <div className="flex flex-col h-full bg-background">
