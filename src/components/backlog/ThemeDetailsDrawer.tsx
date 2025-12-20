@@ -202,7 +202,7 @@ function KPICard({
 }) {
   return (
     <div 
-      className="flex-1 min-w-[140px] p-3 rounded-lg bg-card border border-border"
+      className="flex-1 min-w-[140px] p-3 rounded-lg bg-white dark:bg-neutral-900 border border-gray-200 dark:border-gray-700"
     >
       <div className="flex items-center gap-2 mb-1.5">
         <Icon size={12} style={{ color: 'var(--text-muted)' }} />
@@ -909,7 +909,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
 
                   {/* Summary / Description */}
                   <section 
-                    className="rounded-lg p-4 bg-muted border border-border"
+                    className="rounded-lg p-4 bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-gray-700"
                   >
                     <div className="flex items-center gap-2 mb-3">
                       <FileText size={14} style={{ color: 'var(--text-muted)' }} />
@@ -972,7 +972,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                 <TabsContent value="alignment" className="mt-0 space-y-4">
                   {/* Linked Objectives */}
                   <section 
-                    className="rounded-lg p-4 bg-muted border border-border"
+                    className="rounded-lg p-4 bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-gray-700"
                   >
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
@@ -1083,7 +1083,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
 
                   {/* Aligned Epics */}
                   <section 
-                    className="rounded-lg p-4 bg-muted border border-border"
+                    className="rounded-lg p-4 bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-gray-700"
                   >
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
