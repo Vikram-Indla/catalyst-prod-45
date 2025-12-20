@@ -102,6 +102,7 @@ interface CommitteeQueueTableProps {
   isLoading?: boolean;
   onRowClick?: (item: CommitteeQueueItem) => void;
   onLoadDemoData?: () => void;
+  includeClosedDecisions?: boolean;
 }
 
 function StatusBadge({ status }: { status: CommitteeDecisionStatus }) {
@@ -224,13 +225,13 @@ function LoadingSkeleton() {
   );
 }
 
-// Empty state - compact
-function EmptyState({ onLoadDemoData }: { onLoadDemoData?: () => void }) {
+function EmptyState({ onLoadDemoData, includeClosedDecisions }: { onLoadDemoData?: () => void; includeClosedDecisions?: boolean }) {
+  const message = includeClosedDecisions ? 'No committee items found.' : 'No open committee approvals.';
   return (
-    <div className="py-8 text-center border-t border-[var(--border-default)]">
-      <p className="text-sm text-[var(--text-2)] mb-3">No incidents in committee queue</p>
+    <div className="py-8 text-center border-t" style={{ borderColor: 'var(--border-default)' }}>
+      <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{message}</p>
       {onLoadDemoData && (
-        <Button variant="outline" size="sm" onClick={onLoadDemoData} className="gap-2">
+        <Button variant="outline" size="sm" onClick={onLoadDemoData} className="gap-2 mt-3">
           <Database className="h-3.5 w-3.5" />
           Load Demo Data
         </Button>
@@ -239,7 +240,7 @@ function EmptyState({ onLoadDemoData }: { onLoadDemoData?: () => void }) {
   );
 }
 
-export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoData }: CommitteeQueueTableProps) {
+export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoData, includeClosedDecisions }: CommitteeQueueTableProps) {
   const navigate = useNavigate();
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [page, setPage] = useState(1);
@@ -321,7 +322,7 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
 
               {/* Rows */}
               {paginatedItems.length === 0 ? (
-                <EmptyState onLoadDemoData={onLoadDemoData} />
+                <EmptyState onLoadDemoData={onLoadDemoData} includeClosedDecisions={includeClosedDecisions} />
               ) : (
                 paginatedItems.map((item) => (
                   <div
