@@ -532,6 +532,7 @@ export default function IncidentRoomDetail() {
           availableReleaseVersions={releaseVersions as any}
           onStatusChange={handleStatusChange}
           onSeverityChange={(v) => handleFieldChange('severity', v)}
+          onPriorityChange={(v) => handleFieldChange('priority', v)}
           onImpactChange={(v) => handleFieldChange('impact', v)}
           onUrgencyChange={(v) => handleFieldChange('urgency', v)}
           onDeliveryStageChange={(v) => handleFieldChange('delivery_stage', v)}
