@@ -1,14 +1,15 @@
 /**
  * FeatureKeyDetails — Epic, Owner, Health, Planned Dates grid
  * 
- * Now with real CRUD for Owner, Health, and Dates.
+ * Epic picker is now editable but cannot be cleared (mandatory).
+ * Matches Epic UI patterns.
  */
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Calendar, ChevronDown } from 'lucide-react';
+import { Calendar, ChevronDown, Check, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import {
   DropdownMenu,
@@ -23,6 +24,7 @@ import {
 } from '@/components/ui/popover';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
 import styles from '../FeatureViewPage.module.css';
 
@@ -35,6 +37,7 @@ interface Feature {
   health: string | null;
   planned_start_date: string | null;
   planned_end_date: string | null;
+  project_id: string;
 }
 
 interface FeatureKeyDetailsProps {
@@ -97,6 +100,7 @@ function getHealthLabel(health: string | null): string {
 export function FeatureKeyDetails({ feature, onFeatureUpdated }: FeatureKeyDetailsProps) {
   const queryClient = useQueryClient();
   const [datePopoverOpen, setDatePopoverOpen] = useState(false);
+  const [epicPopoverOpen, setEpicPopoverOpen] = useState(false);
   const [startDate, setStartDate] = useState<Date | undefined>(
     feature.planned_start_date ? new Date(feature.planned_start_date) : undefined
   );
@@ -118,11 +122,33 @@ export function FeatureKeyDetails({ feature, onFeatureUpdated }: FeatureKeyDetai
     },
   });
 
+  // Fetch epics for the epic picker
+  const { data: epics = [], isLoading: loadingEpics } = useQuery({
+    queryKey: ['epics-for-feature-picker'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('epics')
+        .select('id, epic_key, name')
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false })
+        .limit(100);
+      
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
   type HealthType = 'green' | 'yellow' | 'red';
 
   // Mutation for updating feature
   const updateFeature = useMutation({
-    mutationFn: async (data: { owner_id?: string | null; health?: HealthType; planned_start_date?: string | null; planned_end_date?: string | null }) => {
+    mutationFn: async (data: { 
+      owner_id?: string | null; 
+      health?: HealthType; 
+      planned_start_date?: string | null; 
+      planned_end_date?: string | null;
+      epic_id?: string;
+    }) => {
       const { error } = await supabase
         .from('features')
         .update({ ...data, updated_at: new Date().toISOString() })
@@ -133,6 +159,7 @@ export function FeatureKeyDetails({ feature, onFeatureUpdated }: FeatureKeyDetai
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['feature-view', feature.id] });
       queryClient.invalidateQueries({ queryKey: ['features'] });
+      queryClient.invalidateQueries({ queryKey: ['work-items'] });
       onFeatureUpdated?.();
     },
     onError: (error: any) => {
@@ -152,7 +179,26 @@ export function FeatureKeyDetails({ feature, onFeatureUpdated }: FeatureKeyDetai
     });
   };
 
+  const handleEpicChange = (newEpicId: string) => {
+    if (!newEpicId) {
+      toast.error('Epic is required', { description: 'Features must be linked to an Epic' });
+      return;
+    }
+    updateFeature.mutate({ epic_id: newEpicId }, {
+      onSuccess: () => {
+        toast.success('Epic updated');
+        setEpicPopoverOpen(false);
+      },
+    });
+  };
+
   const handleSaveDates = () => {
+    // Validate dates
+    if (startDate && endDate && startDate > endDate) {
+      toast.error('Invalid dates', { description: 'Start date must be before end date' });
+      return;
+    }
+    
     updateFeature.mutate({
       planned_start_date: startDate ? format(startDate, 'yyyy-MM-dd') : null,
       planned_end_date: endDate ? format(endDate, 'yyyy-MM-dd') : null,
@@ -172,21 +218,60 @@ export function FeatureKeyDetails({ feature, onFeatureUpdated }: FeatureKeyDetai
   
   return (
     <div className={styles.keyDetailsGrid}>
-      {/* Epic */}
+      {/* Epic - Editable (Mandatory) */}
       <div className={styles.keyDetailItem}>
         <div className={styles.keyDetailLabel}>EPIC</div>
         <div className={styles.keyDetailValue}>
-          {feature.epic ? (
-            <Link 
-              to={`/epics/${feature.epic.id}`} 
-              className={styles.epicLink}
-            >
-              <span className={styles.epicLinkIcon}>E</span>
-              {feature.epic.display_id || feature.epic.id.slice(0, 6)} · {feature.epic.name}
-            </Link>
-          ) : (
-            <span className={styles.noneValue}>None</span>
-          )}
+          <Popover open={epicPopoverOpen} onOpenChange={setEpicPopoverOpen}>
+            <PopoverTrigger asChild>
+              <button className={styles.editableField}>
+                {feature.epic ? (
+                  <Link 
+                    to={`/epics/${feature.epic.id}`} 
+                    className={styles.epicLink}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <span className={styles.epicLinkIcon}>E</span>
+                    {feature.epic.display_id || feature.epic.id.slice(0, 6)} · {feature.epic.name}
+                  </Link>
+                ) : (
+                  <span className={styles.noneValue}>Select Epic (required)</span>
+                )}
+                <ChevronDown size={12} className={styles.editableChevron} />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80 p-0" align="start">
+              <div className="p-2 border-b">
+                <p className="text-xs text-muted-foreground">Select an Epic (required)</p>
+              </div>
+              {loadingEpics ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                </div>
+              ) : (
+                <ScrollArea className="h-[300px]">
+                  <div className="p-1">
+                    {epics.map(epic => (
+                      <button
+                        key={epic.id}
+                        onClick={() => handleEpicChange(epic.id)}
+                        className="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-accent text-left"
+                      >
+                        <span className={styles.epicLinkIcon}>E</span>
+                        <span className="flex-1 truncate">
+                          <span className="font-medium">{epic.epic_key || epic.id.slice(0, 6)}</span>
+                          <span className="text-muted-foreground ml-2">{epic.name}</span>
+                        </span>
+                        {feature.epic_id === epic.id && (
+                          <Check className="h-4 w-4 text-primary" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </ScrollArea>
+              )}
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
       
