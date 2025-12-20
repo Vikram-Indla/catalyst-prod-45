@@ -1,9 +1,9 @@
 /**
  * Major Incidents Table
  * Enterprise-density table for incidents requiring attention
+ * Reduced pill noise, SLA State is primary urgency signal
  */
 
-import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -25,24 +25,11 @@ function formatAge(hours: number): string {
 }
 
 const SLA_STATE_CONFIG: Record<string, { label: string; className: string }> = {
-  on_track: { label: 'On Track', className: 'bg-[hsl(142_76%_94%)] text-[hsl(142_76%_28%)] border-[hsl(142_50%_80%)]' },
-  at_risk: { label: 'At Risk', className: 'bg-[hsl(35_100%_94%)] text-[hsl(35_92%_35%)] border-[hsl(35_80%_70%)]' },
-  breached: { label: 'Breached', className: 'bg-[hsl(0_86%_95%)] text-destructive border-[hsl(0_60%_80%)]' },
-  n_a: { label: 'N/A', className: 'bg-muted text-muted-foreground border-border' },
-  met: { label: 'Met', className: 'bg-[hsl(142_76%_94%)] text-[hsl(142_76%_28%)] border-[hsl(142_50%_80%)]' },
-};
-
-const SEVERITY_CONFIG: Record<string, string> = {
-  SEV1: 'bg-[hsl(0_86%_95%)] text-destructive border-[hsl(0_60%_80%)]',
-  SEV2: 'bg-[hsl(35_100%_94%)] text-[hsl(35_92%_35%)] border-[hsl(35_80%_70%)]',
-  SEV3: 'bg-[hsl(50_100%_94%)] text-[hsl(50_80%_30%)] border-[hsl(50_70%_70%)]',
-  SEV4: 'bg-muted text-muted-foreground border-border',
-};
-
-const LEVEL_CONFIG: Record<string, string> = {
-  L1: 'bg-[hsl(142_76%_94%)] text-[hsl(142_76%_28%)]',
-  L2: 'bg-[hsl(200_90%_94%)] text-[hsl(200_80%_30%)]',
-  L3: 'bg-[hsl(270_60%_94%)] text-[hsl(270_50%_35%)]',
+  on_track: { label: 'On Track', className: 'text-foreground' },
+  at_risk: { label: 'At Risk', className: 'text-[hsl(var(--warning))] font-semibold' },
+  breached: { label: 'Breached', className: 'text-destructive font-semibold' },
+  n_a: { label: 'N/A', className: 'text-muted-foreground' },
+  met: { label: 'Met', className: 'text-foreground' },
 };
 
 const STATUS_LABELS: Record<string, string> = {
@@ -54,39 +41,39 @@ const STATUS_LABELS: Record<string, string> = {
   closed: 'Closed',
 };
 
-export function MajorIncidentsTable({ incidents, onRowClick, maxHeight = '400px' }: MajorIncidentsTableProps) {
+export function MajorIncidentsTable({ incidents, onRowClick, maxHeight = '360px' }: MajorIncidentsTableProps) {
   return (
     <section className="mb-6">
-      <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+      <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
         Major Incidents Requiring Attention
       </h2>
-      <div className="border border-border rounded-lg bg-card overflow-hidden">
-        <ScrollArea className={`max-h-[${maxHeight}]`} style={{ maxHeight }}>
-          <table className="w-full min-w-[900px]">
+      <div className="border border-border rounded-md bg-card overflow-hidden">
+        <ScrollArea className="max-h-[360px]" style={{ maxHeight }}>
+          <table className="w-full min-w-[800px]">
             <thead className="bg-muted/50 sticky top-0 z-10">
               <tr>
                 <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border">
-                  Incident ID
+                  ID
                 </th>
-                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border min-w-[250px]">
+                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border min-w-[200px]">
                   Summary
                 </th>
-                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border w-[80px]">
+                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border w-[60px]">
                   Severity
                 </th>
-                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border w-[60px]">
+                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border w-[48px]">
                   Level
                 </th>
-                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border w-[100px]">
+                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border w-[80px]">
                   Status
                 </th>
-                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border w-[70px]">
+                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border w-[56px]">
                   Age
                 </th>
-                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border min-w-[150px]">
-                  Owner / Assignee
+                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border min-w-[120px]">
+                  Assignee
                 </th>
-                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border w-[90px]">
+                <th className="px-3 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border w-[80px]">
                   SLA State
                 </th>
               </tr>
@@ -94,15 +81,13 @@ export function MajorIncidentsTable({ incidents, onRowClick, maxHeight = '400px'
             <tbody>
               {incidents.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-3 py-8 text-center text-muted-foreground">
-                    No incidents requiring immediate attention
+                  <td colSpan={8} className="px-3 py-8 text-center text-muted-foreground text-sm">
+                    No major incidents requiring attention
                   </td>
                 </tr>
               ) : (
                 incidents.map((incident) => {
                   const slaConfig = SLA_STATE_CONFIG[incident.sla_state.state] || SLA_STATE_CONFIG.n_a;
-                  const sevConfig = SEVERITY_CONFIG[incident.severity] || SEVERITY_CONFIG.SEV4;
-                  const levelConfig = LEVEL_CONFIG[incident.support_level || 'L1'] || LEVEL_CONFIG.L1;
 
                   return (
                     <tr
@@ -110,43 +95,39 @@ export function MajorIncidentsTable({ incidents, onRowClick, maxHeight = '400px'
                       onClick={() => onRowClick(incident.id)}
                       className="hover:bg-muted/30 cursor-pointer border-b border-border last:border-b-0"
                     >
-                      <td className="px-3 py-2.5">
-                        <div className="flex items-center gap-2">
+                      <td className="px-3 py-2">
+                        <div className="flex items-center gap-1.5">
                           <span className="font-mono text-sm font-medium text-[var(--brand-primary)]">
                             {incident.incident_key}
                           </span>
                           {incident.is_major_incident && (
-                            <Badge variant="destructive" className="text-[9px] px-1.5 py-0">
+                            <Badge variant="destructive" className="text-[9px] px-1 py-0 h-4">
                               Major
                             </Badge>
                           )}
                         </div>
                       </td>
-                      <td className="px-3 py-2.5">
+                      <td className="px-3 py-2">
                         <span className="text-sm text-foreground line-clamp-1">
                           {incident.title}
                         </span>
                       </td>
-                      <td className="px-3 py-2.5">
-                        <Badge variant="outline" className={cn("text-[10px] font-medium border", sevConfig)}>
+                      <td className="px-3 py-2">
+                        <span className="text-sm text-foreground font-medium">
                           {incident.severity}
-                        </Badge>
+                        </span>
                       </td>
-                      <td className="px-3 py-2.5">
-                        {incident.support_level ? (
-                          <Badge variant="outline" className={cn("text-[10px] font-medium", levelConfig)}>
-                            {incident.support_level}
-                          </Badge>
-                        ) : (
-                          <span className="text-muted-foreground text-sm">—</span>
-                        )}
+                      <td className="px-3 py-2">
+                        <span className="text-sm text-muted-foreground">
+                          {incident.support_level || '—'}
+                        </span>
                       </td>
-                      <td className="px-3 py-2.5">
+                      <td className="px-3 py-2">
                         <span className="text-sm text-foreground">
                           {STATUS_LABELS[incident.status] || incident.status}
                         </span>
                       </td>
-                      <td className="px-3 py-2.5">
+                      <td className="px-3 py-2">
                         <span className={cn(
                           "text-sm font-mono tabular-nums",
                           incident.age_hours > 48 && "text-destructive font-medium"
@@ -154,22 +135,21 @@ export function MajorIncidentsTable({ incidents, onRowClick, maxHeight = '400px'
                           {formatAge(incident.age_hours)}
                         </span>
                       </td>
-                      <td className="px-3 py-2.5">
-                        <span className="text-sm text-foreground">
-                          {incident.assignee_name || (
-                            <span className="text-destructive font-medium">Unassigned</span>
-                          )}
-                        </span>
-                        {incident.assignee_workgroup?.name && (
-                          <span className="text-xs text-muted-foreground ml-1">
-                            ({incident.assignee_workgroup.name})
+                      <td className="px-3 py-2">
+                        {incident.assignee_name ? (
+                          <span className="text-sm text-foreground">
+                            {incident.assignee_name}
+                          </span>
+                        ) : (
+                          <span className="text-sm text-destructive font-medium">
+                            Unassigned
                           </span>
                         )}
                       </td>
-                      <td className="px-3 py-2.5">
-                        <Badge variant="outline" className={cn("text-[10px] font-medium border", slaConfig.className)}>
+                      <td className="px-3 py-2">
+                        <span className={cn("text-sm", slaConfig.className)}>
                           {slaConfig.label}
-                        </Badge>
+                        </span>
                       </td>
                     </tr>
                   );

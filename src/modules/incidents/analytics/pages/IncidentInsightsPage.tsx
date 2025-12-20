@@ -1,13 +1,12 @@
 /**
  * Incident Insights Page
- * Text-first operational briefing
+ * Text-first operational briefing for CIOs
  */
 
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
-import { ArrowLeft, Printer, Loader2, AlertTriangle, CheckCircle2, Clock } from 'lucide-react';
+import { Printer, Loader2, ChevronRight, AlertTriangle, Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useIncidentAnalytics } from '../hooks/useIncidentAnalytics';
 import { useIncidentInsights } from '../hooks/useIncidentInsights';
 import { TimeRangeSelector } from '../components/TimeRangeSelector';
@@ -61,93 +60,108 @@ export default function IncidentInsightsPage() {
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Header */}
-      <div className="h-[72px] border-b border-border bg-card flex-shrink-0">
-        <div className="h-full px-6 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link to="/release/incidents/analytics">
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
+      <div className="border-b border-border bg-card flex-shrink-0">
+        <div className="px-6 py-4">
+          {/* Breadcrumb Row */}
+          <nav className="flex items-center gap-1.5 text-xs text-muted-foreground mb-2">
+            <Link to="/release" className="hover:text-foreground transition-colors">
+              Release
             </Link>
+            <ChevronRight className="h-3 w-3" />
+            <Link to="/release/incidents" className="hover:text-foreground transition-colors">
+              Incident List
+            </Link>
+            <ChevronRight className="h-3 w-3" />
+            <span className="text-foreground font-medium">Insights</span>
+          </nav>
+          
+          {/* Title Row */}
+          <div className="flex items-start justify-between">
             <div>
               <h1 className="text-xl font-semibold text-foreground">Incident Insights</h1>
-              <p className="text-sm text-muted-foreground">Operational briefing</p>
+              <p className="text-sm text-muted-foreground mt-0.5">Operational briefing</p>
             </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <TimeRangeSelector
-              value={timeRange}
-              onChange={handleTimeRangeChange}
-              customStart={customStart}
-              customEnd={customEnd}
-            />
-            <div className="h-6 w-px bg-border" />
-            <Button variant="outline" size="sm" onClick={handlePrint} className="h-8">
-              <Printer className="h-4 w-4 mr-1.5" />
-              Print / PDF
-            </Button>
+            <div className="flex items-center gap-3">
+              <TimeRangeSelector
+                value={timeRange}
+                onChange={handleTimeRangeChange}
+                customStart={customStart}
+                customEnd={customEnd}
+              />
+              <div className="h-5 w-px bg-border" />
+              <Button variant="outline" size="sm" onClick={handlePrint} className="h-8">
+                <Printer className="h-4 w-4 mr-1.5" />
+                Print / PDF
+              </Button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="flex-1 overflow-auto p-6 max-w-4xl mx-auto w-full">
-        {/* Generated timestamp */}
-        <div className="text-xs text-muted-foreground mb-6 flex items-center gap-2">
-          <Clock className="h-3.5 w-3.5" />
-          Generated: {format(insights.generatedAt, 'PPpp')}
-        </div>
+      {/* Content - CIO Briefing Style */}
+      <div className="flex-1 overflow-auto">
+        <div className="max-w-3xl mx-auto px-6 py-6">
+          {/* Timestamp */}
+          <div className="text-xs text-muted-foreground mb-4">
+            Generated {format(insights.generatedAt, 'EEEE, MMMM d, yyyy · h:mm a')}
+          </div>
 
-        {/* Executive Summary */}
-        <Card className="mb-6 border-l-4 border-l-[var(--brand-primary)]">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base font-semibold">Executive Summary</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm leading-relaxed text-foreground">
-              {insights.executiveSummary}
-            </p>
-          </CardContent>
-        </Card>
+          {/* Executive Summary - Most Prominent */}
+          <section className="mb-6">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+              Executive Summary
+            </h2>
+            <div className="border-l-2 border-[var(--brand-primary)] pl-4">
+              <p className="text-base text-foreground leading-relaxed">
+                {insights.executiveSummary}
+              </p>
+            </div>
+          </section>
 
-        {/* Key Facts */}
-        <Card className="mb-6">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-[hsl(35_92%_50%)]" />
-              Key Facts
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+          {/* Divider */}
+          <div className="border-t border-border my-6" />
+
+          {/* Key Facts */}
+          <section className="mb-6">
+            <div className="flex items-center gap-2 mb-3">
+              <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Key Facts
+              </h2>
+            </div>
             <ul className="space-y-2">
               {insights.keyFacts.map((fact, idx) => (
-                <li key={idx} className="text-sm text-foreground flex items-start gap-2">
-                  <span className="text-muted-foreground mt-1">•</span>
+                <li key={idx} className="flex items-start gap-2 text-sm text-foreground">
+                  <span className="text-muted-foreground select-none">•</span>
                   <span>{fact}</span>
                 </li>
               ))}
             </ul>
-          </CardContent>
-        </Card>
+          </section>
 
-        {/* Required Actions */}
-        <Card className="border-l-4 border-l-destructive">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 text-destructive" />
-              Required Actions
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ol className="space-y-2 list-decimal list-inside">
+          {/* Divider */}
+          <div className="border-t border-border my-6" />
+
+          {/* Required Actions */}
+          <section>
+            <div className="flex items-center gap-2 mb-3">
+              <Target className="h-4 w-4 text-destructive" />
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-destructive">
+                Required Actions
+              </h2>
+            </div>
+            <ol className="space-y-2">
               {insights.requiredActions.map((action, idx) => (
-                <li key={idx} className="text-sm text-foreground font-medium">
-                  {action}
+                <li key={idx} className="flex items-start gap-3 text-sm">
+                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-destructive/10 text-destructive text-xs font-semibold flex items-center justify-center">
+                    {idx + 1}
+                  </span>
+                  <span className="text-foreground font-medium pt-0.5">{action}</span>
                 </li>
               ))}
             </ol>
-          </CardContent>
-        </Card>
+          </section>
+        </div>
       </div>
     </div>
   );

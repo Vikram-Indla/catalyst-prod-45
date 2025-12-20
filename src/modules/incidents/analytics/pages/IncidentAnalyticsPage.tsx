@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Printer, Lightbulb, Loader2 } from 'lucide-react';
+import { Printer, Lightbulb, Loader2, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useIncidentAnalytics, useFilteredIncidents } from '../hooks/useIncidentAnalytics';
@@ -72,35 +72,51 @@ export default function IncidentAnalyticsPage() {
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Header */}
-      <div className="h-[72px] border-b border-border bg-card flex-shrink-0">
-        <div className="h-full px-6 flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-semibold text-foreground">Incident Analytics</h1>
-            <p className="text-sm text-muted-foreground">Operations control room</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <TimeRangeSelector
-              value={timeRange}
-              onChange={handleTimeRangeChange}
-              customStart={customStart}
-              customEnd={customEnd}
-            />
-            <div className="h-6 w-px bg-border" />
-            <Link to="/release/incidents/insights">
-              <Button variant="outline" size="sm" className="h-8">
-                <Lightbulb className="h-4 w-4 mr-1.5" />
-                Insights
-              </Button>
+      <div className="border-b border-border bg-card flex-shrink-0">
+        <div className="px-6 py-4">
+          {/* Breadcrumb Row */}
+          <nav className="flex items-center gap-1.5 text-xs text-muted-foreground mb-2">
+            <Link to="/release" className="hover:text-foreground transition-colors">
+              Release
             </Link>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" size="sm" onClick={handlePrint} className="h-8">
-                  <Printer className="h-4 w-4 mr-1.5" />
-                  Print / PDF
+            <ChevronRight className="h-3 w-3" />
+            <Link to="/release/incidents" className="hover:text-foreground transition-colors">
+              Incident List
+            </Link>
+            <ChevronRight className="h-3 w-3" />
+            <span className="text-foreground font-medium">Analytics</span>
+          </nav>
+          
+          {/* Title Row */}
+          <div className="flex items-start justify-between">
+            <div>
+              <h1 className="text-xl font-semibold text-foreground">Incident Analytics</h1>
+              <p className="text-sm text-muted-foreground mt-0.5">Operations control room</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <TimeRangeSelector
+                value={timeRange}
+                onChange={handleTimeRangeChange}
+                customStart={customStart}
+                customEnd={customEnd}
+              />
+              <div className="h-5 w-px bg-border" />
+              <Link to="/release/incidents/insights">
+                <Button variant="outline" size="sm" className="h-8">
+                  <Lightbulb className="h-4 w-4 mr-1.5" />
+                  Insights
                 </Button>
-              </TooltipTrigger>
-              <TooltipContent>Export current view to PDF</TooltipContent>
-            </Tooltip>
+              </Link>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="outline" size="sm" onClick={handlePrint} className="h-8">
+                    <Printer className="h-4 w-4 mr-1.5" />
+                    Print / PDF
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Export current view to PDF</TooltipContent>
+              </Tooltip>
+            </div>
           </div>
         </div>
       </div>
