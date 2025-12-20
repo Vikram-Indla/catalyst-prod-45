@@ -136,7 +136,7 @@ function LoadingSkeleton({
     <div className="rounded-md border border-border overflow-hidden bg-card">
       {/* Header - exactly 32px */}
       <div 
-        className="grid items-center h-8 bg-muted/40 border-b border-border"
+        className="grid items-center h-8 bg-muted border-b border-border"
         style={{ gridTemplateColumns: gridTemplate }}
       >
         {isColumnVisible('key') && (
@@ -422,7 +422,7 @@ export function IncidentListTable({
             <div style={{ minWidth: `${totalTableWidth}px`, width: '100%' }}>
               {/* Header row - exactly 32px height, CSS Grid layout */}
               <div 
-                className="grid items-center h-8 sticky top-0 z-20 bg-muted/40 border-b border-border"
+                className="grid items-center h-8 sticky top-0 z-20 bg-muted border-b border-border"
                 style={{ gridTemplateColumns: gridTemplate }}
               >
                 {/* Key - left aligned */}
