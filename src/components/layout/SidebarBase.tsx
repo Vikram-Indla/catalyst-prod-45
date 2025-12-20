@@ -172,7 +172,7 @@ export function SidebarBase({
                   transition: 'background 0.15s ease, color 0.15s ease',
                   marginBottom: '2px',
                   position: 'relative',
-                  background: active ? 'rgba(92,124,92,0.12)' : 'transparent',
+                  background: active ? 'var(--nav-active-bg)' : 'transparent',
                   color: active ? 'var(--text-1)' : 'var(--text-2)',
                   fontWeight: active ? 600 : 500,
                   fontSize: '13px',
@@ -180,10 +180,10 @@ export function SidebarBase({
                   outline: 'none',
                 }}
                 onMouseEnter={(e) => { 
-                  if (!active) e.currentTarget.style.background = 'rgba(92,124,92,0.08)'; 
+                  if (!active) e.currentTarget.style.background = 'var(--nav-hover-bg)'; 
                 }}
                 onMouseLeave={(e) => { 
-                  e.currentTarget.style.background = active ? 'rgba(92,124,92,0.12)' : 'transparent'; 
+                  e.currentTarget.style.background = active ? 'var(--nav-active-bg)' : 'transparent'; 
                 }}
               >
                 {/* Left indicator bar for active state - vertically centered, matches row height */}
@@ -293,7 +293,7 @@ export function SidebarBase({
                     cursor: 'pointer',
                     transition: 'background 0.15s ease, color 0.15s ease',
                     position: 'relative',
-                    background: active ? 'rgba(92,124,92,0.12)' : 'transparent',
+                    background: active ? 'var(--nav-active-bg)' : 'transparent',
                     color: active ? 'var(--text-1)' : 'var(--text-2)',
                     fontWeight: active ? 600 : 500,
                     fontSize: '13px',
@@ -301,10 +301,10 @@ export function SidebarBase({
                     outline: 'none',
                   }}
                   onMouseEnter={(e) => { 
-                    if (!active) e.currentTarget.style.background = 'rgba(92,124,92,0.08)'; 
+                    if (!active) e.currentTarget.style.background = 'var(--nav-hover-bg)'; 
                   }}
                   onMouseLeave={(e) => { 
-                    e.currentTarget.style.background = active ? 'rgba(92,124,92,0.12)' : 'transparent'; 
+                    e.currentTarget.style.background = active ? 'var(--nav-active-bg)' : 'transparent'; 
                   }}
                 >
                   {active && (
