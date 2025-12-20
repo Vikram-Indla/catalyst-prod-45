@@ -8,7 +8,7 @@
  *   C) Timeline (audit trail)
  */
 
-import { X, AlertTriangle, Clock, CheckCircle, XCircle, Shield, UserPlus, ChevronRight, User } from 'lucide-react';
+import { AlertTriangle, Clock, CheckCircle, XCircle, Shield, UserPlus, ChevronRight, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -199,14 +199,9 @@ export function CommitteeQueueDrawer({ open, onOpenChange, item, onEditApprovers
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-[440px] sm:max-w-[440px] p-0 flex flex-col">
         <SheetHeader className="p-4 border-b shrink-0" style={{ borderColor: 'var(--border-default)' }}>
-          <div className="flex items-center justify-between">
-            <SheetTitle className="text-sm font-semibold text-[var(--text-primary)]">
-              Committee — {item.incident.incident_key}
-            </SheetTitle>
-            <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => onOpenChange(false)}>
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+          <SheetTitle className="text-sm font-semibold text-[var(--text-primary)]">
+            Committee — {item.incident.incident_key}
+          </SheetTitle>
           <div className="flex items-center gap-2 mt-1">
             <StatusBadge status={item.committeeStatus} />
             <span className="text-[11px] text-[var(--text-tertiary)]">
