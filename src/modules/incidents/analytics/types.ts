@@ -4,6 +4,8 @@
 
 export type TimeRange = 'today' | '24h' | '7d' | '30d' | 'custom';
 
+export type InsightPeriod = 'today' | 'this_week' | 'last_week';
+
 export interface SLAPolicy {
   severity: 'SEV1' | 'SEV2' | 'SEV3' | 'SEV4';
   resolution_hours: number | null; // null = no SLA
@@ -39,6 +41,24 @@ export interface AnalyticsSnapshot {
   committee: number;
 }
 
+export interface PeriodMetrics {
+  created: number;
+  resolved: number;
+  backlog_delta: number;
+  sla_breached: number;
+  sla_at_risk: number;
+  major_active: number;
+}
+
+export interface PeriodComparison {
+  created: number;
+  resolved: number;
+  backlog_delta: number;
+  sla_breached: number;
+  sla_at_risk: number;
+  major_active: number;
+}
+
 export interface BreakdownData {
   severity: Record<string, number>;
   level: Record<string, number>;
@@ -48,7 +68,10 @@ export interface BreakdownData {
 
 export interface DrilldownFilter {
   type: 'open' | 'major_active' | 'sla_breached' | 'sla_at_risk' | 'committee' |
-        'severity' | 'level' | 'status' | 'sla_state';
+        'severity' | 'level' | 'status' | 'sla_state' |
+        'created' | 'resolved';
   value?: string;
   label: string;
+  periodStart?: Date;
+  periodEnd?: Date;
 }
