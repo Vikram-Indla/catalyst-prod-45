@@ -173,7 +173,7 @@ export default function ProjectDirectory() {
           {filteredProjects.map((project) => (
             <div
               key={project.id}
-              onClick={() => navigate(`/project/${project.id}/room`)}
+              onClick={() => navigate(`/projects/${project.id}/work`)}
               className="grid grid-cols-[40px_1fr_80px_180px_180px_50px] px-3 py-2.5 border-b border-border bg-card items-center cursor-pointer hover:bg-muted transition-colors"
             >
               <button onClick={(e) => { e.stopPropagation(); toggleStar(project.id); }} className="p-1 bg-transparent border-none cursor-pointer">
@@ -191,7 +191,7 @@ export default function ProjectDirectory() {
                   <Button variant="ghost" size="icon" className="h-8 w-8"><MoreHorizontal className="w-4 h-4" /></Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => navigate(`/project/${project.id}/room`)}>View project</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate(`/projects/${project.id}/work`)}>View project</DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate(`/projects/${project.key}/settings`)}>Settings</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
