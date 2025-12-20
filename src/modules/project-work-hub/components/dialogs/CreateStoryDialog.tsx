@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import {
   Dialog,
   DialogContent,
@@ -17,85 +19,103 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { WorkItem, Priority, StatusCategory } from '../../types';
+import { toast } from '@/components/ui/catalyst-toast';
+import { Loader2 } from 'lucide-react';
 
 interface CreateStoryDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: Partial<WorkItem>) => void;
+  onSuccess?: () => void;
   projectId: string;
-  features?: WorkItem[];
 }
-
-const priorityOptions = [
-  { label: 'Highest', value: 'HIGHEST' },
-  { label: 'High', value: 'HIGH' },
-  { label: 'Medium', value: 'MEDIUM' },
-  { label: 'Low', value: 'LOW' },
-  { label: 'Lowest', value: 'LOWEST' },
-];
-
-const quarterOptions = [
-  { label: 'Q1 2025', value: 'q1-2025' },
-  { label: 'Q2 2025', value: 'q2-2025' },
-  { label: 'Q3 2025', value: 'q3-2025' },
-  { label: 'Q4 2025', value: 'q4-2025' },
-];
-
-const releaseOptions = [
-  { label: 'Release 1.0', value: 'rel-1.0' },
-  { label: 'Release 1.1', value: 'rel-1.1' },
-  { label: 'Release 2.0', value: 'rel-2.0' },
-];
-
-const featureOptions = [
-  { label: 'FEAT-001: User Authentication', value: 'feat-001' },
-  { label: 'FEAT-002: Dashboard Redesign', value: 'feat-002' },
-  { label: 'FEAT-003: API Integration', value: 'feat-003' },
-];
 
 export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
   isOpen,
   onClose,
-  onSubmit,
+  onSuccess,
   projectId,
-  features,
 }) => {
-  const [summary, setSummary] = useState('');
+  const queryClient = useQueryClient();
+  const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [feature, setFeature] = useState('');
-  const [quarter, setQuarter] = useState('');
-  const [release, setRelease] = useState('');
-  const [priority, setPriority] = useState('MEDIUM');
+  const [featureId, setFeatureId] = useState<string>('');
   const [acceptanceCriteria, setAcceptanceCriteria] = useState('');
 
-  const handleSubmit = () => {
-    if (!summary.trim() || !feature || !quarter || !release) return;
+  // Fetch real features from database filtered by project_id
+  const { data: features, isLoading: featuresLoading } = useQuery({
+    queryKey: ['features-for-story', projectId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('features')
+        .select('id, name, display_id')
+        .eq('project_id', projectId)
+        .is('deleted_at', null)
+        .order('name');
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: isOpen,
+  });
 
-    onSubmit({
-      type: 'STORY',
-      summary: summary.trim(),
-      description: description.trim(),
-      status: 'TODO',
-      statusCategory: 'TODO' as StatusCategory,
-      priority: priority as Priority,
-      quarterId: quarter,
-      releaseVersionId: release,
-      parentId: feature,
-    });
+  // Create story mutation
+  const createStory = useMutation({
+    mutationFn: async (storyData: { 
+      title: string;
+      name: string; 
+      description?: string;
+      feature_id: string;
+      acceptance_criteria?: string;
+    }) => {
+      const { data, error } = await supabase
+        .from('stories')
+        .insert({
+          title: storyData.title,
+          name: storyData.name,
+          description: storyData.description || null,
+          feature_id: storyData.feature_id,
+          acceptance_criteria: storyData.acceptance_criteria || null,
+        })
+        .select()
+        .single();
 
-    // Reset form
-    setSummary('');
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      // Invalidate work items query so the list refreshes
+      queryClient.invalidateQueries({ queryKey: ['work-items', projectId] });
+      queryClient.invalidateQueries({ queryKey: ['stories'] });
+      toast.success('Story created', { description: 'The story has been created successfully.' });
+      resetForm();
+      onClose();
+      onSuccess?.();
+    },
+    onError: (error: any) => {
+      toast.error('Failed to create story', { description: error.message });
+    },
+  });
+
+  const resetForm = () => {
+    setTitle('');
     setDescription('');
-    setFeature('');
-    setQuarter('');
-    setRelease('');
-    setPriority('MEDIUM');
+    setFeatureId('');
     setAcceptanceCriteria('');
-    onClose();
   };
 
-  const isValid = summary.trim() && feature && quarter && release;
+  const handleSubmit = () => {
+    if (!title.trim() || !featureId) return;
+
+    createStory.mutate({
+      title: title.trim(),
+      name: title.trim(), // name is required, use title as the name
+      description: description.trim() || undefined,
+      feature_id: featureId,
+      acceptance_criteria: acceptanceCriteria.trim() || undefined,
+    });
+  };
+
+  const isValid = title.trim() && featureId;
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -105,14 +125,15 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
         </DialogHeader>
         <div className="flex flex-col gap-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="summary">
-              Summary <span className="text-destructive">*</span>
+            <Label htmlFor="title">
+              Title <span className="text-destructive">*</span>
             </Label>
             <Input
-              id="summary"
-              value={summary}
-              onChange={(e) => setSummary(e.target.value)}
-              placeholder="Enter story summary"
+              id="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Enter story title"
+              disabled={createStory.isPending}
             />
           </div>
 
@@ -120,74 +141,26 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
             <Label htmlFor="feature">
               Feature <span className="text-destructive">*</span>
             </Label>
-            <Select value={feature} onValueChange={setFeature}>
+            <Select value={featureId} onValueChange={setFeatureId} disabled={featuresLoading || createStory.isPending}>
               <SelectTrigger>
-                <SelectValue placeholder="Select parent feature (required)" />
+                <SelectValue placeholder={featuresLoading ? "Loading features..." : "Select parent feature (required)"} />
               </SelectTrigger>
               <SelectContent>
-                {featureOptions.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
+                {features?.map((feature) => (
+                  <SelectItem key={feature.id} value={feature.id}>
+                    {feature.display_id ? `${feature.display_id}: ` : ''}{feature.name}
                   </SelectItem>
                 ))}
+                {features?.length === 0 && (
+                  <div className="px-2 py-3 text-sm text-muted-foreground text-center">
+                    No features in this project. Create a feature first.
+                  </div>
+                )}
               </SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground">
               Stories must belong to a Feature
             </p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="quarter">
-                Quarter <span className="text-destructive">*</span>
-              </Label>
-              <Select value={quarter} onValueChange={setQuarter}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select quarter" />
-                </SelectTrigger>
-                <SelectContent>
-                  {quarterOptions.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="release">
-                Release Version <span className="text-destructive">*</span>
-              </Label>
-              <Select value={release} onValueChange={setRelease}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select release" />
-                </SelectTrigger>
-                <SelectContent>
-                  {releaseOptions.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="priority">Priority</Label>
-            <Select value={priority} onValueChange={setPriority}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select priority" />
-              </SelectTrigger>
-              <SelectContent>
-                {priorityOptions.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
           </div>
 
           <div className="space-y-2">
@@ -196,8 +169,9 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Enter story description"
+              placeholder="Enter story description (optional)"
               rows={3}
+              disabled={createStory.isPending}
             />
           </div>
 
@@ -207,16 +181,21 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
               id="acceptance"
               value={acceptanceCriteria}
               onChange={(e) => setAcceptanceCriteria(e.target.value)}
-              placeholder="Enter acceptance criteria (one per line)"
+              placeholder="Enter acceptance criteria (optional)"
               rows={3}
+              disabled={createStory.isPending}
             />
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
+          <Button variant="outline" onClick={onClose} disabled={createStory.isPending}>
             Cancel
           </Button>
-          <Button onClick={handleSubmit} disabled={!isValid}>
+          <Button 
+            onClick={handleSubmit} 
+            disabled={!isValid || createStory.isPending}
+          >
+            {createStory.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Create Story
           </Button>
         </DialogFooter>

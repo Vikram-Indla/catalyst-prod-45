@@ -54,7 +54,8 @@ export const ProjectWorkHubPage: React.FC = () => {
   };
 
   const handleCreateSubmit = (data: Partial<WorkItem>) => {
-    console.log('Creating work item:', data);
+    // Legacy handler for dialogs that still use onSubmit pattern
+    // Feature and Story dialogs now handle their own mutations
     setCreateDialogOpen(null);
   };
 
@@ -179,14 +180,14 @@ export const ProjectWorkHubPage: React.FC = () => {
       <CreateFeatureDialog
         isOpen={createDialogOpen === 'FEATURE'}
         onClose={() => setCreateDialogOpen(null)}
-        onSubmit={handleCreateSubmit}
+        onSuccess={() => setCreateDialogOpen(null)}
         projectId={projectId}
       />
 
       <CreateStoryDialog
         isOpen={createDialogOpen === 'STORY'}
         onClose={() => setCreateDialogOpen(null)}
-        onSubmit={handleCreateSubmit}
+        onSuccess={() => setCreateDialogOpen(null)}
         projectId={projectId}
       />
 

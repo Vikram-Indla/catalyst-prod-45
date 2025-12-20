@@ -160,6 +160,7 @@ import ProjectDirectory from "./pages/ProjectDirectory";
 import ProjectSettingsPage from "./pages/ProjectSettingsPage";
 import { ProjectWorkHubPage } from "./modules/project-work-hub/ProjectWorkHubPage";
 import ProjectSummaryPage from "./pages/projects/ProjectSummaryPage";
+import ProjectComingSoonPage from "./pages/projects/ProjectComingSoonPage";
 import { WorkHubLayout } from "./modules/work-hub/WorkHubLayout";
 import { SummaryView } from "./modules/work-hub/views/SummaryView";
 import { ListView, AllWorkView, ReleasesView, ReleaseDetailsView } from "./modules/work-hub/views";
@@ -451,6 +452,10 @@ const App = () => (
               <Route path="/projects/:projectId/features" element={<FeaturesPage />} />
               <Route path="/projects/:projectId/features/:featureId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><FeatureViewPage /></Suspense>} />
               <Route path="/projects/:projectId/work" element={<ProjectWorkHubPage />} />
+              <Route path="/projects/:projectId/backlog" element={<ProjectComingSoonPage pageTitle="Backlog" />} />
+              <Route path="/projects/:projectId/roadmap" element={<ProjectComingSoonPage pageTitle="Roadmap" />} />
+              <Route path="/projects/:projectId/dependencies" element={<ProjectComingSoonPage pageTitle="Dependencies" />} />
+              <Route path="/projects/:projectId/reports" element={<ProjectComingSoonPage pageTitle="Reports" />} />
               <Route path="/project/:projectId/work" element={<ProjectWorkHubPage />} />
               <Route path="/teams" element={<TeamComingSoon />} />
               <Route path="/teams/:teamId/room" element={<TeamComingSoon />} />

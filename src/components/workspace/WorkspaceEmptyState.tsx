@@ -119,9 +119,7 @@ export function WorkspaceEmptyState({
         <CreateFeatureDialog
           isOpen={isCreateDialogOpen}
           onClose={handleDialogClose}
-          onSubmit={() => {
-            handleDialogClose();
-          }}
+          onSuccess={handleDialogClose}
           projectId={contextId}
         />
       )}

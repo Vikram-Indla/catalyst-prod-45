@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import {
   Dialog,
   DialogContent,
@@ -17,83 +19,97 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { WorkItem, Priority, StatusCategory } from '../../types';
+import { toast } from '@/components/ui/catalyst-toast';
+import { Loader2 } from 'lucide-react';
 
 interface CreateFeatureDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: Partial<WorkItem>) => void;
+  onSuccess?: () => void;
   projectId: string;
-  programId?: string;
 }
-
-const priorityOptions = [
-  { label: 'Highest', value: 'HIGHEST' },
-  { label: 'High', value: 'HIGH' },
-  { label: 'Medium', value: 'MEDIUM' },
-  { label: 'Low', value: 'LOW' },
-  { label: 'Lowest', value: 'LOWEST' },
-];
-
-const quarterOptions = [
-  { label: 'Q1 2025', value: 'q1-2025' },
-  { label: 'Q2 2025', value: 'q2-2025' },
-  { label: 'Q3 2025', value: 'q3-2025' },
-  { label: 'Q4 2025', value: 'q4-2025' },
-];
-
-const releaseOptions = [
-  { label: 'Release 1.0', value: 'rel-1.0' },
-  { label: 'Release 1.1', value: 'rel-1.1' },
-  { label: 'Release 2.0', value: 'rel-2.0' },
-];
-
-const epicOptions = [
-  { label: 'EPIC-001: Platform Migration', value: 'epic-001' },
-  { label: 'EPIC-002: User Experience', value: 'epic-002' },
-  { label: 'EPIC-003: Performance Optimization', value: 'epic-003' },
-];
 
 export const CreateFeatureDialog: React.FC<CreateFeatureDialogProps> = ({
   isOpen,
   onClose,
-  onSubmit,
+  onSuccess,
   projectId,
-  programId,
 }) => {
-  const [summary, setSummary] = useState('');
+  const queryClient = useQueryClient();
+  const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [epic, setEpic] = useState('');
-  const [quarter, setQuarter] = useState('');
-  const [release, setRelease] = useState('');
-  const [priority, setPriority] = useState('MEDIUM');
+  const [epicId, setEpicId] = useState<string>('');
 
-  const handleSubmit = () => {
-    if (!summary.trim() || !epic || !quarter || !release) return;
+  // Fetch real epics from database
+  const { data: epics, isLoading: epicsLoading } = useQuery({
+    queryKey: ['epics-for-feature', projectId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('epics')
+        .select('id, name, epic_key')
+        .is('deleted_at', null)
+        .order('name');
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: isOpen,
+  });
 
-    onSubmit({
-      type: 'FEATURE',
-      summary: summary.trim(),
-      description: description.trim(),
-      status: 'TODO',
-      statusCategory: 'TODO' as StatusCategory,
-      priority: priority as Priority,
-      quarterId: quarter,
-      releaseVersionId: release,
-      epicId: epic,
-    });
+  // Create feature mutation
+  const createFeature = useMutation({
+    mutationFn: async (featureData: { 
+      name: string; 
+      description?: string;
+      project_id: string; 
+      epic_id: string;
+    }) => {
+      const { data, error } = await supabase
+        .from('features')
+        .insert({
+          name: featureData.name,
+          description: featureData.description || null,
+          project_id: featureData.project_id,
+          epic_id: featureData.epic_id,
+        })
+        .select()
+        .single();
 
-    // Reset form
-    setSummary('');
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      // Invalidate work items query so the list refreshes
+      queryClient.invalidateQueries({ queryKey: ['work-items', projectId] });
+      queryClient.invalidateQueries({ queryKey: ['features'] });
+      toast.success('Feature created', { description: 'The feature has been created successfully.' });
+      resetForm();
+      onClose();
+      onSuccess?.();
+    },
+    onError: (error: any) => {
+      toast.error('Failed to create feature', { description: error.message });
+    },
+  });
+
+  const resetForm = () => {
+    setName('');
     setDescription('');
-    setEpic('');
-    setQuarter('');
-    setRelease('');
-    setPriority('MEDIUM');
-    onClose();
+    setEpicId('');
   };
 
-  const isValid = summary.trim() && epic && quarter && release;
+  const handleSubmit = () => {
+    if (!name.trim() || !epicId) return;
+
+    createFeature.mutate({
+      name: name.trim(),
+      description: description.trim() || undefined,
+      project_id: projectId,
+      epic_id: epicId,
+    });
+  };
+
+  const isValid = name.trim() && epicId;
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -103,14 +119,15 @@ export const CreateFeatureDialog: React.FC<CreateFeatureDialogProps> = ({
         </DialogHeader>
         <div className="flex flex-col gap-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="summary">
-              Summary <span className="text-destructive">*</span>
+            <Label htmlFor="name">
+              Name <span className="text-destructive">*</span>
             </Label>
             <Input
-              id="summary"
-              value={summary}
-              onChange={(e) => setSummary(e.target.value)}
-              placeholder="Enter feature summary"
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter feature name"
+              disabled={createFeature.isPending}
             />
           </div>
 
@@ -118,69 +135,21 @@ export const CreateFeatureDialog: React.FC<CreateFeatureDialogProps> = ({
             <Label htmlFor="epic">
               Epic <span className="text-destructive">*</span>
             </Label>
-            <Select value={epic} onValueChange={setEpic}>
+            <Select value={epicId} onValueChange={setEpicId} disabled={epicsLoading || createFeature.isPending}>
               <SelectTrigger>
-                <SelectValue placeholder="Select parent epic" />
+                <SelectValue placeholder={epicsLoading ? "Loading epics..." : "Select parent epic"} />
               </SelectTrigger>
               <SelectContent>
-                {epicOptions.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
+                {epics?.map((epic) => (
+                  <SelectItem key={epic.id} value={epic.id}>
+                    {epic.epic_key ? `${epic.epic_key}: ` : ''}{epic.name}
                   </SelectItem>
                 ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="quarter">
-                Quarter <span className="text-destructive">*</span>
-              </Label>
-              <Select value={quarter} onValueChange={setQuarter}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select quarter" />
-                </SelectTrigger>
-                <SelectContent>
-                  {quarterOptions.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="release">
-                Release Version <span className="text-destructive">*</span>
-              </Label>
-              <Select value={release} onValueChange={setRelease}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select release" />
-                </SelectTrigger>
-                <SelectContent>
-                  {releaseOptions.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="priority">Priority</Label>
-            <Select value={priority} onValueChange={setPriority}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select priority" />
-              </SelectTrigger>
-              <SelectContent>
-                {priorityOptions.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
+                {epics?.length === 0 && (
+                  <div className="px-2 py-3 text-sm text-muted-foreground text-center">
+                    No epics available. Create an epic first.
+                  </div>
+                )}
               </SelectContent>
             </Select>
           </div>
@@ -191,16 +160,21 @@ export const CreateFeatureDialog: React.FC<CreateFeatureDialogProps> = ({
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Enter feature description"
+              placeholder="Enter feature description (optional)"
               rows={3}
+              disabled={createFeature.isPending}
             />
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
+          <Button variant="outline" onClick={onClose} disabled={createFeature.isPending}>
             Cancel
           </Button>
-          <Button onClick={handleSubmit} disabled={!isValid}>
+          <Button 
+            onClick={handleSubmit} 
+            disabled={!isValid || createFeature.isPending}
+          >
+            {createFeature.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Create Feature
           </Button>
         </DialogFooter>
