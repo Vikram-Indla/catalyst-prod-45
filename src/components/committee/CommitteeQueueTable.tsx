@@ -286,8 +286,7 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
       <div className="flex flex-col h-full">
         <div className="rounded-md border border-border overflow-hidden bg-card flex-1 min-h-0">
           {/* Single scroll container */}
-          <div className="overflow-auto w-full h-full">
-            <div style={{ minWidth: `${MIN_TABLE_WIDTH}px`, width: '100%' }}>
+          <div className="overflow-auto w-full h-full" style={{ minWidth: `${MIN_TABLE_WIDTH}px` }}>
               {/* Header */}
               <div
                 className="grid items-center h-8 sticky top-0 z-20 bg-muted border-b border-border"
@@ -409,7 +408,6 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
                   </div>
                 ))
               )}
-            </div>
           </div>
         </div>
 
