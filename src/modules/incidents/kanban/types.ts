@@ -1,18 +1,56 @@
 /**
  * Incident Kanban Types and Utilities
- * Lane rules match Analytics/Insights for consistent counts
+ * Re-exports shared computations for backward compatibility
  */
 
-import type { Incident, IncidentStatus, SeverityLevel, SupportLevel, SlaRecord } from '@/types/incident';
+import type { Incident, IncidentStatus, SeverityLevel, SupportLevel } from '@/types/incident';
 
-// Kanban status columns (fixed order, Committee is NOT a status)
-export const KANBAN_STATUSES: IncidentStatus[] = [
-  'open',
-  'triage',
-  'in_progress',
-  'resolved',
-  'closed',
-];
+// Re-export all shared computations
+export {
+  // SLA
+  type SlaHealthState as SlaHealth,
+  SLA_HEALTH_ORDER,
+  SLA_HEALTH_CONFIG,
+  type SLAConfig,
+  DEFAULT_SLA_CONFIG,
+  computeSlaHealth as getSlaHealth,
+  
+  // Age
+  type AgeBucket,
+  AGE_BUCKET_ORDER,
+  AGE_BUCKET_CONFIG,
+  computeAgeDays as getAgeDays,
+  computeAgeHours,
+  computeAgeBucket as getAgeBucket,
+  formatAge,
+  computeTimeInStatus as getTimeInStatus,
+  
+  // Quick Filters
+  type QuickFilterKey,
+  type QuickFilterConfig,
+  QUICK_FILTERS,
+  applyQuickFilters,
+  
+  // Stats
+  type ColumnStats,
+  computeColumnStats as getColumnStats,
+  
+  // Severity/Level
+  SEVERITY_ORDER,
+  SEVERITY_CONFIG,
+  LEVEL_ORDER,
+  LEVEL_CONFIG,
+  
+  // Status
+  KANBAN_STATUSES,
+  OPEN_STATUSES,
+  RESOLVED_STATUSES,
+  STATUS_CONFIG,
+} from '../shared/computations';
+
+// ============================================================================
+// COLUMN CONFIGURATION
+// ============================================================================
 
 // Required columns that cannot be removed
 export const REQUIRED_COLUMNS: IncidentStatus[] = [
@@ -26,150 +64,8 @@ export const REQUIRED_COLUMNS: IncidentStatus[] = [
 // Statuses that can NEVER be added as columns
 export const FORBIDDEN_COLUMNS: IncidentStatus[] = [
   'to_committee', // Committee is never a column
-  'converted',    // Converted is a terminal state, not a workflow column
+  'converted',    // Converted is a terminal state
 ];
-
-// Open statuses (for toggle filter)
-export const OPEN_STATUSES: IncidentStatus[] = ['open', 'triage', 'in_progress'];
-
-// Resolved/Closed statuses (for SLA checks)
-export const RESOLVED_STATUSES: IncidentStatus[] = ['resolved', 'closed'];
-
-// Status display config
-export const STATUS_CONFIG: Record<IncidentStatus, { label: string; color: string }> = {
-  open: { label: 'Open', color: 'hsl(var(--b400))' },
-  triage: { label: 'Triage', color: 'hsl(var(--y300))' },
-  in_progress: { label: 'In Progress', color: 'hsl(var(--p300))' },
-  to_committee: { label: 'Committee', color: 'hsl(var(--secondary-bronze))' },
-  resolved: { label: 'Resolved', color: 'hsl(var(--g300))' },
-  converted: { label: 'Converted', color: 'hsl(var(--info))' },
-  closed: { label: 'Closed', color: 'var(--text-3)' },
-};
-
-// ============================================================================
-// SLA HEALTH
-// ============================================================================
-
-export type SlaHealth = 'breached' | 'at_risk' | 'on_track' | 'no_sla';
-
-export const SLA_HEALTH_ORDER: SlaHealth[] = ['breached', 'at_risk', 'on_track', 'no_sla'];
-
-export const SLA_HEALTH_CONFIG: Record<SlaHealth, { label: string; color: string }> = {
-  breached: { label: 'Breached', color: 'hsl(var(--destructive))' },
-  at_risk: { label: 'At Risk', color: 'hsl(var(--warning))' },
-  on_track: { label: 'On Track', color: 'hsl(var(--g300))' },
-  no_sla: { label: 'No SLA', color: 'var(--text-3)' },
-};
-
-/**
- * Calculate SLA health for an incident
- * Rules:
- * - No SLA: severity = SEV4 OR SLA duration is null/disabled
- * - Breached: now > created_at + sla_duration AND status not in [Resolved, Closed]
- * - At Risk: remaining SLA time <= 20% of sla_duration AND status not in [Resolved, Closed]
- * - On Track: all other cases
- */
-export function getSlaHealth(incident: Incident): SlaHealth {
-  // SEV4 incidents have no SLA
-  if (incident.severity === 'SEV4') {
-    return 'no_sla';
-  }
-
-  const sla = incident.sla;
-  
-  // No SLA record = no SLA
-  if (!sla || !sla.resolution_due_at) {
-    return 'no_sla';
-  }
-
-  // Already resolved/closed - show final status
-  if (RESOLVED_STATUSES.includes(incident.status)) {
-    // If it was breached, show breached
-    if (sla.resolution_breached) {
-      return 'breached';
-    }
-    return 'on_track';
-  }
-
-  const now = new Date();
-  const dueAt = new Date(sla.resolution_due_at);
-  const createdAt = new Date(incident.created_at);
-  
-  // Calculate total SLA duration (due_at - created_at)
-  const totalDuration = dueAt.getTime() - createdAt.getTime();
-  const remaining = dueAt.getTime() - now.getTime();
-
-  // Breached: now > due date
-  if (remaining < 0) {
-    return 'breached';
-  }
-
-  // At Risk: remaining time <= 20% of total duration
-  const atRiskThreshold = totalDuration * 0.2;
-  if (remaining <= atRiskThreshold) {
-    return 'at_risk';
-  }
-
-  return 'on_track';
-}
-
-// ============================================================================
-// AGE BUCKETS
-// ============================================================================
-
-export type AgeBucket = '0-1d' | '2-3d' | '4-7d' | '8d+';
-
-export const AGE_BUCKET_ORDER: AgeBucket[] = ['0-1d', '2-3d', '4-7d', '8d+'];
-
-export const AGE_BUCKET_CONFIG: Record<AgeBucket, { label: string; minDays: number; maxDays: number }> = {
-  '0-1d': { label: '0–1 day', minDays: 0, maxDays: 1 },
-  '2-3d': { label: '2–3 days', minDays: 2, maxDays: 3 },
-  '4-7d': { label: '4–7 days', minDays: 4, maxDays: 7 },
-  '8d+': { label: '8+ days', minDays: 8, maxDays: Infinity },
-};
-
-/**
- * Calculate age in days from created_at
- */
-export function getAgeDays(createdAt: string): number {
-  const created = new Date(createdAt);
-  const now = new Date();
-  return Math.floor((now.getTime() - created.getTime()) / (1000 * 60 * 60 * 24));
-}
-
-/**
- * Get age bucket for an incident
- * Based on now - created_at
- */
-export function getAgeBucket(createdAt: string): AgeBucket {
-  const days = getAgeDays(createdAt);
-  if (days <= 1) return '0-1d';
-  if (days <= 3) return '2-3d';
-  if (days <= 7) return '4-7d';
-  return '8d+';
-}
-
-// ============================================================================
-// SEVERITY / LEVEL LANES
-// ============================================================================
-
-export const SEVERITY_ORDER: SeverityLevel[] = ['SEV1', 'SEV2', 'SEV3', 'SEV4'];
-
-export const SEVERITY_CONFIG: Record<SeverityLevel, { label: string; color: string }> = {
-  SEV1: { label: 'SEV1', color: 'hsl(var(--destructive))' },
-  SEV2: { label: 'SEV2', color: 'hsl(var(--warning))' },
-  SEV3: { label: 'SEV3', color: 'hsl(var(--b400))' },
-  SEV4: { label: 'SEV4', color: 'var(--text-3)' },
-};
-
-export const LEVEL_ORDER: (SupportLevel | 'none')[] = ['L1', 'L2', 'L3', 'none'];
-
-export const LEVEL_CONFIG: Record<SupportLevel | 'none', { label: string; color: string }> = {
-  L1: { label: 'L1', color: 'hsl(var(--destructive))' },
-  L2: { label: 'L2', color: 'hsl(var(--warning))' },
-  L3: { label: 'L3', color: 'hsl(var(--b400))' },
-  none: { label: '—', color: 'var(--text-3)' },
-};
 
 // ============================================================================
 // GROUP BY OPTIONS
@@ -198,39 +94,24 @@ export interface SwimlaneGroup {
   incidents: Incident[];
 }
 
-export interface ColumnStats {
-  total: number;
-  atRisk: number;
-  breached: number;
-}
-
 // ============================================================================
-// UTILITY FUNCTIONS
+// GROUPING FUNCTIONS (import shared utilities)
 // ============================================================================
 
-/**
- * Calculate time in current status
- */
-export function getTimeInStatus(incident: Incident): string {
-  const lastChange = new Date(incident.updated_at);
-  const now = new Date();
-  const hours = Math.floor((now.getTime() - lastChange.getTime()) / (1000 * 60 * 60));
-  
-  if (hours < 1) return '<1h';
-  if (hours < 24) return `${hours}h`;
-  const days = Math.floor(hours / 24);
-  return `${days}d`;
-}
-
-/**
- * Format age for display
- */
-export function formatAge(createdAt: string): string {
-  const days = getAgeDays(createdAt);
-  if (days === 0) return 'Today';
-  if (days === 1) return '1d';
-  return `${days}d`;
-}
+import {
+  computeSlaHealth,
+  computeAgeBucket,
+  SLA_HEALTH_ORDER,
+  SLA_HEALTH_CONFIG,
+  AGE_BUCKET_ORDER,
+  AGE_BUCKET_CONFIG,
+  SEVERITY_ORDER,
+  SEVERITY_CONFIG,
+  LEVEL_ORDER,
+  LEVEL_CONFIG,
+  type SLAConfig,
+  DEFAULT_SLA_CONFIG,
+} from '../shared/computations';
 
 /**
  * Group incidents into swimlanes with FIXED lane orders
@@ -238,7 +119,8 @@ export function formatAge(createdAt: string): string {
  */
 export function groupIncidents(
   incidents: Incident[],
-  groupBy: GroupByOption
+  groupBy: GroupByOption,
+  slaConfig?: SLAConfig
 ): SwimlaneGroup[] {
   if (groupBy === 'none') {
     return [{
@@ -253,7 +135,7 @@ export function groupIncidents(
     case 'severity':
       return groupBySeverity(incidents);
     case 'sla_health':
-      return groupBySlaHealth(incidents);
+      return groupBySlaHealth(incidents, slaConfig);
     case 'level':
       return groupByLevel(incidents);
     case 'assignee':
@@ -291,7 +173,7 @@ function groupBySeverity(incidents: Incident[]): SwimlaneGroup[] {
  * GROUP BY: SLA Health
  * Lane order: Breached, At Risk, On Track, No SLA
  */
-function groupBySlaHealth(incidents: Incident[]): SwimlaneGroup[] {
+function groupBySlaHealth(incidents: Incident[], slaConfig?: SLAConfig): SwimlaneGroup[] {
   const lanes: SwimlaneGroup[] = SLA_HEALTH_ORDER.map((health, idx) => ({
     key: health,
     label: SLA_HEALTH_CONFIG[health].label,
@@ -303,7 +185,7 @@ function groupBySlaHealth(incidents: Incident[]): SwimlaneGroup[] {
   const laneMap = new Map(lanes.map(l => [l.key, l]));
 
   incidents.forEach(incident => {
-    const health = getSlaHealth(incident);
+    const health = computeSlaHealth(incident, slaConfig || DEFAULT_SLA_CONFIG);
     laneMap.get(health)?.incidents.push(incident);
   });
 
@@ -335,13 +217,9 @@ function groupByLevel(incidents: Incident[]): SwimlaneGroup[] {
 
 /**
  * GROUP BY: Assignee
- * Lane order:
- *   1) Unassigned
- *   2) Top 6 assignees by count
- *   3) "Other" (everyone else)
+ * Lane order: Unassigned, Top 6, Other
  */
 function groupByAssignee(incidents: Incident[]): SwimlaneGroup[] {
-  // Count incidents per assignee
   const assigneeCounts = new Map<string, { id: string; name: string; count: number }>();
   const unassignedIncidents: Incident[] = [];
   const assignedIncidents: Incident[] = [];
@@ -365,7 +243,6 @@ function groupByAssignee(incidents: Incident[]): SwimlaneGroup[] {
     }
   });
 
-  // Sort assignees by count (desc) and take top 6
   const sortedAssignees = Array.from(assigneeCounts.values())
     .sort((a, b) => b.count - a.count);
   
@@ -373,10 +250,8 @@ function groupByAssignee(incidents: Incident[]): SwimlaneGroup[] {
   const top6Ids = new Set(top6.map(a => a.id));
   const otherAssignees = sortedAssignees.slice(6);
 
-  // Build lanes
   const lanes: SwimlaneGroup[] = [];
 
-  // 1) Unassigned (always first)
   lanes.push({
     key: 'unassigned',
     label: 'Unassigned',
@@ -385,7 +260,6 @@ function groupByAssignee(incidents: Incident[]): SwimlaneGroup[] {
     incidents: unassignedIncidents,
   });
 
-  // 2) Top 6 assignees
   top6.forEach((assignee, idx) => {
     lanes.push({
       key: assignee.id,
@@ -395,7 +269,6 @@ function groupByAssignee(incidents: Incident[]): SwimlaneGroup[] {
     });
   });
 
-  // 3) "Other" lane (if there are more assignees)
   if (otherAssignees.length > 0) {
     lanes.push({
       key: 'other',
@@ -424,29 +297,9 @@ function groupByAge(incidents: Incident[]): SwimlaneGroup[] {
   const laneMap = new Map(lanes.map(l => [l.key, l]));
 
   incidents.forEach(incident => {
-    const bucket = getAgeBucket(incident.created_at);
+    const bucket = computeAgeBucket(incident.created_at);
     laneMap.get(bucket)?.incidents.push(incident);
   });
 
   return lanes;
-}
-
-/**
- * Calculate column stats (for headers)
- */
-export function getColumnStats(incidents: Incident[]): ColumnStats {
-  let atRisk = 0;
-  let breached = 0;
-
-  incidents.forEach(incident => {
-    const health = getSlaHealth(incident);
-    if (health === 'at_risk') atRisk++;
-    if (health === 'breached') breached++;
-  });
-
-  return {
-    total: incidents.length,
-    atRisk,
-    breached,
-  };
 }
