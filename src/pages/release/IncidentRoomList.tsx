@@ -135,10 +135,10 @@ export default function IncidentRoomList() {
         pageTitle="Incident List"
         rightActions={
           <div className="flex items-center gap-2">
-            <Link to="/release/incidents/dashboard">
+            <Link to="/release/incidents/analytics">
               <Button variant="ghost" size="sm" className="h-8 px-3 text-sm">
                 <LayoutDashboard className="h-4 w-4 mr-1.5" />
-                Dashboard
+                Analytics
               </Button>
             </Link>
             <Button 
