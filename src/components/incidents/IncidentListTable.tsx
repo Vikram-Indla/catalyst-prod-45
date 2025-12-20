@@ -4,13 +4,13 @@
  * Design: Jira-quality dense enterprise list view using CSS Grid
  * - CSS Grid layout for perfect column alignment (header + body share same template)
  * - Compact row height (36px body, 32px header)
- * - All columns fixed width (no flex-1), resizable
- * - Horizontal scroll when content exceeds viewport
+ * - Auto-fit column widths on first load, with weighted stretch to fill container
+ * - Resize + persist + restore pattern
  * - Perfect vertical alignment across all cells
- * - Single-line summary with ellipsis/tooltip
+ * - Center alignment for SEV onward columns
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { MoreHorizontal, Eye, Pencil, Trash2, AlertTriangle, Copy } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -33,7 +33,13 @@ import { InlineUserPicker } from './InlineUserPicker';
 import { InlineReleasePicker } from './InlineReleasePicker';
 import { DeleteIncidentDialog } from './DeleteIncidentDialog';
 import { ResizableHeader } from './ResizableHeader';
-import { useIncidentColumnWidths, MIN_COLUMN_WIDTHS, MAX_COLUMN_WIDTHS } from './useIncidentColumnWidths';
+import { 
+  useIncidentColumnWidths, 
+  MIN_COLUMN_WIDTHS, 
+  MAX_COLUMN_WIDTHS, 
+  COLUMN_ORDER,
+  CENTER_ALIGNED_COLUMNS,
+} from './useIncidentColumnWidths';
 import { toast } from '@/components/ui/catalyst-toast';
 import { getCommitteeDisplayStatus } from '@/utils/committeeStatus';
 import { useUpdateIncident } from '@/hooks/useIncidents';
@@ -100,13 +106,10 @@ const DEFAULT_VISIBLE_COLUMNS: ColumnConfig[] = [
   { id: 'committee', label: 'Committee', visible: true },
 ];
 
-// Column order for grid template
-const COLUMN_ORDER = ['key', 'summary', 'severity', 'level', 'status', 'assignee', 'age', 'sla', 'releaseVersion', 'major', 'committee', 'actions'];
-
 function LoadingSkeleton({ columnWidths, visibleColumns }: { columnWidths: Record<string, number>; visibleColumns: ColumnConfig[] }) {
   const isColumnVisible = (colId: string) => visibleColumns.some(c => c.id === colId && c.visible !== false);
   
-  // Build grid template - ALL columns use fixed pixel widths (no fr units)
+  // Build grid template - ALL columns use fixed pixel widths
   const gridTemplate = useMemo(() => {
     const cols: string[] = [];
     COLUMN_ORDER.forEach(colId => {
@@ -119,6 +122,8 @@ function LoadingSkeleton({ columnWidths, visibleColumns }: { columnWidths: Recor
     return cols.join(' ');
   }, [columnWidths, visibleColumns]);
 
+  const isCentered = (colId: string) => CENTER_ALIGNED_COLUMNS.includes(colId);
+
   return (
     <div className="rounded-md border border-border overflow-hidden bg-card">
       {/* Header - exactly 32px */}
@@ -128,15 +133,15 @@ function LoadingSkeleton({ columnWidths, visibleColumns }: { columnWidths: Recor
       >
         {isColumnVisible('key') && <div className="pl-3 pr-2 flex items-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>KEY</span></div>}
         {isColumnVisible('summary') && <div className="pr-2 flex items-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>SUMMARY</span></div>}
-        {isColumnVisible('severity') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>SEV</span></div>}
-        {isColumnVisible('level') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>LVL</span></div>}
-        {isColumnVisible('status') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>STATUS</span></div>}
-        {isColumnVisible('assignee') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>ASSIGNEE</span></div>}
-        {isColumnVisible('age') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>AGE</span></div>}
-        {isColumnVisible('sla') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>SLA</span></div>}
-        {isColumnVisible('releaseVersion') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>RELEASE</span></div>}
-        {isColumnVisible('major') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>MAJOR</span></div>}
-        {isColumnVisible('committee') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>COMMITTEE</span></div>}
+        {isColumnVisible('severity') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>SEV</span></div>}
+        {isColumnVisible('level') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>LVL</span></div>}
+        {isColumnVisible('status') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>STATUS</span></div>}
+        {isColumnVisible('assignee') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>ASSIGNEE</span></div>}
+        {isColumnVisible('age') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>AGE</span></div>}
+        {isColumnVisible('sla') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>SLA</span></div>}
+        {isColumnVisible('releaseVersion') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>RELEASE</span></div>}
+        {isColumnVisible('major') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>MAJOR</span></div>}
+        {isColumnVisible('committee') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><span className={cn(HEADER_TEXT, "truncate")}>COMMITTEE</span></div>}
         <div className="flex items-center h-full min-w-0"></div>
       </div>
       {/* Skeleton rows - exactly 36px each */}
@@ -148,15 +153,15 @@ function LoadingSkeleton({ columnWidths, visibleColumns }: { columnWidths: Recor
         >
           {isColumnVisible('key') && <div className="pl-3 pr-2 flex items-center h-full min-w-0 overflow-hidden"><Skeleton className="h-3.5 w-14" /></div>}
           {isColumnVisible('summary') && <div className="pr-2 flex items-center h-full min-w-0 overflow-hidden"><Skeleton className="h-3.5 w-full max-w-[90%]" /></div>}
-          {isColumnVisible('severity') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><Skeleton className="h-5 w-14 rounded-full" /></div>}
-          {isColumnVisible('level') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><Skeleton className="h-3.5 w-6" /></div>}
-          {isColumnVisible('status') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><Skeleton className="h-5 w-20 rounded-full" /></div>}
-          {isColumnVisible('assignee') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><Skeleton className="h-4 w-24" /></div>}
-          {isColumnVisible('age') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><Skeleton className="h-3.5 w-8" /></div>}
-          {isColumnVisible('sla') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><Skeleton className="h-3.5 w-14" /></div>}
-          {isColumnVisible('releaseVersion') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><Skeleton className="h-3.5 w-16" /></div>}
-          {isColumnVisible('major') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><Skeleton className="h-3.5 w-10" /></div>}
-          {isColumnVisible('committee') && <div className="px-2 flex items-center h-full min-w-0 overflow-hidden"><Skeleton className="h-3.5 w-16" /></div>}
+          {isColumnVisible('severity') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><Skeleton className="h-5 w-14 rounded-full" /></div>}
+          {isColumnVisible('level') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><Skeleton className="h-3.5 w-6" /></div>}
+          {isColumnVisible('status') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><Skeleton className="h-5 w-20 rounded-full" /></div>}
+          {isColumnVisible('assignee') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><Skeleton className="h-4 w-24" /></div>}
+          {isColumnVisible('age') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><Skeleton className="h-3.5 w-8" /></div>}
+          {isColumnVisible('sla') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><Skeleton className="h-3.5 w-14" /></div>}
+          {isColumnVisible('releaseVersion') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><Skeleton className="h-3.5 w-16" /></div>}
+          {isColumnVisible('major') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><Skeleton className="h-3.5 w-10" /></div>}
+          {isColumnVisible('committee') && <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"><Skeleton className="h-3.5 w-16" /></div>}
           <div className="flex items-center h-full min-w-0"></div>
         </div>
       ))}
@@ -183,12 +188,38 @@ export function IncidentListTable({
     key: '' 
   });
   
-  const { columnWidths, handleColumnResize } = useIncidentColumnWidths();
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Get visible column IDs for the hook
+  const visibleColumnIds = useMemo(() => 
+    visibleColumns.filter(c => c.visible !== false).map(c => c.id),
+    [visibleColumns]
+  );
+  
+  const { columnWidths, handleColumnResize, recalculateWidths } = useIncidentColumnWidths({
+    containerRef,
+    visibleColumns: visibleColumnIds,
+  });
+
+  // Recalculate widths when container resizes (only if no saved widths)
+  useEffect(() => {
+    if (!containerRef.current) return;
+    
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        recalculateWidths(entry.contentRect.width);
+      }
+    });
+    
+    resizeObserver.observe(containerRef.current);
+    return () => resizeObserver.disconnect();
+  }, [recalculateWidths]);
 
   const isColumnVisible = (colId: string) => visibleColumns.some(c => c.id === colId && c.visible !== false);
+  const isCentered = (colId: string) => CENTER_ALIGNED_COLUMNS.includes(colId);
 
-  // Build CSS Grid template string from column widths - shared by header and body
-  // ALL columns use fixed pixel widths - no fr units (required for proper resizing)
+  // Build CSS Grid template string - shared by header and body
+  // Uses width: 100% on container to fill available space
   const gridTemplate = useMemo(() => {
     const cols: string[] = [];
     COLUMN_ORDER.forEach(colId => {
@@ -201,7 +232,7 @@ export function IncidentListTable({
     return cols.join(' ');
   }, [columnWidths, visibleColumns]);
 
-  // Calculate total table width for horizontal scroll (sum of all column widths)
+  // Calculate total table width
   const totalTableWidth = useMemo(() => {
     let width = 40; // Actions column
     COLUMN_ORDER.forEach(colId => {
@@ -254,17 +285,20 @@ export function IncidentListTable({
   return (
     <TooltipProvider delayDuration={200}>
       <div className="flex flex-col h-full">
-        {/* Table container - horizontal scroll enabled */}
-        <div className="rounded-md border border-border overflow-hidden bg-card flex-1">
+        {/* Table container - horizontal scroll when content exceeds viewport */}
+        <div 
+          ref={containerRef}
+          className="rounded-md border border-border overflow-hidden bg-card flex-1"
+        >
           <div className="overflow-x-auto w-full">
-            {/* Grid table - uses exact pixel width, expands beyond viewport for scroll */}
-            <div style={{ width: `${totalTableWidth}px`, minWidth: `${totalTableWidth}px` }}>
+            {/* Grid table - min-width ensures it can grow for horizontal scroll */}
+            <div style={{ minWidth: `${totalTableWidth}px`, width: '100%' }}>
               {/* Header row - exactly 32px height, CSS Grid layout */}
               <div 
                 className="grid items-center h-8 sticky top-0 z-20 bg-muted/40 border-b border-border"
                 style={{ gridTemplateColumns: gridTemplate }}
               >
-                {/* Key */}
+                {/* Key - left aligned */}
                 {isColumnVisible('key') && (
                   <ResizableHeader
                     columnId="key"
@@ -277,7 +311,7 @@ export function IncidentListTable({
                     <span className={HEADER_TEXT}>KEY</span>
                   </ResizableHeader>
                 )}
-                {/* Summary - FIXED width, resizable like any other column */}
+                {/* Summary - left aligned */}
                 {isColumnVisible('summary') && (
                   <ResizableHeader
                     columnId="summary"
@@ -290,7 +324,7 @@ export function IncidentListTable({
                     <span className={HEADER_TEXT}>SUMMARY</span>
                   </ResizableHeader>
                 )}
-                {/* Sev */}
+                {/* Sev - center aligned */}
                 {isColumnVisible('severity') && (
                   <ResizableHeader
                     columnId="severity"
@@ -298,12 +332,13 @@ export function IncidentListTable({
                     minWidth={MIN_COLUMN_WIDTHS.severity}
                     maxWidth={MAX_COLUMN_WIDTHS.severity}
                     onResize={handleColumnResize}
-                    className="px-2"
+                    className="px-2 justify-center"
+                    centered
                   >
                     <span className={HEADER_TEXT}>SEV</span>
                   </ResizableHeader>
                 )}
-                {/* Lvl */}
+                {/* Lvl - center aligned */}
                 {isColumnVisible('level') && (
                   <ResizableHeader
                     columnId="level"
@@ -311,12 +346,13 @@ export function IncidentListTable({
                     minWidth={MIN_COLUMN_WIDTHS.level}
                     maxWidth={MAX_COLUMN_WIDTHS.level}
                     onResize={handleColumnResize}
-                    className="px-2"
+                    className="px-2 justify-center"
+                    centered
                   >
                     <span className={HEADER_TEXT}>LVL</span>
                   </ResizableHeader>
                 )}
-                {/* Status */}
+                {/* Status - center aligned */}
                 {isColumnVisible('status') && (
                   <ResizableHeader
                     columnId="status"
@@ -324,12 +360,13 @@ export function IncidentListTable({
                     minWidth={MIN_COLUMN_WIDTHS.status}
                     maxWidth={MAX_COLUMN_WIDTHS.status}
                     onResize={handleColumnResize}
-                    className="px-2"
+                    className="px-2 justify-center"
+                    centered
                   >
                     <span className={HEADER_TEXT}>STATUS</span>
                   </ResizableHeader>
                 )}
-                {/* Assignee */}
+                {/* Assignee - center aligned */}
                 {isColumnVisible('assignee') && (
                   <ResizableHeader
                     columnId="assignee"
@@ -337,12 +374,13 @@ export function IncidentListTable({
                     minWidth={MIN_COLUMN_WIDTHS.assignee}
                     maxWidth={MAX_COLUMN_WIDTHS.assignee}
                     onResize={handleColumnResize}
-                    className="px-2"
+                    className="px-2 justify-center"
+                    centered
                   >
                     <span className={HEADER_TEXT}>ASSIGNEE</span>
                   </ResizableHeader>
                 )}
-                {/* Age */}
+                {/* Age - center aligned */}
                 {isColumnVisible('age') && (
                   <ResizableHeader
                     columnId="age"
@@ -350,12 +388,13 @@ export function IncidentListTable({
                     minWidth={MIN_COLUMN_WIDTHS.age}
                     maxWidth={MAX_COLUMN_WIDTHS.age}
                     onResize={handleColumnResize}
-                    className="px-2"
+                    className="px-2 justify-center"
+                    centered
                   >
                     <span className={HEADER_TEXT}>AGE</span>
                   </ResizableHeader>
                 )}
-                {/* SLA */}
+                {/* SLA - center aligned */}
                 {isColumnVisible('sla') && (
                   <ResizableHeader
                     columnId="sla"
@@ -363,12 +402,13 @@ export function IncidentListTable({
                     minWidth={MIN_COLUMN_WIDTHS.sla}
                     maxWidth={MAX_COLUMN_WIDTHS.sla}
                     onResize={handleColumnResize}
-                    className="px-2"
+                    className="px-2 justify-center"
+                    centered
                   >
                     <span className={HEADER_TEXT}>SLA</span>
                   </ResizableHeader>
                 )}
-                {/* Release */}
+                {/* Release - center aligned */}
                 {isColumnVisible('releaseVersion') && (
                   <ResizableHeader
                     columnId="releaseVersion"
@@ -376,12 +416,13 @@ export function IncidentListTable({
                     minWidth={MIN_COLUMN_WIDTHS.releaseVersion}
                     maxWidth={MAX_COLUMN_WIDTHS.releaseVersion}
                     onResize={handleColumnResize}
-                    className="px-2"
+                    className="px-2 justify-center"
+                    centered
                   >
                     <span className={HEADER_TEXT}>RELEASE</span>
                   </ResizableHeader>
                 )}
-                {/* Major */}
+                {/* Major - center aligned */}
                 {isColumnVisible('major') && (
                   <ResizableHeader
                     columnId="major"
@@ -389,12 +430,13 @@ export function IncidentListTable({
                     minWidth={MIN_COLUMN_WIDTHS.major}
                     maxWidth={MAX_COLUMN_WIDTHS.major}
                     onResize={handleColumnResize}
-                    className="px-2"
+                    className="px-2 justify-center"
+                    centered
                   >
                     <span className={HEADER_TEXT}>MAJOR</span>
                   </ResizableHeader>
                 )}
-                {/* Committee */}
+                {/* Committee - center aligned */}
                 {isColumnVisible('committee') && (
                   <ResizableHeader
                     columnId="committee"
@@ -402,7 +444,8 @@ export function IncidentListTable({
                     minWidth={MIN_COLUMN_WIDTHS.committee}
                     maxWidth={MAX_COLUMN_WIDTHS.committee}
                     onResize={handleColumnResize}
-                    className="px-2"
+                    className="px-2 justify-center"
+                    centered
                   >
                     <span className={HEADER_TEXT}>COMMITTEE</span>
                   </ResizableHeader>
@@ -441,7 +484,7 @@ export function IncidentListTable({
                         if (e.key === 'Enter' && incident.id) navigate(`/release/incidents/${incident.id}`);
                       }}
                     >
-                      {/* Key - min-w-0 prevents grid cell bleed */}
+                      {/* Key - left aligned, min-w-0 prevents grid cell bleed */}
                       {isColumnVisible('key') && (
                         <div className="pl-3 pr-2 flex items-center h-full min-w-0 overflow-hidden">
                           <Link 
@@ -462,7 +505,7 @@ export function IncidentListTable({
                         </div>
                       )}
                       
-                      {/* Summary - single line, ellipsis, tooltip on hover, min-w-0 for grid */}
+                      {/* Summary - left aligned, single line, ellipsis, tooltip on hover */}
                       {isColumnVisible('summary') && (
                         <div 
                           className="pr-2 flex items-center h-full min-w-0 overflow-hidden" 
@@ -486,10 +529,10 @@ export function IncidentListTable({
                         </div>
                       )}
                       
-                      {/* Severity - min-w-0 prevents grid bleed */}
+                      {/* Severity - center aligned */}
                       {isColumnVisible('severity') && (
                         <div 
-                          className="px-2 flex items-center h-full min-w-0 overflow-hidden" 
+                          className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden" 
                           data-inline-edit
                         >
                           <InlineEditCell
@@ -504,10 +547,10 @@ export function IncidentListTable({
                         </div>
                       )}
                       
-                      {/* Level - DISTINCT column, plain text, min-w-0 */}
+                      {/* Level - center aligned */}
                       {isColumnVisible('level') && (
                         <div 
-                          className="px-2 flex items-center h-full min-w-0 overflow-hidden" 
+                          className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden" 
                           data-inline-edit
                         >
                           <InlineEditCell
@@ -528,10 +571,10 @@ export function IncidentListTable({
                         </div>
                       )}
                       
-                      {/* Status - compact pill, min-w-0 */}
+                      {/* Status - center aligned */}
                       {isColumnVisible('status') && (
                         <div 
-                          className="px-2 flex items-center h-full min-w-0 overflow-hidden" 
+                          className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden" 
                           data-inline-edit
                         >
                           <InlineEditCell
@@ -546,10 +589,10 @@ export function IncidentListTable({
                         </div>
                       )}
                       
-                      {/* Assignee - avatar + name inline, min-w-0 */}
+                      {/* Assignee - center aligned */}
                       {isColumnVisible('assignee') && (
                         <div 
-                          className="px-2 flex items-center h-full min-w-0 overflow-hidden"
+                          className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"
                           data-inline-edit
                         >
                           <InlineUserPicker
@@ -561,16 +604,16 @@ export function IncidentListTable({
                         </div>
                       )}
                       
-                      {/* Age - numeric text, min-w-0 */}
+                      {/* Age - center aligned */}
                       {isColumnVisible('age') && (
-                        <div className="px-2 flex items-center h-full min-w-0 overflow-hidden">
+                        <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden">
                           <span className={cn(CELL_MUTED, "tabular-nums text-[11px] truncate")}>{age}</span>
                         </div>
                       )}
                       
-                      {/* SLA - subtle text, min-w-0 */}
+                      {/* SLA - center aligned */}
                       {isColumnVisible('sla') && (
-                        <div className="px-2 flex items-center h-full min-w-0 overflow-hidden">
+                        <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden">
                           {slaStatus ? (
                             <SlaPill status={slaStatus} />
                           ) : (
@@ -579,10 +622,10 @@ export function IncidentListTable({
                         </div>
                       )}
 
-                      {/* Release - plain text, min-w-0 */}
+                      {/* Release - center aligned */}
                       {isColumnVisible('releaseVersion') && (
                         <div 
-                          className="px-2 flex items-center h-full min-w-0 overflow-hidden"
+                          className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden"
                           data-inline-edit
                         >
                           <InlineReleasePicker
@@ -594,10 +637,10 @@ export function IncidentListTable({
                         </div>
                       )}
 
-                      {/* Major - small badge, min-w-0 */}
+                      {/* Major - center aligned */}
                       {isColumnVisible('major') && (
                         <div 
-                          className="px-2 flex items-center h-full min-w-0 overflow-hidden" 
+                          className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden" 
                           data-inline-edit
                         >
                           <InlineEditCell
@@ -611,9 +654,9 @@ export function IncidentListTable({
                         </div>
                       )}
 
-                      {/* Committee - text only, min-w-0 */}
+                      {/* Committee - center aligned */}
                       {isColumnVisible('committee') && (
-                        <div className="px-2 flex items-center h-full min-w-0 overflow-hidden">
+                        <div className="px-2 flex items-center justify-center h-full min-w-0 overflow-hidden">
                           <CommitteePill status={committeeStatus.status} label={committeeStatus.label} />
                         </div>
                       )}

@@ -1,12 +1,11 @@
 /**
  * ResizableHeader — Enterprise-grade column resize for Incident List (Grid version)
  * 
- * Updated for CSS Grid layout:
- * - DOES NOT set its own width (grid cell controls width via gridTemplateColumns)
- * - Fills grid cell completely with width: 100%
+ * Features:
+ * - Fills grid cell completely (grid controls width via gridTemplateColumns)
  * - Resize handle with proper hit zone (8px)
  * - Subtle vertical line on hover, prominent on drag
- * - Cursor col-resize
+ * - Optional centered content for center-aligned columns
  */
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
@@ -19,6 +18,7 @@ interface ResizableHeaderProps {
   onResize: (columnId: string, width: number) => void;
   children: React.ReactNode;
   className?: string;
+  centered?: boolean;
 }
 
 export function ResizableHeader({
@@ -29,6 +29,7 @@ export function ResizableHeader({
   onResize,
   children,
   className,
+  centered = false,
 }: ResizableHeaderProps) {
   const [isResizing, setIsResizing] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -74,11 +75,11 @@ export function ResizableHeader({
   return (
     <div
       className={cn(
-        // CRITICAL: Fill grid cell completely - DO NOT set width here, grid controls it
+        // Fill grid cell completely - grid controls width
         "relative select-none flex items-center h-full w-full min-w-0 overflow-hidden",
+        centered && "justify-center",
         className
       )}
-      // NO width style - gridTemplateColumns controls the width
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => !isResizing && setIsHovered(false)}
     >
