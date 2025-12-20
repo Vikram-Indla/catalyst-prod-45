@@ -14,6 +14,21 @@ export const KANBAN_STATUSES: IncidentStatus[] = [
   'closed',
 ];
 
+// Required columns that cannot be removed
+export const REQUIRED_COLUMNS: IncidentStatus[] = [
+  'open',
+  'triage',
+  'in_progress',
+  'resolved',
+  'closed',
+];
+
+// Statuses that can NEVER be added as columns
+export const FORBIDDEN_COLUMNS: IncidentStatus[] = [
+  'to_committee', // Committee is never a column
+  'converted',    // Converted is a terminal state, not a workflow column
+];
+
 // Open statuses (for toggle filter)
 export const OPEN_STATUSES: IncidentStatus[] = ['open', 'triage', 'in_progress'];
 
