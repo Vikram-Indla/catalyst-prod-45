@@ -1,6 +1,7 @@
 /**
  * Breakdown Tiles
  * Clickable tiles for severity, level, status, SLA state
+ * Token-only styling, uniform appearance, semantic color for SLA only
  */
 
 import { cn } from '@/lib/utils';
@@ -35,42 +36,25 @@ interface TileProps {
   label: string;
   value: number;
   isActive: boolean;
-  variant?: 'default' | 'success' | 'warning' | 'danger' | 'muted';
+  valueClassName?: string;
   onClick: () => void;
 }
 
-function Tile({ label, value, isActive, variant = 'default', onClick }: TileProps) {
-  const variantClasses = {
-    default: 'bg-card',
-    success: value > 0 ? 'bg-[hsl(142_76%_96%)]' : 'bg-card',
-    warning: value > 0 ? 'bg-[hsl(35_100%_96%)]' : 'bg-card',
-    danger: value > 0 ? 'bg-[hsl(0_86%_97%)]' : 'bg-card',
-    muted: 'bg-muted/50',
-  };
-
-  const valueClasses = {
-    default: 'text-foreground',
-    success: value > 0 ? 'text-[hsl(142_76%_36%)]' : 'text-foreground',
-    warning: value > 0 ? 'text-[hsl(35_92%_40%)]' : 'text-foreground',
-    danger: value > 0 ? 'text-destructive' : 'text-foreground',
-    muted: 'text-muted-foreground',
-  };
-
+function Tile({ label, value, isActive, valueClassName, onClick }: TileProps) {
   return (
     <button
       onClick={onClick}
       className={cn(
-        "p-3 rounded-md border text-left transition-all cursor-pointer",
+        "p-2.5 rounded-md border text-left transition-all cursor-pointer",
         "hover:shadow-sm hover:border-[var(--brand-primary)]",
-        variantClasses[variant],
-        isActive && "ring-2 ring-[var(--brand-primary)] border-[var(--brand-primary)]",
-        !isActive && "border-border"
+        "bg-card border-border",
+        isActive && "ring-2 ring-[var(--brand-primary)] border-[var(--brand-primary)]"
       )}
     >
-      <div className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground mb-0.5">
+      <div className="text-[9px] font-medium uppercase tracking-wide text-muted-foreground mb-0.5">
         {label}
       </div>
-      <div className={cn("text-xl font-bold tabular-nums", valueClasses[variant])}>
+      <div className={cn("text-lg font-bold tabular-nums text-foreground", valueClassName)}>
         {value}
       </div>
     </button>
@@ -78,21 +62,16 @@ function Tile({ label, value, isActive, variant = 'default', onClick }: TileProp
 }
 
 export function BreakdownTiles({ breakdowns, onDrilldown, activeFilter }: BreakdownTilesProps) {
-  const getSeverityVariant = (sev: string): TileProps['variant'] => {
-    if (sev === 'SEV1') return 'danger';
-    if (sev === 'SEV2') return 'warning';
-    return 'default';
-  };
-
-  const getSLAVariant = (state: string): TileProps['variant'] => {
-    if (state === 'breached') return 'danger';
-    if (state === 'at_risk') return 'warning';
-    if (state === 'on_track') return 'success';
-    return 'muted';
+  // Only SLA states get semantic colors when value > 0
+  const getSLAValueClass = (state: string, value: number): string | undefined => {
+    if (value === 0) return undefined;
+    if (state === 'breached') return 'text-destructive';
+    if (state === 'at_risk') return 'text-[hsl(var(--warning))]';
+    return undefined;
   };
 
   return (
-    <section className="mb-6 grid grid-cols-4 gap-6">
+    <section className="mb-6 grid grid-cols-4 gap-5">
       {/* Severity Breakdown */}
       <div>
         <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
@@ -105,7 +84,6 @@ export function BreakdownTiles({ breakdowns, onDrilldown, activeFilter }: Breakd
               label={sev}
               value={breakdowns.severity[sev] || 0}
               isActive={activeFilter?.type === 'severity' && activeFilter.value === sev}
-              variant={getSeverityVariant(sev)}
               onClick={() => onDrilldown({ type: 'severity', value: sev, label: sev })}
             />
           ))}
@@ -148,22 +126,25 @@ export function BreakdownTiles({ breakdowns, onDrilldown, activeFilter }: Breakd
         </div>
       </div>
 
-      {/* SLA State Breakdown */}
+      {/* SLA State Breakdown - Semantic colors only here */}
       <div>
         <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
           SLA State
         </h3>
         <div className="grid grid-cols-2 gap-2">
-          {SLA_ORDER.map(state => (
-            <Tile
-              key={state}
-              label={SLA_LABELS[state]}
-              value={breakdowns.sla_state[state] || 0}
-              isActive={activeFilter?.type === 'sla_state' && activeFilter.value === state}
-              variant={getSLAVariant(state)}
-              onClick={() => onDrilldown({ type: 'sla_state', value: state, label: SLA_LABELS[state] })}
-            />
-          ))}
+          {SLA_ORDER.map(state => {
+            const value = breakdowns.sla_state[state] || 0;
+            return (
+              <Tile
+                key={state}
+                label={SLA_LABELS[state]}
+                value={value}
+                isActive={activeFilter?.type === 'sla_state' && activeFilter.value === state}
+                valueClassName={getSLAValueClass(state, value)}
+                onClick={() => onDrilldown({ type: 'sla_state', value: state, label: SLA_LABELS[state] })}
+              />
+            );
+          })}
         </div>
       </div>
     </section>
