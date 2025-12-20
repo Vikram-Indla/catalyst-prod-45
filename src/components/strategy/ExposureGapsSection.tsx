@@ -351,7 +351,7 @@ function DataRow({ label, value, total = 0, variant = 'neutral', showBar }: Data
       
       {/* Bar - visually aligned with value, never overpowers */}
       {showBar && total > 0 && (
-        <div className="w-14 h-1.5 rounded-full overflow-hidden bg-border/60">
+        <div className="w-14 h-1.5 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700">
           <div 
             className={cn("h-full rounded-full", barColors[variant], variant !== 'neutral' ? 'opacity-80' : '')}
             style={{ width: `${barWidth}%` }}
