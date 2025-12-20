@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { WorkItem, WorkItemType, WorkItemWithChildren, WorkHubFilters, StatusCategory } from '../types';
+import { mapToFeatureStatus, mapToStoryStatus } from '../utils/statusMapping';
+import { toast } from '@/components/ui/sonner';
 
 // Map database status to status category
 const getStatusCategory = (status: string): StatusCategory => {
@@ -8,7 +10,7 @@ const getStatusCategory = (status: string): StatusCategory => {
   if (statusLower === 'done' || statusLower === 'completed' || statusLower === 'closed') {
     return 'DONE';
   }
-  if (statusLower === 'in_progress' || statusLower === 'in progress' || statusLower === 'active' || statusLower === 'in_development' || statusLower === 'in_qa') {
+  if (statusLower === 'in_progress' || statusLower === 'in progress' || statusLower === 'active' || statusLower === 'implementing' || statusLower === 'in_development' || statusLower === 'in_qa') {
     return 'IN_PROGRESS';
   }
   return 'TODO';
@@ -230,28 +232,28 @@ export function useUpdateWorkItemStatus() {
   
   return useMutation({
     mutationFn: async ({ itemId, newStatus, itemType }: { itemId: string; newStatus: string; itemType?: 'FEATURE' | 'STORY' }) => {
-      // Determine if this is a feature or story by checking both tables
       let updated = false;
       
-      // Try features first if type is FEATURE or unknown
-      if (itemType === 'FEATURE' || !itemType) {
+      // Map status to valid enum value based on item type
+      if (itemType === 'FEATURE') {
+        const mappedStatus = mapToFeatureStatus(newStatus);
         const { data: featureData, error: featureError } = await supabase
           .from('features')
-          .update({ status: newStatus as any, updated_at: new Date().toISOString() })
+          .update({ status: mappedStatus, updated_at: new Date().toISOString() })
           .eq('id', itemId)
           .select('id')
           .single();
         
         if (featureData && !featureError) {
           updated = true;
+        } else if (featureError) {
+          throw new Error(`Failed to update feature status: ${featureError.message}`);
         }
-      }
-      
-      // Try stories if not updated yet and type is STORY or unknown
-      if (!updated && (itemType === 'STORY' || !itemType)) {
+      } else if (itemType === 'STORY') {
+        const mappedStatus = mapToStoryStatus(newStatus);
         const { data: storyData, error: storyError } = await supabase
           .from('stories')
-          .update({ status: newStatus as any, state: newStatus as any, updated_at: new Date().toISOString() })
+          .update({ status: mappedStatus, updated_at: new Date().toISOString() })
           .eq('id', itemId)
           .select('id')
           .single();
@@ -259,7 +261,35 @@ export function useUpdateWorkItemStatus() {
         if (storyData && !storyError) {
           updated = true;
         } else if (storyError) {
-          throw new Error(`Failed to update status: ${storyError.message}`);
+          throw new Error(`Failed to update story status: ${storyError.message}`);
+        }
+      } else {
+        // If type is unknown, try features first, then stories
+        const featureMappedStatus = mapToFeatureStatus(newStatus);
+        const { data: featureData, error: featureError } = await supabase
+          .from('features')
+          .update({ status: featureMappedStatus, updated_at: new Date().toISOString() })
+          .eq('id', itemId)
+          .select('id')
+          .single();
+        
+        if (featureData && !featureError) {
+          updated = true;
+        } else {
+          // Try stories
+          const storyMappedStatus = mapToStoryStatus(newStatus);
+          const { data: storyData, error: storyError } = await supabase
+            .from('stories')
+            .update({ status: storyMappedStatus, updated_at: new Date().toISOString() })
+            .eq('id', itemId)
+            .select('id')
+            .single();
+          
+          if (storyData && !storyError) {
+            updated = true;
+          } else if (storyError) {
+            throw new Error(`Failed to update status: ${storyError.message}`);
+          }
         }
       }
       
@@ -269,7 +299,7 @@ export function useUpdateWorkItemStatus() {
       
       return { id: itemId, status: newStatus };
     },
-    onSuccess: (_, variables) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['work-items'] });
       queryClient.invalidateQueries({ queryKey: ['features'] });
       queryClient.invalidateQueries({ queryKey: ['stories'] });
