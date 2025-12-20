@@ -52,7 +52,8 @@ export {
 // COLUMN CONFIGURATION
 // ============================================================================
 
-// Required columns that cannot be removed
+// Required columns that cannot be removed (in proper order)
+// Committee is now a required status column
 export const REQUIRED_COLUMNS: IncidentStatus[] = [
   'open',
   'triage',

@@ -1,9 +1,12 @@
 /**
- * Quick Filter Chips - Minimal, subtle filter row for Kanban
+ * Quick Filter Chips - Executive-grade filter bar for Kanban
+ * Compact, token-based, control-room quality
  */
 
 import { memo } from 'react';
+import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { 
   QUICK_FILTERS, 
   type QuickFilterKey 
@@ -21,41 +24,56 @@ export const QuickFilterChips = memo(function QuickFilterChips({
   counts,
 }: QuickFilterChipsProps) {
   return (
-    <div className="flex items-center gap-1.5 flex-wrap">
-      {QUICK_FILTERS.map(filter => {
-        const isActive = activeFilters.includes(filter.key);
-        const count = counts?.[filter.key];
-        
-        return (
-          <button
-            key={filter.key}
-            onClick={() => onToggle(filter.key)}
-            className={cn(
-              "inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium",
-              "transition-colors border",
-              isActive
-                ? "bg-primary/10 border-primary/30 text-primary"
-                : "bg-muted/30 border-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-            )}
-          >
-            {filter.color && (
-              <span 
-                className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                style={{ backgroundColor: isActive ? filter.color : 'currentColor', opacity: isActive ? 1 : 0.4 }}
-              />
-            )}
-            <span>{filter.label}</span>
-            {count !== undefined && count > 0 && (
-              <span className={cn(
-                "text-[10px] tabular-nums",
-                isActive ? "text-primary/80" : "text-muted-foreground/60"
-              )}>
-                {count}
-              </span>
-            )}
-          </button>
-        );
-      })}
+    <div className="bg-[var(--surface-2)] border border-[var(--border-color)] rounded-lg px-2 py-1 max-w-full overflow-hidden">
+      <ScrollArea className="w-full">
+        <div className="flex items-center gap-1.5">
+          {QUICK_FILTERS.map(filter => {
+            const isActive = activeFilters.includes(filter.key);
+            const count = counts?.[filter.key] ?? 0;
+            
+            return (
+              <button
+                key={filter.key}
+                onClick={() => onToggle(filter.key)}
+                className={cn(
+                  // Base chip styles
+                  "inline-flex items-center gap-1.5 h-7 px-2.5 py-1 rounded-md",
+                  "text-[12px] font-normal whitespace-nowrap",
+                  "transition-all duration-150 border",
+                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-gold)]/50",
+                  
+                  // State styles
+                  isActive
+                    ? "bg-[var(--surface-1)] border-[var(--brand-gold)]/30 text-[var(--text-1)] shadow-sm"
+                    : "bg-transparent border-transparent text-[var(--text-3)] hover:bg-[var(--surface-3)] hover:text-[var(--text-2)]"
+                )}
+              >
+                {/* Checkmark for selected state */}
+                {isActive && (
+                  <Check className="h-3 w-3 text-[var(--brand-gold)] flex-shrink-0" />
+                )}
+                
+                {/* Label */}
+                <span>{filter.label}</span>
+                
+                {/* Count badge */}
+                {count > 0 && (
+                  <span className={cn(
+                    "inline-flex items-center justify-center min-w-[18px] h-[18px] px-1.5",
+                    "text-[10px] font-medium tabular-nums rounded-full",
+                    isActive
+                      ? "bg-[var(--brand-gold)]/15 text-[var(--brand-gold)]"
+                      : "bg-[var(--surface-3)] text-[var(--text-3)]"
+                  )}>
+                    {count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+        <ScrollBar orientation="horizontal" className="h-1.5 opacity-0 hover:opacity-100" />
+      </ScrollArea>
     </div>
   );
 });
