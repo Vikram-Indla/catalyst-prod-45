@@ -15,34 +15,20 @@ export default {
     extend: {
       colors: {
         /* ══════════════════════════════════════════════════════════
-           BRAND COLORS (V2)
+           PURE ONYX BRAND COLORS (V3)
            ══════════════════════════════════════════════════════════ */
-        brand: {
-          dark: "#1A1A1A",
-          // Primary action color - OLIVE
-          primary: "#5C7C5C",
-          "primary-hover": "#4A6A4A",
-          "primary-light": "#7A9A7A",
-          "primary-muted": "rgba(92, 124, 92, 0.15)",
-          "primary-subtle": "rgba(92, 124, 92, 0.08)",
-          "primary-pale": "rgba(92, 124, 92, 0.1)",
-          // Legacy gold - DECORATIVE ONLY
-          gold: "#C69C6D",
-          "gold-hover": "#B8905F",
-          "gold-muted": "rgba(198, 156, 109, 0.15)",
-          "gold-pale": "rgba(198, 156, 109, 0.1)",
+        gold: {
+          DEFAULT: "#c69c6d",
+          hover: "#b8894d",
+          subtle: "rgba(198, 156, 109, 0.12)",
         },
+        // Chart colors (preserved)
+        olive: "#5c7c5c",
+        bronze: "#8b7355",
+        champagne: "#d4b896",
         
         /* ══════════════════════════════════════════════════════════
-           SECONDARY PALETTE - Golden Hour (V2)
-           ══════════════════════════════════════════════════════════ */
-        "secondary-green": "#5C7C5C",
-        "secondary-bronze": "#8B7355",
-        "secondary-champagne": "#D4B896",
-        "secondary-grey": "#C8CCD0",
-        
-        /* ══════════════════════════════════════════════════════════
-           TAILWIND/SHADCN SEMANTIC COLORS (V2)
+           TAILWIND/SHADCN SEMANTIC COLORS (V3)
            ══════════════════════════════════════════════════════════ */
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -89,95 +75,52 @@ export default {
         },
         
         /* ══════════════════════════════════════════════════════════
-           STATUS COLORS (V2) — Enhanced for dark mode
+           STATUS COLORS (V3)
            ══════════════════════════════════════════════════════════ */
         success: {
           DEFAULT: "var(--status-success)",
           bg: "var(--status-success-bg)",
-          border: "var(--status-success-border)",
         },
         warning: {
           DEFAULT: "var(--status-warning)",
           bg: "var(--status-warning-bg)",
-          border: "var(--status-warning-border)",
         },
         danger: {
-          DEFAULT: "var(--status-danger)",
-          bg: "var(--status-danger-bg)",
-          border: "var(--status-danger-border)",
+          DEFAULT: "var(--status-error)",
+          bg: "var(--status-error-bg)",
         },
         info: {
           DEFAULT: "var(--status-info)",
           bg: "var(--status-info-bg)",
-          border: "var(--status-info-border)",
         },
         
         /* ══════════════════════════════════════════════════════════
-           SURFACE COLORS (V2) — 4-tier layered system
-           ══════════════════════════════════════════════════════════ */
-        surface: {
-          bg: "var(--surface-bg)",
-          elevated: "var(--surface-elevated)",
-          subtle: "var(--surface-subtle)",
-          hover: "var(--surface-hover)",
-          tinted: "var(--surface-tinted)",
-          "1": "var(--bg-surface-1, var(--surface-1))",
-          "2": "var(--bg-surface-2, var(--surface-2))",
-          "3": "var(--bg-surface-3, var(--surface-3))",
-        },
-        
-        /* Dark mode specific backgrounds */
-        dark: {
-          base: "#0D1117",
-          "surface-1": "#151B23",
-          "surface-2": "#1C232D",
-          "surface-3": "#242C38",
-          interactive: "#1E2632",
-          "interactive-hover": "#262F3D",
-          "interactive-active": "#2D3848",
-        },
-        
-        /* ══════════════════════════════════════════════════════════
-           TEXT COLORS (V2) - SEMANTIC TYPOGRAPHY CONTRACT
+           TEXT COLORS (V3)
            ══════════════════════════════════════════════════════════ */
         text: {
-          primary: "var(--text-primary)",       // Highest contrast - body, titles, values
-          secondary: "var(--text-secondary)",   // UI labels, nav, tabs, headers
-          tertiary: "var(--text-tertiary)",     // METADATA ONLY: timestamps, hints
-          disabled: "var(--text-disabled)",     // Disabled states ONLY
-          "secondary-strong": "var(--text-secondary-strong)",
-          muted: "var(--text-muted)",           // DEPRECATED: use tertiary
-          faint: "var(--text-faint)",
-          link: "var(--text-link)",
-          "link-hover": "var(--text-link-hover)",
-          danger: "var(--text-danger)",
-          warning: "var(--text-warning)",
-          success: "var(--text-success)",
+          primary: "var(--text-primary)",
+          secondary: "var(--text-secondary)",
+          tertiary: "var(--text-tertiary)",
+          muted: "var(--text-muted)",
+          inverse: "var(--text-inverse)",
         },
         
         /* ══════════════════════════════════════════════════════════
-           BORDER COLORS (V2) — Three-tier system
+           BACKGROUND COLORS (V3)
            ══════════════════════════════════════════════════════════ */
-        "border-default": "var(--border-default)",
-        "border-subtle": "var(--border-subtle)",
-        "border-muted": "var(--border-muted)",
-        "border-accent": "var(--border-accent)",
-        "border-strong": "var(--border-strong)",
-        "border-focus": "var(--border-focus)",
-        
-        /* ══════════════════════════════════════════════════════════
-           PROGRESS COLORS (V2)
-           ══════════════════════════════════════════════════════════ */
-        progress: {
-          bg: "var(--progress-bg)",
-          low: "var(--progress-fill-low)",
-          medium: "var(--progress-fill-medium)",
-          high: "var(--progress-fill-high)",
+        surface: {
+          primary: "var(--bg-primary)",
+          secondary: "var(--bg-secondary)",
+          card: "var(--bg-card)",
+          sidebar: "var(--bg-sidebar)",
+          hover: "var(--bg-hover)",
+          active: "var(--bg-active)",
+          elevated: "var(--bg-elevated)",
         },
       },
       
       /* ══════════════════════════════════════════════════════════
-         BORDER RADIUS (V2)
+         BORDER RADIUS (V3)
          ══════════════════════════════════════════════════════════ */
       borderRadius: {
         none: "0",
@@ -185,33 +128,28 @@ export default {
         DEFAULT: "6px",
         md: "6px",
         lg: "8px",
-        xl: "10px",
+        xl: "12px",
         "2xl": "12px",
         "3xl": "16px",
         full: "9999px",
       },
       
       /* ══════════════════════════════════════════════════════════
-         BOX SHADOWS (V2) — Dark-optimized
+         BOX SHADOWS (V3)
          ══════════════════════════════════════════════════════════ */
       boxShadow: {
         sm: "var(--shadow-sm)",
         DEFAULT: "var(--shadow-md)",
         md: "var(--shadow-md)",
         lg: "var(--shadow-lg)",
-        card: "var(--shadow-card)",
-        "card-hover": "var(--shadow-card-hover)",
-        dropdown: "var(--shadow-dropdown)",
-        glow: "var(--shadow-glow)",
-        "focus-ring": "var(--focus-ring)",
       },
       
       /* ══════════════════════════════════════════════════════════
-         TYPOGRAPHY (V2)
+         TYPOGRAPHY (V3)
          ══════════════════════════════════════════════════════════ */
       fontFamily: {
-        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', '"Noto Sans"', 'Helvetica', 'Arial', 'sans-serif'],
-        mono: ['"SF Mono"', 'Monaco', 'Consolas', '"Liberation Mono"', '"Courier New"', 'monospace'],
+        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        mono: ['"SF Mono"', 'Monaco', 'Consolas', 'monospace'],
       },
       fontSize: {
         'xs': ['11px', { lineHeight: '1.4', fontWeight: '400' }],
@@ -220,13 +158,13 @@ export default {
         'md': ['15px', { lineHeight: '1.5', fontWeight: '500' }],
         'lg': ['16px', { lineHeight: '1.5', fontWeight: '600' }],
         'xl': ['18px', { lineHeight: '1.4', fontWeight: '600' }],
-        '2xl': ['22px', { lineHeight: '1.3', fontWeight: '600' }],
-        '3xl': ['28px', { lineHeight: '1.25', fontWeight: '600' }],
-        '4xl': ['36px', { lineHeight: '1.2', fontWeight: '700' }],
+        '2xl': ['20px', { lineHeight: '1.3', fontWeight: '600' }],
+        '3xl': ['28px', { lineHeight: '1.25', fontWeight: '700' }],
+        '4xl': ['32px', { lineHeight: '1.2', fontWeight: '700' }],
       },
       
       /* ══════════════════════════════════════════════════════════
-         SPACING (V2 - 8px Base Grid)
+         SPACING (V3 - 4px Base Grid)
          ══════════════════════════════════════════════════════════ */
       spacing: {
         '0.5': '2px',
@@ -251,7 +189,7 @@ export default {
       },
       
       /* ══════════════════════════════════════════════════════════
-         TRANSITION DURATION (V2)
+         TRANSITIONS (V3)
          ══════════════════════════════════════════════════════════ */
       transitionDuration: {
         fast: "150ms",
@@ -260,7 +198,7 @@ export default {
       },
       
       /* ══════════════════════════════════════════════════════════
-         ANIMATIONS (V2)
+         ANIMATIONS (V3)
          ══════════════════════════════════════════════════════════ */
       keyframes: {
         "accordion-down": {
@@ -293,7 +231,7 @@ export default {
       },
       
       /* ══════════════════════════════════════════════════════════
-         Z-INDEX (V2)
+         Z-INDEX (V3)
          ══════════════════════════════════════════════════════════ */
       zIndex: {
         'dropdown': '10',
