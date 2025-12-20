@@ -2,10 +2,10 @@
  * CommitteeQueueTable — Enterprise-grade committee governance table
  * 
  * Compact density, governance-focused columns, proper alignment.
- * Uses demo data when real data is empty.
+ * Matches IncidentListTable styling patterns.
  */
 
-import { useState, useMemo, useCallback, useRef } from 'react';
+import { useState, useMemo, useCallback, useRef, useLayoutEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, AlertTriangle, Clock, CheckCircle, XCircle, Database } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -23,6 +23,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { ResizableHeader } from '@/components/incidents/ResizableHeader';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow, format } from 'date-fns';
 import type { CommitteeQueueItem, CommitteeDecisionStatus } from '@/hooks/useCommitteeQueue';
@@ -30,77 +31,117 @@ import type { CommitteeQueueItem, CommitteeDecisionStatus } from '@/hooks/useCom
 // Page size options
 const PAGE_SIZE_OPTIONS = [25, 50, 100];
 const PAGE_SIZE_STORAGE_KEY = 'catalyst.committeeQueue.pageSize';
+const COLUMN_WIDTHS_STORAGE_KEY = 'catalyst.committeeQueue.columnWidths.v2';
 
-// Grid + typography (match Incident List table - Tailwind tokens)
+// Enterprise typography - consistent with IncidentListTable
 const HEADER_TEXT = 'text-[10px] font-semibold text-muted-foreground uppercase tracking-wider';
 const CELL_TEXT = 'text-[12px] leading-4 text-foreground';
 const CELL_SECONDARY = 'text-[12px] leading-4 text-muted-foreground';
 const CELL_META = 'text-[10px] text-muted-foreground tabular-nums';
 
-// Grid cell base styles - consistent box model + no header overlap
+// Grid cell base styles
 const GRID_CELL_BASE = 'min-w-0 overflow-hidden';
 
-// Default column widths - all resizable
-const DEFAULT_WIDTHS: Record<ColumnId, number> = {
-  key: 85,
-  summary: 350,
-  severity: 65,
-  major: 50,
-  status: 100,
-  progress: 80,
-  approvers: 120,
-  lastAction: 150,
-  time: 95,
-  aging: 55,
+// Column configuration
+type ColumnId = 'key' | 'summary' | 'severity' | 'major' | 'status' | 'progress' | 'approvers' | 'lastAction' | 'time' | 'aging';
+
+const COLUMN_ORDER: ColumnId[] = ['key', 'summary', 'severity', 'major', 'status', 'progress', 'approvers', 'lastAction', 'time', 'aging'];
+
+const COLUMN_LABELS: Record<ColumnId, string> = {
+  key: 'KEY',
+  summary: 'SUMMARY',
+  severity: 'SEV',
+  major: 'MAJ',
+  status: 'STATUS',
+  progress: 'PROGRESS',
+  approvers: 'APPROVERS',
+  lastAction: 'LAST ACTION',
+  time: 'TIME',
+  aging: 'AGE',
 };
 
-// Minimum column widths
-const MIN_WIDTHS: Record<ColumnId, number> = {
-  key: 70,
+// Center-aligned columns (everything except key and summary)
+const CENTER_ALIGNED_COLUMNS: ColumnId[] = ['severity', 'major', 'status', 'progress', 'time', 'aging'];
+
+// Column width constraints
+const MIN_COLUMN_WIDTHS: Record<ColumnId, number> = {
+  key: 75,
   summary: 200,
-  severity: 50,
-  major: 40,
-  status: 80,
-  progress: 60,
-  approvers: 80,
-  lastAction: 100,
-  time: 70,
+  severity: 55,
+  major: 45,
+  status: 85,
+  progress: 70,
+  approvers: 90,
+  lastAction: 110,
+  time: 75,
   aging: 45,
 };
 
-type ColumnId =
-  | 'key'
-  | 'summary'
-  | 'severity'
-  | 'major'
-  | 'status'
-  | 'progress'
-  | 'approvers'
-  | 'lastAction'
-  | 'time'
-  | 'aging';
+const MAX_COLUMN_WIDTHS: Record<ColumnId, number> = {
+  key: 120,
+  summary: 500,
+  severity: 80,
+  major: 60,
+  status: 120,
+  progress: 100,
+  approvers: 160,
+  lastAction: 200,
+  time: 120,
+  aging: 70,
+};
 
-const COLUMN_IDS: ColumnId[] = [
-  'key',
-  'summary',
-  'severity',
-  'major',
-  'status',
-  'progress',
-  'approvers',
-  'lastAction',
-  'time',
-  'aging',
-];
+const DEFAULT_COLUMN_WIDTHS: Record<ColumnId, number> = {
+  key: 85,
+  summary: 300,
+  severity: 62,
+  major: 50,
+  status: 100,
+  progress: 80,
+  approvers: 110,
+  lastAction: 140,
+  time: 90,
+  aging: 55,
+};
 
-const COLUMN_WIDTHS_STORAGE_KEY = 'catalyst.committeeQueue.columnWidths';
+// Flexible column weights for distributing extra space
+const FLEXIBLE_WEIGHTS: Partial<Record<ColumnId, number>> = {
+  summary: 4,
+  status: 1,
+  approvers: 1.5,
+  lastAction: 2,
+};
 
-function getGridTemplate(widths: Record<ColumnId, number>) {
-  return COLUMN_IDS.map(col => `${widths[col]}px`).join(' ');
+function getGridTemplate(widths: Record<ColumnId, number>): string {
+  return COLUMN_ORDER.map(col => `${Math.round(widths[col])}px`).join(' ');
 }
 
-function getMinTableWidth(widths: Record<ColumnId, number>) {
-  return Object.values(widths).reduce((a, b) => a + b, 0);
+function calculateAutoFitWidths(containerWidth: number): Record<ColumnId, number> {
+  const widths = { ...DEFAULT_COLUMN_WIDTHS };
+  
+  // Calculate total default width
+  let totalDefault = Object.values(widths).reduce((a, b) => a + b, 0);
+  
+  // If container is wider, distribute extra space
+  if (containerWidth > totalDefault) {
+    const extra = containerWidth - totalDefault;
+    let totalWeight = 0;
+    
+    COLUMN_ORDER.forEach(col => {
+      totalWeight += FLEXIBLE_WEIGHTS[col] || 0;
+    });
+    
+    if (totalWeight > 0) {
+      COLUMN_ORDER.forEach(col => {
+        const weight = FLEXIBLE_WEIGHTS[col] || 0;
+        if (weight > 0) {
+          const bonus = (extra * weight) / totalWeight;
+          widths[col] = Math.min(MAX_COLUMN_WIDTHS[col], widths[col] + bonus);
+        }
+      });
+    }
+  }
+  
+  return widths;
 }
 
 interface CommitteeQueueTableProps {
@@ -145,7 +186,6 @@ function SeverityBadge({ severity }: { severity: string }) {
   );
 }
 
-// Visual progress bar component
 function ProgressBar({ completed, total }: { completed: number; total: number }) {
   const pct = total > 0 ? (completed / total) * 100 : 0;
   const isComplete = completed >= total;
@@ -168,7 +208,6 @@ function ProgressBar({ completed, total }: { completed: number; total: number })
   );
 }
 
-// Approvers avatars - compact
 function ApproversAvatars({ approvers }: { approvers: CommitteeQueueItem['approvers'] }) {
   const visible = approvers.slice(0, 3);
   const remaining = approvers.length - 3;
@@ -194,7 +233,6 @@ function ApproversAvatars({ approvers }: { approvers: CommitteeQueueItem['approv
               <div className="font-medium">{a.userName}</div>
               <div className="capitalize text-muted-foreground">{a.decision}</div>
               {a.hasVeto && <div className="text-amber-500">Veto power</div>}
-              {a.addedBy && <div className="text-muted-foreground">Added by {a.addedBy}</div>}
             </TooltipContent>
           </Tooltip>
         );
@@ -208,16 +246,15 @@ function ApproversAvatars({ approvers }: { approvers: CommitteeQueueItem['approv
   );
 }
 
-function LoadingSkeleton() {
-  const gridTemplate = getGridTemplate(DEFAULT_WIDTHS);
+function LoadingSkeleton({ gridTemplate }: { gridTemplate: string }) {
   return (
     <div className="rounded-md border border-border overflow-hidden bg-card flex-1">
       <div
         className="grid items-center h-8 bg-muted border-b border-border"
         style={{ gridTemplateColumns: gridTemplate }}
       >
-        {COLUMN_IDS.map((col) => (
-          <div key={col} className={cn(GRID_CELL_BASE, "px-2 flex items-center h-full")}>
+        {COLUMN_ORDER.map((col) => (
+          <div key={col} className={cn(GRID_CELL_BASE, "px-2 flex items-center h-full", CENTER_ALIGNED_COLUMNS.includes(col) && "justify-center")}>
             <Skeleton className="h-3 w-10" />
           </div>
         ))}
@@ -228,8 +265,8 @@ function LoadingSkeleton() {
           className="grid items-center h-9 border-b border-border last:border-b-0"
           style={{ gridTemplateColumns: gridTemplate }}
         >
-          {COLUMN_IDS.map((col) => (
-            <div key={col} className={cn(GRID_CELL_BASE, "px-2 flex items-center h-full")}>
+          {COLUMN_ORDER.map((col) => (
+            <div key={col} className={cn(GRID_CELL_BASE, "px-2 flex items-center h-full", CENTER_ALIGNED_COLUMNS.includes(col) && "justify-center")}>
               <Skeleton className="h-3 w-full max-w-[80%]" />
             </div>
           ))}
@@ -256,8 +293,12 @@ function EmptyState({ onLoadDemoData, includeClosedDecisions }: { onLoadDemoData
 
 export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoData, includeClosedDecisions }: CommitteeQueueTableProps) {
   const navigate = useNavigate();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const hasInitialized = useRef(false);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [page, setPage] = useState(1);
+  const [hasSavedWidths, setHasSavedWidths] = useState(false);
+  
   const [pageSize, setPageSize] = useState<number>(() => {
     try {
       const saved = localStorage.getItem(PAGE_SIZE_STORAGE_KEY);
@@ -266,42 +307,59 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
     return 25;
   });
 
-  // Resizable column widths
+  // Column widths with localStorage persistence
   const [columnWidths, setColumnWidths] = useState<Record<ColumnId, number>>(() => {
     try {
       const saved = localStorage.getItem(COLUMN_WIDTHS_STORAGE_KEY);
-      if (saved) return { ...DEFAULT_WIDTHS, ...JSON.parse(saved) };
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Object.keys(parsed).length > 0) {
+          return { ...DEFAULT_COLUMN_WIDTHS, ...parsed };
+        }
+      }
     } catch {}
-    return { ...DEFAULT_WIDTHS };
+    return { ...DEFAULT_COLUMN_WIDTHS };
   });
 
-  const resizingRef = useRef<{ col: ColumnId; startX: number; startWidth: number } | null>(null);
-
-  const handleResizeStart = useCallback((col: ColumnId, e: React.MouseEvent) => {
-    e.preventDefault();
-    resizingRef.current = { col, startX: e.clientX, startWidth: columnWidths[col] };
+  // Auto-fit columns on first load if no saved widths
+  useLayoutEffect(() => {
+    if (hasInitialized.current) return;
     
-    const handleMouseMove = (moveEvent: MouseEvent) => {
-      if (!resizingRef.current) return;
-      const delta = moveEvent.clientX - resizingRef.current.startX;
-      const newWidth = Math.max(MIN_WIDTHS[resizingRef.current.col], resizingRef.current.startWidth + delta);
-      setColumnWidths(prev => ({ ...prev, [resizingRef.current!.col]: newWidth }));
-    };
-
-    const handleMouseUp = () => {
-      if (resizingRef.current) {
-        try {
-          localStorage.setItem(COLUMN_WIDTHS_STORAGE_KEY, JSON.stringify(columnWidths));
-        } catch {}
+    try {
+      const saved = localStorage.getItem(COLUMN_WIDTHS_STORAGE_KEY);
+      if (saved) {
+        setHasSavedWidths(true);
+        hasInitialized.current = true;
+        return;
       }
-      resizingRef.current = null;
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
+    } catch {}
+    
+    const container = containerRef.current;
+    const containerWidth = container?.clientWidth || window.innerWidth - 300;
+    
+    if (containerWidth > 0) {
+      const autoFitWidths = calculateAutoFitWidths(containerWidth);
+      setColumnWidths(autoFitWidths);
+    }
+    
+    hasInitialized.current = true;
+  }, []);
 
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-  }, [columnWidths]);
+  const handleColumnResize = useCallback((columnId: string, width: number) => {
+    const col = columnId as ColumnId;
+    const minWidth = MIN_COLUMN_WIDTHS[col] || 40;
+    const maxWidth = MAX_COLUMN_WIDTHS[col] || 500;
+    const clampedWidth = Math.max(minWidth, Math.min(maxWidth, width));
+    
+    setColumnWidths(prev => {
+      const newWidths = { ...prev, [col]: clampedWidth };
+      try {
+        localStorage.setItem(COLUMN_WIDTHS_STORAGE_KEY, JSON.stringify(newWidths));
+        setHasSavedWidths(true);
+      } catch {}
+      return newWidths;
+    });
+  }, []);
 
   const totalPages = Math.ceil(items.length / pageSize);
   const startIndex = (page - 1) * pageSize;
@@ -316,60 +374,51 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
 
   const handleRowClick = useCallback((item: CommitteeQueueItem, e: React.MouseEvent) => {
     const t = e.target as HTMLElement;
-    if (t.closest('a') || t.closest('button') || t.closest('.resize-handle')) return;
+    if (t.closest('a') || t.closest('button')) return;
     onRowClick ? onRowClick(item) : navigate(`/release/incidents/${item.incident.id}`);
   }, [navigate, onRowClick]);
 
   const gridTemplate = useMemo(() => getGridTemplate(columnWidths), [columnWidths]);
+  
+  const totalTableWidth = useMemo(() => {
+    return Object.values(columnWidths).reduce((a, b) => a + b, 0);
+  }, [columnWidths]);
 
-  if (isLoading) return <LoadingSkeleton />;
+  if (isLoading) return <LoadingSkeleton gridTemplate={gridTemplate} />;
 
   return (
     <TooltipProvider delayDuration={200}>
       <div className="flex flex-col h-full">
-        <div className="rounded-md border border-border overflow-hidden bg-card flex-1 min-h-0">
-          {/* Single scroll container - table is content-sized, scrolls horizontally if needed */}
-          <div className="overflow-auto h-full">
-            <div className="w-fit min-w-full">
-              {/* Header with resize handles */}
+        <div ref={containerRef} className="rounded-md border border-border overflow-hidden bg-card flex-1 min-h-0">
+          <div className="overflow-x-auto w-full h-full">
+            <div style={{ minWidth: `${totalTableWidth}px`, width: '100%' }}>
+              {/* Header row - 32px height */}
               <div
                 className="grid items-center h-8 sticky top-0 z-20 bg-muted border-b border-border"
                 style={{ gridTemplateColumns: gridTemplate }}
               >
-                {COLUMN_IDS.map((col, idx) => {
-                  const labels: Record<ColumnId, string> = {
-                    key: 'KEY', summary: 'SUMMARY', severity: 'SEV', major: 'MAJ',
-                    status: 'STATUS', progress: 'PROGRESS', approvers: 'APPROVERS',
-                    lastAction: 'LAST ACTION', time: 'TIME', aging: 'AGE',
-                  };
-                  const isCenter = ['severity', 'major', 'status', 'progress', 'time', 'aging'].includes(col);
+                {COLUMN_ORDER.map((col, idx) => {
+                  const isCentered = CENTER_ALIGNED_COLUMNS.includes(col);
                   const isFirst = idx === 0;
-                  const isLast = idx === COLUMN_IDS.length - 1;
-
+                  
                   return (
-                    <div
+                    <ResizableHeader
                       key={col}
-                      className={cn(
-                        GRID_CELL_BASE,
-                        "relative flex items-center h-full group",
-                        isFirst ? "pl-3 pr-1" : "px-1",
-                        isCenter && "justify-center"
-                      )}
+                      columnId={col}
+                      width={columnWidths[col]}
+                      minWidth={MIN_COLUMN_WIDTHS[col]}
+                      maxWidth={MAX_COLUMN_WIDTHS[col]}
+                      onResize={handleColumnResize}
+                      centered={isCentered}
+                      className={cn(GRID_CELL_BASE, isFirst ? "pl-3 pr-2" : "px-2")}
                     >
-                      <span className={cn(HEADER_TEXT, "truncate")}>{labels[col]}</span>
-                      {/* Resize handle - not on last column */}
-                      {!isLast && (
-                        <div
-                          className="resize-handle absolute right-0 top-0 h-full w-1 cursor-col-resize hover:bg-primary/30 active:bg-primary/50 z-30"
-                          onMouseDown={(e) => handleResizeStart(col, e)}
-                        />
-                      )}
-                    </div>
+                      <span className={HEADER_TEXT}>{COLUMN_LABELS[col]}</span>
+                    </ResizableHeader>
                   );
                 })}
               </div>
 
-              {/* Rows */}
+              {/* Rows - 36px height */}
               {paginatedItems.length === 0 ? (
                 <EmptyState onLoadDemoData={onLoadDemoData} includeClosedDecisions={includeClosedDecisions} />
               ) : (
@@ -385,7 +434,8 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
                     onMouseEnter={() => setHoveredId(item.incident.id)}
                     onMouseLeave={() => setHoveredId(null)}
                   >
-                    <div className={cn(GRID_CELL_BASE, "pl-3 pr-1 flex items-center h-full")}>
+                    {/* KEY */}
+                    <div className={cn(GRID_CELL_BASE, "pl-3 pr-2 flex items-center h-full")}>
                       <Link
                         to={`/release/incidents/${item.incident.id}`}
                         className={cn(CELL_TEXT, 'font-medium text-primary hover:underline truncate')}
@@ -394,7 +444,8 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
                         {item.incident.incident_key}
                       </Link>
                     </div>
-                    <div className={cn(GRID_CELL_BASE, "px-1 flex items-center h-full")}>
+                    {/* SUMMARY */}
+                    <div className={cn(GRID_CELL_BASE, "px-2 flex items-center h-full")}>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <span className={cn(CELL_TEXT, 'truncate')}>{item.incident.title}</span>
@@ -404,26 +455,32 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
                         </TooltipContent>
                       </Tooltip>
                     </div>
-                    <div className={cn(GRID_CELL_BASE, "px-1 flex items-center justify-center h-full")}>
+                    {/* SEV */}
+                    <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
                       <SeverityBadge severity={item.incident.severity} />
                     </div>
-                    <div className={cn(GRID_CELL_BASE, "px-1 flex items-center justify-center h-full")}>
+                    {/* MAJ */}
+                    <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
                       {item.incident.is_major_incident ? (
                         <AlertTriangle className="h-3.5 w-3.5 text-amber-500" />
                       ) : (
                         <span className={cn(CELL_META, 'text-[11px]')}>—</span>
                       )}
                     </div>
-                    <div className={cn(GRID_CELL_BASE, "px-1 flex items-center justify-center h-full")}>
+                    {/* STATUS */}
+                    <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
                       <StatusBadge status={item.committeeStatus} />
                     </div>
+                    {/* PROGRESS */}
                     <div className={cn(GRID_CELL_BASE, "px-2 flex items-center h-full")}>
                       <ProgressBar completed={item.approvalsCompletedCount} total={item.approvalsRequiredCount} />
                     </div>
-                    <div className={cn(GRID_CELL_BASE, "px-1 flex items-center h-full")}>
+                    {/* APPROVERS */}
+                    <div className={cn(GRID_CELL_BASE, "px-2 flex items-center h-full")}>
                       <ApproversAvatars approvers={item.approvers} />
                     </div>
-                    <div className={cn(GRID_CELL_BASE, "px-1 flex items-center h-full")}>
+                    {/* LAST ACTION */}
+                    <div className={cn(GRID_CELL_BASE, "px-2 flex items-center h-full")}>
                       <span className={cn(CELL_SECONDARY, 'truncate text-[11px]')}>
                         {item.lastAction?.type === 'vetoed' && `Veto by ${item.lastAction.by}`}
                         {item.lastAction?.type === 'approved' && `${item.lastAction.by}`}
@@ -431,7 +488,8 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
                         {item.lastAction?.type === 'approver_added' && `Added by ${item.lastAction.by}`}
                       </span>
                     </div>
-                    <div className={cn(GRID_CELL_BASE, "px-1 flex items-center justify-center h-full")}>
+                    {/* TIME */}
+                    <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
                       {item.lastAction?.at ? (
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -445,7 +503,8 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
                         <span className={CELL_META}>—</span>
                       )}
                     </div>
-                    <div className={cn(GRID_CELL_BASE, "px-1 flex items-center justify-center h-full")}>
+                    {/* AGE */}
+                    <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
                       <span className={cn('text-[11px] tabular-nums font-medium', item.agingDays >= 7 ? 'text-amber-500' : 'text-muted-foreground')}>
                         {item.agingDays}d
                       </span>
