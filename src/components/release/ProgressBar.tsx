@@ -6,27 +6,27 @@ interface ProgressBarProps {
   showLabel?: boolean;
 }
 
-function getProgressColor(value: number): string {
-  if (value >= 70) return '#43A047';
-  if (value >= 40) return '#FDD835';
-  return '#E53935';
+function getProgressClasses(value: number): string {
+  if (value >= 70) return 'bg-green-500';
+  if (value >= 40) return 'bg-yellow-500';
+  return 'bg-red-500';
 }
 
 export function ProgressBar({ value, className, showLabel = false }: ProgressBarProps) {
-  const color = getProgressColor(value);
+  const barClass = getProgressClasses(value);
   
   return (
     <div className={cn("space-y-1.5", className)}>
       {showLabel && (
         <div className="flex justify-between text-[13px]">
-          <span className="text-[#8C8C8C]">Progress</span>
-          <span className="font-semibold">{value}%</span>
+          <span className="text-gray-500 dark:text-gray-400">Progress</span>
+          <span className="font-semibold text-gray-900 dark:text-gray-100">{value}%</span>
         </div>
       )}
-      <div className="h-1.5 bg-[#E8E8E8] rounded-full overflow-hidden">
+      <div className="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
         <div 
-          className="h-full rounded-full transition-all duration-300"
-          style={{ width: `${value}%`, backgroundColor: color }}
+          className={cn("h-full rounded-full transition-all duration-300", barClass)}
+          style={{ width: `${value}%` }}
         />
       </div>
     </div>
