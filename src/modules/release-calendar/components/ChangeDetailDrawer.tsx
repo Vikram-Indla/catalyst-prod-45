@@ -45,11 +45,11 @@ export function ChangeDetailDrawer({ open, onOpenChange, changeCardId }: ChangeD
                 </div>
                 <div className="flex items-center gap-2">
                   {change.approved ? (
-                    <Badge className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
+                    <Badge variant="success" className="border-0">
                       <CheckCircle className="w-3 h-3 mr-1" /> Approved
                     </Badge>
                   ) : (
-                    <Badge className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
+                    <Badge variant="secondary" className="border-0">
                       <Clock className="w-3 h-3 mr-1" /> Pending Approval
                     </Badge>
                   )}
