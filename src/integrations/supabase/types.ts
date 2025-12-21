@@ -11277,6 +11277,7 @@ export type Database = {
       subtasks: {
         Row: {
           assignee_id: string | null
+          change_number_id: string | null
           created_at: string | null
           description: string | null
           id: string
@@ -11291,6 +11292,7 @@ export type Database = {
         }
         Insert: {
           assignee_id?: string | null
+          change_number_id?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
@@ -11305,6 +11307,7 @@ export type Database = {
         }
         Update: {
           assignee_id?: string | null
+          change_number_id?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
@@ -11318,6 +11321,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "subtasks_change_number_id_fkey"
+            columns: ["change_number_id"]
+            isOneToOne: false
+            referencedRelation: "change_numbers"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "subtasks_release_id_fkey"
             columns: ["release_id"]
