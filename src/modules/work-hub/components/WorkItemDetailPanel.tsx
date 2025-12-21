@@ -39,14 +39,14 @@ const typeIcons: Record<string, { icon: React.ReactNode; color: string }> = {
 };
 
 const statusStyles: Record<string, { bg: string; text: string; label: string }> = {
-  'Backlog': { bg: 'bg-[#DFE1E6]', text: 'text-[#42526E]', label: 'BACKLOG' },
-  'To Do': { bg: 'bg-[#DFE1E6]', text: 'text-[#42526E]', label: 'TO DO' },
-  'In Progress': { bg: 'bg-[#DEEBFF]', text: 'text-[#0747A6]', label: 'IN PROGRESS' },
-  'In Requirement': { bg: 'bg-[#DEEBFF]', text: 'text-[#0747A6]', label: 'IN REQUIREMENTS' },
-  'In Production': { bg: 'bg-[#EAE6FF]', text: 'text-[#403294]', label: 'IN PRODUCTION' },
-  'Done': { bg: 'bg-[#E3FCEF]', text: 'text-[#006644]', label: 'DONE' },
-  'Closed': { bg: 'bg-[#DFE1E6]', text: 'text-[#42526E]', label: 'CLOSED' },
-  'Blocked': { bg: 'bg-[#FFEBE6]', text: 'text-[#BF2600]', label: 'BLOCKED' },
+  'Backlog': { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-700 dark:text-gray-300', label: 'BACKLOG' },
+  'To Do': { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-700 dark:text-gray-300', label: 'TO DO' },
+  'In Progress': { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-700 dark:text-blue-300', label: 'IN PROGRESS' },
+  'In Requirement': { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-700 dark:text-blue-300', label: 'IN REQUIREMENTS' },
+  'In Production': { bg: 'bg-amber-100 dark:bg-amber-900/30', text: 'text-amber-700 dark:text-amber-300', label: 'IN PRODUCTION' },
+  'Done': { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-700 dark:text-green-300', label: 'DONE' },
+  'Closed': { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-700 dark:text-gray-300', label: 'CLOSED' },
+  'Blocked': { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-700 dark:text-red-300', label: 'BLOCKED' },
 };
 
 export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps) {
@@ -57,37 +57,37 @@ export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps)
 
   const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   const getAvatarColor = (name: string) => {
-    const colors = ['bg-blue-600', 'bg-green-600', 'bg-purple-600', 'bg-orange-500', 'bg-teal-600'];
+    const colors = ['bg-blue-600', 'bg-green-600', 'bg-gray-600', 'bg-amber-500', 'bg-red-500'];
     return colors[name.charCodeAt(0) % colors.length];
   };
 
   return (
-    <div className="w-[440px] border-l border-[#DFE1E6] bg-white h-full flex flex-col" style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
+    <div className="w-[440px] border-l border-border bg-white dark:bg-gray-900 h-full flex flex-col" style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[#DFE1E6]">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border">
         <div className="flex items-center gap-2">
           <span className={typeInfo.color}>{typeInfo.icon}</span>
-          <span className="text-[13px] font-medium text-[#172B4D]">Jira work item</span>
+          <span className="text-sm font-medium text-foreground">Jira work item</span>
         </div>
         <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-[#F4F5F7]">
-            <ExternalLink className="h-4 w-4 text-[#6B778C]" />
+          <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-muted">
+            <ExternalLink className="h-4 w-4 text-muted-foreground" />
           </Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-[#F4F5F7]">
-            <MoreHorizontal className="h-4 w-4 text-[#6B778C]" />
+          <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-muted">
+            <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
           </Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-[#F4F5F7]" onClick={onClose}>
-            <X className="h-4 w-4 text-[#6B778C]" />
+          <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-muted" onClick={onClose}>
+            <X className="h-4 w-4 text-muted-foreground" />
           </Button>
         </div>
       </div>
 
       {/* Breadcrumb */}
       {item.parentKey && (
-        <div className="px-4 py-2 border-b border-[#DFE1E6] text-[12px]">
-          <span className="text-[#6B778C]">{item.parentKey}</span>
-          <span className="text-[#6B778C] mx-1">/</span>
-          <span className="text-[#0052CC] hover:underline cursor-pointer">{item.key}</span>
+        <div className="px-4 py-2 border-b border-border text-xs">
+          <span className="text-muted-foreground">{item.parentKey}</span>
+          <span className="text-muted-foreground mx-1">/</span>
+          <span className="text-[#c69c6d] hover:underline cursor-pointer">{item.key}</span>
         </div>
       )}
 
@@ -119,10 +119,10 @@ export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps)
         {/* Parent */}
         {item.parentKey && item.parentSummary && (
           <div className="mb-4">
-            <div className="text-[11px] font-semibold text-[#6B778C] uppercase mb-1">Parent</div>
-            <div className="flex items-center gap-2 p-2 bg-[#F4F5F7] rounded-[3px]">
-              <span className="text-purple-500"><Zap className="h-4 w-4" /></span>
-              <span className="text-[13px] text-[#0052CC] hover:underline cursor-pointer">
+            <div className="text-xs font-semibold text-muted-foreground uppercase mb-1">Parent</div>
+            <div className="flex items-center gap-2 p-2 bg-muted rounded-md">
+              <span className="text-amber-500"><Zap className="h-4 w-4" /></span>
+              <span className="text-sm text-[#c69c6d] hover:underline cursor-pointer">
                 {item.parentKey} {item.parentSummary}
               </span>
             </div>

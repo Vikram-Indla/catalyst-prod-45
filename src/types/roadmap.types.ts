@@ -252,32 +252,32 @@ export interface StateBadgeConfig {
 export const STATE_BADGE_CONFIG: Record<WorkItemState, StateBadgeConfig> = {
   not_started: {
     label: 'NOT STARTED',
-    backgroundColor: '#DEEBFF',
-    textColor: '#0052CC',
+    backgroundColor: '#f3f4f6',
+    textColor: '#6b7280',
     fillCount: 1,
   },
   in_progress: {
     label: 'IN PROGRESS',
-    backgroundColor: '#DEEBFF',
-    textColor: '#0052CC',
+    backgroundColor: '#dbeafe',
+    textColor: '#2563eb',
     fillCount: 3,
   },
   accepted: {
     label: 'ACCEPTED',
-    backgroundColor: '#E3FCEF',
-    textColor: '#36B37E',
+    backgroundColor: '#dcfce7',
+    textColor: '#16a34a',
     fillCount: 6,
   },
   blocked: {
     label: 'BLOCKED',
-    backgroundColor: '#FFEBE6',
-    textColor: '#DE350B',
+    backgroundColor: '#fee2e2',
+    textColor: '#dc2626',
     fillCount: 2,
   },
   done: {
     label: 'DONE',
-    backgroundColor: '#E3FCEF',
-    textColor: '#36B37E',
+    backgroundColor: '#dcfce7',
+    textColor: '#16a34a',
     fillCount: 6,
   },
 };
@@ -295,11 +295,11 @@ export const BAR_COLORS: Record<WorkItemState, string> = {
 };
 
 export const BAR_TYPE_COLORS: Record<WorkItemType, string> = {
-  theme: '#6554C0',   // Purple
-  epic: '#00B8D9',    // Cyan
-  feature: '#36B37E', // Green
-  capability: '#FF8B00', // Orange
-  story: '#36B37E',   // Green
+  theme: '#c69c6d',   // Gold (brand primary)
+  epic: '#2563eb',    // Blue
+  feature: '#16a34a', // Green
+  capability: '#f59e0b', // Amber
+  story: '#16a34a',   // Green
 };
 
 // ============================================

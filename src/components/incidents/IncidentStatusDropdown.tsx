@@ -96,7 +96,7 @@ export function IncidentStatusDropdown({
           </PopoverTrigger>
           <PopoverContent 
             align="start" 
-            className="w-72 p-0 bg-white border border-[#DFE1E6] shadow-lg rounded-[3px]"
+            className="w-72 p-0 bg-white dark:bg-gray-900 border border-border shadow-lg rounded-md"
             sideOffset={4}
           >
             <div className="py-1">
@@ -104,13 +104,13 @@ export function IncidentStatusDropdown({
                 <button
                   key={transition.targetStatus}
                   onClick={() => handleTransition(transition.targetStatus)}
-                  className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-[#F4F5F7] text-left transition-colors"
+                  className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-muted text-left transition-colors"
                 >
-                  <span className="text-[14px] text-[#42526E]">{transition.action}</span>
+                  <span className="text-sm text-foreground">{transition.action}</span>
                   <div className="flex items-center gap-2">
-                    <ArrowRight className="w-4 h-4 text-[#8993A4]" />
+                    <ArrowRight className="w-4 h-4 text-muted-foreground" />
                     <span className={cn(
-                      "text-xs font-semibold px-2 py-0.5 rounded-[3px]",
+                      "text-xs font-semibold px-2 py-0.5 rounded-md",
                       STATUS_CONFIG[transition.targetStatus]?.bgColor || 'bg-gray-100',
                       STATUS_CONFIG[transition.targetStatus]?.textColor || 'text-gray-600'
                     )}>
@@ -121,14 +121,14 @@ export function IncidentStatusDropdown({
               ))}
               
               {/* Divider */}
-              <div className="border-t border-[#DFE1E6] my-1" />
+              <div className="border-t border-border my-1" />
               
               {/* View workflow */}
               <button
                 onClick={() => setIsOpen(false)}
-                className="w-full flex items-center px-4 py-2.5 hover:bg-[#F4F5F7] text-left transition-colors"
+                className="w-full flex items-center px-4 py-2.5 hover:bg-muted text-left transition-colors"
               >
-                <span className="text-[14px] text-[#42526E]">View workflow</span>
+                <span className="text-sm text-foreground">View workflow</span>
               </button>
             </div>
           </PopoverContent>
@@ -136,10 +136,10 @@ export function IncidentStatusDropdown({
 
         {/* Quick action button */}
         <button
-          className="inline-flex items-center justify-center w-8 h-8 rounded-[3px] border border-[#DFE1E6] hover:bg-[#F4F5F7] transition-colors"
+          className="inline-flex items-center justify-center w-8 h-8 rounded-md border border-border hover:bg-muted transition-colors"
           title="Quick actions"
         >
-          <Zap className="w-4 h-4 text-[#42526E]" />
+          <Zap className="w-4 h-4 text-muted-foreground" />
         </button>
       </div>
 
@@ -147,7 +147,7 @@ export function IncidentStatusDropdown({
       {onAssignToMe && (
         <button
           onClick={onAssignToMe}
-          className="text-[14px] text-[#0052CC] hover:text-[#0065FF] hover:underline transition-colors"
+          className="text-sm text-[#c69c6d] hover:text-[#b8894d] hover:underline transition-colors"
         >
           Assign to me
         </button>

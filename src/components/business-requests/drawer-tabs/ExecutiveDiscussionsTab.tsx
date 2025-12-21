@@ -230,8 +230,8 @@ export function ExecutiveDiscussionsTab({ requestId }: ExecutiveDiscussionsTabPr
       case 'delivery': return 'border-blue-500/50 text-blue-600 bg-blue-500/10';
       case 'budget': return 'border-emerald-500/50 text-emerald-600 bg-emerald-500/10';
       case 'risk': return 'border-amber-500/50 text-amber-600 bg-amber-500/10';
-      case 'scope': return 'border-purple-500/50 text-purple-600 bg-purple-500/10';
-      case 'stakeholder': return 'border-pink-500/50 text-pink-600 bg-pink-500/10';
+      case 'scope': return 'border-gray-500/50 text-gray-600 bg-gray-500/10';
+      case 'stakeholder': return 'border-amber-500/50 text-amber-600 bg-amber-500/10';
       default: return '';
     }
   };

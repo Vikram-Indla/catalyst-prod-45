@@ -151,7 +151,7 @@ function AssigneeCell({ assignee, onAssigneeChange }: {
   const [search, setSearch] = useState('');
   const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   const getAvatarColor = (name: string) => {
-    const colors = ['bg-blue-600', 'bg-green-600', 'bg-purple-600', 'bg-orange-500', 'bg-teal-600', 'bg-pink-500', 'bg-indigo-500'];
+    const colors = ['bg-blue-600', 'bg-green-600', 'bg-gray-600', 'bg-amber-500', 'bg-red-500', 'bg-sky-500', 'bg-emerald-500'];
     const index = name.charCodeAt(0) % colors.length;
     return colors[index];
   };
@@ -408,7 +408,7 @@ export function ListView() {
   const isFieldVisible = (field: string) => !hiddenFields.has(field);
 
   const getAvatarColor = (name: string) => {
-    const colors = ['bg-blue-600', 'bg-green-600', 'bg-purple-600', 'bg-orange-500', 'bg-teal-600', 'bg-pink-500', 'bg-indigo-500'];
+    const colors = ['bg-blue-600', 'bg-green-600', 'bg-gray-600', 'bg-amber-500', 'bg-red-500', 'bg-sky-500', 'bg-emerald-500'];
     return colors[name.charCodeAt(0) % colors.length];
   };
 

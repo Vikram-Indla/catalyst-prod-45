@@ -159,12 +159,12 @@ export const MORE_MENU_ITEMS = [
 
 // Type icons and colors
 export const WORK_ITEM_TYPE_CONFIG: Record<WorkItemType, { label: string; color: string }> = {
-  FEATURE: { label: 'Epic', color: '#904EE2' },
-  STORY: { label: 'Story', color: '#36B37E' },
-  SUBTASK: { label: 'Subtask', color: '#2684FF' },
-  DEFECT: { label: 'Bug', color: '#FF5630' },
-  INCIDENT: { label: 'Production Incident', color: '#FF991F' },
-  TASK: { label: 'Task', color: '#2684FF' },
+  FEATURE: { label: 'Epic', color: '#c69c6d' },
+  STORY: { label: 'Story', color: '#16a34a' },
+  SUBTASK: { label: 'Subtask', color: '#2563eb' },
+  DEFECT: { label: 'Bug', color: '#dc2626' },
+  INCIDENT: { label: 'Production Incident', color: '#f59e0b' },
+  TASK: { label: 'Task', color: '#2563eb' },
 };
 
 // Priority config
@@ -179,10 +179,10 @@ export const PRIORITY_CONFIG: Record<Priority, { label: string; color: string; i
 
 // Status colors
 export const STATUS_COLORS: Record<string, string> = {
-  'TODO': '#DFE1E6',
-  'IN PROGRESS': '#0052CC',
-  'DONE': '#36B37E',
-  'READY FOR QA': '#FF991F',
-  'READY FOR PRODUCTION': '#36B37E',
-  'CLOSED': '#36B37E',
+  'TODO': '#e5e7eb',
+  'IN PROGRESS': '#2563eb',
+  'DONE': '#16a34a',
+  'READY FOR QA': '#f59e0b',
+  'READY FOR PRODUCTION': '#16a34a',
+  'CLOSED': '#16a34a',
 };
