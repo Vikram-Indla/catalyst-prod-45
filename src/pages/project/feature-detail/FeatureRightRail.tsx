@@ -25,6 +25,7 @@ interface FeatureRightRailProps {
     owner?: { id: string; full_name: string } | null;
     epic?: { id: string; epic_key: string; name: string; primary_program_id?: string | null } | null;
     project?: { id: string; name: string } | null;
+    change_number?: { id: string; number: string; description?: string | null } | null;
   };
   collapsed: boolean;
   onToggleCollapse: () => void;
@@ -193,6 +194,16 @@ export function FeatureRightRail({ feature, collapsed, onToggleCollapse, onUpdat
           <span className="text-gold-link hover:text-gold-link-hover cursor-pointer hover:underline transition-colors font-mono text-xs font-medium">
             {MOCK_DATA.release}
           </span>
+        </FieldRow>
+
+        <FieldRow label="Change Number">
+          {feature.change_number ? (
+            <span className="font-mono text-xs bg-muted px-2 py-1 rounded inline-block">
+              {feature.change_number.number}
+            </span>
+          ) : (
+            <span className="text-muted-foreground">Not assigned</span>
+          )}
         </FieldRow>
 
         <div className="grid grid-cols-2 gap-3">

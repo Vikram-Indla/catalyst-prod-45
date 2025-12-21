@@ -78,10 +78,12 @@ interface FeatureData {
   project_id: string;
   progress_pct: number | null;
   updated_at: string | null;
+  change_number_id: string | null;
   owner?: { id: string; full_name: string; email?: string; avatar_url?: string; role?: string } | null;
   epic?: { id: string; epic_key: string; name: string; primary_program_id?: string | null } | null;
   project?: { id: string; name: string } | null;
   contributors?: Contributor[];
+  change_number?: { id: string; number: string; description?: string | null } | null;
 }
 
 const STATUS_CONFIG: Record<string, { label: string; class: string }> = {
@@ -120,7 +122,7 @@ export default function FeatureDetailPage() {
         .select(`
           id, display_id, name, description, acceptance_criteria, status, health,
           blocked, blocked_reason, planned_start_date, planned_end_date,
-          owner_id, epic_id, project_id, progress_pct, updated_at
+          owner_id, epic_id, project_id, progress_pct, updated_at, change_number_id
         `)
         .eq('id', featureId)
         .single();
@@ -129,7 +131,7 @@ export default function FeatureDetailPage() {
       if (!data) return null;
 
       // Fetch relations in parallel
-      const [ownerResult, epicResult, projectResult, contributorsResult] = await Promise.all([
+      const [ownerResult, epicResult, projectResult, contributorsResult, changeNumberResult] = await Promise.all([
         data.owner_id 
           ? supabase.from('profiles').select('id, full_name, email, avatar_url, role').eq('id', data.owner_id).single()
           : { data: null },
@@ -143,6 +145,9 @@ export default function FeatureDetailPage() {
           .from('feature_contributors')
           .select('id, user_id, user:profiles!feature_contributors_user_id_fkey(id, full_name, email, avatar_url, role)')
           .eq('feature_id', featureId),
+        data.change_number_id
+          ? supabase.from('change_numbers').select('id, number, description').eq('id', data.change_number_id).single()
+          : { data: null },
       ]);
 
       return {
@@ -152,6 +157,7 @@ export default function FeatureDetailPage() {
         epic: epicResult.data,
         project: projectResult.data,
         contributors: contributorsResult.data || [],
+        change_number: changeNumberResult.data,
       };
     },
     enabled: !!featureId,
