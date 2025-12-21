@@ -33,28 +33,28 @@ export function GroupByMenu({ value, onChange }: GroupByMenuProps) {
           variant="ghost" 
           size="sm" 
           className={cn(
-            "h-8 gap-1 text-[13px] hover:bg-[#F4F5F7] font-normal",
-            value !== 'none' ? "text-[#0052CC] bg-[#E9F2FF]" : "text-[#42526E]"
+            "h-8 gap-1 text-[13px] hover:bg-muted font-normal",
+            value !== 'none' ? "text-[#c69c6d] bg-[#c69c6d]/10" : "text-muted-foreground"
           )}
         >
           Group
           <ChevronDown className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-44 bg-white border border-[#DFE1E6] shadow-lg rounded-[3px] p-1">
-        <div className="px-2 py-1 text-[11px] font-semibold text-[#6B778C] uppercase">Group by</div>
+      <DropdownMenuContent align="end" className="w-44 bg-card border border-border shadow-lg rounded-md p-1">
+        <div className="px-2 py-1 text-[11px] font-semibold text-muted-foreground uppercase">Group by</div>
         {groupOptions.map((option) => (
           <DropdownMenuItem
             key={option.id}
             className={cn(
-              "flex items-center gap-2 px-2 py-1.5 text-[13px] text-[#172B4D] cursor-pointer hover:bg-[#F4F5F7] rounded-[3px]",
-              value === option.id && "bg-[#E9F2FF]"
+              "flex items-center gap-2 px-2 py-1.5 text-[13px] text-foreground cursor-pointer hover:bg-muted rounded-md",
+              value === option.id && "bg-[#c69c6d]/10"
             )}
             onClick={() => onChange(value === option.id ? 'none' : option.id)}
           >
             {option.icon}
             <span className="flex-1">{option.label}</span>
-            {value === option.id && <Check className="h-4 w-4 text-[#0052CC]" />}
+            {value === option.id && <Check className="h-4 w-4 text-[#c69c6d]" />}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
