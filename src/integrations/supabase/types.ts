@@ -1203,6 +1203,59 @@ export type Database = {
           },
         ]
       }
+      change_approvals: {
+        Row: {
+          assigned_role: string | null
+          assigned_user_id: string | null
+          change_card_id: string
+          comments: string | null
+          created_at: string
+          decided_at: string | null
+          decision_by_user_id: string | null
+          id: string
+          status: string
+          step_order: number
+          step_type: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_role?: string | null
+          assigned_user_id?: string | null
+          change_card_id: string
+          comments?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decision_by_user_id?: string | null
+          id?: string
+          status?: string
+          step_order?: number
+          step_type: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_role?: string | null
+          assigned_user_id?: string | null
+          change_card_id?: string
+          comments?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decision_by_user_id?: string | null
+          id?: string
+          status?: string
+          step_order?: number
+          step_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "change_approvals_change_card_id_fkey"
+            columns: ["change_card_id"]
+            isOneToOne: false
+            referencedRelation: "change_cards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       change_card_audit_events: {
         Row: {
           actor_user_id: string
@@ -1308,6 +1361,7 @@ export type Database = {
       }
       change_cards: {
         Row: {
+          approvals_overall_status: string | null
           approved: boolean
           approved_at: string | null
           approved_by_user_id: string | null
@@ -1325,13 +1379,16 @@ export type Database = {
           exception_recorded_by_user_id: string | null
           id: string
           planned_prod_date: string
+          release_readiness: string | null
           release_version_id: string | null
+          risk_level: string | null
           status: Database["public"]["Enums"]["change_card_status"]
           title: string
           updated_at: string
           updated_by_user_id: string | null
         }
         Insert: {
+          approvals_overall_status?: string | null
           approved?: boolean
           approved_at?: string | null
           approved_by_user_id?: string | null
@@ -1349,13 +1406,16 @@ export type Database = {
           exception_recorded_by_user_id?: string | null
           id?: string
           planned_prod_date: string
+          release_readiness?: string | null
           release_version_id?: string | null
+          risk_level?: string | null
           status?: Database["public"]["Enums"]["change_card_status"]
           title: string
           updated_at?: string
           updated_by_user_id?: string | null
         }
         Update: {
+          approvals_overall_status?: string | null
           approved?: boolean
           approved_at?: string | null
           approved_by_user_id?: string | null
@@ -1373,7 +1433,9 @@ export type Database = {
           exception_recorded_by_user_id?: string | null
           id?: string
           planned_prod_date?: string
+          release_readiness?: string | null
           release_version_id?: string | null
+          risk_level?: string | null
           status?: Database["public"]["Enums"]["change_card_status"]
           title?: string
           updated_at?: string
@@ -1385,6 +1447,121 @@ export type Database = {
             columns: ["release_version_id"]
             isOneToOne: false
             referencedRelation: "release_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      change_conflicts: {
+        Row: {
+          change_card_id: string
+          conflict_type: string
+          created_at: string
+          id: string
+          message: string
+          related_change_id: string | null
+          related_window_id: string | null
+          resolution_notes: string | null
+          resolved_at: string | null
+          resolved_by_user_id: string | null
+          severity: string
+          status: string
+        }
+        Insert: {
+          change_card_id: string
+          conflict_type: string
+          created_at?: string
+          id?: string
+          message: string
+          related_change_id?: string | null
+          related_window_id?: string | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by_user_id?: string | null
+          severity?: string
+          status?: string
+        }
+        Update: {
+          change_card_id?: string
+          conflict_type?: string
+          created_at?: string
+          id?: string
+          message?: string
+          related_change_id?: string | null
+          related_window_id?: string | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by_user_id?: string | null
+          severity?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "change_conflicts_change_card_id_fkey"
+            columns: ["change_card_id"]
+            isOneToOne: false
+            referencedRelation: "change_cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "change_conflicts_related_change_id_fkey"
+            columns: ["related_change_id"]
+            isOneToOne: false
+            referencedRelation: "change_cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "change_conflicts_related_window_id_fkey"
+            columns: ["related_window_id"]
+            isOneToOne: false
+            referencedRelation: "release_windows"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      change_dependencies: {
+        Row: {
+          blocked_change_id: string
+          blocking_change_id: string
+          created_at: string
+          created_by_user_id: string
+          dependency_type: string
+          id: string
+          notes: string | null
+          status: string
+        }
+        Insert: {
+          blocked_change_id: string
+          blocking_change_id: string
+          created_at?: string
+          created_by_user_id: string
+          dependency_type?: string
+          id?: string
+          notes?: string | null
+          status?: string
+        }
+        Update: {
+          blocked_change_id?: string
+          blocking_change_id?: string
+          created_at?: string
+          created_by_user_id?: string
+          dependency_type?: string
+          id?: string
+          notes?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "change_dependencies_blocked_change_id_fkey"
+            columns: ["blocked_change_id"]
+            isOneToOne: false
+            referencedRelation: "change_cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "change_dependencies_blocking_change_id_fkey"
+            columns: ["blocking_change_id"]
+            isOneToOne: false
+            referencedRelation: "change_cards"
             referencedColumns: ["id"]
           },
         ]
@@ -9228,6 +9405,65 @@ export type Database = {
           version?: string
         }
         Relationships: []
+      }
+      release_windows: {
+        Row: {
+          applies_to_environment: string | null
+          applies_to_release_version_id: string | null
+          created_at: string
+          created_by_user_id: string
+          description: string | null
+          end_date: string
+          id: string
+          is_recurring: boolean | null
+          recurrence_pattern: string | null
+          severity: string
+          start_date: string
+          title: string
+          updated_at: string
+          window_type: string
+        }
+        Insert: {
+          applies_to_environment?: string | null
+          applies_to_release_version_id?: string | null
+          created_at?: string
+          created_by_user_id: string
+          description?: string | null
+          end_date: string
+          id?: string
+          is_recurring?: boolean | null
+          recurrence_pattern?: string | null
+          severity?: string
+          start_date: string
+          title: string
+          updated_at?: string
+          window_type: string
+        }
+        Update: {
+          applies_to_environment?: string | null
+          applies_to_release_version_id?: string | null
+          created_at?: string
+          created_by_user_id?: string
+          description?: string | null
+          end_date?: string
+          id?: string
+          is_recurring?: boolean | null
+          recurrence_pattern?: string | null
+          severity?: string
+          start_date?: string
+          title?: string
+          updated_at?: string
+          window_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "release_windows_applies_to_release_version_id_fkey"
+            columns: ["applies_to_release_version_id"]
+            isOneToOne: false
+            referencedRelation: "release_versions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       releases: {
         Row: {
