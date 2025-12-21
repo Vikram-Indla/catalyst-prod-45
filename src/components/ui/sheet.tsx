@@ -91,11 +91,11 @@ const SheetContent = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Con
             isHorizontal && sheetWidthVariants({ width }),
             // DRAWER LAYOUT CONTRACT: 
             // 1. flex-col + overflow-hidden ensures single scroll container pattern
-            // 2. bg-background ensures opaque panel (NOT transparent)
-            // 3. text-foreground ensures readable text
-            "flex flex-col overflow-hidden bg-background text-foreground",
+            // 2. Explicit white/gray-900 ensures opaque panel in both modes
+            // 3. Explicit text colors ensure readable text
+            "flex flex-col overflow-hidden bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100",
             // Border styling
-            isHorizontal ? "border-l border-border" : "border-t border-border",
+            isHorizontal ? "border-l border-gray-200 dark:border-gray-700" : "border-t border-gray-200 dark:border-gray-700",
             className
           )}
           {...props}
@@ -121,39 +121,37 @@ const SheetContent = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Con
 );
 SheetContent.displayName = SheetPrimitive.Content.displayName;
 
-const SheetHeader = ({ className, style, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+const SheetHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div 
-    className={cn("flex flex-col gap-1 px-6 py-4 shrink-0", className)} 
-    style={{
-      backgroundColor: 'var(--surface-1)',
-      borderBottom: '1px solid var(--border-color)',
-      ...style,
-    }}
+    className={cn(
+      "flex flex-col gap-1 px-6 py-4 shrink-0",
+      "bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700",
+      className
+    )} 
     {...props} 
   />
 );
 SheetHeader.displayName = "SheetHeader";
 
-const SheetFooter = ({ className, style, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+const SheetFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div 
-    className={cn("flex flex-col-reverse sm:flex-row sm:justify-end sm:gap-2 px-6 py-4 mt-auto shrink-0", className)} 
-    style={{
-      backgroundColor: 'var(--surface-1)',
-      borderTop: '1px solid var(--border-color)',
-      ...style,
-    }}
+    className={cn(
+      "flex flex-col-reverse sm:flex-row sm:justify-end sm:gap-2 px-6 py-4 mt-auto shrink-0",
+      "bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700",
+      className
+    )} 
     {...props} 
   />
 );
 SheetFooter.displayName = "SheetFooter";
 
-const SheetBody = ({ className, style, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+const SheetBody = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div 
-    className={cn("flex-1 overflow-auto px-6 py-4", className)} 
-    style={{
-      backgroundColor: 'var(--surface-1)',
-      ...style,
-    }}
+    className={cn(
+      "flex-1 overflow-auto px-6 py-4",
+      "bg-white dark:bg-gray-900",
+      className
+    )} 
     {...props} 
   />
 );
@@ -163,7 +161,7 @@ const SheetTitle = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Title>,
   React.ComponentPropsWithoutRef<typeof SheetPrimitive.Title>
 >(({ className, ...props }, ref) => (
-  <SheetPrimitive.Title ref={ref} className={cn("text-lg font-semibold text-foreground", className)} {...props} />
+  <SheetPrimitive.Title ref={ref} className={cn("text-lg font-semibold text-gray-900 dark:text-gray-100", className)} {...props} />
 ));
 SheetTitle.displayName = SheetPrimitive.Title.displayName;
 
@@ -171,7 +169,7 @@ const SheetDescription = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Description>,
   React.ComponentPropsWithoutRef<typeof SheetPrimitive.Description>
 >(({ className, ...props }, ref) => (
-  <SheetPrimitive.Description ref={ref} className={cn("text-sm text-muted-foreground", className)} {...props} />
+  <SheetPrimitive.Description ref={ref} className={cn("text-sm text-gray-500 dark:text-gray-400", className)} {...props} />
 ));
 SheetDescription.displayName = SheetPrimitive.Description.displayName;
 
