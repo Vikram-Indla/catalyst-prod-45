@@ -16,7 +16,7 @@ const stats = [
 
 const statusData = [
   { label: 'Open', count: 24, color: 'bg-blue-600' },
-  { label: 'In Progress', count: 15, color: 'bg-purple-700' },
+  { label: 'In Progress', count: 15, color: 'bg-amber-600' },
   { label: 'Pending', count: 8, color: 'bg-orange-600' },
   { label: 'Resolved', count: 45, color: 'bg-green-600' },
   { label: 'Closed', count: 55, color: 'bg-gray-500' },

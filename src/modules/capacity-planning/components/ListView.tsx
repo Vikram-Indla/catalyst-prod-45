@@ -27,14 +27,14 @@ type SortDirection = 'asc' | 'desc';
 const TYPE_COLORS: Record<string, { bg: string; text: string }> = {
   ticket: { bg: 'bg-secondary-green', text: 'text-white' },
   leave: { bg: 'bg-amber-500', text: 'text-white' },
-  task: { bg: 'bg-teal-500', text: 'text-white' },
+  task: { bg: 'bg-blue-500', text: 'text-white' },
 };
 
 // Status with dot indicator colors
 const STATUS_STYLES: Record<string, { dot: string; text: string; bg: string }> = {
   'in-progress': { dot: 'bg-amber-500', text: 'text-amber-600', bg: 'bg-amber-50' },
   'in_progress': { dot: 'bg-amber-500', text: 'text-amber-600', bg: 'bg-amber-50' },
-  planned: { dot: 'bg-teal-500', text: 'text-teal-600', bg: 'bg-teal-50' },
+  planned: { dot: 'bg-blue-500', text: 'text-blue-600', bg: 'bg-blue-50' },
   leave: { dot: 'bg-amber-500', text: 'text-amber-600', bg: 'bg-amber-50' },
   completed: { dot: 'bg-green-500', text: 'text-green-600', bg: 'bg-green-50' },
   draft: { dot: 'bg-muted-foreground', text: 'text-muted-foreground', bg: 'bg-muted' },

@@ -21,10 +21,10 @@ type ViewMode = 'list' | 'kanban';
 const KANBAN_COLUMNS = [
   { id: 'open', label: 'Open', color: 'bg-blue-500' },
   { id: 'triage', label: 'Triage', color: 'bg-yellow-500' },
-  { id: 'to_committee', label: 'To Committee', color: 'bg-purple-500' },
+  { id: 'to_committee', label: 'To Committee', color: 'bg-amber-500' },
   { id: 'in_progress', label: 'In Progress', color: 'bg-orange-500' },
   { id: 'resolved', label: 'Resolved', color: 'bg-green-500' },
-  { id: 'converted', label: 'Converted', color: 'bg-teal-500' },
+  { id: 'converted', label: 'Converted', color: 'bg-blue-600' },
   { id: 'closed', label: 'Closed', color: 'bg-gray-500' },
 ];
 
@@ -49,7 +49,7 @@ const SupportLevelBadge = ({ level }: { level: string | null | undefined }) => {
   const colors: Record<string, string> = {
     L1: 'bg-green-100 text-green-800',
     L2: 'bg-blue-100 text-blue-800',
-    L3: 'bg-purple-100 text-purple-800',
+    L3: 'bg-gray-100 text-gray-800',
   };
   return (
     <Badge variant="outline" className={cn('text-xs font-medium', colors[level] || 'bg-gray-100')}>

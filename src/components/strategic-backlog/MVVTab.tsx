@@ -82,8 +82,8 @@ export function MVVTab({ missions, visions, values, links, snapshotId, isArchive
       icon: Eye,
       items: visions,
       linkedIds: linkedVisionIds,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50',
+      color: 'text-amber-600 dark:text-amber-400',
+      bgColor: 'bg-amber-50 dark:bg-amber-900/20',
     },
     {
       type: 'value' as ObjectType,
@@ -91,8 +91,8 @@ export function MVVTab({ missions, visions, values, links, snapshotId, isArchive
       icon: Heart,
       items: values,
       linkedIds: linkedValueIds,
-      color: 'text-pink-600',
-      bgColor: 'bg-pink-50',
+      color: 'text-green-600 dark:text-green-400',
+      bgColor: 'bg-green-50 dark:bg-green-900/20',
     },
   ];
 

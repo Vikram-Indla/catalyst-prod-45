@@ -81,9 +81,9 @@ export function StrategyObjectDrawer({ open, onOpenChange, type, data, isArchive
 
   const getIcon = () => {
     switch (type) {
-      case 'mission': return <Target className="h-5 w-5 text-blue-600" />;
-      case 'vision': return <Eye className="h-5 w-5 text-purple-600" />;
-      case 'value': return <Heart className="h-5 w-5 text-pink-600" />;
+      case 'mission': return <Target className="h-5 w-5 text-blue-600 dark:text-blue-400" />;
+      case 'vision': return <Eye className="h-5 w-5 text-amber-600 dark:text-amber-400" />;
+      case 'value': return <Heart className="h-5 w-5 text-green-600 dark:text-green-400" />;
     }
   };
 

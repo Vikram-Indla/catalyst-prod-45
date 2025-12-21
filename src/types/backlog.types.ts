@@ -48,13 +48,13 @@ export const STATUS_COLORS: Record<EpicStatus, string> = {
 
 export const LABEL_COLORS: Record<LabelColor, { bg: string; text: string }> = {
   orange: { bg: '#FF8B00', text: '#FFFFFF' },
-  teal: { bg: '#00B8D9', text: '#FFFFFF' },
-  purple: { bg: '#6554C0', text: '#FFFFFF' },
+  teal: { bg: '#0077B6', text: '#FFFFFF' },
+  purple: { bg: '#6B778C', text: '#FFFFFF' },
   blue: { bg: '#0052CC', text: '#FFFFFF' },
   red: { bg: '#DE350B', text: '#FFFFFF' },
   gray: { bg: '#6B778C', text: '#FFFFFF' },
   green: { bg: '#36B37E', text: '#FFFFFF' },
-  pink: { bg: '#E774BB', text: '#FFFFFF' },
+  pink: { bg: '#C69C6D', text: '#FFFFFF' },
 };
 
 // ============================================

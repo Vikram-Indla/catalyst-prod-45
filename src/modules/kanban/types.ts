@@ -134,14 +134,14 @@ export const KANBAN_COLORS = {
   warning: 'hsl(var(--y300))',
   info: 'hsl(var(--b400))',
   success: 'hsl(var(--g300))',
-  purple: 'hsl(var(--p300))',
+  semantic: 'hsl(var(--b400))',
 };
 
 // Column configuration
 export const COLUMNS_CONFIG: StatusConfig[] = [
   { id: 'new_request', label: 'New Request', color: KANBAN_COLORS.greyDark, order: 0 },
   { id: 'analyse', label: 'Analyse', color: KANBAN_COLORS.bronze, order: 1 },
-  { id: 'approved', label: 'Approved', color: KANBAN_COLORS.purple, order: 2 },
+  { id: 'approved', label: 'Approved', color: KANBAN_COLORS.info, order: 2 },
   { id: 'implement', label: 'Implement', color: KANBAN_COLORS.success, order: 3 },
   { id: 'closed', label: 'Closed', color: KANBAN_COLORS.olive, order: 4 },
   { id: 'rejected', label: 'Rejected', color: KANBAN_COLORS.danger, order: 5 },
@@ -160,7 +160,7 @@ export const PRIORITIES: PriorityConfig[] = [
 export const DEPARTMENTS: DepartmentConfig[] = [
   { id: 'investment_ops', label: 'Investment Operations', color: KANBAN_COLORS.olive },
   { id: 'investor_relations', label: 'Investor Relations', color: KANBAN_COLORS.bronze },
-  { id: 'legal_compliance', label: 'Legal & Compliance', color: KANBAN_COLORS.purple },
+  { id: 'legal_compliance', label: 'Legal & Compliance', color: KANBAN_COLORS.grey },
   { id: 'finance', label: 'Finance', color: KANBAN_COLORS.info },
   { id: 'it_systems', label: 'IT & Systems', color: KANBAN_COLORS.success },
   { id: 'strategy', label: 'Strategy & Planning', color: KANBAN_COLORS.warning },
