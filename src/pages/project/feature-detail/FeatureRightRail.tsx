@@ -120,7 +120,7 @@ export function FeatureRightRail({ feature, collapsed, onToggleCollapse, onUpdat
     <div className="w-[300px] border-l bg-card flex flex-col">
       {/* Details Section */}
       <CollapsibleSection title="Details">
-        <FieldRow label="Owner">
+        <FieldRow label="Assignee">
           {feature.owner ? (
             <div className="flex items-center gap-2">
               <div className="w-6 h-6 rounded-full bg-brand-primary/10 text-brand-primary flex items-center justify-center text-xs font-medium">
