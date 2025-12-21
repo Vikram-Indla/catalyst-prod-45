@@ -40,7 +40,7 @@ import Features from "./pages/Features";
 import FeaturesPage from "./pages/items/FeaturesPage";
 import FeaturesBacklog from "./pages/FeaturesBacklog";
 import FeaturePrioritizationView from "./pages/items/FeaturePrioritizationView";
-const FeatureViewPage = lazy(() => import("./pages/project/FeatureViewPage"));
+const FeatureDetailPage = lazy(() => import("./pages/project/FeatureDetailPage"));
 import { EpicBalancingPage } from "./modules/epic-balancing";
 
 import Defects from "./pages/Defects";
@@ -460,7 +460,7 @@ const App = () => (
               <Route path="/projects/:projectKey/summary" element={<Navigate to={`/projects`} replace />} />
               <Route path="/projects/:projectKey/settings" element={<ProjectSettingsPage />} />
               <Route path="/projects/:projectId/features" element={<FeaturesPage />} />
-              <Route path="/projects/:projectId/features/:featureId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><FeatureViewPage /></Suspense>} />
+              <Route path="/projects/:projectId/features/:featureId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><FeatureDetailPage /></Suspense>} />
               <Route path="/projects/:projectId/work" element={<ProjectWorkHubPage />} />
               <Route path="/projects/:projectId/backlog" element={<ProjectBacklogPage />} />
               <Route path="/projects/:projectId/roadmap" element={<ProjectComingSoonPage pageTitle="Roadmap" />} />
