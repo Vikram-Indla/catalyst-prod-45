@@ -57,16 +57,16 @@ const EVENT_ICONS: Record<EventType, React.ReactNode> = {
 
 const EVENT_COLORS: Record<EventType, string> = {
   created: 'text-blue-600 bg-blue-100',
-  status_change: 'text-purple-600 bg-purple-100',
-  support_level_change: 'text-indigo-600 bg-indigo-100',
-  testing_status_change: 'text-teal-600 bg-teal-100',
+  status_change: 'text-blue-600 bg-blue-100',
+  support_level_change: 'text-blue-600 bg-blue-100',
+  testing_status_change: 'text-blue-600 bg-blue-100',
   sla_start: 'text-gray-600 bg-gray-100',
   sla_breach_response: 'text-red-600 bg-red-100',
   sla_breach_resolution: 'text-red-600 bg-red-100',
   sla_met_response: 'text-green-600 bg-green-100',
   sla_met_resolution: 'text-green-600 bg-green-100',
-  converted: 'text-teal-600 bg-teal-100',
-  approval_action: 'text-orange-600 bg-orange-100',
+  converted: 'text-blue-600 bg-blue-100',
+  approval_action: 'text-amber-600 bg-amber-100',
   field_update: 'text-gray-600 bg-gray-100',
 };
 
