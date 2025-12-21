@@ -81,9 +81,9 @@ export function InlineEditTextarea({
           onBlur={handleBlur}
           placeholder={placeholder}
           className={cn(
-            'w-full rounded-md border border-brand-primary bg-background px-3 py-2 text-sm text-foreground',
+            'w-full rounded-md border border-gray-300 dark:border-gray-600 bg-background px-3 py-2 text-sm text-foreground',
             'placeholder:text-muted-foreground resize-y',
-            'focus:outline-none focus:ring-2 focus:ring-brand-primary/20',
+            'focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600',
             'disabled:cursor-not-allowed disabled:opacity-50',
             className
           )}
