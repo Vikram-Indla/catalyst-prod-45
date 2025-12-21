@@ -165,7 +165,9 @@ export default {
             DEFAULT: "#c69c6d",
             hover: "#b8894d",
             pale: "rgba(198, 156, 109, 0.08)",
+            border: "rgba(198, 156, 109, 0.3)",
           },
+          dark: "#1a1a1a",
         },
         
         /* Status colors - for bg-status-danger, text-status-success, etc. */
