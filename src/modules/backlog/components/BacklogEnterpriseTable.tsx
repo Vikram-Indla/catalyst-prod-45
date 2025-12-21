@@ -130,7 +130,11 @@ export function BacklogEnterpriseTable({
       render: (value, row) => (
         <span 
           className="font-mono text-xs text-[#c69c6d] dark:text-[#d4a855] hover:text-[#b8894d] dark:hover:text-[#c49545] hover:underline cursor-pointer"
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            // Explicitly open the drawer with this epic's id
+            onItemClick(row.id);
+          }}
         >
           {value}
         </span>
@@ -221,7 +225,7 @@ export function BacklogEnterpriseTable({
         <span className="text-sm font-medium text-right block">{value ?? '—'}</span>
       ),
     },
-  ], [programData?.key]);
+  ], [programData?.key, onItemClick]);
 
   // Handle row update for inline editing
   const handleRowUpdate = async (rowId: string, columnId: string, newValue: any) => {
