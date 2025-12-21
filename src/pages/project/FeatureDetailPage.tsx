@@ -56,6 +56,7 @@ import { FeatureActivityTab } from './feature-detail/FeatureActivityTab';
 import { FeatureAuditTab } from './feature-detail/FeatureAuditTab';
 import { FeatureRightRail } from './feature-detail/FeatureRightRail';
 import { AssignModal } from '@/components/features/AssignModal';
+import { CreateStoryModal } from '@/components/stories/CreateStoryModal';
 import { Contributor } from '@/hooks/useFeatureAssignments';
 
 // Types
@@ -110,6 +111,7 @@ export default function FeatureDetailPage() {
   const [activeTab, setActiveTab] = useState('overview');
   const [rightRailCollapsed, setRightRailCollapsed] = useState(false);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [isCreateStoryOpen, setIsCreateStoryOpen] = useState(false);
 
   // Fetch feature with relations
   const { data: feature, isLoading, error } = useQuery({
@@ -339,7 +341,7 @@ export default function FeatureDetailPage() {
               <Link2 className="h-4 w-4 mr-1" />
               Link
             </Button>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={() => setIsCreateStoryOpen(true)}>
               <Plus className="h-4 w-4 mr-1" />
               Create Story
             </Button>
@@ -518,6 +520,20 @@ export default function FeatureDetailPage() {
         currentOwner={feature.owner || null}
         currentContributors={feature.contributors || []}
         projectId={feature.project_id}
+      />
+
+      {/* Create Story Modal */}
+      <CreateStoryModal
+        isOpen={isCreateStoryOpen}
+        onClose={() => setIsCreateStoryOpen(false)}
+        parentFeature={{
+          id: feature.id,
+          key: featureKey,
+          title: feature.name,
+          program_id: feature.epic?.primary_program_id || undefined,
+          epic_id: feature.epic_id,
+          epic_key: feature.epic?.epic_key,
+        }}
       />
     </div>
   );
