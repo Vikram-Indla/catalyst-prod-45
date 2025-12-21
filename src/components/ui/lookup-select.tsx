@@ -211,19 +211,28 @@ export function LookupMultiSelect({
       {open && (
         <>
           <div className="fixed inset-0 z-[399]" onClick={() => setOpen(false)} />
-          <div className="absolute z-[400] mt-1 w-full rounded-md border bg-popover shadow-lg">
-            <div className="max-h-60 overflow-auto p-1">
+          <div 
+            className="absolute z-[400] mt-1 w-full rounded-md border bg-popover shadow-lg"
+            style={{ maxHeight: '240px' }}
+          >
+            <div 
+              className="p-1 overflow-y-auto overscroll-contain"
+              style={{ maxHeight: '232px' }}
+            >
               {options.map((option) => (
                 <div
                   key={option.id}
-                  onClick={() => toggleValue(option.value_key)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleValue(option.value_key);
+                  }}
                   className={cn(
                     "flex items-center gap-2 px-2 py-1.5 text-sm cursor-pointer rounded hover:bg-accent",
                     selectedValues.includes(option.value_key) && "bg-accent/50"
                   )}
                 >
                   <div className={cn(
-                    "h-4 w-4 rounded border flex items-center justify-center",
+                    "h-4 w-4 rounded border flex items-center justify-center shrink-0",
                     selectedValues.includes(option.value_key) 
                       ? "bg-primary border-primary text-primary-foreground" 
                       : "border-input"
