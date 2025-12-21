@@ -295,12 +295,12 @@ export default function Auth() {
               lineHeight: 1.2
             }}
           >
-            Streamline your <span className="text-brand-primary italic">enterprise</span> demand & delivery
+            Streamline your <span className="text-brand-primary font-semibold italic">enterprise</span> demand & delivery
           </h1>
 
           {/* Description */}
           <p 
-            className="mb-8 sm:mb-12 max-w-md font-body text-white/65"
+            className="mb-8 sm:mb-12 max-w-md font-body text-white/90"
             style={{
               fontSize: "clamp(0.95rem, 2vw, 1.1rem)",
               lineHeight: 1.8
@@ -310,7 +310,7 @@ export default function Auth() {
           </p>
 
           {/* Capabilities Section */}
-          <div className="pt-8 sm:pt-12 border-t border-brand-primary/25">
+          <div className="pt-8 sm:pt-12 border-t border-brand-primary/40">
             <div className="grid grid-cols-2 gap-x-8 gap-y-4">
               {[
                 { Icon: Briefcase, label: "Portfolio Management" },
@@ -324,12 +324,14 @@ export default function Auth() {
                   key={index}
                   className="flex items-center gap-3 group py-2.5 whitespace-nowrap"
                 >
-                  <item.Icon 
-                    className="transition-transform duration-300 group-hover:scale-110 text-brand-primary"
-                    size={18}
-                    strokeWidth={1.5}
-                  />
-                  <span className="font-body text-base font-medium tracking-wide transition-colors duration-300 group-hover:text-brand-primary text-white/85">
+                  <div className="p-2 bg-brand-primary/15 rounded-lg transition-colors duration-300 group-hover:bg-brand-primary/25">
+                    <item.Icon 
+                      className="transition-transform duration-300 group-hover:scale-110 text-brand-primary"
+                      size={18}
+                      strokeWidth={2}
+                    />
+                  </div>
+                  <span className="font-body text-base font-medium tracking-wide transition-colors duration-300 group-hover:text-brand-primary text-white">
                     {item.label}
                   </span>
                 </div>
