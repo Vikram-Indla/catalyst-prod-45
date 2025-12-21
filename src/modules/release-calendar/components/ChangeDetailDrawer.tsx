@@ -26,7 +26,7 @@ export function ChangeDetailDrawer({ open, onOpenChange, changeCardId }: ChangeD
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-[600px] sm:max-w-[600px] bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 overflow-y-auto">
+      <SheetContent className="w-[600px] sm:max-w-[600px] bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 overflow-y-auto rounded-none">
         {isLoading || !change ? (
           <div className="space-y-4 mt-6">
             <Skeleton className="h-8 w-48" />
@@ -130,12 +130,13 @@ export function ChangeDetailDrawer({ open, onOpenChange, changeCardId }: ChangeD
                             <span className="font-mono text-xs text-gray-900 dark:text-gray-100">{link.work_item_key || link.work_item_id}</span>
                             <p className="text-sm text-gray-600 dark:text-gray-400">{link.cached_title || 'No title'}</p>
                           </div>
-                          <Badge className={cn(
-                            "text-2xs",
-                            link.committee_status === 'approved' && "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400",
-                            link.committee_status === 'pending' && "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400",
-                            link.committee_status === 'not_required' && "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
-                          )}>
+                          <Badge 
+                            variant={
+                              link.committee_status === 'approved' ? 'success' :
+                              link.committee_status === 'pending' ? 'warning' : 'secondary'
+                            }
+                            className="text-2xs border-0"
+                          >
                             {link.committee_status}
                           </Badge>
                         </div>
