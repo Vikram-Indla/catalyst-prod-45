@@ -7,7 +7,7 @@ import { useState, ReactNode } from 'react';
 import { Input } from '@/components/ui/input';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { Button } from '@/components/ui/button';
-import { Lock, Unlock, ChevronDown, ChevronRight } from 'lucide-react';
+import { Lock, Unlock, ChevronDown, ChevronRight, Scale } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -188,7 +188,7 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
           />
         </Field>
 
-        {/* Auto Priority Link */}
+        {/* Business Score Indicator */}
         <div 
           className="flex items-center justify-between px-3.5 py-2.5 rounded-md"
           style={{
@@ -196,13 +196,20 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
             border: '1px solid var(--border-subtle, hsl(var(--border)/0.5))',
           }}
         >
-          <div className="flex items-center gap-2 text-[13px]" style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>
-            <Lock className="h-4 w-4" />
-            {(() => {
-              const tier = (data.priority_tier as PriorityTier) || 'unscored';
-              const { label } = getTierDisplayInfo(tier);
-              return label.charAt(0) + label.slice(1).toLowerCase();
-            })()}
+          <div className="flex items-center gap-2">
+            <Scale className="h-4 w-4 text-muted-foreground" />
+            <div className="flex flex-col">
+              <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">
+                Business Score
+              </span>
+              <span className="text-[13px] font-medium" style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}>
+                {(() => {
+                  const tier = (data.priority_tier as PriorityTier) || 'unscored';
+                  const { label } = getTierDisplayInfo(tier);
+                  return tier === 'unscored' ? 'Not yet scored' : label;
+                })()}
+              </span>
+            </div>
           </div>
           <button
             onClick={() => onNavigateToTab?.('business-score')}
