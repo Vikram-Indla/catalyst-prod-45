@@ -638,16 +638,16 @@ export default function IndustryPage() {
     'active': { bg: 'bg-blue-100', text: 'text-blue-700' },
     'on_hold': { bg: 'bg-amber-100', text: 'text-amber-700' },
     'paused': { bg: 'bg-amber-100', text: 'text-amber-700' },
-    'request_received': { bg: 'bg-slate-100', text: 'text-slate-600' },
-    'received': { bg: 'bg-slate-100', text: 'text-slate-600' },
-    'under_study': { bg: 'bg-violet-100', text: 'text-violet-700' },
-    'analysis': { bg: 'bg-violet-100', text: 'text-violet-700' },
+    'request_received': { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-600 dark:text-gray-300' },
+    'received': { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-600 dark:text-gray-300' },
+    'under_study': { bg: 'bg-amber-100 dark:bg-amber-900/30', text: 'text-amber-700 dark:text-amber-400' },
+    'analysis': { bg: 'bg-amber-100 dark:bg-amber-900/30', text: 'text-amber-700 dark:text-amber-400' },
     'awaiting_business_response': { bg: 'bg-orange-100', text: 'text-orange-700' },
   };
 
   const getStatusBadge = (status: string) => {
     const step = PROCESS_STEPS.find(s => s.value === status);
-    const styles = STATUS_BADGE_STYLES[status] || { bg: 'bg-slate-100', text: 'text-slate-600' };
+    const styles = STATUS_BADGE_STYLES[status] || { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-600 dark:text-gray-300' };
     
     return (
       <span className={cn(

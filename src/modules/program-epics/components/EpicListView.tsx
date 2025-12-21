@@ -47,11 +47,11 @@ interface Epic {
 
 // State styles
 const stateStyles: Record<string, { bg: string; text: string; label: string }> = {
-  'not_started': { bg: 'bg-slate-100', text: 'text-slate-700', label: 'NOT STARTED' },
+  'not_started': { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-700 dark:text-gray-300', label: 'NOT STARTED' },
   'in_progress': { bg: 'bg-blue-100', text: 'text-blue-800', label: 'IN PROGRESS' },
   'done': { bg: 'bg-green-100', text: 'text-green-800', label: 'DONE' },
   'blocked': { bg: 'bg-red-100', text: 'text-red-700', label: 'BLOCKED' },
-  'cancelled': { bg: 'bg-slate-100', text: 'text-slate-500', label: 'CANCELLED' },
+  'cancelled': { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-500 dark:text-gray-400', label: 'CANCELLED' },
 };
 
 const stateOptions = ['not_started', 'in_progress', 'done', 'blocked', 'cancelled'];
@@ -82,7 +82,7 @@ function StateLozenge({ state, onStateChange }: { state: string | null; onStateC
           </span>
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-44 p-1 bg-white border border-slate-200 shadow-lg" align="start">
+      <PopoverContent className="w-44 p-1 bg-popover border border-border shadow-lg" align="start">
         <div className="flex flex-col">
           {stateOptions.map((opt) => {
             const optStyle = stateStyles[opt] || stateStyles['not_started'];
@@ -90,8 +90,8 @@ function StateLozenge({ state, onStateChange }: { state: string | null; onStateC
               <button
                 key={opt}
                 className={cn(
-                  "text-left px-2 py-1.5 text-sm rounded hover:bg-slate-50 transition-colors",
-                  state === opt && "bg-blue-50"
+                  "text-left px-2 py-1.5 text-sm rounded hover:bg-muted transition-colors",
+                  state === opt && "bg-muted"
                 )}
                 onClick={() => onStateChange(opt)}
               >
@@ -265,7 +265,7 @@ export function EpicListView({ programId }: EpicListViewProps) {
     : filteredItems;
 
   const getAvatarColor = (name: string) => {
-    const colors = ['bg-blue-600', 'bg-green-600', 'bg-gray-600', 'bg-amber-500', 'bg-slate-600', 'bg-red-500', 'bg-sky-500'];
+    const colors = ['bg-blue-600', 'bg-green-600', 'bg-gray-600', 'bg-amber-500', 'bg-gray-600', 'bg-red-500', 'bg-sky-500'];
     return colors[name.charCodeAt(0) % colors.length];
   };
 
@@ -274,7 +274,7 @@ export function EpicListView({ programId }: EpicListViewProps) {
     <th 
       scope="col"
       className={cn(
-        "px-3 py-2 text-left text-[12px] leading-4 font-medium text-slate-500 bg-slate-50 border-b border-r border-slate-200 last:border-r-0 whitespace-nowrap",
+        "px-3 py-2 text-left text-xs font-medium text-muted-foreground bg-muted/50 border-b border-r border-border last:border-r-0 whitespace-nowrap",
         className
       )}
     >
@@ -286,7 +286,7 @@ export function EpicListView({ programId }: EpicListViewProps) {
   const TableCell = ({ children, className, onClick }: { children?: React.ReactNode; className?: string; onClick?: (e: React.MouseEvent) => void }) => (
     <td 
       className={cn(
-        "px-3 py-2.5 text-[14px] leading-5 text-slate-900 border-b border-r border-slate-200 last:border-r-0",
+        "px-3 py-2.5 text-sm text-foreground border-b border-r border-border last:border-r-0",
         className
       )}
       onClick={onClick}
@@ -296,47 +296,47 @@ export function EpicListView({ programId }: EpicListViewProps) {
   );
 
   return (
-    <div className="h-full flex bg-white" style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif" }}>
+    <div className="h-full flex bg-background" style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif" }}>
       {/* Main content area */}
-      <div className={cn("flex-1 flex flex-col min-w-0", selectedEpic && "border-r border-slate-200")}>
+      <div className={cn("flex-1 flex flex-col min-w-0", selectedEpic && "border-r border-border")}>
         {/* Toolbar */}
-        <div className="flex items-center justify-between px-4 py-2 border-b border-slate-200 bg-white">
+        <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-background">
           <div className="flex items-center gap-3">
             <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search epics..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 h-8 w-44 text-[14px] bg-slate-50 border-transparent rounded focus:border-brand-primary focus:bg-white placeholder:text-slate-400"
+                className="pl-9 h-8 w-44 text-sm bg-muted/50 border-transparent rounded focus:border-ring focus:bg-background placeholder:text-muted-foreground"
               />
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-slate-50">
-              <Settings2 className="h-4 w-4 text-slate-500" />
+            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-muted">
+              <Settings2 className="h-4 w-4 text-muted-foreground" />
             </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-slate-50">
-              <MoreHorizontal className="h-4 w-4 text-slate-500" />
+            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-muted">
+              <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
             </Button>
           </div>
         </div>
 
         {/* Card container wrapping the table */}
         <div className="flex-1 p-4 overflow-hidden">
-          <div className="h-full flex flex-col rounded-lg border border-slate-200 bg-white overflow-hidden">
+          <div className="h-full flex flex-col rounded-lg border border-border bg-card overflow-hidden">
             {/* Table container with horizontal scroll */}
             <div className="flex-1 overflow-auto">
               <table className="w-full border-collapse" style={{ minWidth: '900px' }}>
                 <thead className="sticky top-0 z-10">
                   <tr>
                     {/* Checkbox column */}
-                    <th scope="col" className="w-10 px-2 py-2 bg-slate-50 border-b border-r border-slate-200 text-center">
+                    <th scope="col" className="w-10 px-2 py-2 bg-muted/50 border-b border-r border-border text-center">
                       <div className="flex justify-center">
                         <Checkbox
                           checked={selectedItems.size === epics.length && epics.length > 0}
                           onCheckedChange={handleSelectAll}
-                          className="rounded border-slate-300 data-[state=checked]:bg-brand-primary data-[state=checked]:border-brand-primary focus:ring-0 focus:ring-offset-0"
+                          className="rounded border-gray-300 dark:border-gray-600 data-[state=checked]:bg-brand-primary data-[state=checked]:border-brand-primary focus:ring-0 focus:ring-offset-0"
                         />
                       </div>
                     </th>
@@ -347,7 +347,7 @@ export function EpicListView({ programId }: EpicListViewProps) {
                     <TableHeader className="w-24">Estimate</TableHeader>
                     <TableHeader className="w-28">Start Date</TableHeader>
                     <TableHeader className="w-28">End Date</TableHeader>
-                    <th scope="col" className="w-10 px-2 py-2 bg-slate-50 border-b border-slate-200" />
+                    <th scope="col" className="w-10 px-2 py-2 bg-muted/50 border-b border-border" />
                   </tr>
                 </thead>
                 <DragDropContext onDragEnd={handleDragEnd}>
@@ -367,10 +367,10 @@ export function EpicListView({ programId }: EpicListViewProps) {
                                   {...provided.draggableProps}
                                   className={cn(
                                     "transition-colors cursor-pointer",
-                                    isHovered && !isSelected && !isDetailOpen && "bg-slate-50",
-                                    isSelected && "bg-blue-50",
-                                    isDetailOpen && "bg-blue-50",
-                                    snapshot.isDragging && "bg-blue-100 shadow-lg"
+                                    isHovered && !isSelected && !isDetailOpen && "bg-muted/50",
+                                    isSelected && "bg-[#c69c6d]/10",
+                                    isDetailOpen && "bg-[#c69c6d]/10",
+                                    snapshot.isDragging && "bg-[#c69c6d]/20 shadow-lg"
                                   )}
                                   onClick={() => handleRowClick(epic)}
                                   onMouseEnter={() => setHoveredRow(epic.id)}
@@ -386,12 +386,12 @@ export function EpicListView({ programId }: EpicListViewProps) {
                                           !isHovered && !snapshot.isDragging && "opacity-0"
                                         )}
                                       >
-                                        <GripVertical className="h-4 w-4 text-slate-400" />
+                                        <GripVertical className="h-4 w-4 text-muted-foreground" />
                                       </div>
                                       <Checkbox
                                         checked={isSelected}
                                         onCheckedChange={(checked) => handleSelectItem(epic.id, !!checked)}
-                                        className="rounded border-slate-300 data-[state=checked]:bg-brand-primary data-[state=checked]:border-brand-primary focus:ring-0 focus:ring-offset-0"
+                                        className="rounded border-gray-300 dark:border-gray-600 data-[state=checked]:bg-brand-primary data-[state=checked]:border-brand-primary focus:ring-0 focus:ring-offset-0"
                                       />
                                     </div>
                                   </TableCell>
@@ -408,7 +408,7 @@ export function EpicListView({ programId }: EpicListViewProps) {
                                   
                                   {/* Name */}
                                   <TableCell className="min-w-[280px]">
-                                    <span className="text-slate-900">{epic.name}</span>
+                                    <span className="text-foreground">{epic.name}</span>
                                   </TableCell>
                                   
                                   {/* State */}
@@ -430,12 +430,12 @@ export function EpicListView({ programId }: EpicListViewProps) {
                                   </TableCell>
                                   
                                   {/* Start Date */}
-                                  <TableCell className="w-28 text-slate-500 text-[13px]">
+                                  <TableCell className="w-28 text-muted-foreground text-[13px]">
                                     {formatDate(epic.start_date)}
                                   </TableCell>
                                   
                                   {/* End Date */}
-                                  <TableCell className="w-28 text-slate-500 text-[13px]">
+                                  <TableCell className="w-28 text-muted-foreground text-[13px]">
                                     {formatDate(epic.end_date)}
                                   </TableCell>
                                   
@@ -455,8 +455,8 @@ export function EpicListView({ programId }: EpicListViewProps) {
             </div>
 
             {/* Footer inside card */}
-            <div className="border-t border-slate-200 flex items-center justify-between px-4 py-2 bg-white flex-shrink-0">
-              <span className="text-[14px] text-slate-600">
+            <div className="border-t border-border flex items-center justify-between px-4 py-2 bg-card flex-shrink-0">
+              <span className="text-sm text-muted-foreground">
                 {selectedItems.size > 0 
                   ? `${selectedItems.size} item${selectedItems.size > 1 ? 's' : ''} selected`
                   : `Showing ${sortedItems.length} of ${epics.length} epics`

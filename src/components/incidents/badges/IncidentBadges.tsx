@@ -9,12 +9,12 @@ import type { IncidentStatus, SeverityLevel, PriorityLevel, SupportLevel } from 
 
 // STATUS - Enterprise muted tones, no saturated colors
 export const STATUS_CONFIG: Record<IncidentStatus, { label: string; className: string }> = {
-  open: { label: 'New', className: 'bg-slate-100 text-slate-700 border-slate-200' },
+  open: { label: 'New', className: 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700' },
   triage: { label: 'Triage', className: 'bg-amber-50 text-amber-700 border-amber-200' },
   to_committee: { label: 'Committee', className: 'bg-amber-50 text-amber-700 border-amber-200' },
   in_progress: { label: 'In Progress', className: 'bg-sky-50 text-sky-700 border-sky-200' },
   resolved: { label: 'Resolved', className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-  converted: { label: 'Converted', className: 'bg-slate-100 text-slate-700 border-slate-200' },
+  converted: { label: 'Converted', className: 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700' },
   closed: { label: 'Closed', className: 'bg-muted text-muted-foreground border-border' },
 };
 
@@ -23,7 +23,7 @@ export const SEVERITY_CONFIG: Record<SeverityLevel, { label: string; className: 
   SEV1: { label: 'SEV1', className: 'bg-rose-50 text-rose-700 border-rose-200' },
   SEV2: { label: 'SEV2', className: 'bg-amber-50 text-amber-700 border-amber-200' },
   SEV3: { label: 'SEV3', className: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
-  SEV4: { label: 'SEV4', className: 'bg-slate-50 text-slate-600 border-slate-200' },
+  SEV4: { label: 'SEV4', className: 'bg-gray-50 text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700' },
 };
 
 // PRIORITY - Derived, muted enterprise tones
@@ -31,14 +31,14 @@ export const PRIORITY_CONFIG: Record<PriorityLevel, { label: string; fullLabel: 
   P1: { label: 'P1', fullLabel: 'P1 — Critical', className: 'bg-rose-50 text-rose-700 border-rose-200' },
   P2: { label: 'P2', fullLabel: 'P2 — High', className: 'bg-amber-50 text-amber-700 border-amber-200' },
   P3: { label: 'P3', fullLabel: 'P3 — Medium', className: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
-  P4: { label: 'P4', fullLabel: 'P4 — Low', className: 'bg-slate-50 text-slate-600 border-slate-200' },
+  P4: { label: 'P4', fullLabel: 'P4 — Low', className: 'bg-gray-50 text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700' },
 };
 
 // SUPPORT LEVEL - Neutral enterprise tones
 export const SUPPORT_LEVEL_CONFIG: Record<SupportLevel, { label: string; className: string }> = {
-  L1: { label: 'L1', className: 'bg-slate-50 text-slate-600 border-slate-200' },
-  L2: { label: 'L2', className: 'bg-slate-100 text-slate-700 border-slate-300' },
-  L3: { label: 'L3', className: 'bg-slate-100 text-slate-700 border-slate-300' },
+  L1: { label: 'L1', className: 'bg-gray-50 text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700' },
+  L2: { label: 'L2', className: 'bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600' },
+  L3: { label: 'L3', className: 'bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600' },
 };
 
 // ============================================

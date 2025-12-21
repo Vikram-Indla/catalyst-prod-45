@@ -32,7 +32,7 @@ const variantStyles: Record<string, string> = {
   info: 'bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-400',
   muted: 'bg-muted/50 text-muted-foreground',
   // NOTE: "accent" must stay within approved neutral palette (no purple/violet).
-  accent: 'bg-slate-100 dark:bg-slate-900/40 text-slate-700 dark:text-slate-300',
+  accent: 'bg-gray-100 dark:bg-gray-900/40 text-gray-700 dark:text-gray-300',
 };
 
 const dotStyles: Record<string, string> = {
@@ -42,7 +42,7 @@ const dotStyles: Record<string, string> = {
   danger: 'bg-rose-500',
   info: 'bg-sky-500',
   muted: 'bg-muted-foreground/40',
-  accent: 'bg-slate-400',
+  accent: 'bg-gray-400',
 };
 
 export function TablePill({ 
