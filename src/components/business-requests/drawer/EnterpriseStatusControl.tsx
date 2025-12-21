@@ -1,6 +1,6 @@
 /**
- * EnterpriseStatusControl - Olive pill status control with dropdown
- * Catalyst Design System: Primary Olive (#5C7C5C)
+ * EnterpriseStatusControl - Brand gold status control with dropdown
+ * Catalyst Design System: Primary Gold (#c69c6d)
  */
 
 import { useState } from 'react';
@@ -44,18 +44,15 @@ export function EnterpriseStatusControl({
         <button
           className={cn(
             "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold uppercase tracking-[0.3px]",
-            "cursor-pointer transition-colors",
+            "cursor-pointer transition-colors bg-[#c69c6d] hover:bg-[#b8894d] text-white",
             disabled && "opacity-50 cursor-not-allowed"
           )}
           style={{
-            background: '#5C7C5C',
-            color: 'white',
-            boxShadow: '0 2px 4px rgba(92, 124, 92, 0.25)',
+            boxShadow: '0 2px 4px rgba(198, 156, 109, 0.25)',
           }}
         >
           <span 
-            className="w-1.5 h-1.5 rounded-full animate-pulse"
-            style={{ background: 'white' }}
+            className="w-1.5 h-1.5 rounded-full animate-pulse bg-white"
           />
           {displayLabel}
           <ChevronDown className="h-3 w-3 opacity-80" />
@@ -63,8 +60,7 @@ export function EnterpriseStatusControl({
       </DropdownMenuTrigger>
       <DropdownMenuContent 
         align="start" 
-        className="w-44 z-[400]"
-        style={{ background: 'var(--surface-bg, hsl(var(--background)))', borderColor: 'var(--border-default, hsl(var(--border)))' }}
+        className="w-44 z-[400] bg-popover border-border"
       >
         {processSteps.map((step) => {
           const isActive = step.value === currentStep;
@@ -76,15 +72,14 @@ export function EnterpriseStatusControl({
                 onChange(step.value);
                 setOpen(false);
               }}
-              className="text-[13px] cursor-pointer"
-              style={{
-                background: isActive ? 'rgba(92, 124, 92, 0.08)' : 'transparent',
-                color: isActive ? '#5C7C5C' : 'var(--text-primary, hsl(var(--foreground)))',
-              }}
+              className={cn(
+                "text-[13px] cursor-pointer",
+                isActive && "bg-[#c69c6d]/10 text-[#c69c6d]"
+              )}
             >
               <span className="flex-1">{step.label}</span>
               {isActive && (
-                <Check className="h-4 w-4 shrink-0" style={{ color: '#5C7C5C' }} />
+                <Check className="h-4 w-4 shrink-0 text-[#c69c6d]" />
               )}
             </DropdownMenuItem>
           );
