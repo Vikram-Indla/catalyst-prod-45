@@ -1203,6 +1203,192 @@ export type Database = {
           },
         ]
       }
+      change_card_audit_events: {
+        Row: {
+          actor_user_id: string
+          change_card_id: string
+          created_at: string
+          event_type: Database["public"]["Enums"]["change_audit_event_type"]
+          from_value: string | null
+          id: string
+          metadata_json: Json | null
+          notes: string | null
+          reason_code:
+            | Database["public"]["Enums"]["exception_reason_code"]
+            | null
+          to_value: string | null
+        }
+        Insert: {
+          actor_user_id: string
+          change_card_id: string
+          created_at?: string
+          event_type: Database["public"]["Enums"]["change_audit_event_type"]
+          from_value?: string | null
+          id?: string
+          metadata_json?: Json | null
+          notes?: string | null
+          reason_code?:
+            | Database["public"]["Enums"]["exception_reason_code"]
+            | null
+          to_value?: string | null
+        }
+        Update: {
+          actor_user_id?: string
+          change_card_id?: string
+          created_at?: string
+          event_type?: Database["public"]["Enums"]["change_audit_event_type"]
+          from_value?: string | null
+          id?: string
+          metadata_json?: Json | null
+          notes?: string | null
+          reason_code?:
+            | Database["public"]["Enums"]["exception_reason_code"]
+            | null
+          to_value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "change_card_audit_events_change_card_id_fkey"
+            columns: ["change_card_id"]
+            isOneToOne: false
+            referencedRelation: "change_cards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      change_card_links: {
+        Row: {
+          cached_priority_or_severity: string | null
+          cached_status: string | null
+          cached_title: string | null
+          change_card_id: string
+          committee_status: Database["public"]["Enums"]["change_committee_status"]
+          created_at: string
+          created_by_user_id: string
+          id: string
+          work_item_id: string
+          work_item_key: string | null
+          work_item_type: Database["public"]["Enums"]["change_work_item_type"]
+        }
+        Insert: {
+          cached_priority_or_severity?: string | null
+          cached_status?: string | null
+          cached_title?: string | null
+          change_card_id: string
+          committee_status?: Database["public"]["Enums"]["change_committee_status"]
+          created_at?: string
+          created_by_user_id: string
+          id?: string
+          work_item_id: string
+          work_item_key?: string | null
+          work_item_type: Database["public"]["Enums"]["change_work_item_type"]
+        }
+        Update: {
+          cached_priority_or_severity?: string | null
+          cached_status?: string | null
+          cached_title?: string | null
+          change_card_id?: string
+          committee_status?: Database["public"]["Enums"]["change_committee_status"]
+          created_at?: string
+          created_by_user_id?: string
+          id?: string
+          work_item_id?: string
+          work_item_key?: string | null
+          work_item_type?: Database["public"]["Enums"]["change_work_item_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "change_card_links_change_card_id_fkey"
+            columns: ["change_card_id"]
+            isOneToOne: false
+            referencedRelation: "change_cards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      change_cards: {
+        Row: {
+          approved: boolean
+          approved_at: string | null
+          approved_by_user_id: string | null
+          change_manager_user_id: string
+          change_number: string
+          compliance_state: Database["public"]["Enums"]["compliance_state"]
+          created_at: string
+          created_by_user_id: string
+          description: string | null
+          exception_notes: string | null
+          exception_reason_code:
+            | Database["public"]["Enums"]["exception_reason_code"]
+            | null
+          exception_recorded_at: string | null
+          exception_recorded_by_user_id: string | null
+          id: string
+          planned_prod_date: string
+          release_version_id: string | null
+          status: Database["public"]["Enums"]["change_card_status"]
+          title: string
+          updated_at: string
+          updated_by_user_id: string | null
+        }
+        Insert: {
+          approved?: boolean
+          approved_at?: string | null
+          approved_by_user_id?: string | null
+          change_manager_user_id: string
+          change_number: string
+          compliance_state?: Database["public"]["Enums"]["compliance_state"]
+          created_at?: string
+          created_by_user_id: string
+          description?: string | null
+          exception_notes?: string | null
+          exception_reason_code?:
+            | Database["public"]["Enums"]["exception_reason_code"]
+            | null
+          exception_recorded_at?: string | null
+          exception_recorded_by_user_id?: string | null
+          id?: string
+          planned_prod_date: string
+          release_version_id?: string | null
+          status?: Database["public"]["Enums"]["change_card_status"]
+          title: string
+          updated_at?: string
+          updated_by_user_id?: string | null
+        }
+        Update: {
+          approved?: boolean
+          approved_at?: string | null
+          approved_by_user_id?: string | null
+          change_manager_user_id?: string
+          change_number?: string
+          compliance_state?: Database["public"]["Enums"]["compliance_state"]
+          created_at?: string
+          created_by_user_id?: string
+          description?: string | null
+          exception_notes?: string | null
+          exception_reason_code?:
+            | Database["public"]["Enums"]["exception_reason_code"]
+            | null
+          exception_recorded_at?: string | null
+          exception_recorded_by_user_id?: string | null
+          id?: string
+          planned_prod_date?: string
+          release_version_id?: string | null
+          status?: Database["public"]["Enums"]["change_card_status"]
+          title?: string
+          updated_at?: string
+          updated_by_user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "change_cards_release_version_id_fkey"
+            columns: ["release_version_id"]
+            isOneToOne: false
+            referencedRelation: "release_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comment_mentions: {
         Row: {
           comment_id: string
@@ -14516,6 +14702,23 @@ export type Database = {
         | "in_progress"
         | "done"
         | "cancelled"
+      change_audit_event_type:
+        | "created"
+        | "updated"
+        | "status_changed"
+        | "approval_toggled"
+        | "ticket_linked"
+        | "ticket_unlinked"
+        | "exception_recorded"
+      change_card_status:
+        | "new_awaiting_approval"
+        | "approved_scheduled"
+        | "in_progress"
+        | "ready_for_production"
+        | "in_production"
+        | "closed"
+      change_committee_status: "pending" | "approved" | "not_required"
+      change_work_item_type: "incident" | "story" | "feature" | "task" | "other"
       comment_type:
         | "update"
         | "investigation"
@@ -14525,6 +14728,7 @@ export type Database = {
         | "rca"
         | "system"
       committee_status: "pending" | "approved" | "rejected"
+      compliance_state: "compliant" | "exception_recorded"
       confidence_level: "high" | "med" | "low"
       delivery_stage: "stage" | "qa" | "beta" | "prod"
       dependency_level_v2: "execution" | "delivery" | "cross_level"
@@ -14557,6 +14761,12 @@ export type Database = {
         | "in_progress"
         | "done"
         | "cancelled"
+      exception_reason_code:
+        | "moved_to_prod_not_approved"
+        | "committee_pending_override"
+        | "emergency_change"
+        | "business_critical"
+        | "other"
       feature_status:
         | "funnel"
         | "analyzing"
@@ -14831,6 +15041,25 @@ export const Constants = {
         "done",
         "cancelled",
       ],
+      change_audit_event_type: [
+        "created",
+        "updated",
+        "status_changed",
+        "approval_toggled",
+        "ticket_linked",
+        "ticket_unlinked",
+        "exception_recorded",
+      ],
+      change_card_status: [
+        "new_awaiting_approval",
+        "approved_scheduled",
+        "in_progress",
+        "ready_for_production",
+        "in_production",
+        "closed",
+      ],
+      change_committee_status: ["pending", "approved", "not_required"],
+      change_work_item_type: ["incident", "story", "feature", "task", "other"],
       comment_type: [
         "update",
         "investigation",
@@ -14841,6 +15070,7 @@ export const Constants = {
         "system",
       ],
       committee_status: ["pending", "approved", "rejected"],
+      compliance_state: ["compliant", "exception_recorded"],
       confidence_level: ["high", "med", "low"],
       delivery_stage: ["stage", "qa", "beta", "prod"],
       dependency_level_v2: ["execution", "delivery", "cross_level"],
@@ -14875,6 +15105,13 @@ export const Constants = {
         "in_progress",
         "done",
         "cancelled",
+      ],
+      exception_reason_code: [
+        "moved_to_prod_not_approved",
+        "committee_pending_override",
+        "emergency_change",
+        "business_critical",
+        "other",
       ],
       feature_status: [
         "funnel",
