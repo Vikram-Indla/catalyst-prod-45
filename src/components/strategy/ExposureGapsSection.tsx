@@ -368,50 +368,41 @@ function DataRow({ label, value, total = 0, variant = 'neutral', showBar }: Data
   );
 }
 
-function AttentionRow({ item, onClick, index }: { item: AttentionItem; onClick: () => void; index: number }) {
+function AttentionRow({ item, onClick }: { item: AttentionItem; onClick: () => void; index: number }) {
   const severityColors: Record<string, string> = {
     critical: 'bg-destructive',
     high: 'bg-status-warning',
     medium: 'bg-secondary-bronze',
   };
 
-  // First two items visually prioritized, remaining de-emphasized
-  const isPriority = index < 2;
+  const reasonColors: Record<string, string> = {
+    critical: 'text-destructive',
+    high: 'text-status-warning',
+    medium: 'text-secondary-bronze',
+  };
 
   return (
     <button
       onClick={onClick}
       className={cn(
-        "w-full px-2 py-2 rounded text-left flex items-center gap-2.5",
+        "w-full px-2 py-1.5 rounded text-left flex items-center gap-2",
         "transition-[background-color] duration-100",
         "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
         "group hover:bg-accent/40"
       )}
     >
-      {/* Severity dot - calm, not alarming */}
+      {/* Severity dot - consistent with DataRow bar dots */}
       <div className={cn("w-2 h-2 rounded-full flex-shrink-0", severityColors[item.severity])} />
-      <div className="flex-1 min-w-0">
-        {/* Title - priority items have stronger weight */}
-        <div className={cn(
-          TYPOGRAPHY.cardLabel, 
-          'truncate',
-          isPriority ? TEXT_COLORS.primary : TEXT_COLORS.secondaryStrong
-        )}>
-          {item.title}
-        </div>
-        {/* Reason - secondary but readable */}
-        <div className={cn(
-          TYPOGRAPHY.microcopy, 
-          'leading-tight',
-          'text-gray-600 dark:text-gray-400'
-        )}>
-          {item.reason}
-        </div>
-      </div>
-      <ChevronRight 
-        size={14} 
-        className="opacity-0 group-hover:opacity-60 transition-opacity duration-100 flex-shrink-0 text-gray-500 dark:text-gray-400" 
-      />
+      
+      {/* Title - matches DataRow label typography */}
+      <span className={cn(TYPOGRAPHY.dataRowLabel, TEXT_COLORS.secondaryStrong, 'flex-1 truncate')}>
+        {item.title}
+      </span>
+      
+      {/* Reason badge - right-aligned like DataRow value */}
+      <span className={cn(TYPOGRAPHY.microcopy, 'whitespace-nowrap flex-shrink-0', reasonColors[item.severity])}>
+        {item.reason}
+      </span>
     </button>
   );
 }
