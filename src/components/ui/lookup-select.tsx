@@ -150,8 +150,22 @@ export function LookupMultiSelect({
 }: LookupMultiSelectProps) {
   const { data: options = [], isLoading, error } = useActiveOptionValues(optionSetKey);
   const [open, setOpen] = React.useState(false);
+  const [dropdownPosition, setDropdownPosition] = React.useState<{ top: number; left: number; width: number } | null>(null);
+  const triggerRef = React.useRef<HTMLButtonElement>(null);
   
   const selectedValues = value || [];
+
+  // Calculate dropdown position when opening
+  React.useEffect(() => {
+    if (open && triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      setDropdownPosition({
+        top: rect.bottom + 4,
+        left: rect.left,
+        width: rect.width,
+      });
+    }
+  }, [open]);
 
   const toggleValue = (valueKey: string) => {
     if (selectedValues.includes(valueKey)) {
@@ -190,6 +204,7 @@ export function LookupMultiSelect({
   return (
     <div className={cn("relative", className)}>
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => !disabled && setOpen(!open)}
         className={cn(
@@ -208,12 +223,17 @@ export function LookupMultiSelect({
         </svg>
       </button>
       
-      {open && (
+      {open && dropdownPosition && (
         <>
           <div className="fixed inset-0 z-[399]" onClick={() => setOpen(false)} />
           <div 
-            className="absolute z-[400] mt-1 w-full rounded-md border bg-popover shadow-lg"
-            style={{ maxHeight: '240px' }}
+            className="fixed z-[400] rounded-md border bg-popover shadow-lg"
+            style={{ 
+              top: dropdownPosition.top,
+              left: dropdownPosition.left,
+              width: dropdownPosition.width,
+              maxHeight: '240px' 
+            }}
           >
             <div 
               className="p-1 overflow-y-auto overscroll-contain"
