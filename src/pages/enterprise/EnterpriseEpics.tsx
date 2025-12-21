@@ -89,9 +89,9 @@ export default function EnterpriseEpics() {
     const colors: Record<string, string> = {
       'funnel': 'bg-gray-500',
       'analyzing': 'bg-blue-500',
-      'portfolio_backlog': 'bg-purple-500',
-      'implementing': 'bg-amber-500',
-      'validating_in_production': 'bg-cyan-500',
+      'portfolio_backlog': 'bg-amber-500',
+      'implementing': 'bg-sky-500',
+      'validating_in_production': 'bg-emerald-500',
       'done': 'bg-green-500',
     };
     return (

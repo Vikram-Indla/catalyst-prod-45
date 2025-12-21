@@ -321,7 +321,7 @@ function CAPEffectivenessSection({
                 <div className="flex items-center gap-2 mb-1">
                   {item.name === 'Approved' && <CheckCircle2 className="h-4 w-4 text-green-600" />}
                   {item.name === 'Rejected' && <XCircle className="h-4 w-4 text-red-600" />}
-                  {item.name === 'Vetoed' && <AlertCircle className="h-4 w-4 text-purple-600" />}
+                  {item.name === 'Vetoed' && <AlertCircle className="h-4 w-4 text-amber-600" />}
                   <span className="text-xs text-muted-foreground">{item.name}</span>
                 </div>
                 <p className="text-xl font-bold" style={{ color: item.color }}>{item.value}</p>

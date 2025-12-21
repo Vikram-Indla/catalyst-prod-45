@@ -69,12 +69,12 @@ const mockItems: WorkItem[] = [
 
 // Type icons
 const typeIcons: Record<string, { icon: React.ReactNode; color: string }> = {
-  Feature: { icon: <Zap className="h-4 w-4" />, color: 'text-purple-500' },
+  Feature: { icon: <Zap className="h-4 w-4" />, color: 'text-amber-500' },
   Story: { icon: <Bookmark className="h-4 w-4" />, color: 'text-green-600' },
   Task: { icon: <CircleDot className="h-4 w-4" />, color: 'text-blue-500' },
   Defect: { icon: <Bug className="h-4 w-4" />, color: 'text-red-500' },
-  Subtask: { icon: <CircleDot className="h-4 w-4" />, color: 'text-cyan-500' },
-  Incident: { icon: <Settings2 className="h-4 w-4" />, color: 'text-orange-500' },
+  Subtask: { icon: <CircleDot className="h-4 w-4" />, color: 'text-gray-500' },
+  Incident: { icon: <Settings2 className="h-4 w-4" />, color: 'text-amber-600' },
 };
 
 // Status lozenge - NEUTRAL STYLING (no colors per status)

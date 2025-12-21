@@ -9,7 +9,7 @@ interface WorkItemTypeIconProps {
 
 const ICON_COLORS: Record<WorkItemType, string> = {
   story: '#36B37E', // Green
-  feature: '#6554C0', // Purple
+  feature: '#F59E0B', // Amber (was purple - per design system governance)
   task: '#0065FF', // Blue
   defect: '#FF5630', // Red
 };

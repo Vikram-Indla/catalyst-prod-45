@@ -43,7 +43,7 @@ const getEventIcon = (type: string) => {
 
 // Sample mention suggestions
 const mentionSuggestions = [
-  { id: 'u1', name: 'h.binslimah.c', initials: 'HB', color: 'bg-purple-500' },
+  { id: 'u1', name: 'h.binslimah.c', initials: 'HB', color: 'bg-slate-500' },
   { id: 'u2', name: 'Yahya Aloyoni', initials: 'YA', color: 'bg-green-500' },
   { id: 'u3', name: 'Nada alfassam', initials: 'NA', color: 'bg-green-600' },
   { id: 'u4', name: 'Yazeed Daraz', initials: 'YD', color: 'bg-blue-500' },

@@ -36,10 +36,10 @@ const typeIcons: Record<ComponentType, React.ReactNode> = {
 // Type colors
 const typeColors: Record<ComponentType, string> = {
   Page: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
-  Drawer: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
+  Drawer: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300',
   Table: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-  Kanban: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
-  Widget: 'bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-300',
+  Kanban: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300',
+  Widget: 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300',
   Layout: 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300',
 };
 
@@ -47,13 +47,13 @@ const typeColors: Record<ComponentType, string> = {
 const categoryColors: Record<CategoryType, string> = {
   Public: 'bg-slate-100 text-slate-700',
   Home: 'bg-amber-100 text-amber-700',
-  Enterprise: 'bg-indigo-100 text-indigo-700',
+  Enterprise: 'bg-sky-100 text-sky-700',
   Product: 'bg-emerald-100 text-emerald-700',
-  Program: 'bg-cyan-100 text-cyan-700',
-  Project: 'bg-teal-100 text-teal-700',
-  Portfolio: 'bg-violet-100 text-violet-700',
+  Program: 'bg-blue-100 text-blue-700',
+  Project: 'bg-green-100 text-green-700',
+  Portfolio: 'bg-slate-100 text-slate-700',
   Team: 'bg-rose-100 text-rose-700',
-  Release: 'bg-fuchsia-100 text-fuchsia-700',
+  Release: 'bg-amber-100 text-amber-700',
   Insights: 'bg-sky-100 text-sky-700',
   Admin: 'bg-red-100 text-red-700',
   Utility: 'bg-gray-100 text-gray-700',

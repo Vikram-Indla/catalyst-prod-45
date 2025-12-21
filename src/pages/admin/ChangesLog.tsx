@@ -108,9 +108,9 @@ export default function ChangesLog() {
     switch (type) {
       case 'configuration': return 'bg-blue-100 text-blue-700';
       case 'work_item': return 'bg-green-100 text-green-700';
-      case 'user_management': return 'bg-purple-100 text-purple-700';
-      case 'integration': return 'bg-orange-100 text-orange-700';
-      case 'data': return 'bg-cyan-100 text-cyan-700';
+      case 'user_management': return 'bg-amber-100 text-amber-700';
+      case 'integration': return 'bg-amber-100 text-amber-700';
+      case 'data': return 'bg-sky-100 text-sky-700';
       default: return 'bg-gray-100 text-gray-700';
     }
   };

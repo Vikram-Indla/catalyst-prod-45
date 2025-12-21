@@ -53,7 +53,7 @@ const dimensionsAr = [
 const statusesEn = [
   { name: 'Received', count: 11, color: 'bg-gray-500' },
   { name: 'Analysis', count: 17, color: 'bg-gray-400' },
-  { name: 'Active', count: 31, color: 'bg-violet-500' },
+  { name: 'Active', count: 31, color: 'bg-sky-500' },
   { name: 'Pending', count: 10, color: 'bg-gray-500' },
   { name: 'Paused', count: 7, color: 'bg-rose-400' },
   { name: 'Implemented', count: 59, color: 'bg-gray-800' },
@@ -63,7 +63,7 @@ const statusesEn = [
 const statusesAr = [
   { name: 'مستلم', count: 11, color: 'bg-gray-500' },
   { name: 'تحليل', count: 17, color: 'bg-gray-400' },
-  { name: 'نشط', count: 31, color: 'bg-violet-500' },
+  { name: 'نشط', count: 31, color: 'bg-sky-500' },
   { name: 'معلق', count: 10, color: 'bg-gray-500' },
   { name: 'متوقف', count: 7, color: 'bg-rose-400' },
   { name: 'منفذ', count: 59, color: 'bg-gray-800' },

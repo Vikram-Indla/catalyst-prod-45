@@ -106,11 +106,11 @@ const mockItems: WorkItem[] = [
 ];
 
 const typeColors: Record<string, string> = {
-  Feature: 'bg-purple-500',
+  Feature: 'bg-amber-500',
   Story: 'bg-green-500',
   Task: 'bg-blue-500',
   Defect: 'bg-red-500',
-  Subtask: 'bg-cyan-500',
+  Subtask: 'bg-gray-500',
 };
 
 // Available columns for configuration
@@ -138,11 +138,11 @@ const mockAssignees = [
 ];
 
 const mockTypes = [
-  { id: 'epic', name: 'Epic', icon: Zap, color: 'text-purple-500' },
-  { id: 'business-gap', name: 'Business Gap', icon: AlertCircle, color: 'text-orange-500' },
+  { id: 'epic', name: 'Epic', icon: Zap, color: 'text-amber-500' },
+  { id: 'business-gap', name: 'Business Gap', icon: AlertCircle, color: 'text-amber-600' },
   { id: 'change-request', name: 'Change Request', icon: CheckSquare, color: 'text-blue-500' },
   { id: 'production-incident', name: 'Production Incident', icon: AlertCircle, color: 'text-red-500' },
-  { id: 'backend', name: 'Backend', icon: FileText, color: 'text-cyan-500' },
+  { id: 'backend', name: 'Backend', icon: FileText, color: 'text-gray-500' },
 ];
 
 const mockStatuses = [

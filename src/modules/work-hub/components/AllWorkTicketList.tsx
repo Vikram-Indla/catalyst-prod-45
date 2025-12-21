@@ -25,11 +25,11 @@ interface AllWorkTicketListProps {
 }
 
 const typeIcons: Record<string, { icon: React.ReactNode; bgColor: string }> = {
-  Feature: { icon: <Zap className="h-3 w-3 text-white" />, bgColor: 'bg-purple-500' },
+  Feature: { icon: <Zap className="h-3 w-3 text-white" />, bgColor: 'bg-amber-500' },
   Story: { icon: <Bookmark className="h-3 w-3 text-white" />, bgColor: 'bg-green-500' },
   Task: { icon: <CheckSquare className="h-3 w-3 text-white" />, bgColor: 'bg-blue-500' },
   Defect: { icon: <Bug className="h-3 w-3 text-white" />, bgColor: 'bg-red-500' },
-  Subtask: { icon: <CircleDot className="h-3 w-3 text-white" />, bgColor: 'bg-cyan-500' },
+  Subtask: { icon: <CircleDot className="h-3 w-3 text-white" />, bgColor: 'bg-gray-500' },
 };
 
 // Status - NEUTRAL STYLING (no colors per status)

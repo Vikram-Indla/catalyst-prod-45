@@ -51,10 +51,10 @@ export function SegmentedTab({ value, children, count, className }: SegmentedTab
       onClick={() => context.onValueChange(value)}
       className={cn(
         "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 dark:focus-visible:ring-gray-600",
         isActive
-          // Active: olive green text
-          ? "bg-[var(--surface-1)] text-[var(--brand-primary)] shadow-sm"
+          // Active: grey background, foreground text (neutral, not gold)
+          ? "bg-[var(--surface-1)] text-[var(--text-1)] shadow-sm"
           : "text-[var(--text-2)] hover:text-[var(--text-1)] hover:bg-[var(--surface-2)]",
         className
       )}
@@ -65,8 +65,8 @@ export function SegmentedTab({ value, children, count, className }: SegmentedTab
           className={cn(
             "min-w-[18px] h-[18px] px-1 rounded text-[11px] font-medium tabular-nums inline-flex items-center justify-center",
             isActive
-              // Active count badge: olive green
-              ? "bg-[var(--brand-primary)] text-[var(--text-inverse)]"
+              // Active count badge: grey neutral (not gold)
+              ? "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
               : "bg-[var(--surface-3)] text-[var(--text-2)]"
           )}
         >
