@@ -160,7 +160,7 @@ export default function VersionDetail() {
                       item.type === 'story' && "bg-green-50 text-green-700",
                       item.type === 'defect' && "bg-red-50 text-red-700",
                       item.type === 'task' && "bg-blue-50 text-blue-700",
-                      item.type === 'epic' && "bg-purple-50 text-purple-700"
+                      item.type === 'epic' && "bg-amber-50 text-amber-700"
                     )}>
                       {item.type}
                     </span>

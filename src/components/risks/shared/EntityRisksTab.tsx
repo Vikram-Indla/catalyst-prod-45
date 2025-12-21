@@ -59,7 +59,7 @@ const RESOLUTION_METHOD_OPTIONS = [
   { value: 'Resolved', label: 'Resolved', color: 'bg-emerald-100 text-emerald-700' },
   { value: 'Owned', label: 'Owned', color: 'bg-blue-100 text-blue-700' },
   { value: 'Accepted', label: 'Accepted', color: 'bg-amber-100 text-amber-700' },
-  { value: 'Mitigated', label: 'Mitigated', color: 'bg-purple-100 text-purple-700' },
+  { value: 'Mitigated', label: 'Mitigated', color: 'bg-gray-100 text-gray-700' },
 ];
 
 const SORT_OPTIONS = [

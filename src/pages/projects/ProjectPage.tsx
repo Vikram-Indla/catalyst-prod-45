@@ -28,7 +28,7 @@ export default function ProjectPage() {
       {/* PROJECT HEADER */}
       <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-background">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-purple-100 rounded flex items-center justify-center text-base">
+          <div className="w-8 h-8 bg-amber-100 dark:bg-amber-900/30 rounded flex items-center justify-center text-base">
             📊
           </div>
           <h1 className="text-2xl font-medium text-foreground">

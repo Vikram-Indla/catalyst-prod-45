@@ -39,21 +39,21 @@ export type LabelDisplayMode = 'full' | 'abbreviated' | 'hidden';
 // ============================================
 
 export const STATUS_COLORS: Record<EpicStatus, string> = {
-  not_started: '#C1C7D0',  // Gray
-  in_progress: '#FF8B00',  // Orange
-  accepted: '#0052CC',     // Blue
-  done: '#0052CC',         // Blue
-  blocked: '#DE350B',      // Red
+  not_started: '#9ca3af',  // Gray-400
+  in_progress: '#f59e0b',  // Amber-500
+  accepted: '#2563eb',     // Blue-600
+  done: '#16a34a',         // Green-600
+  blocked: '#dc2626',      // Red-600
 };
 
 export const LABEL_COLORS: Record<LabelColor, { bg: string; text: string }> = {
-  orange: { bg: '#FF8B00', text: '#FFFFFF' },
-  teal: { bg: '#0077B6', text: '#FFFFFF' },
-  purple: { bg: '#6B778C', text: '#FFFFFF' },
-  blue: { bg: '#0052CC', text: '#FFFFFF' },
-  red: { bg: '#DE350B', text: '#FFFFFF' },
-  gray: { bg: '#6B778C', text: '#FFFFFF' },
-  green: { bg: '#36B37E', text: '#FFFFFF' },
+  orange: { bg: '#f59e0b', text: '#FFFFFF' },
+  teal: { bg: '#0d9488', text: '#FFFFFF' },
+  purple: { bg: '#6b7280', text: '#FFFFFF' },
+  blue: { bg: '#2563eb', text: '#FFFFFF' },
+  red: { bg: '#dc2626', text: '#FFFFFF' },
+  gray: { bg: '#6b7280', text: '#FFFFFF' },
+  green: { bg: '#16a34a', text: '#FFFFFF' },
   pink: { bg: '#C69C6D', text: '#FFFFFF' },
 };
 

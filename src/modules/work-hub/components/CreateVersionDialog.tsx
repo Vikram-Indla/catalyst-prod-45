@@ -129,7 +129,7 @@ export function CreateVersionDialog({ open, onOpenChange, onSave }: CreateVersio
                 if (errors.name) setErrors({ ...errors, name: '' });
               }}
               className={cn(
-                "h-10 text-[14px] border-[#DFE1E6] focus:border-[#4C9AFF] focus:ring-[#4C9AFF]",
+                "h-10 text-sm border-border focus:border-[#c69c6d] focus:ring-[#c69c6d]",
                 errors.name && "border-red-500 focus:border-red-500 focus:ring-red-500"
               )}
               placeholder=""
@@ -151,8 +151,8 @@ export function CreateVersionDialog({ open, onOpenChange, onSave }: CreateVersio
                   <Button
                     variant="outline"
                     className={cn(
-                      "w-full h-10 justify-between text-left font-normal text-[14px] border-[#DFE1E6] hover:bg-[#F4F5F7]",
-                      !startDate && "text-[#6B778C]"
+                      "w-full h-10 justify-between text-left font-normal text-sm border-border hover:bg-muted",
+                      !startDate && "text-muted-foreground"
                     )}
                   >
                     {startDate ? format(startDate, "M/d/yyyy") : "Select date"}
@@ -184,8 +184,8 @@ export function CreateVersionDialog({ open, onOpenChange, onSave }: CreateVersio
                   <Button
                     variant="outline"
                     className={cn(
-                      "w-full h-10 justify-between text-left font-normal text-[14px] border-[#DFE1E6] hover:bg-[#F4F5F7]",
-                      !releaseDate && "text-[#6B778C]"
+                      "w-full h-10 justify-between text-left font-normal text-sm border-border hover:bg-muted",
+                      !releaseDate && "text-muted-foreground"
                     )}
                   >
                     {releaseDate ? format(releaseDate, "M/d/yyyy") : "Select date"}
@@ -214,7 +214,7 @@ export function CreateVersionDialog({ open, onOpenChange, onSave }: CreateVersio
               Driver
             </Label>
             <Select value={driver} onValueChange={setDriver}>
-              <SelectTrigger className="h-10 text-[14px] border-[#DFE1E6] focus:border-[#4C9AFF] focus:ring-[#4C9AFF]">
+              <SelectTrigger className="h-10 text-sm border-border focus:border-[#c69c6d] focus:ring-[#c69c6d]">
                 <SelectValue placeholder="Select driver">
                   {selectedUser && (
                     <div className="flex items-center gap-2">
@@ -255,24 +255,24 @@ export function CreateVersionDialog({ open, onOpenChange, onSave }: CreateVersio
             <Textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="min-h-[100px] text-[14px] border-[#DFE1E6] focus:border-[#4C9AFF] focus:ring-[#4C9AFF] resize-none"
+              className="min-h-[100px] text-sm border-border focus:border-[#c69c6d] focus:ring-[#c69c6d] resize-none"
               placeholder=""
             />
           </div>
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-[#DFE1E6] flex justify-end gap-2">
+        <div className="px-6 py-4 border-t border-border flex justify-end gap-2">
           <Button
             variant="ghost"
             onClick={handleCancel}
-            className="h-9 px-4 text-[14px] font-medium text-[#42526E] hover:bg-[#F4F5F7]"
+            className="h-9 px-4 text-sm font-medium text-muted-foreground hover:bg-muted"
           >
             Cancel
           </Button>
           <Button
             onClick={handleSave}
-            className="h-9 px-4 text-[14px] font-medium bg-[#0052CC] hover:bg-[#0747A6] text-white"
+            className="h-9 px-4 text-sm font-medium bg-[#c69c6d] hover:bg-[#b8894d] text-white"
           >
             Save
           </Button>
