@@ -393,7 +393,7 @@ export default function FeatureDetailPage() {
             <Calendar className="h-4 w-4 text-muted-foreground" />
             <div>
               <div className="text-xs text-muted-foreground">Target Release</div>
-              <div className="font-mono text-sm font-medium text-primary">
+              <div className="font-mono text-sm font-medium text-gold-link hover:text-gold-link-hover cursor-pointer hover:underline transition-colors">
                 {feature.planned_end_date 
                   ? `REL-${format(new Date(feature.planned_end_date), 'yyyy')}-Q${Math.ceil((new Date(feature.planned_end_date).getMonth() + 1) / 3)}`
                   : 'Not set'

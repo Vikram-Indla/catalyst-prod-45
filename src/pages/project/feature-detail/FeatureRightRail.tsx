@@ -134,14 +134,14 @@ export function FeatureRightRail({ feature, collapsed, onToggleCollapse, onUpdat
         </FieldRow>
 
         <FieldRow label="Program">
-          <span className="text-primary cursor-pointer hover:underline">
+          <span className="text-gold-link hover:text-gold-link-hover cursor-pointer hover:underline transition-colors font-medium">
             {MOCK_DATA.program}
           </span>
         </FieldRow>
 
         <FieldRow label="Parent Epic">
           {feature.epic ? (
-            <span className="text-primary cursor-pointer hover:underline">
+            <span className="text-gold-link hover:text-gold-link-hover cursor-pointer hover:underline transition-colors font-medium">
               {feature.epic.epic_key} {feature.epic.name}
             </span>
           ) : (
@@ -190,7 +190,7 @@ export function FeatureRightRail({ feature, collapsed, onToggleCollapse, onUpdat
         </div>
 
         <FieldRow label="Release">
-          <span className="text-primary cursor-pointer hover:underline font-mono text-xs">
+          <span className="text-gold-link hover:text-gold-link-hover cursor-pointer hover:underline transition-colors font-mono text-xs font-medium">
             {MOCK_DATA.release}
           </span>
         </FieldRow>

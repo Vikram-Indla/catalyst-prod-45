@@ -65,13 +65,17 @@ const MOCK_ATTACHMENTS = [
 function getFileIcon(type: string) {
   switch (type) {
     case 'pdf':
-      return <FileText className="h-5 w-5 text-red-500" />;
+      return <FileText className="h-5 w-5 text-red-600 dark:text-red-400" />;
     case 'fig':
-      return <ImageIcon className="h-5 w-5 text-purple-500" />;
+    case 'sketch':
+    case 'xd':
+      return <ImageIcon className="h-5 w-5 text-amber-600 dark:text-amber-400" />;
     case 'docx':
-      return <File className="h-5 w-5 text-blue-500" />;
+    case 'doc':
+      return <File className="h-5 w-5 text-blue-600 dark:text-blue-400" />;
     case 'xlsx':
-      return <FileSpreadsheet className="h-5 w-5 text-green-500" />;
+    case 'xls':
+      return <FileSpreadsheet className="h-5 w-5 text-green-600 dark:text-green-400" />;
     default:
       return <File className="h-5 w-5 text-muted-foreground" />;
   }
