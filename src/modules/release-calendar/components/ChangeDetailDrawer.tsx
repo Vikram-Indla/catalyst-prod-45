@@ -26,7 +26,7 @@ export function ChangeDetailDrawer({ open, onOpenChange, changeCardId }: ChangeD
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-[600px] sm:max-w-[600px] bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 overflow-y-auto rounded-none">
+      <SheetContent className="w-[600px] sm:max-w-[600px] bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 overflow-y-auto rounded-none p-6">
         {isLoading || !change ? (
           <div className="space-y-4 mt-6">
             <Skeleton className="h-8 w-48" />
