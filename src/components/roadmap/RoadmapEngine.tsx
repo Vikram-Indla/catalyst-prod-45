@@ -982,9 +982,13 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
                   <TooltipProvider delayDuration={300}>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <div className="text-sm font-medium truncate leading-tight mt-1 cursor-default" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); onItemClick?.(item.id); }}
+                          className="text-sm font-medium truncate leading-tight mt-1 cursor-pointer hover:underline bg-transparent border-none p-0 text-left w-full"
+                          style={{ color: 'hsl(var(--roadmap-status-new))' }}
+                        >
                           {isRTL ? item.titleAr : item.titleEn}
-                        </div>
+                        </button>
                       </TooltipTrigger>
                       <TooltipContent 
                         side="top" 
