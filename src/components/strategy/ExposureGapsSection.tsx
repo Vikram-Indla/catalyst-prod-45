@@ -260,7 +260,7 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
                 ))}
                 {attentionItems.length > 4 && (
                   <div className="text-center pt-1.5">
-                    <span className={cn(TYPOGRAPHY.microcopy, TEXT_COLORS.muted)}>
+                    <span className={cn(TYPOGRAPHY.microcopy, 'text-gray-600 dark:text-gray-400')}>
                       +{attentionItems.length - 4} more
                     </span>
                   </div>
@@ -295,7 +295,7 @@ function CockpitCard({ title, icon, iconColor, children, cta }: CockpitCardProps
       
       <div className="p-3 flex-1">{children}</div>
 
-      {/* CTA - secondary but discoverable */}
+      {/* CTA - brand color for discoverability */}
       {cta && (
         <div className="px-3 pb-2.5">
           <Button
@@ -303,9 +303,10 @@ function CockpitCard({ title, icon, iconColor, children, cta }: CockpitCardProps
             size="sm"
             className={cn(
               TYPOGRAPHY.ctaButton, 
-              "w-full h-8 text-gray-600 dark:text-gray-400",
+              "w-full h-8",
+              "text-[#c69c6d] dark:text-[#d4a855]",
               "transition-[background-color,color] duration-150",
-              "hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100",
+              "hover:bg-[#c69c6d]/10 dark:hover:bg-[#d4a855]/10",
               "focus-visible:ring-1"
             )}
             onClick={cta.onClick}
@@ -398,11 +399,11 @@ function AttentionRow({ item, onClick, index }: { item: AttentionItem; onClick: 
         )}>
           {item.title}
         </div>
-        {/* Reason - secondary */}
+        {/* Reason - secondary but readable */}
         <div className={cn(
           TYPOGRAPHY.microcopy, 
           'leading-tight',
-          TEXT_COLORS.secondaryStrong
+          'text-gray-600 dark:text-gray-400'
         )}>
           {item.reason}
         </div>
