@@ -1,32 +1,32 @@
 /**
- * FeatureOverviewTab — Overview content for Feature detail page (V1 Wired)
+ * FeatureOverviewTab — Overview content for Feature detail page
  * 
  * Includes:
  * - Rich description
  * - Readiness snapshot (approvals, exceptions, dependencies)
  * - Acceptance criteria checklist
- * - Attachments (real data)
+ * - Attachments
  */
 
+import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   CheckCircle2, 
+  Circle, 
   AlertTriangle, 
   Zap, 
   Clock, 
   FileText,
+  Upload,
   File,
   Image as ImageIcon,
-  FileSpreadsheet,
-  Download
+  FileSpreadsheet
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
-
-// Real hooks
-import { useWorkItemAttachments, downloadAttachment } from '@/hooks/useUnifiedAttachments';
-import { useWorkItemDependencies } from '@/hooks/useWorkItemDependencies';
 
 interface FeatureOverviewTabProps {
   feature: {
@@ -55,9 +55,15 @@ function parseAcceptanceCriteria(text: string | null): { id: string; text: strin
     });
 }
 
-function getFileIcon(filename: string) {
-  const ext = filename.split('.').pop()?.toLowerCase() || '';
-  switch (ext) {
+// Mock attachments data (would come from attachments table)
+const MOCK_ATTACHMENTS = [
+  { id: '1', name: 'Compliance_Rules_Specification_v2.pdf', size: '2.4 MB', date: 'Dec 10, 2025', type: 'pdf' },
+  { id: '2', name: 'Dashboard_Wireframes.fig', size: '8.1 MB', date: 'Dec 8, 2025', type: 'fig' },
+  { id: '3', name: 'API_Integration_Guide.docx', size: '512 KB', date: 'Dec 5, 2025', type: 'docx' },
+];
+
+function getFileIcon(type: string) {
+  switch (type) {
     case 'pdf':
       return <FileText className="h-5 w-5 text-red-600 dark:text-red-400" />;
     case 'fig':
@@ -70,45 +76,26 @@ function getFileIcon(filename: string) {
     case 'xlsx':
     case 'xls':
       return <FileSpreadsheet className="h-5 w-5 text-green-600 dark:text-green-400" />;
-    case 'png':
-    case 'jpg':
-    case 'jpeg':
-    case 'gif':
-    case 'svg':
-      return <ImageIcon className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />;
     default:
       return <File className="h-5 w-5 text-muted-foreground" />;
   }
 }
 
-function formatFileSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
-
 export function FeatureOverviewTab({ feature }: FeatureOverviewTabProps) {
+  const queryClient = useQueryClient();
   const criteria = parseAcceptanceCriteria(feature.acceptance_criteria);
 
-  // Real data hooks
-  const { data: attachments = [] } = useWorkItemAttachments(feature.id, 'feature');
-  const { outgoing, incoming } = useWorkItemDependencies('feature', feature.id);
-
-  // Readiness data from real dependencies
-  const totalDeps = outgoing.length + incoming.length;
-  const clearedDeps = [...outgoing, ...incoming].filter(d => d.status === 'done' || d.status === 'delivered').length;
-
-  const handleCriteriaToggle = (id: string, checked: boolean) => {
-    // Deferred: would update the acceptance_criteria text
-    toast.success('Acceptance criteria updated');
+  // Mock readiness data
+  const readinessData = {
+    approvalsPending: 2,
+    exceptions: 1,
+    dependenciesClear: 3,
+    dependenciesTotal: 4,
   };
 
-  const handleDownload = async (attachment: any) => {
-    try {
-      await downloadAttachment(attachment);
-    } catch {
-      toast.error('Failed to download file');
-    }
+  const handleCriteriaToggle = (id: string, checked: boolean) => {
+    // In a real implementation, this would update the acceptance_criteria text
+    toast.success('Acceptance criteria updated');
   };
 
   return (
@@ -131,20 +118,22 @@ export function FeatureOverviewTab({ feature }: FeatureOverviewTabProps) {
       <section className="bg-muted/30 border rounded-lg p-4">
         <div className="flex flex-wrap items-center gap-6 text-sm">
           <div className="flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4 text-brand-primary" />
+            <span className="font-medium">{readinessData.approvalsPending}</span>
+            <span className="text-muted-foreground">Approvals Pending</span>
+          </div>
+          <div className="h-4 w-px bg-border" />
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4 text-status-warning" />
+            <span className="font-medium">{readinessData.exceptions}</span>
+            <span className="text-muted-foreground">Exception</span>
+          </div>
+          <div className="h-4 w-px bg-border" />
+          <div className="flex items-center gap-2">
             <Zap className="h-4 w-4 text-brand-primary" />
-            <span className="font-medium">{clearedDeps}/{totalDeps}</span>
+            <span className="font-medium">{readinessData.dependenciesClear}/{readinessData.dependenciesTotal}</span>
             <span className="text-muted-foreground">Deps Clear</span>
           </div>
-          {totalDeps > clearedDeps && (
-            <>
-              <div className="h-4 w-px bg-border" />
-              <div className="flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4 text-status-warning" />
-                <span className="font-medium">{totalDeps - clearedDeps}</span>
-                <span className="text-muted-foreground">Pending</span>
-              </div>
-            </>
-          )}
         </div>
         <div className="flex items-center gap-2 mt-3 text-xs text-muted-foreground">
           <Clock className="h-3.5 w-3.5" />
@@ -204,29 +193,23 @@ export function FeatureOverviewTab({ feature }: FeatureOverviewTabProps) {
       {/* Attachments */}
       <section>
         <h3 className="text-sm font-semibold text-foreground uppercase tracking-wide mb-3">
-          Attachments ({attachments.length})
+          Attachments
         </h3>
         <div className="space-y-2">
-          {attachments.length === 0 ? (
-            <div className="text-sm text-muted-foreground italic p-4 border rounded-lg">
-              No attachments.
-            </div>
-          ) : attachments.map((file: any) => (
+          {MOCK_ATTACHMENTS.map((file) => (
             <div 
               key={file.id}
-              className="flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-muted/30 transition-colors cursor-pointer group"
-              onClick={() => handleDownload(file)}
+              className="flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-muted/30 transition-colors cursor-pointer"
             >
-              {getFileIcon(file.file_name)}
+              {getFileIcon(file.type)}
               <div className="flex-1 min-w-0">
                 <div className="font-medium text-sm text-foreground truncate">
-                  {file.file_name}
+                  {file.name}
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  {formatFileSize(file.file_size)} · {file.created_at ? format(new Date(file.created_at), 'MMM d, yyyy') : 'Unknown'}
+                  {file.size} · Uploaded {file.date}
                 </div>
               </div>
-              <Download className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
           ))}
         </div>

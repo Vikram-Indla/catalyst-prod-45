@@ -1,31 +1,43 @@
 /**
- * FeatureDetailPage — Enterprise-Grade Feature Work Item (V1 Wired)
+ * FeatureDetailPage — Enterprise-Grade Feature Work Item
  * 
  * Route: /projects/:projectId/features/:featureId
- * Fully wired to real data and existing components
+ * Matches Catalyst Design System + Atlassian-grade UX
+ * 
+ * Features:
+ * - Header with Feature Key (JetBrains Mono), title, status, health
+ * - KPI strip: Progress %, Target Release, Stories, Blockers
+ * - Tabbed content: Overview, Delivery, Links, Activity, Audit/Governance
+ * - Collapsible right rail with Details, Planning, Classification sections
  */
 
 import { useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { useQueryClient } from '@tanstack/react-query';
+import { useParams, Link } from 'react-router-dom';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { 
   ChevronRight, 
+  ChevronDown,
   Share2, 
   Link2, 
   MoreHorizontal, 
   UserPlus,
   Plus,
   Eye,
-  EyeOff,
   Calendar,
   FileText,
   Ban,
+  CheckCircle2,
+  Circle,
   AlertTriangle,
+  Clock,
+  Target,
+  Layers
 } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import {
@@ -35,31 +47,6 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command';
-
-// Feature hooks
-import { 
-  useFeature, 
-  useUpdateFeature, 
-  useFeatureTransition,
-  useFeatureStoryStats,
-  useAvailableUsers,
-  FeatureStatus
-} from '@/hooks/useFeature';
-import { useWorkItemWatchers } from '@/hooks/useWorkItemWatchers';
 
 // Sub-components
 import { FeatureOverviewTab } from './feature-detail/FeatureOverviewTab';
@@ -69,8 +56,30 @@ import { FeatureActivityTab } from './feature-detail/FeatureActivityTab';
 import { FeatureAuditTab } from './feature-detail/FeatureAuditTab';
 import { FeatureRightRail } from './feature-detail/FeatureRightRail';
 
-// Dialogs
-import { CreateStoryDialog } from '@/modules/project-work-hub/components/dialogs/CreateStoryDialog';
+// Types
+type FeatureStatus = 'funnel' | 'analyzing' | 'backlog' | 'implementing' | 'done';
+
+interface FeatureData {
+  id: string;
+  display_id: string | null;
+  name: string;
+  description: string | null;
+  acceptance_criteria: string | null;
+  status: FeatureStatus | null;
+  health: string | null;
+  blocked: boolean | null;
+  blocked_reason: string | null;
+  planned_start_date: string | null;
+  planned_end_date: string | null;
+  owner_id: string | null;
+  epic_id: string;
+  project_id: string;
+  progress_pct: number | null;
+  updated_at: string | null;
+  owner?: { id: string; full_name: string } | null;
+  epic?: { id: string; epic_key: string; name: string; primary_program_id?: string | null } | null;
+  project?: { id: string; name: string } | null;
+}
 
 const STATUS_CONFIG: Record<string, { label: string; class: string }> = {
   funnel: { label: 'Draft', class: 'bg-muted text-muted-foreground' },
@@ -92,58 +101,106 @@ const HEALTH_CONFIG: Record<string, { label: string; class: string }> = {
 
 export default function FeatureDetailPage() {
   const { projectId, featureId } = useParams<{ projectId: string; featureId: string }>();
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
-  
   const [activeTab, setActiveTab] = useState('overview');
   const [rightRailCollapsed, setRightRailCollapsed] = useState(false);
-  const [createStoryOpen, setCreateStoryOpen] = useState(false);
-  const [assignDialogOpen, setAssignDialogOpen] = useState(false);
 
-  // Data hooks
-  const { data: feature, isLoading, error } = useFeature(featureId);
-  const { data: storyStats } = useFeatureStoryStats(featureId);
-  
-  // Mutation hooks
-  const updateFeature = useUpdateFeature(featureId);
-  const transitionFeature = useFeatureTransition(featureId);
-  
-  // Watchers hook
-  const { 
-    isWatching, 
-    toggleWatch,
-    isPending: watchersPending 
-  } = useWorkItemWatchers('feature', featureId || '');
+  // Fetch feature with relations
+  const { data: feature, isLoading, error } = useQuery({
+    queryKey: ['feature-detail', featureId],
+    queryFn: async (): Promise<FeatureData | null> => {
+      if (!featureId) return null;
 
-  // Users for assignment
-  const { data: availableUsers = [] } = useAvailableUsers();
+      const { data, error } = await supabase
+        .from('features')
+        .select(`
+          id, display_id, name, description, acceptance_criteria, status, health,
+          blocked, blocked_reason, planned_start_date, planned_end_date,
+          owner_id, epic_id, project_id, progress_pct, updated_at
+        `)
+        .eq('id', featureId)
+        .single();
+
+      if (error) throw error;
+      if (!data) return null;
+
+      // Fetch relations in parallel
+      const [ownerResult, epicResult, projectResult] = await Promise.all([
+        data.owner_id 
+          ? supabase.from('profiles').select('id, full_name').eq('id', data.owner_id).single()
+          : { data: null },
+        data.epic_id
+          ? supabase.from('epics').select('id, epic_key, name, primary_program_id').eq('id', data.epic_id).single()
+          : { data: null },
+        data.project_id
+          ? supabase.from('projects').select('id, name').eq('id', data.project_id).single()
+          : { data: null },
+      ]);
+
+      return {
+        ...data,
+        status: data.status as FeatureStatus,
+        owner: ownerResult.data,
+        epic: epicResult.data,
+        project: projectResult.data,
+      };
+    },
+    enabled: !!featureId,
+  });
+
+  // Fetch story counts
+  const { data: storyStats } = useQuery({
+    queryKey: ['feature-story-stats', featureId],
+    queryFn: async () => {
+      if (!featureId) return { total: 0, done: 0, blocked: 0 };
+
+      const { data, error } = await supabase
+        .from('stories')
+        .select('id, status, state')
+        .eq('feature_id', featureId);
+
+      if (error) {
+        console.error('Failed to fetch stories:', error);
+        return { total: 0, done: 0, blocked: 0 };
+      }
+
+      const stories = data || [];
+      return {
+        total: stories.length,
+        done: stories.filter(s => s.status === 'done' || s.state === 'done').length,
+        blocked: stories.filter(s => (s.status as string) === 'blocked' || (s.state as string) === 'blocked').length,
+      };
+    },
+    enabled: !!featureId,
+  });
+
+  // Update feature mutation
+  const updateFeature = useMutation({
+    mutationFn: async (updates: Record<string, any>) => {
+      const { error } = await supabase
+        .from('features')
+        .update({ ...updates, updated_at: new Date().toISOString() })
+        .eq('id', featureId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['feature-detail', featureId] });
+      queryClient.invalidateQueries({ queryKey: ['features'] });
+    },
+    onError: (error: any) => {
+      toast.error('Failed to update feature', { description: error.message });
+    },
+  });
 
   const handleStatusChange = (newStatus: FeatureStatus) => {
-    transitionFeature.mutate(newStatus);
-  };
-
-  const handleAssign = (userId: string) => {
-    updateFeature.mutate({ owner_id: userId } as any, {
-      onSuccess: () => {
-        toast.success('Owner updated');
-        setAssignDialogOpen(false);
-      },
+    updateFeature.mutate({ status: newStatus } as any, {
+      onSuccess: () => toast.success('Status updated'),
     });
-  };
-
-  const handleToggleWatch = () => {
-    toggleWatch();
   };
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
     toast.success('Link copied to clipboard');
-  };
-
-  const handleStoryCreated = () => {
-    setCreateStoryOpen(false);
-    queryClient.invalidateQueries({ queryKey: ['feature-stories', featureId] });
-    queryClient.invalidateQueries({ queryKey: ['feature-story-stats', featureId] });
   };
 
   // Loading state
@@ -222,9 +279,11 @@ export default function FeatureDetailPage() {
         {/* Top row: Key + Actions */}
         <div className="flex items-start justify-between gap-4 mb-4">
           <div className="flex-1 min-w-0">
+            {/* Feature Key */}
             <span className="font-mono text-sm text-muted-foreground mb-1 block">
               {featureKey}
             </span>
+            {/* Title */}
             <h1 className="text-xl font-semibold text-foreground leading-tight">
               {feature.name}
             </h1>
@@ -241,9 +300,6 @@ export default function FeatureDetailPage() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => handleStatusChange('funnel')}>
-                  Move to Draft
-                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleStatusChange('analyzing')}>
                   Move to Analysis
                 </DropdownMenuItem>
@@ -260,41 +316,24 @@ export default function FeatureDetailPage() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Assign */}
-            <Button variant="outline" size="sm" onClick={() => setAssignDialogOpen(true)}>
+            <Button variant="outline" size="sm">
               <UserPlus className="h-4 w-4 mr-1" />
               Assign
             </Button>
-
-            {/* Link - navigate to Links tab */}
-            <Button variant="outline" size="sm" onClick={() => setActiveTab('links')}>
+            <Button variant="outline" size="sm">
               <Link2 className="h-4 w-4 mr-1" />
               Link
             </Button>
-
-            {/* Create Story */}
-            <Button variant="outline" size="sm" onClick={() => setCreateStoryOpen(true)}>
+            <Button variant="outline" size="sm">
               <Plus className="h-4 w-4 mr-1" />
               Create Story
             </Button>
-
-            {/* Watch */}
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={handleToggleWatch} 
-              title={isWatching ? 'Stop watching' : 'Watch'}
-              disabled={watchersPending}
-            >
-              {isWatching ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            <Button variant="ghost" size="icon" onClick={handleCopyLink} title="Watch">
+              <Eye className="h-4 w-4" />
             </Button>
-
-            {/* Share */}
             <Button variant="ghost" size="icon" onClick={handleCopyLink} title="Share">
               <Share2 className="h-4 w-4" />
             </Button>
-
-            {/* More */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon">
@@ -302,9 +341,7 @@ export default function FeatureDetailPage() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => navigate(`/projects/${projectId}/features/${featureId}/edit`)}>
-                  Edit
-                </DropdownMenuItem>
+                <DropdownMenuItem>Edit</DropdownMenuItem>
                 <DropdownMenuItem>Clone</DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
@@ -432,10 +469,7 @@ export default function FeatureDetailPage() {
                 <FeatureOverviewTab feature={feature} />
               </TabsContent>
               <TabsContent value="delivery" className="m-0 p-6">
-                <FeatureDeliveryTab 
-                  featureId={feature.id} 
-                  projectId={projectId || ''} 
-                />
+                <FeatureDeliveryTab featureId={feature.id} projectId={projectId || ''} />
               </TabsContent>
               <TabsContent value="links" className="m-0 p-6">
                 <FeatureLinksTab feature={feature} />
@@ -458,47 +492,6 @@ export default function FeatureDetailPage() {
           onUpdate={(data) => updateFeature.mutate(data as any)}
         />
       </div>
-
-      {/* Create Story Dialog - use native dialog with pre-selected feature */}
-      {createStoryOpen && (
-        <CreateStoryDialog
-          isOpen={createStoryOpen}
-          onClose={() => setCreateStoryOpen(false)}
-          onSuccess={handleStoryCreated}
-          projectId={projectId || ''}
-        />
-      )}
-
-      {/* Assign Dialog */}
-      <Dialog open={assignDialogOpen} onOpenChange={setAssignDialogOpen}>
-        <DialogContent className="sm:max-w-[400px]">
-          <DialogHeader>
-            <DialogTitle>Assign Owner</DialogTitle>
-          </DialogHeader>
-          <Command className="border rounded-lg">
-            <CommandInput placeholder="Search users..." />
-            <CommandList>
-              <CommandEmpty>No users found.</CommandEmpty>
-              <CommandGroup>
-                {availableUsers.map((user) => (
-                  <CommandItem
-                    key={user.id}
-                    value={user.full_name || user.email}
-                    onSelect={() => handleAssign(user.id)}
-                  >
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-full bg-brand-primary/10 text-brand-primary flex items-center justify-center text-xs font-medium">
-                        {(user.full_name || user.email || '?').slice(0, 2).toUpperCase()}
-                      </div>
-                      <span>{user.full_name || user.email}</span>
-                    </div>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </CommandList>
-          </Command>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
