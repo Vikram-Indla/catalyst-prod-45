@@ -127,8 +127,13 @@ export function BacklogEnterpriseTable({
       accessor: (row) => row.epicKey || (programData?.key ? `${programData.key}-${String(row.rank || row.globalRank || 1).padStart(3, '0')}` : row.displayId || '—'),
       width: '100px',
       sortable: true,
-      render: (value) => (
-        <span className="font-mono text-xs text-muted-foreground">{value}</span>
+      render: (value, row) => (
+        <span 
+          className="font-mono text-xs text-[#c69c6d] dark:text-[#d4a855] hover:text-[#b8894d] dark:hover:text-[#c49545] hover:underline cursor-pointer"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {value}
+        </span>
       ),
     },
     {
@@ -190,9 +195,21 @@ export function BacklogEnterpriseTable({
         { value: 'done', label: 'Done' },
         { value: 'blocked', label: 'Blocked' },
       ],
-      render: (value) => (
-        <span className="text-sm">{formatStatus(value)}</span>
-      ),
+      render: (value) => {
+        const statusStyles: Record<string, string> = {
+          'not_started': 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
+          'in_progress': 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+          'done': 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+          'blocked': 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+        };
+        const normalizedValue = value?.toLowerCase().replace(/\s+/g, '_') || 'not_started';
+        const styleClass = statusStyles[normalizedValue] || statusStyles['not_started'];
+        return (
+          <Badge className={`${styleClass} border-0 text-xs font-medium`}>
+            {formatStatus(value)}
+          </Badge>
+        );
+      },
     },
     {
       id: 'technicalScore',

@@ -635,8 +635,10 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
         <td style={{ ...tdStyle, padding: '8px', width: '32px' }} {...dragHandleProps}>
           <GripVertical 
             className={cn(
-              "h-4 w-4 cursor-grab active:cursor-grabbing",
-              isDragging ? "text-brand-primary" : "text-muted-foreground"
+              "h-4 w-4 cursor-grab active:cursor-grabbing transition-colors",
+              isDragging 
+                ? "text-brand-primary" 
+                : "text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400"
             )} 
           />
         </td>
