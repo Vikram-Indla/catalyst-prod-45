@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      acceptance_criteria: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          is_met: boolean | null
+          order_index: number | null
+          story_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          is_met?: boolean | null
+          order_index?: number | null
+          story_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          is_met?: boolean | null
+          order_index?: number | null
+          story_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "acceptance_criteria_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       active_package: {
         Row: {
           id: string
@@ -11243,9 +11281,12 @@ export type Database = {
           description: string | null
           id: string
           name: string
+          order_index: number | null
           original_estimate_hours: number | null
+          release_id: string | null
           status: Database["public"]["Enums"]["subtask_status"] | null
           story_id: string
+          type: string | null
           updated_at: string | null
         }
         Insert: {
@@ -11254,9 +11295,12 @@ export type Database = {
           description?: string | null
           id?: string
           name: string
+          order_index?: number | null
           original_estimate_hours?: number | null
+          release_id?: string | null
           status?: Database["public"]["Enums"]["subtask_status"] | null
           story_id: string
+          type?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -11265,12 +11309,22 @@ export type Database = {
           description?: string | null
           id?: string
           name?: string
+          order_index?: number | null
           original_estimate_hours?: number | null
+          release_id?: string | null
           status?: Database["public"]["Enums"]["subtask_status"] | null
           story_id?: string
+          type?: string | null
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "subtasks_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "releases"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "subtasks_story_id_fkey"
             columns: ["story_id"]
