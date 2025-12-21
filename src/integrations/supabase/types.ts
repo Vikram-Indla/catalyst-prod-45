@@ -13812,6 +13812,102 @@ export type Database = {
         }
         Relationships: []
       }
+      transition_approval_configs: {
+        Row: {
+          approval_type: string | null
+          created_at: string | null
+          entity_type: string
+          from_status: string
+          id: string
+          is_active: boolean | null
+          to_status: string
+        }
+        Insert: {
+          approval_type?: string | null
+          created_at?: string | null
+          entity_type: string
+          from_status: string
+          id?: string
+          is_active?: boolean | null
+          to_status: string
+        }
+        Update: {
+          approval_type?: string | null
+          created_at?: string | null
+          entity_type?: string
+          from_status?: string
+          id?: string
+          is_active?: boolean | null
+          to_status?: string
+        }
+        Relationships: []
+      }
+      transition_approvers: {
+        Row: {
+          approver_id: string
+          comment: string | null
+          due_date: string | null
+          entity_id: string
+          entity_type: string
+          from_status: string
+          id: string
+          is_veto: boolean | null
+          requested_at: string | null
+          requested_by: string | null
+          responded_at: string | null
+          status: string | null
+          step_order: number | null
+          to_status: string
+        }
+        Insert: {
+          approver_id: string
+          comment?: string | null
+          due_date?: string | null
+          entity_id: string
+          entity_type: string
+          from_status: string
+          id?: string
+          is_veto?: boolean | null
+          requested_at?: string | null
+          requested_by?: string | null
+          responded_at?: string | null
+          status?: string | null
+          step_order?: number | null
+          to_status: string
+        }
+        Update: {
+          approver_id?: string
+          comment?: string | null
+          due_date?: string | null
+          entity_id?: string
+          entity_type?: string
+          from_status?: string
+          id?: string
+          is_veto?: boolean | null
+          requested_at?: string | null
+          requested_by?: string | null
+          responded_at?: string | null
+          status?: string | null
+          step_order?: number | null
+          to_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transition_approvers_approver_id_fkey"
+            columns: ["approver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transition_approvers_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       unified_attachments: {
         Row: {
           checksum_sha256: string | null
@@ -15014,6 +15110,22 @@ export type Database = {
       calculate_objective_score: {
         Args: { objective_uuid: string }
         Returns: number
+      }
+      can_transition: {
+        Args: {
+          p_entity_id: string
+          p_entity_type: string
+          p_from_status: string
+          p_to_status: string
+        }
+        Returns: {
+          allowed: boolean
+          approved_count: number
+          pending_count: number
+          reason: string
+          total_count: number
+          veto_approved: boolean
+        }[]
       }
       check_permission: {
         Args: {
