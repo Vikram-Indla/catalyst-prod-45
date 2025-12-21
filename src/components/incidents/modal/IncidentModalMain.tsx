@@ -40,16 +40,16 @@ export function IncidentModalMain({ incident, onFieldChange }: IncidentModalMain
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-6" style={{ fontFamily: 'ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif' }}>
+    <div className="flex-1 overflow-y-auto p-6 bg-card">
       {/* Title Area */}
       <div className="mb-4">
         <h1 
           contentEditable
           suppressContentEditableWarning
-          className={`text-2xl font-semibold text-[#172B4D] leading-7 p-1 rounded border-2 transition-all cursor-text ${
+          className={`text-2xl font-semibold text-foreground leading-7 p-1 rounded border-2 transition-all cursor-text ${
             isTitleFocused 
-              ? 'border-[#C69C6D] shadow-[0_0_0_2px_#C69C6D] bg-white' 
-              : 'border-transparent hover:bg-[#F4F5F7] hover:border-[#DFE1E6]'
+              ? 'border-[#c69c6d] shadow-[0_0_0_2px_rgba(198,156,109,0.3)] bg-card' 
+              : 'border-transparent hover:bg-muted hover:border-border'
           }`}
           onFocus={() => setIsTitleFocused(true)}
           onBlur={(e) => {
@@ -61,7 +61,7 @@ export function IncidentModalMain({ incident, onFieldChange }: IncidentModalMain
         </h1>
         <div className="flex gap-1 mt-2">
           <button 
-            className="w-8 h-8 flex items-center justify-center border border-[#DFE1E6] rounded bg-white text-[#42526E] hover:bg-[#F4F5F7] hover:border-[#A5ADBA] focus:outline-none focus:border-[#C69C6D] focus:shadow-[0_0_0_1px_#C69C6D]"
+            className="w-8 h-8 flex items-center justify-center border border-border rounded bg-card text-muted-foreground hover:bg-muted hover:border-border focus:outline-none focus:border-[#c69c6d] focus:shadow-[0_0_0_1px_rgba(198,156,109,0.5)]"
             title="Add"
           >
             <Plus className="w-4 h-4" />
@@ -71,11 +71,10 @@ export function IncidentModalMain({ incident, onFieldChange }: IncidentModalMain
 
       {/* Parent Field */}
       <div className="flex items-start py-2 gap-4">
-        <div className="text-sm text-[#42526E] w-[100px] shrink-0">Parent</div>
+        <div className="text-sm text-muted-foreground w-[100px] shrink-0">Parent</div>
         <div className="flex-1">
           <span 
-            className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-sm cursor-pointer"
-            style={{ background: '#E9E0FF', color: '#5243AA' }}
+            className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-sm cursor-pointer bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
           >
             <span>◇</span>
             INC-1246 Database Infrastructure
@@ -85,14 +84,14 @@ export function IncidentModalMain({ incident, onFieldChange }: IncidentModalMain
 
       {/* Priority Field */}
       <div className="flex items-start py-2 gap-4">
-        <div className="text-sm text-[#42526E] w-[100px] shrink-0">Priority</div>
+        <div className="text-sm text-muted-foreground w-[100px] shrink-0">Priority</div>
         <div className="flex-1">
-          <div className="inline-flex items-center gap-1.5 p-1.5 rounded border-2 border-transparent hover:bg-[#F4F5F7] hover:border-[#DFE1E6] cursor-pointer">
+          <div className="inline-flex items-center gap-1.5 p-1.5 rounded border-2 border-transparent hover:bg-muted hover:border-border cursor-pointer">
             <div className="flex gap-0.5">
-              <div className="w-[3px] h-3 bg-[#FF8800] rounded-sm"></div>
-              <div className="w-[3px] h-3 bg-[#FF8800] rounded-sm"></div>
+              <div className="w-[3px] h-3 bg-amber-500 rounded-sm"></div>
+              <div className="w-[3px] h-3 bg-amber-500 rounded-sm"></div>
             </div>
-            <span className="text-sm text-[#172B4D]">
+            <span className="text-sm text-foreground">
               {incident.priority?.charAt(0).toUpperCase() + incident.priority?.slice(1) || 'Medium'}
             </span>
           </div>
@@ -101,11 +100,11 @@ export function IncidentModalMain({ incident, onFieldChange }: IncidentModalMain
 
       {/* Description Section */}
       <div className="mt-6 mb-6">
-        <h2 className="text-base font-semibold text-[#172B4D] mb-3">Description</h2>
+        <h2 className="text-base font-semibold text-foreground mb-3">Description</h2>
         <div 
           contentEditable
           suppressContentEditableWarning
-          className="text-sm text-[#172B4D] leading-5 p-4 border border-brand-primary rounded-xl min-h-[120px] cursor-text transition-all bg-white"
+          className="text-sm text-foreground leading-5 p-4 border border-brand-primary rounded-xl min-h-[120px] cursor-text transition-all bg-card"
           onFocus={() => setIsDescFocused(true)}
           onBlur={(e) => {
             setIsDescFocused(false);
@@ -118,18 +117,18 @@ export function IncidentModalMain({ incident, onFieldChange }: IncidentModalMain
       {/* Attachments Section */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-base font-semibold text-[#172B4D] flex items-center gap-2">
+          <h2 className="text-base font-semibold text-foreground flex items-center gap-2">
             Attachments
-            <span className="text-[11px] text-[#42526E] bg-[#FAFBFC] px-1.5 py-0.5 rounded">
+            <span className="text-[11px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
               {incident.attachments?.length || 0}
             </span>
           </h2>
           <div className="flex items-center gap-1">
-            <button className="w-8 h-8 flex items-center justify-center rounded hover:bg-[#F4F5F7] text-[#42526E]">
+            <button className="w-8 h-8 flex items-center justify-center rounded hover:bg-muted text-muted-foreground">
               <MoreHorizontal className="w-5 h-5" />
             </button>
             <button 
-              className="w-8 h-8 flex items-center justify-center rounded hover:bg-[#F4F5F7] text-[#42526E]"
+              className="w-8 h-8 flex items-center justify-center rounded hover:bg-muted text-muted-foreground"
               onClick={() => fileInputRef.current?.click()}
             >
               <Plus className="w-5 h-5" />
@@ -145,10 +144,10 @@ export function IncidentModalMain({ incident, onFieldChange }: IncidentModalMain
         </div>
 
         {/* Attachments Table Header */}
-        <div className="flex items-center py-1.5 border-b border-[#DFE1E6] text-[11px] text-[#42526E]">
+        <div className="flex items-center py-1.5 border-b border-border text-[11px] text-muted-foreground">
           <div className="flex-1 min-w-0">Name</div>
           <div className="w-20 text-right pr-4">Size</div>
-          <div className="w-36 flex items-center gap-1 cursor-pointer hover:text-[#172B4D]">
+          <div className="w-36 flex items-center gap-1 cursor-pointer hover:text-foreground">
             Date added
             <ChevronDown className="w-3 h-3" />
           </div>
@@ -159,26 +158,26 @@ export function IncidentModalMain({ incident, onFieldChange }: IncidentModalMain
         {(incident.attachments || []).map((att) => (
           <div 
             key={att.id}
-            className="flex items-center py-2 border-b border-[#DFE1E6] last:border-b-0 group hover:bg-[#F4F5F7]"
+            className="flex items-center py-2 border-b border-border last:border-b-0 group hover:bg-muted"
           >
-            <div className="w-8 h-8 rounded bg-[#FAFBFC] border border-[#DFE1E6] flex items-center justify-center mr-2 shrink-0">
-              <svg className="w-4 h-4 text-[#42526E]" viewBox="0 0 24 24" fill="currentColor">
+            <div className="w-8 h-8 rounded bg-muted border border-border flex items-center justify-center mr-2 shrink-0">
+              <svg className="w-4 h-4 text-muted-foreground" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
               </svg>
             </div>
-            <div className="flex-1 min-w-0 text-sm text-[#172B4D] truncate" dir="auto" style={{ unicodeBidi: 'plaintext' }}>
+            <div className="flex-1 min-w-0 text-sm text-foreground truncate" dir="auto" style={{ unicodeBidi: 'plaintext' }}>
               {att.name}
             </div>
-            <div className="w-20 text-right pr-4 text-sm text-[#42526E]">{att.size}</div>
-            <div className="w-36 text-sm text-[#42526E]">{att.uploadedAt}</div>
+            <div className="w-20 text-right pr-4 text-sm text-muted-foreground">{att.size}</div>
+            <div className="w-36 text-sm text-muted-foreground">{att.uploadedAt}</div>
             <div className="w-20 flex justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
               <button 
-                className="w-7 h-7 flex items-center justify-center rounded hover:bg-red-50 text-[#42526E] hover:text-red-600"
+                className="w-7 h-7 flex items-center justify-center rounded hover:bg-red-50 dark:hover:bg-red-900/30 text-muted-foreground hover:text-red-600"
                 onClick={() => deleteAttachment(att.id)}
               >
                 <Trash2 className="w-4 h-4" />
               </button>
-              <button className="w-7 h-7 flex items-center justify-center rounded hover:bg-[#F4F5F7] text-[#42526E] hover:text-[#172B4D]">
+              <button className="w-7 h-7 flex items-center justify-center rounded hover:bg-muted text-muted-foreground hover:text-foreground">
                 <Download className="w-4 h-4" />
               </button>
             </div>
@@ -188,8 +187,8 @@ export function IncidentModalMain({ incident, onFieldChange }: IncidentModalMain
 
       {/* Linked Work Items Section */}
       <div className="mb-6">
-        <h2 className="text-base font-semibold text-[#172B4D] mb-2">Linked work items</h2>
-        <a className="text-sm text-[#42526E] hover:text-[#0052CC] hover:underline cursor-pointer">
+        <h2 className="text-base font-semibold text-foreground mb-2">Linked work items</h2>
+        <a className="text-sm text-muted-foreground hover:text-[#c69c6d] hover:underline cursor-pointer">
           Add linked work item
         </a>
       </div>

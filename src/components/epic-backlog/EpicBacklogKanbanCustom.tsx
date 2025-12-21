@@ -83,10 +83,10 @@ export function EpicBacklogKanbanCustom({
     switch (color) {
       case 'red': return 'border-t-red-500';
       case 'orange': return 'border-t-orange-500';
-      case 'yellow': return 'border-t-yellow-500';
+      case 'yellow': return 'border-t-amber-500';
       case 'green': return 'border-t-green-500';
       case 'blue': return 'border-t-blue-500';
-      case 'purple': return 'border-t-purple-500';
+      case 'purple': return 'border-t-gray-400'; // Purple not allowed - use gray
       default: return 'border-t-gray-300';
     }
   };

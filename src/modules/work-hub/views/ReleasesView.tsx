@@ -92,7 +92,7 @@ function ReleaseProgress({ release }: { release: Release }) {
   
   if (total === 0) {
     return (
-      <span className="text-[14px] leading-[20px] text-slate-500">
+      <span className="text-[14px] leading-[20px] text-muted-foreground">
         No work items
       </span>
     );
@@ -103,7 +103,7 @@ function ReleaseProgress({ release }: { release: Release }) {
 
   return (
     <div className="flex flex-col gap-1 min-w-[180px]">
-      <div className="h-2 rounded-full bg-slate-200 overflow-hidden flex">
+      <div className="h-2 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden flex">
         <div
           className="h-full bg-green-600"
           style={{ width: `${donePercent}%` }}
@@ -142,14 +142,13 @@ function ReleaseRow({
 
   return (
     <div 
-      className="flex items-center gap-6 border-t border-slate-200 py-3 text-[14px] leading-[20px] text-slate-900 hover:bg-slate-50 transition-colors"
-      style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif" }}
+      className="flex items-center gap-6 border-t border-border py-3 text-[14px] leading-[20px] text-foreground hover:bg-muted transition-colors"
     >
       {/* Version (link) - min-w for consistency */}
       <div className="min-w-[140px]">
         <button
           onClick={onClick}
-          className="text-[14px] font-medium text-green-700 hover:underline text-left"
+          className="text-[14px] font-medium text-[#c69c6d] dark:text-[#d4a855] hover:underline text-left"
         >
           {release.name}
         </button>
@@ -166,20 +165,20 @@ function ReleaseRow({
       </div>
 
       {/* Start date */}
-      <div className="min-w-[100px] text-[14px] text-slate-700">
+      <div className="min-w-[100px] text-[14px] text-muted-foreground">
         {formatDate(release.startDate)}
       </div>
 
       {/* Release date */}
       <div className={cn(
         "min-w-[100px] text-[14px]",
-        isOverdue ? "text-red-600 font-medium" : "text-slate-700"
+        isOverdue ? "text-red-600 font-medium" : "text-muted-foreground"
       )}>
         {formatDate(release.releaseDate)}
       </div>
 
       {/* Description - flexible width */}
-      <div className="flex-1 text-[14px] text-slate-600 truncate">
+      <div className="flex-1 text-[14px] text-muted-foreground truncate">
         {release.description || '—'}
       </div>
 
@@ -188,13 +187,13 @@ function ReleaseRow({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
-              className="inline-flex h-8 w-8 items-center justify-center rounded hover:bg-slate-100 focus:outline-none"
+              className="inline-flex h-8 w-8 items-center justify-center rounded hover:bg-muted focus:outline-none"
               onClick={(e) => e.stopPropagation()}
             >
-              <MoreHorizontal className="h-4 w-4 text-slate-500" />
+              <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48 bg-white z-50">
+          <DropdownMenuContent align="end" className="w-48 bg-card z-50">
             <DropdownMenuItem onClick={onEdit}>
               Edit version
             </DropdownMenuItem>
@@ -221,8 +220,7 @@ function ReleaseRow({
 function ReleaseTableHeader() {
   return (
     <div 
-      className="flex items-center gap-6 py-2 text-[11px] leading-[16px] font-semibold uppercase tracking-wider text-slate-500 border-b border-slate-200"
-      style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif" }}
+      className="flex items-center gap-6 py-2 text-[11px] leading-[16px] font-semibold uppercase tracking-wider text-muted-foreground border-b border-border"
     >
       <div className="min-w-[140px]">Version</div>
       <div className="min-w-[100px]">Status</div>
@@ -267,30 +265,27 @@ export function ReleasesView() {
   };
 
   return (
-    <div 
-      className="h-full flex flex-col bg-white"
-      style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif" }}
-    >
+    <div className="h-full flex flex-col bg-card">
       {/* Toolbar Row */}
-      <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between gap-4">
+      <div className="px-6 py-4 border-b border-border flex items-center justify-between gap-4">
         <div className="flex items-center gap-3 flex-1">
           {/* Search input */}
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search releases"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 h-9 text-[14px] border-slate-300 focus:border-blue-500 focus:ring-blue-500"
+              className="pl-9 h-9 text-[14px] border-border focus:border-[#c69c6d] focus:ring-[#c69c6d]"
             />
           </div>
           
           {/* Status filter */}
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[140px] h-9 text-[14px] border-slate-300">
+            <SelectTrigger className="w-[140px] h-9 text-[14px] border-border">
               <SelectValue placeholder="All statuses" />
             </SelectTrigger>
-            <SelectContent className="bg-white z-50">
+            <SelectContent className="bg-card z-50">
               <SelectItem value="all">All statuses</SelectItem>
               <SelectItem value="released">Released</SelectItem>
               <SelectItem value="unreleased">Unreleased</SelectItem>
@@ -301,7 +296,7 @@ export function ReleasesView() {
 
         {/* Create version button */}
         <Button 
-          className="h-9 px-4 text-[14px] font-medium bg-[#C69C6D] hover:bg-[#B8905F] text-white gap-2"
+          className="h-9 px-4 text-[14px] font-medium bg-[#c69c6d] hover:bg-[#b8894d] text-white gap-2"
         >
           <Plus className="h-4 w-4" />
           Create version
@@ -311,7 +306,7 @@ export function ReleasesView() {
       {/* Main Content */}
       <div className="flex-1 overflow-auto px-6 py-6">
         {/* Section heading */}
-        <h2 className="text-[20px] leading-[24px] font-semibold text-slate-900 mb-4">
+        <h2 className="text-[20px] leading-[24px] font-semibold text-foreground mb-4">
           Release versions
         </h2>
 
@@ -333,7 +328,7 @@ export function ReleasesView() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-16 text-slate-500 text-[14px]">
+            <div className="text-center py-16 text-muted-foreground text-[14px]">
               <p>No releases found</p>
               <p className="text-[12px] mt-1">Try adjusting your search or filter criteria</p>
             </div>

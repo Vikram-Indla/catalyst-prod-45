@@ -35,14 +35,13 @@ export function IncidentModalSidebar({ incident, onFieldChange }: IncidentModalS
 
   return (
     <div 
-      className="w-[280px] border-l border-[#DFE1E6] overflow-y-auto shrink-0"
-      style={{ fontFamily: 'ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif' }}
+      className="w-[280px] border-l border-border overflow-y-auto shrink-0 bg-card"
     >
       <div className="p-4">
         {/* Status Button */}
         <div className="relative mb-4">
           <button 
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-[11px] font-semibold uppercase border border-[#DFE1E6] bg-white text-[#172B4D] hover:bg-[#F4F5F7]"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-[11px] font-semibold uppercase border border-border bg-card text-foreground hover:bg-muted"
             onClick={() => setIsStatusOpen(!isStatusOpen)}
           >
             {currentStatus}
@@ -50,12 +49,12 @@ export function IncidentModalSidebar({ incident, onFieldChange }: IncidentModalS
           </button>
 
           {isStatusOpen && (
-            <div className="absolute top-full left-0 mt-1 bg-white border border-[#DFE1E6] rounded shadow-lg z-10 min-w-[160px]">
+            <div className="absolute top-full left-0 mt-1 bg-card border border-border rounded shadow-lg z-10 min-w-[160px]">
               {STATUS_OPTIONS.map((status) => (
                 <div
                   key={status.value}
-                  className={`px-3 py-2 text-sm cursor-pointer hover:bg-[#F4F5F7] ${
-                    incident.status === status.value ? 'bg-[#DEEBFF] text-[#0052CC]' : 'text-[#172B4D]'
+                  className={`px-3 py-2 text-sm cursor-pointer hover:bg-muted ${
+                    incident.status === status.value ? 'bg-[#c69c6d]/10 text-[#c69c6d]' : 'text-foreground'
                   }`}
                   onClick={() => {
                     onFieldChange('status', status.value);
@@ -71,7 +70,7 @@ export function IncidentModalSidebar({ incident, onFieldChange }: IncidentModalS
 
         {/* Details Section */}
         <div 
-          className="flex items-center gap-1.5 text-[11px] font-semibold text-[#42526E] cursor-pointer hover:text-[#172B4D] mt-2 mb-3"
+          className="flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground cursor-pointer hover:text-foreground mt-2 mb-3"
           onClick={() => setIsDetailsExpanded(!isDetailsExpanded)}
         >
           {isDetailsExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
@@ -82,9 +81,9 @@ export function IncidentModalSidebar({ incident, onFieldChange }: IncidentModalS
           <div className="space-y-4">
             {/* Release Version */}
             <div>
-              <div className="text-[11px] text-[#42526E] mb-1">Release version</div>
+              <div className="text-[11px] text-muted-foreground mb-1">Release version</div>
               <div 
-                className="text-sm text-[#172B4D] p-1.5 -mx-1.5 rounded border-2 border-transparent hover:bg-[#F4F5F7] hover:border-[#DFE1E6] cursor-text focus-within:border-[#C69C6D] focus-within:shadow-[0_0_0_2px_#C69C6D] focus-within:bg-white"
+                className="text-sm text-foreground p-1.5 -mx-1.5 rounded border-2 border-transparent hover:bg-muted hover:border-border cursor-text focus-within:border-[#c69c6d] focus-within:shadow-[0_0_0_2px_rgba(198,156,109,0.3)] focus-within:bg-card"
                 contentEditable
                 suppressContentEditableWarning
               >
@@ -94,33 +93,33 @@ export function IncidentModalSidebar({ incident, onFieldChange }: IncidentModalS
 
             {/* Assignee */}
             <div>
-              <div className="text-[11px] text-[#42526E] mb-1">Assignee</div>
-              <div className="flex items-center gap-2 p-1.5 -mx-1.5 rounded border-2 border-transparent hover:bg-[#F4F5F7] hover:border-[#DFE1E6] cursor-pointer">
+              <div className="text-[11px] text-muted-foreground mb-1">Assignee</div>
+              <div className="flex items-center gap-2 p-1.5 -mx-1.5 rounded border-2 border-transparent hover:bg-muted hover:border-border cursor-pointer">
                 <div className="w-6 h-6 rounded-full bg-gray-500 dark:bg-gray-600 text-white text-[10px] font-medium flex items-center justify-center">
                   {incident.assignee?.initials || 'RA'}
                 </div>
-                <span className="text-sm text-[#172B4D]">{incident.assignee?.name || 'Rahaf Alhejaili'}</span>
+                <span className="text-sm text-foreground">{incident.assignee?.name || 'Rahaf Alhejaili'}</span>
               </div>
-              <a className="text-sm text-[#0052CC] hover:underline cursor-pointer mt-1 inline-block">
+              <a className="text-sm text-[#c69c6d] dark:text-[#d4a855] hover:underline cursor-pointer mt-1 inline-block">
                 Assign to me
               </a>
             </div>
 
             {/* Reporter */}
             <div>
-              <div className="text-[11px] text-[#42526E] mb-1">Reporter</div>
-              <div className="flex items-center gap-2 p-1.5 -mx-1.5 rounded border-2 border-transparent hover:bg-[#F4F5F7] hover:border-[#DFE1E6] cursor-pointer">
+              <div className="text-[11px] text-muted-foreground mb-1">Reporter</div>
+              <div className="flex items-center gap-2 p-1.5 -mx-1.5 rounded border-2 border-transparent hover:bg-muted hover:border-border cursor-pointer">
                 <div className="w-6 h-6 rounded-full bg-gray-500 dark:bg-gray-600 text-white text-[10px] font-medium flex items-center justify-center">
                   {incident.reporter?.initials || 'VI'}
                 </div>
-                <span className="text-sm text-[#172B4D]">{incident.reporter?.name || 'vikram indla'}</span>
+                <span className="text-sm text-foreground">{incident.reporter?.name || 'vikram indla'}</span>
               </div>
             </div>
 
             {/* Labels */}
             <div>
-              <div className="text-[11px] text-[#42526E] mb-1">Labels</div>
-              <div className="text-sm text-[#172B4D] p-1.5 -mx-1.5 rounded border-2 border-transparent hover:bg-[#F4F5F7] hover:border-[#DFE1E6] cursor-pointer">
+              <div className="text-[11px] text-muted-foreground mb-1">Labels</div>
+              <div className="text-sm text-foreground p-1.5 -mx-1.5 rounded border-2 border-transparent hover:bg-muted hover:border-border cursor-pointer">
                 {incident.labels?.length ? incident.labels.join(', ') : 'None'}
               </div>
             </div>
@@ -128,13 +127,13 @@ export function IncidentModalSidebar({ incident, onFieldChange }: IncidentModalS
         )}
 
         {/* Meta Info */}
-        <div className="mt-6 text-[11px] text-[#42526E] space-y-1">
+        <div className="mt-6 text-[11px] text-muted-foreground space-y-1">
           <p>Created {formatDate(incident.createdAt)}</p>
           <p>Updated {formatDate(incident.updatedAt)}</p>
         </div>
 
         {/* Configure Link */}
-        <a className="flex items-center gap-1 text-[11px] text-[#42526E] hover:text-[#0052CC] mt-4 cursor-pointer">
+        <a className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-[#c69c6d] mt-4 cursor-pointer">
           <Settings className="w-3 h-3" />
           Configure
         </a>

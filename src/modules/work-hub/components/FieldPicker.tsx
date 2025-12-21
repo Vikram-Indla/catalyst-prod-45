@@ -49,32 +49,32 @@ export function FieldPicker({ visibleFields, onToggleField }: FieldPickerProps) 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <th className="w-10 px-2 py-2 border-b border-[#DFE1E6] cursor-pointer hover:bg-[#F4F5F7]">
-          <Plus className="h-4 w-4 text-[#6B778C]" />
+        <th className="w-10 px-2 py-2 border-b border-border cursor-pointer hover:bg-muted">
+          <Plus className="h-4 w-4 text-muted-foreground" />
         </th>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-64 p-0 bg-white border border-[#DFE1E6] shadow-lg rounded-[3px]">
-        <div className="p-2 border-b border-[#DFE1E6]">
+      <PopoverContent align="end" className="w-64 p-0 bg-card border border-border shadow-lg rounded-md">
+        <div className="p-2 border-b border-border">
           <div className="relative">
-            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B778C]" />
+            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-8 h-8 text-[13px] bg-[#F4F5F7] border-transparent rounded-[3px] focus:border-[#4C9AFF] focus:bg-white"
+              className="pl-8 h-8 text-[13px] bg-muted border-transparent rounded-md focus:border-[#c69c6d] focus:bg-card"
             />
           </div>
         </div>
         <div className="p-1 max-h-64 overflow-auto">
-          <div className="px-2 py-1 text-[11px] font-semibold text-[#6B778C] uppercase">All fields</div>
+          <div className="px-2 py-1 text-[11px] font-semibold text-muted-foreground uppercase">All fields</div>
           {filteredFields.map((field) => {
             const isVisible = visibleFields.includes(field.id);
             return (
               <button
                 key={field.id}
                 className={cn(
-                  "w-full flex items-center gap-2 px-2 py-1.5 text-[13px] text-[#172B4D] rounded-[3px] hover:bg-[#F4F5F7] text-left",
-                  isVisible && "bg-[#E9F2FF]"
+                  "w-full flex items-center gap-2 px-2 py-1.5 text-[13px] text-foreground rounded-md hover:bg-muted text-left",
+                  isVisible && "bg-[#c69c6d]/10"
                 )}
                 onClick={() => {
                   onToggleField(field.id);
@@ -82,13 +82,13 @@ export function FieldPicker({ visibleFields, onToggleField }: FieldPickerProps) 
               >
                 {field.icon}
                 <span className="flex-1 truncate">{field.label}</span>
-                {isVisible && <Check className="h-4 w-4 text-[#0052CC]" />}
+                {isVisible && <Check className="h-4 w-4 text-[#c69c6d]" />}
               </button>
             );
           })}
         </div>
-        <div className="p-2 border-t border-[#DFE1E6]">
-          <button className="flex items-center gap-1 text-[13px] text-[#0052CC] hover:underline">
+        <div className="p-2 border-t border-border">
+          <button className="flex items-center gap-1 text-[13px] text-[#c69c6d] dark:text-[#d4a855] hover:underline">
             <span>⚙</span>
             Configure fields in fields configuration
           </button>
