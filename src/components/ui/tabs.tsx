@@ -8,18 +8,14 @@ const Tabs = TabsPrimitive.Root;
 const TabsList = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.List>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
->(({ className, style, ...props }, ref) => (
+>(({ className, ...props }, ref) => (
   <TabsPrimitive.List
     ref={ref}
     className={cn(
       "inline-flex h-10 items-center justify-center rounded-md p-1",
+      "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300",
       className,
     )}
-    style={{
-      backgroundColor: 'var(--surface-2)',
-      color: 'var(--text-2)',
-      ...style,
-    }}
     {...props}
   />
 ));
@@ -33,13 +29,12 @@ const TabsTrigger = React.forwardRef<
     ref={ref}
     className={cn(
       "relative inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all",
-      "text-[var(--text-secondary)]",
-      "hover:text-[var(--text-primary)]",
+      "text-gray-600 dark:text-gray-400",
+      "hover:text-gray-900 dark:hover:text-gray-100",
       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
       "disabled:pointer-events-none disabled:opacity-50",
-      "data-[state=active]:shadow-sm data-[state=active]:text-[var(--text-primary)] data-[state=active]:font-semibold",
-      "after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:rounded-t",
-      "data-[state=active]:after:bg-[var(--secondary-green)]",
+      "data-[state=active]:shadow-sm data-[state=active]:text-gray-900 dark:data-[state=active]:text-gray-100 data-[state=active]:font-semibold",
+      "data-[state=active]:bg-white dark:data-[state=active]:bg-gray-900",
       className,
     )}
     {...props}
@@ -50,18 +45,14 @@ TabsTrigger.displayName = TabsPrimitive.Trigger.displayName;
 const TabsContent = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
->(({ className, style, ...props }, ref) => (
+>(({ className, ...props }, ref) => (
   <TabsPrimitive.Content
     ref={ref}
     className={cn(
       "mt-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
+      "text-gray-900 dark:text-gray-100",
       className,
     )}
-    style={{
-      backgroundColor: 'var(--surface-1)',
-      color: 'var(--text-1)',
-      ...style,
-    }}
     {...props}
   />
 ));

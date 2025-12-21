@@ -34,7 +34,7 @@ DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 const dialogContentVariants = cva(
   cn(
     "fixed left-[50%] top-[50%] z-[250] grid w-full translate-x-[-50%] translate-y-[-50%]",
-    "gap-4 border bg-background shadow-xl rounded-lg",
+    "gap-4 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-xl rounded-lg",
     "duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out",
     "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
     "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
@@ -76,11 +76,10 @@ const DialogContent = React.forwardRef<
       {children}
       <DialogPrimitive.Close className={cn(
         "absolute right-4 top-4 rounded-md p-1",
-        "opacity-70 ring-offset-background transition-opacity",
-        "hover:opacity-100 hover:bg-accent",
-        "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
-        "disabled:pointer-events-none",
-        "data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
+        "opacity-70 transition-opacity text-gray-500 dark:text-gray-400",
+        "hover:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-800",
+        "focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2",
+        "disabled:pointer-events-none"
       )}>
         <X className="h-4 w-4" />
         <span className="sr-only">Close</span>
@@ -106,7 +105,7 @@ const DialogTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Title
     ref={ref}
-    className={cn("text-lg font-semibold leading-none tracking-tight text-foreground", className)}
+    className={cn("text-lg font-semibold leading-none tracking-tight text-gray-900 dark:text-gray-100", className)}
     {...props}
   />
 ));
@@ -118,7 +117,7 @@ const DialogDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Description 
     ref={ref} 
-    className={cn("text-sm text-muted-foreground", className)} 
+    className={cn("text-sm text-gray-500 dark:text-gray-400", className)} 
     {...props} 
   />
 ));
