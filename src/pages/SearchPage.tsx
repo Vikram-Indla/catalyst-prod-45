@@ -293,7 +293,7 @@ export default function SearchPage() {
       case 'epic': return 'bg-workitem-epic/20 text-workitem-epic';
       case 'feature': return 'bg-workitem-feature/20 text-workitem-feature';
       case 'story': return 'bg-workitem-story/20 text-workitem-story';
-      case 'subtask': return 'bg-cyan-100 text-cyan-800';
+      case 'subtask': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
       case 'demand': return 'bg-amber-100 text-amber-800';
       default: return 'bg-gray-100 text-gray-800';
     }

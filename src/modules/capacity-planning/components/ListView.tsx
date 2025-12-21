@@ -339,7 +339,7 @@ export function ListView({
                           'inline-block px-1.5 py-0.5 text-xs font-medium border rounded',
                           booking.booking_type === 'ticket' && 'text-secondary-green border-secondary-green/30 bg-secondary-green/5',
                           booking.booking_type === 'leave' && 'text-amber-600 border-amber-300 bg-amber-50',
-                          booking.booking_type === 'task' && 'text-teal-600 border-teal-300 bg-teal-50'
+                          booking.booking_type === 'task' && 'text-blue-600 border-blue-300 bg-blue-50 dark:text-blue-400 dark:border-blue-700 dark:bg-blue-900/30'
                         )}>
                           {getDisplayKey(booking)}
                         </span>

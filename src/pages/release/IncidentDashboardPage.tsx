@@ -338,7 +338,7 @@ export default function IncidentDashboardPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-teal-700 mb-2">{metrics.convertedIncidents.length}</div>
+              <div className="text-2xl font-bold text-blue-700 dark:text-blue-400 mb-2">{metrics.convertedIncidents.length}</div>
               <div className="flex gap-3">
                 <button 
                   className="flex-1 p-2 bg-sky-50 border border-sky-100 rounded text-center hover:bg-sky-100 transition-colors"

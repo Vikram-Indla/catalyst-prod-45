@@ -102,7 +102,7 @@ const priorityIcons: Record<string, { icon: React.ReactNode; color: string }> = 
   'High': { icon: <ArrowUp className="h-4 w-4" />, color: 'text-orange-500' },
   'Medium': { icon: <Minus className="h-4 w-4" />, color: 'text-amber-500' },
   'Low': { icon: <ArrowDown className="h-4 w-4" />, color: 'text-green-500' },
-  'Lowest': { icon: <ChevronsDown className="h-4 w-4" />, color: 'text-slate-500' },
+  'Lowest': { icon: <ChevronsDown className="h-4 w-4" />, color: 'text-gray-500' },
 };
 
 type SortField = string;
@@ -119,15 +119,15 @@ function StatusLozenge({ status, onStatusChange }: { status: string; onStatusCha
           </span>
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-44 p-1 bg-white border border-slate-200 shadow-lg" align="start">
+      <PopoverContent className="w-44 p-1 bg-popover border border-border shadow-lg" align="start">
         <div className="flex flex-col">
           {statusOptions.map((opt) => {
             return (
               <button
                 key={opt}
                 className={cn(
-                  "text-left px-2 py-1.5 text-sm rounded hover:bg-slate-50 transition-colors",
-                  status === opt && "bg-blue-50"
+                  "text-left px-2 py-1.5 text-sm rounded hover:bg-muted transition-colors",
+                  status === opt && "bg-muted"
                 )}
                 onClick={() => onStatusChange(opt)}
               >
@@ -163,7 +163,7 @@ function AssigneeCell({ assignee, onAssigneeChange }: {
   return (
     <Popover>
       <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
-        <button className="inline-flex items-center gap-2 hover:bg-slate-50 rounded px-1 py-0.5 -mx-1 transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 min-w-0">
+        <button className="inline-flex items-center gap-2 hover:bg-muted rounded px-1 py-0.5 -mx-1 transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 min-w-0">
           {assignee ? (
             <>
               <Avatar className="h-6 w-6 flex-shrink-0">
@@ -171,31 +171,31 @@ function AssigneeCell({ assignee, onAssigneeChange }: {
                   {getInitials(assignee.name)}
                 </AvatarFallback>
               </Avatar>
-              <span className="text-[14px] leading-5 text-slate-900 truncate">{assignee.name}</span>
+              <span className="text-sm text-foreground truncate">{assignee.name}</span>
             </>
           ) : (
-            <span className="text-[14px] leading-5 text-slate-500">Unassigned</span>
+            <span className="text-sm text-muted-foreground">Unassigned</span>
           )}
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-64 p-0 bg-white border border-slate-200 shadow-lg" align="start">
-        <div className="p-2 border-b border-slate-200">
+      <PopoverContent className="w-64 p-0 bg-popover border border-border shadow-lg" align="start">
+        <div className="p-2 border-b border-border">
           <Input
             placeholder="Search assignees..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="h-8 text-[14px] bg-slate-50 border-transparent rounded focus:border-blue-400 focus:bg-white"
+            className="h-8 text-sm bg-muted/50 border-transparent rounded focus:border-ring focus:bg-background"
           />
         </div>
         <div className="flex flex-col max-h-60 overflow-auto p-1">
           <button
-            className="flex items-center gap-2 px-2 py-1.5 text-sm rounded hover:bg-slate-50 transition-colors text-left text-blue-600"
+            className="flex items-center gap-2 px-2 py-1.5 text-sm rounded hover:bg-muted transition-colors text-left text-[#c69c6d]"
             onClick={() => onAssigneeChange(null)}
           >
             Unassigned
           </button>
           <button
-            className="flex items-center gap-2 px-2 py-1.5 text-sm rounded hover:bg-blue-100 bg-blue-50 transition-colors text-left text-blue-600 font-medium"
+            className="flex items-center gap-2 px-2 py-1.5 text-sm rounded hover:bg-[#c69c6d]/20 bg-[#c69c6d]/10 transition-colors text-left text-[#c69c6d] font-medium"
             onClick={() => onAssigneeChange({ name: 'Vikram India' })}
           >
             <Avatar className="h-6 w-6 flex-shrink-0">
@@ -203,13 +203,13 @@ function AssigneeCell({ assignee, onAssigneeChange }: {
             </Avatar>
             Vikram India (Assign to me)
           </button>
-          <div className="h-px bg-slate-200 my-1" />
+          <div className="h-px bg-border my-1" />
           {filteredAssignees.map((opt) => (
             <button
               key={opt.name}
               className={cn(
-                "flex items-center gap-2 px-2 py-1.5 text-sm rounded hover:bg-slate-50 transition-colors text-left",
-                assignee?.name === opt.name && "bg-blue-50"
+                "flex items-center gap-2 px-2 py-1.5 text-sm rounded hover:bg-muted transition-colors text-left",
+                assignee?.name === opt.name && "bg-muted"
               )}
               onClick={() => onAssigneeChange(opt)}
             >
@@ -218,7 +218,7 @@ function AssigneeCell({ assignee, onAssigneeChange }: {
                   {getInitials(opt.name)}
                 </AvatarFallback>
               </Avatar>
-              <span className="text-slate-900">{opt.name}</span>
+              <span className="text-foreground">{opt.name}</span>
             </button>
           ))}
         </div>
@@ -238,25 +238,25 @@ function PriorityCell({ priority, onPriorityChange }: {
   return (
     <Popover>
       <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
-        <button className="inline-flex items-center gap-1.5 hover:bg-slate-50 rounded px-1 py-0.5 -mx-1 transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1">
+        <button className="inline-flex items-center gap-1.5 hover:bg-muted rounded px-1 py-0.5 -mx-1 transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1">
           <span className={info.color}>{info.icon}</span>
-          <span className="text-[14px] leading-5 text-slate-900">{priority}</span>
+          <span className="text-sm text-foreground">{priority}</span>
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-40 p-1 bg-white border border-slate-200 shadow-lg" align="start">
+      <PopoverContent className="w-40 p-1 bg-popover border border-border shadow-lg" align="start">
         {priorityOptions.map((opt) => {
           const optInfo = priorityIcons[opt] || priorityIcons['Medium'];
           return (
             <button
               key={opt}
               className={cn(
-                "w-full flex items-center gap-2 px-2 py-1.5 text-sm rounded hover:bg-slate-50 transition-colors text-left",
-                priority === opt && "bg-blue-50"
+                "w-full flex items-center gap-2 px-2 py-1.5 text-sm rounded hover:bg-muted transition-colors text-left",
+                priority === opt && "bg-muted"
               )}
               onClick={() => onPriorityChange(opt)}
             >
               <span className={optInfo.color}>{optInfo.icon}</span>
-              <span className="text-slate-900">{opt}</span>
+              <span className="text-foreground">{opt}</span>
             </button>
           );
         })}
@@ -419,7 +419,7 @@ export function ListView() {
     <th 
       scope={scope}
       className={cn(
-        "px-3 py-2 text-left text-[12px] leading-4 font-medium text-slate-500 bg-slate-50 border-b border-r border-slate-200 last:border-r-0 whitespace-nowrap",
+        "px-3 py-2 text-left text-xs font-medium text-muted-foreground bg-muted/50 border-b border-r border-border last:border-r-0 whitespace-nowrap",
         className
       )}
     >
@@ -431,7 +431,7 @@ export function ListView() {
   const TableCell = ({ children, className, onClick }: { children?: React.ReactNode; className?: string; onClick?: (e: React.MouseEvent) => void }) => (
     <td 
       className={cn(
-        "px-3 py-2.5 text-[14px] leading-5 text-slate-900 border-b border-r border-slate-200 last:border-r-0",
+        "px-3 py-2.5 text-sm text-foreground border-b border-r border-border last:border-r-0",
         className
       )}
       onClick={onClick}
@@ -441,11 +441,11 @@ export function ListView() {
   );
 
   return (
-    <div className="h-full flex bg-white" style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif" }}>
+    <div className="h-full flex bg-background" style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif" }}>
       {/* Main content area */}
-      <div className={cn("flex-1 flex flex-col min-w-0", selectedItem && "border-r border-slate-200")}>
+      <div className={cn("flex-1 flex flex-col min-w-0", selectedItem && "border-r border-border")}>
         {/* Toolbar */}
-        <div className="flex items-center justify-between px-4 py-2 border-b border-slate-200 bg-white">
+        <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-background">
           <div className="flex items-center gap-3">
             <div className="relative">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />

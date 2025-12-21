@@ -50,7 +50,7 @@ export default function AdminDashboard() {
       description: 'Configure Jira and other connectors',
       icon: Database,
       path: '/admin/jira-config',
-      color: 'text-cyan-600',
+      color: 'text-blue-600',
     },
     {
       title: 'Security',

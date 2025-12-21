@@ -37,7 +37,7 @@ export function ColumnHeaderMenu({
       <DropdownMenuTrigger asChild>
         <th
           className={cn(
-            "px-3 py-2 text-left text-[12px] leading-4 font-medium text-slate-500 cursor-pointer hover:bg-slate-100 select-none whitespace-nowrap border-b border-r border-slate-200 bg-slate-50 last:border-r-0 group",
+            "px-3 py-2 text-left text-[12px] leading-4 font-medium text-muted-foreground cursor-pointer hover:bg-muted select-none whitespace-nowrap border-b border-r border-border bg-muted/50 last:border-r-0 group",
             className
           )}
         >
@@ -52,39 +52,39 @@ export function ColumnHeaderMenu({
           </div>
         </th>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-52 bg-white border border-[#DFE1E6] shadow-lg rounded-[3px] p-1">
+      <DropdownMenuContent align="start" className="w-52 bg-popover border border-border shadow-lg rounded-md p-1">
         <DropdownMenuItem
-          className="flex items-center gap-2 px-3 py-2 text-[13px] text-[#172B4D] cursor-pointer hover:bg-[#F4F5F7] rounded-[3px]"
+          className="flex items-center gap-2 px-3 py-2 text-sm text-foreground cursor-pointer hover:bg-muted rounded-md"
           onClick={() => onSort(field, 'asc')}
         >
-          <ArrowUp className="h-4 w-4 text-[#6B778C]" />
+          <ArrowUp className="h-4 w-4 text-muted-foreground" />
           Sort in ascending order
         </DropdownMenuItem>
         <DropdownMenuItem
-          className="flex items-center gap-2 px-3 py-2 text-[13px] text-[#172B4D] cursor-pointer hover:bg-[#F4F5F7] rounded-[3px]"
+          className="flex items-center gap-2 px-3 py-2 text-sm text-foreground cursor-pointer hover:bg-muted rounded-md"
           onClick={() => onSort(field, 'desc')}
         >
-          <ArrowDown className="h-4 w-4 text-[#6B778C]" />
+          <ArrowDown className="h-4 w-4 text-muted-foreground" />
           Sort in descending order
         </DropdownMenuItem>
         {isSorted && (
           <>
-            <DropdownMenuSeparator className="my-1 bg-[#DFE1E6]" />
+            <DropdownMenuSeparator className="my-1 bg-border" />
             <DropdownMenuItem
-              className="flex items-center gap-2 px-3 py-2 text-[13px] text-[#172B4D] cursor-pointer hover:bg-[#F4F5F7] rounded-[3px]"
+              className="flex items-center gap-2 px-3 py-2 text-sm text-foreground cursor-pointer hover:bg-muted rounded-md"
               onClick={onClearSort}
             >
-              <X className="h-4 w-4 text-[#6B778C]" />
+              <X className="h-4 w-4 text-muted-foreground" />
               Clear sorting
             </DropdownMenuItem>
           </>
         )}
-        <DropdownMenuSeparator className="my-1 bg-[#DFE1E6]" />
+        <DropdownMenuSeparator className="my-1 bg-border" />
         <DropdownMenuItem
-          className="flex items-center gap-2 px-3 py-2 text-[13px] text-[#172B4D] cursor-pointer hover:bg-[#F4F5F7] rounded-[3px]"
+          className="flex items-center gap-2 px-3 py-2 text-sm text-foreground cursor-pointer hover:bg-muted rounded-md"
           onClick={() => onHideField(field)}
         >
-          <EyeOff className="h-4 w-4 text-[#6B778C]" />
+          <EyeOff className="h-4 w-4 text-muted-foreground" />
           Hide field
         </DropdownMenuItem>
       </DropdownMenuContent>
