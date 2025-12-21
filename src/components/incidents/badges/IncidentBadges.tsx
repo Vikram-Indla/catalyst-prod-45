@@ -11,10 +11,10 @@ import type { IncidentStatus, SeverityLevel, PriorityLevel, SupportLevel } from 
 export const STATUS_CONFIG: Record<IncidentStatus, { label: string; className: string }> = {
   open: { label: 'New', className: 'bg-slate-100 text-slate-700 border-slate-200' },
   triage: { label: 'Triage', className: 'bg-amber-50 text-amber-700 border-amber-200' },
-  to_committee: { label: 'To Committee', className: 'bg-violet-50 text-violet-700 border-violet-200' },
+  to_committee: { label: 'Committee', className: 'bg-amber-50 text-amber-700 border-amber-200' },
   in_progress: { label: 'In Progress', className: 'bg-sky-50 text-sky-700 border-sky-200' },
   resolved: { label: 'Resolved', className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-  converted: { label: 'Converted', className: 'bg-teal-50 text-teal-700 border-teal-200' },
+  converted: { label: 'Converted', className: 'bg-slate-100 text-slate-700 border-slate-200' },
   closed: { label: 'Closed', className: 'bg-muted text-muted-foreground border-border' },
 };
 
@@ -38,7 +38,7 @@ export const PRIORITY_CONFIG: Record<PriorityLevel, { label: string; fullLabel: 
 export const SUPPORT_LEVEL_CONFIG: Record<SupportLevel, { label: string; className: string }> = {
   L1: { label: 'L1', className: 'bg-slate-50 text-slate-600 border-slate-200' },
   L2: { label: 'L2', className: 'bg-slate-100 text-slate-700 border-slate-300' },
-  L3: { label: 'L3', className: 'bg-violet-50 text-violet-700 border-violet-200' },
+  L3: { label: 'L3', className: 'bg-slate-100 text-slate-700 border-slate-300' },
 };
 
 // ============================================

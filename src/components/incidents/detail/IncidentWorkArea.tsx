@@ -522,7 +522,7 @@ export function IncidentWorkArea({
                       'text-[10px] h-5 px-1.5',
                       committee.status === 'approved' && 'bg-emerald-50 text-emerald-700 border-emerald-200',
                       committee.status === 'rejected' && 'bg-rose-50 text-rose-700 border-rose-200',
-                      committee.status === 'pending' && 'bg-violet-50 text-violet-700 border-violet-200'
+                      committee.status === 'pending' && 'bg-amber-50 text-amber-700 border-amber-200'
                     )}
                   >
                     {committee.status === 'pending' ? 'In Review' : 

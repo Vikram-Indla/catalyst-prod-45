@@ -31,7 +31,8 @@ const variantStyles: Record<string, string> = {
   danger: 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400',
   info: 'bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-400',
   muted: 'bg-muted/50 text-muted-foreground',
-  accent: 'bg-violet-50 dark:bg-violet-950/40 text-violet-700 dark:text-violet-400',
+  // NOTE: "accent" must stay within approved neutral palette (no purple/violet).
+  accent: 'bg-slate-100 dark:bg-slate-900/40 text-slate-700 dark:text-slate-300',
 };
 
 const dotStyles: Record<string, string> = {
@@ -41,7 +42,7 @@ const dotStyles: Record<string, string> = {
   danger: 'bg-rose-500',
   info: 'bg-sky-500',
   muted: 'bg-muted-foreground/40',
-  accent: 'bg-violet-500',
+  accent: 'bg-slate-400',
 };
 
 export function TablePill({ 
@@ -86,7 +87,7 @@ export function StatusPill({ status }: { status: string }) {
   const statusConfig: Record<string, { label: string; variant: TablePillProps['variant']; dot?: boolean }> = {
     open: { label: 'Open', variant: 'muted' },
     triage: { label: 'Triage', variant: 'warning', dot: true },
-    to_committee: { label: 'Committee', variant: 'accent', dot: true },
+    to_committee: { label: 'Committee', variant: 'warning', dot: true },
     in_progress: { label: 'In Progress', variant: 'info', dot: true },
     resolved: { label: 'Resolved', variant: 'success', dot: true },
     converted: { label: 'Converted', variant: 'muted' },
