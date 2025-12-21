@@ -155,12 +155,13 @@ export function LookupMultiSelect({
   
   const selectedValues = value || [];
 
-  // Calculate dropdown position when opening
+  // Calculate dropdown position when opening - always open upward
   React.useEffect(() => {
     if (open && triggerRef.current) {
       const rect = triggerRef.current.getBoundingClientRect();
+      const dropdownHeight = 240; // max height of dropdown
       setDropdownPosition({
-        top: rect.bottom + 4,
+        top: rect.top - dropdownHeight - 4, // Position above the trigger
         left: rect.left,
         width: rect.width,
       });
