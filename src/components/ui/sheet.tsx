@@ -93,7 +93,8 @@ const SheetContent = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Con
             // 1. flex-col + overflow-hidden ensures single scroll container pattern
             // 2. Explicit white/gray-900 ensures opaque panel in both modes
             // 3. Explicit text colors ensure readable text
-            "flex flex-col overflow-hidden bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100",
+            // 4. rounded-none ensures clean rectangle edges (no rounded corners)
+            "flex flex-col overflow-hidden bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-none",
             // Border styling
             isHorizontal ? "border-l border-gray-200 dark:border-gray-700" : "border-t border-gray-200 dark:border-gray-700",
             className
