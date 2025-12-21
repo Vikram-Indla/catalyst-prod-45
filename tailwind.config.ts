@@ -112,6 +112,9 @@ export default {
           800: "#7d5a38",
           900: "#664a30",
           950: "#382618",
+          /* WCAG-compliant link colors */
+          link: "hsl(var(--gold-link))",
+          "link-hover": "hsl(var(--gold-link-hover))",
         },
 
         /* Shadcn semantic colors */

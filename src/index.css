@@ -136,6 +136,10 @@
     --status-danger: #ef4444;
     --status-danger-bg: rgba(239, 68, 68, 0.1);
     --status-danger-border: rgba(239, 68, 68, 0.3);
+    
+    /* Gold link colors - Light mode (WCAG AA compliant) */
+    --gold-link: 30 33% 49%;             /* #a67c52 - darker for contrast */
+    --gold-link-hover: 40 75% 32%;       /* #8b6914 - even darker */
   }
   
   [data-theme="dark"],
@@ -266,6 +270,10 @@
     --status-danger: #f87171;
     --status-danger-bg: rgba(248, 113, 113, 0.15);
     --status-danger-border: rgba(248, 113, 113, 0.4);
+    
+    /* Gold link colors - Dark mode (WCAG AA compliant) */
+    --gold-link: 40 55% 55%;             /* #d4a855 - lighter for visibility */
+    --gold-link-hover: 40 55% 70%;       /* #e5c078 - brighter */
   }
   
   * {

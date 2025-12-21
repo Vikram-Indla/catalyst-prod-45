@@ -51,7 +51,7 @@ export function FeatureLinksTab({ feature }: FeatureLinksTabProps) {
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <span className="font-mono text-sm font-medium text-primary">
+                <span className="font-mono text-sm font-medium text-gold-link hover:text-gold-link-hover transition-colors">
                   {feature.epic.epic_key}
                 </span>
                 <span className="text-muted-foreground">·</span>
@@ -87,7 +87,7 @@ export function FeatureLinksTab({ feature }: FeatureLinksTabProps) {
               <div className="w-6 h-6 rounded bg-blue-500/10 flex items-center justify-center">
                 <FileText className="h-3.5 w-3.5 text-blue-500" />
               </div>
-              <span className="font-mono text-xs font-medium text-primary">
+              <span className="font-mono text-xs font-medium text-gold-link hover:text-gold-link-hover transition-colors">
                 {story.key}
               </span>
               <span className="text-sm text-foreground flex-1 truncate">{story.name}</span>
@@ -137,7 +137,7 @@ export function FeatureLinksTab({ feature }: FeatureLinksTabProps) {
               <span className="text-xs font-medium text-muted-foreground uppercase">
                 {dep.type === 'blocks' ? 'Blocks' : 'Blocked by'}
               </span>
-              <span className="font-mono text-xs font-medium text-primary">
+              <span className="font-mono text-xs font-medium text-gold-link hover:text-gold-link-hover transition-colors">
                 {dep.itemKey}
               </span>
               <span className="text-sm text-foreground flex-1 truncate">{dep.itemName}</span>
@@ -174,10 +174,10 @@ export function FeatureLinksTab({ feature }: FeatureLinksTabProps) {
               key={change.id}
               className="flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-muted/30 transition-colors"
             >
-              <div className="w-6 h-6 rounded bg-purple-500/10 flex items-center justify-center">
-                <Ban className="h-3.5 w-3.5 text-purple-500" />
+              <div className="w-6 h-6 rounded bg-amber-500/10 flex items-center justify-center">
+                <Ban className="h-3.5 w-3.5 text-amber-500" />
               </div>
-              <span className="font-mono text-xs font-medium text-primary">
+              <span className="font-mono text-xs font-medium text-gold-link hover:text-gold-link-hover transition-colors">
                 {change.key}
               </span>
               <span className="text-sm text-foreground flex-1 truncate">{change.name}</span>
