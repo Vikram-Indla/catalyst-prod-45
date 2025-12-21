@@ -39,6 +39,8 @@ export interface IndustryHeaderToolbarV2Props {
 
   onExport?: () => void;
   onColumnsConfig?: () => void;
+  onOpenFilters?: () => void;
+  activeFiltersCount?: number;
 }
 
 // Icons - inline SVGs (tree-shakeable)
@@ -76,6 +78,11 @@ const Icons = {
       <line x1="15" y1="3" x2="15" y2="21" />
     </svg>
   ),
+  Filter: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+    </svg>
+  ),
 };
 
 // Default avatar colors
@@ -102,6 +109,8 @@ export function IndustryHeaderToolbarV2({
   onDensityModeChange,
   onExport,
   onColumnsConfig,
+  onOpenFilters,
+  activeFiltersCount = 0,
 }: IndustryHeaderToolbarV2Props) {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -213,6 +222,23 @@ export function IndustryHeaderToolbarV2({
             <div className="w-4 h-4">
               <Icons.Density />
             </div>
+          </button>
+        )}
+
+        {onOpenFilters && (
+          <button
+            onClick={onOpenFilters}
+            className="relative w-9 h-9 flex items-center justify-center rounded-lg border border-border bg-background text-muted-foreground hover:bg-muted transition-colors"
+            title="Filters"
+          >
+            <div className="w-4 h-4">
+              <Icons.Filter />
+            </div>
+            {activeFiltersCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-brand-primary text-[10px] font-semibold text-white flex items-center justify-center">
+                {activeFiltersCount}
+              </span>
+            )}
           </button>
         )}
 
