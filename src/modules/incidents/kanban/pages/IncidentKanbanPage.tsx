@@ -1,21 +1,14 @@
 /**
  * Incident Kanban Page
  * Production-grade Kanban board for Incident management
+ * Enhanced with breached alerts, grouped filters, breadcrumb navigation
  */
 
-import { useState, useMemo, useCallback, useRef } from 'react';
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Loader2, AlertCircle, RefreshCw, Settings2, ChevronsLeftRight, ChevronsRightLeft, MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,7 +29,9 @@ import { toast } from 'sonner';
 import { KanbanColumn } from '../components/KanbanColumn';
 import { KanbanSwimlane } from '../components/KanbanSwimlane';
 import { ManageColumnsDialog } from '../components/ManageColumnsDialog';
-import { QuickFilterChips } from '../components/QuickFilterChips';
+import { BreachedAlertBanner } from '../components/BreachedAlertBanner';
+import { KanbanBreadcrumb } from '../components/KanbanBreadcrumb';
+import { KanbanFiltersBar } from '../components/KanbanFiltersBar';
 import { SetCommitteeApproversModal, CommitteeSetupData } from '../components/SetCommitteeApproversModal';
 import { useKanbanColumnPrefs } from '../hooks/useKanbanColumnPrefs';
 import { useKanbanColumnConfig } from '../hooks/useKanbanColumnConfig';
@@ -46,11 +41,11 @@ import {
   groupIncidents,
   type GroupByOption,
   getSlaHealth,
-  type QuickFilterKey,
   QUICK_FILTERS,
   applyQuickFilters,
+  type QuickFilterKey,
 } from '../types';
-import type { Incident, IncidentStatus } from '@/types/incident';
+import type { Incident, IncidentStatus, SeverityLevel } from '@/types/incident';
 
 // Pending committee drop context
 interface PendingCommitteeDrop {
@@ -68,6 +63,9 @@ export default function IncidentKanbanPage() {
   const [showOpenOnly, setShowOpenOnly] = useState(true);
   const [groupBy, setGroupBy] = useState<GroupByOption>('none');
   const [quickFilters, setQuickFilters] = useState<QuickFilterKey[]>([]);
+  const [selectedSeverity, setSelectedSeverity] = useState<SeverityLevel | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<'breached' | 'at_risk' | null>(null);
+  const [selectedAssignee, setSelectedAssignee] = useState<string | null>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [optimisticUpdates, setOptimisticUpdates] = useState<Record<string, IncidentStatus>>({});
   
@@ -151,10 +149,39 @@ export default function IncidentKanbanPage() {
     return counts;
   }, [baseFilteredIncidents]);
 
-  // Apply quick filters
+  // Apply all filters (quick filters + dropdown filters)
   const filteredIncidents = useMemo(() => {
-    return applyQuickFilters(baseFilteredIncidents, quickFilters);
-  }, [baseFilteredIncidents, quickFilters]);
+    let result = applyQuickFilters(baseFilteredIncidents, quickFilters);
+    
+    // Apply severity filter
+    if (selectedSeverity) {
+      result = result.filter(inc => inc.severity === selectedSeverity);
+    }
+    
+    // Apply status filter (breached/at_risk)
+    if (selectedStatus) {
+      result = result.filter(inc => {
+        const health = getSlaHealth(inc);
+        return health === selectedStatus;
+      });
+    }
+    
+    // Apply assignee filter
+    if (selectedAssignee) {
+      if (selectedAssignee === 'unassigned') {
+        result = result.filter(inc => !inc.assignee_id);
+      } else {
+        result = result.filter(inc => inc.assignee_id === selectedAssignee);
+      }
+    }
+    
+    return result;
+  }, [baseFilteredIncidents, quickFilters, selectedSeverity, selectedStatus, selectedAssignee]);
+
+  // Calculate breached count for alert banner
+  const breachedCount = useMemo(() => {
+    return baseFilteredIncidents.filter(inc => getSlaHealth(inc) === 'breached').length;
+  }, [baseFilteredIncidents]);
 
   // Group incidents by status for non-swimlane view
   const incidentsByStatus = useMemo(() => {
@@ -575,61 +602,35 @@ export default function IncidentKanbanPage() {
           }
         />
 
-        {/* Page Controls */}
-        <div className="px-4 sm:px-6 py-3 border-b border-border bg-muted/20 flex flex-wrap items-center gap-4 sm:gap-6">
-          {/* Toggle: Open tickets / Include closed */}
-          <div className="flex items-center gap-2">
-            <Switch
-              id="show-open"
-              checked={showOpenOnly}
-              onCheckedChange={setShowOpenOnly}
-            />
-            <Label htmlFor="show-open" className="text-sm cursor-pointer">
-              {showOpenOnly ? 'Open tickets' : 'Include closed tickets'}
-            </Label>
-          </div>
+        {/* Breadcrumb */}
+        <KanbanBreadcrumb />
 
-          <div className="h-5 w-px bg-border hidden sm:block" />
+        {/* Breached Alert Banner */}
+        <BreachedAlertBanner 
+          breachedCount={breachedCount}
+          onViewBreached={() => setSelectedStatus('breached')}
+        />
 
-          {/* Group by dropdown */}
-          <div className="flex items-center gap-2">
-            <Label className="text-sm text-muted-foreground">Group by:</Label>
-            <Select value={groupBy} onValueChange={(v) => setGroupBy(v as GroupByOption)}>
-              <SelectTrigger className="w-[140px] h-8 text-sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {GROUP_BY_OPTIONS.map(opt => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="h-5 w-px bg-border hidden sm:block" />
-
-          {/* Quick Filter Chips */}
-          <QuickFilterChips
-            activeFilters={quickFilters}
-            onToggle={handleToggleQuickFilter}
-            counts={quickFilterCounts}
-          />
-
-          {/* Stats summary */}
-          <div className="ml-auto flex items-center gap-3 text-xs text-muted-foreground">
-            <span>{filteredIncidents.length} incident{filteredIncidents.length !== 1 ? 's' : ''}</span>
-            {quickFilters.length > 0 && (
-              <button 
-                onClick={() => setQuickFilters([])}
-                className="text-primary hover:underline"
-              >
-                Clear filters
-              </button>
-            )}
-          </div>
-        </div>
+        {/* Filters Bar */}
+        <KanbanFiltersBar
+          incidents={baseFilteredIncidents}
+          filteredCount={filteredIncidents.length}
+          showOpenOnly={showOpenOnly}
+          onShowOpenOnlyChange={setShowOpenOnly}
+          groupBy={groupBy}
+          onGroupByChange={setGroupBy}
+          selectedSeverity={selectedSeverity}
+          onSeverityChange={setSelectedSeverity}
+          selectedStatus={selectedStatus}
+          onStatusChange={setSelectedStatus}
+          selectedAssignee={selectedAssignee}
+          onAssigneeChange={setSelectedAssignee}
+          onClearFilters={() => {
+            setSelectedSeverity(null);
+            setSelectedStatus(null);
+            setSelectedAssignee(null);
+          }}
+        />
 
         {/* Kanban Board */}
         <div className="flex-1 overflow-hidden">
