@@ -111,7 +111,7 @@ export const CatalystToast: React.FC<CatalystToastProps> = ({
                 'bg-transparent border-none cursor-pointer p-0',
                 'hover:text-brand-primary-dark hover:underline',
                 'transition-all duration-150 ease-out',
-                'focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2 rounded'
+                'focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600 focus:ring-offset-2 rounded'
               )}
             >
               {action.label}
@@ -129,7 +129,7 @@ export const CatalystToast: React.FC<CatalystToastProps> = ({
           'bg-transparent border-none cursor-pointer rounded-md',
           'text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100',
           'transition-all duration-150 ease-out',
-          'focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2'
+          'focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600 focus:ring-offset-2'
         )}
       >
         <X size={18} strokeWidth={1.5} aria-hidden="true" />

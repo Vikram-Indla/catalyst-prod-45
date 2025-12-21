@@ -78,7 +78,7 @@ const DialogContent = React.forwardRef<
         "absolute right-4 top-4 rounded-md p-1",
         "opacity-70 transition-opacity text-gray-500 dark:text-gray-400",
         "hover:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-800",
-        "focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2",
+        "focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600 focus:ring-offset-2",
         "disabled:pointer-events-none"
       )}>
         <X className="h-4 w-4" />

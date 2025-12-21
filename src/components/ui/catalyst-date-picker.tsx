@@ -259,7 +259,7 @@ function CatalystDatePicker({
                 onClick={() => handleDateSelect(day.date)}
                 className={cn(
                   "h-9 w-9 flex items-center justify-center text-sm rounded-md transition-colors",
-                  "hover:bg-brand-primary/10 focus:outline-none focus:ring-2 focus:ring-brand-primary/50",
+                  "hover:bg-brand-primary/10 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600",
                   !day.isCurrentMonth && "text-muted-foreground opacity-50",
                   day.isToday && !day.isSelected && "border border-brand-primary text-brand-primary font-medium",
                   day.isSelected && "bg-brand-primary text-white hover:bg-brand-primary-hover font-medium",
