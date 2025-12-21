@@ -69,7 +69,7 @@ export default function ProjectDirectory() {
   });
 
   // Using semantic color classes instead of hex colors
-  const iconBgClasses = ['bg-blue-500', 'bg-red-500', 'bg-cyan-500', 'bg-amber-500', 'bg-green-500', 'bg-purple-500'];
+  const iconBgClasses = ['bg-blue-500', 'bg-red-500', 'bg-blue-600', 'bg-amber-500', 'bg-green-500', 'bg-gray-500'];
   const icons = ['🧭', '💼', '🏢', '🔧', '📊', '📱', '⚙️', '🚀'];
 
   const projects: Project[] = (projectsData || []).map((p: any, index) => ({

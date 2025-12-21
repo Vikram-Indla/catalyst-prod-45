@@ -644,7 +644,7 @@ export default function ProgramBoard() {
                       <div className="w-full h-full bg-gradient-to-br from-amber-700 to-amber-900" style={{backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 4px, rgba(0,0,0,.2) 4px, rgba(0,0,0,.2) 8px)'}} />
                     )}
                     {!team.name.includes('Cheetah') && !team.name.includes('Giraffe') && !team.name.includes('Hunters') && (
-                      <div className="w-full h-full bg-gradient-to-br from-cyan-500 to-cyan-700" />
+                      <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-700" />
                     )}
                   </div>
                   <span className="text-[10px] sm:text-xs text-primary hover:text-primary/80 cursor-pointer font-medium truncate">{team.name}</span>
