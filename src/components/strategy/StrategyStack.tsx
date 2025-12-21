@@ -448,12 +448,11 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                           />
                         </div>
                         <span 
-                          className={cn(TYPOGRAPHY.countBadge, 'px-1 py-0.5 rounded')}
-                          style={{ 
-                            backgroundColor: 'var(--surface-subtle)',
-                            color: coverageStatus.color,
-                            border: `1px solid ${coverageStatus.color}`,
-                          }}
+                          className={cn(
+                            TYPOGRAPHY.countBadge, 
+                            'px-1.5 py-0.5 rounded font-medium',
+                            coverageStatus.badgeClass
+                          )}
                         >
                           {data.coverage}%
                         </span>
@@ -479,15 +478,15 @@ export function StrategyStack({ onLayerClick, snapshotId }: StrategyStackProps) 
                     )}
                   </div>
                   
-                  {/* Gap Badge - Neutral grey for Onyx consistency */}
+                  {/* Gap Badge - Amber (warning) when gaps exist, grey when zero */}
                   <div className="text-center">
                     {hasGap ? (
                       <span 
                         className={cn(
                           TYPOGRAPHY.countBadge, 
                           'inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded',
-                          'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300',
-                          'border border-gray-300 dark:border-gray-600'
+                          'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400',
+                          'border border-amber-300 dark:border-amber-600/50'
                         )}
                       >
                         <AlertTriangle size={10} />
