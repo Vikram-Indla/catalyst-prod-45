@@ -284,14 +284,15 @@
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
-   SIDEBAR ACTIVE STATES
+   SIDEBAR ACTIVE STATES — Scoped to sidebar elements ONLY
    ════════════════════════════════════════════════════════════════════════════ */
 
 @layer components {
-  /* Active sidebar items should be gold */
-  [data-active="true"],
-  .active,
-  [data-state="active"] {
+  /* Active sidebar items should be gold - ONLY sidebar elements */
+  [data-sidebar] [data-active="true"],
+  [data-sidebar] .active,
+  [data-sidebar="menu-button"][data-state="active"],
+  [data-sidebar="menu-button"][data-active="true"] {
     background-color: hsl(var(--sidebar-accent)) !important;
     color: hsl(var(--sidebar-accent-foreground)) !important;
   }
@@ -305,9 +306,9 @@
     background-color: hsl(0 0% 90%);
   }
   
-  [data-sidebar="menu-button"][data-active="true"] {
-    background-color: hsl(var(--sidebar-primary)) !important;
-    color: hsl(var(--sidebar-primary-foreground)) !important;
+  .dark [data-sidebar="menu-button"]:hover,
+  [data-theme="dark"] [data-sidebar="menu-button"]:hover {
+    background-color: hsl(0 0% 20%);
   }
 }
 
