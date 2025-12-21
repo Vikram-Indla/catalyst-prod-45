@@ -87,7 +87,10 @@ export const DemandColumn = forwardRef<HTMLDivElement, DemandColumnProps>(
           
           {/* Content: Title, Owner, Platform */}
           <div className="flex-1 min-w-0">
-            <div className="font-medium text-sm mb-1 truncate" title={demand.title}>
+            <div 
+              className="font-medium text-sm mb-1 truncate text-[#c69c6d] dark:text-[#d4a855] hover:underline cursor-pointer" 
+              title={demand.title}
+            >
               {demand.title}
             </div>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
