@@ -37,8 +37,8 @@ const statusStyles: Record<string, { light: { bg: string; text: string }; dark: 
     label: 'Closed' 
   },
   'implementing': { 
-    light: { bg: 'bg-purple-100', text: 'text-purple-700' },
-    dark: { bg: 'dark:bg-purple-900/30', text: 'dark:text-purple-400' },
+    light: { bg: 'bg-blue-100', text: 'text-blue-700' },
+    dark: { bg: 'dark:bg-blue-900/30', text: 'dark:text-blue-400' },
     label: 'Implementing' 
   },
   'analysis': { 

@@ -17,9 +17,9 @@ const LABEL_COLORS: Record<string, string> = {
   yellow: 'bg-yellow-500',
   green: 'bg-green-500',
   blue: 'bg-blue-500',
-  purple: 'bg-purple-500',
-  pink: 'bg-pink-500',
-  cyan: 'bg-cyan-500',
+  purple: 'bg-gray-500',
+  pink: 'bg-amber-500',
+  cyan: 'bg-blue-400',
   gray: 'bg-gray-500',
 };
 

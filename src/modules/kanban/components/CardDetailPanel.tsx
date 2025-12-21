@@ -260,8 +260,8 @@ export function CardDetailPanel({ ticket, onClose, onOpenFullView, teamMembers =
               <span style={{
                 padding: '4px 10px',
                 borderRadius: '6px',
-                backgroundColor: `${KANBAN_COLORS.purple}12`,
-                color: KANBAN_COLORS.purple,
+                backgroundColor: `${KANBAN_COLORS.gold}12`,
+                color: KANBAN_COLORS.gold,
                 fontSize: '12px',
                 fontWeight: 600,
               }}>

@@ -49,8 +49,8 @@ export default function OKRTree() {
 
   const getTierColor = (tier: string) => {
     switch (tier) {
-      case 'yearly_goal': return 'bg-purple-200 text-purple-900';
-      case 'portfolio': return 'bg-blue-500 text-white';
+      case 'yearly_goal': return 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100';
+      case 'portfolio': return 'bg-gray-500 text-white';
       case 'program': return 'bg-blue-400 text-white';
       case 'team': return 'bg-blue-300 text-blue-900';
       default: return 'bg-gray-200 text-gray-900';

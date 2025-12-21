@@ -39,7 +39,7 @@ const mockSystemRoles = [
     userCount: 8, 
     description: 'Manage portfolios, epics, and strategic planning',
     permissions: ['Portfolios', 'Epics', 'Themes', 'Roadmaps'],
-    color: 'purple',
+    color: 'gray',
     active: true 
   },
   { 
@@ -69,7 +69,7 @@ const mockSystemRoles = [
     userCount: 18, 
     description: 'Facilitate agile ceremonies and remove impediments',
     permissions: ['Sprints', 'Ceremonies', 'Impediments', 'Metrics'],
-    color: 'teal',
+    color: 'blue',
     active: true 
   },
   { 
@@ -241,8 +241,8 @@ export default function SystemRoles() {
                 <span className="font-medium">Super Admin</span>
                 <span className="text-xs text-muted-foreground">→ All Permissions</span>
               </div>
-              <div className="flex items-center gap-3 p-2 border-l-2 border-purple-500 ml-6">
-                <Shield className="h-5 w-5 text-purple-500" />
+              <div className="flex items-center gap-3 p-2 border-l-2 border-gray-500 ml-6">
+                <Shield className="h-5 w-5 text-gray-500" />
                 <span className="font-medium">Portfolio Manager</span>
                 <span className="text-xs text-muted-foreground">→ Portfolio + Program Permissions</span>
               </div>

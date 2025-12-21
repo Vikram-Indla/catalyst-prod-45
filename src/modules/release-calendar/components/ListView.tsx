@@ -103,7 +103,7 @@ function ChangeRow({ change, isExpanded, onToggle, onClick }: ChangeRowProps) {
     'new_awaiting_approval': 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300',
     'approved_scheduled': 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400',
     'in_progress': 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400',
-    'ready_for_production': 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400',
+    'ready_for_production': 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400',
     'in_production': 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400',
     'closed': 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
   };

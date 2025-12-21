@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 const TIER_CONFIG: Record<ObjectiveTier, { label: string; className: string; icon: typeof Briefcase }> = {
   portfolio: {
     label: 'Portfolio',
-    className: 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300',
+    className: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
     icon: Briefcase,
   },
   program: {

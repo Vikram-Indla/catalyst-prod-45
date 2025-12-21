@@ -60,12 +60,12 @@ export function ExecutionDrilldownDrawer({
 
   const getTypeBadge = (type: string) => {
     const colors: Record<string, string> = {
-      epic: 'bg-purple-100 text-purple-700',
-      feature: 'bg-blue-100 text-blue-700',
-      story: 'bg-green-100 text-green-700',
+      epic: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+      feature: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+      story: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
     };
     return (
-      <Badge className={`${colors[type] || 'bg-gray-100 text-gray-700'} text-xs capitalize`}>
+      <Badge className={`${colors[type] || 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'} text-xs capitalize`}>
         {type}
       </Badge>
     );

@@ -136,14 +136,14 @@ export function InsightsPanel({ resources, bookings, visible }: InsightsPanelPro
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-cyan-500" />
+              <div className="w-2 h-2 rounded-full bg-blue-500" />
               <span className="text-sm">Tasks</span>
             </div>
             <span className="text-sm font-medium">{stats.bookingsByType.task}</span>
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-purple-500" />
+              <div className="w-2 h-2 rounded-full bg-gray-500" />
               <span className="text-sm">Leave</span>
             </div>
             <span className="text-sm font-medium">{stats.bookingsByType.leave}</span>

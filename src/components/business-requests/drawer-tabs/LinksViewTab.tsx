@@ -109,13 +109,13 @@ const STATUS_INDICATOR_COLORS: Record<StatusFilter, string> = {
 };
 
 const TYPE_BADGE_CONFIG: Record<string, { bg: string; text: string }> = {
-  'epic': { bg: 'bg-purple-100', text: 'text-purple-700' },
-  'feature': { bg: 'bg-emerald-100', text: 'text-emerald-700' },
-  'story': { bg: 'bg-sky-100', text: 'text-sky-700' },
-  'task': { bg: 'bg-amber-100', text: 'text-amber-700' },
-  'document': { bg: 'bg-orange-100', text: 'text-orange-700' },
-  'kb': { bg: 'bg-indigo-100', text: 'text-indigo-700' },
-  'external': { bg: 'bg-gray-100', text: 'text-gray-700' },
+  'epic': { bg: 'bg-amber-100 dark:bg-amber-900/30', text: 'text-amber-700 dark:text-amber-400' },
+  'feature': { bg: 'bg-emerald-100 dark:bg-emerald-900/30', text: 'text-emerald-700 dark:text-emerald-400' },
+  'story': { bg: 'bg-sky-100 dark:bg-sky-900/30', text: 'text-sky-700 dark:text-sky-400' },
+  'task': { bg: 'bg-amber-100 dark:bg-amber-900/30', text: 'text-amber-700 dark:text-amber-400' },
+  'document': { bg: 'bg-orange-100 dark:bg-orange-900/30', text: 'text-orange-700 dark:text-orange-400' },
+  'kb': { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-700 dark:text-blue-400' },
+  'external': { bg: 'bg-gray-100 dark:bg-gray-800', text: 'text-gray-700 dark:text-gray-300' },
 };
 
 interface LinksViewTabProps {

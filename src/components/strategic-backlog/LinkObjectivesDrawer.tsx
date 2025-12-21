@@ -90,9 +90,9 @@ export function LinkObjectivesDrawer({
 
   const getTierBadge = (tier?: string) => {
     switch (tier) {
-      case 'portfolio': return <Badge variant="outline" className="text-purple-600 border-purple-300 text-xs">Portfolio</Badge>;
-      case 'program': return <Badge variant="outline" className="text-blue-600 border-blue-300 text-xs">Program</Badge>;
-      case 'team': return <Badge variant="outline" className="text-green-600 border-green-300 text-xs">Team</Badge>;
+      case 'portfolio': return <Badge variant="outline" className="text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 text-xs">Portfolio</Badge>;
+      case 'program': return <Badge variant="outline" className="text-blue-600 dark:text-blue-400 border-blue-300 dark:border-blue-600 text-xs">Program</Badge>;
+      case 'team': return <Badge variant="outline" className="text-green-600 dark:text-green-400 border-green-300 dark:border-green-600 text-xs">Team</Badge>;
       default: return null;
     }
   };

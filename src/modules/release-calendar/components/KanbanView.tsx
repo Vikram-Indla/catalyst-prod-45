@@ -21,7 +21,7 @@ export function KanbanView({ changeCards, onChangeClick, isLoading }: KanbanView
     'new_awaiting_approval': 'border-t-gray-400',
     'approved_scheduled': 'border-t-blue-500',
     'in_progress': 'border-t-amber-500',
-    'ready_for_production': 'border-t-purple-500',
+    'ready_for_production': 'border-t-green-600',
     'in_production': 'border-t-green-500',
     'closed': 'border-t-gray-300',
   };
