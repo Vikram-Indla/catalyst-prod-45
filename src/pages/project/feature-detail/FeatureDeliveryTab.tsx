@@ -1,12 +1,11 @@
 /**
- * FeatureDeliveryTab — Child Stories table for Feature detail page
+ * FeatureDeliveryTab — Child Stories table for Feature detail page (V1 Wired)
  */
 
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Link } from 'react-router-dom';
-import { Plus, ChevronDown, Search, ArrowUpDown } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -21,6 +20,10 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
+// Reuse existing StoryDetailsPanel
+import { StoryDetailsPanel } from '@/components/items/stories/StoryDetailsPanel';
+import { CreateStoryDialog } from '@/modules/project-work-hub/components/dialogs/CreateStoryDialog';
+
 interface FeatureDeliveryTabProps {
   featureId: string;
   projectId: string;
@@ -29,15 +32,14 @@ interface FeatureDeliveryTabProps {
 interface Story {
   id: string;
   name: string;
+  story_key: string | null;
   status: string | null;
   state: string | null;
   priority: string | null;
   estimate_points: number | null;
   assignee_id: string | null;
-  iteration_id: string | null;
   updated_at: string | null;
   assignee?: { full_name: string } | null;
-  iteration?: { name: string } | null;
 }
 
 const STATUS_CONFIG: Record<string, { label: string; class: string }> = {
@@ -53,14 +55,18 @@ function getInitials(name: string): string {
 }
 
 export function FeatureDeliveryTab({ featureId, projectId }: FeatureDeliveryTabProps) {
+  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedStory, setSelectedStory] = useState<Story | null>(null);
+  const [storyPanelOpen, setStoryPanelOpen] = useState(false);
+  const [createStoryOpen, setCreateStoryOpen] = useState(false);
 
   const { data: stories = [], isLoading } = useQuery({
     queryKey: ['feature-stories', featureId],
     queryFn: async (): Promise<Story[]> => {
       const { data, error } = await supabase
         .from('stories')
-        .select(`id, name, status, state, priority, estimate_points, assignee_id, updated_at`)
+        .select(`id, name, story_key, status, state, priority, estimate_points, assignee_id, updated_at`)
         .eq('feature_id', featureId)
         .order('created_at', { ascending: true });
 
@@ -80,9 +86,7 @@ export function FeatureDeliveryTab({ featureId, projectId }: FeatureDeliveryTabP
 
       return storyData.map(story => ({
         ...story,
-        iteration_id: null,
         assignee: story.assignee_id ? assigneeMap.get(story.assignee_id) : null,
-        iteration: null,
       }));
     },
     enabled: !!featureId,
@@ -95,6 +99,17 @@ export function FeatureDeliveryTab({ featureId, projectId }: FeatureDeliveryTabP
   const doneCount = stories.filter(s => s.status === 'done' || s.state === 'done').length;
   const totalCount = stories.length;
   const progressPct = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
+
+  const handleStoryClick = (story: Story) => {
+    setSelectedStory(story);
+    setStoryPanelOpen(true);
+  };
+
+  const handleStoryCreated = () => {
+    setCreateStoryOpen(false);
+    queryClient.invalidateQueries({ queryKey: ['feature-stories', featureId] });
+    queryClient.invalidateQueries({ queryKey: ['feature-story-stats', featureId] });
+  };
 
   if (isLoading) {
     return (
@@ -133,7 +148,7 @@ export function FeatureDeliveryTab({ featureId, projectId }: FeatureDeliveryTabP
               className="pl-9 w-[200px]"
             />
           </div>
-          <Button size="sm">
+          <Button size="sm" onClick={() => setCreateStoryOpen(true)}>
             <Plus className="h-4 w-4 mr-1" />
             Add Story
           </Button>
@@ -150,14 +165,13 @@ export function FeatureDeliveryTab({ featureId, projectId }: FeatureDeliveryTabP
               <TableHead className="font-semibold text-xs uppercase tracking-wide w-[120px]">Status</TableHead>
               <TableHead className="font-semibold text-xs uppercase tracking-wide w-[150px]">Assignee</TableHead>
               <TableHead className="font-semibold text-xs uppercase tracking-wide w-[80px] text-center">Points</TableHead>
-              <TableHead className="font-semibold text-xs uppercase tracking-wide w-[120px]">Sprint</TableHead>
               <TableHead className="font-semibold text-xs uppercase tracking-wide w-[100px]">Updated</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredStories.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                   {searchQuery ? 'No stories match your search.' : 'No stories yet. Add one to get started.'}
                 </TableCell>
               </TableRow>
@@ -165,12 +179,16 @@ export function FeatureDeliveryTab({ featureId, projectId }: FeatureDeliveryTabP
               filteredStories.map((story) => {
                 const status = story.status || story.state || 'backlog';
                 const statusConfig = STATUS_CONFIG[status] || STATUS_CONFIG.backlog;
-                const storyKey = `STO-${story.id.slice(0, 4).toUpperCase()}`;
+                const storyKey = story.story_key || `STO-${story.id.slice(0, 4).toUpperCase()}`;
                 
                 return (
-                  <TableRow key={story.id} className="hover:bg-muted/30">
+                  <TableRow 
+                    key={story.id} 
+                    className="hover:bg-muted/30 cursor-pointer"
+                    onClick={() => handleStoryClick(story)}
+                  >
                     <TableCell>
-                      <span className="font-mono text-xs font-medium text-primary">
+                      <span className="font-mono text-xs font-medium text-gold-link hover:text-gold-link-hover">
                         {storyKey}
                       </span>
                     </TableCell>
@@ -200,11 +218,6 @@ export function FeatureDeliveryTab({ featureId, projectId }: FeatureDeliveryTabP
                       </span>
                     </TableCell>
                     <TableCell>
-                      <span className="text-sm text-muted-foreground">
-                        {story.iteration?.name || '-'}
-                      </span>
-                    </TableCell>
-                    <TableCell>
                       <span className="text-xs text-muted-foreground">
                         {story.updated_at 
                           ? new Date(story.updated_at).toLocaleDateString()
@@ -219,6 +232,24 @@ export function FeatureDeliveryTab({ featureId, projectId }: FeatureDeliveryTabP
           </TableBody>
         </Table>
       </div>
+
+      {/* Story Details Panel */}
+      <StoryDetailsPanel
+        story={selectedStory}
+        open={storyPanelOpen}
+        onClose={() => {
+          setStoryPanelOpen(false);
+          setSelectedStory(null);
+        }}
+      />
+
+      {/* Create Story Dialog */}
+      <CreateStoryDialog
+        isOpen={createStoryOpen}
+        onClose={() => setCreateStoryOpen(false)}
+        onSuccess={handleStoryCreated}
+        projectId={projectId}
+      />
     </div>
   );
 }
