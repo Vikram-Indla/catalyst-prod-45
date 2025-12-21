@@ -662,7 +662,7 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
         return (
           <td
             key={column.id}
-            style={tdStyle}
+            style={{ ...tdStyle, width: column.width }}
             onDoubleClick={(e) => handleCellDoubleClick(e, row.id, column.id)}
             title={column.editable ? 'Double-click to edit' : ''}
           >
@@ -720,7 +720,7 @@ export function CatalystEnterpriseTable<T extends { id: string }>({
     <div style={cardStyle}>
       {/* Table */}
       <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px', tableLayout: 'fixed' }}>
           <thead>
             <tr>
               {/* Drag handle header */}
