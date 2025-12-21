@@ -37,7 +37,7 @@
     
     --border: 0 0% 90%;                 /* #e5e5e5 */
     --input: 0 0% 83%;                  /* #d4d4d4 */
-    --ring: 32 40% 60%;                 /* gold */
+    --ring: 0 0% 83%;                  /* grey - neutral focus ring */
     
     --radius: 6px;
     
@@ -169,7 +169,7 @@
     
     --border: 0 0% 16%;                 /* #292929 */
     --input: 0 0% 16%;
-    --ring: 40 55% 55%;
+    --ring: 0 0% 40%;                   /* grey - neutral focus ring */
     
     /* Sidebar dark */
     --sidebar-background: 0 0% 6%;      /* #0f0f0f */
