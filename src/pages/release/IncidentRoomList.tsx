@@ -206,7 +206,7 @@ export default function IncidentRoomList() {
                   {stats.open} open
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-full bg-violet-500" />
+                  <span className="h-2 w-2 rounded-full bg-amber-500" />
                   {stats.toCommittee} committee
                 </span>
               </div>

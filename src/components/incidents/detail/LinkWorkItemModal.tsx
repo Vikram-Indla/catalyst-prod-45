@@ -23,17 +23,17 @@ interface LinkWorkItemModalProps {
 }
 
 const TYPE_BADGES: Record<string, { label: string; className: string }> = {
-  feature: { 
-    label: 'Feature', 
-    className: 'bg-violet-100 text-violet-800 dark:bg-violet-900/30 dark:text-violet-400' 
+  feature: {
+    label: 'Feature',
+    className: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400'
   },
-  story: { 
-    label: 'Story', 
-    className: 'bg-sky-100 text-sky-800 dark:bg-sky-900/30 dark:text-sky-400' 
+  story: {
+    label: 'Story',
+    className: 'bg-sky-100 text-sky-800 dark:bg-sky-900/30 dark:text-sky-400'
   },
-  task: { 
-    label: 'Task', 
-    className: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400' 
+  task: {
+    label: 'Task',
+    className: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400'
   },
 };
 

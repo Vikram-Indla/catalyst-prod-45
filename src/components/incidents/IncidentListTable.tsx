@@ -616,7 +616,12 @@ export function IncidentListTable({
                         <div className={cn(GRID_CELL_BASE, "pl-3 pr-2 flex items-center h-full")}>
                           <Link 
                             to={`/release/incidents/${incident.id}`} 
-                            className={cn(CELL_TEXT, "font-medium text-primary hover:underline truncate")}
+                            className={cn(
+                              CELL_TEXT,
+                              'font-medium font-mono',
+                              'text-[#c69c6d] dark:text-[#d4a855] hover:text-[#b8894d] dark:hover:text-[#c49545]',
+                              'hover:underline truncate'
+                            )}
                             onClick={(e) => e.stopPropagation()}
                           >
                             {incident.incident_key}

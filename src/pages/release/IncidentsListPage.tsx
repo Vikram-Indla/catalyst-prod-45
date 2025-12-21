@@ -265,11 +265,11 @@ export default function IncidentsListPage() {
               Major Incidents
             </Button>
             <Button
-              variant={activeQuickFilter === 'l3' ? 'default' : 'ghost'}
+              variant={activeQuickFilter === 'l3' ? 'secondary' : 'ghost'}
               size="sm"
               className={cn(
                 "h-7 text-xs px-2",
-                activeQuickFilter === 'l3' && "bg-purple-600 text-white"
+                activeQuickFilter === 'l3' && "bg-muted text-foreground"
               )}
               onClick={() => handleQuickFilter('l3')}
             >
