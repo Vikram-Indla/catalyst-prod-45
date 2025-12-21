@@ -1566,6 +1566,57 @@ export type Database = {
           },
         ]
       }
+      change_numbers: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          number: string
+          release_id: string | null
+          scheduled_date: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          number: string
+          release_id?: string | null
+          scheduled_date?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          number?: string
+          release_id?: string | null
+          scheduled_date?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "change_numbers_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "change_numbers_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "releases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comment_mentions: {
         Row: {
           comment_id: string
@@ -3957,6 +4008,7 @@ export type Database = {
           budget: number | null
           business_value: number | null
           capitalized: boolean | null
+          change_number_id: string | null
           created_at: string | null
           deleted_at: string | null
           description: string | null
@@ -4005,6 +4057,7 @@ export type Database = {
           budget?: number | null
           business_value?: number | null
           capitalized?: boolean | null
+          change_number_id?: string | null
           created_at?: string | null
           deleted_at?: string | null
           description?: string | null
@@ -4053,6 +4106,7 @@ export type Database = {
           budget?: number | null
           business_value?: number | null
           capitalized?: boolean | null
+          change_number_id?: string | null
           created_at?: string | null
           deleted_at?: string | null
           description?: string | null
@@ -4093,6 +4147,13 @@ export type Database = {
           wsjf_score?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "features_change_number_id_fkey"
+            columns: ["change_number_id"]
+            isOneToOne: false
+            referencedRelation: "change_numbers"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "features_epic_id_fkey"
             columns: ["epic_id"]
@@ -10616,6 +10677,7 @@ export type Database = {
           assignee_id: string | null
           blocked: boolean | null
           blocked_reason: string | null
+          change_number_id: string | null
           created_at: string | null
           deleted_at: string | null
           description: string | null
@@ -10649,6 +10711,7 @@ export type Database = {
           assignee_id?: string | null
           blocked?: boolean | null
           blocked_reason?: string | null
+          change_number_id?: string | null
           created_at?: string | null
           deleted_at?: string | null
           description?: string | null
@@ -10682,6 +10745,7 @@ export type Database = {
           assignee_id?: string | null
           blocked?: boolean | null
           blocked_reason?: string | null
+          change_number_id?: string | null
           created_at?: string | null
           deleted_at?: string | null
           description?: string | null
@@ -10710,6 +10774,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "stories_change_number_id_fkey"
+            columns: ["change_number_id"]
+            isOneToOne: false
+            referencedRelation: "change_numbers"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "stories_feature_id_fkey"
             columns: ["feature_id"]
@@ -14923,6 +14994,7 @@ export type Database = {
       }
       derive_quarter_from_date: { Args: { p_date: string }; Returns: string }
       extract_kb_tiptap_text: { Args: { content: Json }; Returns: string }
+      generate_change_number: { Args: never; Returns: string }
       generate_next_epic_key: {
         Args: { p_program_id: string }
         Returns: string
