@@ -113,27 +113,6 @@ export default {
           900: "#664a30",
           950: "#382618",
         },
-        
-        olive: {
-          DEFAULT: "#5c7c5c",
-          500: "#5c7c5c",
-          600: "#4a6a4a",
-        },
-        
-        bronze: {
-          DEFAULT: "#8b7355",
-          500: "#8b7355",
-        },
-        
-        champagne: {
-          DEFAULT: "#d4b896",
-          500: "#d4b896",
-        },
-        
-        cream: {
-          DEFAULT: "#faf7f1",
-          50: "#faf7f1",
-        },
 
         /* Shadcn semantic colors */
         border: "hsl(var(--border))",

@@ -91,15 +91,15 @@
     --selection-bar-accent: #c69c6d;
     
     /* Status/Semantic colors - Light Mode */
-    --status-success: #5c7c5c;
-    --status-success-light: #7da37d;
-    --status-success-bg: rgba(92, 124, 92, 0.1);
-    --status-success-bg-hover: rgba(92, 124, 92, 0.15);
-    --status-success-border: rgba(92, 124, 92, 0.3);
+    --status-success: #22c55e;
+    --status-success-light: #4ade80;
+    --status-success-bg: rgba(34, 197, 94, 0.1);
+    --status-success-bg-hover: rgba(34, 197, 94, 0.15);
+    --status-success-border: rgba(34, 197, 94, 0.3);
     
-    --status-warning: #b8894d;
-    --status-warning-bg: rgba(184, 137, 77, 0.1);
-    --status-warning-border: rgba(184, 137, 77, 0.3);
+    --status-warning: #f59e0b;
+    --status-warning-bg: rgba(245, 158, 11, 0.1);
+    --status-warning-border: rgba(245, 158, 11, 0.3);
     
     --status-info: #c69c6d;
     --status-info-bg: rgba(198, 156, 109, 0.1);
@@ -221,15 +221,15 @@
     --selection-bar-accent: #d4a855;
     
     /* Status/Semantic colors - Dark Mode */
-    --status-success: #7da37d;
-    --status-success-light: #9dc49d;
-    --status-success-bg: rgba(92, 124, 92, 0.15);
-    --status-success-bg-hover: rgba(92, 124, 92, 0.2);
-    --status-success-border: rgba(92, 124, 92, 0.4);
+    --status-success: #4ade80;
+    --status-success-light: #86efac;
+    --status-success-bg: rgba(34, 197, 94, 0.15);
+    --status-success-bg-hover: rgba(34, 197, 94, 0.2);
+    --status-success-border: rgba(34, 197, 94, 0.4);
     
-    --status-warning: #d4b896;
-    --status-warning-bg: rgba(212, 184, 150, 0.15);
-    --status-warning-border: rgba(212, 184, 150, 0.4);
+    --status-warning: #fbbf24;
+    --status-warning-bg: rgba(251, 191, 36, 0.15);
+    --status-warning-border: rgba(251, 191, 36, 0.4);
     
     --status-info: #d4a855;
     --status-info-bg: rgba(212, 168, 85, 0.15);
@@ -284,7 +284,7 @@
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
-   COMPONENT OVERRIDES — Force Pure Onyx colors on existing classes
+   SIDEBAR ACTIVE STATES
    ════════════════════════════════════════════════════════════════════════════ */
 
 @layer components {
@@ -309,116 +309,6 @@
     background-color: hsl(var(--sidebar-primary)) !important;
     color: hsl(var(--sidebar-primary-foreground)) !important;
   }
-  
-  /* Force dark text on light backgrounds - WCAG AAA contrast */
-  .text-gray-400 { color: #525252 !important; }  /* Was #a3a3a3, now darker */
-  .text-gray-500 { color: #404040 !important; }  /* Was #737373, now darker */
-  .text-gray-600 { color: #404040 !important; }
-  .text-gray-700 { color: #171717 !important; }
-  .text-gray-800 { color: #171717 !important; }
-  .text-gray-900 { color: #0a0a0a !important; }
-  
-  .text-slate-400 { color: #525252 !important; }
-  .text-slate-500 { color: #404040 !important; }
-  .text-slate-600 { color: #404040 !important; }
-  .text-slate-700 { color: #171717 !important; }
-  .text-slate-800 { color: #171717 !important; }
-  .text-slate-900 { color: #0a0a0a !important; }
-  
-  /* Force muted text to be darker */
-  .text-muted-foreground { color: #404040 !important; }
-  .text-muted { color: #525252 !important; }
-  
-  /* Background overrides */
-  .bg-white { background-color: #ffffff !important; }
-  .bg-gray-50 { background-color: #fafafa !important; }
-  .bg-gray-100 { background-color: #f5f5f5 !important; }
-  .bg-slate-50 { background-color: #fafafa !important; }
-  .bg-slate-100 { background-color: #f5f5f5 !important; }
-  
-  /* Border overrides */
-  .border-gray-200 { border-color: #e5e5e5 !important; }
-  .border-gray-300 { border-color: #d4d4d4 !important; }
-  .border-slate-200 { border-color: #e5e5e5 !important; }
-  .border-slate-300 { border-color: #d4d4d4 !important; }
-  
-  /* Primary button - gold */
-  .bg-primary {
-    background-color: var(--accent-gold) !important;
-  }
-  
-  .hover\:bg-primary:hover {
-    background-color: var(--accent-gold-hover) !important;
-  }
-  
-  /* Force cream page background */
-  .bg-background {
-    background-color: #faf7f1 !important;
-  }
-  
-  [data-theme="dark"] .bg-background,
-  .dark .bg-background {
-    background-color: #0a0a0a !important;
-  }
-  
-  /* Card backgrounds stay white */
-  .bg-card {
-    background-color: #ffffff !important;
-  }
-  
-  [data-theme="dark"] .bg-card,
-  .dark .bg-card {
-    background-color: #171717 !important;
-  }
-  
-  /* Sidebar background */
-  .bg-sidebar {
-    background-color: #f7f7f7 !important;
-  }
-  
-  [data-theme="dark"] .bg-sidebar,
-  .dark .bg-sidebar {
-    background-color: #0f0f0f !important;
-  }
-}
-
-/* ════════════════════════════════════════════════════════════════════════════
-   DARK MODE OVERRIDES
-   ════════════════════════════════════════════════════════════════════════════ */
-
-[data-theme="dark"],
-.dark {
-  /* Text colors in dark mode - inverted for light on dark */
-  .text-gray-400 { color: #a3a3a3 !important; }
-  .text-gray-500 { color: #a3a3a3 !important; }
-  .text-gray-600 { color: #d4d4d4 !important; }
-  .text-gray-700 { color: #e5e5e5 !important; }
-  .text-gray-800 { color: #f5f5f5 !important; }
-  .text-gray-900 { color: #fafafa !important; }
-  
-  .text-slate-400 { color: #a3a3a3 !important; }
-  .text-slate-500 { color: #a3a3a3 !important; }
-  .text-slate-600 { color: #d4d4d4 !important; }
-  .text-slate-700 { color: #e5e5e5 !important; }
-  .text-slate-800 { color: #f5f5f5 !important; }
-  .text-slate-900 { color: #fafafa !important; }
-  
-  /* Muted text in dark mode */
-  .text-muted-foreground { color: #a3a3a3 !important; }
-  .text-muted { color: #a3a3a3 !important; }
-  
-  /* Backgrounds in dark mode */
-  .bg-white { background-color: #171717 !important; }
-  .bg-gray-50 { background-color: #141414 !important; }
-  .bg-gray-100 { background-color: #1f1f1f !important; }
-  .bg-slate-50 { background-color: #141414 !important; }
-  .bg-slate-100 { background-color: #1f1f1f !important; }
-  
-  /* Borders in dark mode */
-  .border-gray-200 { border-color: #292929 !important; }
-  .border-gray-300 { border-color: #404040 !important; }
-  .border-slate-200 { border-color: #292929 !important; }
-  .border-slate-300 { border-color: #404040 !important; }
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -439,4 +329,139 @@
   body {
     background: white !important;
   }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GLOBAL OVERRIDES - Force Pure Onyx (outside @layer for specificity)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Light Mode Card Backgrounds */
+.bg-white,
+.bg-card,
+[class*="dark:bg-gray-900"]:not(.dark *):not([data-theme="dark"] *) {
+  background-color: #ffffff !important;
+}
+
+.bg-gray-50 {
+  background-color: #fafafa !important;
+}
+
+.bg-gray-100 {
+  background-color: #f5f5f5 !important;
+}
+
+.bg-gray-800 {
+  background-color: #262626 !important;
+}
+
+.bg-gray-900 {
+  background-color: #171717 !important;
+}
+
+/* Dark Mode Card Backgrounds */
+.dark .bg-white,
+.dark .bg-card,
+[data-theme="dark"] .bg-white,
+[data-theme="dark"] .bg-card {
+  background-color: #171717 !important;
+}
+
+.dark .bg-gray-50,
+[data-theme="dark"] .bg-gray-50 {
+  background-color: #1f1f1f !important;
+}
+
+.dark .bg-gray-100,
+[data-theme="dark"] .bg-gray-100 {
+  background-color: #262626 !important;
+}
+
+.dark .bg-gray-800,
+[data-theme="dark"] .bg-gray-800 {
+  background-color: #1f1f1f !important;
+}
+
+.dark .bg-gray-900,
+[data-theme="dark"] .bg-gray-900 {
+  background-color: #171717 !important;
+}
+
+/* Dark mode explicit class overrides */
+.dark .dark\:bg-gray-800 {
+  background-color: #1f1f1f !important;
+}
+
+.dark .dark\:bg-gray-900 {
+  background-color: #171717 !important;
+}
+
+[data-theme="dark"] .dark\:bg-gray-800 {
+  background-color: #1f1f1f !important;
+}
+
+[data-theme="dark"] .dark\:bg-gray-900 {
+  background-color: #171717 !important;
+}
+
+/* Border overrides */
+.border-gray-200 {
+  border-color: #e5e5e5 !important;
+}
+
+.border-gray-700 {
+  border-color: #404040 !important;
+}
+
+.dark .border-gray-200,
+[data-theme="dark"] .border-gray-200 {
+  border-color: #404040 !important;
+}
+
+.dark .border-gray-700,
+[data-theme="dark"] .border-gray-700,
+.dark .dark\:border-gray-700,
+[data-theme="dark"] .dark\:border-gray-700 {
+  border-color: #404040 !important;
+}
+
+/* Text color overrides for dark mode */
+.dark .text-gray-100,
+[data-theme="dark"] .text-gray-100,
+.dark .dark\:text-gray-100,
+[data-theme="dark"] .dark\:text-gray-100 {
+  color: #f5f5f5 !important;
+}
+
+.dark .text-gray-300,
+[data-theme="dark"] .text-gray-300,
+.dark .dark\:text-gray-300,
+[data-theme="dark"] .dark\:text-gray-300 {
+  color: #d4d4d4 !important;
+}
+
+.dark .text-gray-400,
+[data-theme="dark"] .text-gray-400,
+.dark .dark\:text-gray-400,
+[data-theme="dark"] .dark\:text-gray-400 {
+  color: #a3a3a3 !important;
+}
+
+/* Background for main page */
+.bg-background {
+  background-color: #faf7f1 !important;
+}
+
+.dark .bg-background,
+[data-theme="dark"] .bg-background {
+  background-color: #0a0a0a !important;
+}
+
+/* Sidebar background */
+.bg-sidebar {
+  background-color: #f7f7f7 !important;
+}
+
+.dark .bg-sidebar,
+[data-theme="dark"] .bg-sidebar {
+  background-color: #0f0f0f !important;
 }
