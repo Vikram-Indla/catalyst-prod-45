@@ -70,7 +70,7 @@ const DrawerContent = React.forwardRef<
         widthClasses[width],
         sideClasses[side],
         'bg-card border-l border-border',
-        'shadow-xl',
+        'shadow-xl rounded-none',
         'flex flex-col',
         'data-[state=open]:animate-in data-[state=closed]:animate-out',
         'duration-300 ease-in-out',
