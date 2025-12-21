@@ -1,6 +1,6 @@
 import React, { forwardRef, useRef, useEffect, useCallback } from 'react';
 import { Demand, DemandOwner, DEMAND_STATUS_CONFIG } from '@/types/product-roadmap';
-import { FileText, Lock } from 'lucide-react';
+import { FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { DemandGroupBy } from './ProductRoadmapToolbar';
 
@@ -79,8 +79,8 @@ export const DemandColumn = forwardRef<HTMLDivElement, DemandColumnProps>(
         >
           {/* Key Badge */}
           <div className="flex items-center gap-1.5 min-w-[72px]">
-            <Lock size={12} className="text-muted-foreground/50" />
-            <span className="text-xs font-medium text-muted-foreground">
+            <FileText size={12} className="text-muted-foreground" />
+            <span className="text-xs font-mono font-medium text-[#c69c6d] dark:text-[#d4a855] hover:underline cursor-pointer">
               {demand.key}
             </span>
           </div>
