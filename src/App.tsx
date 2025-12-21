@@ -239,6 +239,9 @@ import IncidentRoomList from "./pages/release/IncidentRoomList";
 import IncidentRoomDetail from "./pages/release/IncidentRoomDetail";
 import IncidentCommandCenter from "./pages/release/IncidentCommandCenter";
 
+// Release Calendar Module (Forward Schedule of Change)
+import ReleaseCalendarFSC from "./modules/release-calendar/pages/ReleaseCalendarPage";
+
 // Incident Analytics
 const IncidentAnalyticsPage = lazy(() => import("./modules/incidents/analytics/pages/IncidentAnalyticsPage"));
 const IncidentInsightsPage = lazy(() => import("./modules/incidents/analytics/pages/IncidentInsightsPage"));
@@ -651,7 +654,8 @@ const App = () => (
               <Route path="/release/versions" element={<VersionsList />} />
               <Route path="/release/versions/calendar" element={<ReleaseCalendar />} />
               <Route path="/release/versions/:id" element={<VersionDetail />} />
-              <Route path="/release/calendar" element={<ReleaseCalendar />} />
+              <Route path="/release/calendar" element={<ReleaseCalendarFSC />} />
+              <Route path="/release/change-calendar" element={<ReleaseCalendarFSC />} />
               <Route path="/release/settings" element={<ReleaseSettings />} />
               {/* Kanban Boards Routes - Program Scoped */}
               <Route path="/programs/:programId/kanban-boards" element={<TeamComingSoon />} />

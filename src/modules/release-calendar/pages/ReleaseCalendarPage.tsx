@@ -51,63 +51,63 @@ export default function ReleaseCalendarPage() {
   };
 
   const toolbar = (
-    <div className="flex items-center gap-3">
-      <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as ChangeCardStatus | 'all')}>
-        <SelectTrigger className="w-48 h-8 text-xs bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
-          <Filter className="w-3 h-3 mr-2 text-gray-500 dark:text-gray-400" />
-          <SelectValue placeholder="Status" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Statuses</SelectItem>
-          {Object.entries(STATUS_LABELS).map(([value, label]) => (
-            <SelectItem key={value} value={value}>{label}</SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+    <div className="flex items-center justify-between w-full">
+      <div className="flex items-center gap-3">
+        <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as ChangeCardStatus | 'all')}>
+          <SelectTrigger className="w-48 h-8 text-xs bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+            <Filter className="w-3 h-3 mr-2 text-gray-500 dark:text-gray-400" />
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Statuses</SelectItem>
+            {Object.entries(STATUS_LABELS).map(([value, label]) => (
+              <SelectItem key={value} value={value}>{label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        
+        <Select value={approvedFilter} onValueChange={(v) => setApprovedFilter(v as ApprovedFilter)}>
+          <SelectTrigger className="w-36 h-8 text-xs bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+            <SelectValue placeholder="Approved" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All</SelectItem>
+            <SelectItem value="true">Approved</SelectItem>
+            <SelectItem value="false">Not Approved</SelectItem>
+          </SelectContent>
+        </Select>
+        
+        <Select value={complianceFilter} onValueChange={(v) => setComplianceFilter(v as ComplianceFilter)}>
+          <SelectTrigger className="w-40 h-8 text-xs bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+            <SelectValue placeholder="Compliance" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All</SelectItem>
+            <SelectItem value="compliant">Compliant</SelectItem>
+            <SelectItem value="exception_recorded">Exceptions</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
       
-      <Select value={approvedFilter} onValueChange={(v) => setApprovedFilter(v as ApprovedFilter)}>
-        <SelectTrigger className="w-36 h-8 text-xs bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
-          <SelectValue placeholder="Approved" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All</SelectItem>
-          <SelectItem value="true">Approved</SelectItem>
-          <SelectItem value="false">Not Approved</SelectItem>
-        </SelectContent>
-      </Select>
-      
-      <Select value={complianceFilter} onValueChange={(v) => setComplianceFilter(v as ComplianceFilter)}>
-        <SelectTrigger className="w-40 h-8 text-xs bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
-          <SelectValue placeholder="Compliance" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All</SelectItem>
-          <SelectItem value="compliant">Compliant</SelectItem>
-          <SelectItem value="exception_recorded">Exceptions</SelectItem>
-        </SelectContent>
-      </Select>
-    </div>
-  );
-
-  const actions = (
-    <div className="flex items-center gap-2">
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => setSelectedDate(new Date().toISOString().split('T')[0])}
-        className="border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
-      >
-        <CalendarDays className="w-4 h-4 mr-2" />
-        Plan Day
-      </Button>
-      <Button
-        size="sm"
-        onClick={() => handleCreateChange()}
-        className="bg-brand-primary hover:bg-brand-primary/90 text-white"
-      >
-        <Plus className="w-4 h-4 mr-2" />
-        Create Change
-      </Button>
+      <div className="flex items-center gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setSelectedDate(new Date().toISOString().split('T')[0])}
+          className="border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
+        >
+          <CalendarDays className="w-4 h-4 mr-2" />
+          Plan Day
+        </Button>
+        <Button
+          size="sm"
+          onClick={() => handleCreateChange()}
+          className="bg-brand-primary hover:bg-brand-primary/90 text-white"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Create Change
+        </Button>
+      </div>
     </div>
   );
 
@@ -116,7 +116,6 @@ export default function ReleaseCalendarPage() {
       <PageHeader
         title="Release Calendar"
         toolbar={toolbar}
-        actions={actions}
       />
       
       <div className="flex-1 overflow-hidden flex flex-col">
