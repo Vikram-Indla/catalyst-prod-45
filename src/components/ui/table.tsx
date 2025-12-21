@@ -4,12 +4,12 @@ import { cn } from "@/lib/utils";
 
 /**
  * CATALYST DATA TABLE - Pure Onyx Theme-Aware Table
- * Uses semantic CSS variables for automatic light/dark mode support
+ * Uses explicit Tailwind dark mode classes for proper light/dark support
  */
 
 const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableElement>>(
   ({ className, ...props }, ref) => (
-    <div className="relative w-full overflow-auto rounded-xl bg-card border border-gray-300">
+    <div className="relative w-full overflow-auto rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
       <table ref={ref} className={cn("w-full caption-bottom text-sm", className)} {...props} />
     </div>
   ),
@@ -20,7 +20,7 @@ const TableHeader = React.forwardRef<HTMLTableSectionElement, React.HTMLAttribut
   ({ className, ...props }, ref) => (
     <thead 
       ref={ref} 
-      className={cn("[&_tr]:border-b bg-gray-50", className)} 
+      className={cn("[&_tr]:border-b bg-gray-50 dark:bg-gray-800", className)} 
       {...props} 
     />
   ),
@@ -38,7 +38,7 @@ const TableFooter = React.forwardRef<HTMLTableSectionElement, React.HTMLAttribut
   ({ className, ...props }, ref) => (
     <tfoot 
       ref={ref} 
-      className={cn("font-medium [&>tr]:last:border-b-0 bg-gray-50 border-t border-gray-300", className)} 
+      className={cn("font-medium [&>tr]:last:border-b-0 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700", className)} 
       {...props} 
     />
   ),
@@ -53,8 +53,8 @@ const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTML
     <tr
       ref={ref}
       className={cn(
-        "h-10 border-b border-gray-200 transition-colors hover:bg-gray-50",
-        selected && "bg-gold-50 border-l-2 border-l-gold-500",
+        "h-10 border-b border-gray-200 dark:border-gray-700 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800",
+        selected && "bg-[#c69c6d]/10 dark:bg-[#d4a855]/10 border-l-2 border-l-[#c69c6d] dark:border-l-[#d4a855]",
         className
       )}
       data-state={selected ? 'selected' : undefined}
@@ -69,7 +69,7 @@ const TableHead = React.forwardRef<HTMLTableCellElement, React.ThHTMLAttributes<
     <th
       ref={ref}
       className={cn(
-        "h-10 px-4 py-2 text-left align-middle font-semibold text-gray-900 uppercase text-xs tracking-wide [&:has([role=checkbox])]:pr-0",
+        "h-10 px-4 py-2 text-left align-middle font-semibold text-gray-700 dark:text-gray-300 uppercase text-xs tracking-wide [&:has([role=checkbox])]:pr-0",
         className,
       )}
       {...props}
@@ -82,7 +82,7 @@ const TableCell = React.forwardRef<HTMLTableCellElement, React.TdHTMLAttributes<
   ({ className, ...props }, ref) => (
     <td 
       ref={ref} 
-      className={cn("px-4 py-2 align-middle text-gray-900 [&:has([role=checkbox])]:pr-0", className)} 
+      className={cn("px-4 py-2 align-middle text-gray-900 dark:text-gray-100 [&:has([role=checkbox])]:pr-0", className)} 
       {...props} 
     />
   ),
@@ -93,7 +93,7 @@ const TableCaption = React.forwardRef<HTMLTableCaptionElement, React.HTMLAttribu
   ({ className, ...props }, ref) => (
     <caption 
       ref={ref} 
-      className={cn("mt-4 text-sm text-gray-700", className)} 
+      className={cn("mt-4 text-sm text-gray-500 dark:text-gray-400", className)} 
       {...props} 
     />
   ),
