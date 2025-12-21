@@ -256,6 +256,7 @@ export default function ProductBacklogPage() {
       onExport={handleExport}
       onOpenFilters={() => setFiltersDialogOpen(true)}
       activeFiltersCount={activeFiltersCount}
+      onCreateRequest={() => setCreateModalOpen(true)}
     />
   );
 
