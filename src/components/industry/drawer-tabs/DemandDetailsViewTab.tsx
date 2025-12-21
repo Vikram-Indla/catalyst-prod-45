@@ -80,7 +80,7 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6 pb-72">
       {/* Overview Section */}
       <div className="space-y-4">
         <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Overview</h3>
