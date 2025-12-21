@@ -5,6 +5,10 @@ export * from './types';
 
 // Hooks
 export * from './hooks/useChangeCards';
+export * from './hooks/useReleaseWindows';
+export * from './hooks/useChangeApprovals';
+export * from './hooks/useChangeConflicts';
+export * from './hooks/useChangeDependencies';
 
 // Components - Pages
 export { default as ReleaseCalendarPage } from './pages/ReleaseCalendarPage';
