@@ -127,10 +127,14 @@ export function ProductBacklogEnterpriseTable({
       accessor: 'id',
       width: '110px',
       sortable: true,
-      render: (value) => (
+      render: (value, row) => (
         <span 
           className="font-mono text-xs text-[#c69c6d] dark:text-[#d4a855] hover:text-[#b8894d] dark:hover:text-[#c49545] hover:underline cursor-pointer font-semibold"
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            // Explicitly trigger the row click to open the drawer
+            onItemClick(value);
+          }}
         >
           {value}
         </span>
@@ -262,7 +266,7 @@ export function ProductBacklogEnterpriseTable({
         )
       ),
     },
-  ], []);
+  ], [onItemClick]);
 
   // Handle row update for inline editing
   const handleRowUpdate = async (rowId: string, columnId: string, newValue: any) => {
