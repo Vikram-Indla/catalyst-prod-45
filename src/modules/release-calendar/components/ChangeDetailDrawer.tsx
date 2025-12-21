@@ -35,15 +35,15 @@ export function ChangeDetailDrawer({ open, onOpenChange, changeCardId }: ChangeD
           </div>
         ) : (
           <>
-            <SheetHeader>
-              <div className="flex items-start justify-between">
-                <div>
-                  <SheetTitle className="text-gray-900 dark:text-gray-100 font-mono">
+            <SheetHeader className="pr-10">
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0 flex-1">
+                  <SheetTitle className="text-gray-900 dark:text-gray-100 font-mono break-words">
                     {change.change_number}
                   </SheetTitle>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{change.title}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 break-words">{change.title}</p>
                 </div>
-                <div className="flex items-center gap-2 mr-8">
+                <div className="flex items-center gap-2 shrink-0">
                   {change.approved ? (
                     <Badge variant="success" className="border-0">
                       <CheckCircle className="w-3 h-3 mr-1" /> Approved
