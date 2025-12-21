@@ -59,8 +59,7 @@ function FormCard({
         onClick={collapsible ? () => setExpanded(!expanded) : undefined}
       >
         <h2 
-          className="text-[11px] font-semibold uppercase tracking-[0.5px]"
-          style={{ color: '#5C7C5C' }}
+          className="text-[11px] font-semibold uppercase tracking-[0.5px] text-muted-foreground"
         >
           {title}
         </h2>
@@ -207,8 +206,7 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
           </div>
           <button
             onClick={() => onNavigateToTab?.('business-score')}
-            className="flex items-center gap-1 text-[13px] font-medium hover:underline"
-            style={{ color: '#5C7C5C' }}
+            className="flex items-center gap-1 text-[13px] font-medium hover:underline text-[#c69c6d] dark:text-[#d4a855]"
           >
             View scoring
             <ChevronRight className="h-4 w-4" />
@@ -279,12 +277,8 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
                 onClick={handleLockToggle}
                 className={cn(
                   "shrink-0 h-9 w-9",
-                  targetDateLocked && "border-[#5C7C5C]"
+                  targetDateLocked && "border-[#c69c6d] bg-[#c69c6d]/10 text-[#c69c6d]"
                 )}
-                style={targetDateLocked ? { 
-                  background: 'rgba(92, 124, 92, 0.1)', 
-                  color: '#5C7C5C' 
-                } : undefined}
                 title={targetDateLocked ? `Locked by ${lockedByUser}` : 'Lock date'}
               >
                 {targetDateLocked ? <Lock className="h-3.5 w-3.5" /> : <Unlock className="h-3.5 w-3.5" />}

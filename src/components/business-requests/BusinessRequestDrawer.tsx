@@ -501,10 +501,9 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                       onChange={(e) => setEditedName(e.target.value)}
                       onBlur={handleSaveName}
                       onKeyDown={handleNameKeyDown}
-                      className="text-[18px] font-semibold h-auto py-1 px-2 max-w-[480px]"
+                      className="text-[18px] font-semibold h-auto py-1 px-2 max-w-[480px] border-[#c69c6d] focus-visible:ring-[#c69c6d]"
                       style={{ 
                         background: 'var(--surface-subtle, hsl(var(--muted)))',
-                        borderColor: '#5C7C5C',
                         color: 'var(--text-primary, hsl(var(--foreground)))'
                       }}
                     />
@@ -545,13 +544,10 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                   <DropdownMenuTrigger asChild>
                     <Button
                       size="sm"
-                      className="h-8 px-3 text-[13px] font-medium text-white"
+                      className="h-8 px-3 text-[13px] font-medium text-white bg-[#c69c6d] hover:bg-[#b8894d]"
                       style={{ 
-                        background: '#5C7C5C',
-                        boxShadow: '0 2px 4px rgba(92, 124, 92, 0.25)'
+                        boxShadow: '0 2px 4px rgba(198, 156, 109, 0.25)'
                       }}
-                      onMouseEnter={(e) => e.currentTarget.style.background = '#4A6A4A'}
-                      onMouseLeave={(e) => e.currentTarget.style.background = '#5C7C5C'}
                     >
                       Save
                       <ChevronDown className="h-3.5 w-3.5 ml-1" />
@@ -735,8 +731,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
             </AlertDialogAction>
             <AlertDialogAction 
               onClick={handleSaveAndClose}
-              className="text-white"
-              style={{ background: '#5C7C5C' }}
+              className="text-white bg-[#c69c6d] hover:bg-[#b8894d]"
             >
               Save & Close
             </AlertDialogAction>
