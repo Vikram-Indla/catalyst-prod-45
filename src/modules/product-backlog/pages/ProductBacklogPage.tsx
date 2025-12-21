@@ -1,6 +1,6 @@
 /**
- * Product Backlog Page - Executive Table view for Business Requests
- * Uses PageChrome for consistent header + IndustryHeaderToolbarV2 for toolbar
+ * Product Backlog Page - Uses CatalystEnterpriseTable for Business Requests
+ * Uses PageChrome for consistent header
  * Shares state with Kanban view via useIndustryViewStore
  */
 
@@ -8,7 +8,7 @@ import React, { useState, useMemo } from 'react';
 import { useBusinessRequests } from '@/hooks/useBusinessRequests';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
-import { ExecutiveTable } from '../components/ExecutiveTable';
+import { ProductBacklogEnterpriseTable } from '../components/ProductBacklogEnterpriseTable';
 import { DemandBulkActionsBar } from '@/components/demand/DemandBulkActionsBar';
 import { DemandBulkStatusModal } from '@/components/demand/DemandBulkStatusModal';
 import { DemandBulkDeleteModal } from '@/components/demand/DemandBulkDeleteModal';
@@ -33,14 +33,13 @@ export default function ProductBacklogPage() {
   const { data: businessRequests = [], isLoading } = useBusinessRequests(searchQuery);
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [columnsDialogOpen, setColumnsDialogOpen] = useState(false);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   
   // Bulk action modals
   const [bulkStatusModalOpen, setBulkStatusModalOpen] = useState(false);
   const [bulkDeleteModalOpen, setBulkDeleteModalOpen] = useState(false);
 
-  // Transform business requests to match ExecutiveTable format
+  // Transform business requests to match table format
   const tableData = useMemo(() => {
     let data = businessRequests.map((br: any) => ({
       id: br.request_key || br.id?.slice(0, 8) || '—',
@@ -53,14 +52,14 @@ export default function ProductBacklogPage() {
       reporter: br.requestor_name || null,
       assignee: br.assignee_name || br.assignee || null,
       assigneeId: br.assignee || null,
-      department: br.department?.toLowerCase().replace(/ /g, '_') || null,
+      department: br.department || null,
       businessOwner: br.business_owner || null,
       businessAsk: br.start_date?.split('T')[0] || null,
       kickoff: br.impl_start_date?.split('T')[0] || null,
       targetComplete: br.impl_target_end_date?.split('T')[0] || null,
-      deliveryTrack: br.delivery_track?.toLowerCase().replace(/ /g, '_') || null,
-      platform: br.delivery_platform?.toLowerCase().replace(/ /g, '_') || null,
-      quarter: br.planned_quarter?.toLowerCase().replace(/ /g, '_') || null,
+      deliveryTrack: br.delivery_track || null,
+      platform: br.delivery_platform || null,
+      quarter: br.planned_quarter?.[0] || null,
       createdAt: br.created_at?.split('T')[0] || null,
       updatedAt: br.updated_at?.split('T')[0] || null,
     }));
@@ -97,6 +96,7 @@ export default function ProductBacklogPage() {
       processStep: 'process_step',
       department: 'department',
       platform: 'delivery_platform',
+      summary: 'title',
     };
 
     const dbField = fieldMap[field] || field;
@@ -110,51 +110,12 @@ export default function ProductBacklogPage() {
     queryClient.invalidateQueries({ queryKey: ['business-requests'] });
   };
 
-  const handleDuplicate = async (requestId: string) => {
-    const dbId = getDbIdFromDisplayId(requestId);
-    if (!dbId) return;
-
-    const originalRequest = businessRequests.find((br: any) => br.id === dbId);
-    if (!originalRequest) return;
-
-    const { error } = await supabase
-      .from('business_requests')
-      .insert({
-        title: `${originalRequest.title} (Copy)`,
-        description: originalRequest.description,
-        process_step: 'new_request',
-        department: originalRequest.department,
-        delivery_platform: originalRequest.delivery_platform,
-        platform: originalRequest.platform,
-        complexity: originalRequest.complexity,
-        urgency: originalRequest.urgency,
-        health: 'green',
-      });
-
-    if (error) {
-      toast.error('Failed to duplicate request');
-      throw error;
+  const handleItemSelect = (itemId: string, selected: boolean) => {
+    if (selected) {
+      setSelectedRows(prev => [...prev, itemId]);
+    } else {
+      setSelectedRows(prev => prev.filter(id => id !== itemId));
     }
-
-    queryClient.invalidateQueries({ queryKey: ['business-requests'] });
-    toast.success('Request duplicated successfully');
-  };
-
-  const handleDelete = async (requestId: string) => {
-    const dbId = getDbIdFromDisplayId(requestId);
-    if (!dbId) return;
-
-    const { error } = await supabase
-      .from('business_requests')
-      .update({ deleted_at: new Date().toISOString() })
-      .eq('id', dbId);
-
-    if (error) {
-      toast.error('Failed to delete request');
-      throw error;
-    }
-
-    queryClient.invalidateQueries({ queryKey: ['business-requests'] });
   };
 
   // Bulk status update handler
@@ -200,22 +161,16 @@ export default function ProductBacklogPage() {
   return (
     <PageChrome>
       <div className="h-full flex flex-col" style={{ backgroundColor: 'var(--bg)' }}>
-        <ExecutiveTable
-          data={tableData}
-          isLoading={isLoading}
-          onRowClick={(row) => handleOpenFullView(row.id)}
-          onOpenFullView={handleOpenFullView}
-          onFieldUpdate={handleFieldUpdate}
-          onCreateNew={() => setCreateModalOpen(true)}
-          onDuplicate={handleDuplicate}
-          onDelete={handleDelete}
-          searchValue={searchQuery}
-          onSearchChange={setSearchQuery}
-          columnsDialogOpen={columnsDialogOpen}
-          onColumnsDialogChange={setColumnsDialogOpen}
-          selectedRows={selectedRows}
-          onSelectedRowsChange={setSelectedRows}
-        />
+        <div className="flex-1 p-4 overflow-auto">
+          <ProductBacklogEnterpriseTable
+            items={tableData}
+            isLoading={isLoading}
+            selectedItems={selectedRows}
+            onItemClick={handleOpenFullView}
+            onItemSelect={handleItemSelect}
+            onFieldUpdate={handleFieldUpdate}
+          />
+        </div>
 
         {/* Bulk Actions Bar */}
         <DemandBulkActionsBar
