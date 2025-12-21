@@ -43,7 +43,7 @@ export function ChangeDetailDrawer({ open, onOpenChange, changeCardId }: ChangeD
                   </SheetTitle>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{change.title}</p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 mr-8">
                   {change.approved ? (
                     <Badge variant="success" className="border-0">
                       <CheckCircle className="w-3 h-3 mr-1" /> Approved
