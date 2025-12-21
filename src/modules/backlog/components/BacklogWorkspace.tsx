@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useBacklogState } from '../hooks/useBacklogState';
 import { BacklogHeader } from './BacklogHeader';
@@ -11,6 +11,8 @@ import { CreateEpicDialog } from '@/modules/program-epics/components/CreateEpicD
 import { useQuery } from '@tanstack/react-query';
 import { fetchBacklogItems } from '../api/backlogApi';
 import { useEpicBacklogPreferences } from '@/hooks/useEpicBacklogPreferences';
+import { toast } from 'sonner';
+import { format } from 'date-fns';
 
 export function BacklogWorkspace() {
   const backlogState = useBacklogState();
@@ -84,6 +86,55 @@ export function BacklogWorkspace() {
     setSelectedItemId(epicId);
   };
 
+  // Export epics to CSV
+  const handleExport = useCallback(() => {
+    const items = backlogData?.items || [];
+    if (items.length === 0) {
+      toast.error('No items to export');
+      return;
+    }
+
+    try {
+      // Define CSV columns
+      const headers = ['Key', 'Name', 'Status', 'State', 'Owner', 'Points', 'Start Date', 'Target Date', 'Created'];
+      
+      // Map items to CSV rows
+      const rows = items.map((item: any) => [
+        item.key || '',
+        (item.name || item.title || '').replace(/,/g, ';').replace(/\n/g, ' '),
+        item.status || '',
+        item.state || '',
+        item.owner_name || item.owner || '',
+        item.points || item.story_points || '',
+        item.start_date ? format(new Date(item.start_date), 'yyyy-MM-dd') : '',
+        item.target_date || item.end_date ? format(new Date(item.target_date || item.end_date), 'yyyy-MM-dd') : '',
+        item.created_at ? format(new Date(item.created_at), 'yyyy-MM-dd') : '',
+      ]);
+
+      // Build CSV content
+      const csvContent = [
+        headers.join(','),
+        ...rows.map(row => row.map((cell: any) => `"${cell}"`).join(','))
+      ].join('\n');
+
+      // Create and download file
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `epic-backlog-${format(new Date(), 'yyyy-MM-dd')}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      toast.success(`Exported ${items.length} epics to CSV`);
+    } catch (error) {
+      console.error('Export failed:', error);
+      toast.error('Failed to export data');
+    }
+  }, [backlogData?.items]);
+
   const isListView = ['list', 'sprint'].includes(backlogState.view);
 
   return (
@@ -92,6 +143,7 @@ export function BacklogWorkspace() {
         onOpenFilters={() => setIsFiltersDialogOpen(true)}
         onOpenColumns={() => setIsColumnsDialogOpen(true)}
         onCreateEpic={() => setIsCreateEpicDialogOpen(true)}
+        onExport={handleExport}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
       />
