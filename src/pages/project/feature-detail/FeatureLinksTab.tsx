@@ -150,8 +150,8 @@ export function FeatureLinksTab({ feature }: FeatureLinksTabProps) {
       <CreateDependencyDialog
         open={createDepOpen}
         onOpenChange={setCreateDepOpen}
-        prefilledFromId={feature.id}
-        prefilledFromType="feature"
+        defaultRequestingWorkItemId={feature.id}
+        defaultRequestingWorkItemType="feature"
       />
       <DependencyDetailsDrawer
         dependencyId={selectedDepId}
