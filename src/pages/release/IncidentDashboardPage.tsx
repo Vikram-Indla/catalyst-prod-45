@@ -287,7 +287,7 @@ export default function IncidentDashboardPage() {
             title="L3 Pending Committee"
             value={metrics.l3PendingCommittee.length}
             icon={Shield}
-            colorClass={metrics.l3PendingCommittee.length > 0 ? "text-purple-600" : "text-muted-foreground"}
+            colorClass={metrics.l3PendingCommittee.length > 0 ? "text-amber-600" : "text-muted-foreground"}
             onClick={() => navigate('/release/committee-queue')}
           />
         </div>
@@ -348,11 +348,11 @@ export default function IncidentDashboardPage() {
                   <div className="text-[10px] text-sky-600">Story</div>
                 </button>
                 <button 
-                  className="flex-1 p-2 bg-violet-50 border border-violet-100 rounded text-center hover:bg-violet-100 transition-colors"
+                  className="flex-1 p-2 bg-amber-50 border border-amber-100 rounded text-center hover:bg-amber-100 transition-colors"
                   onClick={() => navTo({ status: 'converted', converted_to: 'feature' })}
                 >
-                  <div className="text-sm font-semibold text-violet-700">{metrics.convertedToFeature}</div>
-                  <div className="text-[10px] text-violet-600">Feature</div>
+                  <div className="text-sm font-semibold text-amber-700">{metrics.convertedToFeature}</div>
+                  <div className="text-[10px] text-amber-600">Feature</div>
                 </button>
                 <button 
                   className="flex-1 p-2 bg-amber-50 border border-amber-100 rounded text-center hover:bg-amber-100 transition-colors"

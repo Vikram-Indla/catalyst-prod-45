@@ -265,7 +265,7 @@ export function EpicListView({ programId }: EpicListViewProps) {
     : filteredItems;
 
   const getAvatarColor = (name: string) => {
-    const colors = ['bg-blue-600', 'bg-green-600', 'bg-purple-600', 'bg-orange-500', 'bg-teal-600', 'bg-pink-500', 'bg-indigo-500'];
+    const colors = ['bg-blue-600', 'bg-green-600', 'bg-gray-600', 'bg-amber-500', 'bg-slate-600', 'bg-red-500', 'bg-sky-500'];
     return colors[name.charCodeAt(0) % colors.length];
   };
 

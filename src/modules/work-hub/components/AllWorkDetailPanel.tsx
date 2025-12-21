@@ -28,11 +28,11 @@ interface AllWorkDetailPanelProps {
 }
 
 const typeIcons: Record<string, { icon: React.ReactNode; bgColor: string; textColor: string }> = {
-  Feature: { icon: <Zap className="h-4 w-4" />, bgColor: 'bg-purple-100', textColor: 'text-purple-600' },
+  Feature: { icon: <Zap className="h-4 w-4" />, bgColor: 'bg-amber-100', textColor: 'text-amber-600' },
   Story: { icon: <Bookmark className="h-4 w-4" />, bgColor: 'bg-green-100', textColor: 'text-green-600' },
   Task: { icon: <CheckSquare className="h-4 w-4" />, bgColor: 'bg-blue-100', textColor: 'text-blue-600' },
   Defect: { icon: <Bug className="h-4 w-4" />, bgColor: 'bg-red-100', textColor: 'text-red-600' },
-  Subtask: { icon: <CircleDot className="h-4 w-4" />, bgColor: 'bg-cyan-100', textColor: 'text-cyan-600' },
+  Subtask: { icon: <CircleDot className="h-4 w-4" />, bgColor: 'bg-gray-100', textColor: 'text-gray-600' },
 };
 
 const statusStyles: Record<string, { bg: string; text: string; label: string }> = {
@@ -52,7 +52,7 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
 
   const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   const getAvatarColor = (name: string) => {
-    const colors = ['bg-blue-600', 'bg-green-600', 'bg-purple-600', 'bg-orange-500', 'bg-teal-600'];
+    const colors = ['bg-blue-600', 'bg-green-600', 'bg-gray-600', 'bg-amber-500', 'bg-slate-600'];
     return colors[name.charCodeAt(0) % colors.length];
   };
 

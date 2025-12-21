@@ -37,7 +37,7 @@ const typeColors: Record<string, string> = {
   Story: 'bg-green-500',
   Task: 'bg-blue-500',
   Defect: 'bg-red-500',
-  Feature: 'bg-purple-500',
+  Feature: 'bg-amber-500',
 };
 
 export function ReleaseDetailsView() {

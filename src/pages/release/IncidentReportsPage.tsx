@@ -300,9 +300,9 @@ function ConversionReport({ incidents, onRowClick }: { incidents: Incident[]; on
     { key: 'targetType', label: 'Target', minWidth: 90, centered: true, render: (i) => (
       i.converted_to_type ? (
         <Badge variant="outline" className={cn('text-[10px] whitespace-nowrap',
-          i.converted_to_type === 'epic' ? 'bg-violet-500/10 text-violet-600 border-violet-500/20' :
-          i.converted_to_type === 'feature' ? 'bg-sky-500/10 text-sky-600 border-sky-500/20' :
-          'bg-teal-500/10 text-teal-600 border-teal-500/20'
+          i.converted_to_type === 'epic' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' :
+          i.converted_to_type === 'feature' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' :
+          'bg-green-500/10 text-green-600 border-green-500/20'
         )}>
           {i.converted_to_type.toUpperCase()}
         </Badge>

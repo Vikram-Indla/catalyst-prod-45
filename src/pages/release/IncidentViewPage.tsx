@@ -264,12 +264,12 @@ export default function IncidentViewPage() {
           )}
           <Badge className={cn(
             "font-medium",
-            incident.status === 'open' ? 'bg-blue-100 text-blue-700' :
-            incident.status === 'triage' ? 'bg-yellow-100 text-yellow-700' :
-            incident.status === 'in_progress' ? 'bg-orange-100 text-orange-700' :
+            incident.status === 'open' ? 'bg-slate-100 text-slate-700' :
+            incident.status === 'triage' ? 'bg-amber-100 text-amber-700' :
+            incident.status === 'in_progress' ? 'bg-sky-100 text-sky-700' :
             incident.status === 'resolved' ? 'bg-green-100 text-green-700' :
             incident.status === 'closed' ? 'bg-gray-100 text-gray-700' :
-            'bg-purple-100 text-purple-700'
+            'bg-amber-100 text-amber-700'
           )}>
             {STATUS_OPTIONS.find(s => s.value === incident.status)?.label || incident.status}
           </Badge>

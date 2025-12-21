@@ -121,8 +121,8 @@ export default function ProgramBacklog() {
       case 'analyzing': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
       case 'backlog': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
       case 'implementing': return 'bg-primary/10 text-primary';
-      case 'validating': return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200';
-      case 'deploying': return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
+      case 'validating': return 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200';
+      case 'deploying': return 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200';
       case 'done': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
       default: return 'bg-muted text-muted-foreground';
     }

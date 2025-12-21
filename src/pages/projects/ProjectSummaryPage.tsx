@@ -304,7 +304,7 @@ function SummaryView() {
         <Card>
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <Edit className="h-5 w-5 text-purple-600" />
+              <Edit className="h-5 w-5 text-blue-600" />
               <div>
                 <div className="text-2xl font-medium">{metrics.updated}</div>
                 <div className="text-sm text-foreground">updated</div>
@@ -770,8 +770,8 @@ export default function ProjectSummaryPage() {
 
       {/* Project Header */}
       <div className="flex items-center gap-3 mb-4">
-        <div className="w-8 h-8 bg-purple-100 rounded flex items-center justify-center">
-          <span className="text-sm font-medium text-purple-700">{projectKey.charAt(0)}</span>
+        <div className="w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded flex items-center justify-center">
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{projectKey.charAt(0)}</span>
         </div>
         <h1 className="text-xl font-medium">{projectName}</h1>
         <Button variant="ghost" size="icon" className="ml-auto" asChild>
