@@ -136,7 +136,7 @@ export function CommitteeCard({
       default:
         return { 
           label: 'Pending', 
-          className: 'bg-violet-100 text-violet-800 dark:bg-violet-950/30 dark:text-violet-400 border-violet-200 dark:border-violet-800' 
+          className: 'bg-amber-100 text-amber-800 dark:bg-amber-950/30 dark:text-amber-400 border-amber-200 dark:border-amber-800' 
         };
     }
   };
@@ -351,7 +351,7 @@ export function CommitteeSummary({
           statusInfo.variant === 'success' && 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800',
           statusInfo.variant === 'destructive' && 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/30 dark:text-rose-400 dark:border-rose-800',
           statusInfo.variant === 'warning' && 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800',
-          statusInfo.variant === 'default' && 'bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-950/30 dark:text-violet-400 dark:border-violet-800',
+          statusInfo.variant === 'default' && 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800',
         )}
       >
         {statusInfo.label}

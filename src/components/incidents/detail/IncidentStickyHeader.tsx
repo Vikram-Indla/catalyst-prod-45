@@ -324,7 +324,7 @@ export function IncidentStickyHeader(props: IncidentStickyHeaderProps) {
                     // Apply status-specific background colors while keeping text visible
                     status === 'open' && 'bg-slate-100 dark:bg-slate-900',
                     status === 'triage' && 'bg-amber-50 dark:bg-amber-950/50',
-                    status === 'to_committee' && 'bg-violet-50 dark:bg-violet-950/50',
+                    status === 'to_committee' && 'bg-amber-50 dark:bg-amber-950/50',
                     status === 'in_progress' && 'bg-sky-50 dark:bg-sky-950/50',
                     status === 'resolved' && 'bg-emerald-50 dark:bg-emerald-950/50',
                     (status === 'converted' || status === 'closed') && 'bg-muted'

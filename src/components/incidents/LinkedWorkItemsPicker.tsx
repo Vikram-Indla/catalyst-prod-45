@@ -42,14 +42,14 @@ interface LinkedWorkItemsPickerProps {
 
 const TYPE_ICONS: Record<WorkItemType, React.ReactNode> = {
   story: <FileText className="h-3.5 w-3.5 text-blue-600" />,
-  feature: <Layers className="h-3.5 w-3.5 text-purple-600" />,
-  epic: <Square className="h-3.5 w-3.5 text-teal-600" />,
+  feature: <Layers className="h-3.5 w-3.5 text-amber-600" />,
+  epic: <Square className="h-3.5 w-3.5 text-green-600" />,
 };
 
 const TYPE_COLORS: Record<WorkItemType, string> = {
   story: 'bg-blue-100 text-blue-800 border-blue-200',
-  feature: 'bg-purple-100 text-purple-800 border-purple-200',
-  epic: 'bg-teal-100 text-teal-800 border-teal-200',
+  feature: 'bg-amber-100 text-amber-800 border-amber-200',
+  epic: 'bg-green-100 text-green-800 border-green-200',
 };
 
 export function LinkedWorkItemsPicker({
