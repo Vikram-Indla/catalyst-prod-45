@@ -241,6 +241,7 @@ export function FeatureActivity({ featureId }: FeatureActivityProps) {
             size="sm" 
             onClick={handleSubmitComment}
             disabled={!comment.trim() || createComment.isPending}
+            className="bg-[hsl(var(--primary))] hover:bg-[hsl(var(--primary))]/90 text-[hsl(var(--primary-foreground))]"
           >
             {createComment.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin mr-1" />

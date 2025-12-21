@@ -299,6 +299,10 @@ export function FeatureChildStories({ stories, featureId, projectId, totalCount,
                           <AlertTriangle size={12} />
                           High
                         </span>
+                      ) : story.priority?.toLowerCase() === 'low' ? (
+                        <span className={styles.priorityLow}>
+                          Low
+                        </span>
                       ) : (
                         <span className={styles.priorityMedium}>
                           {story.priority || 'Medium'}

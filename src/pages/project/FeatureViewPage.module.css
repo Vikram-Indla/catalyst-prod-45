@@ -42,8 +42,9 @@
 }
 
 .breadcrumbCurrent {
-  color: hsl(var(--foreground));
+  color: hsl(var(--primary));
   font-weight: 500;
+  font-family: var(--font-mono);
 }
 
 .mainLayout {
@@ -112,7 +113,7 @@
 .workItemId {
   font-size: 12px;
   font-weight: 500;
-  color: hsl(var(--muted-foreground));
+  color: hsl(var(--primary));
   margin-bottom: 4px;
   font-family: var(--font-mono);
 }
@@ -276,27 +277,31 @@
   align-items: center;
   gap: 8px;
   padding: 4px 8px;
-  background: var(--secondary-green-muted, hsl(92 30% 60% / 0.12));
-  color: var(--secondary-green, hsl(92 30% 45%));
+  background: hsl(var(--primary) / 0.1);
   font-size: 12px;
   font-weight: 500;
   border-radius: 4px;
   text-decoration: none;
-  border: none;
+  border: 1px solid hsl(var(--border));
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .epicLink:hover {
-  background: var(--secondary-green, hsl(92 30% 45%));
-  color: white;
+  background: hsl(var(--primary) / 0.15);
   text-decoration: none;
+}
+
+.epicLinkId {
+  color: hsl(var(--primary));
+  font-family: var(--font-mono);
+  font-weight: 600;
 }
 
 .epicIcon {
   width: 14px;
   height: 14px;
-  background: var(--secondary-green, hsl(92 30% 45%));
+  background: hsl(38 80% 55%);
   border-radius: 2px;
   display: flex;
   align-items: center;
@@ -452,16 +457,16 @@
 
 .progressBar {
   flex: 1;
-  height: 6px;
+  height: 8px;
   background: hsl(var(--muted));
-  border-radius: 3px;
+  border-radius: 4px;
   overflow: hidden;
 }
 
 .progressFill {
   height: 100%;
-  background: linear-gradient(90deg, var(--secondary-green, hsl(92 30% 45%)) 0%, hsl(142 76% 36%) 100%);
-  border-radius: 3px;
+  background: hsl(var(--primary));
+  border-radius: 4px;
   transition: width 0.3s ease;
 }
 
@@ -612,20 +617,22 @@
 .storyIcon {
   width: 18px;
   height: 18px;
-  background: hsl(217 91% 60%);
+  background: hsl(var(--muted));
   border-radius: 3px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: hsl(var(--muted-foreground));
   font-size: 10px;
+  font-weight: 700;
   flex-shrink: 0;
 }
 
 .storyId {
   font-family: var(--font-mono);
   font-size: 12px;
-  color: hsl(var(--muted-foreground));
+  color: hsl(var(--primary));
+  font-weight: 500;
 }
 
 .storySummary {
@@ -956,11 +963,22 @@
 }
 
 .sidebarTitle {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  color: hsl(var(--foreground));
+  color: hsl(var(--muted-foreground));
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebarTitle::before {
+  content: '';
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: hsl(var(--primary));
 }
 
 .fieldList {
@@ -1053,11 +1071,22 @@
 
 .futureFieldsHeader {
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 600;
   color: hsl(var(--muted-foreground));
   text-transform: uppercase;
   letter-spacing: 0.04em;
   margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.futureFieldsHeader::before {
+  content: '';
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: hsl(var(--primary));
 }
 
 .futureFields .fieldRow {
@@ -1252,14 +1281,42 @@
 }
 
 .priorityHigh {
-  color: hsl(var(--destructive));
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  background: hsl(0 84% 60% / 0.1);
+  color: hsl(0 84% 60%);
+  border: 1px solid hsl(0 84% 60% / 0.2);
 }
 
 .priorityMedium {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  background: hsl(38 80% 55% / 0.1);
+  color: hsl(38 80% 55%);
+  border: 1px solid hsl(38 80% 55% / 0.2);
+  text-transform: capitalize;
+}
+
+.priorityLow {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  background: hsl(var(--muted));
   color: hsl(var(--muted-foreground));
+  border: 1px solid hsl(var(--border));
+  text-transform: capitalize;
 }
 
 .priorityHigh svg {
