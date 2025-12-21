@@ -61,22 +61,29 @@ function getProgressBarColor(progress: number): string {
   return 'var(--brand-primary)';
 }
 
+// Type tags - neutral grey styling per governance (type indicators should be neutral)
 const typeStyles = {
   theme: {
-    bg: 'var(--secondary-green-bg)',
-    color: 'var(--secondary-green)',
+    bg: 'rgb(229, 231, 235)',        // gray-200
+    darkBg: 'rgb(55, 65, 81)',       // gray-700
+    color: 'rgb(55, 65, 81)',        // gray-700
+    darkColor: 'rgb(209, 213, 219)', // gray-300
     label: 'THM',
     rowBg: 'var(--surface-subtle)',
   },
   objective: {
-    bg: 'var(--brand-gold-bg)',
-    color: 'var(--brand-gold)',
+    bg: 'rgb(229, 231, 235)',        // gray-200
+    darkBg: 'rgb(55, 65, 81)',       // gray-700
+    color: 'rgb(55, 65, 81)',        // gray-700
+    darkColor: 'rgb(209, 213, 219)', // gray-300
     label: 'OBJ',
     rowBg: 'transparent',
   },
   key_result: {
-    bg: 'var(--secondary-bronze-bg)',
-    color: 'var(--secondary-bronze)',
+    bg: 'rgb(229, 231, 235)',        // gray-200
+    darkBg: 'rgb(55, 65, 81)',       // gray-700
+    color: 'rgb(55, 65, 81)',        // gray-700
+    darkColor: 'rgb(209, 213, 219)', // gray-300
     label: 'KR',
     rowBg: 'transparent',
   },
@@ -239,10 +246,13 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
               <div className="w-4 flex-shrink-0" />
             )}
             
-            {/* Type chip - readable size */}
+            {/* Type chip - neutral grey styling */}
             <span 
-              className={cn(TYPOGRAPHY.typeBadge, 'px-1 py-0.5 rounded flex-shrink-0')}
-              style={{ backgroundColor: typeStyle.bg, color: typeStyle.color }}
+              className={cn(
+                TYPOGRAPHY.typeBadge, 
+                'px-1 py-0.5 rounded flex-shrink-0',
+                'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+              )}
             >
               {typeStyle.label}
             </span>
@@ -394,13 +404,16 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
               <span>Refreshing…</span>
             </div>
           )}
-          {/* Type legend */}
+          {/* Type legend - neutral grey styling */}
           <div className="flex items-center gap-0.5">
             {Object.entries(typeStyles).map(([key, style]) => (
               <span 
                 key={key}
-                className={cn(TYPOGRAPHY.typeBadge, 'px-1 py-0.5 rounded')}
-                style={{ backgroundColor: style.bg, color: style.color }}
+                className={cn(
+                  TYPOGRAPHY.typeBadge, 
+                  'px-1 py-0.5 rounded',
+                  'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                )}
               >
                 {style.label}
               </span>
