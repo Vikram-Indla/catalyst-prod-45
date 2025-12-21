@@ -1,11 +1,13 @@
 /**
  * IndustryHeaderToolbarV2 - Unified Toolbar Component
- * Ported exactly from catalyst-header-toolbar-v2.html
  * Used for both /industry/backlog and /industry/kanban routes
+ * 
+ * Layout: [List | Board toggle] [Search] [Filters (count)] [Export] [+ Create]
  */
 
 import React, { useEffect, useRef, useCallback } from 'react';
-import { IndustryViewSwitchButton } from '@/components/industry/IndustryViewSwitchButton';
+import { useNavigate } from 'react-router-dom';
+import { cn } from '@/lib/utils';
 
 export type DensityMode = 'compact' | 'regular' | 'relaxed';
 
@@ -41,6 +43,7 @@ export interface IndustryHeaderToolbarV2Props {
   onColumnsConfig?: () => void;
   onOpenFilters?: () => void;
   activeFiltersCount?: number;
+  onCreateRequest?: () => void;
 }
 
 // Icons - inline SVGs (tree-shakeable)
@@ -83,6 +86,26 @@ const Icons = {
       <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
     </svg>
   ),
+  List: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="3" y1="6" x2="21" y2="6"/>
+      <line x1="3" y1="12" x2="21" y2="12"/>
+      <line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  ),
+  Kanban: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="5" height="18" rx="1"/>
+      <rect x="10" y="3" width="5" height="12" rx="1"/>
+      <rect x="17" y="3" width="5" height="15" rx="1"/>
+    </svg>
+  ),
+  Plus: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="12" y1="5" x2="12" y2="19" />
+      <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
+  ),
 };
 
 // Default avatar colors
@@ -111,8 +134,10 @@ export function IndustryHeaderToolbarV2({
   onColumnsConfig,
   onOpenFilters,
   activeFiltersCount = 0,
+  onCreateRequest,
 }: IndustryHeaderToolbarV2Props) {
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
 
   // Keyboard shortcut: Cmd+K / Ctrl+K focuses search
   useEffect(() => {
@@ -132,6 +157,7 @@ export function IndustryHeaderToolbarV2({
     if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
     return (parts[0][0] + (parts[1]?.[0] || '')).toUpperCase();
   };
+  
   // Detect Mac for shortcut display
   const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
   const shortcutKey = isMac ? '⌘K' : 'Ctrl+K';
@@ -146,20 +172,54 @@ export function IndustryHeaderToolbarV2({
 
   const showAvatarFilter = avatars.length > 0 && !!onToggleAvatar;
 
+  const handleViewChange = (view: 'list' | 'board') => {
+    if (view === 'list') {
+      navigate('/industry/backlog');
+    } else {
+      navigate('/industry/kanban');
+    }
+  };
+
   return (
-    <div className="w-full grid grid-cols-[auto_1fr_auto] items-center gap-4">
-      {/* Left: Single view switch (only shows the OTHER view) */}
-      <div className="flex items-center">
-        <IndustryViewSwitchButton currentView={activeView === 'board' ? 'kanban' : 'list'} />
+    <div className="w-full flex items-center justify-between gap-4">
+      {/* Left Section: View Toggle */}
+      <div className="flex items-center gap-3">
+        <div className="flex items-center bg-muted rounded-lg p-1">
+          <button
+            onClick={() => handleViewChange('list')}
+            className={cn(
+              'h-8 px-3 flex items-center gap-2 rounded-md text-sm font-medium transition-colors',
+              activeView === 'list'
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+            )}
+          >
+            <div className="w-4 h-4">
+              <Icons.List />
+            </div>
+            <span>List</span>
+          </button>
+          <button
+            onClick={() => handleViewChange('board')}
+            className={cn(
+              'h-8 px-3 flex items-center gap-2 rounded-md text-sm font-medium transition-colors',
+              activeView === 'board'
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+            )}
+          >
+            <div className="w-4 h-4">
+              <Icons.Kanban />
+            </div>
+            <span>Board</span>
+          </button>
+        </div>
       </div>
 
-      {/* Center: Search (unified styling) */}
-      <div className="flex justify-center">
-        <div
-          className="w-full max-w-[480px] h-10 flex items-center gap-2 px-3 rounded-lg bg-muted/50"
-          style={{ border: '1px solid var(--border-visible)' }}
-        >
-          <div className="w-4 h-4 text-muted-foreground">
+      {/* Center Section: Search */}
+      <div className="flex-1 max-w-md">
+        <div className="relative">
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground">
             <Icons.Search />
           </div>
           <input
@@ -167,30 +227,30 @@ export function IndustryHeaderToolbarV2({
             type="text"
             value={searchValue}
             onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Search..."
-            className="flex-1 border-none outline-none text-sm bg-transparent text-foreground placeholder:text-muted-foreground"
+            placeholder="Search requests..."
+            className="w-full h-9 pl-9 pr-16 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1"
           />
           {searchValue && (
             <button
               onClick={() => onSearchChange('')}
-              className="border-none bg-transparent cursor-pointer text-muted-foreground p-0.5"
+              className="absolute right-12 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground"
               title="Clear search"
             >
-              <div className="w-4 h-4">
+              <div className="w-3 h-3">
                 <Icons.X />
               </div>
             </button>
           )}
-          <span className="text-[10px] text-muted-foreground font-medium px-1.5 py-0.5 rounded bg-muted">
+          <kbd className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
             {shortcutKey}
-          </span>
+          </kbd>
         </div>
       </div>
 
-      {/* Right: Actions */}
-      <div className="flex items-center justify-end gap-2">
+      {/* Right Section: Actions */}
+      <div className="flex items-center gap-2">
         {showAvatarFilter && (
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 mr-2">
             {avatars.slice(0, 4).map((a, idx) => {
               const initials = a.initials || getInitials(a.name);
               const isActive = selectedAvatarIds.includes(a.id);
@@ -200,7 +260,10 @@ export function IndustryHeaderToolbarV2({
                   key={a.id}
                   onClick={() => onToggleAvatar?.(a.id)}
                   title={a.name}
-                  className={`w-7 h-7 rounded-full border-2 flex items-center justify-center text-[11px] font-semibold text-white ${idx > 0 ? '-ml-1.5' : ''}`}
+                  className={cn(
+                    'w-7 h-7 rounded-full border-2 flex items-center justify-center text-[11px] font-semibold text-white',
+                    idx > 0 && '-ml-1.5'
+                  )}
                   style={{
                     backgroundColor: bg,
                     borderColor: isActive ? 'hsl(var(--secondary-green))' : 'hsl(var(--background))',
@@ -216,7 +279,7 @@ export function IndustryHeaderToolbarV2({
         {onDensityModeChange && (
           <button
             onClick={cycleDensity}
-            className="w-9 h-9 flex items-center justify-center rounded-lg border bg-background border-border text-muted-foreground hover:bg-muted transition-colors"
+            className="h-9 w-9 flex items-center justify-center rounded-lg border bg-background border-border text-muted-foreground hover:bg-muted transition-colors"
             title={`Density: ${densityMode[0].toUpperCase()}${densityMode.slice(1)}`}
           >
             <div className="w-4 h-4">
@@ -225,17 +288,23 @@ export function IndustryHeaderToolbarV2({
           </button>
         )}
 
+        {/* Filter Button with Label & Count */}
         {onOpenFilters && (
           <button
             onClick={onOpenFilters}
-            className="relative w-9 h-9 flex items-center justify-center rounded-lg border border-border bg-background text-muted-foreground hover:bg-muted transition-colors"
-            title="Filters"
+            className={cn(
+              'h-9 px-3 flex items-center gap-2 rounded-lg border bg-background text-sm font-medium transition-colors',
+              activeFiltersCount > 0
+                ? 'border-[#c69c6d] text-[#c69c6d]'
+                : 'border-border text-muted-foreground hover:bg-muted'
+            )}
           >
             <div className="w-4 h-4">
               <Icons.Filter />
             </div>
+            <span>Filters</span>
             {activeFiltersCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-brand-primary text-[10px] font-semibold text-white flex items-center justify-center">
+              <span className="min-w-5 h-5 px-1.5 rounded-full bg-[#c69c6d] text-[10px] font-semibold text-white flex items-center justify-center">
                 {activeFiltersCount}
               </span>
             )}
@@ -245,7 +314,7 @@ export function IndustryHeaderToolbarV2({
         {onColumnsConfig && (
           <button
             onClick={onColumnsConfig}
-            className="w-9 h-9 flex items-center justify-center rounded-lg border border-border bg-background text-muted-foreground hover:bg-muted transition-colors"
+            className="h-9 w-9 flex items-center justify-center rounded-lg border border-border bg-background text-muted-foreground hover:bg-muted transition-colors"
             title="Columns"
           >
             <div className="w-4 h-4">
@@ -254,15 +323,30 @@ export function IndustryHeaderToolbarV2({
           </button>
         )}
 
+        {/* Export Button with Label */}
         {onExport && (
           <button
             onClick={onExport}
-            className="w-9 h-9 flex items-center justify-center rounded-lg border border-border bg-background text-muted-foreground hover:bg-muted transition-colors"
-            title="Export"
+            className="h-9 px-3 flex items-center gap-2 rounded-lg border border-border bg-background text-sm font-medium text-muted-foreground hover:bg-muted transition-colors"
+            title="Export to CSV"
           >
             <div className="w-4 h-4">
               <Icons.Export />
             </div>
+            <span>Export</span>
+          </button>
+        )}
+
+        {/* Create Button - Primary CTA (Gold) */}
+        {onCreateRequest && (
+          <button
+            onClick={onCreateRequest}
+            className="h-9 px-4 flex items-center gap-2 rounded-lg bg-[#c69c6d] hover:bg-[#b8894d] text-white text-sm font-medium transition-colors"
+          >
+            <div className="w-4 h-4">
+              <Icons.Plus />
+            </div>
+            <span>Create Request</span>
           </button>
         )}
       </div>

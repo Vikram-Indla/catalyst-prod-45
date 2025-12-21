@@ -174,6 +174,7 @@ export default function BusinessRequestsKanbanPage() {
         a.click();
         URL.revokeObjectURL(url);
       }}
+      onCreateRequest={() => setCreateModalOpen(true)}
     />
   );
 
