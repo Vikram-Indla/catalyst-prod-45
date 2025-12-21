@@ -3783,6 +3783,52 @@ export type Database = {
         }
         Relationships: []
       }
+      feature_contributors: {
+        Row: {
+          added_at: string | null
+          added_by: string | null
+          feature_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          added_at?: string | null
+          added_by?: string | null
+          feature_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          added_at?: string | null
+          added_by?: string | null
+          feature_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feature_contributors_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feature_contributors_feature_id_fkey"
+            columns: ["feature_id"]
+            isOneToOne: false
+            referencedRelation: "features"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feature_contributors_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       feature_flags: {
         Row: {
           created_at: string | null
