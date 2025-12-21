@@ -546,7 +546,9 @@ export default function FeatureViewPage() {
                       {feature.epic ? (
                         <button className={styles.epicLink}>
                           <span className={styles.epicIcon}><Zap size={8} /></span>
-                          {feature.epic.display_id} · {feature.epic.name}
+                          <span className={styles.epicLinkId}>{feature.epic.display_id}</span>
+                          <span className="text-muted-foreground">·</span>
+                          <span className="text-foreground">{feature.epic.name}</span>
                         </button>
                       ) : (
                         <button className={styles.epicMissing}>
