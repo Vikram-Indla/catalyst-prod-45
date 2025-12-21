@@ -44,7 +44,7 @@ const getStateColor = (state: string | null) => {
     case 'blocked':
       return 'text-red-600 bg-red-100';
     default:
-      return 'text-slate-600 bg-slate-100';
+      return 'text-gray-600 bg-gray-100 dark:text-gray-400 dark:bg-gray-800';
   }
 };
 

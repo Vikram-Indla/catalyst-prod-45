@@ -94,7 +94,7 @@ const normalizeStatus = (rawStatus: string | null): StatusFilter => {
 
 const STATUS_CONFIG: Record<StatusFilter, { label: string; color: string; bgColor: string }> = {
   'all': { label: 'All Statuses', color: 'text-muted-foreground', bgColor: 'bg-muted' },
-  'not-started': { label: 'Not Started', color: 'text-slate-600', bgColor: 'bg-slate-100' },
+  'not-started': { label: 'Not Started', color: 'text-gray-600 dark:text-gray-400', bgColor: 'bg-gray-100 dark:bg-gray-800' },
   'in-progress': { label: 'In Progress', color: 'text-blue-600', bgColor: 'bg-blue-100' },
   'blocked': { label: 'Blocked', color: 'text-red-600', bgColor: 'bg-red-100' },
   'done': { label: 'Done', color: 'text-green-600', bgColor: 'bg-green-100' },
@@ -102,7 +102,7 @@ const STATUS_CONFIG: Record<StatusFilter, { label: string; color: string; bgColo
 
 const STATUS_INDICATOR_COLORS: Record<StatusFilter, string> = {
   'all': 'bg-muted',
-  'not-started': 'bg-slate-400',
+  'not-started': 'bg-gray-400',
   'in-progress': 'bg-blue-500',
   'blocked': 'bg-red-500',
   'done': 'bg-green-500',

@@ -400,7 +400,7 @@ export default function DemandSummaryPage() {
                     <div key={i} className={cn('bg-white/5 rounded-lg p-2.5 border-l-4 border border-white/10', 
                       s.color === 'bg-gray-500' ? 'border-l-gray-500' : 
                       s.color === 'bg-gray-400' ? 'border-l-gray-400' : 
-                      s.color === 'bg-violet-500' ? 'border-l-violet-500' : 
+                      s.color === 'bg-amber-500' ? 'border-l-amber-500' : 
                       s.color === 'bg-rose-400' ? 'border-l-rose-400' : 
                       s.color === 'bg-brand-primary' ? 'border-l-brand-primary' : 
                       s.color === 'bg-success' ? 'border-l-success' : 'border-l-destructive'

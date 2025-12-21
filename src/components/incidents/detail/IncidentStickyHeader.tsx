@@ -322,7 +322,7 @@ export function IncidentStickyHeader(props: IncidentStickyHeaderProps) {
                     // Ensure text is always visible with proper foreground color
                     'bg-background text-foreground',
                     // Apply status-specific background colors while keeping text visible
-                    status === 'open' && 'bg-slate-100 dark:bg-slate-900',
+                    status === 'open' && 'bg-gray-100 dark:bg-gray-900',
                     status === 'triage' && 'bg-amber-50 dark:bg-amber-950/50',
                     status === 'to_committee' && 'bg-amber-50 dark:bg-amber-950/50',
                     status === 'in_progress' && 'bg-sky-50 dark:bg-sky-950/50',
