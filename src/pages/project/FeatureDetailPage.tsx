@@ -55,6 +55,8 @@ import { FeatureLinksTab } from './feature-detail/FeatureLinksTab';
 import { FeatureActivityTab } from './feature-detail/FeatureActivityTab';
 import { FeatureAuditTab } from './feature-detail/FeatureAuditTab';
 import { FeatureRightRail } from './feature-detail/FeatureRightRail';
+import { AssignModal } from '@/components/features/AssignModal';
+import { Contributor } from '@/hooks/useFeatureAssignments';
 
 // Types
 type FeatureStatus = 'funnel' | 'analyzing' | 'backlog' | 'implementing' | 'done';
@@ -76,9 +78,10 @@ interface FeatureData {
   project_id: string;
   progress_pct: number | null;
   updated_at: string | null;
-  owner?: { id: string; full_name: string } | null;
+  owner?: { id: string; full_name: string; email?: string; avatar_url?: string; role?: string } | null;
   epic?: { id: string; epic_key: string; name: string; primary_program_id?: string | null } | null;
   project?: { id: string; name: string } | null;
+  contributors?: Contributor[];
 }
 
 const STATUS_CONFIG: Record<string, { label: string; class: string }> = {
@@ -104,6 +107,7 @@ export default function FeatureDetailPage() {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('overview');
   const [rightRailCollapsed, setRightRailCollapsed] = useState(false);
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
 
   // Fetch feature with relations
   const { data: feature, isLoading, error } = useQuery({
@@ -125,9 +129,9 @@ export default function FeatureDetailPage() {
       if (!data) return null;
 
       // Fetch relations in parallel
-      const [ownerResult, epicResult, projectResult] = await Promise.all([
+      const [ownerResult, epicResult, projectResult, contributorsResult] = await Promise.all([
         data.owner_id 
-          ? supabase.from('profiles').select('id, full_name').eq('id', data.owner_id).single()
+          ? supabase.from('profiles').select('id, full_name, email, avatar_url, role').eq('id', data.owner_id).single()
           : { data: null },
         data.epic_id
           ? supabase.from('epics').select('id, epic_key, name, primary_program_id').eq('id', data.epic_id).single()
@@ -135,6 +139,10 @@ export default function FeatureDetailPage() {
         data.project_id
           ? supabase.from('projects').select('id, name').eq('id', data.project_id).single()
           : { data: null },
+        supabase
+          .from('feature_contributors')
+          .select('id, user_id, user:profiles!feature_contributors_user_id_fkey(id, full_name, email, avatar_url, role)')
+          .eq('feature_id', featureId),
       ]);
 
       return {
@@ -143,6 +151,7 @@ export default function FeatureDetailPage() {
         owner: ownerResult.data,
         epic: epicResult.data,
         project: projectResult.data,
+        contributors: contributorsResult.data || [],
       };
     },
     enabled: !!featureId,
@@ -316,7 +325,7 @@ export default function FeatureDetailPage() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={() => setIsAssignModalOpen(true)}>
               <UserPlus className="h-4 w-4 mr-1" />
               Assign
             </Button>
@@ -492,6 +501,18 @@ export default function FeatureDetailPage() {
           onUpdate={(data) => updateFeature.mutate(data as any)}
         />
       </div>
+
+      {/* Assign Modal */}
+      <AssignModal
+        isOpen={isAssignModalOpen}
+        onClose={() => setIsAssignModalOpen(false)}
+        featureId={feature.id}
+        featureKey={featureKey}
+        featureTitle={feature.name}
+        currentOwner={feature.owner || null}
+        currentContributors={feature.contributors || []}
+        projectId={feature.project_id}
+      />
     </div>
   );
 }
