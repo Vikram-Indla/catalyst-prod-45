@@ -237,13 +237,13 @@ export function FeatureRightRail({ feature, collapsed, onToggleCollapse, onUpdat
         </FieldRow>
       </CollapsibleSection>
 
-      {/* Configure Fields Button */}
-      <div className="mt-auto p-4 border-t">
+      {/* Configure Fields - Deferred */}
+      {/* <div className="mt-auto p-4 border-t">
         <Button variant="ghost" size="sm" className="w-full justify-center">
           <Settings className="h-4 w-4 mr-2" />
           Configure Fields
         </Button>
-      </div>
+      </div> */}
     </div>
   );
 }
