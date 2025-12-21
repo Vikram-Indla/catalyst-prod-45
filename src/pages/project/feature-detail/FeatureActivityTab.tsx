@@ -44,7 +44,7 @@ export function FeatureActivityTab({ featureId }: FeatureActivityTabProps) {
   // Combine and filter
   const allItems = [
     ...comments.map(c => ({ ...c, itemType: 'comment' as const, timestamp: new Date(c.created_at) })),
-    ...activities.map(a => ({ ...a, itemType: 'history' as const, timestamp: new Date(a.created_at) })),
+    ...activities.map(a => ({ ...a, itemType: 'history' as const, timestamp: new Date(a.timestamp) })),
   ].sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
 
   const filteredItems = allItems.filter(item => {
