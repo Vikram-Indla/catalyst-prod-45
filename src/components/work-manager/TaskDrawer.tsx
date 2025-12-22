@@ -52,7 +52,20 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
     }
   }, [task]);
 
-  if (!isOpen || !task) return null;
+  // Don't render if not open or no task
+  if (!isOpen) return null;
+  
+  // Show loading state if task not yet available
+  if (!task) {
+    return (
+      <>
+        <div className="fixed inset-0 bg-black/40 z-40" onClick={onClose} />
+        <div className="fixed top-0 right-0 h-full w-[500px] bg-surface-card border-l border-border-default shadow-xl z-50 flex items-center justify-center">
+          <span className="text-text-muted">Loading...</span>
+        </div>
+      </>
+    );
+  }
 
   const assignee = getUserById(task.assigneeId);
   const team = getTeamById(task.teamId);
