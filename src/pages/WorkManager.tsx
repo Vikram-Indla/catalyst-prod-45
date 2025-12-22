@@ -437,6 +437,7 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
             tasks={filteredTasks} 
             onOpenTask={handleOpenTask}
             onMoveTask={handleMoveTask}
+            onAddTask={() => setIsNewTaskDialogOpen(true)}
           />
         )}
         {activeTab === 'tasks' && (

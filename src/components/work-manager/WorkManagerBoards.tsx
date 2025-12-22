@@ -15,6 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useToast } from '@/hooks/use-toast';
 
 interface WorkManagerBoardsProps {
   tasks: TaskExtended[];
@@ -25,9 +26,10 @@ interface WorkManagerBoardsProps {
     toStatus: TaskStatus;
     toIndex: number;
   }) => void;
+  onAddTask?: (status: TaskStatus) => void;
 }
 
-export function WorkManagerBoards({ tasks, onOpenTask, onMoveTask }: WorkManagerBoardsProps) {
+export function WorkManagerBoards({ tasks, onOpenTask, onMoveTask, onAddTask }: WorkManagerBoardsProps) {
   const columnTasks = useMemo(() => {
     const grouped: Record<string, TaskExtended[]> = {};
     defaultColumns.forEach(col => {
@@ -64,6 +66,7 @@ export function WorkManagerBoards({ tasks, onOpenTask, onMoveTask }: WorkManager
             column={column}
             tasks={columnTasks[column.status] || []}
             onOpenTask={onOpenTask}
+            onAddTask={onAddTask}
           />
         ))}
       </div>
@@ -75,9 +78,11 @@ interface BoardColumnProps {
   column: KanbanColumn;
   tasks: TaskExtended[];
   onOpenTask: (taskId: string) => void;
+  onAddTask?: (status: TaskStatus) => void;
 }
 
-function BoardColumn({ column, tasks, onOpenTask }: BoardColumnProps) {
+function BoardColumn({ column, tasks, onOpenTask, onAddTask }: BoardColumnProps) {
+  const { toast } = useToast();
   const isOverWip = column.wipLimit && tasks.length > column.wipLimit;
 
   return (
@@ -119,24 +124,45 @@ function BoardColumn({ column, tasks, onOpenTask }: BoardColumnProps) {
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem className="gap-2 cursor-pointer">
+              <DropdownMenuItem
+                className="gap-2 cursor-pointer"
+                onSelect={() => {
+                  if (onAddTask) {
+                    onAddTask(column.status);
+                    return;
+                  }
+                  toast({ title: 'Add task', description: 'This action is not wired yet.' });
+                }}
+              >
                 <Plus className="w-4 h-4" />
                 Add task
               </DropdownMenuItem>
-              <DropdownMenuItem className="gap-2 cursor-pointer">
+              <DropdownMenuItem
+                className="gap-2 cursor-pointer"
+                onSelect={() => toast({ title: 'Edit column', description: 'Coming soon.' })}
+              >
                 <Settings className="w-4 h-4" />
                 Edit column
               </DropdownMenuItem>
-              <DropdownMenuItem className="gap-2 cursor-pointer">
+              <DropdownMenuItem
+                className="gap-2 cursor-pointer"
+                onSelect={() => toast({ title: 'Set WIP limit', description: 'Coming soon.' })}
+              >
                 <Eye className="w-4 h-4" />
                 Set WIP limit
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="gap-2 cursor-pointer">
+              <DropdownMenuItem
+                className="gap-2 cursor-pointer"
+                onSelect={() => toast({ title: 'Hide column', description: 'Coming soon.' })}
+              >
                 <EyeOff className="w-4 h-4" />
                 Hide column
               </DropdownMenuItem>
-              <DropdownMenuItem className="gap-2 cursor-pointer text-red-600 focus:text-red-600">
+              <DropdownMenuItem
+                className="gap-2 cursor-pointer text-red-600 focus:text-red-600"
+                onSelect={() => toast({ title: 'Clear column', description: 'Coming soon.', variant: 'destructive' })}
+              >
                 <Trash2 className="w-4 h-4" />
                 Clear column
               </DropdownMenuItem>
