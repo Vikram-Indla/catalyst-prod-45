@@ -230,8 +230,8 @@ export function WorkManagerSettings() {
     <div className="max-w-4xl">
       {/* Header */}
       <div className="mb-6">
-        <h2 className="text-[16px] font-semibold text-text-primary">Settings</h2>
-        <p className="text-[13px] text-text-muted">Configure your Work Manager preferences</p>
+        <h2 className="text-[16px] font-semibold text-foreground">Settings</h2>
+        <p className="text-[13px] text-muted-foreground">Configure your Work Manager preferences</p>
       </div>
 
       {/* Tab Navigation */}
@@ -244,7 +244,7 @@ export function WorkManagerSettings() {
               'px-4 py-3 text-[13px] font-medium border-b-2 transition-colors -mb-px',
               activeTab === tab.id
                 ? 'text-brand-primary border-brand-primary'
-                : 'text-text-muted border-transparent hover:text-text-primary'
+                : 'text-muted-foreground border-transparent hover:text-foreground'
             )}
           >
             {tab.label}
@@ -257,8 +257,8 @@ export function WorkManagerSettings() {
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-[14px] font-semibold text-text-primary">Default Board Columns</h3>
-              <p className="text-[12px] text-text-muted mt-1">Configure the default columns and WIP limits for new boards</p>
+              <h3 className="text-[14px] font-semibold text-foreground">Default Board Columns</h3>
+              <p className="text-[12px] text-muted-foreground mt-1">Configure the default columns and WIP limits for new boards</p>
             </div>
             <Button variant="outline" size="sm" className="gap-2" onClick={handleOpenAddColumn}>
               <Plus className="w-4 h-4" />
@@ -284,7 +284,7 @@ export function WorkManagerSettings() {
                     <td className="px-2 py-3 text-center">
                       <GripVertical className="w-4 h-4 text-text-muted cursor-grab" />
                     </td>
-                    <td className="px-4 py-3 text-[13px] font-medium text-text-primary">{column.name}</td>
+                    <td className="px-4 py-3 text-[13px] font-medium text-foreground">{column.name}</td>
                     <td className="px-4 py-3">
                       <span className={cn('px-2 py-0.5 text-[11px] font-medium rounded', getStatusBadgeClass(column.status))}>
                         {column.status}
@@ -330,8 +330,8 @@ export function WorkManagerSettings() {
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-[14px] font-semibold text-text-primary">Recurrence Templates</h3>
-              <p className="text-[12px] text-text-muted mt-1">Manage templates for recurring tasks</p>
+              <h3 className="text-[14px] font-semibold text-foreground">Recurrence Templates</h3>
+              <p className="text-[12px] text-muted-foreground mt-1">Manage templates for recurring tasks</p>
             </div>
             <Button variant="outline" size="sm" className="gap-2" onClick={handleOpenAddTemplate}>
               <Plus className="w-4 h-4" />
@@ -343,19 +343,19 @@ export function WorkManagerSettings() {
             <table className="w-full">
               <thead>
                 <tr className="bg-surface-muted">
-                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-text-muted uppercase tracking-wide">Template Name</th>
-                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-text-muted uppercase tracking-wide">Frequency</th>
-                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-text-muted uppercase tracking-wide">Next Run</th>
-                  <th className="text-center px-4 py-3 text-[11px] font-semibold text-text-muted uppercase tracking-wide">Active</th>
-                  <th className="text-right px-4 py-3 text-[11px] font-semibold text-text-muted uppercase tracking-wide">Actions</th>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Template Name</th>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Frequency</th>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Next Run</th>
+                  <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Active</th>
+                  <th className="text-right px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {templates.map((template) => (
-                  <tr key={template.id} className="border-b border-border-subtle">
-                    <td className="px-4 py-3 text-[13px] font-medium text-text-primary">{template.name}</td>
-                    <td className="px-4 py-3 text-[13px] text-text-secondary">{template.frequency}</td>
-                    <td className="px-4 py-3 text-[13px] text-text-muted">{template.nextRun}</td>
+                  <tr key={template.id} className="border-b border-border-subtle hover:bg-stone-50 dark:hover:bg-gray-800 transition-colors">
+                    <td className="px-4 py-3 text-[13px] font-medium text-foreground">{template.name}</td>
+                    <td className="px-4 py-3 text-[13px] text-foreground/70">{template.frequency}</td>
+                    <td className="px-4 py-3 text-[13px] text-muted-foreground">{template.nextRun}</td>
                     <td className="px-4 py-3 text-center">
                       <Switch
                         checked={template.active}
@@ -378,16 +378,16 @@ export function WorkManagerSettings() {
       {activeTab === 'notifications' && (
         <div className="space-y-6">
           <div>
-            <h3 className="text-[14px] font-semibold text-text-primary">Notification Preferences</h3>
-            <p className="text-[12px] text-text-muted mt-1">Configure when and how you receive notifications</p>
+            <h3 className="text-[14px] font-semibold text-foreground">Notification Preferences</h3>
+            <p className="text-[12px] text-muted-foreground mt-1">Configure when and how you receive notifications</p>
           </div>
 
           <div className="bg-surface-card border border-border-default rounded-lg divide-y divide-border-subtle">
             {notifications.map((notification) => (
-              <div key={notification.id} className="flex items-center justify-between p-4">
+              <div key={notification.id} className="flex items-center justify-between p-4 hover:bg-stone-50 dark:hover:bg-gray-800 transition-colors">
                 <div>
-                  <span className="text-[13px] font-medium text-text-primary">{notification.label}</span>
-                  <p className="text-[12px] text-text-muted mt-0.5">{notification.description}</p>
+                  <span className="text-[13px] font-medium text-foreground">{notification.label}</span>
+                  <p className="text-[12px] text-muted-foreground mt-0.5">{notification.description}</p>
                 </div>
                 <Switch
                   checked={notification.checked}
@@ -402,23 +402,23 @@ export function WorkManagerSettings() {
       {activeTab === 'integrations' && (
         <div className="space-y-6">
           <div>
-            <h3 className="text-[14px] font-semibold text-text-primary">Integrations</h3>
-            <p className="text-[12px] text-text-muted mt-1">Connect Work Manager with other Catalyst modules</p>
+            <h3 className="text-[14px] font-semibold text-foreground">Integrations</h3>
+            <p className="text-[12px] text-muted-foreground mt-1">Connect Work Manager with other Catalyst modules</p>
           </div>
 
           <div className="grid gap-4">
             {integrations.map((integration) => (
               <div
                 key={integration.name}
-                className="flex items-center justify-between p-4 bg-surface-card border border-border-default rounded-lg"
+                className="flex items-center justify-between p-4 bg-surface-card border border-border-default rounded-lg hover:bg-stone-50 dark:hover:bg-gray-800 transition-colors"
               >
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-lg bg-surface-muted flex items-center justify-center text-lg">
                     {integration.icon}
                   </div>
                   <div>
-                    <span className="text-[13px] font-medium text-text-primary">{integration.name}</span>
-                    <p className="text-[12px] text-text-muted">{integration.description}</p>
+                    <span className="text-[13px] font-medium text-foreground">{integration.name}</span>
+                    <p className="text-[12px] text-muted-foreground">{integration.description}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
