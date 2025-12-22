@@ -21,7 +21,7 @@ export function BrandedCheckbox({ checked, onChange, disabled = false, className
         "border-2 transition-all duration-150",
         checked
           ? "bg-[#C69C6D] border-[#C69C6D]"
-          : "bg-transparent border-[#E8E4DC] dark:border-[#30363D]",
+          : "bg-transparent border-[#9CA3AF] dark:border-[#6B7280]",
         disabled && "opacity-50 cursor-not-allowed",
         !disabled && !checked && "hover:border-[#C69C6D]",
         className
