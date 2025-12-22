@@ -389,7 +389,6 @@ export function RichTextEditor({ value, onChange, placeholder, className, minHei
         data-placeholder={placeholder}
         style={{
           minHeight,
-          maxHeight: '400px',
           background: 'var(--surface-1)',
           color: 'var(--text-1)',
           caretColor: 'var(--text-1)',

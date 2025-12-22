@@ -103,6 +103,7 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
             value={data.description || ''}
             onChange={(value) => onChange('description', value)}
             placeholder="Enter detailed description..."
+            minHeight="350px"
           />
         </Field>
       </FormCard>
