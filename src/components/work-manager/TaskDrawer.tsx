@@ -94,17 +94,15 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
 
   return (
     <>
-      {/* Overlay */}
+      {/* Overlay - covers entire screen */}
       <div 
-        className="fixed inset-0 bg-black/40 z-40" 
+        className="fixed inset-0 bg-black/50 z-40" 
         onClick={onClose}
+        aria-hidden="true"
       />
 
-      {/* Drawer */}
-      <div className={cn(
-        'fixed top-0 right-0 h-full w-[500px] bg-surface-card border-l border-border-default shadow-xl z-50 flex flex-col transition-transform duration-200',
-        isOpen ? 'translate-x-0' : 'translate-x-full'
-      )}>
+      {/* Drawer Panel - solid background, on top of overlay */}
+      <div className="fixed top-0 right-0 bottom-0 w-[500px] bg-white dark:bg-zinc-900 border-l border-border-default shadow-xl z-50 flex flex-col">
         {/* Header */}
         <div className="flex items-start justify-between p-4 border-b border-border-default">
           <div>
