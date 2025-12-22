@@ -158,7 +158,6 @@ const FALLBACK_TABS = [
   { value: 'risks', label: 'Risks' },
   { value: 'milestones', label: 'Milestones' },
   { value: 'links', label: 'Links' },
-  { value: 'discussions', label: 'Discussions' },
   { value: 'audit-history', label: 'Audit History' },
 ];
 
@@ -588,9 +587,6 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
               </TabsContent>
               <TabsContent value="links" className="m-0 focus-visible:outline-none">
                 <LinksViewTab data={formData} onChange={handleFieldChange} onDirtyChange={handleDirtyChange} />
-              </TabsContent>
-              <TabsContent value="discussions" className="m-0 focus-visible:outline-none">
-                <DiscussionsViewTab data={formData} onChange={handleFieldChange} onDirtyChange={handleDirtyChange} />
               </TabsContent>
               <TabsContent value="audit-history" className="m-0 focus-visible:outline-none">
                 <AuditHistoryTab data={formData} onChange={handleFieldChange} onDirtyChange={handleDirtyChange} />

@@ -46,7 +46,6 @@ import {
 import { Risk, RiskFormData, RoamStatus, RiskStatus, SeverityLevel, YesNo } from '@/types/risks';
 import { RiskFormV2, RiskFormDataV2 } from './shared/RiskFormV2';
 import { RiskLinksTab } from './drawer-tabs/RiskLinksTab';
-import { RiskDiscussionsTab } from './RiskDiscussionsTab';
 import { UnifiedAuditHistoryTab } from '@/components/shared/UnifiedAuditHistoryTab';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
@@ -62,7 +61,6 @@ interface RiskDrawerProps {
 const TABS = [
   { value: 'details', label: 'Details' },
   { value: 'links', label: 'Links' },
-  { value: 'discussions', label: 'Discussions' },
   { value: 'audit-history', label: 'Audit History' },
 ];
 
@@ -395,9 +393,6 @@ export function RiskDrawer({ risk, isOpen, onClose, onUpdate }: RiskDrawerProps)
                   relatedItemId={risk.related_item_id}
                   relationship={risk.relationship}
                 />
-              </TabsContent>
-              <TabsContent value="discussions" className="m-0 focus-visible:outline-none h-[500px]">
-                <RiskDiscussionsTab riskId={risk.id} />
               </TabsContent>
               <TabsContent value="audit-history" className="m-0 focus-visible:outline-none h-[500px]">
                 <UnifiedAuditHistoryTab entityType="risk" entityId={risk.id} />

@@ -27,7 +27,6 @@ import { WorkItemWatchers } from '@/components/work-items/WorkItemWatchers';
 import { FeatureOverviewTab } from './tabs/FeatureOverviewTab';
 import { FeatureStoriesTab } from './tabs/FeatureStoriesTab';
 import { FeatureDependenciesTab } from './tabs/FeatureDependenciesTab';
-import { FeatureDiscussionsTab } from './tabs/FeatureDiscussionsTab';
 import { Badge } from '@/components/ui/badge';
 import { useFeatureProgress } from '@/hooks/useFeatureProgress';
 
@@ -242,9 +241,6 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
               <TabsTrigger value="dependencies" className="executive-drawer-tab">
                 Dependencies
               </TabsTrigger>
-              <TabsTrigger value="activity" className="executive-drawer-tab">
-                Activity
-              </TabsTrigger>
             </TabsList>
           </div>
 
@@ -264,10 +260,6 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
 
             <TabsContent value="dependencies" className="mt-0 p-4 sm:p-6">
               <FeatureDependenciesTab feature={feature} />
-            </TabsContent>
-
-            <TabsContent value="activity" className="mt-0 p-4 sm:p-6">
-              <FeatureDiscussionsTab featureId={feature?.id} />
             </TabsContent>
           </div>
         </Tabs>

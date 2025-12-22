@@ -40,8 +40,6 @@ import { DemandDetailsViewTab } from './drawer-tabs/DemandDetailsViewTab';
 import { BusinessScoreViewTab } from './drawer-tabs/BusinessScoreViewTab';
 import { BudgetViewTab } from './drawer-tabs/BudgetViewTab';
 import { LinksViewTab } from './drawer-tabs/LinksViewTab';
-import { DiscussionsViewTab } from './drawer-tabs/DiscussionsViewTab';
-import { ExecutiveDiscussionsTab } from './drawer-tabs/ExecutiveDiscussionsTab';
 import { AuditHistoryTab } from './drawer-tabs/AuditHistoryTab';
 import { ExecutiveAuditHistoryTab } from './drawer-tabs/ExecutiveAuditHistoryTab';
 import { MilestonesViewTab } from './drawer-tabs/MilestonesViewTab';
@@ -167,7 +165,6 @@ const FALLBACK_TABS = [
   { value: 'risks', label: 'Risks' },
   { value: 'milestones', label: 'Milestones' },
   { value: 'links', label: 'Links' },
-  { value: 'discussions', label: 'Discussions' },
   { value: 'audit-history', label: 'Audit History' },
 ];
 
@@ -698,9 +695,6 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                 {requestId && <LinksViewTab requestId={requestId} onNavigateToEpic={handleNavigateToEpic} />}
               </TabsContent>
               
-              <TabsContent value="discussions" className="m-0 focus-visible:outline-none p-5 pb-8">
-                {requestId && <ExecutiveDiscussionsTab requestId={requestId} />}
-              </TabsContent>
               
               <TabsContent value="audit-history" className="m-0 focus-visible:outline-none p-5 pb-8">
                 {requestId && <ExecutiveAuditHistoryTab requestId={requestId} />}

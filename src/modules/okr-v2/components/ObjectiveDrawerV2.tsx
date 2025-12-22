@@ -29,7 +29,6 @@ import { ObjectiveOverviewTabV2, ObjectiveFormData } from './ObjectiveOverviewTa
 import { KeyResultsTabV2 } from './KeyResultsTabV2';
 import { LinkedWorkTabV2 } from './LinkedWorkTabV2';
 import { UnifiedLinksTab } from '@/components/shared/UnifiedLinksTab';
-import { DiscussionsTab } from '@/components/okr/DiscussionsTab';
 import { UnifiedAuditHistoryTab } from '@/components/shared/UnifiedAuditHistoryTab';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
@@ -431,15 +430,6 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
       value: 'links',
       label: 'Links',
       content: <UnifiedLinksTab entityType="objective" entityId={objective.id} hideTiles={['implementation', 'knowledge-hub']} />,
-    },
-    {
-      value: 'discussions',
-      label: 'Discussions',
-      content: (
-        <div className="p-6">
-          <DiscussionsTab objectiveId={objective.id} />
-        </div>
-      ),
     },
     {
       value: 'audit',
