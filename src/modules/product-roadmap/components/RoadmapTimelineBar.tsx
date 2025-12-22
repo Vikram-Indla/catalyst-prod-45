@@ -1,6 +1,6 @@
 /**
  * Timeline bar representing a demand on the timeline
- * Enterprise-grade styling with Catalyst colors
+ * Enterprise-grade styling with Catalyst colors and dark mode support
  */
 
 import React from 'react';
@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/tooltip';
 import type { RoadmapDemand } from '../types/roadmap';
 import { catalystTokens } from '../lib/design-tokens';
+import { useRoadmapTheme } from '../lib/useRoadmapTheme';
 import { format, parseISO } from 'date-fns';
 
 interface RoadmapTimelineBarProps {
@@ -31,6 +32,7 @@ export function RoadmapTimelineBar({
   isSelected,
   onClick,
 }: RoadmapTimelineBarProps) {
+  const { tokens } = useRoadmapTheme();
   const productColor = item.product?.color || catalystTokens.brand.primary;
   
   // Format dates for tooltip
@@ -108,15 +110,15 @@ export function RoadmapTimelineBar({
       </TooltipTrigger>
       <TooltipContent side="top" className="max-w-xs">
         <div className="space-y-1.5">
-          <div className="font-semibold" style={{ color: catalystTokens.light.text.primary }}>
+          <div className="font-semibold" style={{ color: tokens.text.primary }}>
             {item.request_key}: {item.title}
           </div>
-          <div className="text-xs flex items-center gap-1.5" style={{ color: catalystTokens.light.text.secondary }}>
+          <div className="text-xs flex items-center gap-1.5" style={{ color: tokens.text.secondary }}>
             <Calendar className="w-3 h-3" />
             {formatDate(item.start_date)} → {formatDate(item.end_date)}
           </div>
           {item.product && (
-            <div className="flex items-center gap-1.5 text-xs" style={{ color: catalystTokens.light.text.secondary }}>
+            <div className="flex items-center gap-1.5 text-xs" style={{ color: tokens.text.secondary }}>
               <div 
                 className="w-2 h-2 rounded-full" 
                 style={{ backgroundColor: item.product.color || catalystTokens.brand.primary }}
@@ -138,7 +140,7 @@ export function RoadmapTimelineBar({
 
 /**
  * Unscheduled indicator for items without dates
- * Shows actionable button to set dates
+ * Shows actionable button to set dates with dark mode support
  */
 interface RoadmapUnscheduledIndicatorProps {
   item: RoadmapDemand;
@@ -146,6 +148,7 @@ interface RoadmapUnscheduledIndicatorProps {
 }
 
 export function RoadmapUnscheduledIndicator({ item, onSetDates }: RoadmapUnscheduledIndicatorProps) {
+  const { tokens } = useRoadmapTheme();
   const productColor = item.product?.color || catalystTokens.secondary.grey.base;
   
   return (
@@ -159,7 +162,7 @@ export function RoadmapUnscheduledIndicator({ item, onSetDates }: RoadmapUnsched
       {/* No dates text */}
       <span 
         className="text-sm italic"
-        style={{ color: catalystTokens.light.text.muted }}
+        style={{ color: tokens.text.muted }}
       >
         No dates set
       </span>

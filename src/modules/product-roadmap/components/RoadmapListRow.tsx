@@ -113,7 +113,7 @@ export function RoadmapListRow({
       onClick={onClick}
       onKeyDown={(e) => e.key === 'Enter' && onClick()}
       className={cn(
-        'group flex items-center gap-2 px-3 py-2.5 min-h-[64px] cursor-pointer transition-colors',
+        'group flex items-center gap-2 px-3 py-2.5 h-[52px] cursor-pointer transition-colors',
         'border-b',
         isDragging && 'opacity-50'
       )}
