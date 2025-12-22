@@ -7,7 +7,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { CalendarIcon, Lock, Unlock, Upload, X, FileText, Info } from 'lucide-react';
+import { CalendarIcon, Lock, Unlock, Upload, X, FileText, Info, Users, CalendarDays, Paperclip, Briefcase } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -177,46 +177,90 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
   };
 
+  // Premium input class
+  const premiumInputClass = cn(
+    "w-full px-4 py-3",
+    "bg-white dark:bg-gray-900",
+    "border border-gray-200 dark:border-gray-700",
+    "rounded-lg",
+    "text-gray-900 dark:text-gray-100",
+    "placeholder:text-gray-400 dark:placeholder:text-gray-500",
+    "focus:outline-none",
+    "focus:ring-2 focus:ring-secondary-olive/20",
+    "focus:border-secondary-olive",
+    "transition-all"
+  );
+
+  // Premium section card class
+  const sectionCardClass = cn(
+    "bg-stone-50 dark:bg-gray-800/50",
+    "rounded-xl",
+    "border border-gray-200/80 dark:border-gray-700/60",
+    "shadow-sm",
+    "p-6"
+  );
+
+  // Premium section header
+  const SectionHeader = ({ icon: Icon, title }: { icon: React.ElementType; title: string }) => (
+    <h3 className="
+      text-[12px] font-semibold uppercase tracking-wider
+      text-secondary-olive dark:text-green-400
+      mb-5
+      flex items-center gap-2
+    ">
+      <Icon className="w-4 h-4" />
+      {title}
+    </h3>
+  );
+
+  // Premium label
+  const PremiumLabel = ({ children, required = false }: { children: React.ReactNode; required?: boolean }) => (
+    <label className="block mb-2">
+      <span className="text-[13px] font-medium text-gray-700 dark:text-gray-300">
+        {children}
+      </span>
+      {required && (
+        <span className="text-[10px] text-red-500 ml-2 uppercase tracking-wide font-medium">
+          Required
+        </span>
+      )}
+    </label>
+  );
+
   return (
-    <div className="space-y-6 p-5">
+    <div className="space-y-6 p-6">
       {/* Basic Information Section */}
-      <Card className="border border-border/60 rounded-lg bg-card">
-        <CardContent className="p-5 space-y-4">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-primary">Basic Information</h3>
-          
+      <div className={sectionCardClass}>
+        <SectionHeader icon={FileText} title="Basic Information" />
+        
+        <div className="space-y-5">
           <div>
-            <Label className="text-sm font-medium">
-              Summary <span className="text-destructive">*</span>
-            </Label>
+            <PremiumLabel required>Summary</PremiumLabel>
             <Input
               value={data.title || ''}
               onChange={(e) => onChange('title', e.target.value)}
               placeholder="Enter demand summary (min 5 characters)"
-              className="mt-1.5"
+              className={premiumInputClass}
             />
           </div>
 
           <div>
-            <Label className="text-sm font-medium">
-              Description <span className="text-destructive">*</span>
-            </Label>
-            <p className="text-xs text-muted-foreground mb-1.5">Provide a detailed description (up to 2,000 words)</p>
+            <PremiumLabel required>Description</PremiumLabel>
+            <p className="text-[12px] text-gray-500 dark:text-gray-400 mb-2">Provide a detailed description (up to 2,000 words)</p>
             <RichTextEditor
               value={data.description || ''}
               onChange={(value) => onChange('description', value)}
               placeholder="Describe the demand in detail..."
-              className="mt-1"
             />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      {/* Timeline Section - Moved after Description */}
-      <Card className="border border-border/60 rounded-lg bg-card">
-        <CardContent className="p-5 space-y-4">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-primary">Timeline</h3>
-          
-          <div className="grid grid-cols-3 gap-4">
+      {/* Timeline Section */}
+      <div className={sectionCardClass}>
+        <SectionHeader icon={CalendarDays} title="Timeline" />
+        
+        <div className="grid grid-cols-3 gap-5">
             <div>
               <Label className="text-sm font-medium">Business Ask Date</Label>
               <Popover open={businessAskDateOpen} onOpenChange={setBusinessAskDateOpen}>
@@ -326,14 +370,14 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
               )}
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Attachments & Assignment Section */}
-      <Card className="border border-border/60 rounded-lg bg-card">
-        <CardContent className="p-5 space-y-4">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-primary">Attachments & Assignment</h3>
-
+      <div className={sectionCardClass}>
+        <SectionHeader icon={Paperclip} title="Attachments & Assignment" />
+        
+        <div className="space-y-5">
           <div>
             <div className="flex items-baseline gap-2">
               <Label className="text-sm font-medium">Attachments</Label>
@@ -440,63 +484,53 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Delivery Context Section */}
-      <Card className="border border-border/60 rounded-lg bg-card">
-        <CardContent className="p-5 space-y-4">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-primary">Delivery Context</h3>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label className="text-sm font-medium">
-                Delivery Platform
-              </Label>
-              <Select
-                value={data.delivery_platform || ''}
-                onValueChange={(value) => onChange('delivery_platform', value)}
-              >
-                <SelectTrigger className="mt-1.5">
-                  <SelectValue placeholder="Select platform..." />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border shadow-lg z-[200]">
-                  <SelectItem value="Senaei Platform">Senaei Platform</SelectItem>
-                  <SelectItem value="MIM Platform">MIM Platform</SelectItem>
-                  <SelectItem value="Enterprise Platform">Enterprise Platform</SelectItem>
-                  <SelectItem value="Digital Platform">Digital Platform</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label className="text-sm font-medium">Planned Quarter</Label>
-              <Select
-                value={data.planned_quarter || ''}
-                onValueChange={(value) => onChange('planned_quarter', value)}
-              >
-                <SelectTrigger className="mt-1.5">
-                  <SelectValue placeholder="Select quarter..." />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border shadow-lg z-[200]">
-                  <SelectItem value="Q4-2025">Q4 2025</SelectItem>
-                  <SelectItem value="Q1-2026">Q1 2026</SelectItem>
-                  <SelectItem value="Q2-2026">Q2 2026</SelectItem>
-                  <SelectItem value="Q3-2026">Q3 2026</SelectItem>
-                  <SelectItem value="Q4-2026">Q4 2026</SelectItem>
-                  <SelectItem value="Q1-2027">Q1 2027</SelectItem>
-                  <SelectItem value="Q2-2027">Q2 2027</SelectItem>
-                  <SelectItem value="Q3-2027">Q3 2027</SelectItem>
-                  <SelectItem value="Q4-2027">Q4 2027</SelectItem>
-                  <SelectItem value="Q1-2028">Q1 2028</SelectItem>
-                  <SelectItem value="Q2-2028">Q2 2028</SelectItem>
-                  <SelectItem value="Q3-2028">Q3 2028</SelectItem>
-                  <SelectItem value="Q4-2028">Q4 2028</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+      <div className={sectionCardClass}>
+        <SectionHeader icon={Briefcase} title="Delivery Context" />
+        
+        <div className="grid grid-cols-2 gap-5">
+          <div>
+            <PremiumLabel>Delivery Platform</PremiumLabel>
+            <Select
+              value={data.delivery_platform || ''}
+              onValueChange={(value) => onChange('delivery_platform', value)}
+            >
+              <SelectTrigger className={premiumInputClass}>
+                <SelectValue placeholder="Select platform..." />
+              </SelectTrigger>
+              <SelectContent className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-xl rounded-xl z-[200]">
+                <SelectItem value="Senaei Platform">Senaei Platform</SelectItem>
+                <SelectItem value="MIM Platform">MIM Platform</SelectItem>
+                <SelectItem value="Enterprise Platform">Enterprise Platform</SelectItem>
+                <SelectItem value="Digital Platform">Digital Platform</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-        </CardContent>
-      </Card>
+          <div>
+            <PremiumLabel>Planned Quarter</PremiumLabel>
+            <Select
+              value={data.planned_quarter || ''}
+              onValueChange={(value) => onChange('planned_quarter', value)}
+            >
+              <SelectTrigger className={premiumInputClass}>
+                <SelectValue placeholder="Select quarter..." />
+              </SelectTrigger>
+              <SelectContent className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-xl rounded-xl z-[200]">
+                <SelectItem value="Q4-2025">Q4 2025</SelectItem>
+                <SelectItem value="Q1-2026">Q1 2026</SelectItem>
+                <SelectItem value="Q2-2026">Q2 2026</SelectItem>
+                <SelectItem value="Q3-2026">Q3 2026</SelectItem>
+                <SelectItem value="Q4-2026">Q4 2026</SelectItem>
+                <SelectItem value="Q1-2027">Q1 2027</SelectItem>
+                <SelectItem value="Q2-2027">Q2 2027</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
