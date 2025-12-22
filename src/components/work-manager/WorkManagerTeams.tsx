@@ -234,22 +234,35 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
       </div>
 
       {/* All Members Section */}
-      <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
-        <div className="px-5 py-4 border-b border-border">
-          <h3 className="text-[14px] font-semibold text-foreground">All Team Members</h3>
-          <p className="text-[12px] text-muted-foreground mt-0.5">Click a row to view their tasks</p>
+      <div className="bg-card rounded-xl border border-border overflow-hidden shadow-sm">
+        {/* Header */}
+        <div className="px-5 py-4 border-b border-border bg-muted/30">
+          <h3 className="font-semibold text-[15px] text-foreground">All Team Members</h3>
+          <p className="text-[12px] text-muted-foreground mt-0.5">
+            {users.length} members across {teams.length} teams • Click a row to view tasks
+          </p>
         </div>
+        
+        {/* Table */}
         <table className="w-full">
           <thead>
-            <tr className="bg-muted/50">
-              <th className="text-left px-5 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Member</th>
-              <th className="text-left px-5 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Role</th>
-              <th className="text-left px-5 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Team</th>
-              <th className="text-left px-5 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Workload</th>
+            <tr className="bg-muted/50 border-b border-border">
+              <th className="text-left px-5 py-3.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                Member
+              </th>
+              <th className="text-left px-5 py-3.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                Role
+              </th>
+              <th className="text-left px-5 py-3.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                Team
+              </th>
+              <th className="text-right px-5 py-3.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                Workload
+              </th>
             </tr>
           </thead>
           <tbody>
-            {users.map((user) => {
+            {users.map((user, index) => {
               const userTeam = userTeamMap.get(user.id);
               const userStats = getUserStats(user.id);
               const color = avatarColors[user.id] || '#5c7c5c';
@@ -258,27 +271,33 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
               return (
                 <tr 
                   key={user.id} 
-                  className="group border-b border-border/50 hover:bg-muted/50 cursor-pointer transition-colors"
+                  className={cn(
+                    "group border-b border-border hover:bg-muted/50 transition-colors cursor-pointer",
+                    index % 2 === 1 && "bg-muted/20"
+                  )}
+                  onClick={() => console.log('Navigate to tasks for', user.name)}
                 >
                   {/* Member Cell - Avatar + Name + Email */}
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
                       <div
-                        className="w-9 h-9 rounded-full flex items-center justify-center text-[11px] font-semibold text-white shrink-0"
+                        className="w-10 h-10 rounded-full flex items-center justify-center text-[12px] font-bold text-white shadow-sm shrink-0"
                         style={{ backgroundColor: color }}
                         title={user.name}
                       >
                         {user.initials}
                       </div>
                       <div>
-                        <div className="text-[13px] font-medium text-foreground">{user.name}</div>
+                        <div className="font-medium text-[13px] text-foreground">{user.name}</div>
                         <div className="text-[11px] text-muted-foreground">{user.email}</div>
                       </div>
                     </div>
                   </td>
                   
                   {/* Role Cell */}
-                  <td className="px-5 py-4 text-[13px] text-muted-foreground">{user.role}</td>
+                  <td className="px-5 py-4">
+                    <span className="text-[13px] text-muted-foreground">{user.role}</span>
+                  </td>
                   
                   {/* Team Cell - With color indicator */}
                   <td className="px-5 py-4">
@@ -288,26 +307,29 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
                           className="w-2.5 h-2.5 rounded-full shrink-0"
                           style={{ backgroundColor: teamColor }}
                         />
-                        <span className="text-[13px] text-muted-foreground">{userTeam.name}</span>
+                        <span className="text-[13px] text-foreground">{userTeam.name}</span>
                       </div>
                     ) : (
                       <span className="text-[13px] text-muted-foreground">—</span>
                     )}
                   </td>
                   
-                  {/* Workload Cell */}
+                  {/* Workload Cell - Visual indicators */}
                   <td className="px-5 py-4">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-end gap-3">
                       <div className="flex items-center gap-2">
                         {userStats.overdue > 0 && (
-                          <span className="px-2 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-[11px] font-medium rounded-full">
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-[11px] font-medium rounded-md">
+                            <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
                             {userStats.overdue} overdue
                           </span>
                         )}
-                        <span className="px-2 py-0.5 bg-muted text-muted-foreground text-[11px] font-medium rounded-full">
+                        <span className="inline-flex items-center px-2 py-1 bg-muted text-foreground text-[11px] font-medium rounded-md">
                           {userStats.open} open
                         </span>
                       </div>
+                      
+                      {/* Arrow on hover */}
                       <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                   </td>
