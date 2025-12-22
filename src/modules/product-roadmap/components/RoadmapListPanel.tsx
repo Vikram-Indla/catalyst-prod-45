@@ -1,12 +1,12 @@
 /**
- * Left panel containing the list of demands
+ * Left panel containing the list of demands with drag & drop support
  */
 
 import React from 'react';
+import { Droppable, Draggable } from '@hello-pangea/dnd';
 import { RoadmapListRow } from './RoadmapListRow';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { RoadmapDemand, RoadmapGroup } from '../types/roadmap';
-import { cn } from '@/lib/utils';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 
 interface RoadmapListPanelProps {
@@ -28,7 +28,7 @@ export function RoadmapListPanel({
   onToggleGroup,
   listWidth = 360,
 }: RoadmapListPanelProps) {
-  // If groups are provided, render grouped view
+  // If groups are provided, render grouped view (no DnD for now)
   if (groups && groups.length > 0) {
     return (
       <div 
@@ -46,7 +46,7 @@ export function RoadmapListPanel({
         </div>
 
         <ScrollArea className="flex-1">
-          <div role="table" data-roadmap-container>
+          <div role="table">
             {groups.map((group) => (
               <div key={group.key} className="border-b border-border last:border-b-0">
                 {/* Group header */}
@@ -76,7 +76,7 @@ export function RoadmapListPanel({
                 {/* Group items */}
                 {group.isExpanded && (
                   <div>
-                    {group.items.map((item, idx) => {
+                    {group.items.map((item) => {
                       const globalIndex = items.findIndex(i => i.id === item.id);
                       return (
                         <RoadmapListRow
@@ -99,7 +99,7 @@ export function RoadmapListPanel({
     );
   }
 
-  // Flat list view
+  // Flat list view with drag & drop
   return (
     <div 
       className="border-r border-border bg-card flex-shrink-0 flex flex-col"
@@ -116,18 +116,38 @@ export function RoadmapListPanel({
       </div>
 
       <ScrollArea className="flex-1">
-        <div role="table" data-roadmap-container>
-          {items.map((item, index) => (
-            <RoadmapListRow
-              key={item.id}
-              item={item}
-              index={index}
-              isFocused={focusedIndex === index}
-              isSelected={selectedItemId === item.id}
-              onClick={() => onItemClick(item.id)}
-            />
-          ))}
-        </div>
+        <Droppable droppableId="roadmap-list">
+          {(provided, snapshot) => (
+            <div
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+              role="table"
+              className={snapshot.isDraggingOver ? 'bg-accent/20' : ''}
+            >
+              {items.map((item, index) => (
+                <Draggable key={item.id} draggableId={item.id} index={index}>
+                  {(provided, snapshot) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                    >
+                      <RoadmapListRow
+                        item={item}
+                        index={index}
+                        isFocused={focusedIndex === index}
+                        isSelected={selectedItemId === item.id}
+                        onClick={() => onItemClick(item.id)}
+                        isDragging={snapshot.isDragging}
+                      />
+                    </div>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
       </ScrollArea>
     </div>
   );
