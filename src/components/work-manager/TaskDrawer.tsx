@@ -227,26 +227,37 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
             {/* OVERVIEW TAB */}
             {activeTab === 'overview' && (
               <div className="py-2">
-                {/* Status */}
+              {/* Status */}
                 <FieldRow label="Status">
-                  <span className={cn(
-                    'px-2.5 py-1 rounded-full text-[11px] font-semibold',
-                    statusColors[currentStatus]
-                  )}>
-                    {currentStatus}
-                  </span>
                   <Select
                     value={currentStatus}
                     onValueChange={(v) => setLocalTask(prev => ({ ...prev, status: v as TaskStatus }))}
                   >
                     <SelectTrigger className="w-[160px] h-8 text-[13px]">
-                      <SelectValue />
+                      <div className="flex items-center gap-2">
+                        <div className={cn(
+                          'w-2 h-2 rounded-full',
+                          currentStatus === 'Backlog' && 'bg-gray-400',
+                          currentStatus === 'Planned' && 'bg-blue-500',
+                          currentStatus === 'In Progress' && 'bg-amber-500',
+                          currentStatus === 'Waiting' && 'bg-purple-500',
+                          currentStatus === 'Done' && 'bg-emerald-500'
+                        )} />
+                        <span>{currentStatus}</span>
+                      </div>
                     </SelectTrigger>
                     <SelectContent>
                       {statuses.map(s => (
                         <SelectItem key={s} value={s}>
                           <div className="flex items-center gap-2">
-                            <div className={cn('w-2 h-2 rounded-full', statusColors[s].split(' ')[0])} />
+                            <div className={cn(
+                              'w-2 h-2 rounded-full',
+                              s === 'Backlog' && 'bg-gray-400',
+                              s === 'Planned' && 'bg-blue-500',
+                              s === 'In Progress' && 'bg-amber-500',
+                              s === 'Waiting' && 'bg-purple-500',
+                              s === 'Done' && 'bg-emerald-500'
+                            )} />
                             {s}
                           </div>
                         </SelectItem>
@@ -353,7 +364,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                     <SelectTrigger className="w-[160px] h-8 text-[13px]">
                       <div className="flex items-center gap-2">
                         <div className={cn('w-2.5 h-2.5 rounded-full', priorityColors[currentPriority].dot)} />
-                        <SelectValue />
+                        <span>{currentPriority}</span>
                       </div>
                     </SelectTrigger>
                     <SelectContent>
@@ -377,8 +388,13 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                   >
                     <SelectTrigger className="w-[160px] h-8 text-[13px]">
                       <div className="flex items-center gap-2">
-                        <TypeIcon className="w-4 h-4 text-gray-500" />
-                        <SelectValue />
+                        <TypeIcon className={cn(
+                          'w-4 h-4',
+                          currentType === 'Project' && 'text-[#5c7c5c]',
+                          currentType === 'Task' && 'text-blue-500',
+                          currentType === 'General' && 'text-gray-500'
+                        )} />
+                        <span>{currentType}</span>
                       </div>
                     </SelectTrigger>
                     <SelectContent>
@@ -387,7 +403,12 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                         return (
                           <SelectItem key={t} value={t}>
                             <div className="flex items-center gap-2">
-                              <Icon className="w-4 h-4 text-gray-500" />
+                              <Icon className={cn(
+                                'w-4 h-4',
+                                t === 'Project' && 'text-[#5c7c5c]',
+                                t === 'Task' && 'text-blue-500',
+                                t === 'General' && 'text-gray-500'
+                              )} />
                               <span>{t}</span>
                             </div>
                           </SelectItem>
