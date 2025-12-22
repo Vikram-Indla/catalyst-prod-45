@@ -439,7 +439,7 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label className="text-sm font-medium">
-                Delivery Platform <span className="text-destructive">*</span>
+                Delivery Platform
               </Label>
               <Select
                 value={data.delivery_platform || ''}
