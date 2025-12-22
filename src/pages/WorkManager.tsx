@@ -29,8 +29,9 @@ import { WorkManagerInsights } from '@/components/work-manager/WorkManagerInsigh
 import { WorkManagerTeams } from '@/components/work-manager/WorkManagerTeams';
 import { WorkManagerSettings } from '@/components/work-manager/WorkManagerSettings';
 import { TaskDrawer } from '@/components/work-manager/TaskDrawer';
+import { NewTaskDialog } from '@/components/work-manager/NewTaskDialog';
 import { teams, tasks, computeTaskExtended } from '@/lib/work-manager-data';
-import type { TaskFilters, TaskDrawerState, TaskExtended } from '@/components/work-manager/types';
+import type { TaskFilters, TaskDrawerState, TaskExtended, Task } from '@/components/work-manager/types';
 
 interface WorkManagerProps {
   tab?: 'boards' | 'tasks' | 'insights' | 'teams' | 'settings';
@@ -75,6 +76,9 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
     taskId: null,
     activeTab: 'overview',
   });
+
+  // New task dialog state
+  const [isNewTaskDialogOpen, setIsNewTaskDialogOpen] = useState(false);
 
   // Task data with computed fields
   const [taskData, setTaskData] = useState(tasks);
@@ -124,6 +128,23 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
     ));
   };
 
+  // Create new task
+  const handleCreateTask = (taskInput: Omit<Task, 'id' | 'key' | 'createdAt' | 'updatedAt'>) => {
+    const now = new Date().toISOString().split('T')[0];
+    const newId = `t${Date.now()}`;
+    const newKey = `WM-${String(taskData.length + 1).padStart(4, '0')}`;
+    
+    const newTask: Task = {
+      ...taskInput,
+      id: newId,
+      key: newKey,
+      createdAt: now,
+      updatedAt: now,
+    };
+    
+    setTaskData(prev => [...prev, newTask]);
+  };
+
   // Get selected task for drawer
   const selectedTask = drawer.taskId 
     ? extendedTasks.find(t => t.id === drawer.taskId) 
@@ -137,7 +158,10 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
           <h1 className="text-[20px] font-semibold text-text-primary">Planner</h1>
           <p className="text-[13px] text-text-muted mt-1">Personal task management and team coordination</p>
         </div>
-        <Button className="bg-brand-primary hover:bg-brand-primary-hover text-white gap-2">
+        <Button 
+          onClick={() => setIsNewTaskDialogOpen(true)}
+          className="bg-brand-primary hover:bg-brand-primary-hover text-white gap-2"
+        >
           <Plus className="w-4 h-4" />
           New Task
         </Button>
@@ -249,6 +273,13 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
             handleUpdateTask(drawer.taskId, updates);
           }
         }}
+      />
+
+      {/* New Task Dialog */}
+      <NewTaskDialog
+        open={isNewTaskDialogOpen}
+        onOpenChange={setIsNewTaskDialogOpen}
+        onCreateTask={handleCreateTask}
       />
     </div>
   );
