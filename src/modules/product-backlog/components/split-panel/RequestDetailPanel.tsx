@@ -19,6 +19,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { format } from 'date-fns';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 interface RequestItem {
   id: string;
@@ -118,6 +120,22 @@ export function RequestDetailPanel({
 
   const statusKey = request.processStep?.toLowerCase().replace(/\s+/g, '_') || 'new_request';
   const priorityKey = request.autoPriority?.toLowerCase() || 'unscored';
+
+  // Fetch attachment count
+  const { data: attachmentCount = 0 } = useQuery({
+    queryKey: ['business-request-attachments-count', request._dbId],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('attachments')
+        .select('*', { count: 'exact', head: true })
+        .eq('entity_type', 'business_request')
+        .eq('entity_id', request._dbId);
+
+      if (error) return 0;
+      return count || 0;
+    },
+    enabled: !!request._dbId,
+  });
 
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return '—';
@@ -411,6 +429,11 @@ export function RequestDetailPanel({
           <Button variant="outline" size="sm" className="gap-1.5" onClick={onAttachment}>
             <Paperclip className="w-3.5 h-3.5" />
             Attachment
+            {attachmentCount > 0 && (
+              <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1.5 text-xs">
+                {attachmentCount}
+              </Badge>
+            )}
           </Button>
           <Button variant="outline" size="sm" className="gap-1.5" onClick={onClone}>
             <Copy className="w-3.5 h-3.5" />
