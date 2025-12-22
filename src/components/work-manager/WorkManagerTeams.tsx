@@ -199,15 +199,18 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
                 {(stats.overdue > 0 || stats.blocked > 0) && (
                   <div className="mt-4 pt-4 border-t border-border flex flex-wrap gap-2">
                     {stats.overdue > 0 && (
-                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-lg text-[11px] font-medium">
-                        <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                        {stats.overdue} overdue
+                      <div className="inline-flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-red-50 to-red-100 dark:from-red-950 dark:to-red-900 text-red-700 dark:text-red-300 rounded-lg text-[11px] font-semibold border border-red-200 dark:border-red-800 shadow-sm hover:scale-105 transition-transform cursor-pointer">
+                        <div className="relative">
+                          <div className="w-2 h-2 rounded-full bg-red-500" />
+                          <div className="absolute inset-0 w-2 h-2 rounded-full bg-red-500 animate-ping opacity-75" />
+                        </div>
+                        <span>{stats.overdue} overdue</span>
                       </div>
                     )}
                     {stats.blocked > 0 && (
-                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-lg text-[11px] font-medium">
-                        <AlertTriangle className="w-3 h-3" />
-                        {stats.blocked} blocked
+                      <div className="inline-flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-amber-50 to-amber-100 dark:from-amber-950 dark:to-amber-900 text-amber-700 dark:text-amber-300 rounded-lg text-[11px] font-semibold border border-amber-200 dark:border-amber-800 shadow-sm hover:scale-105 transition-transform cursor-pointer">
+                        <AlertTriangle className="w-3.5 h-3.5" />
+                        <span>{stats.blocked} blocked</span>
                       </div>
                     )}
                   </div>
