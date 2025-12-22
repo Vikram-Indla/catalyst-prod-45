@@ -1,6 +1,6 @@
 /**
  * Main Product Roadmap Component
- * Integrates drag & drop and keyboard navigation
+ * Integrates drag & drop, keyboard navigation, and business request drawer
  */
 
 import React, { useState, useCallback, useMemo } from 'react';
@@ -13,6 +13,7 @@ import { RoadmapLoadingSkeleton } from './RoadmapLoadingSkeleton';
 import { RoadmapEmptyState } from './RoadmapEmptyState';
 import { RoadmapFilterDialog } from './RoadmapFilterDialog';
 import { RoadmapExportDialog } from './RoadmapExportDialog';
+import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import { useRoadmapDemands, useReorderDemands, useUpdateDemandDates } from '../hooks/useRoadmapDemands';
 import { useRoadmapFilters } from '../hooks/useRoadmapFilters';
 import { useRoadmapDragDrop } from '../hooks/useRoadmapDragDrop';
@@ -21,7 +22,6 @@ import { groupDemands } from '../utils/grouping';
 import type { TimelineConfig, GroupingField, TimelineZoom, RoadmapGroup } from '../types/roadmap';
 import { DEFAULT_TIMELINE_CONFIG } from '../types/roadmap';
 import { addMonths, subMonths } from 'date-fns';
-import { toast } from 'sonner';
 
 export function ProductRoadmap() {
   // Filter state
@@ -37,7 +37,11 @@ export function ProductRoadmap() {
   // Selection state
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   
-  // Dialog states (placeholders for now)
+  // Drawer state
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [drawerRequestId, setDrawerRequestId] = useState<string | null>(null);
+  
+  // Dialog states
   const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
@@ -72,23 +76,34 @@ export function ProductRoadmap() {
     onDateChange: handleDateChange,
   });
 
-  // Keyboard navigation handlers
+  // Open drawer handler
   const handleOpenDrawer = useCallback((id: string) => {
     setSelectedItemId(id);
-    // TODO: Open drawer
-    toast.info('Drawer opening for: ' + id);
+    setDrawerRequestId(id);
+    setIsDrawerOpen(true);
+  }, []);
+
+  // Close drawer handler
+  const handleCloseDrawer = useCallback(() => {
+    setIsDrawerOpen(false);
+    // Keep drawerRequestId to avoid flash during close animation
+  }, []);
+
+  // Handle request change in drawer (e.g., when duplicating)
+  const handleDrawerRequestChange = useCallback((newRequestId: string) => {
+    setDrawerRequestId(newRequestId);
+    setSelectedItemId(newRequestId);
   }, []);
 
   const handleEdit = useCallback((id: string) => {
-    setSelectedItemId(id);
-    // TODO: Open edit mode
-    toast.info('Edit mode for: ' + id);
-  }, []);
+    // Open drawer for editing
+    handleOpenDrawer(id);
+  }, [handleOpenDrawer]);
 
   const handleDelete = useCallback((id: string) => {
-    // TODO: Show confirmation dialog
-    toast.info('Delete confirmation for: ' + id);
-  }, []);
+    // Open drawer where delete can be done
+    handleOpenDrawer(id);
+  }, [handleOpenDrawer]);
 
   const handleMove = useCallback((id: string, direction: 'up' | 'down') => {
     const currentIndex = items.findIndex(item => item.id === id);
@@ -120,7 +135,7 @@ export function ProductRoadmap() {
     onDelete: handleDelete,
     onMove: handleMove,
     onCreateNew: handleCreateNew,
-    enabled: !isLoading && items.length > 0,
+    enabled: !isLoading && items.length > 0 && !isDrawerOpen,
   });
 
   const handleItemClick = useCallback((id: string) => {
@@ -129,7 +144,9 @@ export function ProductRoadmap() {
     if (index !== -1) {
       setFocusedIndex(index);
     }
-  }, [items, setFocusedIndex]);
+    // Open drawer on click
+    handleOpenDrawer(id);
+  }, [items, setFocusedIndex, handleOpenDrawer]);
 
   const handleToggleGroup = useCallback((key: string) => {
     setExpandedGroups(prev => {
@@ -242,6 +259,14 @@ export function ProductRoadmap() {
             onClose={() => setIsExportDialogOpen(false)}
             items={items}
             timelineConfig={timelineConfig}
+          />
+
+          {/* Business Request Drawer */}
+          <BusinessRequestDrawer
+            isOpen={isDrawerOpen}
+            onClose={handleCloseDrawer}
+            requestId={drawerRequestId}
+            onRequestChange={handleDrawerRequestChange}
           />
         </div>
       </DragDropContext>
