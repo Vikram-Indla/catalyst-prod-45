@@ -11,7 +11,7 @@ interface KanbanCardProps {
   teamMembers?: TeamMember[];
 }
 
-// Days in Column Indicator
+// Days in Column Indicator - with clock icon
 function DaysInColumnIndicator({ days }: { days: number }) {
   if (!days || days === 0) return null;
   
@@ -27,7 +27,7 @@ function DaysInColumnIndicator({ days }: { days: number }) {
   const dotsToShow = Math.min(4, Math.ceil(days / 3));
   
   return (
-    <div className="flex items-center gap-0.5" title={`${days} days in column`}>
+    <div className="flex items-center gap-0.5 text-gray-400 dark:text-gray-500" title={`${days} days in column`}>
       {Array.from({ length: dotsToShow }).map((_, i) => (
         <span
           key={i}
@@ -35,7 +35,11 @@ function DaysInColumnIndicator({ days }: { days: number }) {
           style={{ backgroundColor: getIndicatorColor(i + 1, days) }}
         />
       ))}
-      <span className="text-[10px] ml-0.5" style={{ color: 'var(--text-3)' }}>{days}d</span>
+      <svg className="w-3 h-3 ml-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <polyline points="12 6 12 12 16 14"/>
+      </svg>
+      <span className="text-[10px]">{days}d</span>
     </div>
   );
 }
@@ -46,11 +50,7 @@ function RankBadge({ rank }: { rank: number | null }) {
     return (
       <span 
         title="No rank assigned"
-        className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium cursor-default"
-        style={{
-          backgroundColor: 'var(--surface-2)',
-          color: 'var(--text-3)',
-        }}
+        className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium cursor-default text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800"
       >
         Unranked
       </span>
@@ -185,27 +185,19 @@ export function KanbanCard({ ticket, onClick, compactMode, teamMembers = [] }: K
         {ticket.summary}
       </p>
 
-      {/* Chips - Owner & Department (compact) */}
-      <div className="flex flex-wrap gap-1 mb-2">
+      {/* Chips - Owner & Department (subtle text style) */}
+      <div className="flex flex-wrap gap-1.5 mb-2">
         {ticket.businessOwner && (
           <span 
-            className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-medium"
-            style={{
-              backgroundColor: 'var(--status-success-bg)',
-              color: 'var(--status-success)',
-            }}
+            className="inline-flex items-center gap-1 text-[11px] text-gray-600 dark:text-gray-400"
           >
             <KanbanIcons.User />
-            <span className="max-w-[80px] truncate">{ticket.businessOwner}</span>
+            <span className="max-w-[100px] truncate">{ticket.businessOwner}</span>
           </span>
         )}
         {(ticket.department || department) && (
           <span 
-            className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-medium max-w-[100px] truncate"
-            style={{
-              backgroundColor: 'var(--surface-3)',
-              color: 'var(--text-2)',
-            }}
+            className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium max-w-[100px] truncate bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
           >
             {department?.label || ticket.department}
           </span>
