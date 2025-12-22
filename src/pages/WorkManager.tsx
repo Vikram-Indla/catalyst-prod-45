@@ -1,5 +1,5 @@
-// src/pages/WorkManager.tsx
-// Main Work Manager Page with Tab Navigation
+// src/pages/Planner.tsx
+// Main Planner Page with Tab Navigation
 
 import { useState, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -104,7 +104,7 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
 
   // Tab navigation handler
   const handleTabChange = (tabId: string) => {
-    navigate(`/work-manager/${tabId}`);
+    navigate(`/planner/${tabId}`);
   };
 
   // Open task drawer
@@ -134,7 +134,7 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
       {/* Page Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-border-default bg-surface-card">
         <div>
-          <h1 className="text-[20px] font-semibold text-text-primary">Work Manager</h1>
+          <h1 className="text-[20px] font-semibold text-text-primary">Planner</h1>
           <p className="text-[13px] text-text-muted mt-1">Personal task management and team coordination</p>
         </div>
         <Button className="bg-brand-primary hover:bg-brand-primary-hover text-white gap-2">

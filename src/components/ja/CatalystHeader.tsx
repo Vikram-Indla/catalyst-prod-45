@@ -116,6 +116,7 @@ export function CatalystHeader() {
     { label: "Program", hasDropdown: true, moduleCode: "PORTFOLIO" },
     { label: "Project", hasDropdown: true, moduleCode: "PROGRAM" },
     { label: "Release", hasDropdown: true, path: "/release", moduleCode: null }, // Always visible
+    { label: "Planner", path: "/planner", moduleCode: null }, // Always visible
   ];
 
   // Get all nav items with their enabled status
