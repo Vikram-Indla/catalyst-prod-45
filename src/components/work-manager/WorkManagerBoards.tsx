@@ -3,7 +3,7 @@
 
 import { useMemo } from 'react';
 import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
-import { MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal, CheckCircle2 } from 'lucide-react';
 import { TaskCard } from './TaskCard';
 import { defaultColumns } from '@/lib/work-manager-data';
 import type { TaskExtended, KanbanColumn, TaskStatus } from './types';
@@ -78,7 +78,14 @@ function BoardColumn({ column, tasks, onOpenTask }: BoardColumnProps) {
       {/* Column Header */}
       <div className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center gap-2">
-          <span className="text-[13px] font-semibold text-gray-900 dark:text-gray-100">{column.name}</span>
+          {/* Green dot indicator for Done column */}
+          {column.status === 'Done' && (
+            <CheckCircle2 className="w-4 h-4 text-green-500" />
+          )}
+          <span className={cn(
+            "text-[13px] font-semibold",
+            column.status === 'Done' ? 'text-green-700 dark:text-green-400' : 'text-gray-900 dark:text-gray-100'
+          )}>{column.name}</span>
           <span className="px-2 py-0.5 bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-[11px] font-medium rounded-full">
             {tasks.length}
           </span>
