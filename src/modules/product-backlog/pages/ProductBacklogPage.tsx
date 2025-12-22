@@ -51,6 +51,7 @@ interface RequestItem {
   quarter: string | null;
   createdAt?: string | null;
   updatedAt?: string | null;
+  ea_review_required?: boolean;
 }
 
 export default function ProductBacklogPage() {
@@ -110,6 +111,7 @@ export default function ProductBacklogPage() {
       quarter: br.planned_quarter?.[0] || null,
       createdAt: br.created_at?.split('T')[0] || null,
       updatedAt: br.updated_at?.split('T')[0] || null,
+      ea_review_required: br.ea_review_required ?? true,
     }));
     
     // Apply scoring filter from store

@@ -56,7 +56,7 @@ interface RequestItem {
   createdAt?: string | null;
   updatedAt?: string | null;
   description?: string;
-  eaReviewRequired?: boolean;
+  ea_review_required?: boolean;
 }
 
 interface RequestDetailPanelProps {
@@ -509,8 +509,8 @@ export function RequestDetailPanel({
                 </label>
                 <Switch 
                   id="ea-review"
-                  checked={request.eaReviewRequired ?? true}
-                  onCheckedChange={(checked) => onUpdateField('eaReviewRequired', checked)}
+                  checked={request.ea_review_required ?? true}
+                  onCheckedChange={(checked) => onUpdateField('ea_review_required', checked)}
                   className="data-[state=checked]:bg-[hsl(var(--secondary-olive))]"
                 />
               </div>
