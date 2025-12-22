@@ -96,8 +96,11 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
           // Fallback to first accessible team
           setFilters(prev => ({ ...prev, teamId: accessibleTeams[0].id }));
         }
-      } else if (!canViewAllTeams && accessibleTeams.length > 0 && !filters.teamId) {
-        // Auto-select first team for non-admin users with no URL param
+      } else if (canViewAllTeams) {
+        // Admin/program manager selected "All Teams" - clear team filter
+        setFilters(prev => ({ ...prev, teamId: null }));
+      } else if (accessibleTeams.length > 0) {
+        // Non-admin users without URL param - auto-select first team
         setFilters(prev => ({ ...prev, teamId: accessibleTeams[0].id }));
       }
     }
