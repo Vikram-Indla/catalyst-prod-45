@@ -127,7 +127,7 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
                         return (
                           <div
                             key={memberId}
-                            className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold border-2 border-card bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-white"
+                            className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold border-2 border-card bg-stone-200 dark:bg-stone-700 text-stone-600 dark:text-stone-300"
                             style={{ zIndex: 5 - index }}
                             title={member.name}
                           >
@@ -150,31 +150,31 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
                 <div className="mt-4 pt-4 border-t border-border">
                   <div className="grid grid-cols-3 gap-3">
                     {/* Open */}
-                    <div className="p-3 rounded-lg bg-white/5 dark:bg-white/5 text-center">
+                    <div className="p-3 rounded-lg bg-stone-100 dark:bg-white/5 text-center">
                       <div className="text-xl font-bold text-foreground">{stats.open}</div>
-                      <div className="text-[10px] uppercase tracking-wide text-muted-foreground mt-0.5">Open</div>
+                      <div className="text-[10px] uppercase tracking-wide text-stone-500 dark:text-muted-foreground mt-0.5">Open</div>
                     </div>
                     
                     {/* Overdue - text color only */}
-                    <div className="p-3 rounded-lg bg-white/5 dark:bg-white/5 text-center">
+                    <div className="p-3 rounded-lg bg-stone-100 dark:bg-white/5 text-center">
                       <div className={cn(
                         "text-xl font-bold",
-                        stats.overdue > 0 ? 'text-red-400' : 'text-foreground'
+                        stats.overdue > 0 ? 'text-red-500 dark:text-red-400' : 'text-foreground'
                       )}>
                         {stats.overdue}
                       </div>
                       <div className={cn(
                         "text-[10px] uppercase tracking-wide mt-0.5",
-                        stats.overdue > 0 ? 'text-red-400' : 'text-muted-foreground'
+                        stats.overdue > 0 ? 'text-red-500 dark:text-red-400' : 'text-stone-500 dark:text-muted-foreground'
                       )}>
                         Overdue
                       </div>
                     </div>
                     
                     {/* Done - text color only */}
-                    <div className="p-3 rounded-lg bg-white/5 dark:bg-white/5 text-center">
-                      <div className="text-xl font-bold text-green-400">{stats.done}</div>
-                      <div className="text-[10px] uppercase tracking-wide text-muted-foreground mt-0.5">Done</div>
+                    <div className="p-3 rounded-lg bg-stone-100 dark:bg-white/5 text-center">
+                      <div className="text-xl font-bold text-green-600 dark:text-green-400">{stats.done}</div>
+                      <div className="text-[10px] uppercase tracking-wide text-stone-500 dark:text-muted-foreground mt-0.5">Done</div>
                     </div>
                   </div>
                 </div>
@@ -183,12 +183,12 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
                 {(stats.overdue > 0 || stats.blocked > 0) && (
                   <div className="mt-4 pt-4 border-t border-border flex flex-wrap gap-3">
                     {stats.overdue > 0 && (
-                      <span className="text-red-400 text-[11px]">
+                      <span className="text-red-500 dark:text-red-400 text-[11px]">
                         {stats.overdue} overdue
                       </span>
                     )}
                     {stats.blocked > 0 && (
-                      <span className="text-amber-400 text-[11px]">
+                      <span className="text-amber-600 dark:text-amber-400 text-[11px]">
                         {stats.blocked} blocked
                       </span>
                     )}
