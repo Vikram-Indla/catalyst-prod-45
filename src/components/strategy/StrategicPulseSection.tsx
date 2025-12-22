@@ -169,12 +169,12 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
                 Strategy Health
               </span>
               
-              {/* Primary Value: Status badge */}
+              {/* Primary Value: Status badge - slightly more subtle */}
               <div className="flex items-center gap-2 mt-2">
               <span 
                 className={cn(
-                  "inline-flex items-center px-3 py-1.5 rounded font-bold",
-                  TYPOGRAPHY.primaryMetricStatus,
+                  "inline-flex items-center px-2.5 py-1 rounded font-semibold",
+                  "text-[14px] leading-[18px]",
                   config.bgClass,
                 )}
                 style={{ color: '#ffffff' }}

@@ -260,7 +260,7 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
                 ))}
                 {attentionItems.length > 4 && (
                   <div className="text-center pt-1.5">
-                    <span className={cn(TYPOGRAPHY.microcopy, 'text-gray-600 dark:text-gray-400')}>
+                    <span className={cn(TYPOGRAPHY.microcopy, 'text-[#5c7c5c] dark:text-[#7a9a7a] font-medium')}>
                       +{attentionItems.length - 4} more
                     </span>
                   </div>
@@ -295,7 +295,7 @@ function CockpitCard({ title, icon, iconColor, children, cta }: CockpitCardProps
       
       <div className="p-3 flex-1">{children}</div>
 
-      {/* CTA - brand color for discoverability */}
+      {/* CTA - olive green for discoverability */}
       {cta && (
         <div className="px-3 pb-2.5">
           <Button
@@ -304,9 +304,10 @@ function CockpitCard({ title, icon, iconColor, children, cta }: CockpitCardProps
             className={cn(
               TYPOGRAPHY.ctaButton, 
               "w-full h-8",
-              "text-[#c69c6d] dark:text-[#d4a855]",
+              "text-[#5c7c5c] dark:text-[#7a9a7a]",
               "transition-[background-color,color] duration-150",
-              "hover:bg-[#c69c6d]/10 dark:hover:bg-[#d4a855]/10",
+              "hover:bg-[#5c7c5c]/10 dark:hover:bg-[#7a9a7a]/10",
+              "hover:text-[#4a6a4a] dark:hover:text-[#8aaa8a]",
               "focus-visible:ring-1"
             )}
             onClick={cta.onClick}
@@ -375,10 +376,11 @@ function AttentionRow({ item, onClick }: { item: AttentionItem; onClick: () => v
     medium: 'bg-secondary-bronze',
   };
 
+  // Darker text colors for better visibility
   const reasonColors: Record<string, string> = {
-    critical: 'text-destructive',
-    high: 'text-status-warning',
-    medium: 'text-secondary-bronze',
+    critical: 'text-red-700 dark:text-red-400 font-medium',
+    high: 'text-amber-700 dark:text-amber-400 font-medium',
+    medium: 'text-amber-600 dark:text-amber-500',
   };
 
   return (
