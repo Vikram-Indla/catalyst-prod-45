@@ -141,13 +141,13 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
           {activeTab === 'overview' && (
             <div className="space-y-0">
               {/* Status */}
-              <div className="flex items-center justify-between py-3 border-b border-border-subtle">
+              <div className="flex items-center justify-between py-3.5 border-b border-border-subtle">
                 <span className="text-[12px] font-medium text-text-muted">Status</span>
                 <Select
                   value={localTask.status || task.status}
                   onValueChange={(v) => setLocalTask(prev => ({ ...prev, status: v as TaskStatus }))}
                 >
-                  <SelectTrigger className="w-[160px] h-8 text-[13px]">
+                  <SelectTrigger className="w-[200px] h-8 text-[13px]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -159,39 +159,39 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
               </div>
 
               {/* Team */}
-              <div className="flex items-center justify-between py-3 border-b border-border-subtle">
+              <div className="flex items-center justify-between py-3.5 border-b border-border-subtle">
                 <span className="text-[12px] font-medium text-text-muted">Team</span>
                 <span className="text-[13px] text-text-primary">{team?.name || '—'}</span>
               </div>
 
               {/* Assignee */}
-              <div className="flex items-center justify-between py-3 border-b border-border-subtle">
+              <div className="flex items-center justify-between py-3.5 border-b border-border-subtle">
                 <span className="text-[12px] font-medium text-text-muted">Assignee</span>
                 <Select
                   value={localTask.assigneeId || task.assigneeId}
                   onValueChange={(v) => setLocalTask(prev => ({ ...prev, assigneeId: v }))}
                 >
-                  <SelectTrigger className="w-[180px] h-8 text-[13px]">
+                  <SelectTrigger className="w-[200px] h-8 text-[13px]">
                     <SelectValue>
                       {assignee && (
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 whitespace-nowrap">
                           <div className={cn(
-                            'w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-semibold text-white',
+                            'w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-semibold text-white shrink-0',
                             assignee.avatarColor || 'bg-brand-primary'
                           )}>
                             {assignee.initials}
                           </div>
-                          <span>{assignee.name}</span>
+                          <span className="truncate">{assignee.name}</span>
                         </div>
                       )}
                     </SelectValue>
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="min-w-[200px]">
                     {teamMembers.map(u => (
                       <SelectItem key={u.id} value={u.id}>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 whitespace-nowrap">
                           <div className={cn(
-                            'w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-semibold text-white',
+                            'w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-semibold text-white shrink-0',
                             u.avatarColor || 'bg-brand-primary'
                           )}>
                             {u.initials}
@@ -205,35 +205,35 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
               </div>
 
               {/* Reporter (read-only) */}
-              <div className="flex items-center justify-between py-3 border-b border-border-subtle">
+              <div className="flex items-center justify-between py-3.5 border-b border-border-subtle">
                 <span className="text-[12px] font-medium text-text-muted">Reporter</span>
                 <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 rounded-full bg-brand-accent flex items-center justify-center text-[9px] font-semibold text-white">
-                    V
+                  <div className="w-6 h-6 rounded-full bg-brand-primary flex items-center justify-center text-[10px] font-semibold text-white shrink-0">
+                    VA
                   </div>
                   <span className="text-[13px] text-text-primary">Vikram (You)</span>
                 </div>
               </div>
 
               {/* Due Date */}
-              <div className="flex items-center justify-between py-3 border-b border-border-subtle">
+              <div className="flex items-center justify-between py-3.5 border-b border-border-subtle">
                 <span className="text-[12px] font-medium text-text-muted">Due Date</span>
                 <Input
                   type="date"
                   value={localTask.dueDate || task.dueDate || ''}
                   onChange={(e) => setLocalTask(prev => ({ ...prev, dueDate: e.target.value }))}
-                  className="w-[160px] h-8 text-[13px]"
+                  className="w-[200px] h-8 text-[13px]"
                 />
               </div>
 
               {/* Priority */}
-              <div className="flex items-center justify-between py-3 border-b border-border-subtle">
+              <div className="flex items-center justify-between py-3.5 border-b border-border-subtle">
                 <span className="text-[12px] font-medium text-text-muted">Priority</span>
                 <Select
                   value={localTask.priority || task.priority}
                   onValueChange={(v) => setLocalTask(prev => ({ ...prev, priority: v as Priority }))}
                 >
-                  <SelectTrigger className="w-[160px] h-8 text-[13px]">
+                  <SelectTrigger className="w-[200px] h-8 text-[13px]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -245,13 +245,13 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
               </div>
 
               {/* Task Type */}
-              <div className="flex items-center justify-between py-3 border-b border-border-subtle">
+              <div className="flex items-center justify-between py-3.5 border-b border-border-subtle">
                 <span className="text-[12px] font-medium text-text-muted">Task Type</span>
                 <Select
                   value={localTask.type || task.type}
                   onValueChange={(v) => setLocalTask(prev => ({ ...prev, type: v as TaskType }))}
                 >
-                  <SelectTrigger className="w-[160px] h-8 text-[13px]">
+                  <SelectTrigger className="w-[200px] h-8 text-[13px]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -264,25 +264,25 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
 
               {/* Linked Item - only show if exists */}
               {task.linkedItem && (
-                <div className="flex items-center justify-between py-3 border-b border-border-subtle">
+                <div className="flex items-center justify-between py-3.5 border-b border-border-subtle">
                   <span className="text-[12px] font-medium text-text-muted">Linked Item</span>
-                  <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-brand-highlight/30 text-text-primary text-[12px] font-mono rounded dark:bg-brand-highlight/20 dark:text-brand-highlight">
-                    <Link2 className="w-3 h-3" />
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-brand-highlight/30 text-text-primary text-[12px] font-mono rounded dark:bg-brand-highlight/20 dark:text-brand-highlight">
+                    <Link2 className="w-3.5 h-3.5" />
                     {task.linkedItem.key}
                   </span>
                 </div>
               )}
 
               {/* Recurrence */}
-              <div className="flex items-center justify-between py-3 border-b border-border-subtle">
+              <div className="flex items-center justify-between py-3.5 border-b border-border-subtle">
                 <span className="text-[12px] font-medium text-text-muted">Recurrence</span>
                 <Select
                   value={localTask.recurrence || task.recurrence}
                   onValueChange={(v) => setLocalTask(prev => ({ ...prev, recurrence: v as RecurrenceType }))}
                 >
-                  <SelectTrigger className="w-[160px] h-8 text-[13px]">
+                  <SelectTrigger className="w-[200px] h-8 text-[13px]">
                     <div className="flex items-center gap-2">
-                      <RefreshCw className="w-3 h-3 text-text-muted" />
+                      <RefreshCw className="w-3.5 h-3.5 text-text-muted" />
                       <SelectValue />
                     </div>
                   </SelectTrigger>
@@ -294,14 +294,15 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                 </Select>
               </div>
 
-              {/* Blocked */}
-              <div className="py-3 border-b border-border-subtle">
+              {/* Blocked - no bottom border on last item */}
+              <div className="py-3.5">
                 <div className="flex items-center justify-between">
                   <span className="text-[12px] font-medium text-text-muted">Blocked</span>
                   <label className="flex items-center gap-2 cursor-pointer">
                     <BrandedCheckbox
                       checked={localTask.blocked ?? task.blocked ?? false}
                       onChange={handleBlockedChange}
+                      className="w-4 h-4"
                     />
                     <span className="text-[13px] text-text-secondary">This task is blocked</span>
                   </label>
@@ -311,8 +312,8 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                     <Textarea
                       value={localTask.blockedReason ?? task.blockedReason ?? ''}
                       onChange={(e) => setLocalTask(prev => ({ ...prev, blockedReason: e.target.value }))}
-                      placeholder="Describe the blocker..."
-                      className="text-[13px] min-h-[80px] bg-surface-muted"
+                      placeholder="Describe what's blocking this task..."
+                      className="text-[13px] min-h-[80px] w-full"
                     />
                   </div>
                 )}
