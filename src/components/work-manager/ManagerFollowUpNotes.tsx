@@ -305,13 +305,13 @@ export function ManagerFollowUpNotes({
           {followUps.length > 0 && (
             <div className="flex items-center gap-2 text-[11px]">
               {pendingCount > 0 && (
-                <span className="text-amber-500 flex items-center gap-1">
+                <span className="text-amber-700 dark:text-amber-500 flex items-center gap-1 font-medium">
                   <Circle className="w-3 h-3" />
                   {pendingCount} pending
                 </span>
               )}
               {completedCount > 0 && (
-                <span className="text-green-500 flex items-center gap-1">
+                <span className="text-green-700 dark:text-green-500 flex items-center gap-1 font-medium">
                   <Check className="w-3 h-3" />
                   {completedCount} done
                 </span>
@@ -355,7 +355,7 @@ export function ManagerFollowUpNotes({
                 checked={followUp.is_completed}
                 onCheckedChange={() => toggleComplete(followUp.id)}
                 disabled={isSaving}
-                className="mt-0.5"
+                className="mt-0.5 border-gray-400 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
               />
               
               <div className="flex-1 min-w-0">
@@ -392,11 +392,11 @@ export function ManagerFollowUpNotes({
                   <>
                     <p className={cn(
                       'text-[13px]',
-                      followUp.is_completed ? 'text-text-muted line-through' : 'text-text-primary'
+                      followUp.is_completed ? 'text-gray-500 dark:text-gray-400 line-through' : 'text-text-primary'
                     )}>
                       {followUp.content}
                     </p>
-                    <p className="text-[10px] text-text-muted mt-1">
+                    <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
                       Added {formatDistanceToNow(new Date(followUp.created_at), { addSuffix: true })}
                       {followUp.is_completed && followUp.completed_at && (
                         <> · Completed {formatDistanceToNow(new Date(followUp.completed_at), { addSuffix: true })}</>
@@ -411,7 +411,7 @@ export function ManagerFollowUpNotes({
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-7 w-7 p-0 text-text-muted hover:text-text-primary"
+                    className="h-7 w-7 p-0 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
                     onClick={() => handleStartEdit(followUp)}
                     disabled={isSaving}
                   >
@@ -420,7 +420,7 @@ export function ManagerFollowUpNotes({
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-7 w-7 p-0 text-text-muted hover:text-red-500"
+                    className="h-7 w-7 p-0 text-gray-400 hover:text-red-600 dark:text-gray-500 dark:hover:text-red-400"
                     onClick={() => handleDelete(followUp.id)}
                     disabled={isSaving}
                   >
@@ -439,7 +439,7 @@ export function ManagerFollowUpNotes({
           value={newNote}
           onChange={(e) => setNewNote(e.target.value)}
           placeholder="Add a follow-up action item..."
-          className="text-[13px] min-h-[80px]"
+          className="text-[13px] min-h-[80px] bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 placeholder:text-gray-500"
         />
         <Button
           size="sm"
