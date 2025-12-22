@@ -1,12 +1,22 @@
 // src/components/work-manager/TaskDrawer.tsx
-// Task Detail Drawer Component
+// Task Detail Drawer Component using shadcn Sheet
 
 import { useState, useEffect } from 'react';
-import { X, Link2, AlertTriangle, RefreshCw, MessageSquare, Clock } from 'lucide-react';
+import { Link2, RefreshCw, MessageSquare, Clock, AlertTriangle } from 'lucide-react';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  SheetBody,
+  SheetFooter,
+} from '@/components/ui/sheet';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { BrandedCheckbox } from '@/components/ui/branded-checkbox';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Select,
   SelectContent,
@@ -52,20 +62,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
     }
   }, [task]);
 
-  // Don't render if not open
-  if (!isOpen) return null;
-  
-  // Show loading state if task not yet available
-  if (!task) {
-    return (
-      <>
-        <div className="fixed inset-0 bg-black/50 z-40" onClick={onClose} aria-hidden="true" />
-        <div className="fixed top-0 right-0 bottom-0 w-[500px] bg-white dark:bg-zinc-900 border-l border-border-default shadow-xl z-50 flex items-center justify-center">
-          <span className="text-text-muted text-[13px]">Loading task...</span>
-        </div>
-      </>
-    );
-  }
+  if (!task) return null;
 
   const assignee = getUserById(task.assigneeId);
   const team = getTeamById(task.teamId);
@@ -92,80 +89,59 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
     { id: 'a3', type: 'created', user: 'Vikram', time: '3 days ago' },
   ];
 
+  // Field row component for consistent styling
+  const FieldRow = ({ label, children, noBorder = false }: { label: string; children: React.ReactNode; noBorder?: boolean }) => (
+    <div className={cn(
+      'flex items-center justify-between py-3',
+      !noBorder && 'border-b border-gray-100 dark:border-gray-800'
+    )}>
+      <span className="text-[12px] font-medium text-gray-500 dark:text-gray-400">{label}</span>
+      {children}
+    </div>
+  );
+
   return (
     <>
-      {/* OVERLAY - Must be separate, must cover everything */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40"
-          onClick={onClose}
-          aria-hidden="true"
-        />
-      )}
-
-      {/* DRAWER PANEL */}
-      {isOpen && task && (
-        <div className="fixed top-0 right-0 bottom-0 w-[500px] bg-white dark:bg-neutral-900 z-50 shadow-2xl border-l border-border-default flex flex-col">
-          {/* HEADER - Task title and close button */}
-          <div className="flex items-start justify-between p-4 border-b border-border-default bg-white dark:bg-neutral-900">
-            <div className="flex-1 min-w-0 pr-4">
-              <h2 className="text-[15px] font-semibold text-text-primary leading-tight">
-                {task.title}
-              </h2>
-              <span className="font-mono text-[12px] text-text-muted mt-1 block">
-                {task.key}
-              </span>
-            </div>
-            <button
-              onClick={onClose}
-              className="p-2 rounded-md hover:bg-surface-muted transition-colors"
-              aria-label="Close drawer"
-            >
-              <X className="w-5 h-5 text-text-muted" />
-            </button>
-          </div>
+      <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
+        <SheetContent side="right" width="medium" className="p-0 flex flex-col">
+          {/* HEADER - Task title and key */}
+          <SheetHeader className="pr-12">
+            <SheetTitle className="text-[15px] font-semibold leading-tight truncate">
+              {task.title}
+            </SheetTitle>
+            <SheetDescription className="font-mono text-[12px]">
+              {task.key}
+            </SheetDescription>
+          </SheetHeader>
 
           {/* TABS */}
-          <div className="flex border-b border-border-default bg-white dark:bg-neutral-900">
-            <button
-              onClick={() => onTabChange('overview')}
-              className={`flex-1 px-4 py-3 text-[13px] font-medium transition-colors ${
-                activeTab === 'overview'
-                  ? 'text-brand-primary border-b-2 border-brand-primary'
-                  : 'text-text-muted hover:text-text-primary'
-              }`}
-            >
-              Overview
-            </button>
-            <button
-              onClick={() => onTabChange('activity')}
-              className={`flex-1 px-4 py-3 text-[13px] font-medium transition-colors ${
-                activeTab === 'activity'
-                  ? 'text-brand-primary border-b-2 border-brand-primary'
-                  : 'text-text-muted hover:text-text-primary'
-              }`}
-            >
-              Activity
-            </button>
-            <button
-              onClick={() => onTabChange('comments')}
-              className={`flex-1 px-4 py-3 text-[13px] font-medium transition-colors ${
-                activeTab === 'comments'
-                  ? 'text-brand-primary border-b-2 border-brand-primary'
-                  : 'text-text-muted hover:text-text-primary'
-              }`}
-            >
-              Comments
-            </button>
-          </div>
+          <Tabs value={activeTab} onValueChange={(v) => onTabChange(v as typeof activeTab)} className="flex-1 flex flex-col overflow-hidden">
+            <TabsList className="w-full justify-start rounded-none border-b border-gray-200 dark:border-gray-700 bg-transparent h-auto p-0">
+              <TabsTrigger
+                value="overview"
+                className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-[#5c7c5c] data-[state=active]:text-[#5c7c5c] data-[state=active]:bg-transparent py-3 text-[13px] font-medium"
+              >
+                Overview
+              </TabsTrigger>
+              <TabsTrigger
+                value="activity"
+                className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-[#5c7c5c] data-[state=active]:text-[#5c7c5c] data-[state=active]:bg-transparent py-3 text-[13px] font-medium"
+              >
+                Activity
+              </TabsTrigger>
+              <TabsTrigger
+                value="comments"
+                className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-[#5c7c5c] data-[state=active]:text-[#5c7c5c] data-[state=active]:bg-transparent py-3 text-[13px] font-medium"
+              >
+                Comments
+              </TabsTrigger>
+            </TabsList>
 
-          {/* BODY - Scrollable content */}
-          <div className="flex-1 overflow-y-auto p-4 bg-white dark:bg-neutral-900">
-            {activeTab === 'overview' && (
-              <div className="space-y-0">
+            {/* OVERVIEW TAB */}
+            <TabsContent value="overview" className="flex-1 flex flex-col overflow-hidden m-0">
+              <SheetBody className="flex-1 overflow-y-auto">
                 {/* Status */}
-                <div className="flex items-center justify-between py-3.5 border-b border-border-subtle">
-                  <span className="text-[12px] font-medium text-text-muted">Status</span>
+                <FieldRow label="Status">
                   <Select
                     value={localTask.status || task.status}
                     onValueChange={(v) => setLocalTask(prev => ({ ...prev, status: v as TaskStatus }))}
@@ -179,17 +155,15 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
+                </FieldRow>
 
                 {/* Team */}
-                <div className="flex items-center justify-between py-3.5 border-b border-border-subtle">
-                  <span className="text-[12px] font-medium text-text-muted">Team</span>
-                  <span className="text-[13px] text-text-primary">{team?.name || '—'}</span>
-                </div>
+                <FieldRow label="Team">
+                  <span className="text-[13px] text-gray-900 dark:text-gray-100">{team?.name || '—'}</span>
+                </FieldRow>
 
                 {/* Assignee */}
-                <div className="flex items-center justify-between py-3.5 border-b border-border-subtle">
-                  <span className="text-[12px] font-medium text-text-muted">Assignee</span>
+                <FieldRow label="Assignee">
                   <Select
                     value={localTask.assigneeId || task.assigneeId}
                     onValueChange={(v) => setLocalTask(prev => ({ ...prev, assigneeId: v }))}
@@ -200,7 +174,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                           <div className="flex items-center gap-2 whitespace-nowrap">
                             <div className={cn(
                               'w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-semibold text-white shrink-0',
-                              assignee.avatarColor || 'bg-brand-primary'
+                              assignee.avatarColor || 'bg-[#5c7c5c]'
                             )}>
                               {assignee.initials}
                             </div>
@@ -215,7 +189,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                           <div className="flex items-center gap-2 whitespace-nowrap">
                             <div className={cn(
                               'w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-semibold text-white shrink-0',
-                              u.avatarColor || 'bg-brand-primary'
+                              u.avatarColor || 'bg-[#5c7c5c]'
                             )}>
                               {u.initials}
                             </div>
@@ -225,33 +199,30 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
+                </FieldRow>
 
                 {/* Reporter (read-only) */}
-                <div className="flex items-center justify-between py-3.5 border-b border-border-subtle">
-                  <span className="text-[12px] font-medium text-text-muted">Reporter</span>
+                <FieldRow label="Reporter">
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-full bg-brand-primary flex items-center justify-center text-[10px] font-semibold text-white shrink-0">
+                    <div className="w-6 h-6 rounded-full bg-[#5c7c5c] flex items-center justify-center text-[10px] font-semibold text-white shrink-0">
                       VA
                     </div>
-                    <span className="text-[13px] text-text-primary">Vikram (You)</span>
+                    <span className="text-[13px] text-gray-900 dark:text-gray-100">Vikram (You)</span>
                   </div>
-                </div>
+                </FieldRow>
 
                 {/* Due Date */}
-                <div className="flex items-center justify-between py-3.5 border-b border-border-subtle">
-                  <span className="text-[12px] font-medium text-text-muted">Due Date</span>
+                <FieldRow label="Due Date">
                   <Input
                     type="date"
                     value={localTask.dueDate || task.dueDate || ''}
                     onChange={(e) => setLocalTask(prev => ({ ...prev, dueDate: e.target.value }))}
                     className="w-[200px] h-8 text-[13px]"
                   />
-                </div>
+                </FieldRow>
 
                 {/* Priority */}
-                <div className="flex items-center justify-between py-3.5 border-b border-border-subtle">
-                  <span className="text-[12px] font-medium text-text-muted">Priority</span>
+                <FieldRow label="Priority">
                   <Select
                     value={localTask.priority || task.priority}
                     onValueChange={(v) => setLocalTask(prev => ({ ...prev, priority: v as Priority }))}
@@ -265,11 +236,10 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
+                </FieldRow>
 
                 {/* Task Type */}
-                <div className="flex items-center justify-between py-3.5 border-b border-border-subtle">
-                  <span className="text-[12px] font-medium text-text-muted">Task Type</span>
+                <FieldRow label="Task Type">
                   <Select
                     value={localTask.type || task.type}
                     onValueChange={(v) => setLocalTask(prev => ({ ...prev, type: v as TaskType }))}
@@ -283,29 +253,27 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
+                </FieldRow>
 
                 {/* Linked Item - only show if exists */}
                 {task.linkedItem && (
-                  <div className="flex items-center justify-between py-3.5 border-b border-border-subtle">
-                    <span className="text-[12px] font-medium text-text-muted">Linked Item</span>
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-brand-highlight/30 text-text-primary text-[12px] font-mono rounded dark:bg-brand-highlight/20 dark:text-brand-highlight">
+                  <FieldRow label="Linked Item">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#5c7c5c]/20 text-[#5c7c5c] text-[12px] font-mono rounded">
                       <Link2 className="w-3.5 h-3.5" />
                       {task.linkedItem.key}
                     </span>
-                  </div>
+                  </FieldRow>
                 )}
 
                 {/* Recurrence */}
-                <div className="flex items-center justify-between py-3.5 border-b border-border-subtle">
-                  <span className="text-[12px] font-medium text-text-muted">Recurrence</span>
+                <FieldRow label="Recurrence">
                   <Select
                     value={localTask.recurrence || task.recurrence}
                     onValueChange={(v) => setLocalTask(prev => ({ ...prev, recurrence: v as RecurrenceType }))}
                   >
                     <SelectTrigger className="w-[200px] h-8 text-[13px]">
                       <div className="flex items-center gap-2">
-                        <RefreshCw className="w-3.5 h-3.5 text-text-muted" />
+                        <RefreshCw className="w-3.5 h-3.5 text-gray-400" />
                         <SelectValue />
                       </div>
                     </SelectTrigger>
@@ -315,39 +283,38 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
+                </FieldRow>
 
-                {/* Blocked - no bottom border on last item */}
-                <div className="py-3.5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[12px] font-medium text-text-muted">Blocked</span>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <BrandedCheckbox
-                        checked={localTask.blocked ?? task.blocked ?? false}
-                        onChange={handleBlockedChange}
-                        className="w-4 h-4"
-                      />
-                      <span className="text-[13px] text-text-secondary">This task is blocked</span>
-                    </label>
+                {/* Blocked */}
+                <FieldRow label="Blocked" noBorder>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <Checkbox
+                      checked={localTask.blocked ?? task.blocked ?? false}
+                      onCheckedChange={handleBlockedChange}
+                      className="w-4 h-4"
+                    />
+                    <span className="text-[13px] text-gray-600 dark:text-gray-300">This task is blocked</span>
+                  </label>
+                </FieldRow>
+
+                {/* Blocked Reason Textarea */}
+                {(localTask.blocked ?? task.blocked) && (
+                  <div className="mt-3">
+                    <Textarea
+                      value={localTask.blockedReason ?? task.blockedReason ?? ''}
+                      onChange={(e) => setLocalTask(prev => ({ ...prev, blockedReason: e.target.value }))}
+                      placeholder="Describe what's blocking this task..."
+                      className="text-[13px] min-h-[80px] w-full"
+                    />
                   </div>
-                  {(localTask.blocked ?? task.blocked) && (
-                    <div className="mt-3">
-                      <Textarea
-                        value={localTask.blockedReason ?? task.blockedReason ?? ''}
-                        onChange={(e) => setLocalTask(prev => ({ ...prev, blockedReason: e.target.value }))}
-                        placeholder="Describe what's blocking this task..."
-                        className="text-[13px] min-h-[80px] w-full"
-                      />
-                    </div>
-                  )}
-                </div>
+                )}
 
                 {/* Attention Level Indicator */}
                 {task.attentionLevel && task.attentionLevel !== 'neutral' && (
                   <div className={cn(
                     'flex items-center gap-2 p-3 rounded-md mt-4',
-                    task.attentionLevel === 'danger' && 'bg-status-danger-bg text-status-danger',
-                    task.attentionLevel === 'warning' && 'bg-status-warning-bg text-status-warning'
+                    task.attentionLevel === 'danger' && 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+                    task.attentionLevel === 'warning' && 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
                   )}>
                     <AlertTriangle className="w-4 h-4 shrink-0" />
                     <span className="text-[12px] font-medium">
@@ -356,39 +323,51 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                     </span>
                   </div>
                 )}
-              </div>
-            )}
+              </SheetBody>
 
-            {activeTab === 'activity' && (
-              <div className="space-y-4">
-                {activities.map((activity) => (
-                  <div key={activity.id} className="flex gap-3 pb-4 border-b border-border-subtle last:border-0">
-                    <div className="w-8 h-8 rounded-full bg-surface-muted flex items-center justify-center shrink-0">
-                      <Clock className="w-4 h-4 text-text-muted" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[13px] text-text-primary">
-                        <span className="font-medium">{activity.user}</span>
-                        {activity.type === 'status_changed' && (
-                          <> changed status from <span className="font-medium">{activity.from}</span> to <span className="font-medium">{activity.to}</span></>
-                        )}
-                        {activity.type === 'assigned' && (
-                          <> assigned to <span className="font-medium">{activity.to}</span></>
-                        )}
-                        {activity.type === 'created' && (
-                          <> created this task</>
-                        )}
-                      </p>
-                      <span className="text-[11px] text-text-muted">{activity.time}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+              {/* Footer */}
+              <SheetFooter>
+                <Button variant="outline" onClick={onClose}>Cancel</Button>
+                <Button onClick={handleSave} className="bg-[#5c7c5c] hover:bg-[#4a6a4a] text-white">
+                  Save Changes
+                </Button>
+              </SheetFooter>
+            </TabsContent>
 
-            {activeTab === 'comments' && (
-              <div className="space-y-4">
-                <div className="text-center py-8 text-[13px] text-text-muted">
+            {/* ACTIVITY TAB */}
+            <TabsContent value="activity" className="flex-1 overflow-hidden m-0">
+              <SheetBody>
+                <div className="space-y-4">
+                  {activities.map((activity) => (
+                    <div key={activity.id} className="flex gap-3 pb-4 border-b border-gray-100 dark:border-gray-800 last:border-0">
+                      <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center shrink-0">
+                        <Clock className="w-4 h-4 text-gray-400" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[13px] text-gray-900 dark:text-gray-100">
+                          <span className="font-medium">{activity.user}</span>
+                          {activity.type === 'status_changed' && (
+                            <> changed status from <span className="font-medium">{activity.from}</span> to <span className="font-medium">{activity.to}</span></>
+                          )}
+                          {activity.type === 'assigned' && (
+                            <> assigned to <span className="font-medium">{activity.to}</span></>
+                          )}
+                          {activity.type === 'created' && (
+                            <> created this task</>
+                          )}
+                        </p>
+                        <span className="text-[11px] text-gray-400">{activity.time}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </SheetBody>
+            </TabsContent>
+
+            {/* COMMENTS TAB */}
+            <TabsContent value="comments" className="flex-1 overflow-hidden m-0">
+              <SheetBody>
+                <div className="text-center py-8 text-[13px] text-gray-400">
                   <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-50" />
                   No comments yet
                 </div>
@@ -396,28 +375,18 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                   placeholder="Add a comment..."
                   className="text-[13px] min-h-[80px]"
                 />
-                <Button size="sm" className="bg-brand-primary hover:bg-brand-primary-hover text-white">
+                <Button size="sm" className="mt-2 bg-[#5c7c5c] hover:bg-[#4a6a4a] text-white">
                   Add Comment
                 </Button>
-              </div>
-            )}
-          </div>
-
-          {/* FOOTER - Only on Overview tab */}
-          {activeTab === 'overview' && (
-            <div className="flex justify-end gap-3 p-4 border-t border-border-default bg-white dark:bg-neutral-900">
-              <Button variant="outline" onClick={onClose}>Cancel</Button>
-              <Button onClick={handleSave} className="bg-brand-primary hover:bg-brand-primary-hover text-white">
-                Save Changes
-              </Button>
-            </div>
-          )}
-        </div>
-      )}
+              </SheetBody>
+            </TabsContent>
+          </Tabs>
+        </SheetContent>
+      </Sheet>
 
       {/* Toast */}
       {showToast && (
-        <div className="fixed bottom-4 right-4 px-4 py-2 bg-status-success text-white text-[13px] font-medium rounded-md shadow-lg z-[60]">
+        <div className="fixed bottom-4 right-4 px-4 py-2 bg-green-600 text-white text-[13px] font-medium rounded-md shadow-lg z-[300]">
           Task updated successfully
         </div>
       )}
