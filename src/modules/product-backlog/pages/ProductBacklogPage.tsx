@@ -9,7 +9,7 @@ import { useBusinessRequests } from '@/hooks/useBusinessRequests';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { ProductBacklogFiltersDialog, ProductBacklogFilters } from '../components/ProductBacklogFiltersDialog';
-import { RequestListPanel, RequestDetailPanel } from '../components/split-panel';
+import { RequestListPanel, RequestDetailPanel, AttachmentUploadModal } from '../components/split-panel';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
@@ -76,6 +76,7 @@ export default function ProductBacklogPage() {
   const [filtersDialogOpen, setFiltersDialogOpen] = useState(false);
   const [filters, setFilters] = useState<ProductBacklogFilters>({});
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [attachmentModalOpen, setAttachmentModalOpen] = useState(false);
 
   // Transform business requests to match table format
   const tableData: RequestItem[] = useMemo(() => {
@@ -228,17 +229,25 @@ export default function ProductBacklogPage() {
     }
 
     const { id, request_key, created_at, updated_at, ...cloneData } = original;
-    const { error: insertError } = await supabase
+    const { data: newRequest, error: insertError } = await supabase
       .from('business_requests')
-      .insert({ ...cloneData, title: `${original.title} (Copy)` });
+      .insert({ ...cloneData, title: `${original.title} (Copy)` })
+      .select('request_key, id')
+      .single();
 
-    if (insertError) {
+    if (insertError || !newRequest) {
       toast.error('Failed to clone request');
       return;
     }
 
     queryClient.invalidateQueries({ queryKey: ['business-requests'] });
-    toast.success('Request cloned');
+    
+    // Show the new cloned request key
+    const newKey = newRequest.request_key || newRequest.id?.slice(0, 8);
+    toast.success(`Request cloned successfully as ${newKey}`, {
+      description: 'The new request has been added to the backlog.',
+      duration: 5000,
+    });
   };
 
   // Handle delete
@@ -355,8 +364,7 @@ export default function ProductBacklogPage() {
             onOpenDrawer={() => selectedRequest && setDrawerRequestId(selectedRequest._dbId)}
             onAttachment={() => {
               if (selectedRequest) {
-                setDrawerRequestId(selectedRequest._dbId);
-                toast.info('Opening drawer to manage attachments');
+                setAttachmentModalOpen(true);
               }
             }}
             onLink={() => {
@@ -368,6 +376,16 @@ export default function ProductBacklogPage() {
           />
         </div>
       </div>
+
+      {/* Attachment Upload Modal */}
+      {selectedRequest && (
+        <AttachmentUploadModal
+          open={attachmentModalOpen}
+          onOpenChange={setAttachmentModalOpen}
+          requestId={selectedRequest._dbId}
+          requestKey={selectedRequest.id}
+        />
+      )}
 
       {/* Filters Dialog */}
       <ProductBacklogFiltersDialog
