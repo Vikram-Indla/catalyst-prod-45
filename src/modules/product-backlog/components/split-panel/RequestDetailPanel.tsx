@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
@@ -501,18 +501,18 @@ export function RequestDetailPanel({
 
             <div>
               <div 
-                className="h-10 px-3 rounded-md flex items-center gap-3 mt-6"
+                className="h-10 px-3 rounded-md flex items-center justify-between mt-6"
                 style={{ backgroundColor: 'hsl(var(--secondary-olive) / 0.08)', border: '1px solid hsl(var(--secondary-olive) / 0.2)' }}
               >
-                <Checkbox 
-                  id="ea-review"
-                  checked={request.eaReviewRequired ?? true}
-                  onCheckedChange={(checked) => onUpdateField('eaReviewRequired', checked)}
-                  className="data-[state=checked]:bg-[hsl(var(--secondary-olive))] data-[state=checked]:border-[hsl(var(--secondary-olive))]"
-                />
                 <label htmlFor="ea-review" className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>
                   EA Review Required?
                 </label>
+                <Switch 
+                  id="ea-review"
+                  checked={request.eaReviewRequired ?? true}
+                  onCheckedChange={(checked) => onUpdateField('eaReviewRequired', checked)}
+                  className="data-[state=checked]:bg-[hsl(var(--secondary-olive))]"
+                />
               </div>
             </div>
           </div>
