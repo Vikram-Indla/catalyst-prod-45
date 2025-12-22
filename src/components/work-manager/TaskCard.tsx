@@ -1,5 +1,5 @@
 // src/components/work-manager/TaskCard.tsx
-// Premium Enterprise-Grade Kanban Task Card - Dark Mode Optimized
+// Premium Enterprise-Grade Kanban Task Card - CIO Polish
 
 import { 
   Calendar, 
@@ -37,28 +37,30 @@ export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
-  // Priority dot colors only - no background badges
-  const getPriorityDotColor = (priority: string) => {
+  // Priority dot colors with glow effect
+  const getPriorityStyles = (priority: string) => {
     switch (priority) {
-      case 'Critical': return 'bg-red-500';
-      case 'High': return 'bg-orange-500';
-      case 'Medium': return 'bg-amber-500';
-      case 'Low': return 'bg-gray-400';
-      default: return 'bg-gray-400';
+      case 'Critical': return { dot: 'bg-red-500', glow: 'shadow-[0_0_6px_rgba(239,68,68,0.5)]' };
+      case 'High': return { dot: 'bg-orange-500', glow: 'shadow-[0_0_4px_rgba(249,115,22,0.4)]' };
+      case 'Medium': return { dot: 'bg-amber-500', glow: '' };
+      case 'Low': return { dot: 'bg-stone-400', glow: '' };
+      default: return { dot: 'bg-stone-400', glow: '' };
     }
   };
 
-  // Type icon config - outlined style, no filled backgrounds
-  const getTypeIcon = (type: string) => {
+  // Type icon config
+  const getTypeConfig = (type: string) => {
     switch (type) {
-      case 'Project': return Folder;
-      case 'Task': return CheckSquare;
-      case 'General': return FileText;
-      default: return FileText;
+      case 'Project': return { icon: Folder, color: 'text-olive-500 border-olive-200 bg-olive-50' };
+      case 'Task': return { icon: CheckSquare, color: 'text-blue-500 border-blue-200 bg-blue-50' };
+      case 'General': return { icon: FileText, color: 'text-stone-500 border-stone-200 bg-stone-50' };
+      default: return { icon: FileText, color: 'text-stone-500 border-stone-200 bg-stone-50' };
     }
   };
 
-  const TypeIcon = getTypeIcon(task.type);
+  const typeConfig = getTypeConfig(task.type);
+  const TypeIcon = typeConfig.icon;
+  const priorityStyles = getPriorityStyles(task.priority);
 
   return (
     <div
@@ -67,77 +69,85 @@ export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
       tabIndex={0}
       role="button"
       className={cn(
-        'relative group bg-white dark:bg-gray-800 border rounded-lg p-3 cursor-pointer transition-all duration-200',
-        'hover:shadow-md hover:border-[#5c7c5c] hover:-translate-y-0.5',
-        'focus:ring-2 focus:ring-[#5c7c5c] focus:outline-none',
-        'shadow-sm',
-        isDragging && 'shadow-xl cursor-grabbing',
+        // Base styles - Premium card treatment
+        'relative group bg-white rounded-xl p-4 cursor-pointer',
+        'border border-stone-100',
+        'shadow-card',
+        // Premium hover effects
+        'transition-all duration-200 ease-out',
+        'hover:shadow-elevated hover:border-stone-200 hover:-translate-y-0.5',
+        'focus:ring-2 focus:ring-olive-500/20 focus:outline-none focus:border-olive-300',
+        // Dragging state
+        isDragging && 'shadow-hover cursor-grabbing rotate-1 scale-[1.02]',
         !isDragging && 'cursor-grab',
-        // Blocked styling - red border only, no background tint
-        task.blocked && 'border-l-2 border-l-red-500',
-        // Done styling - just opacity, no green tint
-        isDone && !task.blocked && 'opacity-50',
-        // Default border
-        !task.blocked && 'border-gray-200 dark:border-gray-700'
+        // Blocked styling - accent bar on left
+        task.blocked && 'border-l-[3px] border-l-red-500 bg-gradient-to-r from-red-50/50 to-transparent',
+        // Done styling - subtle fade
+        isDone && !task.blocked && 'opacity-60 bg-stone-50/50',
+        // Dark mode
+        'dark:bg-gray-800 dark:border-gray-700 dark:hover:border-gray-600'
       )}
     >
       {/* Drag Handle - visible on hover */}
-      <div className="absolute top-2 left-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-        <GripVertical className="w-4 h-4 text-gray-400" />
+      <div className="absolute top-3 left-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        <GripVertical className="w-4 h-4 text-stone-300" />
       </div>
 
       {/* Done Checkmark - subtle */}
       {isDone && (
-        <div className="absolute top-2 right-2">
-          <CheckCircle className="w-4 h-4 text-green-500/50" />
+        <div className="absolute top-3 right-3">
+          <CheckCircle className="w-4 h-4 text-green-500/60" />
         </div>
       )}
 
       {/* Header: Key + Blocked Badge */}
-      <div className="flex items-center justify-between gap-2 mb-2 pl-4">
-        <span className="font-mono text-[11px] text-gray-500 dark:text-gray-400">{task.key}</span>
+      <div className="flex items-center justify-between gap-2 mb-2.5 pl-5">
+        <span className="font-mono text-[11px] text-stone-400 tracking-wide">{task.key}</span>
         {task.blocked && (
           <span 
-            className="text-red-400 text-[10px] font-medium uppercase"
+            className="inline-flex items-center gap-1 text-red-500 text-[10px] font-semibold uppercase tracking-wide"
             title={task.blockedReason || 'Task is blocked'}
           >
-            BLOCKED
+            <AlertTriangle className="w-3 h-3" />
+            Blocked
           </span>
         )}
       </div>
 
       {/* Title - muted for done tasks */}
       <h4 className={cn(
-        'text-[13px] font-medium leading-snug mb-2 line-clamp-2 pl-4',
+        'text-[13px] font-medium leading-snug mb-3 line-clamp-2 pl-5 tracking-tight',
         isDone 
-          ? 'text-muted-foreground line-through decoration-muted-foreground/50' 
-          : 'text-gray-900 dark:text-gray-100'
+          ? 'text-stone-400 line-through decoration-stone-300' 
+          : 'text-stone-900 dark:text-gray-100'
       )}>
         {task.title}
       </h4>
 
-      {/* Meta: Type (icon + text), Priority (dot + text), Linked Item (muted) */}
-      <div className="flex flex-wrap items-center gap-2 mb-3 pl-4">
-        {/* Type - outlined badges per type color */}
+      {/* Meta: Type, Priority, Linked Item */}
+      <div className="flex flex-wrap items-center gap-2 mb-3 pl-5">
+        {/* Type - Premium pill with icon */}
         <span className={cn(
-          "inline-flex items-center gap-1.5 px-2 py-0.5 text-[11px] font-medium rounded bg-transparent border",
-          task.type === 'Project' && 'border-green-500/30 text-green-400',
-          task.type === 'Task' && 'border-blue-500/30 text-blue-400',
-          task.type === 'General' && 'border-gray-500/30 text-gray-400'
+          "inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium rounded-md border",
+          typeConfig.color
         )}>
           <TypeIcon className="w-3 h-3" />
           {task.type}
         </span>
         
-        {/* Priority - dot + text only */}
+        {/* Priority - dot with optional glow */}
         <div className="flex items-center gap-1.5">
-          <div className={cn('w-2 h-2 rounded-full shrink-0', getPriorityDotColor(task.priority))} />
-          <span className="text-[11px] text-gray-400">{task.priority}</span>
+          <div className={cn(
+            'w-2 h-2 rounded-full shrink-0',
+            priorityStyles.dot,
+            priorityStyles.glow
+          )} />
+          <span className="text-[11px] text-stone-500">{task.priority}</span>
         </div>
         
-        {/* Linked Item - neutral, no gold */}
+        {/* Linked Item - Champagne tint */}
         {task.linkedItem && (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-white/5 text-gray-400 text-[11px] font-mono rounded border border-white/10">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-bronze-50 text-bronze-600 text-[11px] font-mono rounded border border-bronze-200 hover:bg-bronze-100 transition-colors cursor-pointer">
             <Link2 className="w-3 h-3" />
             {task.linkedItem.key}
           </span>
@@ -145,20 +155,20 @@ export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
       </div>
 
       {/* Footer: Due Date/Completed + Recurrence + Assignee */}
-      <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700 pl-4">
+      <div className="flex items-center justify-between pt-3 border-t border-stone-100 dark:border-gray-700 pl-5">
         <div className="flex items-center gap-2">
           {/* Show completed date for done tasks, otherwise due date */}
           {isDone && task.completedAt ? (
-            <span className="inline-flex items-center gap-1 text-[11px] text-gray-500">
-              <CheckCircle className="w-3 h-3 text-green-500/50" />
+            <span className="inline-flex items-center gap-1 text-[11px] text-stone-400">
+              <CheckCircle className="w-3 h-3 text-green-500/60" />
               Completed {formatCompletedDate(task.completedAt)}
             </span>
           ) : task.dueDate ? (
             <span className={cn(
-              'inline-flex items-center gap-1 text-[11px]',
-              task.dueBucket === 'overdue' && 'text-red-400',
-              task.dueBucket === 'today' && 'text-amber-400',
-              task.dueBucket !== 'overdue' && task.dueBucket !== 'today' && 'text-muted-foreground'
+              'inline-flex items-center gap-1 text-[11px] font-medium',
+              task.dueBucket === 'overdue' && 'text-red-500',
+              task.dueBucket === 'today' && 'text-amber-600',
+              task.dueBucket !== 'overdue' && task.dueBucket !== 'today' && 'text-stone-500'
             )}>
               <Calendar className="w-3 h-3" />
               {task.dueBucket === 'overdue' && `${task.daysOverdue}d overdue`}
@@ -166,20 +176,26 @@ export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
               {(task.dueBucket === 'next7' || task.dueBucket === 'future' || task.dueBucket === 'none') && formatDueDate(task.dueDate)}
             </span>
           ) : (
-            <span className="text-[11px] text-gray-400">No due date</span>
+            <span className="text-[11px] text-stone-400">No due date</span>
           )}
 
           {/* Recurrence indicator */}
           {task.recurrence !== 'None' && (
-            <span className="text-[10px] text-gray-500" title={`Repeats ${task.recurrence.toLowerCase()}`}>
+            <span className="text-[10px] text-stone-400 font-medium" title={`Repeats ${task.recurrence.toLowerCase()}`}>
               ↻ {task.recurrence}
             </span>
           )}
         </div>
         
-        {/* Assignee Avatar - Monochrome */}
+        {/* Assignee Avatar - Premium style */}
         <div 
-          className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ring-2 ring-white dark:ring-gray-800 bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-white"
+          className={cn(
+            'w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0',
+            'ring-2 ring-white dark:ring-gray-800',
+            'bg-gradient-to-br from-stone-100 to-stone-200 text-stone-600',
+            'dark:from-gray-600 dark:to-gray-700 dark:text-gray-200',
+            'transition-transform duration-200 hover:scale-110 hover:ring-olive-200'
+          )}
           title={assignee?.name || 'Unassigned'}
         >
           {assignee?.initials || '??'}

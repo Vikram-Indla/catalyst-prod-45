@@ -114,23 +114,26 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
   const selectedUser = getUserById(selectedUserId);
 
   return (
-    <div className="max-w-4xl">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-[16px] font-semibold text-text-primary">Weekly Insights</h2>
-          <p className="text-[13px] text-text-muted">{formatDateRange()}</p>
+    <div className="max-w-4xl animate-fade-in">
+      {/* Header - Premium treatment */}
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-3">
+          <div className="w-1 h-8 bg-gradient-to-b from-olive-500 to-bronze-500 rounded-full" />
+          <div>
+            <h2 className="text-xl font-bold text-stone-900 tracking-tight">Weekly Insights</h2>
+            <p className="text-[13px] text-stone-500 mt-0.5">{formatDateRange()}</p>
+          </div>
         </div>
         <div className="flex items-center gap-3">
-          {/* View Mode Toggle */}
-          <div className="flex rounded-md border border-border-default overflow-hidden">
+          {/* View Mode Toggle - Premium */}
+          <div className="flex rounded-lg border border-stone-200 overflow-hidden shadow-xs">
             <button
               onClick={() => setViewMode('individual')}
               className={cn(
-                'px-3 py-1.5 text-[12px] font-medium transition-colors',
+                'px-4 py-2 text-[12px] font-semibold transition-all duration-200',
                 viewMode === 'individual' 
-                  ? 'bg-brand-primary text-white' 
-                  : 'bg-surface-card text-text-secondary hover:bg-surface-muted'
+                  ? 'bg-gradient-to-r from-olive-500 to-olive-600 text-white shadow-brand' 
+                  : 'bg-white text-stone-600 hover:bg-stone-50'
               )}
             >
               Individual
@@ -138,17 +141,17 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
             <button
               onClick={() => setViewMode('team')}
               className={cn(
-                'px-3 py-1.5 text-[12px] font-medium transition-colors',
+                'px-4 py-2 text-[12px] font-semibold transition-all duration-200',
                 viewMode === 'team' 
-                  ? 'bg-brand-primary text-white' 
-                  : 'bg-surface-card text-text-secondary hover:bg-surface-muted'
+                  ? 'bg-gradient-to-r from-olive-500 to-olive-600 text-white shadow-brand' 
+                  : 'bg-white text-stone-600 hover:bg-stone-50'
               )}
             >
               Team
             </button>
           </div>
           
-          <Button variant="outline" size="sm" className="gap-2">
+          <Button variant="outline" size="sm" className="gap-2 shadow-xs hover:shadow-sm transition-shadow">
             <Download className="w-4 h-4" />
             Export PDF
           </Button>
@@ -160,61 +163,65 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
           {/* Person Selector */}
           <div className="flex items-center gap-4">
             <Select value={selectedUserId} onValueChange={setSelectedUserId}>
-              <SelectTrigger className="w-[250px]">
+              <SelectTrigger className="w-[280px] shadow-xs">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="shadow-elevated">
                 {users.map(u => (
                   <SelectItem key={u.id} value={u.id}>
                     <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-white">
+                      <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold bg-gradient-to-br from-stone-100 to-stone-200 text-stone-600">
                         {u.initials}
                       </div>
-                      {u.name}
+                      <span className="font-medium">{u.name}</span>
                     </div>
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
 
-            {/* Status Badge - text only, no backgrounds */}
+            {/* Status Badge - Premium treatment */}
             {individualInsights.status === 'on_track' && (
-              <span className="text-green-400 text-[12px] font-medium flex items-center gap-1.5">
-                <CheckCircle className="w-3.5 h-3.5" />
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-green-50 to-emerald-50 text-green-600 border border-green-100 rounded-lg text-[12px] font-semibold shadow-xs">
+                <CheckCircle className="w-4 h-4" />
                 On Track
               </span>
             )}
             {individualInsights.status === 'needs_attention' && (
-              <span className="text-amber-400 text-[12px] font-medium flex items-center gap-1.5">
-                <AlertTriangle className="w-3.5 h-3.5" />
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-amber-50 to-orange-50 text-amber-600 border border-amber-100 rounded-lg text-[12px] font-semibold shadow-xs">
+                <AlertTriangle className="w-4 h-4" />
                 Needs Attention
               </span>
             )}
             {individualInsights.status === 'at_risk' && (
-              <span className="text-red-400 text-[12px] font-medium flex items-center gap-1.5">
-                <XCircle className="w-3.5 h-3.5" />
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-red-50 to-rose-50 text-red-600 border border-red-100 rounded-lg text-[12px] font-semibold shadow-xs">
+                <XCircle className="w-4 h-4" />
                 At Risk
               </span>
             )}
           </div>
 
-          {/* Summary Stats */}
+          {/* Summary Stats - Premium cards with semantic colors */}
           <div className="grid grid-cols-5 gap-4">
             {[
-              { label: 'Total Tasks', value: individualInsights.summary.total, icon: FileText, color: 'text-text-primary' },
-              { label: 'Completed', value: individualInsights.summary.completed, icon: CheckCircle, color: 'text-status-success' },
-              { label: 'In Progress', value: individualInsights.summary.inProgress, icon: Clock, color: 'text-status-warning' },
-              { label: 'Overdue', value: individualInsights.summary.overdue, icon: XCircle, color: 'text-status-danger' },
-              { label: 'Blocked', value: individualInsights.summary.blocked, icon: AlertTriangle, color: 'text-status-danger' },
+              { label: 'Total Tasks', value: individualInsights.summary.total, icon: FileText, bgColor: 'bg-stone-50', borderColor: 'border-stone-100', textColor: 'text-stone-900' },
+              { label: 'Completed', value: individualInsights.summary.completed, icon: CheckCircle, bgColor: 'bg-gradient-to-br from-green-50 to-emerald-50', borderColor: 'border-green-100', textColor: 'text-green-600' },
+              { label: 'In Progress', value: individualInsights.summary.inProgress, icon: Clock, bgColor: 'bg-gradient-to-br from-amber-50 to-orange-50', borderColor: 'border-amber-100', textColor: 'text-amber-600' },
+              { label: 'Overdue', value: individualInsights.summary.overdue, icon: XCircle, bgColor: 'bg-gradient-to-br from-red-50 to-rose-50', borderColor: 'border-red-100', textColor: 'text-red-600' },
+              { label: 'Blocked', value: individualInsights.summary.blocked, icon: AlertTriangle, bgColor: 'bg-gradient-to-br from-red-50 to-rose-50', borderColor: 'border-red-100', textColor: 'text-red-600' },
             ].map((stat) => {
               const Icon = stat.icon;
               return (
-                <div key={stat.label} className="bg-surface-card border border-border-default rounded-lg p-4">
+                <div key={stat.label} className={cn(
+                  'rounded-xl p-4 border shadow-card hover:shadow-elevated transition-shadow',
+                  stat.bgColor,
+                  stat.borderColor
+                )}>
                   <div className="flex items-center gap-2 mb-2">
-                    <Icon className={cn('w-4 h-4', stat.color)} />
-                    <span className="text-[11px] font-medium text-text-muted uppercase tracking-wide">{stat.label}</span>
+                    <Icon className={cn('w-4 h-4', stat.textColor)} />
+                    <span className="text-[11px] font-semibold text-stone-500 uppercase tracking-wider">{stat.label}</span>
                   </div>
-                  <span className={cn('text-[24px] font-semibold', stat.color)}>{stat.value}</span>
+                  <span className={cn('text-3xl font-bold tracking-tight', stat.textColor)}>{stat.value}</span>
                 </div>
               );
             })}
