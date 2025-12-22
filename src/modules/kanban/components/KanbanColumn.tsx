@@ -1,9 +1,9 @@
-// KanbanColumn component - matching HTML specification exactly
+// KanbanColumn component - Enterprise-grade design
 
 import React, { useState } from 'react';
-import { KanbanTicket, StatusId, COLUMNS_CONFIG, KANBAN_COLORS, TeamMember } from '../types';
+import { KanbanTicket, StatusId, COLUMNS_CONFIG, TeamMember } from '../types';
 import { KanbanCard } from './KanbanCard';
-import { KanbanIcons } from './KanbanIcons';
+import { MoreHorizontal, Inbox, ChevronLeft } from 'lucide-react';
 
 interface KanbanColumnProps {
   column: StatusId;
@@ -16,6 +16,45 @@ interface KanbanColumnProps {
   inSwimlane?: boolean;
   teamMembers?: TeamMember[];
 }
+
+// Column semantic colors for header backgrounds
+const COLUMN_HEADER_STYLES: Record<StatusId, { bg: string; border: string; dotColor: string }> = {
+  new_request: { 
+    bg: 'bg-blue-50 dark:bg-blue-950/30', 
+    border: 'border-blue-100 dark:border-blue-900/50',
+    dotColor: 'bg-blue-500'
+  },
+  analyse: { 
+    bg: 'bg-amber-50 dark:bg-amber-950/30', 
+    border: 'border-amber-100 dark:border-amber-900/50',
+    dotColor: 'bg-amber-500'
+  },
+  approved: { 
+    bg: 'bg-green-50 dark:bg-green-950/30', 
+    border: 'border-green-100 dark:border-green-900/50',
+    dotColor: 'bg-green-500'
+  },
+  implement: { 
+    bg: 'bg-purple-50 dark:bg-purple-950/30', 
+    border: 'border-purple-100 dark:border-purple-900/50',
+    dotColor: 'bg-purple-500'
+  },
+  closed: { 
+    bg: 'bg-stone-100 dark:bg-stone-900/30', 
+    border: 'border-stone-200 dark:border-stone-800',
+    dotColor: 'bg-stone-500'
+  },
+  rejected: { 
+    bg: 'bg-red-50 dark:bg-red-950/30', 
+    border: 'border-red-100 dark:border-red-900/50',
+    dotColor: 'bg-red-500'
+  },
+  on_hold: { 
+    bg: 'bg-orange-50 dark:bg-orange-950/30', 
+    border: 'border-orange-100 dark:border-orange-900/50',
+    dotColor: 'bg-orange-500'
+  },
+};
 
 export function KanbanColumn({ 
   column, 
@@ -31,6 +70,7 @@ export function KanbanColumn({
   const [isDragOver, setIsDragOver] = useState(false);
   const [isHeaderHovered, setIsHeaderHovered] = useState(false);
   const columnConfig = COLUMNS_CONFIG.find(c => c.id === column);
+  const headerStyles = COLUMN_HEADER_STYLES[column] || COLUMN_HEADER_STYLES.new_request;
   
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -57,33 +97,23 @@ export function KanbanColumn({
         onClick={onToggleCollapse}
         onMouseEnter={() => setIsHeaderHovered(true)}
         onMouseLeave={() => setIsHeaderHovered(false)}
-        className="cursor-pointer transition-all duration-150 flex flex-col items-center py-3 flex-shrink-0"
+        className={`cursor-pointer transition-all duration-150 flex flex-col items-center py-3 flex-shrink-0 rounded-xl border bg-stone-50 dark:bg-stone-900/50 border-stone-200 dark:border-stone-800 ${isHeaderHovered ? 'shadow-md' : 'shadow-sm'}`}
         style={{
           width: '44px',
           minWidth: '44px',
           height: '100%',
-          backgroundColor: isHeaderHovered ? 'rgba(92, 124, 92, 0.08)' : 'var(--surface-1)',
-          borderRadius: '8px',
-          border: '1px solid var(--border-color)',
         }}
       >
-        <div 
-          className="w-2.5 h-2.5 rounded-full mb-2 flex-shrink-0"
-          style={{ backgroundColor: columnConfig?.color || 'var(--text-3)' }} 
-        />
-        <span 
-          className="text-xs font-bold mb-2"
-          style={{ color: 'var(--text-1)' }}
-        >
+        <div className={`w-2.5 h-2.5 rounded-full mb-2 flex-shrink-0 ${headerStyles.dotColor}`} />
+        <span className="text-xs font-bold mb-2 text-foreground">
           {tickets.length}
         </span>
         <span 
-          className="text-[10px] font-semibold tracking-wide uppercase"
+          className="text-[10px] font-semibold tracking-wide uppercase text-muted-foreground"
           style={{
             writingMode: 'vertical-rl',
             textOrientation: 'mixed',
             transform: 'rotate(180deg)',
-            color: 'var(--text-3)',
           }}
         >
           {columnConfig?.label}
@@ -97,45 +127,28 @@ export function KanbanColumn({
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
-      className="flex flex-col flex-shrink-0 transition-all duration-150"
+      className={`flex flex-col flex-shrink-0 transition-all duration-150 rounded-xl border shadow-sm ${
+        isDragOver 
+          ? 'border-2 border-dashed border-[#5c7c5c] bg-[#5c7c5c]/5' 
+          : 'border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900/50'
+      }`}
       style={{
         width: inSwimlane ? '280px' : '320px',
         minWidth: inSwimlane ? '280px' : '320px',
         maxWidth: inSwimlane ? '280px' : '320px',
         height: '100%',
-        minHeight: 0,
-        backgroundColor: isDragOver ? 'var(--accent-muted)' : 'var(--surface-2)',
-        borderRadius: '8px',
-        border: isDragOver ? '2px dashed var(--accent-color)' : '1px solid var(--border-color)',
+        minHeight: '500px',
       }}
     >
-      {/* Column Header - Fixed height */}
-      <div 
-        className="flex-shrink-0 rounded-t-lg px-3 py-2.5"
-        style={{
-          borderBottom: '1px solid var(--border-color)',
-          backgroundColor: 'var(--surface-1)',
-        }}
-      >
+      {/* Column Header - Enterprise style with semantic background */}
+      <div className={`flex-shrink-0 rounded-t-xl px-4 py-3 border-b ${headerStyles.bg} ${headerStyles.border}`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div 
-              className="w-2 h-2 rounded-full flex-shrink-0"
-              style={{ backgroundColor: tickets.length > 0 ? (columnConfig?.color || 'var(--text-3)') : 'rgb(156, 163, 175)' }} 
-            />
-            <span 
-              className="text-xs font-medium"
-              style={{ color: 'var(--text-1)' }}
-            >
+            <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${headerStyles.dotColor}`} />
+            <span className="text-[14px] font-semibold text-gray-900 dark:text-gray-100">
               {columnConfig?.label}
             </span>
-            <span 
-              className="px-1.5 py-0.5 rounded text-[10px] font-medium"
-              style={{ 
-                backgroundColor: 'var(--surface-3)', 
-                color: 'var(--text-2)' 
-              }}
-            >
+            <span className="bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-[12px] font-medium px-2 py-0.5 rounded-full border border-gray-200 dark:border-gray-700">
               {tickets.length}
             </span>
           </div>
@@ -144,23 +157,19 @@ export function KanbanColumn({
               onClick={onToggleCollapse}
               onMouseEnter={() => setIsHeaderHovered(true)}
               onMouseLeave={() => setIsHeaderHovered(false)}
-              className="p-1 rounded transition-all cursor-pointer"
-              style={{
-                color: 'var(--text-3)',
-                backgroundColor: isHeaderHovered ? 'rgba(92, 124, 92, 0.08)' : 'transparent',
-              }}
+              className="p-1 rounded transition-all cursor-pointer text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-800/50"
             >
-              <KanbanIcons.Minimize />
+              <ChevronLeft className="w-4 h-4" />
             </button>
           )}
         </div>
       </div>
 
-      {/* Cards - Flex-grow with internal scroll */}
+      {/* Cards Container */}
       <div 
-        className="flex-1 overflow-y-auto p-2 flex flex-col"
+        className="flex-1 overflow-y-auto p-3 flex flex-col"
         style={{ 
-          gap: compactMode ? '6px' : '8px',
+          gap: compactMode ? '8px' : '10px',
           minHeight: 0,
         }}
       >
@@ -174,27 +183,15 @@ export function KanbanColumn({
           />
         ))}
         {tickets.length === 0 && (
-          <div 
-            className="flex flex-col items-center justify-center py-8 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-lg mx-1"
-          >
-            <svg 
-              width="28" 
-              height="28" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth="1.5"
-              className="text-gray-300 dark:text-gray-600 mb-2"
-            >
-              <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/>
-              <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
-            </svg>
-            <span className="text-[12px] text-gray-400 dark:text-gray-500">
-              No items
-            </span>
-            <span className="text-[11px] text-gray-400 dark:text-gray-600">
-              Drag items here
-            </span>
+          <div className="flex flex-col items-center justify-center py-16 px-4">
+            <div className="w-12 h-12 rounded-full bg-stone-100 dark:bg-stone-800 flex items-center justify-center mb-3">
+              <Inbox className="w-6 h-6 text-stone-400 dark:text-stone-500" />
+            </div>
+            <p className="text-[13px] font-medium text-gray-500 dark:text-gray-400 mb-1">No items</p>
+            <p className="text-[12px] text-gray-400 dark:text-gray-500 text-center">
+              Drag requests here or<br/>
+              <button className="text-[#5c7c5c] hover:underline">create new</button>
+            </p>
           </div>
         )}
       </div>
