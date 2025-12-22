@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
@@ -16,6 +17,7 @@ interface OnHoldTabProps {
 }
 
 export function OnHoldTab({ data, isEditMode, onChange }: OnHoldTabProps) {
+  const [resumeDateOpen, setResumeDateOpen] = useState(false);
   return (
     <div className="space-y-6 p-5">
       {/* On Hold Reason Section */}
@@ -37,7 +39,7 @@ export function OnHoldTab({ data, isEditMode, onChange }: OnHoldTabProps) {
 
           <div>
             <Label className="text-sm font-medium">Expected Resume Date</Label>
-            <Popover>
+            <Popover open={resumeDateOpen} onOpenChange={setResumeDateOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
@@ -54,7 +56,10 @@ export function OnHoldTab({ data, isEditMode, onChange }: OnHoldTabProps) {
                 <Calendar
                   mode="single"
                   selected={data.expected_resume_date ? new Date(data.expected_resume_date) : undefined}
-                  onSelect={(date) => onChange('expected_resume_date', date ? format(date, 'yyyy-MM-dd') : null)}
+                  onSelect={(date) => {
+                    onChange('expected_resume_date', date ? format(date, 'yyyy-MM-dd') : null);
+                    setResumeDateOpen(false);
+                  }}
                   initialFocus
                   className="pointer-events-auto"
                 />

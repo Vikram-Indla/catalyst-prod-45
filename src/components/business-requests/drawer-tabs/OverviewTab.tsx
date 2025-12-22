@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -28,6 +29,8 @@ interface OverviewTabProps {
 
 export function OverviewTab({ data, isEditMode, onChange, hideProcessStepHealth = false }: OverviewTabProps) {
   const { options: processStepOptions } = useDemandProcessStepOptions();
+  const [startDateOpen, setStartDateOpen] = useState(false);
+  const [endDateOpen, setEndDateOpen] = useState(false);
   
   return (
     <div className="space-y-6 p-5">
@@ -212,7 +215,7 @@ export function OverviewTab({ data, isEditMode, onChange, hideProcessStepHealth 
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label className="text-sm font-medium">Start Date</Label>
-              <Popover>
+              <Popover open={startDateOpen} onOpenChange={setStartDateOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
@@ -229,7 +232,10 @@ export function OverviewTab({ data, isEditMode, onChange, hideProcessStepHealth 
                   <Calendar
                     mode="single"
                     selected={data.start_date ? new Date(data.start_date) : undefined}
-                    onSelect={(date) => onChange('start_date', date ? format(date, 'yyyy-MM-dd') : null)}
+                    onSelect={(date) => {
+                      onChange('start_date', date ? format(date, 'yyyy-MM-dd') : null);
+                      setStartDateOpen(false);
+                    }}
                     initialFocus
                     className="pointer-events-auto"
                   />
@@ -239,7 +245,7 @@ export function OverviewTab({ data, isEditMode, onChange, hideProcessStepHealth 
 
             <div>
               <Label className="text-sm font-medium">End Date</Label>
-              <Popover>
+              <Popover open={endDateOpen} onOpenChange={setEndDateOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
@@ -256,7 +262,10 @@ export function OverviewTab({ data, isEditMode, onChange, hideProcessStepHealth 
                   <Calendar
                     mode="single"
                     selected={data.end_date ? new Date(data.end_date) : undefined}
-                    onSelect={(date) => onChange('end_date', date ? format(date, 'yyyy-MM-dd') : null)}
+                    onSelect={(date) => {
+                      onChange('end_date', date ? format(date, 'yyyy-MM-dd') : null);
+                      setEndDateOpen(false);
+                    }}
                     initialFocus
                     className="pointer-events-auto"
                   />

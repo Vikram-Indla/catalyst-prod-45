@@ -93,6 +93,10 @@ export function SmartFiltersDialog({
 }: SmartFiltersDialogProps) {
   const { user } = useAuth();
   const [localFilters, setLocalFilters] = useState<SmartFilters>(filters);
+  const [submittedDateFromOpen, setSubmittedDateFromOpen] = useState(false);
+  const [submittedDateToOpen, setSubmittedDateToOpen] = useState(false);
+  const [targetDateFromOpen, setTargetDateFromOpen] = useState(false);
+  const [targetDateToOpen, setTargetDateToOpen] = useState(false);
   
   // Fetch departments from admin-configured data (ZERO-SEED policy)
   const { data: departments = [] } = useDepartments();
@@ -326,7 +330,7 @@ export function SmartFiltersDialog({
             <div className="space-y-1.5">
               <Label className="text-sm text-destructive">Submitted Date</Label>
               <div className="flex gap-2 items-center">
-                <Popover>
+                <Popover open={submittedDateFromOpen} onOpenChange={setSubmittedDateFromOpen}>
                   <PopoverTrigger asChild>
                     <Button variant="outline" size="sm" className={cn("h-9 w-28 justify-start text-left font-normal", !localFilters.submittedDateFrom && "text-muted-foreground")}>
                       <CalendarIcon className="mr-1 h-3 w-3" />
@@ -334,11 +338,11 @@ export function SmartFiltersDialog({
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0 bg-popover" align="start">
-                    <Calendar mode="single" selected={localFilters.submittedDateFrom} onSelect={(date) => updateFilter('submittedDateFrom', date)} />
+                    <Calendar mode="single" selected={localFilters.submittedDateFrom} onSelect={(date) => { updateFilter('submittedDateFrom', date); setSubmittedDateFromOpen(false); }} className="pointer-events-auto" />
                   </PopoverContent>
                 </Popover>
                 <span className="text-muted-foreground">—</span>
-                <Popover>
+                <Popover open={submittedDateToOpen} onOpenChange={setSubmittedDateToOpen}>
                   <PopoverTrigger asChild>
                     <Button variant="outline" size="sm" className={cn("h-9 w-28 justify-start text-left font-normal", !localFilters.submittedDateTo && "text-muted-foreground")}>
                       <CalendarIcon className="mr-1 h-3 w-3" />
@@ -346,7 +350,7 @@ export function SmartFiltersDialog({
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0 bg-popover" align="start">
-                    <Calendar mode="single" selected={localFilters.submittedDateTo} onSelect={(date) => updateFilter('submittedDateTo', date)} />
+                    <Calendar mode="single" selected={localFilters.submittedDateTo} onSelect={(date) => { updateFilter('submittedDateTo', date); setSubmittedDateToOpen(false); }} className="pointer-events-auto" />
                   </PopoverContent>
                 </Popover>
               </div>
