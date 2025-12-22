@@ -179,6 +179,7 @@ import StrategicSnapshots from "./pages/enterprise/StrategicSnapshots";
 import StrategicBacklog from "./pages/enterprise/StrategicBacklog";
 import EnterpriseEpics from "./pages/enterprise/EnterpriseEpics";
 import { WorkTreePage } from "./pages/work-tree";
+import WorkManager from "./pages/WorkManager";
 
 import EnterpriseTasks from "./pages/enterprise/EnterpriseTasks";
 import EnterpriseObjectives from "./pages/enterprise/EnterpriseObjectives";
@@ -340,6 +341,10 @@ const App = () => (
               <Route path="/work-tree" element={<WorkTreePage />} />
               <Route path="/enterprise/work-tree" element={<WorkTreePage />} />
               <Route path="/enterprise/kanban-boards" element={<EnterpriseComingSoon />} />
+              
+              {/* Planner */}
+              <Route path="/planner" element={<Navigate to="/planner/boards" replace />} />
+              <Route path="/planner/:tab" element={<WorkManager />} />
               
               
               {/* Mining */}
