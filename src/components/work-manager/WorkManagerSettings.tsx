@@ -22,7 +22,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { defaultColumns } from '@/lib/work-manager-data';
+import { useWorkManagerColumns } from '@/hooks/useWorkManagerColumns';
+import type { TaskStatus } from './types';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
@@ -51,7 +52,7 @@ interface Integration {
 
 export function WorkManagerSettings() {
   const [activeTab, setActiveTab] = useState<SettingsTab>('columns');
-  const [columns, setColumns] = useState<BoardColumn[]>(defaultColumns);
+  const { columns, addColumn, updateColumn, deleteColumn } = useWorkManagerColumns();
 
   // Column dialog state
   const [isColumnDialogOpen, setIsColumnDialogOpen] = useState(false);
@@ -130,19 +131,16 @@ export function WorkManagerSettings() {
     }
 
     if (editingColumn) {
-      setColumns(prev => prev.map(col =>
-        col.id === editingColumn.id
-          ? { ...col, name: columnForm.name.trim(), status: columnForm.status }
-          : col
-      ));
+      updateColumn(editingColumn.id, { 
+        name: columnForm.name.trim(), 
+        status: columnForm.status as TaskStatus 
+      });
       toast.success(`Column "${columnForm.name}" updated`);
     } else {
-      const newColumn: BoardColumn = {
-        id: `col-${Date.now()}`,
+      addColumn({
         name: columnForm.name.trim(),
-        status: columnForm.status,
-      };
-      setColumns(prev => [...prev, newColumn]);
+        status: columnForm.status as TaskStatus,
+      });
       toast.success(`Column "${columnForm.name}" added`);
     }
     setIsColumnDialogOpen(false);
@@ -155,7 +153,7 @@ export function WorkManagerSettings() {
 
   const handleConfirmDeleteColumn = () => {
     if (deletingColumn) {
-      setColumns(prev => prev.filter(col => col.id !== deletingColumn.id));
+      deleteColumn(deletingColumn.id);
       toast.success(`Column "${deletingColumn.name}" deleted`);
     }
     setIsDeleteDialogOpen(false);
