@@ -50,7 +50,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useVisibleDrawerTabs } from '@/hooks/useDrawerTabConfigs';
 import { useBusinessDrawerRoleTabs } from '@/hooks/useBusinessDrawerRoleTabs';
-import { EnterpriseStatusControl } from './drawer';
+import { EnterpriseStatusControl, WorkflowFooter, getNextWorkflowAction } from './drawer';
 import { EAReviewTab } from './drawer-tabs/EAReviewTab';
 import { cn } from '@/lib/utils';
 
@@ -702,6 +702,19 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
               </TabsContent>
             </div>
           </Tabs>
+
+          {/* Workflow Footer */}
+          <WorkflowFooter
+            currentStep={(formData.process_step as any) || 'new_request'}
+            onAdvance={() => {
+              const next = getNextWorkflowAction((formData.process_step as any) || 'new_request');
+              if (next) {
+                handleFieldChange('process_step', next.nextStep);
+              }
+            }}
+            nextAction={getNextWorkflowAction((formData.process_step as any) || 'new_request')}
+            disabled={!hasChanges && updateMutation.isPending}
+          />
         </SheetContent>
       </Sheet>
 

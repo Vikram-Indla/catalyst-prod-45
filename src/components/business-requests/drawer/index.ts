@@ -16,3 +16,4 @@ export {
   DrawerEmptyState,
   DrawerTabToolbar 
 } from './EnterpriseDrawerShell';
+export { WorkflowFooter, getNextWorkflowAction, type ProcessStep, type WorkflowStep, WORKFLOW_STEPS } from './WorkflowFooter';
