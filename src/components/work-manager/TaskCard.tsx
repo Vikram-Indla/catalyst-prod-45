@@ -50,18 +50,18 @@ export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
-  // Get priority badge classes
+  // Get priority badge classes - Low is warmer/lighter to differentiate from General
   const getPriorityClasses = (priority: string) => {
     switch (priority) {
       case 'Critical': return 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400';
       case 'High': return 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-400';
       case 'Medium': return 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400';
-      case 'Low': return 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400';
+      case 'Low': return 'bg-stone-100 text-stone-500 dark:bg-stone-800 dark:text-stone-400 border border-stone-200 dark:border-stone-700';
       default: return 'bg-gray-100 text-gray-500';
     }
   };
 
-  // Get type badge classes and icon
+  // Get type badge classes and icon - Project uses brand-primary olive, General uses cooler slate with border
   const getTypeConfig = (type: string) => {
     switch (type) {
       case 'Project': return { 
@@ -73,7 +73,7 @@ export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
         icon: CheckSquare 
       };
       case 'General': return { 
-        classes: 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300', 
+        classes: 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-600', 
         icon: FileText 
       };
       default: return { 
@@ -110,8 +110,8 @@ export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
         !isDragging && 'cursor-grab',
         // Blocked styling
         task.blocked && 'border-l-4 border-l-red-500 bg-red-50/50 dark:bg-red-950/20',
-        // Done styling
-        isDone && !task.blocked && 'border-l-4 border-l-green-500 opacity-80',
+        // Done styling - muted appearance with green tint
+        isDone && !task.blocked && 'border-l-4 border-l-green-500 opacity-60 bg-green-50/50 dark:bg-green-950/20',
         // Default border
         !task.blocked && !isDone && 'border-gray-200 dark:border-gray-700'
       )}
@@ -142,11 +142,11 @@ export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
         )}
       </div>
 
-      {/* Title */}
+      {/* Title - muted for done tasks */}
       <h4 className={cn(
         'text-[13px] font-medium leading-snug mb-2 line-clamp-2 pl-4',
         isDone 
-          ? 'text-gray-500 dark:text-gray-400 line-through' 
+          ? 'text-muted-foreground line-through decoration-muted-foreground/50' 
           : 'text-gray-900 dark:text-gray-100'
       )}>
         {task.title}
