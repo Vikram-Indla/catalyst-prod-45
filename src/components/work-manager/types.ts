@@ -8,6 +8,7 @@ export type RecurrenceType = 'None' | 'Daily' | 'Weekly' | 'Biweekly' | 'Monthly
 export type LinkedItemType = 'Epic' | 'Feature' | 'Story' | 'BusinessRequest';
 export type DueBucket = 'overdue' | 'today' | 'next7' | 'future' | 'none';
 export type AttentionLevel = 'neutral' | 'warning' | 'danger';
+export type GroupByOption = 'status' | 'team' | 'assignee' | 'dueDate';
 
 export interface LinkedItem {
   type: LinkedItemType;

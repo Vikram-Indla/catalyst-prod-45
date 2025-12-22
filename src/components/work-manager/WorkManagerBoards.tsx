@@ -3,10 +3,10 @@
 
 import { useMemo, useState } from 'react';
 import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
-import { MoreHorizontal, CheckCircle2, Plus, Settings, EyeOff, Trash2, Eye } from 'lucide-react';
+import { MoreHorizontal, CheckCircle2, Plus, Settings, EyeOff, Trash2, Eye, Users, Calendar, User } from 'lucide-react';
 import { TaskCard } from './TaskCard';
-import { defaultColumns } from '@/lib/work-manager-data';
-import type { TaskExtended, KanbanColumn, TaskStatus } from './types';
+import { defaultColumns, users, teams } from '@/lib/work-manager-data';
+import type { TaskExtended, KanbanColumn, TaskStatus, GroupByOption, Team, User as UserType } from './types';
 import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
@@ -20,6 +20,13 @@ import { EditColumnDialog } from './EditColumnDialog';
 import { ClearColumnDialog } from './ClearColumnDialog';
 import { Button } from '@/components/ui/button';
 
+interface DynamicColumn {
+  id: string;
+  name: string;
+  icon?: React.ReactNode;
+  color?: string;
+}
+
 interface WorkManagerBoardsProps {
   tasks: TaskExtended[];
   onOpenTask: (taskId: string) => void;
@@ -31,33 +38,116 @@ interface WorkManagerBoardsProps {
   }) => void;
   onAddTask?: (status: TaskStatus) => void;
   onClearColumn?: (status: TaskStatus) => void;
+  groupBy?: GroupByOption;
+  teamsData?: Team[];
+  usersData?: UserType[];
 }
 
-export function WorkManagerBoards({ tasks, onOpenTask, onMoveTask, onAddTask, onClearColumn }: WorkManagerBoardsProps) {
-  const [columns, setColumns] = useState<KanbanColumn[]>(defaultColumns.map(c => ({ ...c, wipLimit: undefined })));
+// Due date groupings
+const dueDateGroups = [
+  { id: 'overdue', name: 'Overdue', color: '#dc2626' },
+  { id: 'today', name: 'Due Today', color: '#ea580c' },
+  { id: 'next7', name: 'Next 7 Days', color: '#ca8a04' },
+  { id: 'future', name: 'Future', color: '#16a34a' },
+  { id: 'none', name: 'No Due Date', color: '#6b7280' },
+];
+
+export function WorkManagerBoards({ 
+  tasks, 
+  onOpenTask, 
+  onMoveTask, 
+  onAddTask, 
+  onClearColumn,
+  groupBy = 'status',
+  teamsData = teams,
+  usersData = users,
+}: WorkManagerBoardsProps) {
+  const [statusColumns, setStatusColumns] = useState<KanbanColumn[]>(defaultColumns);
   const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(new Set());
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingColumn, setEditingColumn] = useState<KanbanColumn | null>(null);
   const [clearDialogOpen, setClearDialogOpen] = useState(false);
   const [clearingColumn, setClearingColumn] = useState<KanbanColumn | null>(null);
 
-  const visibleColumns = useMemo(() => {
-    return columns.filter(col => !hiddenColumns.has(col.id));
-  }, [columns, hiddenColumns]);
+  // Generate columns based on groupBy option
+  const dynamicColumns: DynamicColumn[] = useMemo(() => {
+    switch (groupBy) {
+      case 'team':
+        return teamsData.map(team => ({
+          id: team.id,
+          name: team.name,
+          color: team.color,
+        }));
+      case 'assignee':
+        // Get unique assignees from tasks
+        const assigneeIds = [...new Set(tasks.map(t => t.assigneeId))];
+        return assigneeIds.map(id => {
+          const user = usersData.find(u => u.id === id);
+          return {
+            id: id || 'unassigned',
+            name: user?.name || 'Unassigned',
+            color: user?.avatarColor,
+          };
+        });
+      case 'dueDate':
+        return dueDateGroups;
+      case 'status':
+      default:
+        return statusColumns.map(col => ({
+          id: col.status,
+          name: col.name,
+        }));
+    }
+  }, [groupBy, teamsData, usersData, tasks, statusColumns]);
 
+  const visibleColumns = useMemo(() => {
+    return dynamicColumns.filter(col => !hiddenColumns.has(col.id));
+  }, [dynamicColumns, hiddenColumns]);
+
+  // Group tasks based on groupBy option
   const columnTasks = useMemo(() => {
     const grouped: Record<string, TaskExtended[]> = {};
-    columns.forEach(col => {
-      grouped[col.status] = tasks
-        .filter(t => t.status === col.status)
-        .sort((a, b) => a.columnPosition - b.columnPosition);
+    
+    dynamicColumns.forEach(col => {
+      grouped[col.id] = [];
     });
+
+    tasks.forEach(task => {
+      let groupKey: string;
+      switch (groupBy) {
+        case 'team':
+          groupKey = task.teamId;
+          break;
+        case 'assignee':
+          groupKey = task.assigneeId || 'unassigned';
+          break;
+        case 'dueDate':
+          groupKey = task.dueBucket || 'none';
+          break;
+        case 'status':
+        default:
+          groupKey = task.status;
+          break;
+      }
+      if (grouped[groupKey]) {
+        grouped[groupKey].push(task);
+      }
+    });
+
+    // Sort by column position within each group
+    Object.keys(grouped).forEach(key => {
+      grouped[key].sort((a, b) => a.columnPosition - b.columnPosition);
+    });
+
     return grouped;
-  }, [tasks, columns]);
+  }, [tasks, groupBy, dynamicColumns]);
 
   const handleDragEnd = (result: DropResult) => {
     const { destination, source, draggableId } = result;
     if (!destination) return;
+
+    // Only allow drag for status grouping
+    if (groupBy !== 'status') return;
 
     const fromStatus = source.droppableId as TaskStatus;
     const toStatus = destination.droppableId as TaskStatus;
@@ -72,13 +162,18 @@ export function WorkManagerBoards({ tasks, onOpenTask, onMoveTask, onAddTask, on
     });
   };
 
-  const handleEditColumn = (column: KanbanColumn) => {
-    setEditingColumn(column);
-    setEditDialogOpen(true);
+  const handleEditColumn = (column: DynamicColumn) => {
+    if (groupBy === 'status') {
+      const kanbanCol = statusColumns.find(c => c.status === column.id);
+      if (kanbanCol) {
+        setEditingColumn(kanbanCol);
+        setEditDialogOpen(true);
+      }
+    }
   };
 
   const handleSaveColumn = (columnId: string, newName: string) => {
-    setColumns(prev => prev.map(col => 
+    setStatusColumns(prev => prev.map(col => 
       col.id === columnId ? { ...col, name: newName } : col
     ));
   };
@@ -95,19 +190,27 @@ export function WorkManagerBoards({ tasks, onOpenTask, onMoveTask, onAddTask, on
     });
   };
 
-  const handleClearColumnClick = (column: KanbanColumn) => {
-    setClearingColumn(column);
-    setClearDialogOpen(true);
+  const handleClearColumnClick = (column: DynamicColumn) => {
+    if (groupBy === 'status') {
+      const kanbanCol = statusColumns.find(c => c.status === column.id);
+      if (kanbanCol) {
+        setClearingColumn(kanbanCol);
+        setClearDialogOpen(true);
+      }
+    }
   };
 
   const handleConfirmClear = (columnId: string) => {
-    const column = columns.find(c => c.id === columnId);
+    const column = statusColumns.find(c => c.id === columnId);
     if (column && onClearColumn) {
       onClearColumn(column.status);
     }
   };
 
-  const hiddenColumnsList = columns.filter(col => hiddenColumns.has(col.id));
+  const hiddenColumnsList = dynamicColumns.filter(col => hiddenColumns.has(col.id));
+
+  // Check if drag is enabled
+  const isDragEnabled = groupBy === 'status';
 
   return (
     <>
@@ -136,12 +239,14 @@ export function WorkManagerBoards({ tasks, onOpenTask, onMoveTask, onAddTask, on
             <BoardColumn
               key={column.id}
               column={column}
-              tasks={columnTasks[column.status] || []}
+              tasks={columnTasks[column.id] || []}
               onOpenTask={onOpenTask}
-              onAddTask={onAddTask}
+              onAddTask={groupBy === 'status' ? onAddTask : undefined}
               onEditColumn={() => handleEditColumn(column)}
               onHideColumn={() => handleHideColumn(column.id)}
               onClearColumn={() => handleClearColumnClick(column)}
+              groupBy={groupBy}
+              isDragEnabled={isDragEnabled}
             />
           ))}
         </div>
@@ -166,30 +271,59 @@ export function WorkManagerBoards({ tasks, onOpenTask, onMoveTask, onAddTask, on
 }
 
 interface BoardColumnProps {
-  column: KanbanColumn;
+  column: DynamicColumn;
   tasks: TaskExtended[];
   onOpenTask: (taskId: string) => void;
   onAddTask?: (status: TaskStatus) => void;
   onEditColumn: () => void;
   onHideColumn: () => void;
   onClearColumn: () => void;
+  groupBy: GroupByOption;
+  isDragEnabled: boolean;
 }
 
-function BoardColumn({ column, tasks, onOpenTask, onAddTask, onEditColumn, onHideColumn, onClearColumn }: BoardColumnProps) {
+function BoardColumn({ 
+  column, 
+  tasks, 
+  onOpenTask, 
+  onAddTask, 
+  onEditColumn, 
+  onHideColumn, 
+  onClearColumn,
+  groupBy,
+  isDragEnabled,
+}: BoardColumnProps) {
   const { toast } = useToast();
+
+  // Get icon based on groupBy type
+  const getGroupIcon = () => {
+    switch (groupBy) {
+      case 'team':
+        return <Users className="w-4 h-4 text-muted-foreground" />;
+      case 'assignee':
+        return <User className="w-4 h-4 text-muted-foreground" />;
+      case 'dueDate':
+        return <Calendar className="w-4 h-4 text-muted-foreground" />;
+      default:
+        return column.id === 'Done' ? <CheckCircle2 className="w-4 h-4 text-green-500/60" /> : null;
+    }
+  };
 
   return (
     <div className="flex-shrink-0 w-[300px] min-w-[280px] bg-gray-50 dark:bg-neutral-900 rounded-lg flex flex-col max-h-[calc(100vh-240px)] border border-gray-200 dark:border-gray-800">
       {/* Column Header */}
       <div className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center gap-2">
-          {/* Muted checkmark for Done column */}
-          {column.status === 'Done' && (
-            <CheckCircle2 className="w-4 h-4 text-green-500/60" />
+          {column.color && (
+            <div 
+              className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+              style={{ backgroundColor: column.color }}
+            />
           )}
+          {getGroupIcon()}
           <span className={cn(
             "text-[13px] font-semibold",
-            column.status === 'Done' ? 'text-green-600/70 dark:text-green-400/70' : 'text-gray-900 dark:text-gray-100'
+            column.id === 'Done' ? 'text-green-600/70 dark:text-green-400/70' : 'text-gray-900 dark:text-gray-100'
           )}>{column.name}</span>
           <span className="px-2 py-0.5 bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-gray-300 text-[11px] font-medium rounded-full">
             {tasks.length}
@@ -206,27 +340,31 @@ function BoardColumn({ column, tasks, onOpenTask, onAddTask, onEditColumn, onHid
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48 bg-popover">
-              <DropdownMenuItem
-                className="gap-2 cursor-pointer"
-                onSelect={() => {
-                  if (onAddTask) {
-                    onAddTask(column.status);
-                    return;
-                  }
-                  toast({ title: 'Add task', description: 'This action is not wired yet.' });
-                }}
-              >
-                <Plus className="w-4 h-4" />
-                Add task
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="gap-2 cursor-pointer"
-                onSelect={onEditColumn}
-              >
-                <Settings className="w-4 h-4" />
-                Edit column
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
+              {groupBy === 'status' && (
+                <>
+                  <DropdownMenuItem
+                    className="gap-2 cursor-pointer"
+                    onSelect={() => {
+                      if (onAddTask) {
+                        onAddTask(column.id as TaskStatus);
+                        return;
+                      }
+                      toast({ title: 'Add task', description: 'This action is not wired yet.' });
+                    }}
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add task
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="gap-2 cursor-pointer"
+                    onSelect={onEditColumn}
+                  >
+                    <Settings className="w-4 h-4" />
+                    Edit column
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                </>
+              )}
               <DropdownMenuItem
                 className="gap-2 cursor-pointer"
                 onSelect={onHideColumn}
@@ -234,38 +372,42 @@ function BoardColumn({ column, tasks, onOpenTask, onAddTask, onEditColumn, onHid
                 <EyeOff className="w-4 h-4" />
                 Hide column
               </DropdownMenuItem>
-              <DropdownMenuItem
-                className="gap-2 cursor-pointer text-destructive focus:text-destructive"
-                onSelect={onClearColumn}
-                disabled={tasks.length === 0}
-              >
-                <Trash2 className="w-4 h-4" />
-                Clear column
-              </DropdownMenuItem>
+              {groupBy === 'status' && (
+                <DropdownMenuItem
+                  className="gap-2 cursor-pointer text-destructive focus:text-destructive"
+                  onSelect={onClearColumn}
+                  disabled={tasks.length === 0}
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Clear column
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       </div>
 
       {/* Column Body - Scrollable + Droppable */}
-      <Droppable droppableId={column.status}>
+      <Droppable droppableId={column.id} isDropDisabled={!isDragEnabled}>
         {(dropProvided, dropSnapshot) => (
           <div
             ref={dropProvided.innerRef}
             {...dropProvided.droppableProps}
             className={cn(
               'flex-1 overflow-y-auto p-3 space-y-2 scroll-smooth',
-              dropSnapshot.isDraggingOver && 'bg-[#5c7c5c]/10'
+              dropSnapshot.isDraggingOver && isDragEnabled && 'bg-[#5c7c5c]/10'
             )}
           >
             {tasks.length === 0 ? (
               <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center">
                 <p className="text-[12px] font-medium text-gray-500 dark:text-gray-400">No tasks</p>
-                <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">Drop tasks here</p>
+                <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">
+                  {isDragEnabled ? 'Drop tasks here' : 'No items in this group'}
+                </p>
               </div>
             ) : (
               tasks.map((task, index) => (
-                <Draggable key={task.id} draggableId={task.id} index={index}>
+                <Draggable key={task.id} draggableId={task.id} index={index} isDragDisabled={!isDragEnabled}>
                   {(dragProvided, dragSnapshot) => (
                     <div
                       ref={dragProvided.innerRef}
