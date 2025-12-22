@@ -29,7 +29,7 @@ interface KanbanColumnProps {
 
 /**
  * Column status styles mapped to design system tokens
- * Uses status-* tokens for semantic meaning
+ * Uses status-* tokens for semantic meaning per Catalyst Governance
  */
 const COLUMN_HEADER_STYLES: Record<StatusId, { 
   bg: string; 
@@ -37,19 +37,19 @@ const COLUMN_HEADER_STYLES: Record<StatusId, {
   dot: string;
 }> = {
   new_request: { 
-    bg: 'bg-blue-50 dark:bg-blue-950/30', 
+    bg: 'bg-status-info-bg', 
     border: 'border-blue-200 dark:border-blue-800',
-    dot: 'bg-blue-500 dark:bg-blue-400'
+    dot: 'bg-status-info'
   },
   analyse: { 
-    bg: 'bg-amber-50 dark:bg-amber-950/30', 
+    bg: 'bg-status-warning-bg', 
     border: 'border-amber-200 dark:border-amber-800',
-    dot: 'bg-amber-500 dark:bg-amber-400'
+    dot: 'bg-status-warning'
   },
   approved: { 
-    bg: 'bg-green-50 dark:bg-green-950/30', 
+    bg: 'bg-status-success-bg', 
     border: 'border-green-200 dark:border-green-800',
-    dot: 'bg-green-500 dark:bg-green-400'
+    dot: 'bg-status-success'
   },
   implement: { 
     bg: 'bg-purple-50 dark:bg-purple-950/30', 
@@ -62,9 +62,9 @@ const COLUMN_HEADER_STYLES: Record<StatusId, {
     dot: 'bg-gray-400 dark:bg-gray-500'
   },
   rejected: { 
-    bg: 'bg-red-50 dark:bg-red-950/30', 
+    bg: 'bg-status-danger-bg', 
     border: 'border-red-200 dark:border-red-800',
-    dot: 'bg-red-500 dark:bg-red-400'
+    dot: 'bg-status-danger'
   },
   on_hold: { 
     bg: 'bg-orange-50 dark:bg-orange-950/30', 

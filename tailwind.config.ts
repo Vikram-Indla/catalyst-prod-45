@@ -232,7 +232,21 @@ export default {
             bg: "var(--status-danger-bg)",
             border: "var(--status-danger-border)",
           },
+          info: {
+            DEFAULT: "var(--status-info)",
+            bg: "var(--status-info-bg)",
+            border: "var(--status-info-border)",
+          },
         },
+        
+        /* Secondary palette - Catalyst Golden Hour */
+        'secondary-olive': '#5c7c5c',
+        'secondary-bronze': '#8b7355',
+        'secondary-champagne': '#d4b896',
+        
+        /* Surface tokens */
+        'surface-bg': 'var(--surface-bg)',
+        'surface-card': 'var(--surface-card)',
         
         /* Text colors from CSS vars */
         text: {
