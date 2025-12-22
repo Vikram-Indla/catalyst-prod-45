@@ -27,11 +27,14 @@ export interface ToolbarAvatar {
   color?: string;
 }
 
+// View types
+export type IndustryViewType = 'list' | 'board' | 'table';
+
 // Props interface
 export interface IndustryHeaderToolbarV2Props {
   title: string;
   countText: string;
-  activeView: 'list' | 'board';
+  activeView: IndustryViewType;
   searchValue: string;
   onSearchChange: (value: string) => void;
   avatars?: ToolbarAvatar[];
@@ -105,6 +108,14 @@ const Icons = {
       <rect x="3" y="3" width="5" height="18" rx="1"/>
       <rect x="10" y="3" width="5" height="12" rx="1"/>
       <rect x="17" y="3" width="5" height="15" rx="1"/>
+    </svg>
+  ),
+  Table: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+      <line x1="3" y1="9" x2="21" y2="9"/>
+      <line x1="3" y1="15" x2="21" y2="15"/>
+      <line x1="9" y1="3" x2="9" y2="21"/>
     </svg>
   ),
   Plus: () => (
@@ -203,11 +214,13 @@ export function IndustryHeaderToolbarV2({
 
   const showAvatarFilter = avatars.length > 0 && !!onToggleAvatar;
 
-  const handleViewChange = (view: 'list' | 'board') => {
+  const handleViewChange = (view: IndustryViewType) => {
     if (view === 'list') {
       navigate('/industry/backlog');
-    } else {
+    } else if (view === 'board') {
       navigate('/industry/kanban');
+    } else {
+      navigate('/industry/table');
     }
   };
 
@@ -247,6 +260,20 @@ export function IndustryHeaderToolbarV2({
               <Icons.Kanban />
             </div>
             <span>Board</span>
+          </button>
+          <button
+            onClick={() => handleViewChange('table')}
+            className={cn(
+              'h-8 px-3 flex items-center gap-2 rounded-md text-sm font-medium transition-all duration-200',
+              activeView === 'table'
+                ? 'bg-background text-foreground shadow-sm ring-1 ring-border/50'
+                : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
+            )}
+          >
+            <div className="w-4 h-4">
+              <Icons.Table />
+            </div>
+            <span>Table</span>
           </button>
         </div>
       </div>

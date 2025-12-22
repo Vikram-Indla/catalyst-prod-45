@@ -202,6 +202,7 @@ import CapacityPlanningPage from "./pages/CapacityPlanningPage";
 import ExecutiveRoadmapPage from "./pages/enterprise/ExecutiveRoadmapPage";
 import BusinessRequestsKanbanPage from "./modules/kanban/pages/BusinessRequestsKanbanPage";
 import ProductBacklogPage from "./modules/product-backlog/pages/ProductBacklogPage";
+import ProductBacklogTablePage from "./modules/product-backlog/pages/ProductBacklogTablePage";
 
 import SubmitDemandRequest from "./pages/SubmitDemandRequest";
 import ResetPassword from "./pages/ResetPassword";
@@ -297,6 +298,7 @@ const App = () => (
               <Route path="/industry1" element={<IndustryPage />} />
               <Route path="/industry/industry" element={<IndustryPage />} />
               <Route path="/industry/backlog" element={<ProductBacklogPage />} />
+              <Route path="/industry/table" element={<ProductBacklogTablePage />} />
               <Route path="/industry/kanban" element={<BusinessRequestsKanbanPage />} />
               <Route path="/industry/dashboard" element={<DemandSummaryPage />} />
               <Route path="/industry/roadmaps" element={<ProductRoadmapV2Page />} />
