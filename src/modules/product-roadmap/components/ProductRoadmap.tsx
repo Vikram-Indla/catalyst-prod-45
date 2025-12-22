@@ -11,6 +11,8 @@ import { RoadmapListPanel } from './RoadmapListPanel';
 import { RoadmapTimelinePanel } from './RoadmapTimelinePanel';
 import { RoadmapLoadingSkeleton } from './RoadmapLoadingSkeleton';
 import { RoadmapEmptyState } from './RoadmapEmptyState';
+import { RoadmapFilterDialog } from './RoadmapFilterDialog';
+import { RoadmapExportDialog } from './RoadmapExportDialog';
 import { useRoadmapDemands, useReorderDemands, useUpdateDemandDates } from '../hooks/useRoadmapDemands';
 import { useRoadmapFilters } from '../hooks/useRoadmapFilters';
 import { useRoadmapDragDrop } from '../hooks/useRoadmapDragDrop';
@@ -225,6 +227,22 @@ export function ProductRoadmap() {
               />
             </div>
           )}
+
+          {/* Filter Dialog */}
+          <RoadmapFilterDialog
+            isOpen={isFilterDialogOpen}
+            onClose={() => setIsFilterDialogOpen(false)}
+            filters={filters}
+            onApply={setFilters}
+          />
+
+          {/* Export Dialog */}
+          <RoadmapExportDialog
+            isOpen={isExportDialogOpen}
+            onClose={() => setIsExportDialogOpen(false)}
+            items={items}
+            timelineConfig={timelineConfig}
+          />
         </div>
       </DragDropContext>
     </TooltipProvider>
