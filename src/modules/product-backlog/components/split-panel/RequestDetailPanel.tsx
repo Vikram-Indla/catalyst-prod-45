@@ -3,11 +3,12 @@
  * Full detail view of selected request with inline editing
  */
 
-import React from 'react';
+import React, { useState } from 'react';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { 
-  Share2, Bell, Edit, Paperclip, Copy, Link2, MessageSquare, Trash2, 
-  UserPlus, AlertTriangle, FileText, Circle 
+  Share2, Edit, Paperclip, Copy, Link2, Trash2, 
+  UserPlus, AlertTriangle, FileText, Check
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -93,6 +94,26 @@ const DEPARTMENT_OPTIONS = [
   'Industrial Development',
   'Regulatory Affairs',
 ];
+
+// Share button component with copy feedback
+function ShareButton({ requestId }: { requestId: string }) {
+  const [copied, setCopied] = useState(false);
+  
+  const handleCopy = async () => {
+    const url = `${window.location.origin}/industry/backlog?request=${requestId}`;
+    await navigator.clipboard.writeText(url);
+    setCopied(true);
+    toast.success('Link copied to clipboard');
+    setTimeout(() => setCopied(false), 2000);
+  };
+  
+  return (
+    <Button variant="outline" size="sm" className="gap-1.5" onClick={handleCopy}>
+      {copied ? <Check className="w-3.5 h-3.5" /> : <Share2 className="w-3.5 h-3.5" />}
+      {copied ? 'Copied!' : 'Share'}
+    </Button>
+  );
+}
 
 export function RequestDetailPanel({
   request,
@@ -190,14 +211,7 @@ export function RequestDetailPanel({
 
           {/* Header Actions */}
           <div className="flex items-center gap-2 ml-4">
-            <Button variant="outline" size="sm" className="gap-1.5">
-              <Share2 className="w-3.5 h-3.5" />
-              Share
-            </Button>
-            <Button variant="outline" size="sm" className="gap-1.5">
-              <Bell className="w-3.5 h-3.5" />
-              Subscribe
-            </Button>
+            <ShareButton requestId={request.id} />
           </div>
         </div>
       </div>
