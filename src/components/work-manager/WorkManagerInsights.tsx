@@ -320,10 +320,10 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
               </span>
             )}
             {individualInsights.status === 'needs_attention' && (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-amber-50 to-orange-50 text-amber-600 border border-amber-100 rounded-lg text-[12px] font-semibold shadow-xs">
-                <AlertTriangle className="w-4 h-4" />
-                Needs Attention
-              </span>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 border border-amber-300 dark:border-amber-600 rounded-lg">
+                <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-500" />
+                <span className="text-amber-700 dark:text-amber-400 text-[13px] font-medium">Needs Attention</span>
+              </div>
             )}
             {individualInsights.status === 'at_risk' && (
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-red-50 to-rose-50 text-red-600 border border-red-100 rounded-lg text-[12px] font-semibold shadow-xs">
