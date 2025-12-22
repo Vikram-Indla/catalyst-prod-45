@@ -483,12 +483,12 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
             </div>
 
             {/* ═══════════════════════════════════════════════════════════
-                HERO ROW: Title + Meta + Actions
+                HERO ROW: Title + Status Badge + Rank Badge
                 ═══════════════════════════════════════════════════════════ */}
-            <div className="flex items-start justify-between px-5 py-3 gap-4">
+            <div className="flex items-start justify-between px-5 py-4 gap-4">
               
-              {/* Left Side: Title + Meta Strip */}
-              <div className="flex-1 min-w-0 space-y-2">
+              {/* Left Side: Title + Status Badge Row */}
+              <div className="flex-1 min-w-0 space-y-2.5">
                 
                 {/* Title with Edit */}
                 <div className="flex items-center gap-1.5 group">
@@ -499,7 +499,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                       onChange={(e) => setEditedName(e.target.value)}
                       onBlur={handleSaveName}
                       onKeyDown={handleNameKeyDown}
-                      className="text-[18px] font-semibold h-auto py-1 px-2 max-w-[480px] border-[#c69c6d] focus-visible:ring-[#c69c6d]"
+                      className="text-[22px] font-semibold h-auto py-1 px-2 max-w-[480px] border-[#c69c6d] focus-visible:ring-[#c69c6d]"
                       style={{ 
                         background: 'var(--surface-subtle, hsl(var(--muted)))',
                         color: 'var(--text-primary, hsl(var(--foreground)))'
@@ -508,7 +508,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                   ) : (
                     <>
                       <SheetTitle 
-                        className="text-[18px] font-semibold tracking-[-0.3px] truncate max-w-[480px] leading-tight"
+                        className="text-[22px] font-semibold tracking-[-0.3px] truncate max-w-[520px] leading-tight"
                         style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}
                       >
                         {request?.title || 'Loading...'}
@@ -519,18 +519,57 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                         style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
                         title="Rename"
                       >
-                        <Pencil className="h-3 w-3" />
+                        <Pencil className="h-3.5 w-3.5" />
                       </button>
                     </>
                   )}
                 </div>
 
-                {/* Status Control */}
-                <div className="flex items-center gap-2.5 flex-wrap">
-                  <EnterpriseStatusControl
-                    currentStep={formData.process_step || 'new_request'}
-                    onChange={(step) => handleFieldChange('process_step', step)}
-                  />
+                {/* Status Badge + Rank Badge Row */}
+                <div className="flex items-center gap-2.5">
+                  {/* Status Badge */}
+                  <div 
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wide"
+                    style={{
+                      background: formData.process_step === 'new_request' 
+                        ? 'hsl(var(--secondary-olive) / 0.12)' 
+                        : formData.process_step === 'approved' 
+                          ? 'hsl(142 76% 36% / 0.12)'
+                          : 'hsl(var(--secondary-bronze) / 0.12)',
+                      color: formData.process_step === 'new_request'
+                        ? 'hsl(var(--secondary-olive))'
+                        : formData.process_step === 'approved'
+                          ? 'hsl(142 76% 36%)'
+                          : 'hsl(var(--secondary-bronze))',
+                      border: `1px solid ${formData.process_step === 'new_request'
+                        ? 'hsl(var(--secondary-olive) / 0.25)'
+                        : formData.process_step === 'approved'
+                          ? 'hsl(142 76% 36% / 0.25)'
+                          : 'hsl(var(--secondary-bronze) / 0.25)'}`
+                    }}
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full" style={{ 
+                      background: formData.process_step === 'new_request'
+                        ? 'hsl(var(--secondary-olive))'
+                        : formData.process_step === 'approved'
+                          ? 'hsl(142 76% 36%)'
+                          : 'hsl(var(--secondary-bronze))'
+                    }} />
+                    {(formData.process_step || 'new_request').replace(/_/g, ' ').toUpperCase()}
+                  </div>
+
+                  {/* Rank Badge */}
+                  {formData.rank && (
+                    <div 
+                      className="inline-flex items-center px-2 py-1 rounded text-[12px] font-semibold"
+                      style={{
+                        background: 'hsl(var(--muted))',
+                        color: 'var(--text-primary, hsl(var(--foreground)))'
+                      }}
+                    >
+                      #{formData.rank}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -642,18 +681,95 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
               ═══════════════════════════════════════════════════════════ */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
             <TabsList 
-              className="w-full justify-start rounded-none h-10 shrink-0 overflow-x-auto flex-nowrap px-5 bg-transparent"
+              className="w-full justify-start rounded-none h-auto shrink-0 flex-nowrap px-5 bg-transparent py-0"
               style={{ borderBottom: '1px solid var(--border-default, hsl(var(--border)))' }}
             >
-              {VIEW_TABS.map((tab) => (
-                <TabsTrigger
-                  key={tab.value}
-                  value={tab.value}
-                  className="relative px-3.5 py-2.5 text-[13px] font-medium whitespace-nowrap bg-transparent border-none rounded-none data-[state=inactive]:text-muted-foreground data-[state=active]:text-foreground"
-                >
-                  {tab.label}
-                </TabsTrigger>
-              ))}
+              {VIEW_TABS.map((tab) => {
+                // Calculate status indicators based on data
+                const getTabStatus = () => {
+                  switch (tab.value) {
+                    case 'demand-details':
+                      return formData.title && formData.description 
+                        ? { type: 'complete' as const, value: '✓' }
+                        : null;
+                    case 'business-score':
+                      return formData.business_score 
+                        ? { type: 'score' as const, value: (formData.business_score / 100).toFixed(1) }
+                        : null;
+                    case 'ea-review':
+                      return formData.ea_status === 'approved' 
+                        ? { type: 'complete' as const, value: 'Approved' }
+                        : { type: 'pending' as const, value: 'Pending' };
+                    case 'budget':
+                      return formData.estimated_cost 
+                        ? { type: 'complete' as const }
+                        : { type: 'empty' as const, value: 'Empty' };
+                    case 'risks':
+                      return { type: 'count' as const, value: '0' };
+                    case 'milestones':
+                      return { type: 'count' as const, value: '0' };
+                    case 'links':
+                      return { type: 'count' as const, value: '1' };
+                    case 'audit-history':
+                      return { type: 'count' as const, value: '11' };
+                    default:
+                      return null;
+                  }
+                };
+                
+                const status = getTabStatus();
+                
+                return (
+                  <TabsTrigger
+                    key={tab.value}
+                    value={tab.value}
+                    className="relative px-4 py-3 text-[13px] font-medium whitespace-nowrap bg-transparent border-none rounded-none data-[state=inactive]:text-muted-foreground data-[state=active]:text-foreground flex flex-col items-center gap-0.5"
+                  >
+                    <span>{tab.label}</span>
+                    {status && (
+                      <span 
+                        className="text-[10px] font-medium"
+                        style={{
+                          color: status.type === 'complete' 
+                            ? 'hsl(var(--secondary-olive))'
+                            : status.type === 'pending'
+                              ? 'hsl(35 92% 50%)'
+                              : status.type === 'score'
+                                ? 'hsl(var(--secondary-bronze))'
+                                : status.type === 'empty'
+                                  ? 'hsl(var(--muted-foreground))'
+                                  : status.type === 'count' && parseInt(status.value || '0') > 0
+                                    ? 'hsl(var(--secondary-olive))'
+                                    : 'hsl(var(--muted-foreground))'
+                        }}
+                      >
+                        {status.type === 'pending' && (
+                          <span className="inline-flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full" style={{ background: 'hsl(35 92% 50%)' }} />
+                            {status.value}
+                          </span>
+                        )}
+                        {status.type === 'empty' && (
+                          <span className="inline-flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full" style={{ background: 'hsl(var(--muted-foreground))' }} />
+                            {status.value}
+                          </span>
+                        )}
+                        {status.type === 'complete' && status.value === '✓' && (
+                          <span style={{ color: 'hsl(var(--secondary-olive))' }}>✓</span>
+                        )}
+                        {status.type === 'score' && status.value}
+                        {status.type === 'count' && status.value}
+                      </span>
+                    )}
+                    {/* Active indicator bar */}
+                    <span 
+                      className="absolute bottom-0 left-0 right-0 h-[2px] rounded-full transition-opacity data-[state=inactive]:opacity-0 data-[state=active]:opacity-100"
+                      style={{ background: 'hsl(var(--secondary-bronze))' }}
+                    />
+                  </TabsTrigger>
+                );
+              })}
             </TabsList>
 
             {/* ═══════════════════════════════════════════════════════════
