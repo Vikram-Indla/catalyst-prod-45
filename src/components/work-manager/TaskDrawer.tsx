@@ -103,18 +103,18 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
 
       {/* Drawer Panel */}
       <div className="fixed top-0 right-0 bottom-0 w-[500px] bg-white dark:bg-zinc-900 border-l border-border-default shadow-xl z-50 flex flex-col">
-        {/* Header */}
-        <div className="flex items-start justify-between p-4 border-b border-border-default shrink-0">
+        {/* Header with task title and key */}
+        <div className="flex items-start justify-between p-4 border-b border-gray-200 dark:border-zinc-700 shrink-0 bg-white dark:bg-zinc-900">
           <div className="flex-1 min-w-0 pr-4">
-            <h2 className="text-[15px] font-semibold text-text-primary leading-snug">{task.title}</h2>
-            <span className="font-mono text-[12px] text-text-muted">{task.key}</span>
+            <h2 className="text-[15px] font-semibold text-gray-900 dark:text-gray-100 leading-snug">{task.title}</h2>
+            <span className="font-mono text-[12px] text-gray-500 dark:text-gray-400 mt-0.5 block">{task.key}</span>
           </div>
           <button 
             onClick={onClose} 
-            className="p-1.5 rounded hover:bg-surface-muted transition-colors shrink-0"
+            className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors shrink-0"
             aria-label="Close drawer"
           >
-            <X className="w-5 h-5 text-text-muted" />
+            <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
           </button>
         </div>
 
