@@ -371,7 +371,6 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
             </div>
           </div>
         </div>
-      </div>
 
       {/* Attachments & Assignment Section */}
       <div className={sectionCardClass}>
