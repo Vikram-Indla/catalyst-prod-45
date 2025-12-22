@@ -46,7 +46,7 @@ import { MilestonesViewTab } from './drawer-tabs/MilestonesViewTab';
 import { RisksViewTab } from './drawer-tabs/RisksViewTab';
 import { WorkflowViewerModal } from './WorkflowViewerModal';
 import { toast } from 'sonner';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useVisibleDrawerTabs } from '@/hooks/useDrawerTabConfigs';
 import { useBusinessDrawerRoleTabs } from '@/hooks/useBusinessDrawerRoleTabs';
@@ -181,6 +181,47 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
   const { visibleTabs: roleBasedTabs, isLoading: roleTabsLoading } = useBusinessDrawerRoleTabs();
   const VIEW_TABS = roleBasedTabs.length > 0 ? roleBasedTabs : FALLBACK_TABS;
   
+  // Fetch tab counts for dynamic status indicators
+  const { data: risksCount = 0 } = useQuery({
+    queryKey: ['business-request-risks-count', requestId],
+    queryFn: async () => {
+      if (!requestId) return 0;
+      const { count } = await supabase
+        .from('business_request_links')
+        .select('id', { count: 'exact', head: true })
+        .eq('business_request_id', requestId)
+        .eq('kind', 'risk');
+      return count || 0;
+    },
+    enabled: !!requestId
+  });
+  
+  const { data: linksCount = 0 } = useQuery({
+    queryKey: ['business-request-links-count', requestId],
+    queryFn: async () => {
+      if (!requestId) return 0;
+      const { count } = await supabase
+        .from('business_request_links')
+        .select('id', { count: 'exact', head: true })
+        .eq('business_request_id', requestId);
+      return count || 0;
+    },
+    enabled: !!requestId
+  });
+  
+  const { data: auditCount = 0 } = useQuery({
+    queryKey: ['business-request-audit-count', requestId],
+    queryFn: async () => {
+      if (!requestId) return 0;
+      const { count } = await supabase
+        .from('business_request_audit_logs')
+        .select('id', { count: 'exact', head: true })
+        .eq('business_request_id', requestId);
+      return count || 0;
+    },
+    enabled: !!requestId
+  });
+  
   const [activeTab, setActiveTab] = useState('demand-details');
   const [formData, setFormData] = useState<Partial<BusinessRequest> & Record<string, any>>({});
   const [originalData, setOriginalData] = useState<Partial<BusinessRequest> & Record<string, any>>({});
@@ -191,7 +232,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showUnsavedChangesDialog, setShowUnsavedChangesDialog] = useState(false);
   const [workflowModalOpen, setWorkflowModalOpen] = useState(false);
-  const [cioPanelCollapsed, setCioPanelCollapsed] = useState(false);
+  
   const nameInputRef = useRef<HTMLInputElement>(null);
 
   // Track if we initiated a data update (to avoid resetting hasChanges on refetch)
@@ -581,9 +622,15 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                   <DropdownMenuTrigger asChild>
                     <Button
                       size="sm"
-                      className="h-8 px-3 text-[13px] font-medium text-white bg-[#c69c6d] hover:bg-[#b8894d]"
+                      disabled={!hasChanges || updateMutation.isPending}
+                      className={cn(
+                        "h-8 px-3 text-[13px] font-medium text-white",
+                        hasChanges 
+                          ? "bg-[#c69c6d] hover:bg-[#b8894d]" 
+                          : "bg-[#c69c6d]/50 cursor-not-allowed opacity-60"
+                      )}
                       style={{ 
-                        boxShadow: '0 2px 4px rgba(198, 156, 109, 0.25)'
+                        boxShadow: hasChanges ? '0 2px 4px rgba(198, 156, 109, 0.25)' : 'none'
                       }}
                     >
                       Save
@@ -595,10 +642,10 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                     className="z-[400] w-40"
                     style={{ background: 'var(--surface-bg, hsl(var(--background)))', borderColor: 'var(--border-default, hsl(var(--border)))' }}
                   >
-                    <DropdownMenuItem onSelect={handleSave}>
+                    <DropdownMenuItem onSelect={handleSave} disabled={!hasChanges}>
                       Save
                     </DropdownMenuItem>
-                    <DropdownMenuItem onSelect={handleSaveAndClose}>
+                    <DropdownMenuItem onSelect={handleSaveAndClose} disabled={!hasChanges}>
                       Save & Close
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -705,13 +752,13 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                         ? { type: 'complete' as const }
                         : { type: 'empty' as const, value: 'Empty' };
                     case 'risks':
-                      return { type: 'count' as const, value: '0' };
+                      return { type: 'count' as const, value: String(risksCount) };
                     case 'milestones':
                       return { type: 'count' as const, value: '0' };
                     case 'links':
-                      return { type: 'count' as const, value: '1' };
+                      return { type: 'count' as const, value: String(linksCount) };
                     case 'audit-history':
-                      return { type: 'count' as const, value: '11' };
+                      return { type: 'count' as const, value: String(auditCount) };
                     default:
                       return null;
                   }
@@ -723,7 +770,17 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                   <TabsTrigger
                     key={tab.value}
                     value={tab.value}
-                    className="relative px-4 py-3 text-[13px] font-medium whitespace-nowrap bg-transparent border-none rounded-none data-[state=inactive]:text-muted-foreground data-[state=active]:text-foreground flex flex-col items-center gap-0.5"
+                    className={cn(
+                      "relative px-4 py-3 text-[13px] font-medium whitespace-nowrap",
+                      "bg-transparent border-none rounded-none",
+                      "data-[state=inactive]:text-muted-foreground data-[state=active]:text-foreground",
+                      "flex flex-col items-center gap-0.5",
+                      // Active indicator - only show for active tab
+                      "after:absolute after:bottom-0 after:left-2 after:right-2",
+                      "after:h-[2px] after:rounded-t-sm after:transition-all",
+                      "data-[state=inactive]:after:bg-transparent data-[state=inactive]:after:opacity-0",
+                      "data-[state=active]:after:bg-[#c69c6d] data-[state=active]:after:opacity-100"
+                    )}
                   >
                     <span>{tab.label}</span>
                     {status && (
@@ -762,11 +819,6 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                         {status.type === 'count' && status.value}
                       </span>
                     )}
-                    {/* Active indicator bar */}
-                    <span 
-                      className="absolute bottom-0 left-0 right-0 h-[2px] rounded-full transition-opacity data-[state=inactive]:opacity-0 data-[state=active]:opacity-100"
-                      style={{ background: 'hsl(var(--secondary-bronze))' }}
-                    />
                   </TabsTrigger>
                 );
               })}

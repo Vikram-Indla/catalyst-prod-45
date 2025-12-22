@@ -86,15 +86,26 @@ export function ExecutiveAuditHistoryTab({ requestId }: ExecutiveAuditHistoryTab
       const from = pageParam * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
 
+      // Join with profiles table to get proper user names
       const { data, error, count } = await supabase
         .from('business_request_audit_logs')
-        .select('*', { count: 'exact' })
+        .select(`
+          *,
+          actor:profiles!actor_id(full_name, email)
+        `, { count: 'exact' })
         .eq('business_request_id', requestId)
         .order('created_at', { ascending: false })
         .range(from, to);
 
       if (error) throw error;
-      return { logs: data || [], count: count || 0, page: pageParam };
+      
+      // Map logs to include resolved actor name
+      const logsWithNames = (data || []).map((log: any) => ({
+        ...log,
+        actor_name: log.actor?.full_name || log.actor?.email || log.actor_name || 'Unknown User'
+      }));
+      
+      return { logs: logsWithNames, count: count || 0, page: pageParam };
     },
     getNextPageParam: (lastPage) => {
       const totalLoaded = (lastPage.page + 1) * PAGE_SIZE;
@@ -105,10 +116,24 @@ export function ExecutiveAuditHistoryTab({ requestId }: ExecutiveAuditHistoryTab
   });
 
   const allLogs = data?.pages.flatMap(page => page.logs) || [];
-  const totalCount = data?.pages[0]?.count || 0;
+  
+  // Deduplicate logs - remove duplicate CREATE entries with same timestamp
+  const deduplicatedLogs = allLogs.reduce<AuditLog[]>((acc, log) => {
+    const isDuplicate = acc.some(existing => 
+      existing.action === log.action &&
+      existing.field_changed === log.field_changed &&
+      existing.created_at === log.created_at
+    );
+    if (!isDuplicate) {
+      acc.push(log);
+    }
+    return acc;
+  }, []);
+  
+  const totalCount = deduplicatedLogs.length; // Use deduplicated count for display
 
   // Group logs by timestamp (same minute = same changeset)
-  const groupedChanges = allLogs.reduce<ChangeGroup[]>((groups, log) => {
+  const groupedChanges = deduplicatedLogs.reduce<ChangeGroup[]>((groups, log) => {
     const lastGroup = groups[groups.length - 1];
     const logTime = parseISO(log.created_at);
     
