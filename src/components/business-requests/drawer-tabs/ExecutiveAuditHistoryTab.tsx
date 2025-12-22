@@ -231,17 +231,6 @@ export function ExecutiveAuditHistoryTab({ requestId }: ExecutiveAuditHistoryTab
             ({totalCount})
           </span>
         </div>
-        
-        <div className="flex items-center gap-2">
-          <Label className="text-[10px]" style={{ color: 'var(--text-3)' }}>
-            Technical
-          </Label>
-          <Switch
-            checked={showTechnical}
-            onCheckedChange={setShowTechnical}
-            className="h-4 w-7"
-          />
-        </div>
       </div>
 
       {/* Timeline */}
