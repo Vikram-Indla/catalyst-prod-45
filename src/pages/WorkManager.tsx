@@ -13,7 +13,8 @@ import {
   Search,
   Filter,
   ChevronDown,
-  X
+  X,
+  Layers
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -40,7 +41,7 @@ import { TaskDrawer } from '@/components/work-manager/TaskDrawer';
 import { NewTaskDialog } from '@/components/work-manager/NewTaskDialog';
 import { teams as initialTeams, users, tasks, computeTaskExtended } from '@/lib/work-manager-data';
 import type { TaskStatus, Team } from '@/components/work-manager/types';
-import type { TaskFilters, TaskDrawerState, TaskExtended, Task } from '@/components/work-manager/types';
+import type { TaskFilters, TaskDrawerState, TaskExtended, Task, GroupByOption } from '@/components/work-manager/types';
 import { useAccessibleTeams, useCanViewAllTeams } from '@/hooks/useAccessibleTeams';
 
 interface WorkManagerProps {
@@ -139,6 +140,9 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
 
   // New task dialog state
   const [isNewTaskDialogOpen, setIsNewTaskDialogOpen] = useState(false);
+
+  // Group by state
+  const [groupBy, setGroupBy] = useState<GroupByOption>('status');
 
   // Task data with computed fields
   const [taskData, setTaskData] = useState(tasks);
@@ -342,6 +346,24 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
           </div>
 
           <div className="flex items-center gap-2">
+            {/* Group By Dropdown - Only for boards view */}
+            {activeTab === 'boards' && (
+              <Select value={groupBy} onValueChange={(v) => setGroupBy(v as GroupByOption)}>
+                <SelectTrigger className="w-[140px] h-9 text-[13px] bg-white dark:bg-gray-900">
+                  <div className="flex items-center gap-2">
+                    <Layers className="w-4 h-4" />
+                    <SelectValue placeholder="Group by" />
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="status">Status</SelectItem>
+                  <SelectItem value="team">Team</SelectItem>
+                  <SelectItem value="assignee">Assignee</SelectItem>
+                  <SelectItem value="dueDate">Due Date</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+
             {/* Filter Popover */}
             <Popover>
               <PopoverTrigger asChild>
@@ -511,6 +533,9 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
             onMoveTask={handleMoveTask}
             onAddTask={() => setIsNewTaskDialogOpen(true)}
             onClearColumn={handleClearColumn}
+            groupBy={groupBy}
+            teamsData={teamsData}
+            usersData={users}
           />
         )}
         {activeTab === 'tasks' && (
