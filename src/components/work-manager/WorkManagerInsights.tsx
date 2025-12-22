@@ -167,16 +167,24 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="shadow-elevated">
-                {users.map(u => (
-                  <SelectItem key={u.id} value={u.id}>
-                    <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold bg-gradient-to-br from-stone-100 to-stone-200 text-stone-600">
-                        {u.initials}
+                {users.map((u, idx) => {
+                  // Distinct avatar colors cycling through brand palette
+                  const avatarColors = ['#5c7c5c', '#8b7355', '#c69c6d', '#d4b896', '#6b8b6b'];
+                  const avatarColor = avatarColors[idx % avatarColors.length];
+                  return (
+                    <SelectItem key={u.id} value={u.id}>
+                      <div className="flex items-center gap-2">
+                        <div 
+                          className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
+                          style={{ backgroundColor: avatarColor }}
+                        >
+                          {u.initials}
+                        </div>
+                        <span className="font-medium">{u.name}</span>
                       </div>
-                      <span className="font-medium">{u.name}</span>
-                    </div>
-                  </SelectItem>
-                ))}
+                    </SelectItem>
+                  );
+                })}
               </SelectContent>
             </Select>
 
@@ -385,22 +393,30 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
                 </tr>
               </thead>
               <tbody>
-                {teamInsights.memberStats.map((member) => (
-                  <tr key={member.userId} className="border-b border-border-subtle">
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-white">
-                          {member.initials}
+                {teamInsights.memberStats.map((member, idx) => {
+                  // Distinct avatar colors cycling through brand palette
+                  const avatarColors = ['#5c7c5c', '#8b7355', '#c69c6d', '#d4b896', '#6b8b6b'];
+                  const avatarColor = avatarColors[idx % avatarColors.length];
+                  return (
+                    <tr key={member.userId} className="border-b border-border-subtle hover:bg-stone-50 transition-colors cursor-pointer">
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <div 
+                            className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white"
+                            style={{ backgroundColor: avatarColor }}
+                          >
+                            {member.initials}
+                          </div>
+                          <span className="text-[13px] text-text-primary">{member.name}</span>
                         </div>
-                        <span className="text-[13px] text-text-primary">{member.name}</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-center text-[13px] text-text-primary font-medium">{member.completed}</td>
-                    <td className="px-4 py-3 text-center text-[13px] text-text-primary font-medium">{member.inProgress}</td>
-                    <td className="px-4 py-3 text-center text-[13px] font-medium">{member.overdue > 0 ? <span className="text-red-400">{member.overdue}</span> : <span className="text-text-muted">—</span>}</td>
-                    <td className="px-4 py-3 text-center text-[13px] font-medium">{member.blocked > 0 ? <span className="text-amber-400">{member.blocked}</span> : <span className="text-text-muted">—</span>}</td>
-                  </tr>
-                ))}
+                      </td>
+                      <td className="px-4 py-3 text-center text-[13px] text-text-primary font-medium">{member.completed}</td>
+                      <td className="px-4 py-3 text-center text-[13px] text-text-primary font-medium">{member.inProgress}</td>
+                      <td className="px-4 py-3 text-center text-[13px] font-medium">{member.overdue > 0 ? <span className="text-red-400">{member.overdue}</span> : <span className="text-text-muted">—</span>}</td>
+                      <td className="px-4 py-3 text-center text-[13px] font-medium">{member.blocked > 0 ? <span className="text-amber-400">{member.blocked}</span> : <span className="text-text-muted">—</span>}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
