@@ -214,7 +214,8 @@ export default function BusinessRequestsKanbanPage() {
                 compactMode={compactMode} 
                 collapsed={collapsedColumns.includes(column.id)} 
                 onToggleCollapse={() => toggleColumnCollapse(column.id)} 
-                teamMembers={teamMembers} 
+                teamMembers={teamMembers}
+                onAddRequest={() => setCreateModalOpen(true)}
               />
             ))}
           </div>
