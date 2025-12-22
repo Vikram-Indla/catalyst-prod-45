@@ -1,14 +1,16 @@
 /**
  * Right panel containing the timeline visualization
+ * With horizontal scroll, gridlines, and proper Catalyst styling
  */
 
 import React, { useMemo } from 'react';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { RoadmapTimelineHeader } from './RoadmapTimelineHeader';
 import { RoadmapTimelineBar, RoadmapUnscheduledIndicator } from './RoadmapTimelineBar';
 import { RoadmapTodayMarker } from './RoadmapTodayMarker';
 import { generateTimelinePeriods, calculateBarPosition } from '../utils/timeline';
 import type { RoadmapDemand, TimelineConfig, RoadmapGroup } from '../types/roadmap';
+import { catalystTokens } from '../lib/design-tokens';
 import { cn } from '@/lib/utils';
 
 interface RoadmapTimelinePanelProps {
@@ -42,77 +44,136 @@ export function RoadmapTimelinePanel({
     return (daysSinceStart / totalDays) * 100;
   }, [config.startDate, config.endDate]);
 
-  // Render items for a given list
-  const renderTimelineRows = (rowItems: RoadmapDemand[]) => {
-    return rowItems.map((item) => {
-      const position = calculateBarPosition(item.start_date, item.end_date, config.startDate, config.endDate);
-      const hasValidDates = item.start_date && item.end_date;
+  // Calculate min-width for horizontal scroll
+  const periodMinWidth = config.zoom === 'month' ? 120 : config.zoom === 'quarter' ? 200 : 280;
+  const totalMinWidth = periods.length * periodMinWidth;
 
-      return (
-        <div 
-          key={item.id} 
-          className="relative h-[52px] border-b border-border"
-        >
-          {/* Grid lines */}
-          <div className="absolute inset-0 flex">
-            {periods.map((period, idx) => (
-              <div 
-                key={period.key}
-                className={cn(
-                  'flex-1 border-r border-border/50 last:border-r-0',
-                  period.isCurrent && 'bg-primary/5'
-                )}
-              />
-            ))}
-          </div>
-
-          {/* Bar or unscheduled indicator */}
-          {hasValidDates && position ? (
-            <RoadmapTimelineBar
-              item={item}
-              left={position.left}
-              width={position.width}
-              isSelected={selectedItemId === item.id}
-              onClick={() => onItemClick(item.id)}
-            />
-          ) : (
-            <RoadmapUnscheduledIndicator item={item} />
-          )}
-        </div>
-      );
-    });
+  // Handle set dates action
+  const handleSetDates = (itemId: string) => {
+    // Default to today + 30 days
+    const start = new Date().toISOString().split('T')[0];
+    const end = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    onDateChange(itemId, start, end);
   };
+
+  // Render timeline row with proper styling
+  const renderTimelineRow = (item: RoadmapDemand, rowIndex: number) => {
+    const position = calculateBarPosition(item.start_date, item.end_date, config.startDate, config.endDate);
+    const hasValidDates = item.start_date && item.end_date;
+    const isSelected = selectedItemId === item.id;
+
+    return (
+      <div 
+        key={item.id} 
+        className="relative h-[52px] flex items-center transition-colors cursor-pointer"
+        style={{
+          backgroundColor: isSelected 
+            ? catalystTokens.light.surface.active 
+            : 'transparent',
+          borderBottom: `1px solid ${catalystTokens.light.border.subtle}`,
+        }}
+        onClick={() => onItemClick(item.id)}
+        onMouseEnter={(e) => {
+          if (!isSelected) {
+            (e.currentTarget as HTMLElement).style.backgroundColor = catalystTokens.light.surface.active;
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (!isSelected) {
+            (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
+          }
+        }}
+      >
+        {/* Bar or unscheduled indicator */}
+        {hasValidDates && position ? (
+          <RoadmapTimelineBar
+            item={item}
+            left={position.left}
+            width={position.width}
+            isSelected={isSelected}
+            onClick={() => onItemClick(item.id)}
+          />
+        ) : (
+          <RoadmapUnscheduledIndicator 
+            item={item} 
+            onSetDates={() => handleSetDates(item.id)}
+          />
+        )}
+      </div>
+    );
+  };
+
+  // Render vertical gridlines
+  const renderGridlines = () => (
+    <div className="absolute inset-0 pointer-events-none flex">
+      {periods.map((period, index) => (
+        <div
+          key={period.key}
+          className="flex-shrink-0 border-r"
+          style={{
+            minWidth: `${periodMinWidth}px`,
+            width: `${100 / periods.length}%`,
+            borderColor: catalystTokens.light.border.default,
+            backgroundColor: period.isCurrent 
+              ? 'rgba(198, 156, 109, 0.06)' 
+              : index % 2 === 0 
+                ? catalystTokens.light.surface.bg 
+                : 'transparent',
+          }}
+        />
+      ))}
+    </div>
+  );
 
   // If groups are provided, render grouped view
   if (groups && groups.length > 0) {
     return (
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <RoadmapTimelineHeader periods={periods} zoom={config.zoom} />
-        
-        <ScrollArea className="flex-1">
-          <div className="relative">
-            {/* Today marker */}
-            {config.showToday && <RoadmapTodayMarker position={todayPosition} />}
+      <div 
+        className="flex-1 flex flex-col min-w-0 overflow-hidden"
+        style={{ backgroundColor: catalystTokens.light.surface.card }}
+      >
+        <ScrollArea className="flex-1 w-full">
+          <div style={{ minWidth: `${totalMinWidth}px` }}>
+            <RoadmapTimelineHeader periods={periods} zoom={config.zoom} />
+            
+            <div className="relative">
+              {/* Gridlines */}
+              {renderGridlines()}
+              
+              {/* Today marker */}
+              {config.showToday && <RoadmapTodayMarker position={todayPosition} />}
 
-            {groups.map((group) => (
-              <div key={group.key}>
-                {/* Group header row */}
-                <div className="h-[36px] border-b border-border bg-muted/50 relative">
-                  <div className="absolute inset-0 flex">
-                    {periods.map((period) => (
-                      <div 
+              {groups.map((group) => (
+                <div key={group.key}>
+                  {/* Group header row */}
+                  <div 
+                    className="h-[36px] relative flex"
+                    style={{
+                      backgroundColor: catalystTokens.light.surface.hover,
+                      borderBottom: `1px solid ${catalystTokens.light.border.default}`,
+                    }}
+                  >
+                    {/* Group header gridlines */}
+                    {periods.map((period, idx) => (
+                      <div
                         key={period.key}
-                        className="flex-1 border-r border-border/50 last:border-r-0"
+                        className="flex-shrink-0 border-r"
+                        style={{
+                          minWidth: `${periodMinWidth}px`,
+                          width: `${100 / periods.length}%`,
+                          borderColor: catalystTokens.light.border.subtle,
+                        }}
                       />
                     ))}
                   </div>
-                </div>
 
-                {/* Group items */}
-                {group.isExpanded && renderTimelineRows(group.items)}
-              </div>
-            ))}
+                  {/* Group items */}
+                  {group.isExpanded && group.items.map((item, idx) => renderTimelineRow(item, idx))}
+                </div>
+              ))}
+            </div>
           </div>
+          <ScrollBar orientation="horizontal" />
         </ScrollArea>
       </div>
     );
@@ -120,16 +181,26 @@ export function RoadmapTimelinePanel({
 
   // Flat view
   return (
-    <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-      <RoadmapTimelineHeader periods={periods} zoom={config.zoom} />
-      
-      <ScrollArea className="flex-1">
-        <div className="relative">
-          {/* Today marker */}
-          {config.showToday && <RoadmapTodayMarker position={todayPosition} />}
+    <div 
+      className="flex-1 flex flex-col min-w-0 overflow-hidden"
+      style={{ backgroundColor: catalystTokens.light.surface.card }}
+    >
+      <ScrollArea className="flex-1 w-full">
+        <div style={{ minWidth: `${totalMinWidth}px` }}>
+          <RoadmapTimelineHeader periods={periods} zoom={config.zoom} />
+          
+          <div className="relative">
+            {/* Gridlines */}
+            {renderGridlines()}
+            
+            {/* Today marker */}
+            {config.showToday && <RoadmapTodayMarker position={todayPosition} />}
 
-          {renderTimelineRows(items)}
+            {/* Timeline rows */}
+            {items.map((item, index) => renderTimelineRow(item, index))}
+          </div>
         </div>
+        <ScrollBar orientation="horizontal" />
       </ScrollArea>
     </div>
   );

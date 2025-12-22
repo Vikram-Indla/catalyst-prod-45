@@ -1,5 +1,6 @@
 /**
  * Toolbar component with search, filters, grouping, and actions
+ * Enterprise-grade styling with Catalyst colors
  */
 
 import React from 'react';
@@ -11,10 +12,6 @@ import {
   Plus, 
   ChevronLeft, 
   ChevronRight,
-  ZoomIn,
-  ZoomOut,
-  LayoutGrid,
-  List
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -33,6 +30,7 @@ import {
 } from '@/components/ui/tooltip';
 import { Badge } from '@/components/ui/badge';
 import type { RoadmapFilters, TimelineZoom, GroupingField } from '../types/roadmap';
+import { catalystTokens } from '../lib/design-tokens';
 
 interface RoadmapToolbarProps {
   filters: RoadmapFilters;
@@ -78,12 +76,21 @@ export function RoadmapToolbar({
   activeFilterCount,
 }: RoadmapToolbarProps) {
   return (
-    <div className="flex items-center justify-between gap-4 p-3 border-b border-border bg-card">
+    <div 
+      className="flex items-center justify-between gap-4 p-3"
+      style={{
+        backgroundColor: catalystTokens.light.surface.card,
+        borderBottom: `1px solid ${catalystTokens.light.border.default}`,
+      }}
+    >
       {/* Left side - Search & Filters */}
       <div className="flex items-center gap-2">
         {/* Search */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Search 
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" 
+            style={{ color: catalystTokens.light.text.muted }}
+          />
           <Input
             type="text"
             placeholder="Search demands..."
@@ -91,6 +98,9 @@ export function RoadmapToolbar({
             onChange={(e) => onFiltersChange({ ...filters, search: e.target.value })}
             className="pl-9 w-64 h-9"
             data-roadmap-search
+            style={{
+              borderColor: catalystTokens.light.border.default,
+            }}
           />
         </div>
 
@@ -102,11 +112,22 @@ export function RoadmapToolbar({
               size="sm"
               onClick={onOpenFilterDialog}
               className="gap-2"
+              style={{
+                borderColor: catalystTokens.light.border.default,
+                color: catalystTokens.light.text.primary,
+              }}
             >
               <Filter className="w-4 h-4" />
               Filters
               {activeFilterCount > 0 && (
-                <Badge variant="secondary" className="h-5 px-1.5 min-w-[20px]">
+                <Badge 
+                  variant="secondary" 
+                  className="h-5 px-1.5 min-w-[20px]"
+                  style={{
+                    backgroundColor: catalystTokens.brand.primary,
+                    color: '#ffffff',
+                  }}
+                >
                   {activeFilterCount}
                 </Badge>
               )}
@@ -120,7 +141,15 @@ export function RoadmapToolbar({
           <Tooltip>
             <TooltipTrigger asChild>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="gap-2"
+                  style={{
+                    borderColor: catalystTokens.light.border.default,
+                    color: catalystTokens.light.text.primary,
+                  }}
+                >
                   <Group className="w-4 h-4" />
                   {grouping ? GROUPING_OPTIONS.find(o => o.value === grouping)?.label : 'Group'}
                 </Button>
@@ -144,7 +173,10 @@ export function RoadmapToolbar({
         </DropdownMenu>
 
         {/* Item count */}
-        <span className="text-sm text-muted-foreground ml-2">
+        <span 
+          className="text-sm ml-2"
+          style={{ color: catalystTokens.light.text.muted }}
+        >
           {itemCount} {itemCount === 1 ? 'demand' : 'demands'}
         </span>
       </div>
@@ -152,7 +184,10 @@ export function RoadmapToolbar({
       {/* Right side - Timeline controls & Actions */}
       <div className="flex items-center gap-2">
         {/* Timeline navigation */}
-        <div className="flex items-center border border-border rounded-md">
+        <div 
+          className="flex items-center rounded-md"
+          style={{ border: `1px solid ${catalystTokens.light.border.default}` }}
+        >
           <Tooltip>
             <TooltipTrigger asChild>
               <Button 
@@ -170,8 +205,12 @@ export function RoadmapToolbar({
           <Button 
             variant="ghost" 
             size="sm" 
-            className="h-8 px-2 rounded-none border-x border-border"
+            className="h-8 px-2 rounded-none"
             onClick={() => onNavigate('today')}
+            style={{
+              borderLeft: `1px solid ${catalystTokens.light.border.default}`,
+              borderRight: `1px solid ${catalystTokens.light.border.default}`,
+            }}
           >
             Today
           </Button>
@@ -196,7 +235,14 @@ export function RoadmapToolbar({
           <Tooltip>
             <TooltipTrigger asChild>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2 min-w-[100px]">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="gap-2 min-w-[100px]"
+                  style={{
+                    borderColor: catalystTokens.light.border.default,
+                  }}
+                >
                   {ZOOM_OPTIONS.find(o => o.value === zoom)?.label}
                 </Button>
               </DropdownMenuTrigger>
@@ -218,7 +264,10 @@ export function RoadmapToolbar({
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <div className="w-px h-6 bg-border mx-1" />
+        <div 
+          className="w-px h-6 mx-1"
+          style={{ backgroundColor: catalystTokens.light.border.default }}
+        />
 
         {/* Export */}
         <Tooltip>
@@ -228,6 +277,9 @@ export function RoadmapToolbar({
               size="icon"
               className="h-9 w-9"
               onClick={onOpenExportDialog}
+              style={{
+                borderColor: catalystTokens.light.border.default,
+              }}
             >
               <Download className="w-4 h-4" />
             </Button>
@@ -235,15 +287,25 @@ export function RoadmapToolbar({
           <TooltipContent>Export roadmap</TooltipContent>
         </Tooltip>
 
-        {/* Create button */}
-        <Button
+        {/* Create button - prominent brand CTA */}
+        <button
           onClick={onOpenCreateDialog}
-          className="gap-2"
+          className="inline-flex items-center gap-2 px-4 py-2 font-medium text-sm rounded-lg transition-colors shadow-sm"
+          style={{
+            backgroundColor: catalystTokens.brand.primary,
+            color: '#ffffff',
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLElement).style.backgroundColor = catalystTokens.brand.primaryHover;
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLElement).style.backgroundColor = catalystTokens.brand.primary;
+          }}
           data-create-button
         >
           <Plus className="w-4 h-4" />
           Add Demand
-        </Button>
+        </button>
       </div>
     </div>
   );
