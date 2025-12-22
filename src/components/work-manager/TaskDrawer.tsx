@@ -233,7 +233,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                     value={currentStatus}
                     onValueChange={(v) => setLocalTask(prev => ({ ...prev, status: v as TaskStatus }))}
                   >
-                    <SelectTrigger className="w-[160px] h-8 text-[13px]">
+                    <SelectTrigger className="w-[160px] h-8 text-[13px] bg-stone-50 border-stone-200">
                       <div className="flex items-center gap-2">
                         <div className={cn(
                           'w-2 h-2 rounded-full',
@@ -280,11 +280,14 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                     value={localTask.assigneeId || task.assigneeId}
                     onValueChange={(v) => setLocalTask(prev => ({ ...prev, assigneeId: v }))}
                   >
-                    <SelectTrigger className="w-[200px] h-9 text-[13px]">
+                    <SelectTrigger className="w-[220px] h-9 text-[13px] bg-stone-50 border-stone-200">
                       <SelectValue>
                         {assignee && (
                           <div className="flex items-center gap-2.5">
-                            <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-white">
+                            <div 
+                              className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 text-white"
+                              style={{ backgroundColor: assignee.avatarColor || '#8b7355' }}
+                            >
                               {assignee.initials}
                             </div>
                             <span className="font-medium truncate">{assignee.name}</span>
@@ -292,31 +295,41 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                         )}
                       </SelectValue>
                     </SelectTrigger>
-                    <SelectContent className="min-w-[240px]">
-                      {teamMembers.map(u => (
-                        <SelectItem key={u.id} value={u.id} className="py-2">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-white">
-                              {u.initials}
+                    <SelectContent className="min-w-[260px]">
+                      {teamMembers.map((u, idx) => {
+                        const avatarColors = ['#5c7c5c', '#8b7355', '#c69c6d', '#d4b896', '#6b8b6b'];
+                        const avatarColor = u.avatarColor || avatarColors[idx % avatarColors.length];
+                        return (
+                          <SelectItem key={u.id} value={u.id} className="py-2">
+                            <div className="flex items-center gap-3">
+                              <div 
+                                className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 text-white"
+                                style={{ backgroundColor: avatarColor }}
+                              >
+                                {u.initials}
+                              </div>
+                              <div>
+                                <div className="text-[13px] font-medium">{u.name}</div>
+                                <div className="text-[11px] text-gray-500">{u.role || 'Team Member'}</div>
+                              </div>
+                              {u.id === (localTask.assigneeId || task.assigneeId) && (
+                                <Check className="w-4 h-4 ml-auto text-[#5c7c5c]" />
+                              )}
                             </div>
-                            <div>
-                              <div className="text-[13px] font-medium">{u.name}</div>
-                              <div className="text-[11px] text-gray-500">{u.role || 'Team Member'}</div>
-                            </div>
-                            {u.id === (localTask.assigneeId || task.assigneeId) && (
-                              <Check className="w-4 h-4 ml-auto text-[#5c7c5c]" />
-                            )}
-                          </div>
-                        </SelectItem>
-                      ))}
+                          </SelectItem>
+                        );
+                      })}
                     </SelectContent>
                   </Select>
                 </FieldRow>
 
-                {/* Reporter - monochrome avatar */}
+                {/* Reporter - with brand color */}
                 <FieldRow label="Reporter">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-white">
+                    <div 
+                      className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
+                      style={{ backgroundColor: '#5c7c5c' }}
+                    >
                       VA
                     </div>
                     <span className="text-[13px] font-medium text-gray-900 dark:text-gray-100">Vikram (You)</span>
@@ -355,7 +368,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                     value={currentPriority}
                     onValueChange={(v) => setLocalTask(prev => ({ ...prev, priority: v as Priority }))}
                   >
-                    <SelectTrigger className="w-[160px] h-8 text-[13px]">
+                    <SelectTrigger className="w-[160px] h-8 text-[13px] bg-stone-50 border-stone-200">
                       <div className="flex items-center gap-2">
                         <div className={cn('w-2.5 h-2.5 rounded-full', priorityColors[currentPriority].dot)} />
                         <span>{currentPriority}</span>
@@ -380,7 +393,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                     value={currentType}
                     onValueChange={(v) => setLocalTask(prev => ({ ...prev, type: v as TaskType }))}
                   >
-                    <SelectTrigger className="w-[160px] h-8 text-[13px]">
+                    <SelectTrigger className="w-[160px] h-8 text-[13px] bg-stone-50 border-stone-200">
                       <div className="flex items-center gap-2">
                         <TypeIcon className="w-4 h-4 text-gray-500" />
                         <span>{currentType}</span>
@@ -402,10 +415,10 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                   </Select>
                 </FieldRow>
 
-                {/* Linked Item - muted styling */}
+                {/* Linked Item - styled with brand colors */}
                 {task.linkedItem && (
                   <FieldRow label="Linked Item">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white/5 dark:bg-white/5 text-gray-500 dark:text-gray-400 text-[12px] font-mono font-medium border border-white/10 dark:border-white/10">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-bronze-50 text-bronze-600 text-[12px] font-mono font-medium border border-bronze-200 hover:bg-[#d4b896]/40 transition-colors cursor-pointer">
                       <Link2 className="w-3.5 h-3.5" />
                       {task.linkedItem.key}
                     </span>
@@ -418,7 +431,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                     value={currentRecurrence}
                     onValueChange={(v) => setLocalTask(prev => ({ ...prev, recurrence: v as RecurrenceType }))}
                   >
-                    <SelectTrigger className="w-[160px] h-8 text-[13px]">
+                    <SelectTrigger className="w-[160px] h-8 text-[13px] bg-stone-50 border-stone-200">
                       <div className="flex items-center gap-2">
                         <RefreshCw className={cn(
                           'w-3.5 h-3.5 text-gray-400 transition-all duration-300',
