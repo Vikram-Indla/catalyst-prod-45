@@ -9,6 +9,7 @@ export { WorkManagerSettings } from './WorkManagerSettings';
 export { TaskCard } from './TaskCard';
 export { TaskDrawer } from './TaskDrawer';
 export { NewTaskDialog } from './NewTaskDialog';
+export { NewTeamDialog } from './NewTeamDialog';
 
 // Export types
 export * from './types';

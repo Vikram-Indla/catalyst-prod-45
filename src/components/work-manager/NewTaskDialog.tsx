@@ -20,12 +20,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { teams, users } from '@/lib/work-manager-data';
-import type { Task, TaskType, TaskStatus, Priority } from './types';
+import type { Task, TaskType, TaskStatus, Priority, Team, User } from './types';
 
 interface NewTaskDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  teams: Team[];
+  users: User[];
   onCreateTask: (task: Omit<Task, 'id' | 'key' | 'createdAt' | 'updatedAt'>) => void;
 }
 
@@ -33,7 +34,7 @@ const taskTypes: TaskType[] = ['Project', 'Task', 'General'];
 const priorities: Priority[] = ['Critical', 'High', 'Medium', 'Low'];
 const statuses: TaskStatus[] = ['Backlog', 'Planned', 'In Progress', 'Waiting', 'Done'];
 
-export function NewTaskDialog({ open, onOpenChange, onCreateTask }: NewTaskDialogProps) {
+export function NewTaskDialog({ open, onOpenChange, onCreateTask, teams, users }: NewTaskDialogProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [type, setType] = useState<TaskType>('Task');

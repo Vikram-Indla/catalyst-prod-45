@@ -1,18 +1,24 @@
 // src/components/work-manager/WorkManagerTeams.tsx
 // Teams Management View
 
-import { Plus, MoreHorizontal, Users, AlertCircle, CheckCircle } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { Plus, MoreHorizontal, Users, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { teams, users, getUserById } from '@/lib/work-manager-data';
-import type { TaskExtended } from './types';
 import { cn } from '@/lib/utils';
+import { NewTeamDialog } from './NewTeamDialog';
+import { getUserById } from '@/lib/work-manager-data';
+import type { TaskExtended, Team, User } from './types';
 
 interface WorkManagerTeamsProps {
   tasks: TaskExtended[];
+  teams: Team[];
+  users: User[];
+  onCreateTeam: (team: Omit<Team, 'id'>) => void;
 }
 
-export function WorkManagerTeams({ tasks }: WorkManagerTeamsProps) {
-  // Calculate team stats
+export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkManagerTeamsProps) {
+  const [isNewTeamDialogOpen, setIsNewTeamDialogOpen] = useState(false);
+
   const getTeamStats = (teamId: string) => {
     const teamTasks = tasks.filter(t => t.teamId === teamId);
     return {
@@ -24,6 +30,21 @@ export function WorkManagerTeams({ tasks }: WorkManagerTeamsProps) {
     };
   };
 
+  const userTeamMap = useMemo(() => {
+    const map = new Map<string, Team | undefined>();
+    users.forEach(u => map.set(u.id, teams.find(t => t.memberIds.includes(u.id))));
+    return map;
+  }, [teams, users]);
+
+  const openTasksByUser = useMemo(() => {
+    const map = new Map<string, number>();
+    users.forEach(u => {
+      const openCount = tasks.filter(t => t.assigneeId === u.id && t.status !== 'Done').length;
+      map.set(u.id, openCount);
+    });
+    return map;
+  }, [tasks, users]);
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -32,7 +53,10 @@ export function WorkManagerTeams({ tasks }: WorkManagerTeamsProps) {
           <h2 className="text-[16px] font-semibold text-text-primary">Teams</h2>
           <p className="text-[13px] text-text-muted">Manage your work teams and members</p>
         </div>
-        <Button className="bg-brand-primary hover:bg-brand-primary-hover text-white gap-2">
+        <Button
+          onClick={() => setIsNewTeamDialogOpen(true)}
+          className="bg-brand-primary hover:bg-brand-primary-hover text-white gap-2"
+        >
           <Plus className="w-4 h-4" />
           New Team
         </Button>
@@ -43,10 +67,10 @@ export function WorkManagerTeams({ tasks }: WorkManagerTeamsProps) {
         {teams.map((team) => {
           const stats = getTeamStats(team.id);
           const members = team.memberIds.map(id => getUserById(id)).filter(Boolean);
-          
+
           return (
-            <div 
-              key={team.id} 
+            <div
+              key={team.id}
               className="bg-surface-card border border-border-default rounded-lg overflow-hidden hover:shadow-md transition-shadow"
             >
               {/* Card Header */}
@@ -58,7 +82,7 @@ export function WorkManagerTeams({ tasks }: WorkManagerTeamsProps) {
                       <p className="text-[12px] text-text-muted mt-1 line-clamp-2">{team.description}</p>
                     )}
                   </div>
-                  <button className="p-1 rounded hover:bg-surface-muted">
+                  <button className="p-1 rounded hover:bg-surface-muted" type="button">
                     <MoreHorizontal className="w-4 h-4 text-text-muted" />
                   </button>
                 </div>
@@ -101,10 +125,12 @@ export function WorkManagerTeams({ tasks }: WorkManagerTeamsProps) {
                     <span className="text-[10px] text-text-muted uppercase tracking-wide">Open</span>
                   </div>
                   <div>
-                    <span className={cn(
-                      'block text-[18px] font-semibold',
-                      stats.overdue > 0 ? 'text-status-danger' : 'text-text-primary'
-                    )}>
+                    <span
+                      className={cn(
+                        'block text-[18px] font-semibold',
+                        stats.overdue > 0 ? 'text-status-danger' : 'text-text-primary'
+                      )}
+                    >
                       {stats.overdue}
                     </span>
                     <span className="text-[10px] text-text-muted uppercase tracking-wide">Overdue</span>
@@ -115,7 +141,6 @@ export function WorkManagerTeams({ tasks }: WorkManagerTeamsProps) {
                   </div>
                 </div>
 
-                {/* Warning indicators */}
                 {(stats.overdue > 0 || stats.blocked > 0) && (
                   <div className="mt-4 flex flex-wrap gap-2">
                     {stats.overdue > 0 && (
@@ -154,18 +179,19 @@ export function WorkManagerTeams({ tasks }: WorkManagerTeamsProps) {
             </thead>
             <tbody>
               {users.map((user) => {
-                const userTeam = teams.find(t => t.memberIds.includes(user.id));
-                const userTasks = tasks.filter(t => t.assigneeId === user.id);
-                const openTasks = userTasks.filter(t => t.status !== 'Done').length;
-                
+                const userTeam = userTeamMap.get(user.id);
+                const openTasks = openTasksByUser.get(user.id) ?? 0;
+
                 return (
                   <tr key={user.id} className="border-b border-border-subtle hover:bg-surface-muted">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <div className={cn(
-                          'w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-semibold text-white',
-                          user.avatarColor || 'bg-brand-primary'
-                        )}>
+                        <div
+                          className={cn(
+                            'w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-semibold text-white',
+                            user.avatarColor || 'bg-brand-primary'
+                          )}
+                        >
                           {user.initials}
                         </div>
                         <span className="text-[13px] font-medium text-text-primary">{user.name}</span>
@@ -186,6 +212,13 @@ export function WorkManagerTeams({ tasks }: WorkManagerTeamsProps) {
           </table>
         </div>
       </div>
+
+      <NewTeamDialog
+        open={isNewTeamDialogOpen}
+        onOpenChange={setIsNewTeamDialogOpen}
+        users={users}
+        onCreateTeam={onCreateTeam}
+      />
     </div>
   );
 }
