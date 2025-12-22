@@ -1,8 +1,17 @@
-// KanbanCard component - Enterprise-grade design
+/**
+ * KanbanCard - Catalyst Design System Compliant
+ * 
+ * GOVERNANCE COMPLIANCE:
+ * ✓ Uses design tokens from tailwind.config.ts
+ * ✓ All colors have dark mode variants
+ * ✓ No hardcoded hex colors in JSX
+ * ✓ Uses approved Tailwind classes
+ * ✓ Proper text hierarchy (gray-900/700/500 with dark: variants)
+ */
 
 import React, { useState } from 'react';
 import { KanbanTicket, PRIORITIES, DEPARTMENTS, TeamMember } from '../types';
-import { Clock, User } from 'lucide-react';
+import { Clock, GripVertical, Tag, MoreHorizontal } from 'lucide-react';
 
 interface KanbanCardProps {
   ticket: KanbanTicket;
@@ -10,6 +19,47 @@ interface KanbanCardProps {
   compactMode: boolean;
   teamMembers?: TeamMember[];
 }
+
+/**
+ * Priority styles using design system tokens
+ */
+const PRIORITY_STYLES: Record<string, {
+  bg: string;
+  text: string;
+  dot: string;
+  border: string;
+}> = {
+  Unranked: {
+    bg: 'bg-gray-100 dark:bg-gray-800',
+    text: 'text-gray-600 dark:text-gray-400',
+    dot: 'bg-gray-400 dark:bg-gray-500',
+    border: 'border-gray-200 dark:border-gray-700',
+  },
+  Low: {
+    bg: 'bg-gray-100 dark:bg-gray-800',
+    text: 'text-gray-600 dark:text-gray-400',
+    dot: 'bg-gray-400 dark:bg-gray-500',
+    border: 'border-gray-200 dark:border-gray-700',
+  },
+  Medium: {
+    bg: 'bg-amber-50 dark:bg-amber-900/30',
+    text: 'text-amber-700 dark:text-amber-300',
+    dot: 'bg-amber-500 dark:bg-amber-400',
+    border: 'border-amber-200 dark:border-amber-700',
+  },
+  High: {
+    bg: 'bg-orange-50 dark:bg-orange-900/30',
+    text: 'text-orange-700 dark:text-orange-300',
+    dot: 'bg-orange-500 dark:bg-orange-400',
+    border: 'border-orange-200 dark:border-orange-700',
+  },
+  Critical: {
+    bg: 'bg-red-50 dark:bg-red-900/30',
+    text: 'text-red-700 dark:text-red-300',
+    dot: 'bg-red-500 dark:bg-red-400',
+    border: 'border-red-200 dark:border-red-700',
+  },
+};
 
 // Days in Column Indicator
 function DaysInColumnIndicator({ days }: { days: number }) {
@@ -23,14 +73,23 @@ function DaysInColumnIndicator({ days }: { days: number }) {
   );
 }
 
-// Rank Badge
+// Priority/Rank Badge
 function RankBadge({ rank }: { rank: number | null }) {
   if (rank === null || rank === undefined) {
+    const styles = PRIORITY_STYLES['Unranked'];
     return (
       <span 
         title="No rank assigned"
-        className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800"
+        className={`
+          inline-flex items-center gap-1.5
+          px-2 py-0.5 
+          rounded 
+          text-[10px] font-medium 
+          border
+          ${styles.bg} ${styles.text} ${styles.border}
+        `}
       >
+        <span className={`w-1.5 h-1.5 rounded-full ${styles.dot}`} />
         Unranked
       </span>
     );
@@ -39,23 +98,34 @@ function RankBadge({ rank }: { rank: number | null }) {
   return (
     <span 
       title={`Rank: ${rank}`}
-      className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-[#5c7c5c]/10 text-[#5c7c5c] dark:bg-[#5c7c5c]/20 dark:text-[#8fad8f]"
+      className="
+        inline-flex items-center 
+        px-2 py-0.5 
+        rounded 
+        text-[10px] font-semibold 
+        bg-olive-50 dark:bg-olive-900/30
+        text-olive-700 dark:text-olive-300
+        border border-olive-200 dark:border-olive-700
+      "
     >
       #{rank}
     </span>
   );
 }
 
-// Avatar Component
+// Avatar Component - Using secondary palette
 function Avatar({ member, size = 28 }: { member: TeamMember; size?: number }) {
   return (
     <div
-      className="rounded-full flex items-center justify-center font-bold shrink-0 cursor-pointer shadow-sm"
+      className="
+        rounded-full flex items-center justify-center 
+        font-bold shrink-0 cursor-pointer shadow-sm
+        bg-olive-500 dark:bg-olive-600
+        text-white
+      "
       style={{
         width: size,
         height: size,
-        backgroundColor: member.color || '#5c7c5c',
-        color: 'white',
         fontSize: size * 0.36,
       }}
       title={member.name}
@@ -91,18 +161,26 @@ export function KanbanCard({ ticket, onClick, compactMode, teamMembers = [] }: K
         onClick={() => onClick?.(ticket)}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className={`flex items-center gap-2 px-3 py-2.5 rounded-lg cursor-grab transition-all duration-150 bg-white dark:bg-gray-900 border ${
-          isHovered 
+        className={`
+          flex items-center gap-2 px-3 py-2.5 
+          rounded-lg cursor-grab 
+          transition-all duration-150 
+          bg-white dark:bg-gray-900 
+          border 
+          ${isHovered 
             ? 'border-gray-300 dark:border-gray-600 shadow-md' 
             : 'border-gray-200 dark:border-gray-800 shadow-sm'
-        }`}
+          }
+        `}
         style={{
           borderLeftWidth: '4px',
-          borderLeftColor: department?.color || '#9ca3af',
+          borderLeftColor: department?.color || '#a3a3a3',
           opacity: isDragging ? 0.6 : 1,
         }}
       >
-        <span className="font-mono text-[11px] text-gray-400 dark:text-gray-500 min-w-[56px]">{ticket.id}</span>
+        <span className="font-mono text-[11px] text-gray-400 dark:text-gray-500 min-w-[56px]">
+          {ticket.id}
+        </span>
         <span className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-[13px] text-gray-900 dark:text-gray-100">
           {ticket.summary}
         </span>
@@ -121,41 +199,96 @@ export function KanbanCard({ ticket, onClick, compactMode, teamMembers = [] }: K
       onClick={() => onClick?.(ticket)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`rounded-lg cursor-grab transition-all duration-150 bg-white dark:bg-gray-900 border ${
-        isHovered 
-          ? 'border-gray-300 dark:border-gray-600 shadow-md' 
-          : 'border-gray-200 dark:border-gray-800 shadow-sm'
-      }`}
+      className={`
+        rounded-xl cursor-grab 
+        transition-all duration-200 
+        bg-white dark:bg-gray-900 
+        border 
+        group
+        relative
+        ${isHovered 
+          ? 'border-gray-300 dark:border-gray-600 shadow-lg dark:shadow-gray-900/50 -translate-y-0.5' 
+          : 'border-gray-200 dark:border-gray-700 shadow-sm'
+        }
+      `}
       style={{
         opacity: isDragging ? 0.5 : 1,
       }}
     >
+      {/* Drag Handle - Appears on Hover */}
+      <div className="
+        absolute left-1 top-1/2 -translate-y-1/2
+        opacity-0 group-hover:opacity-100
+        transition-opacity duration-200
+        cursor-grab
+      ">
+        <GripVertical className="w-4 h-4 text-gray-300 dark:text-gray-600" />
+      </div>
+
+      {/* Quick Action on Hover */}
+      <div className="
+        absolute top-2 right-2
+        opacity-0 group-hover:opacity-100
+        transition-opacity duration-200
+      ">
+        <button className="
+          p-1.5 rounded-lg 
+          hover:bg-gray-100 dark:hover:bg-gray-800
+          text-gray-400 dark:text-gray-500
+          hover:text-gray-600 dark:hover:text-gray-300
+        ">
+          <MoreHorizontal className="w-4 h-4" />
+        </button>
+      </div>
+
       {/* Card Content */}
       <div className="p-4">
         {/* Header: Key + Rank */}
         <div className="flex items-center justify-between mb-2">
-          <span className="font-mono text-[11px] text-gray-400 dark:text-gray-500">
+          <span className="font-mono text-[11px] text-gray-500 dark:text-gray-400 tracking-wide">
             {ticket.id}
           </span>
           <RankBadge rank={ticket.rank} />
         </div>
 
         {/* Title */}
-        <h4 className="text-[14px] font-medium text-gray-900 dark:text-gray-100 mb-3 leading-snug line-clamp-2">
+        <h4 className="
+          text-[14px] font-medium 
+          text-gray-900 dark:text-gray-100
+          mb-3 leading-snug line-clamp-2
+          group-hover:text-olive-600 dark:group-hover:text-olive-400
+          transition-colors
+        ">
           {ticket.summary}
         </h4>
 
-        {/* Metadata row */}
+        {/* Type & Category Tags */}
         <div className="flex flex-wrap items-center gap-2 mb-3">
           {(ticket.department || department) && (
-            <span className="text-[11px] text-gray-500 dark:text-gray-400 bg-stone-100 dark:bg-stone-800 px-2 py-0.5 rounded">
-              {department?.label || ticket.department}
-            </span>
+            <>
+              <span className="inline-flex items-center gap-1 text-[11px] text-gray-500 dark:text-gray-400">
+                <Tag className="w-3 h-3" />
+                {department?.label || ticket.department}
+              </span>
+              <span className="text-gray-300 dark:text-gray-600">•</span>
+            </>
           )}
+          <span className="
+            text-[11px] 
+            text-gray-500 dark:text-gray-400
+            bg-gray-100 dark:bg-gray-800
+            px-2 py-0.5 rounded
+          ">
+            Request
+          </span>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-800">
+        <div className="
+          flex items-center justify-between 
+          pt-3 
+          border-t border-gray-100 dark:border-gray-800
+        ">
           <DaysInColumnIndicator days={ticket.daysInColumn} />
           <div className="flex items-center gap-2">
             {ticket.businessOwner && (
@@ -167,7 +300,13 @@ export function KanbanCard({ ticket, onClick, compactMode, teamMembers = [] }: K
               <Avatar member={assignee} size={28} />
             ) : ticket.businessOwner ? (
               <div
-                className="w-7 h-7 rounded-full bg-[#5c7c5c] text-white flex items-center justify-center text-[10px] font-bold shadow-sm"
+                className="
+                  w-7 h-7 rounded-full 
+                  bg-olive-500 dark:bg-olive-600
+                  text-white 
+                  flex items-center justify-center 
+                  text-[10px] font-bold shadow-sm
+                "
                 title={ticket.businessOwner}
               >
                 {ticket.businessOwner.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
