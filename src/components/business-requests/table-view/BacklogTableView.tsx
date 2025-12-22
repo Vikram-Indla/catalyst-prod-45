@@ -14,23 +14,23 @@ import { DEFAULT_COLUMNS, TableColumn, SortConfig } from './types';
 
 interface BusinessRequestRow {
   id: string;
-  _dbId: string;
-  summary: string;
-  processStep: string;
-  score: number | null;
-  autoPriority: string;
-  rank: number | null;
-  reporter?: string | null;
-  quarter: string | null;
+  request_key?: string;
+  title?: string;
+  process_step?: string;
+  priority_tier?: string;
+  business_score?: number | null;
+  rank?: number | null;
+  requestor?: string | null;
+  planned_quarter?: string[] | null;
 }
 
 interface BacklogTableViewProps {
   data: BusinessRequestRow[];
   isLoading?: boolean;
-  onOpenDrawer: (requestId: string) => void;
+  onRowClick: (requestId: string) => void;
 }
 
-export function BacklogTableView({ data, isLoading, onOpenDrawer }: BacklogTableViewProps) {
+export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableViewProps) {
   const { 
     selectedIds, 
     isAllSelected, 
@@ -38,7 +38,7 @@ export function BacklogTableView({ data, isLoading, onOpenDrawer }: BacklogTable
     toggleSelection, 
     toggleAll,
     clearSelection 
-  } = useTableSelection(data.map(d => ({ id: d._dbId })));
+  } = useTableSelection(data.map(d => ({ id: d.id })));
   
   const { sortConfig, handleSort } = useTableSort({ column: 'rank', direction: 'asc' });
 
@@ -49,9 +49,9 @@ export function BacklogTableView({ data, isLoading, onOpenDrawer }: BacklogTable
       let aVal: any, bVal: any;
       switch (sortConfig.column) {
         case 'rank': aVal = a.rank || 999; bVal = b.rank || 999; break;
-        case 'score': aVal = a.score || 0; bVal = b.score || 0; break;
-        case 'title': aVal = a.summary; bVal = b.summary; break;
-        case 'status': aVal = a.processStep; bVal = b.processStep; break;
+        case 'score': aVal = a.business_score || 0; bVal = b.business_score || 0; break;
+        case 'title': aVal = a.title || ''; bVal = b.title || ''; break;
+        case 'status': aVal = a.process_step || ''; bVal = b.process_step || ''; break;
         default: aVal = a.rank || 999; bVal = b.rank || 999;
       }
       if (sortConfig.direction === 'asc') return aVal > bVal ? 1 : -1;
@@ -139,29 +139,29 @@ export function BacklogTableView({ data, isLoading, onOpenDrawer }: BacklogTable
             ) : (
               sortedData.map(row => (
                 <tr 
-                  key={row._dbId} 
+                  key={row.id} 
                   className={cn(
                     "border-b border-border/50 hover:bg-muted/30 cursor-pointer transition-colors",
-                    selectedIds.has(row._dbId) && "bg-[hsl(var(--brand-primary))]/5"
+                    selectedIds.has(row.id) && "bg-[hsl(var(--brand-primary))]/5"
                   )}
-                  onClick={() => onOpenDrawer(row._dbId)}
+                  onClick={() => onRowClick(row.id)}
                 >
                   <td className="px-3 py-3" onClick={e => e.stopPropagation()}>
                     <Checkbox
-                      checked={selectedIds.has(row._dbId)}
-                      onCheckedChange={() => toggleSelection(row._dbId)}
+                      checked={selectedIds.has(row.id)}
+                      onCheckedChange={() => toggleSelection(row.id)}
                     />
                   </td>
-                  <td className="px-3 py-3"><RankCell rank={row.rank} /></td>
+                  <td className="px-3 py-3"><RankCell rank={row.rank ?? null} /></td>
                   <td className="px-3 py-3">
-                    <IdCell requestKey={row.id} onClick={(e) => { e.stopPropagation(); onOpenDrawer(row._dbId); }} />
+                    <IdCell requestKey={row.request_key || row.id.slice(0, 8)} onClick={(e) => { e.stopPropagation(); onRowClick(row.id); }} />
                   </td>
-                  <td className="px-3 py-3 font-medium text-foreground max-w-[300px] truncate">{row.summary}</td>
-                  <td className="px-3 py-3"><StatusCell status={row.processStep} /></td>
-                  <td className="px-3 py-3 text-muted-foreground">{row.autoPriority || '—'}</td>
-                  <td className="px-3 py-3"><ScoreCell score={row.score} /></td>
-                  <td className="px-3 py-3"><OwnerCell name={row.reporter || null} /></td>
-                  <td className="px-3 py-3 text-muted-foreground">{row.quarter || '—'}</td>
+                  <td className="px-3 py-3 font-medium text-foreground max-w-[300px] truncate">{row.title || '—'}</td>
+                  <td className="px-3 py-3"><StatusCell status={row.process_step || 'new_request'} /></td>
+                  <td className="px-3 py-3 text-muted-foreground">{row.priority_tier || '—'}</td>
+                  <td className="px-3 py-3"><ScoreCell score={row.business_score ?? null} /></td>
+                  <td className="px-3 py-3"><OwnerCell name={row.requestor || null} /></td>
+                  <td className="px-3 py-3 text-muted-foreground">{row.planned_quarter?.[0] || '—'}</td>
                 </tr>
               ))
             )}
