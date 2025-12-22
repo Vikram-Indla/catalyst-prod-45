@@ -41,6 +41,9 @@ import FeaturesPage from "./pages/items/FeaturesPage";
 import FeaturesBacklog from "./pages/FeaturesBacklog";
 import FeaturePrioritizationView from "./pages/items/FeaturePrioritizationView";
 const FeatureDetailPage = lazy(() => import("./pages/project/FeatureDetailPage"));
+const ProjectWorkspace = lazy(() => import("./pages/project/ProjectWorkspace"));
+const BoardView = lazy(() => import("./pages/project/BoardView"));
+const TimelineView = lazy(() => import("./pages/project/TimelineView"));
 import { EpicBalancingPage } from "./modules/epic-balancing";
 
 import Defects from "./pages/Defects";
@@ -461,6 +464,14 @@ const App = () => (
               <Route path="/projects/:projectKey/settings" element={<ProjectSettingsPage />} />
               <Route path="/projects/:projectId/features" element={<FeaturesPage />} />
               <Route path="/projects/:projectId/features/:featureId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><FeatureDetailPage /></Suspense>} />
+              
+              {/* Project Workspace with Board/Timeline/FeatureMap views */}
+              <Route path="/projects/:projectId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ProjectWorkspace /></Suspense>}>
+                <Route path="board" element={<Suspense fallback={<div className="p-8">Loading...</div>}><BoardView /></Suspense>} />
+                <Route path="timeline" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TimelineView /></Suspense>} />
+                <Route path="feature-map" element={<div className="h-full flex items-center justify-center text-muted-foreground">Feature Map View - Coming Soon</div>} />
+              </Route>
+              
               <Route path="/projects/:projectId/work" element={<ProjectWorkHubPage />} />
               <Route path="/projects/:projectId/backlog" element={<ProjectBacklogPage />} />
               <Route path="/projects/:projectId/roadmap" element={<ProjectComingSoonPage pageTitle="Roadmap" />} />
