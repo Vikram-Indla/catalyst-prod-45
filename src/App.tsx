@@ -299,8 +299,7 @@ const App = () => (
               <Route path="/industry/backlog" element={<ProductBacklogPage />} />
               <Route path="/industry/kanban" element={<BusinessRequestsKanbanPage />} />
               <Route path="/industry/dashboard" element={<DemandSummaryPage />} />
-              <Route path="/industry/roadmaps" element={<ProductRoadmapPage />} />
-              <Route path="/industry/roadmap-v2" element={<ProductRoadmapV2Page />} />
+              <Route path="/industry/roadmaps" element={<ProductRoadmapV2Page />} />
               <Route path="/industry/reports" element={<IndustryComingSoon />} />
               
               <Route path="/search" element={<SearchPage />} />
