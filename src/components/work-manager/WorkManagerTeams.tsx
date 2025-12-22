@@ -1,13 +1,32 @@
 // src/components/work-manager/WorkManagerTeams.tsx
-// Teams Management View
+// Teams Management View - Premium Enterprise Grade
 
 import { useMemo, useState } from 'react';
-import { Plus, MoreHorizontal, Users, AlertCircle } from 'lucide-react';
+import { Plus, MoreHorizontal, Users, AlertTriangle, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { NewTeamDialog } from './NewTeamDialog';
 import { getUserById } from '@/lib/work-manager-data';
 import type { TaskExtended, Team, User } from './types';
+
+// Avatar colors for each user
+const avatarColors: Record<string, string> = {
+  'u1': '#5c7c5c', // Sarah Ahmed - olive
+  'u2': '#8b7355', // Mohammed Al-Rashid - bronze
+  'u3': '#c69c6d', // Layla Hassan - gold
+  'u4': '#2563eb', // Omar Khalid - blue
+  'u5': '#16a34a', // Fatima Al-Saud - green
+  'u6': '#ea580c', // Ahmed Mansour - orange
+  'u7': '#dc2626', // Nadia Qureshi - red
+  'u8': '#ca8a04', // Khalid Ibrahim - amber
+};
+
+// Team accent colors
+const teamColors: Record<string, string> = {
+  'investment': '#5c7c5c',   // Olive
+  'portfolio': '#8b7355',    // Bronze
+  'compliance': '#c69c6d',   // Gold
+};
 
 interface WorkManagerTeamsProps {
   tasks: TaskExtended[];
@@ -26,7 +45,16 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
       open: teamTasks.filter(t => t.status !== 'Done').length,
       overdue: teamTasks.filter(t => t.isOverdue).length,
       blocked: teamTasks.filter(t => t.blocked).length,
-      completed: teamTasks.filter(t => t.status === 'Done').length,
+      done: teamTasks.filter(t => t.status === 'Done').length,
+    };
+  };
+
+  const getUserStats = (userId: string) => {
+    const userTasks = tasks.filter(t => t.assigneeId === userId);
+    return {
+      open: userTasks.filter(t => t.status !== 'Done').length,
+      overdue: userTasks.filter(t => t.isOverdue).length,
+      done: userTasks.filter(t => t.status === 'Done').length,
     };
   };
 
@@ -36,26 +64,19 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
     return map;
   }, [teams, users]);
 
-  const openTasksByUser = useMemo(() => {
-    const map = new Map<string, number>();
-    users.forEach(u => {
-      const openCount = tasks.filter(t => t.assigneeId === u.id && t.status !== 'Done').length;
-      map.set(u.id, openCount);
-    });
-    return map;
-  }, [tasks, users]);
-
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="space-y-8">
+      {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-[16px] font-semibold text-text-primary">Teams</h2>
-          <p className="text-[13px] text-text-muted">Manage your work teams and members</p>
+          <h2 className="text-[18px] font-semibold text-gray-900 dark:text-gray-100">Teams</h2>
+          <p className="text-[13px] text-gray-500 dark:text-gray-400 mt-1">
+            Manage your work teams and members • {teams.length} teams • {users.length} members
+          </p>
         </div>
         <Button
           onClick={() => setIsNewTeamDialogOpen(true)}
-          className="bg-brand-primary hover:bg-brand-primary-hover text-white gap-2"
+          className="bg-[#5c7c5c] hover:bg-[#4a6a4a] text-white gap-2 shadow-sm hover:shadow-md transition-all duration-200"
         >
           <Plus className="w-4 h-4" />
           New Team
@@ -63,95 +84,132 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
       </div>
 
       {/* Teams Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {teams.map((team) => {
           const stats = getTeamStats(team.id);
-          const members = team.memberIds.map(id => getUserById(id)).filter(Boolean);
+          const teamColor = teamColors[team.id] || '#5c7c5c';
 
           return (
             <div
               key={team.id}
-              className="bg-surface-card border border-border-default rounded-lg overflow-hidden hover:shadow-md transition-shadow"
+              className="group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col"
             >
-              {/* Card Header */}
-              <div className="p-4 border-b border-border-default">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="text-[14px] font-semibold text-text-primary">{team.name}</h3>
+              {/* Color accent bar at top */}
+              <div 
+                className="h-1.5 w-full"
+                style={{ backgroundColor: teamColor }}
+              />
+              
+              {/* Card content */}
+              <div className="p-5 flex-1 flex flex-col">
+                {/* Header */}
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex-1">
+                    <h3 className="text-[15px] font-semibold text-gray-900 dark:text-gray-100 group-hover:text-[#5c7c5c] transition-colors">
+                      {team.name}
+                    </h3>
                     {team.description && (
-                      <p className="text-[12px] text-text-muted mt-1 line-clamp-2">{team.description}</p>
+                      <p className="text-[12px] text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
+                        {team.description}
+                      </p>
                     )}
                   </div>
-                  <button className="p-1 rounded hover:bg-surface-muted" type="button">
-                    <MoreHorizontal className="w-4 h-4 text-text-muted" />
+                  <button 
+                    className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 opacity-0 group-hover:opacity-100 transition-all duration-200" 
+                    type="button"
+                  >
+                    <MoreHorizontal className="w-4 h-4 text-gray-500" />
                   </button>
                 </div>
-              </div>
-
-              {/* Members */}
-              <div className="p-4 border-b border-border-subtle">
-                <div className="flex items-center gap-2 mb-3">
-                  <Users className="w-4 h-4 text-text-muted" />
-                  <span className="text-[11px] font-medium text-text-muted uppercase tracking-wide">
-                    {members.length} Members
-                  </span>
-                </div>
-                <div className="flex items-center -space-x-2">
-                  {members.slice(0, 5).map((member) => (
-                    <div
-                      key={member!.id}
-                      className={cn(
-                        'w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-semibold text-white border-2 border-surface-card',
-                        member!.avatarColor || 'bg-brand-primary'
+                
+                {/* Members section */}
+                <div className="mb-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Users className="w-4 h-4 text-gray-400" />
+                      <span className="text-[11px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                        {team.memberIds.length} Members
+                      </span>
+                    </div>
+                    
+                    {/* Avatar stack */}
+                    <div className="flex items-center -space-x-2">
+                      {team.memberIds.slice(0, 5).map((memberId, index) => {
+                        const member = getUserById(memberId);
+                        if (!member) return null;
+                        const color = avatarColors[memberId] || '#5c7c5c';
+                        
+                        return (
+                          <div
+                            key={memberId}
+                            className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-semibold text-white border-2 border-white dark:border-gray-800 ring-0 hover:ring-2 hover:ring-offset-1 transition-all duration-200"
+                            style={{ backgroundColor: color, zIndex: 5 - index }}
+                            title={member.name}
+                          >
+                            {member.initials}
+                          </div>
+                        );
+                      })}
+                      
+                      {/* Show +N if more than 5 members */}
+                      {team.memberIds.length > 5 && (
+                        <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-[10px] font-semibold text-gray-600 dark:text-gray-300 border-2 border-white dark:border-gray-800">
+                          +{team.memberIds.length - 5}
+                        </div>
                       )}
-                      title={member!.name}
-                    >
-                      {member!.initials}
                     </div>
-                  ))}
-                  {members.length > 5 && (
-                    <div className="w-8 h-8 rounded-full bg-surface-muted flex items-center justify-center text-[11px] font-medium text-text-muted border-2 border-surface-card">
-                      +{members.length - 5}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Stats */}
-              <div className="p-4">
-                <div className="grid grid-cols-3 gap-4 text-center">
-                  <div>
-                    <span className="block text-[18px] font-semibold text-text-primary">{stats.open}</span>
-                    <span className="text-[10px] text-text-muted uppercase tracking-wide">Open</span>
                   </div>
-                  <div>
-                    <span
-                      className={cn(
-                        'block text-[18px] font-semibold',
-                        stats.overdue > 0 ? 'text-status-danger' : 'text-text-primary'
-                      )}
-                    >
+                </div>
+                
+                {/* Stats section */}
+                <div className="grid grid-cols-3 gap-3 mb-4">
+                  <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 text-center">
+                    <span className="block text-[18px] font-bold text-gray-900 dark:text-gray-100">
+                      {stats.open}
+                    </span>
+                    <span className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                      Open
+                    </span>
+                  </div>
+                  <div className={cn(
+                    "rounded-lg p-3 text-center",
+                    stats.overdue > 0 ? 'bg-red-50 dark:bg-red-900/20' : 'bg-gray-50 dark:bg-gray-700/50'
+                  )}>
+                    <span className={cn(
+                      "block text-[18px] font-bold",
+                      stats.overdue > 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-gray-100'
+                    )}>
                       {stats.overdue}
                     </span>
-                    <span className="text-[10px] text-text-muted uppercase tracking-wide">Overdue</span>
+                    <span className={cn(
+                      "text-[10px] uppercase tracking-wide",
+                      stats.overdue > 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-500 dark:text-gray-400'
+                    )}>
+                      Overdue
+                    </span>
                   </div>
-                  <div>
-                    <span className="block text-[18px] font-semibold text-status-success">{stats.completed}</span>
-                    <span className="text-[10px] text-text-muted uppercase tracking-wide">Done</span>
+                  <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-3 text-center">
+                    <span className="block text-[18px] font-bold text-green-600 dark:text-green-400">
+                      {stats.done}
+                    </span>
+                    <span className="text-[10px] text-green-600 dark:text-green-400 uppercase tracking-wide">
+                      Done
+                    </span>
                   </div>
                 </div>
-
+                
+                {/* Warning badges - only show when needed */}
                 {(stats.overdue > 0 || stats.blocked > 0) && (
-                  <div className="mt-4 flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2 pt-3 border-t border-gray-100 dark:border-gray-700">
                     {stats.overdue > 0 && (
-                      <span className="inline-flex items-center gap-1 px-2 py-1 bg-status-danger-bg text-status-danger text-[11px] font-medium rounded">
-                        <AlertCircle className="w-3 h-3" />
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-[11px] font-medium rounded-full">
+                        <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
                         {stats.overdue} overdue
                       </span>
                     )}
                     {stats.blocked > 0 && (
-                      <span className="inline-flex items-center gap-1 px-2 py-1 bg-status-warning-bg text-status-warning text-[11px] font-medium rounded">
-                        <AlertCircle className="w-3 h-3" />
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[11px] font-medium rounded-full">
+                        <AlertTriangle className="w-3 h-3" />
                         {stats.blocked} blocked
                       </span>
                     )}
@@ -163,54 +221,101 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
         })}
       </div>
 
-      {/* All Members Section */}
-      <div className="mt-8">
-        <h3 className="text-[14px] font-semibold text-text-primary mb-4">All Team Members</h3>
-        <div className="bg-surface-card border border-border-default rounded-lg overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-surface-muted">
-                <th className="text-left px-4 py-3 text-[11px] font-semibold text-text-muted uppercase tracking-wide">Member</th>
-                <th className="text-left px-4 py-3 text-[11px] font-semibold text-text-muted uppercase tracking-wide">Role</th>
-                <th className="text-left px-4 py-3 text-[11px] font-semibold text-text-muted uppercase tracking-wide">Team</th>
-                <th className="text-left px-4 py-3 text-[11px] font-semibold text-text-muted uppercase tracking-wide">Email</th>
-                <th className="text-center px-4 py-3 text-[11px] font-semibold text-text-muted uppercase tracking-wide">Tasks</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => {
-                const userTeam = userTeamMap.get(user.id);
-                const openTasks = openTasksByUser.get(user.id) ?? 0;
-
-                return (
-                  <tr key={user.id} className="border-b border-border-subtle hover:bg-surface-muted">
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={cn(
-                            'w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-semibold text-white',
-                            user.avatarColor || 'bg-brand-primary'
-                          )}
-                        >
-                          {user.initials}
-                        </div>
-                        <span className="text-[13px] font-medium text-text-primary">{user.name}</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-[13px] text-text-secondary">{user.role}</td>
-                    <td className="px-4 py-3 text-[13px] text-text-secondary">{userTeam?.name || '—'}</td>
-                    <td className="px-4 py-3 text-[13px] text-text-muted">{user.email}</td>
-                    <td className="px-4 py-3 text-center">
-                      <span className="px-2 py-0.5 bg-surface-muted text-text-secondary text-[12px] font-medium rounded">
-                        {openTasks} open
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+      {/* Section Divider */}
+      <div className="relative py-4">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-gray-200 dark:border-gray-700" />
         </div>
+        <div className="relative flex justify-center">
+          <span className="bg-gray-100 dark:bg-gray-900 px-4 text-[12px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+            Member Directory
+          </span>
+        </div>
+      </div>
+
+      {/* All Members Section */}
+      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm">
+        <div className="px-5 py-4 border-b border-gray-200 dark:border-gray-700">
+          <h3 className="text-[14px] font-semibold text-gray-900 dark:text-gray-100">All Team Members</h3>
+          <p className="text-[12px] text-gray-500 dark:text-gray-400 mt-0.5">Click a row to view their tasks</p>
+        </div>
+        <table className="w-full">
+          <thead>
+            <tr className="bg-gray-50 dark:bg-gray-700/50">
+              <th className="text-left px-5 py-3 text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Member</th>
+              <th className="text-left px-5 py-3 text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Role</th>
+              <th className="text-left px-5 py-3 text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Team</th>
+              <th className="text-left px-5 py-3 text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Workload</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((user) => {
+              const userTeam = userTeamMap.get(user.id);
+              const userStats = getUserStats(user.id);
+              const color = avatarColors[user.id] || '#5c7c5c';
+              const teamColor = userTeam ? teamColors[userTeam.id] : undefined;
+
+              return (
+                <tr 
+                  key={user.id} 
+                  className="group border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors"
+                >
+                  {/* Member Cell - Avatar + Name + Email */}
+                  <td className="px-5 py-4">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="w-9 h-9 rounded-full flex items-center justify-center text-[11px] font-semibold text-white shrink-0"
+                        style={{ backgroundColor: color }}
+                        title={user.name}
+                      >
+                        {user.initials}
+                      </div>
+                      <div>
+                        <div className="text-[13px] font-medium text-gray-900 dark:text-gray-100">{user.name}</div>
+                        <div className="text-[11px] text-gray-500 dark:text-gray-400">{user.email}</div>
+                      </div>
+                    </div>
+                  </td>
+                  
+                  {/* Role Cell */}
+                  <td className="px-5 py-4 text-[13px] text-gray-600 dark:text-gray-300">{user.role}</td>
+                  
+                  {/* Team Cell - With color indicator */}
+                  <td className="px-5 py-4">
+                    {userTeam ? (
+                      <div className="flex items-center gap-2">
+                        <div 
+                          className="w-2.5 h-2.5 rounded-full shrink-0"
+                          style={{ backgroundColor: teamColor }}
+                        />
+                        <span className="text-[13px] text-gray-600 dark:text-gray-300">{userTeam.name}</span>
+                      </div>
+                    ) : (
+                      <span className="text-[13px] text-gray-400">—</span>
+                    )}
+                  </td>
+                  
+                  {/* Workload Cell */}
+                  <td className="px-5 py-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        {userStats.overdue > 0 && (
+                          <span className="px-2 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-[11px] font-medium rounded-full">
+                            {userStats.overdue} overdue
+                          </span>
+                        )}
+                        <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-[11px] font-medium rounded-full">
+                          {userStats.open} open
+                        </span>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
 
       <NewTeamDialog
