@@ -168,7 +168,7 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
                 {users.map(u => (
                   <SelectItem key={u.id} value={u.id}>
                     <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-semibold bg-white/10 dark:bg-white/10 text-gray-700 dark:text-white">
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-white">
                         {u.initials}
                       </div>
                       {u.name}
@@ -178,17 +178,25 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
               </SelectContent>
             </Select>
 
-            {/* Status Badge */}
-            <span className={cn(
-              'px-3 py-1 text-[12px] font-medium rounded-full',
-              individualInsights.status === 'on_track' && 'bg-status-success-bg text-status-success',
-              individualInsights.status === 'needs_attention' && 'bg-status-warning-bg text-status-warning',
-              individualInsights.status === 'at_risk' && 'bg-status-danger-bg text-status-danger'
-            )}>
-              {individualInsights.status === 'on_track' && '✓ On Track'}
-              {individualInsights.status === 'needs_attention' && '⚠ Needs Attention'}
-              {individualInsights.status === 'at_risk' && '✗ At Risk'}
-            </span>
+            {/* Status Badge - text only, no backgrounds */}
+            {individualInsights.status === 'on_track' && (
+              <span className="text-green-400 text-[12px] font-medium flex items-center gap-1.5">
+                <CheckCircle className="w-3.5 h-3.5" />
+                On Track
+              </span>
+            )}
+            {individualInsights.status === 'needs_attention' && (
+              <span className="text-amber-400 text-[12px] font-medium flex items-center gap-1.5">
+                <AlertTriangle className="w-3.5 h-3.5" />
+                Needs Attention
+              </span>
+            )}
+            {individualInsights.status === 'at_risk' && (
+              <span className="text-red-400 text-[12px] font-medium flex items-center gap-1.5">
+                <XCircle className="w-3.5 h-3.5" />
+                At Risk
+              </span>
+            )}
           </div>
 
           {/* Summary Stats */}
@@ -218,14 +226,14 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
             {/* Achieved This Week */}
             <div className="bg-surface-card border border-border-default rounded-lg p-4">
               <h3 className="text-[12px] font-semibold text-text-primary uppercase tracking-wide mb-3 flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-status-success" />
+                <CheckCircle className="w-4 h-4 text-green-500/60" />
                 Achieved This Week
               </h3>
               {individualInsights.achieved.length > 0 ? (
                 <ul className="space-y-2">
                   {individualInsights.achieved.map(task => (
-                    <li key={task.id} className="text-[13px] text-text-primary flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-status-success" />
+                    <li key={task.id} className="text-[13px] text-text-primary flex items-center gap-3">
+                      <span className="w-1.5 h-1.5 rounded-full bg-gray-500 shrink-0" />
                       {task.title}
                       <span className="font-mono text-[11px] text-text-muted">({task.key})</span>
                     </li>
@@ -239,14 +247,14 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
             {/* In Progress */}
             <div className="bg-surface-card border border-border-default rounded-lg p-4">
               <h3 className="text-[12px] font-semibold text-text-primary uppercase tracking-wide mb-3 flex items-center gap-2">
-                <Clock className="w-4 h-4 text-status-warning" />
+                <Clock className="w-4 h-4 text-amber-500/60" />
                 In Progress
               </h3>
               {individualInsights.inProgress.length > 0 ? (
                 <ul className="space-y-2">
                   {individualInsights.inProgress.map(task => (
-                    <li key={task.id} className="text-[13px] text-text-primary flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-status-warning" />
+                    <li key={task.id} className="text-[13px] text-text-primary flex items-center gap-3">
+                      <span className="w-1.5 h-1.5 rounded-full bg-gray-500 shrink-0" />
                       {task.title}
                       <span className="font-mono text-[11px] text-text-muted">({task.key})</span>
                     </li>
@@ -260,17 +268,17 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
             {/* Not Achieved / Overdue */}
             <div className="bg-surface-card border border-border-default rounded-lg p-4">
               <h3 className="text-[12px] font-semibold text-text-primary uppercase tracking-wide mb-3 flex items-center gap-2">
-                <XCircle className="w-4 h-4 text-status-danger" />
+                <XCircle className="w-4 h-4 text-red-500/60" />
                 Not Achieved / Overdue
               </h3>
               {individualInsights.notAchieved.length > 0 ? (
                 <ul className="space-y-2">
                   {individualInsights.notAchieved.map(task => (
-                    <li key={task.id} className="text-[13px] text-status-danger flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-status-danger" />
+                    <li key={task.id} className="text-[13px] text-text-primary flex items-center gap-3">
+                      <span className="w-1.5 h-1.5 rounded-full bg-gray-500 shrink-0" />
                       {task.title}
-                      <span className="font-mono text-[11px]">({task.key})</span>
-                      <span className="text-[11px] font-medium">{task.daysOverdue}d overdue</span>
+                      <span className="font-mono text-[11px] text-text-muted">({task.key})</span>
+                      <span className="text-[11px] text-red-400">{task.daysOverdue}d overdue</span>
                     </li>
                   ))}
                 </ul>
@@ -282,20 +290,23 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
             {/* Blockers */}
             <div className="bg-surface-card border border-border-default rounded-lg p-4">
               <h3 className="text-[12px] font-semibold text-text-primary uppercase tracking-wide mb-3 flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-status-danger" />
+                <AlertTriangle className="w-4 h-4 text-amber-500/60" />
                 Blockers
               </h3>
               {individualInsights.blockers.length > 0 ? (
                 <ul className="space-y-3">
                   {individualInsights.blockers.map(({ task, reason, daysSinceBlocked }) => (
                     <li key={task.id} className="text-[13px]">
-                      <div className="flex items-center gap-2 text-text-primary">
-                        <span className="w-1.5 h-1.5 rounded-full bg-status-danger" />
+                      <div className="flex items-center gap-3 text-text-primary">
+                        <span className="w-1.5 h-1.5 rounded-full bg-gray-500 shrink-0" />
                         {task.title}
                         <span className="font-mono text-[11px] text-text-muted">({task.key})</span>
                       </div>
-                      <p className="text-[12px] text-text-muted ml-4 mt-1">
-                        {reason} <span className="text-status-danger">({daysSinceBlocked} days blocked)</span>
+                      <p className="text-[12px] text-gray-500 ml-4 mt-1 italic">
+                        {reason}
+                      </p>
+                      <p className="text-[11px] text-amber-400 ml-4">
+                        ({daysSinceBlocked} days blocked)
                       </p>
                     </li>
                   ))}
@@ -377,16 +388,16 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
                   <tr key={member.userId} className="border-b border-border-subtle">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-full bg-white/10 dark:bg-white/10 flex items-center justify-center text-[11px] font-semibold text-gray-700 dark:text-white">
+                        <div className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-white">
                           {member.initials}
                         </div>
                         <span className="text-[13px] text-text-primary">{member.name}</span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-center text-[13px] text-green-400 font-medium">{member.completed}</td>
-                    <td className="px-4 py-3 text-center text-[13px] text-amber-400 font-medium">{member.inProgress}</td>
-                    <td className="px-4 py-3 text-center text-[13px] text-red-400 font-medium">{member.overdue || '—'}</td>
-                    <td className="px-4 py-3 text-center text-[13px] text-red-400 font-medium">{member.blocked || '—'}</td>
+                    <td className="px-4 py-3 text-center text-[13px] text-text-primary font-medium">{member.completed}</td>
+                    <td className="px-4 py-3 text-center text-[13px] text-text-primary font-medium">{member.inProgress}</td>
+                    <td className="px-4 py-3 text-center text-[13px] font-medium">{member.overdue > 0 ? <span className="text-red-400">{member.overdue}</span> : <span className="text-text-muted">—</span>}</td>
+                    <td className="px-4 py-3 text-center text-[13px] font-medium">{member.blocked > 0 ? <span className="text-amber-400">{member.blocked}</span> : <span className="text-text-muted">—</span>}</td>
                   </tr>
                 ))}
               </tbody>
