@@ -17,7 +17,7 @@ import { DepartmentSelect } from '../DepartmentSelect';
 import { BusinessOwnerSelect } from '../BusinessOwnerSelect';
 import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings, getOwnerIdForDepartment } from '@/hooks/useDepartmentsAndOwners';
 
-// Allowed document MIME types
+// Allowed document MIME types - allow all common document types
 const ALLOWED_FILE_TYPES = [
   'application/pdf',
   'application/msword',
@@ -28,9 +28,27 @@ const ALLOWED_FILE_TYPES = [
   'application/vnd.openxmlformats-officedocument.presentationml.presentation',
   'text/plain',
   'text/csv',
+  'image/jpeg',
+  'image/png',
+  'image/gif',
+  'image/webp',
+  'image/svg+xml',
+  'application/zip',
+  'application/x-rar-compressed',
+  'application/x-7z-compressed',
+  'application/json',
+  'application/xml',
+  'text/xml',
+  'text/html',
+  'text/markdown',
+  'application/rtf',
+  'application/vnd.oasis.opendocument.text',
+  'application/vnd.oasis.opendocument.spreadsheet',
+  'application/vnd.oasis.opendocument.presentation',
 ];
 
-const ALLOWED_EXTENSIONS = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.txt', '.csv'];
+// Accept all common file extensions
+const ALLOWED_EXTENSIONS = '*';
 const MAX_FILES = 5;
 const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB in bytes
 
@@ -124,11 +142,7 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
     let totalSize = attachments.reduce((sum, f) => sum + f.size, 0);
 
     for (const file of files) {
-      const extension = '.' + file.name.split('.').pop()?.toLowerCase();
-      if (!ALLOWED_FILE_TYPES.includes(file.type) && !ALLOWED_EXTENSIONS.includes(extension)) {
-        toast.error(`"${file.name}" is not a supported document type`);
-        continue;
-      }
+      // Allow all file types - no extension/type validation
 
       if (totalSize + file.size > MAX_FILE_SIZE) {
         toast.error(`Total file size cannot exceed 20MB`);
@@ -311,14 +325,14 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
           <div>
             <div className="flex items-baseline gap-2">
               <Label className="text-sm font-medium">Attachments</Label>
-              <span className="text-xs text-muted-foreground">(Max 5 files, 20MB total. Documents only: PDF, DOC, XLS, PPT, TXT, CSV)</span>
+              <span className="text-xs text-muted-foreground">(Max 5 files, 20MB total)</span>
             </div>
             <div className="mt-1.5 space-y-2">
               <input
                 ref={fileInputRef}
                 type="file"
                 multiple
-                accept={ALLOWED_EXTENSIONS.join(',')}
+                accept={ALLOWED_EXTENSIONS}
                 onChange={handleFileSelect}
                 className="hidden"
               />
