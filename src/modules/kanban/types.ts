@@ -137,15 +137,15 @@ export const KANBAN_COLORS = {
   semantic: 'hsl(var(--b400))',
 };
 
-// Column configuration
+// Column configuration - semantic colors for enterprise kanban
 export const COLUMNS_CONFIG: StatusConfig[] = [
-  { id: 'new_request', label: 'New Request', color: KANBAN_COLORS.greyDark, order: 0 },
-  { id: 'analyse', label: 'Analyse', color: KANBAN_COLORS.bronze, order: 1 },
-  { id: 'approved', label: 'Approved', color: KANBAN_COLORS.info, order: 2 },
-  { id: 'implement', label: 'Implement', color: KANBAN_COLORS.success, order: 3 },
-  { id: 'closed', label: 'Closed', color: KANBAN_COLORS.olive, order: 4 },
-  { id: 'rejected', label: 'Rejected', color: KANBAN_COLORS.danger, order: 5 },
-  { id: 'on_hold', label: 'On-Hold', color: KANBAN_COLORS.warning, order: 6 },
+  { id: 'new_request', label: 'New Request', color: '#3b82f6', order: 0 },  // Blue
+  { id: 'analyse', label: 'Analyse', color: '#f59e0b', order: 1 },          // Amber
+  { id: 'approved', label: 'Approved', color: '#22c55e', order: 2 },        // Green
+  { id: 'implement', label: 'Implement', color: '#a855f7', order: 3 },      // Purple
+  { id: 'closed', label: 'Closed', color: '#78716c', order: 4 },            // Stone
+  { id: 'rejected', label: 'Rejected', color: '#ef4444', order: 5 },        // Red
+  { id: 'on_hold', label: 'On-Hold', color: '#f97316', order: 6 },          // Orange
 ];
 
 // Priority configuration
