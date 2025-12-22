@@ -284,7 +284,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                       <SelectValue>
                         {assignee && (
                           <div className="flex items-center gap-2.5">
-                            <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 bg-white/10 dark:bg-white/10 text-gray-700 dark:text-white">
+                            <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-white">
                               {assignee.initials}
                             </div>
                             <span className="font-medium truncate">{assignee.name}</span>
@@ -296,7 +296,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                       {teamMembers.map(u => (
                         <SelectItem key={u.id} value={u.id} className="py-2">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 bg-white/10 dark:bg-white/10 text-gray-700 dark:text-white">
+                            <div className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-white">
                               {u.initials}
                             </div>
                             <div>
@@ -316,7 +316,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                 {/* Reporter - monochrome avatar */}
                 <FieldRow label="Reporter">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold bg-white/10 dark:bg-white/10 text-gray-700 dark:text-white">
+                    <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-white">
                       VA
                     </div>
                     <span className="text-[13px] font-medium text-gray-900 dark:text-gray-100">Vikram (You)</span>
@@ -382,12 +382,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                   >
                     <SelectTrigger className="w-[160px] h-8 text-[13px]">
                       <div className="flex items-center gap-2">
-                        <TypeIcon className={cn(
-                          'w-4 h-4',
-                          currentType === 'Project' && 'text-[#5c7c5c]',
-                          currentType === 'Task' && 'text-blue-500',
-                          currentType === 'General' && 'text-gray-500'
-                        )} />
+                        <TypeIcon className="w-4 h-4 text-gray-500" />
                         <span>{currentType}</span>
                       </div>
                     </SelectTrigger>
@@ -397,12 +392,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                         return (
                           <SelectItem key={t} value={t}>
                             <div className="flex items-center gap-2">
-                              <Icon className={cn(
-                                'w-4 h-4',
-                                t === 'Project' && 'text-[#5c7c5c]',
-                                t === 'Task' && 'text-blue-500',
-                                t === 'General' && 'text-gray-500'
-                              )} />
+                              <Icon className="w-4 h-4 text-gray-500" />
                               <span>{t}</span>
                             </div>
                           </SelectItem>
@@ -412,13 +402,13 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                   </Select>
                 </FieldRow>
 
-                {/* Linked Item */}
+                {/* Linked Item - muted styling */}
                 {task.linkedItem && (
                   <FieldRow label="Linked Item">
-                    <button className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#d4b896]/20 hover:bg-[#d4b896]/30 text-[#5c7c5c] dark:text-[#d4b896] text-[12px] font-mono font-medium transition-colors duration-200 group">
-                      <Link2 className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white/5 dark:bg-white/5 text-gray-500 dark:text-gray-400 text-[12px] font-mono font-medium border border-white/10 dark:border-white/10">
+                      <Link2 className="w-3.5 h-3.5" />
                       {task.linkedItem.key}
-                    </button>
+                    </span>
                   </FieldRow>
                 )}
 
@@ -533,11 +523,8 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                           key={activity.id} 
                           className="relative flex gap-4 py-4 group hover:bg-gray-50 dark:hover:bg-gray-800/50 -mx-2 px-2 rounded-lg transition-colors duration-200"
                         >
-                          {/* Avatar */}
-                          <div className={cn(
-                            'w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0 z-10 ring-4 ring-white dark:ring-gray-900',
-                            activity.color
-                          )}>
+                          {/* Avatar - monochrome */}
+                          <div className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 z-10 ring-4 ring-white dark:ring-gray-900 bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-white">
                             {activity.initials}
                           </div>
                           
