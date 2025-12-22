@@ -4084,6 +4084,7 @@ export type Database = {
           time_criticality: number | null
           updated_at: string | null
           work_code: string | null
+          workflow_status: string | null
           wsjf_score: number | null
         }
         Insert: {
@@ -4133,6 +4134,7 @@ export type Database = {
           time_criticality?: number | null
           updated_at?: string | null
           work_code?: string | null
+          workflow_status?: string | null
           wsjf_score?: number | null
         }
         Update: {
@@ -4182,6 +4184,7 @@ export type Database = {
           time_criticality?: number | null
           updated_at?: string | null
           work_code?: string | null
+          workflow_status?: string | null
           wsjf_score?: number | null
         }
         Relationships: [
@@ -9326,6 +9329,7 @@ export type Database = {
           rte_id: string | null
           status: Database["public"]["Enums"]["program_status"] | null
           updated_at: string | null
+          wip_limits: Json | null
         }
         Insert: {
           created_at?: string | null
@@ -9337,6 +9341,7 @@ export type Database = {
           rte_id?: string | null
           status?: Database["public"]["Enums"]["program_status"] | null
           updated_at?: string | null
+          wip_limits?: Json | null
         }
         Update: {
           created_at?: string | null
@@ -9348,6 +9353,7 @@ export type Database = {
           rte_id?: string | null
           status?: Database["public"]["Enums"]["program_status"] | null
           updated_at?: string | null
+          wip_limits?: Json | null
         }
         Relationships: [
           {
@@ -14595,6 +14601,44 @@ export type Database = {
           },
         ]
       }
+      view_preferences: {
+        Row: {
+          created_at: string | null
+          id: string
+          preferences: Json | null
+          project_id: string
+          updated_at: string | null
+          user_id: string
+          view_type: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          preferences?: Json | null
+          project_id: string
+          updated_at?: string | null
+          user_id: string
+          view_type: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          preferences?: Json | null
+          project_id?: string
+          updated_at?: string | null
+          user_id?: string
+          view_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "view_preferences_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       work_item_assignments: {
         Row: {
           created_at: string | null
@@ -14636,6 +14680,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      work_item_dependencies: {
+        Row: {
+          blocker_id: string
+          blocker_type: string
+          created_at: string | null
+          created_by: string | null
+          dependency_type: string
+          dependent_id: string
+          dependent_type: string
+          id: string
+          is_resolved: boolean | null
+          notes: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          blocker_id: string
+          blocker_type: string
+          created_at?: string | null
+          created_by?: string | null
+          dependency_type?: string
+          dependent_id: string
+          dependent_type: string
+          id?: string
+          is_resolved?: boolean | null
+          notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          blocker_id?: string
+          blocker_type?: string
+          created_at?: string | null
+          created_by?: string | null
+          dependency_type?: string
+          dependent_id?: string
+          dependent_type?: string
+          id?: string
+          is_resolved?: boolean | null
+          notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       work_item_forecast_ranks: {
         Row: {
@@ -15127,6 +15219,15 @@ export type Database = {
           veto_approved: boolean
         }[]
       }
+      check_circular_dependency: {
+        Args: {
+          p_blocker_id: string
+          p_blocker_type: string
+          p_dependent_id: string
+          p_dependent_type: string
+        }
+        Returns: boolean
+      }
       check_permission: {
         Args: {
           _action: Database["public"]["Enums"]["permission_action"]
@@ -15174,6 +15275,21 @@ export type Database = {
       generate_next_epic_key: {
         Args: { p_program_id: string }
         Returns: string
+      }
+      get_all_blockers: {
+        Args: { p_item_id: string; p_item_type: string }
+        Returns: {
+          blocker_id: string
+          blocker_type: string
+          depth: number
+        }[]
+      }
+      get_dependency_counts: {
+        Args: { p_item_id: string; p_item_type: string }
+        Returns: {
+          blocked_by_count: number
+          blocks_count: number
+        }[]
       }
       get_user_role: {
         Args: { _user_id: string }
