@@ -1,7 +1,7 @@
 // src/pages/WorkManager.tsx
 // Main Work Manager Page with Tab Navigation
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   LayoutGrid, 
@@ -13,7 +13,8 @@ import {
   Search,
   Filter,
   ChevronDown,
-  X
+  X,
+  Lock
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -41,6 +42,8 @@ import { NewTaskDialog } from '@/components/work-manager/NewTaskDialog';
 import { teams as initialTeams, users, tasks, computeTaskExtended } from '@/lib/work-manager-data';
 import type { TaskStatus, Team } from '@/components/work-manager/types';
 import type { TaskFilters, TaskDrawerState, TaskExtended, Task } from '@/components/work-manager/types';
+import { useAccessibleTeams, useCanViewAllTeams } from '@/hooks/useAccessibleTeams';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface WorkManagerProps {
   tab?: 'boards' | 'tasks' | 'insights' | 'teams' | 'settings';
@@ -49,6 +52,10 @@ interface WorkManagerProps {
 export function WorkManager({ tab: initialTab }: WorkManagerProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  
+  // Fetch accessible teams based on user role
+  const { data: accessibleTeams = [], isLoading: isTeamsLoading } = useAccessibleTeams();
+  const { canViewAllTeams, isLoading: isRoleLoading } = useCanViewAllTeams();
   
   // Determine active tab from URL or prop
   const activeTab = useMemo(() => {
@@ -72,6 +79,44 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
     showBlocked: null,
   });
 
+  // Auto-select first accessible team for non-admin/manager users
+  useEffect(() => {
+    if (!isTeamsLoading && !isRoleLoading && accessibleTeams.length > 0) {
+      // If user can't view all teams and no team is selected, auto-select first team
+      if (!canViewAllTeams && !filters.teamId) {
+        setFilters(prev => ({ ...prev, teamId: accessibleTeams[0].id }));
+      }
+    }
+  }, [accessibleTeams, isTeamsLoading, isRoleLoading, canViewAllTeams, filters.teamId]);
+
+  // Helper function to get team color based on type
+  const getTeamColor = (teamType: string): string => {
+    const colors: Record<string, string> = {
+      'AGILE': 'olive',
+      'KANBAN': 'bronze',
+      'COP': 'gold',
+      'PROGRAM': 'blue',
+      'PORTFOLIO': 'indigo',
+      'SOLUTION': 'teal',
+      'PROCESS_FLOW': 'purple',
+    };
+    return colors[teamType] || 'olive';
+  };
+
+  // Convert accessible teams to the work-manager Team format for compatibility
+  const teamsDataFromDb: Team[] = useMemo(() => {
+    return accessibleTeams.map(t => ({
+      id: t.id,
+      name: t.name,
+      description: t.description,
+      memberIds: [], // Will be populated separately if needed
+      color: getTeamColor(t.team_type),
+    }));
+  }, [accessibleTeams]);
+
+  // Use mock data as fallback when no db teams exist (for demo purposes)
+  const teamsData = teamsDataFromDb.length > 0 ? teamsDataFromDb : initialTeams;
+
   // Drawer state
   const [drawer, setDrawer] = useState<TaskDrawerState>({
     isOpen: false,
@@ -81,9 +126,6 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
 
   // New task dialog state
   const [isNewTaskDialogOpen, setIsNewTaskDialogOpen] = useState(false);
-
-  // Teams state
-  const [teamsData, setTeamsData] = useState<Team[]>(initialTeams);
 
   // Task data with computed fields
   const [taskData, setTaskData] = useState(tasks);
@@ -172,13 +214,11 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
     ));
   };
 
-  // Create new team handler
-  const handleCreateTeam = (teamInput: Omit<Team, 'id'>) => {
-    const newTeam: Team = {
-      ...teamInput,
-      id: `team-${Date.now()}`,
-    };
-    setTeamsData(prev => [...prev, newTeam]);
+  // Create new team handler - now a no-op since teams come from DB
+  // This could be wired to the actual create team mutation if needed
+  const handleCreateTeam = (_teamInput: Omit<Team, 'id'>) => {
+    // Teams are now managed via the database
+    // For now, this is a placeholder - can be connected to useCreateTeam hook
   };
 
   // Get selected task for drawer
@@ -241,20 +281,40 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
         <div className="flex items-center justify-between px-6 py-3 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-3">
             {/* Team Selector */}
-            <Select
-              value={filters.teamId || 'all'}
-              onValueChange={(v) => setFilters(prev => ({ ...prev, teamId: v === 'all' ? null : v }))}
-            >
-              <SelectTrigger className="w-[180px] h-9 text-[13px] bg-white dark:bg-gray-900">
-                <SelectValue placeholder="All Teams" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Teams</SelectItem>
-                {teamsData.map(team => (
-                  <SelectItem key={team.id} value={team.id}>{team.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {isTeamsLoading || isRoleLoading ? (
+              <Skeleton className="w-[180px] h-9" />
+            ) : (
+              <div className="flex items-center gap-2">
+                <Select
+                  value={filters.teamId || 'all'}
+                  onValueChange={(v) => setFilters(prev => ({ ...prev, teamId: v === 'all' ? null : v }))}
+                  disabled={!canViewAllTeams && teamsData.length === 1}
+                >
+                  <SelectTrigger className="w-[180px] h-9 text-[13px] bg-white dark:bg-gray-900">
+                    <SelectValue placeholder={canViewAllTeams ? "All Teams" : "Select Team"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {canViewAllTeams && (
+                      <SelectItem value="all">All Teams</SelectItem>
+                    )}
+                    {teamsData.map(team => (
+                      <SelectItem key={team.id} value={team.id}>{team.name}</SelectItem>
+                    ))}
+                    {teamsData.length === 0 && (
+                      <div className="px-3 py-2 text-[12px] text-muted-foreground">
+                        No teams available
+                      </div>
+                    )}
+                  </SelectContent>
+                </Select>
+                {!canViewAllTeams && (
+                  <div className="flex items-center gap-1 text-[11px] text-muted-foreground" title="You can only see teams you're a member of">
+                    <Lock className="w-3 h-3" />
+                    <span>My Teams</span>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Search */}
             <div className="relative">
