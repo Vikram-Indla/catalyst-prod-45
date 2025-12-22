@@ -592,10 +592,10 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
     <div className="space-y-5 p-5">
       {/* Rescoring Banner */}
       {showRescoringBanner && (
-        <div className="flex items-center justify-between p-3 bg-amber-50 border border-amber-200 rounded-lg">
+        <div className="flex items-center justify-between p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-700 rounded-lg">
           <div className="flex items-center gap-2">
-            <AlertCircle className="h-4 w-4 text-amber-600" />
-            <span className="text-sm text-amber-800">
+            <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+            <span className="text-sm text-amber-800 dark:text-amber-200">
               {isOnHold 
                 ? "This request is currently On Hold. If circumstances changed, you can rescore it."
                 : "This request has been previously scored. If circumstances changed, you can rescore it."}
@@ -605,7 +605,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
             variant="outline"
             size="sm"
             onClick={handleEnterRescoringMode}
-            className="border-amber-300 text-amber-700 hover:bg-amber-100"
+            className="border-amber-300 dark:border-amber-600 text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/30"
           >
             <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
             Rescore
@@ -615,10 +615,10 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
       
       {/* Rescoring Mode Active Banner */}
       {isRescoringMode && (
-        <div className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg">
+        <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-700 rounded-lg">
           <div className="flex items-center gap-2">
-            <RefreshCw className="h-4 w-4 text-blue-600" />
-            <span className="text-sm text-blue-800">
+            <RefreshCw className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+            <span className="text-sm text-blue-800 dark:text-blue-200">
               Rescoring mode active. Modify scores and click Save Score, or cancel to revert.
             </span>
           </div>
@@ -626,7 +626,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
             variant="outline"
             size="sm"
             onClick={handleCancelRescoring}
-            className="border-blue-300 text-blue-700 hover:bg-blue-100"
+            className="border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/30"
           >
             <X className="h-3.5 w-3.5 mr-1.5" />
             Cancel
@@ -812,7 +812,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
                     </Select>
 
                     {showJustification && (
-                      <div className="p-3 bg-amber-50/50 rounded-md border border-amber-200/50 space-y-2">
+                      <div className="p-3 bg-amber-50/50 dark:bg-amber-950/30 rounded-md border border-amber-200/50 dark:border-amber-700/50 space-y-2">
                         <Label className="text-xs font-medium text-foreground">
                           Business Justification
                           <span className="text-destructive ml-1">*</span>
@@ -847,9 +847,9 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
                           </div>
                         )}
                         {!justification.trim() && pendingRank !== null && (
-                          <div className="p-2 rounded-md bg-red-50 border border-red-200">
-                            <p className="text-[11px] font-medium text-red-700">Justification Required</p>
-                            <p className="text-[10px] text-red-600 mt-0.5">Please provide a business justification for the rank override.</p>
+                          <div className="p-2 rounded-md bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-700">
+                            <p className="text-[11px] font-medium text-red-700 dark:text-red-300">Justification Required</p>
+                            <p className="text-[10px] text-red-600 dark:text-red-400 mt-0.5">Please provide a business justification for the rank override.</p>
                           </div>
                         )}
                       </div>

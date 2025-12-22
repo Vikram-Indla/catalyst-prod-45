@@ -67,15 +67,15 @@ export function BusinessScoreTab({ data, onChange }: BusinessScoreTabProps) {
     <div className="space-y-6 p-5">
       {/* Warning Banner when Demand Details incomplete */}
       {!demandComplete && (
-        <Card className="border-2 border-amber-400 rounded-lg bg-amber-50">
+        <Card className="border-2 border-amber-400 rounded-lg bg-amber-50 dark:bg-amber-950/30">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-amber-400 flex items-center justify-center">
                 <AlertTriangle className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h4 className="font-bold text-amber-800 text-lg">Complete Demand Details First</h4>
-                <p className="text-sm text-amber-700">
+                <h4 className="font-bold text-amber-800 dark:text-amber-200 text-lg">Complete Demand Details First</h4>
+                <p className="text-sm text-amber-700 dark:text-amber-300">
                   Please fill in all required fields in the Demand Details tab before scoring this demand.
                 </p>
               </div>
@@ -86,15 +86,15 @@ export function BusinessScoreTab({ data, onChange }: BusinessScoreTabProps) {
 
       {/* Priority Banner for High Scores */}
       {demandComplete && businessScore >= 90 && (
-        <Card className="border-2 border-green-500 rounded-lg bg-green-50">
+        <Card className="border-2 border-green-500 rounded-lg bg-green-50 dark:bg-green-950/30">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center">
                 <Zap className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h4 className="font-bold text-green-800 text-lg">MUST-DO NOW</h4>
-                <p className="text-sm text-green-700">
+                <h4 className="font-bold text-green-800 dark:text-green-200 text-lg">MUST-DO NOW</h4>
+                <p className="text-sm text-green-700 dark:text-green-300">
                   This demand has scored {businessScore}/100 and should be prioritized immediately for execution.
                 </p>
               </div>
@@ -104,15 +104,15 @@ export function BusinessScoreTab({ data, onChange }: BusinessScoreTabProps) {
       )}
 
       {demandComplete && businessScore >= 75 && businessScore < 90 && (
-        <Card className="border-2 border-emerald-500 rounded-lg bg-emerald-50">
+        <Card className="border-2 border-emerald-500 rounded-lg bg-emerald-50 dark:bg-emerald-950/30">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center">
                 <AlertTriangle className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h4 className="font-bold text-emerald-800 text-lg">HIGH PRIORITY</h4>
-                <p className="text-sm text-emerald-700">
+                <h4 className="font-bold text-emerald-800 dark:text-emerald-200 text-lg">HIGH PRIORITY</h4>
+                <p className="text-sm text-emerald-700 dark:text-emerald-300">
                   This demand has scored {businessScore}/100 and should be considered as a high priority item.
                 </p>
               </div>
@@ -278,18 +278,18 @@ export function BusinessScoreTab({ data, onChange }: BusinessScoreTabProps) {
           </Card>
 
           {/* Info Tooltip */}
-          <Card className="border border-blue-200 rounded-lg bg-blue-50/50">
+          <Card className="border border-blue-200 dark:border-blue-800 rounded-lg bg-blue-50/50 dark:bg-blue-950/30">
             <CardContent className="p-4">
               <div className="flex gap-3">
-                <Info className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
-                <div className="text-sm text-blue-800">
+                <Info className="h-5 w-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
+                <div className="text-sm text-blue-800 dark:text-blue-200">
                   <p className="font-medium mb-1">This Business Score combines:</p>
-                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-blue-700">
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-blue-700 dark:text-blue-300">
                     <span>• Business Value (45% weight)</span>
                     <span>• Executive Urgency (35% weight)</span>
                     <span>• Implementation Simplicity (20% weight)</span>
                   </div>
-                  <p className="text-blue-600 mt-2">
+                  <p className="text-blue-600 dark:text-blue-400 mt-2">
                     Use it to compare and rank demands in your backlog.
                   </p>
                 </div>
