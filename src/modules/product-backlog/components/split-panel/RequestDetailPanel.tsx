@@ -30,6 +30,7 @@ import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { format, parseISO } from 'date-fns';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings, getOwnerIdForDepartment } from '@/hooks/useDepartmentsAndOwners';
 
 interface RequestItem {
   id: string;
@@ -87,8 +88,8 @@ const QUARTER_OPTIONS = [
   'Q1 2027', 'Q2 2027',
 ];
 
-// Department options - fetched from DB ideally, but fallback options
-const DEPARTMENT_OPTIONS = [
+// Fallback department options (used if DB fetch fails)
+const FALLBACK_DEPARTMENT_OPTIONS = [
   'Standard Incentive',
   'Special Programs',
   'Investment Services',
@@ -205,6 +206,11 @@ export function RequestDetailPanel({
   onLink,
   onScore,
 }: RequestDetailPanelProps) {
+  // Fetch departments and business owners from DB
+  const { data: departments = [] } = useDepartments();
+  const { data: businessOwners = [] } = useBusinessOwners();
+  const { data: departmentOwnerMappings = [] } = useDepartmentOwnerMappings();
+
   // Fetch attachment count
   const { data: attachmentCount = 0 } = useQuery({
     queryKey: ['business-request-attachments-count', request?._dbId],
@@ -221,6 +227,28 @@ export function RequestDetailPanel({
     },
     enabled: !!request?._dbId,
   });
+
+  // Handle department change - auto-set business owner from mapping
+  const handleDepartmentChange = (departmentId: string) => {
+    // Find department by ID or name
+    const dept = departments.find(d => d.id === departmentId || d.name === departmentId);
+    const deptId = dept?.id || departmentId;
+    const deptName = dept?.name || departmentId;
+    
+    // Update department
+    onUpdateField('department', deptName);
+    onUpdateField('departmentId', deptId);
+    
+    // Auto-set business owner from mapping
+    const ownerId = getOwnerIdForDepartment(deptId, departmentOwnerMappings);
+    if (ownerId) {
+      const owner = businessOwners.find(o => o.id === ownerId);
+      if (owner) {
+        onUpdateField('businessOwner', owner.name);
+        onUpdateField('businessOwnerId', owner.id);
+      }
+    }
+  };
 
   if (!request) {
     return (
@@ -450,29 +478,30 @@ export function RequestDetailPanel({
             </div>
           </div>
 
-          {/* Row 4: Department | EA Review */}
+          {/* Row 4: Department | EA Review Required? */}
           <div className="grid grid-cols-2 gap-6">
             <div>
               <FieldLabel>Department</FieldLabel>
               <Select 
-                value={request.department || ''} 
-                onValueChange={(value) => onUpdateField('department', value)}
+                value={request.departmentId || request.department || ''} 
+                onValueChange={handleDepartmentChange}
               >
                 <SelectTrigger className="w-full h-10">
                   <SelectValue placeholder="Select department" />
                 </SelectTrigger>
                 <SelectContent>
-                  {DEPARTMENT_OPTIONS.map((d) => (
-                    <SelectItem key={d} value={d}>{d}</SelectItem>
+                  {(departments.length > 0 ? departments : FALLBACK_DEPARTMENT_OPTIONS.map(name => ({ id: name, name }))).map((d) => (
+                    <SelectItem key={typeof d === 'string' ? d : d.id} value={typeof d === 'string' ? d : d.id}>
+                      {typeof d === 'string' ? d : d.name}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
 
             <div>
-              <FieldLabel>EA Review</FieldLabel>
               <div 
-                className="h-10 px-3 rounded-md flex items-center gap-3"
+                className="h-10 px-3 rounded-md flex items-center gap-3 mt-6"
                 style={{ backgroundColor: 'hsl(var(--secondary-olive) / 0.08)', border: '1px solid hsl(var(--secondary-olive) / 0.2)' }}
               >
                 <Checkbox 
@@ -482,7 +511,7 @@ export function RequestDetailPanel({
                   className="data-[state=checked]:bg-[hsl(var(--secondary-olive))] data-[state=checked]:border-[hsl(var(--secondary-olive))]"
                 />
                 <label htmlFor="ea-review" className="text-sm font-medium" style={{ color: 'var(--text-1)' }}>
-                  Required
+                  EA Review Required?
                 </label>
               </div>
             </div>
