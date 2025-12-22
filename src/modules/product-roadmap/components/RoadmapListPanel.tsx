@@ -1,5 +1,6 @@
 /**
  * Left panel containing the list of demands with drag & drop support
+ * Enterprise-grade styling with Catalyst colors
  */
 
 import React from 'react';
@@ -8,6 +9,7 @@ import { RoadmapListRow } from './RoadmapListRow';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { RoadmapDemand, RoadmapGroup } from '../types/roadmap';
 import { ChevronDown, ChevronRight } from 'lucide-react';
+import { catalystTokens } from '../lib/design-tokens';
 
 interface RoadmapListPanelProps {
   items: RoadmapDemand[];
@@ -26,21 +28,37 @@ export function RoadmapListPanel({
   selectedItemId,
   onItemClick,
   onToggleGroup,
-  listWidth = 360,
+  listWidth = 380,
 }: RoadmapListPanelProps) {
   // If groups are provided, render grouped view (no DnD for now)
   if (groups && groups.length > 0) {
     return (
       <div 
-        className="border-r border-border bg-card flex-shrink-0 flex flex-col"
-        style={{ width: listWidth }}
+        className="flex-shrink-0 flex flex-col"
+        style={{ 
+          width: listWidth,
+          backgroundColor: catalystTokens.light.surface.card,
+          borderRight: `1px solid ${catalystTokens.light.border.default}`,
+        }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-3 py-2 border-b border-border bg-muted/30">
-          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+        <div 
+          className="flex items-center justify-between px-4 py-3"
+          style={{
+            borderBottom: `1px solid ${catalystTokens.light.border.default}`,
+            backgroundColor: catalystTokens.light.surface.card,
+          }}
+        >
+          <span 
+            className="text-xs font-semibold uppercase tracking-wider"
+            style={{ color: catalystTokens.light.text.muted }}
+          >
             Demands
           </span>
-          <span className="text-xs text-muted-foreground">
+          <span 
+            className="text-xs font-medium"
+            style={{ color: catalystTokens.light.text.secondary }}
+          >
             {items.length} items
           </span>
         </div>
@@ -48,16 +66,26 @@ export function RoadmapListPanel({
         <ScrollArea className="flex-1">
           <div role="table">
             {groups.map((group) => (
-              <div key={group.key} className="border-b border-border last:border-b-0">
+              <div 
+                key={group.key} 
+                style={{ borderBottom: `1px solid ${catalystTokens.light.border.subtle}` }}
+              >
                 {/* Group header */}
                 <button
                   onClick={() => onToggleGroup?.(group.key)}
-                  className="w-full flex items-center gap-2 px-3 py-2 bg-muted/50 hover:bg-muted transition-colors"
+                  className="w-full flex items-center gap-2 px-4 py-2.5 transition-colors"
+                  style={{ backgroundColor: catalystTokens.light.surface.hover }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.backgroundColor = catalystTokens.light.surface.active;
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.backgroundColor = catalystTokens.light.surface.hover;
+                  }}
                 >
                   {group.isExpanded ? (
-                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                    <ChevronDown className="w-4 h-4" style={{ color: catalystTokens.light.text.muted }} />
                   ) : (
-                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    <ChevronRight className="w-4 h-4" style={{ color: catalystTokens.light.text.muted }} />
                   )}
                   {group.color && (
                     <div 
@@ -65,10 +93,16 @@ export function RoadmapListPanel({
                       style={{ backgroundColor: group.color }}
                     />
                   )}
-                  <span className="text-sm font-medium text-foreground">
+                  <span 
+                    className="text-sm font-semibold"
+                    style={{ color: catalystTokens.light.text.primary }}
+                  >
                     {group.label}
                   </span>
-                  <span className="text-xs text-muted-foreground ml-auto">
+                  <span 
+                    className="text-xs font-medium ml-auto"
+                    style={{ color: catalystTokens.light.text.muted }}
+                  >
                     {group.items.length}
                   </span>
                 </button>
@@ -102,15 +136,31 @@ export function RoadmapListPanel({
   // Flat list view with drag & drop
   return (
     <div 
-      className="border-r border-border bg-card flex-shrink-0 flex flex-col"
-      style={{ width: listWidth }}
+      className="flex-shrink-0 flex flex-col"
+      style={{ 
+        width: listWidth,
+        backgroundColor: catalystTokens.light.surface.card,
+        borderRight: `1px solid ${catalystTokens.light.border.default}`,
+      }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-3 py-2 border-b border-border bg-muted/30">
-        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+      <div 
+        className="flex items-center justify-between px-4 py-3"
+        style={{
+          borderBottom: `1px solid ${catalystTokens.light.border.default}`,
+          backgroundColor: catalystTokens.light.surface.card,
+        }}
+      >
+        <span 
+          className="text-xs font-semibold uppercase tracking-wider"
+          style={{ color: catalystTokens.light.text.muted }}
+        >
           Demands
         </span>
-        <span className="text-xs text-muted-foreground">
+        <span 
+          className="text-xs font-medium"
+          style={{ color: catalystTokens.light.text.secondary }}
+        >
           {items.length} items
         </span>
       </div>
@@ -122,7 +172,11 @@ export function RoadmapListPanel({
               ref={provided.innerRef}
               {...provided.droppableProps}
               role="table"
-              className={snapshot.isDraggingOver ? 'bg-accent/20' : ''}
+              style={{
+                backgroundColor: snapshot.isDraggingOver 
+                  ? catalystTokens.light.surface.active 
+                  : 'transparent',
+              }}
             >
               {items.map((item, index) => (
                 <Draggable key={item.id} draggableId={item.id} index={index}>

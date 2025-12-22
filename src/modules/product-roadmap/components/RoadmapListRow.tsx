@@ -1,11 +1,11 @@
 /**
  * Individual row component for the list panel
+ * Enterprise-grade styling with Catalyst design tokens
  */
 
 import React from 'react';
 import { GripVertical } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import type { RoadmapDemand } from '../types/roadmap';
 import { catalystTokens } from '../lib/design-tokens';
@@ -19,27 +19,71 @@ interface RoadmapListRowProps {
   isDragging?: boolean;
 }
 
-const getStatusColor = (status: string | null): string => {
-  const colors: Record<string, string> = {
-    draft: 'bg-muted text-muted-foreground',
-    submitted: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-    in_review: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-    approved: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-    rejected: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-    in_progress: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
-    completed: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
-    cancelled: 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400',
+// Status badge styling - visible and branded
+const getStatusStyle = (status: string | null): { bg: string; text: string; border: string } => {
+  const styles: Record<string, { bg: string; text: string; border: string }> = {
+    new_request: {
+      bg: 'rgba(198, 156, 109, 0.15)',
+      text: '#b8894d',
+      border: 'rgba(198, 156, 109, 0.3)',
+    },
+    new_demand: {
+      bg: catalystTokens.secondary.olive.bg,
+      text: catalystTokens.secondary.olive.base,
+      border: 'rgba(92, 124, 92, 0.3)',
+    },
+    draft: {
+      bg: catalystTokens.secondary.grey.bg,
+      text: catalystTokens.light.text.secondary,
+      border: 'rgba(200, 204, 208, 0.3)',
+    },
+    submitted: {
+      bg: catalystTokens.status.info.bg,
+      text: catalystTokens.status.info.text,
+      border: 'rgba(59, 130, 246, 0.2)',
+    },
+    in_review: {
+      bg: catalystTokens.status.warning.bg,
+      text: catalystTokens.status.warning.text,
+      border: 'rgba(245, 158, 11, 0.2)',
+    },
+    approved: {
+      bg: catalystTokens.status.success.bg,
+      text: catalystTokens.status.success.text,
+      border: 'rgba(34, 197, 94, 0.2)',
+    },
+    rejected: {
+      bg: catalystTokens.status.danger.bg,
+      text: catalystTokens.status.danger.text,
+      border: 'rgba(239, 68, 68, 0.2)',
+    },
+    in_progress: {
+      bg: catalystTokens.status.info.bg,
+      text: catalystTokens.status.info.text,
+      border: 'rgba(59, 130, 246, 0.2)',
+    },
+    completed: {
+      bg: catalystTokens.status.success.bg,
+      text: catalystTokens.status.success.text,
+      border: 'rgba(34, 197, 94, 0.2)',
+    },
+    cancelled: {
+      bg: catalystTokens.secondary.grey.bg,
+      text: catalystTokens.light.text.muted,
+      border: 'rgba(200, 204, 208, 0.3)',
+    },
   };
-  return colors[status || 'draft'] || colors.draft;
+  return styles[status || 'draft'] || styles.draft;
 };
 
-const getHealthColor = (health: string | null): string => {
-  const colors: Record<string, string> = {
-    on_track: 'text-green-600 dark:text-green-400',
-    at_risk: 'text-amber-600 dark:text-amber-400',
-    off_track: 'text-red-600 dark:text-red-400',
+// Health indicator styling
+const getHealthStyle = (health: string | null): { color: string; label: string } => {
+  const styles: Record<string, { color: string; label: string }> = {
+    on_track: { color: catalystTokens.status.success.text, label: 'On Track' },
+    at_risk: { color: catalystTokens.status.warning.text, label: 'At Risk' },
+    off_track: { color: catalystTokens.status.danger.text, label: 'Off Track' },
   };
-  return colors[health || ''] || 'text-muted-foreground';
+  return styles[health || ''] || { color: catalystTokens.light.text.muted, label: '' };
 };
 
 export function RoadmapListRow({
@@ -51,6 +95,8 @@ export function RoadmapListRow({
   isDragging,
 }: RoadmapListRowProps) {
   const productColor = item.product?.color || catalystTokens.secondary.grey.base;
+  const statusStyle = getStatusStyle(item.process_step);
+  const healthStyle = getHealthStyle(item.health);
   
   return (
     <div
@@ -58,22 +104,41 @@ export function RoadmapListRow({
       tabIndex={0}
       data-row-index={index}
       onClick={onClick}
+      onKeyDown={(e) => e.key === 'Enter' && onClick()}
       className={cn(
-        'group flex items-center gap-2 px-3 py-2.5 border-b border-border cursor-pointer transition-colors',
-        'hover:bg-accent/50',
-        isFocused && 'ring-2 ring-inset ring-primary',
-        isSelected && 'bg-accent',
-        isDragging && 'opacity-50 bg-muted'
+        'group flex items-center gap-2 px-3 py-2.5 min-h-[64px] cursor-pointer transition-colors',
+        'border-b',
+        isDragging && 'opacity-50'
       )}
+      style={{
+        backgroundColor: isSelected 
+          ? catalystTokens.light.surface.active 
+          : isDragging 
+            ? catalystTokens.light.surface.hover
+            : 'transparent',
+        borderColor: catalystTokens.light.border.subtle,
+        outline: isFocused ? `2px solid ${catalystTokens.brand.primary}` : 'none',
+        outlineOffset: '-2px',
+      }}
+      onMouseEnter={(e) => {
+        if (!isSelected && !isDragging) {
+          (e.currentTarget as HTMLElement).style.backgroundColor = catalystTokens.light.surface.active;
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!isSelected && !isDragging) {
+          (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
+        }
+      }}
     >
       {/* Drag handle */}
-      <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 cursor-grab active:cursor-grabbing">
-        <GripVertical className="w-4 h-4 text-muted-foreground" />
+      <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 cursor-grab active:cursor-grabbing transition-opacity">
+        <GripVertical className="w-4 h-4" style={{ color: catalystTokens.light.text.muted }} />
       </div>
 
       {/* Product color indicator */}
       <div 
-        className="w-1 h-8 rounded-full flex-shrink-0"
+        className="w-1 h-10 rounded-full flex-shrink-0"
         style={{ backgroundColor: productColor }}
       />
 
@@ -81,49 +146,74 @@ export function RoadmapListRow({
       <div className="flex-1 min-w-0">
         {/* Key and title row */}
         <div className="flex items-center gap-2 mb-1">
-          <span className="text-xs font-medium text-muted-foreground flex-shrink-0">
+          <span 
+            className="text-xs font-mono flex-shrink-0"
+            style={{ color: catalystTokens.light.text.muted }}
+          >
             {item.request_key}
           </span>
-          <span className="text-sm font-medium text-foreground truncate">
+          <span 
+            className="text-sm font-semibold truncate leading-tight"
+            style={{ color: catalystTokens.light.text.primary }}
+          >
             {item.title}
           </span>
         </div>
 
         {/* Meta row */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          {/* Product name with color dot */}
           {item.product && (
-            <span className="text-xs text-muted-foreground truncate max-w-[100px]">
-              {item.product.name}
-            </span>
+            <div className="flex items-center gap-1.5">
+              <div 
+                className="w-2 h-2 rounded-full flex-shrink-0"
+                style={{ backgroundColor: productColor }}
+              />
+              <span 
+                className="text-xs truncate max-w-[100px]"
+                style={{ color: catalystTokens.light.text.secondary }}
+              >
+                {item.product.name}
+              </span>
+            </div>
           )}
           
           {/* Progress indicator */}
           {item.progress > 0 && (
             <div className="flex items-center gap-1.5 flex-shrink-0">
               <Progress value={item.progress} className="w-12 h-1.5" />
-              <span className="text-[10px] text-muted-foreground">{item.progress}%</span>
+              <span 
+                className="text-[10px] font-medium"
+                style={{ color: catalystTokens.light.text.muted }}
+              >
+                {item.progress}%
+              </span>
             </div>
           )}
 
           {/* Health indicator */}
-          {item.health && (
-            <span className={cn('text-[10px] font-medium', getHealthColor(item.health))}>
-              {item.health.replace('_', ' ')}
+          {healthStyle.label && (
+            <span 
+              className="text-[10px] font-semibold uppercase tracking-wide"
+              style={{ color: healthStyle.color }}
+            >
+              {healthStyle.label}
             </span>
           )}
         </div>
       </div>
 
-      {/* Status badge */}
-      <Badge 
-        variant="secondary" 
-        className={cn(
-          'flex-shrink-0 text-[10px] px-2 py-0.5',
-          getStatusColor(item.process_step)
-        )}
+      {/* Status badge - visible and branded */}
+      <span 
+        className="flex-shrink-0 px-2 py-0.5 rounded text-[11px] font-semibold uppercase tracking-wide"
+        style={{
+          backgroundColor: statusStyle.bg,
+          color: statusStyle.text,
+          border: `1px solid ${statusStyle.border}`,
+        }}
       >
-        {(item.process_step || 'draft').replace('_', ' ')}
-      </Badge>
+        {(item.process_step || 'draft').replace(/_/g, ' ')}
+      </span>
     </div>
   );
 }

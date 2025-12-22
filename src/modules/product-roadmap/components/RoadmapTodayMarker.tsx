@@ -1,5 +1,5 @@
 /**
- * Today marker line for the timeline
+ * Today marker line for the timeline - Uses Catalyst olive color
  */
 
 import React from 'react';
@@ -19,15 +19,28 @@ export function RoadmapTodayMarker({ position }: RoadmapTodayMarkerProps) {
       {/* Diamond indicator at top */}
       <div className="absolute -top-1 -translate-x-1/2">
         <div 
-          className="w-3 h-3 rotate-45 bg-destructive border-2 border-background shadow-sm"
+          className="w-3 h-3 rotate-45 shadow-sm"
+          style={{ 
+            backgroundColor: '#5c7c5c',
+            border: '2px solid var(--background)'
+          }}
         />
       </div>
       
-      {/* Vertical line */}
-      <div className="w-[2px] h-full bg-destructive/70" />
+      {/* Vertical line - Catalyst olive */}
+      <div 
+        className="w-0.5 h-full"
+        style={{ backgroundColor: '#5c7c5c' }}
+      />
       
       {/* Today label */}
-      <div className="absolute top-6 -translate-x-1/2 px-1.5 py-0.5 bg-destructive text-destructive-foreground text-[10px] font-medium rounded whitespace-nowrap">
+      <div 
+        className="absolute top-6 -translate-x-1/2 px-2 py-0.5 text-[10px] font-semibold rounded whitespace-nowrap"
+        style={{
+          backgroundColor: '#5c7c5c',
+          color: '#ffffff'
+        }}
+      >
         Today
       </div>
     </div>
