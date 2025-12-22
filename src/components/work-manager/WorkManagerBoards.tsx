@@ -5,7 +5,8 @@ import { useMemo, useState } from 'react';
 import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
 import { MoreHorizontal, CheckCircle2, Plus, Settings, EyeOff, Trash2, Eye, Users, Calendar, User } from 'lucide-react';
 import { TaskCard } from './TaskCard';
-import { defaultColumns, users, teams } from '@/lib/work-manager-data';
+import { users, teams } from '@/lib/work-manager-data';
+import { useWorkManagerColumns } from '@/hooks/useWorkManagerColumns';
 import type { TaskExtended, KanbanColumn, TaskStatus, GroupByOption, Team, User as UserType } from './types';
 import { cn } from '@/lib/utils';
 import {
@@ -62,7 +63,7 @@ export function WorkManagerBoards({
   teamsData = teams,
   usersData = users,
 }: WorkManagerBoardsProps) {
-  const [statusColumns, setStatusColumns] = useState<KanbanColumn[]>(defaultColumns);
+  const { columns: statusColumns, updateColumn } = useWorkManagerColumns();
   const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(new Set());
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingColumn, setEditingColumn] = useState<KanbanColumn | null>(null);
@@ -173,9 +174,7 @@ export function WorkManagerBoards({
   };
 
   const handleSaveColumn = (columnId: string, newName: string) => {
-    setStatusColumns(prev => prev.map(col => 
-      col.id === columnId ? { ...col, name: newName } : col
-    ));
+    updateColumn(columnId, { name: newName });
   };
 
   const handleHideColumn = (columnId: string) => {
