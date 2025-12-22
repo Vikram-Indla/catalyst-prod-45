@@ -1,18 +1,15 @@
 /**
- * Product Backlog Page - Uses CatalystEnterpriseTable for Business Requests
- * Uses PageChrome for consistent header
- * Shares state with Kanban view via useIndustryViewStore
+ * Product Backlog Page - Split Panel Layout
+ * Left panel: Compact list of requests
+ * Right panel: Full detail view of selected request
  */
 
 import React, { useState, useMemo, useCallback } from 'react';
 import { useBusinessRequests } from '@/hooks/useBusinessRequests';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
-import { ProductBacklogEnterpriseTable } from '../components/ProductBacklogEnterpriseTable';
 import { ProductBacklogFiltersDialog, ProductBacklogFilters } from '../components/ProductBacklogFiltersDialog';
-import { DemandBulkActionsBar } from '@/components/demand/DemandBulkActionsBar';
-import { DemandBulkStatusModal } from '@/components/demand/DemandBulkStatusModal';
-import { DemandBulkDeleteModal } from '@/components/demand/DemandBulkDeleteModal';
+import { RequestListPanel, RequestDetailPanel } from '../components/split-panel';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
@@ -20,6 +17,41 @@ import { PageChrome } from '@/components/layout/PageChrome';
 import { useIndustryViewStore } from '@/stores/useIndustryViewStore';
 import { IndustryHeaderToolbarV2 } from '@/shared/components/IndustryHeaderToolbarV2';
 import { format } from 'date-fns';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+
+interface RequestItem {
+  id: string;
+  _dbId: string;
+  summary: string;
+  processStep: string;
+  score: number | null;
+  autoPriority: string;
+  rank: number | null;
+  reporter?: string | null;
+  assignee?: string | null;
+  assigneeId?: string | null;
+  department: string | null;
+  departmentId?: string | null;
+  businessOwner?: string | null;
+  businessOwnerId?: string | null;
+  businessAsk?: string | null;
+  kickoff?: string | null;
+  targetComplete?: string | null;
+  deliveryTrack?: string | null;
+  platform?: string | null;
+  quarter: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+}
 
 export default function ProductBacklogPage() {
   const queryClient = useQueryClient();
@@ -32,20 +64,21 @@ export default function ProductBacklogPage() {
     setScoringFilter
   } = useIndustryViewStore();
   
+  // Local search for list panel (separate from toolbar search)
+  const [listSearchQuery, setListSearchQuery] = useState('');
+  const [activeFilter, setActiveFilter] = useState<'all' | 'high' | 'unscored' | 'my'>('all');
+  
   // Use the shared query with search
   const { data: businessRequests = [], isLoading } = useBusinessRequests(searchQuery);
-  const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
+  const [selectedRequest, setSelectedRequest] = useState<RequestItem | null>(null);
+  const [drawerRequestId, setDrawerRequestId] = useState<string | null>(null);
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [filtersDialogOpen, setFiltersDialogOpen] = useState(false);
   const [filters, setFilters] = useState<ProductBacklogFilters>({});
-  
-  // Bulk action modals
-  const [bulkStatusModalOpen, setBulkStatusModalOpen] = useState(false);
-  const [bulkDeleteModalOpen, setBulkDeleteModalOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   // Transform business requests to match table format
-  const tableData = useMemo(() => {
+  const tableData: RequestItem[] = useMemo(() => {
     let data = businessRequests.map((br: any) => ({
       id: br.request_key || br.id?.slice(0, 8) || '—',
       _dbId: br.id,
@@ -111,48 +144,121 @@ export default function ProductBacklogPage() {
     return data;
   }, [businessRequests, scoringFilter, filters]);
 
-  const getDbIdFromDisplayId = (displayId: string) => {
-    const originalRequest = businessRequests.find((br: any) => 
-      (br.request_key || br.id?.slice(0, 8)) === displayId
-    );
-    return originalRequest?.id || null;
-  };
-
-  const handleOpenFullView = (requestId: string) => {
-    const dbId = getDbIdFromDisplayId(requestId);
-    if (dbId) {
-      setSelectedRequestId(dbId);
+  // Filter and sort for list panel
+  const sortedRequests = useMemo(() => {
+    let filtered = [...tableData];
+    
+    // Apply list search
+    if (listSearchQuery) {
+      const query = listSearchQuery.toLowerCase();
+      filtered = filtered.filter(r => 
+        r.summary.toLowerCase().includes(query) ||
+        r.id.toLowerCase().includes(query)
+      );
     }
-  };
+    
+    // Apply quick filter
+    if (activeFilter === 'high') {
+      filtered = filtered.filter(r => 
+        r.autoPriority?.toLowerCase() === 'high' || 
+        r.autoPriority?.toLowerCase() === 'critical'
+      );
+    } else if (activeFilter === 'unscored') {
+      filtered = filtered.filter(r => 
+        r.autoPriority?.toLowerCase() === 'unscored' || r.score === null
+      );
+    }
+    // 'my' filter would need user context - skip for now
+    
+    // Sort: ranked first, then by score
+    return filtered.sort((a, b) => {
+      if (a.rank && b.rank) return a.rank - b.rank;
+      if (a.rank && !b.rank) return -1;
+      if (!a.rank && b.rank) return 1;
+      return (b.score || 0) - (a.score || 0);
+    });
+  }, [tableData, listSearchQuery, activeFilter]);
 
-  const handleFieldUpdate = async (requestId: string, field: string, value: any) => {
-    const dbId = getDbIdFromDisplayId(requestId);
-    if (!dbId) return;
+  // Handle field update
+  const handleFieldUpdate = async (field: string, value: any) => {
+    if (!selectedRequest) return;
 
     const fieldMap: Record<string, string> = {
       processStep: 'process_step',
       department: 'department',
       platform: 'delivery_platform',
       summary: 'title',
+      autoPriority: 'priority_tier',
+      quarter: 'planned_quarter',
     };
 
     const dbField = fieldMap[field] || field;
+    const dbValue = field === 'quarter' ? [value] : value;
     
     const { error } = await supabase
       .from('business_requests')
-      .update({ [dbField]: value })
-      .eq('id', dbId);
+      .update({ [dbField]: dbValue })
+      .eq('id', selectedRequest._dbId);
 
-    if (error) throw error;
+    if (error) {
+      toast.error(`Failed to update: ${error.message}`);
+      return;
+    }
+
+    // Update local state
+    setSelectedRequest(prev => prev ? { ...prev, [field]: value } : null);
     queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+    toast.success('Updated successfully');
   };
 
-  const handleItemSelect = (itemId: string, selected: boolean) => {
-    if (selected) {
-      setSelectedRows(prev => [...prev, itemId]);
-    } else {
-      setSelectedRows(prev => prev.filter(id => id !== itemId));
+  // Handle clone
+  const handleClone = async () => {
+    if (!selectedRequest) return;
+    
+    // Fetch original and clone
+    const { data: original, error: fetchError } = await supabase
+      .from('business_requests')
+      .select('*')
+      .eq('id', selectedRequest._dbId)
+      .single();
+
+    if (fetchError || !original) {
+      toast.error('Failed to clone request');
+      return;
     }
+
+    const { id, request_key, created_at, updated_at, ...cloneData } = original;
+    const { error: insertError } = await supabase
+      .from('business_requests')
+      .insert({ ...cloneData, title: `${original.title} (Copy)` });
+
+    if (insertError) {
+      toast.error('Failed to clone request');
+      return;
+    }
+
+    queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+    toast.success('Request cloned');
+  };
+
+  // Handle delete
+  const handleDelete = async () => {
+    if (!selectedRequest) return;
+
+    const { error } = await supabase
+      .from('business_requests')
+      .update({ deleted_at: new Date().toISOString() })
+      .eq('id', selectedRequest._dbId);
+
+    if (error) {
+      toast.error('Failed to delete request');
+      return;
+    }
+
+    setSelectedRequest(null);
+    setDeleteDialogOpen(false);
+    queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+    toast.success('Request deleted');
   };
 
   // Export to CSV
@@ -165,7 +271,7 @@ export default function ProductBacklogPage() {
     try {
       const headers = ['Request ID', 'Summary', 'Status', 'Score', 'Priority', 'Rank', 'Department', 'Business Owner', 'Quarter', 'Created'];
       
-      const rows = tableData.map((item: any) => [
+      const rows = tableData.map((item) => [
         item.id || '',
         (item.summary || '').replace(/,/g, ';').replace(/\n/g, ' '),
         item.processStep?.replace(/_/g, ' ') || '',
@@ -200,46 +306,6 @@ export default function ProductBacklogPage() {
     }
   }, [tableData]);
 
-  // Bulk status update handler
-  const handleBulkStatusUpdate = async (newStatus: string) => {
-    const dbIds = selectedRows.map(getDbIdFromDisplayId).filter(Boolean);
-    if (dbIds.length === 0) return;
-
-    const { error } = await supabase
-      .from('business_requests')
-      .update({ process_step: newStatus })
-      .in('id', dbIds);
-
-    if (error) {
-      toast.error('Failed to update status');
-      return;
-    }
-
-    queryClient.invalidateQueries({ queryKey: ['business-requests'] });
-    setSelectedRows([]);
-    toast.success(`Updated ${dbIds.length} request(s)`);
-  };
-
-  // Bulk delete handler
-  const handleBulkDelete = async () => {
-    const dbIds = selectedRows.map(getDbIdFromDisplayId).filter(Boolean);
-    if (dbIds.length === 0) return;
-
-    const { error } = await supabase
-      .from('business_requests')
-      .update({ deleted_at: new Date().toISOString() })
-      .in('id', dbIds);
-
-    if (error) {
-      toast.error('Failed to delete requests');
-      return;
-    }
-
-    queryClient.invalidateQueries({ queryKey: ['business-requests'] });
-    setSelectedRows([]);
-    toast.success(`Deleted ${dbIds.length} request(s)`);
-  };
-
   // Calculate active filter count
   const activeFiltersCount = Object.values(filters).filter(v => v !== undefined && v !== 'all').length;
 
@@ -262,62 +328,74 @@ export default function ProductBacklogPage() {
 
   return (
     <PageChrome toolbar={toolbarElement}>
-      <div className="h-full flex flex-col" style={{ backgroundColor: 'var(--bg)' }}>
-        <div className="flex-1 p-4 overflow-auto">
-          <ProductBacklogEnterpriseTable
-            items={tableData}
+      <div className="h-full flex" style={{ backgroundColor: 'var(--bg)' }}>
+        {/* Left Panel - List (380px) */}
+        <div className="w-[380px] shrink-0">
+          <RequestListPanel
+            requests={sortedRequests}
+            selectedRequestId={selectedRequest?._dbId || null}
+            onSelectRequest={(req) => setSelectedRequest(req)}
+            searchQuery={listSearchQuery}
+            onSearchChange={setListSearchQuery}
+            activeFilter={activeFilter}
+            onFilterChange={setActiveFilter}
+            onCreateRequest={() => setCreateModalOpen(true)}
             isLoading={isLoading}
-            selectedItems={selectedRows}
-            onItemClick={handleOpenFullView}
-            onItemSelect={handleItemSelect}
-            onFieldUpdate={handleFieldUpdate}
           />
         </div>
 
-        {/* Bulk Actions Bar */}
-        <DemandBulkActionsBar
-          selectedCount={selectedRows.length}
-          onClear={() => setSelectedRows([])}
-          onUpdateStatus={() => setBulkStatusModalOpen(true)}
-          onDelete={() => setBulkDeleteModalOpen(true)}
-        />
-
-        {/* Bulk Status Update Modal */}
-        <DemandBulkStatusModal
-          isOpen={bulkStatusModalOpen}
-          onClose={() => setBulkStatusModalOpen(false)}
-          onConfirm={handleBulkStatusUpdate}
-          selectedCount={selectedRows.length}
-        />
-
-        {/* Bulk Delete Modal */}
-        <DemandBulkDeleteModal
-          isOpen={bulkDeleteModalOpen}
-          onClose={() => setBulkDeleteModalOpen(false)}
-          onConfirm={handleBulkDelete}
-          selectedCount={selectedRows.length}
-        />
-
-        {/* Filters Dialog */}
-        <ProductBacklogFiltersDialog
-          open={filtersDialogOpen}
-          onOpenChange={setFiltersDialogOpen}
-          filters={filters}
-          onFiltersChange={setFilters}
-        />
-
-        <BusinessRequestDrawer
-          isOpen={!!selectedRequestId}
-          onClose={() => setSelectedRequestId(null)}
-          requestId={selectedRequestId}
-          onRequestChange={() => queryClient.invalidateQueries({ queryKey: ['business-requests'] })}
-        />
-
-        <CreateBusinessRequestModal 
-          isOpen={createModalOpen} 
-          onClose={() => setCreateModalOpen(false)} 
-        />
+        {/* Right Panel - Detail (flex-1) */}
+        <div className="flex-1 min-w-0">
+          <RequestDetailPanel
+            request={selectedRequest}
+            onUpdateField={handleFieldUpdate}
+            onEdit={() => selectedRequest && setDrawerRequestId(selectedRequest._dbId)}
+            onClone={handleClone}
+            onDelete={() => setDeleteDialogOpen(true)}
+            onOpenDrawer={() => selectedRequest && setDrawerRequestId(selectedRequest._dbId)}
+          />
+        </div>
       </div>
+
+      {/* Filters Dialog */}
+      <ProductBacklogFiltersDialog
+        open={filtersDialogOpen}
+        onOpenChange={setFiltersDialogOpen}
+        filters={filters}
+        onFiltersChange={setFilters}
+      />
+
+      {/* Business Request Drawer */}
+      <BusinessRequestDrawer
+        isOpen={!!drawerRequestId}
+        onClose={() => setDrawerRequestId(null)}
+        requestId={drawerRequestId}
+        onRequestChange={() => queryClient.invalidateQueries({ queryKey: ['business-requests'] })}
+      />
+
+      {/* Create Modal */}
+      <CreateBusinessRequestModal 
+        isOpen={createModalOpen} 
+        onClose={() => setCreateModalOpen(false)} 
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Request</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{selectedRequest?.summary}"? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </PageChrome>
   );
 }
