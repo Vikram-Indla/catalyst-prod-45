@@ -129,10 +129,20 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
 
   // Task data with computed fields
   const [taskData, setTaskData] = useState(tasks);
-  const extendedTasks: TaskExtended[] = useMemo(
-    () => taskData.map(computeTaskExtended),
-    [taskData]
+  
+  // Filter tasks to only show those from accessible teams (security enforcement)
+  const accessibleTeamIds = useMemo(() => 
+    new Set(teamsData.map(t => t.id)), 
+    [teamsData]
   );
+  
+  const extendedTasks: TaskExtended[] = useMemo(() => {
+    // Only show tasks from teams the user has access to
+    const accessibleTasks = taskData.filter(task => 
+      accessibleTeamIds.has(task.teamId) || canViewAllTeams
+    );
+    return accessibleTasks.map(computeTaskExtended);
+  }, [taskData, accessibleTeamIds, canViewAllTeams]);
 
   // Count active filters
   const activeFilterCount = useMemo(() => {
