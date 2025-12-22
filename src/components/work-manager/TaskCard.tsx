@@ -48,13 +48,13 @@ export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
     }
   };
 
-  // Type icon config
+  // Type icon config - subtle gray text only
   const getTypeConfig = (type: string) => {
     switch (type) {
-      case 'Project': return { icon: Folder, color: 'text-olive-500 border-olive-200 bg-olive-50' };
-      case 'Task': return { icon: CheckSquare, color: 'text-blue-500 border-blue-200 bg-blue-50' };
-      case 'General': return { icon: FileText, color: 'text-stone-500 border-stone-200 bg-stone-50' };
-      default: return { icon: FileText, color: 'text-stone-500 border-stone-200 bg-stone-50' };
+      case 'Project': return { icon: Folder };
+      case 'Task': return { icon: CheckSquare };
+      case 'General': return { icon: FileText };
+      default: return { icon: FileText };
     }
   };
 
@@ -82,10 +82,10 @@ export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
         // Dragging state
         isDragging && 'shadow-hover cursor-grabbing rotate-1 scale-[1.02]',
         !isDragging && 'cursor-grab',
-        // Blocked styling - accent bar on left
-        task.blocked && 'border-l-[3px] border-l-red-500 bg-gradient-to-r from-red-50/50 to-transparent',
+        // Blocked styling - red left border only, no background tint
+        task.blocked && 'border-l-[3px] border-l-red-500',
         // Done styling - subtle fade
-        isDone && !task.blocked && 'opacity-60 bg-stone-50/50',
+        isDone && !task.blocked && 'opacity-60 bg-stone-50/50 dark:bg-gray-800/50',
         // Dark mode
         'dark:bg-gray-800 dark:border-gray-700 dark:hover:border-gray-600'
       )}
@@ -128,11 +128,8 @@ export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
 
       {/* Meta: Type, Priority, Linked Item */}
       <div className="flex flex-wrap items-center gap-2 mb-3 pl-5">
-        {/* Type - Premium pill with icon */}
-        <span className={cn(
-          "inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium rounded-md border",
-          typeConfig.color
-        )}>
+        {/* Type - Icon + text only, no background */}
+        <span className="inline-flex items-center gap-1.5 text-[11px] text-stone-500 dark:text-gray-400">
           <TypeIcon className="w-3 h-3" />
           {task.type}
         </span>
@@ -144,12 +141,12 @@ export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
             priorityStyles.dot,
             priorityStyles.glow
           )} />
-          <span className="text-[11px] text-stone-500">{task.priority}</span>
+          <span className="text-[11px] text-stone-500 dark:text-gray-400">{task.priority}</span>
         </div>
         
-        {/* Linked Item - Champagne tint with hover state */}
+        {/* Linked Item - subtle text only */}
         {task.linkedItem && (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-bronze-50 text-bronze-600 text-[11px] font-mono rounded border border-bronze-200 hover:bg-[#d4b896]/40 transition-colors cursor-pointer">
+          <span className="inline-flex items-center gap-1 text-[11px] text-stone-400 dark:text-gray-500 font-mono">
             <Link2 className="w-3 h-3" />
             {task.linkedItem.key}
           </span>
