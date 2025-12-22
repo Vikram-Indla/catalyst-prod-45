@@ -79,14 +79,14 @@ export function useCreateRoadmapView() {
 
       const { data, error } = await supabase
         .from('roadmap_views')
-        .insert({
+        .insert([{
           name,
           user_id: user.id,
-          filters: filters as unknown as Record<string, unknown>,
+          filters: JSON.parse(JSON.stringify(filters)),
           grouping,
           is_default,
           is_shared,
-        })
+        }])
         .select()
         .single();
 
