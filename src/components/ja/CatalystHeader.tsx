@@ -15,6 +15,7 @@ import { NotificationsPanel } from "./NotificationsPanel";
 import { ProgramSelectorDropdown } from "./ProgramSelectorDropdown";
 import { ProjectSelectorDropdown } from "./ProjectSelectorDropdown";
 import { ProductSelectorDropdown } from "./ProductSelectorDropdown";
+import { PlannerSelectorDropdown } from "./PlannerSelectorDropdown";
 import { MobileNavigationMenu } from "./MobileNavigationMenu";
 import { ReleaseDropdown } from "./ReleaseDropdown";
 import { catalystToast } from "@/lib/catalystToast";
@@ -116,7 +117,7 @@ export function CatalystHeader() {
     { label: "Program", hasDropdown: true, moduleCode: "PORTFOLIO" },
     { label: "Project", hasDropdown: true, moduleCode: "PROGRAM" },
     { label: "Release", hasDropdown: true, path: "/release", moduleCode: null }, // Always visible
-    { label: "Planner", path: "/planner", moduleCode: null }, // Always visible
+    { label: "Planner", hasDropdown: true, path: "/planner", moduleCode: null }, // Always visible - now with dropdown
   ];
 
   // Get all nav items with their enabled status
@@ -428,6 +429,46 @@ export function CatalystHeader() {
                         )}
                       </Popover>
                     )
+                  ) : item.label === "Planner" ? (
+                    // Planner: Dropdown with team selection
+                    <Popover
+                      open={activeDropdown === item.label}
+                      onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
+                    >
+                      <PopoverTrigger asChild>
+                        <button 
+                          style={{
+                            ...navButtonStyle,
+                            color: location.pathname.startsWith('/planner') ? 'var(--text-primary)' : navButtonStyle.color,
+                            fontWeight: location.pathname.startsWith('/planner') ? 600 : navButtonStyle.fontWeight,
+                            background: location.pathname.startsWith('/planner') ? 'var(--nav-active-bg)' : 'transparent',
+                          }}
+                          onMouseEnter={(e) => { if (!location.pathname.startsWith('/planner')) e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = location.pathname.startsWith('/planner') ? 'var(--nav-active-bg)' : 'transparent'; }}
+                        >
+                          {item.label}
+                          <ChevronDown style={{ width: '16px', height: '16px' }} />
+                          {location.pathname.startsWith('/planner') && (
+                            <span 
+                              style={{
+                                position: 'absolute',
+                                bottom: '-10px',
+                                left: '14px',
+                                right: '14px',
+                                height: '2px',
+                                background: 'var(--brand-active)',
+                                borderRadius: '1px',
+                              }}
+                            />
+                          )}
+                        </button>
+                      </PopoverTrigger>
+                      {activeDropdown === item.label && (
+                        <PopoverContent className="p-0 w-auto" align="start">
+                          <PlannerSelectorDropdown onClose={() => setActiveDropdown(null)} />
+                        </PopoverContent>
+                      )}
+                    </Popover>
                   ) : (
                     <button
                       style={navButtonStyle}

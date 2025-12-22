@@ -13,8 +13,7 @@ import {
   Search,
   Filter,
   ChevronDown,
-  X,
-  Lock
+  X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -43,7 +42,6 @@ import { teams as initialTeams, users, tasks, computeTaskExtended } from '@/lib/
 import type { TaskStatus, Team } from '@/components/work-manager/types';
 import type { TaskFilters, TaskDrawerState, TaskExtended, Task } from '@/components/work-manager/types';
 import { useAccessibleTeams, useCanViewAllTeams } from '@/hooks/useAccessibleTeams';
-import { Skeleton } from '@/components/ui/skeleton';
 
 interface WorkManagerProps {
   tab?: 'boards' | 'tasks' | 'insights' | 'teams' | 'settings';
@@ -57,9 +55,15 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
   const { data: accessibleTeams = [], isLoading: isTeamsLoading } = useAccessibleTeams();
   const { canViewAllTeams, isLoading: isRoleLoading } = useCanViewAllTeams();
   
+  // Get team ID from URL query parameter
+  const urlTeamId = useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    return params.get('team');
+  }, [location.search]);
+  
   // Determine active tab from URL or prop
   const activeTab = useMemo(() => {
-    const pathTab = location.pathname.split('/').pop();
+    const pathTab = location.pathname.split('/').pop()?.split('?')[0];
     const validTabs = ['boards', 'tasks', 'insights', 'teams', 'settings'];
     if (pathTab && validTabs.includes(pathTab)) {
       return pathTab as 'boards' | 'tasks' | 'insights' | 'teams' | 'settings';
@@ -67,7 +71,7 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
     return initialTab || 'boards';
   }, [location.pathname, initialTab]);
 
-  // Filter state
+  // Filter state - initialized from URL
   const [filters, setFilters] = useState<TaskFilters>({
     search: '',
     teamId: null,
@@ -79,15 +83,24 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
     showBlocked: null,
   });
 
-  // Auto-select first accessible team for non-admin/manager users
+  // Sync team filter from URL and auto-select for restricted users
   useEffect(() => {
-    if (!isTeamsLoading && !isRoleLoading && accessibleTeams.length > 0) {
-      // If user can't view all teams and no team is selected, auto-select first team
-      if (!canViewAllTeams && !filters.teamId) {
+    if (!isTeamsLoading && !isRoleLoading) {
+      if (urlTeamId) {
+        // Use team from URL if user has access to it
+        const hasAccess = canViewAllTeams || accessibleTeams.some(t => t.id === urlTeamId);
+        if (hasAccess) {
+          setFilters(prev => ({ ...prev, teamId: urlTeamId }));
+        } else if (accessibleTeams.length > 0) {
+          // Fallback to first accessible team
+          setFilters(prev => ({ ...prev, teamId: accessibleTeams[0].id }));
+        }
+      } else if (!canViewAllTeams && accessibleTeams.length > 0 && !filters.teamId) {
+        // Auto-select first team for non-admin users with no URL param
         setFilters(prev => ({ ...prev, teamId: accessibleTeams[0].id }));
       }
     }
-  }, [accessibleTeams, isTeamsLoading, isRoleLoading, canViewAllTeams, filters.teamId]);
+  }, [accessibleTeams, isTeamsLoading, isRoleLoading, canViewAllTeams, urlTeamId]);
 
   // Helper function to get team color based on type
   const getTeamColor = (teamType: string): string => {
@@ -290,39 +303,19 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
       {(activeTab === 'boards' || activeTab === 'tasks') && (
         <div className="flex items-center justify-between px-6 py-3 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-3">
-            {/* Team Selector */}
-            {isTeamsLoading || isRoleLoading ? (
-              <Skeleton className="w-[180px] h-9" />
-            ) : (
-              <div className="flex items-center gap-2">
-                <Select
-                  value={filters.teamId || 'all'}
-                  onValueChange={(v) => setFilters(prev => ({ ...prev, teamId: v === 'all' ? null : v }))}
-                  disabled={!canViewAllTeams && teamsData.length === 1}
-                >
-                  <SelectTrigger className="w-[180px] h-9 text-[13px] bg-white dark:bg-gray-900">
-                    <SelectValue placeholder={canViewAllTeams ? "All Teams" : "Select Team"} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {canViewAllTeams && (
-                      <SelectItem value="all">All Teams</SelectItem>
-                    )}
-                    {teamsData.map(team => (
-                      <SelectItem key={team.id} value={team.id}>{team.name}</SelectItem>
-                    ))}
-                    {teamsData.length === 0 && (
-                      <div className="px-3 py-2 text-[12px] text-muted-foreground">
-                        No teams available
-                      </div>
-                    )}
-                  </SelectContent>
-                </Select>
-                {!canViewAllTeams && (
-                  <div className="flex items-center gap-1 text-[11px] text-muted-foreground" title="You can only see teams you're a member of">
-                    <Lock className="w-3 h-3" />
-                    <span>My Teams</span>
-                  </div>
-                )}
+            {/* Current Team Indicator */}
+            {filters.teamId && (
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md">
+                <Users className="w-4 h-4 text-muted-foreground" />
+                <span className="text-[13px] font-medium text-foreground">
+                  {teamsData.find(t => t.id === filters.teamId)?.name || 'Team'}
+                </span>
+              </div>
+            )}
+            {!filters.teamId && canViewAllTeams && (
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md">
+                <Users className="w-4 h-4 text-muted-foreground" />
+                <span className="text-[13px] font-medium text-foreground">All Teams</span>
               </div>
             )}
 
