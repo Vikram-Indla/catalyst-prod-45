@@ -104,12 +104,12 @@ export function WorkManagerTasks({ tasks, onOpenTask }: WorkManagerTasksProps) {
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
-  // Status - colored text only, no backgrounds
-  const getStatusTextColor = (status: string) => {
+  // Status dot colors
+  const getStatusDotColor = (status: string) => {
     switch (status) {
-      case 'Done': return 'text-green-400';
-      case 'In Progress': return 'text-amber-400';
-      default: return 'text-gray-400';
+      case 'Done': return 'bg-green-500';
+      case 'In Progress': return 'bg-amber-500';
+      default: return 'bg-gray-300 dark:bg-gray-600';
     }
   };
 
@@ -205,11 +205,12 @@ export function WorkManagerTasks({ tasks, onOpenTask }: WorkManagerTasksProps) {
                     )}
                   </td>
                   
-                  {/* Status - colored text only */}
+                  {/* Status - tiny dot + gray text */}
                   <td className="px-4 py-3">
-                    <span className={cn('text-[12px] font-medium', getStatusTextColor(task.status))}>
-                      {task.status}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <div className={cn('w-1.5 h-1.5 rounded-full shrink-0', getStatusDotColor(task.status))} />
+                      <span className="text-[13px] text-gray-600 dark:text-gray-400">{task.status}</span>
+                    </div>
                   </td>
                   
                   {/* Priority - dot + gray text */}
