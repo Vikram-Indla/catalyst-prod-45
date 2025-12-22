@@ -37,7 +37,7 @@ import { DemandDetailsViewTab } from './drawer-tabs/DemandDetailsViewTab';
 import { BusinessScoreViewTab } from './drawer-tabs/BusinessScoreViewTab';
 import { BudgetViewTab } from './drawer-tabs/BudgetViewTab';
 import { LinksViewTab } from './drawer-tabs/LinksViewTab';
-import { DiscussionsViewTab } from './drawer-tabs/DiscussionsViewTab';
+import { EAReviewTab } from './drawer-tabs/EAReviewTab';
 import { AuditHistoryTab } from './drawer-tabs/AuditHistoryTab';
 import { MilestonesViewTab } from './drawer-tabs/MilestonesViewTab';
 import { RisksViewTab } from './drawer-tabs/RisksViewTab';
@@ -45,7 +45,7 @@ import { WorkflowViewerModal } from './WorkflowViewerModal';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useVisibleDrawerTabs } from '@/hooks/useDrawerTabConfigs';
+import { useBusinessDrawerRoleTabs } from '@/hooks/useBusinessDrawerRoleTabs';
 
 // Fields to track for audit logging (human-readable names)
 const AUDIT_FIELD_LABELS: Record<string, string> = {
@@ -150,10 +150,11 @@ interface BusinessRequestDrawerProps {
   onRequestChange?: (newRequestId: string) => void;
 }
 
-// Fallback tabs if config is not loaded
+// Fallback tabs if role-based tabs not loaded
 const FALLBACK_TABS = [
   { value: 'demand-details', label: 'Demand Details' },
   { value: 'business-score', label: 'Business Score' },
+  { value: 'ea-review', label: 'EA Review' },
   { value: 'budget', label: 'Budget' },
   { value: 'risks', label: 'Risks' },
   { value: 'milestones', label: 'Milestones' },
@@ -168,9 +169,9 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
   const deleteMutation = useDeleteBusinessRequest();
   const duplicateMutation = useDuplicateBusinessRequest();
   
-  // Fetch visible tabs from configuration
-  const { visibleTabs, isLoading: tabsLoading } = useVisibleDrawerTabs();
-  const VIEW_TABS = visibleTabs.length > 0 ? visibleTabs : FALLBACK_TABS;
+  // Fetch visible tabs based on user role
+  const { visibleTabs: roleBasedTabs, isLoading: roleTabsLoading } = useBusinessDrawerRoleTabs();
+  const VIEW_TABS = roleBasedTabs.length > 0 ? roleBasedTabs : FALLBACK_TABS;
   
   const [activeTab, setActiveTab] = useState('demand-details');
   const [formData, setFormData] = useState<Partial<BusinessRequest> & Record<string, any>>({});
@@ -575,6 +576,9 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                   onChange={handleFieldChange} 
                   onDirtyChange={handleDirtyChange}
                 />
+              </TabsContent>
+              <TabsContent value="ea-review" className="m-0 focus-visible:outline-none p-4 md:p-5 pb-6">
+                <EAReviewTab data={formData} onChange={handleFieldChange} />
               </TabsContent>
               <TabsContent value="budget" className="m-0 focus-visible:outline-none p-4 md:p-5 pb-6">
                 <BudgetViewTab data={formData} onChange={handleFieldChange} onDirtyChange={handleDirtyChange} />

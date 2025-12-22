@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
 
 export type UserRole = 'admin' | 'program_manager' | 'team_lead' | 'user' | null;
-export type ProductRoleCode = 'super_admin' | 'product_admin' | 'general_manager' | 'product_manager' | 'product_owner' | 'requester' | null;
+export type ProductRoleCode = 'super_admin' | 'product_admin' | 'general_manager' | 'product_manager' | 'product_owner' | 'requester' | 'enterprise_architect' | 'project_manager' | null;
 
 export function useUserRole() {
   const { user } = useAuth();
