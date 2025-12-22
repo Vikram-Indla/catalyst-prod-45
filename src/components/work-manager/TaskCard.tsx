@@ -86,10 +86,10 @@ export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
         <GripVertical className="w-4 h-4 text-gray-400" />
       </div>
 
-      {/* Done Checkmark - muted */}
+      {/* Done Checkmark - subtle */}
       {isDone && (
         <div className="absolute top-2 right-2">
-          <CheckCircle className="w-4 h-4 text-green-500/70" />
+          <CheckCircle className="w-4 h-4 text-green-500/50" />
         </div>
       )}
 
@@ -98,11 +98,10 @@ export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
         <span className="font-mono text-[11px] text-gray-500 dark:text-gray-400">{task.key}</span>
         {task.blocked && (
           <span 
-            className="inline-flex items-center gap-1 px-1.5 py-0.5 text-red-500 dark:text-red-400 text-[10px] font-semibold uppercase border border-red-500/30 rounded bg-transparent"
+            className="text-red-400 text-[10px] font-medium uppercase"
             title={task.blockedReason || 'Task is blocked'}
           >
-            <AlertTriangle className="w-3 h-3" />
-            Blocked
+            BLOCKED
           </span>
         )}
       </div>
@@ -119,21 +118,26 @@ export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
 
       {/* Meta: Type (icon + text), Priority (dot + text), Linked Item (muted) */}
       <div className="flex flex-wrap items-center gap-2 mb-3 pl-4">
-        {/* Type - icon + text only, outlined in dark mode */}
-        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 text-[11px] font-medium text-muted-foreground border border-border rounded bg-transparent">
+        {/* Type - outlined badges per type color */}
+        <span className={cn(
+          "inline-flex items-center gap-1.5 px-2 py-0.5 text-[11px] font-medium rounded bg-transparent border",
+          task.type === 'Project' && 'border-green-500/30 text-green-400',
+          task.type === 'Task' && 'border-blue-500/30 text-blue-400',
+          task.type === 'General' && 'border-gray-500/30 text-gray-400'
+        )}>
           <TypeIcon className="w-3 h-3" />
           {task.type}
         </span>
         
         {/* Priority - dot + text only */}
         <div className="flex items-center gap-1.5">
-          <div className={cn('w-2 h-2 rounded-full', getPriorityDotColor(task.priority))} />
-          <span className="text-[11px] text-muted-foreground">{task.priority}</span>
+          <div className={cn('w-2 h-2 rounded-full shrink-0', getPriorityDotColor(task.priority))} />
+          <span className="text-[11px] text-gray-400">{task.priority}</span>
         </div>
         
-        {/* Linked Item - muted, no gold */}
+        {/* Linked Item - neutral, no gold */}
         {task.linkedItem && (
-          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-white/5 dark:bg-white/5 text-muted-foreground text-[11px] font-mono rounded border border-white/10 dark:border-white/10">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-white/5 text-gray-400 text-[11px] font-mono rounded border border-white/10">
             <Link2 className="w-3 h-3" />
             {task.linkedItem.key}
           </span>
@@ -145,8 +149,8 @@ export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
         <div className="flex items-center gap-2">
           {/* Show completed date for done tasks, otherwise due date */}
           {isDone && task.completedAt ? (
-            <span className="inline-flex items-center gap-1 text-[11px] text-green-500/70 dark:text-green-400/70">
-              <CheckCircle className="w-3 h-3" />
+            <span className="inline-flex items-center gap-1 text-[11px] text-gray-500">
+              <CheckCircle className="w-3 h-3 text-green-500/50" />
               Completed {formatCompletedDate(task.completedAt)}
             </span>
           ) : task.dueDate ? (
@@ -173,9 +177,9 @@ export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
           )}
         </div>
         
-        {/* Assignee Avatar - Monochrome in dark mode */}
+        {/* Assignee Avatar - Monochrome */}
         <div 
-          className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-semibold shrink-0 ring-2 ring-white dark:ring-gray-800 bg-white/10 dark:bg-white/10 text-gray-700 dark:text-white"
+          className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ring-2 ring-white dark:ring-gray-800 bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-white"
           title={assignee?.name || 'Unassigned'}
         >
           {assignee?.initials || '??'}
