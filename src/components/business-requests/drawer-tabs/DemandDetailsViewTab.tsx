@@ -135,44 +135,7 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
 
   return (
     <div className="space-y-4">
-      
-      {/* ═══════════════════════════════════════════════════════════
-          REQUEST METADATA CARD
-          ═══════════════════════════════════════════════════════════ */}
-      <FormCard title="Request Metadata">
-        <div className="grid grid-cols-2 gap-4">
-          <Field label="Requestor">
-            <UserPicker
-              value={data.requestor || null}
-              onChange={(value) => onChange('requestor', value as string | null)}
-              placeholder="Select requestor..."
-            />
-          </Field>
 
-          <Field label="Department">
-            <DepartmentSelect
-              value={data.department_id || null}
-              onChange={(id) => onChange('department_id', id)}
-              placeholder="Select department..."
-            />
-          </Field>
-
-          <Field label="Delivery Platform">
-            <DeliveryPlatformSelect
-              value={data.delivery_platform || null}
-              onChange={(value) => onChange('delivery_platform', value)}
-            />
-          </Field>
-
-          <Field label="Target Completion Date">
-            <CatalystDatePicker
-              value={data.end_date || null}
-              onChange={(date) => onChange('end_date', date ? format(date, 'yyyy-MM-dd') : null)}
-              placeholder="Select date"
-            />
-          </Field>
-        </div>
-      </FormCard>
 
       {/* ═══════════════════════════════════════════════════════════
           DETAILS CARD
@@ -247,62 +210,6 @@ export function DemandDetailsViewTab({ data, onChange, onNavigateToTab }: Demand
         </div>
       </FormCard>
 
-      {/* ═══════════════════════════════════════════════════════════
-          PLANNING & DELIVERY CARD
-          ═══════════════════════════════════════════════════════════ */}
-      <FormCard title="Planning & Delivery">
-        <div className="grid grid-cols-3 gap-4">
-          <Field label="Business Ask Date">
-            <CatalystDatePicker
-              value={data.start_date || null}
-              onChange={(date) => onChange('start_date', date ? format(date, 'yyyy-MM-dd') : null)}
-              placeholder="Select"
-            />
-          </Field>
-
-          <Field label="Kickoff Date">
-            <CatalystDatePicker
-              value={data.impl_start_date || null}
-              onChange={(date) => onChange('impl_start_date', date ? format(date, 'yyyy-MM-dd') : null)}
-              placeholder="Select"
-            />
-          </Field>
-
-          <Field label="Target Complete Date">
-            <div className="flex gap-1">
-              <div className="flex-1">
-                <CatalystDatePicker
-                  value={data.end_date || null}
-                  onChange={(date) => onChange('end_date', date ? format(date, 'yyyy-MM-dd') : null)}
-                  placeholder="Select"
-                  disabled={targetDateLocked}
-                />
-              </div>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={handleLockToggle}
-                className={cn(
-                  "shrink-0 h-9 w-9",
-                  targetDateLocked && "border-[#c69c6d] bg-[#c69c6d]/10 text-[#c69c6d]"
-                )}
-                title={targetDateLocked ? `Locked by ${lockedByUser}` : 'Lock date'}
-              >
-                {targetDateLocked ? <Lock className="h-3.5 w-3.5" /> : <Unlock className="h-3.5 w-3.5" />}
-              </Button>
-            </div>
-          </Field>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <Field label="Planned Quarter">
-            <PlannedQuarterSelect
-              value={data.planned_quarter || []}
-              onChange={(value) => onChange('planned_quarter', value)}
-            />
-          </Field>
-        </div>
-      </FormCard>
     </div>
   );
 }

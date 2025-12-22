@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, Wallet, TrendingUp, Users } from 'lucide-react';
+import { ChevronDown, Wallet, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { UserPicker } from '@/components/ui/user-picker';
 
@@ -89,17 +89,6 @@ export function EpicBudgetViewTab({ data, onChange }: EpicBudgetViewTabProps) {
           </div>
         </div>
 
-        {/* Capacity Status Tile */}
-        <div className="border border-border rounded-lg p-4 bg-white">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-            <Users className="h-3.5 w-3.5" />
-            Capacity Status
-          </div>
-          <div className="text-lg font-semibold">{data.capacity_status || 'Not Assessed'}</div>
-          <div className="text-xs text-muted-foreground">
-            {data.internal_effort_pct || 0}% Internal / {data.vendor_effort_pct || 0}% Vendor
-          </div>
-        </div>
       </div>
 
       {/* FUNDING & BUDGET Section */}
