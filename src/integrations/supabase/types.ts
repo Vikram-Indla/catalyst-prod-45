@@ -4041,6 +4041,7 @@ export type Database = {
           acceptance_criteria: string | null
           actual_end_date: string | null
           actual_start_date: string | null
+          assignee_id: string | null
           blocked: boolean | null
           blocked_reason: string | null
           budget: number | null
@@ -4071,10 +4072,12 @@ export type Database = {
           pi_id: string | null
           planned_end_date: string | null
           planned_start_date: string | null
+          priority: string | null
           program_epic_inherited: boolean | null
           progress_pct: number | null
           project_id: string
           rank_within_epic: number | null
+          release_id: string | null
           remaining_minutes: number | null
           risk_reduction: number | null
           spent_minutes: number | null
@@ -4091,6 +4094,7 @@ export type Database = {
           acceptance_criteria?: string | null
           actual_end_date?: string | null
           actual_start_date?: string | null
+          assignee_id?: string | null
           blocked?: boolean | null
           blocked_reason?: string | null
           budget?: number | null
@@ -4121,10 +4125,12 @@ export type Database = {
           pi_id?: string | null
           planned_end_date?: string | null
           planned_start_date?: string | null
+          priority?: string | null
           program_epic_inherited?: boolean | null
           progress_pct?: number | null
           project_id: string
           rank_within_epic?: number | null
+          release_id?: string | null
           remaining_minutes?: number | null
           risk_reduction?: number | null
           spent_minutes?: number | null
@@ -4141,6 +4147,7 @@ export type Database = {
           acceptance_criteria?: string | null
           actual_end_date?: string | null
           actual_start_date?: string | null
+          assignee_id?: string | null
           blocked?: boolean | null
           blocked_reason?: string | null
           budget?: number | null
@@ -4171,10 +4178,12 @@ export type Database = {
           pi_id?: string | null
           planned_end_date?: string | null
           planned_start_date?: string | null
+          priority?: string | null
           program_epic_inherited?: boolean | null
           progress_pct?: number | null
           project_id?: string
           rank_within_epic?: number | null
+          release_id?: string | null
           remaining_minutes?: number | null
           risk_reduction?: number | null
           spent_minutes?: number | null
@@ -4188,6 +4197,13 @@ export type Database = {
           wsjf_score?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "features_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "features_change_number_id_fkey"
             columns: ["change_number_id"]
@@ -4221,6 +4237,13 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "features_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "releases"
             referencedColumns: ["id"]
           },
           {
