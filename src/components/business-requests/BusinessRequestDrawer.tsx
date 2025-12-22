@@ -819,18 +819,6 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
             </div>
           </Tabs>
 
-          {/* Workflow Footer */}
-          <WorkflowFooter
-            currentStep={(formData.process_step as any) || 'new_request'}
-            onAdvance={() => {
-              const next = getNextWorkflowAction((formData.process_step as any) || 'new_request');
-              if (next) {
-                handleFieldChange('process_step', next.nextStep);
-              }
-            }}
-            nextAction={getNextWorkflowAction((formData.process_step as any) || 'new_request')}
-            disabled={!hasChanges && updateMutation.isPending}
-          />
         </SheetContent>
       </Sheet>
 
