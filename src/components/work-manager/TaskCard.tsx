@@ -168,9 +168,9 @@ export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
           ) : task.dueDate ? (
             <span className={cn(
               'inline-flex items-center gap-1 text-[11px] font-medium',
-              task.dueBucket === 'overdue' && 'text-red-500',
-              task.dueBucket === 'today' && 'text-amber-600',
-              task.dueBucket !== 'overdue' && task.dueBucket !== 'today' && 'text-stone-500'
+              task.dueBucket === 'overdue' && 'text-red-400',
+              task.dueBucket === 'today' && 'text-amber-400',
+              task.dueBucket !== 'overdue' && task.dueBucket !== 'today' && 'text-stone-400 dark:text-stone-500'
             )}>
               <Calendar className="w-3 h-3" />
               {task.dueBucket === 'overdue' && `${task.daysOverdue}d overdue`}
