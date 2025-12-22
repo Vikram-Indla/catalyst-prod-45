@@ -10,7 +10,7 @@ import { RoadmapTimelineBar, RoadmapUnscheduledIndicator } from './RoadmapTimeli
 import { RoadmapTodayMarker } from './RoadmapTodayMarker';
 import { generateTimelinePeriods, calculateBarPosition } from '../utils/timeline';
 import type { RoadmapDemand, TimelineConfig, RoadmapGroup } from '../types/roadmap';
-import { catalystTokens } from '../lib/design-tokens';
+import { useRoadmapTheme } from '../lib/useRoadmapTheme';
 import { cn } from '@/lib/utils';
 
 interface RoadmapTimelinePanelProps {
@@ -30,6 +30,8 @@ export function RoadmapTimelinePanel({
   onItemClick,
   onDateChange,
 }: RoadmapTimelinePanelProps) {
+  const { tokens, isDark } = useRoadmapTheme();
+  
   // Generate timeline periods based on config
   const periods = useMemo(() => 
     generateTimelinePeriods(config),
@@ -68,14 +70,14 @@ export function RoadmapTimelinePanel({
         className="relative h-[52px] flex items-center transition-colors cursor-pointer"
         style={{
           backgroundColor: isSelected 
-            ? catalystTokens.light.surface.active 
+            ? tokens.surface.active 
             : 'transparent',
-          borderBottom: `1px solid ${catalystTokens.light.border.subtle}`,
+          borderBottom: `1px solid ${tokens.border.subtle}`,
         }}
         onClick={() => onItemClick(item.id)}
         onMouseEnter={(e) => {
           if (!isSelected) {
-            (e.currentTarget as HTMLElement).style.backgroundColor = catalystTokens.light.surface.active;
+            (e.currentTarget as HTMLElement).style.backgroundColor = tokens.surface.active;
           }
         }}
         onMouseLeave={(e) => {
@@ -113,11 +115,11 @@ export function RoadmapTimelinePanel({
           style={{
             minWidth: `${periodMinWidth}px`,
             width: `${100 / periods.length}%`,
-            borderColor: catalystTokens.light.border.default,
+            borderColor: tokens.border.default,
             backgroundColor: period.isCurrent 
-              ? 'rgba(198, 156, 109, 0.06)' 
+              ? (isDark ? 'rgba(198, 156, 109, 0.12)' : 'rgba(198, 156, 109, 0.06)')
               : index % 2 === 0 
-                ? catalystTokens.light.surface.bg 
+                ? tokens.surface.bg 
                 : 'transparent',
           }}
         />
@@ -130,7 +132,7 @@ export function RoadmapTimelinePanel({
     return (
       <div 
         className="flex-1 flex flex-col min-w-0 overflow-hidden"
-        style={{ backgroundColor: catalystTokens.light.surface.card }}
+        style={{ backgroundColor: tokens.surface.card }}
       >
         <ScrollArea className="flex-1 w-full">
           <div style={{ minWidth: `${totalMinWidth}px` }}>
@@ -149,8 +151,8 @@ export function RoadmapTimelinePanel({
                   <div 
                     className="h-[36px] relative flex"
                     style={{
-                      backgroundColor: catalystTokens.light.surface.hover,
-                      borderBottom: `1px solid ${catalystTokens.light.border.default}`,
+                      backgroundColor: tokens.surface.hover,
+                      borderBottom: `1px solid ${tokens.border.default}`,
                     }}
                   >
                     {/* Group header gridlines */}
@@ -161,7 +163,7 @@ export function RoadmapTimelinePanel({
                         style={{
                           minWidth: `${periodMinWidth}px`,
                           width: `${100 / periods.length}%`,
-                          borderColor: catalystTokens.light.border.subtle,
+                          borderColor: tokens.border.subtle,
                         }}
                       />
                     ))}
@@ -183,7 +185,7 @@ export function RoadmapTimelinePanel({
   return (
     <div 
       className="flex-1 flex flex-col min-w-0 overflow-hidden"
-      style={{ backgroundColor: catalystTokens.light.surface.card }}
+      style={{ backgroundColor: tokens.surface.card }}
     >
       <ScrollArea className="flex-1 w-full">
         <div style={{ minWidth: `${totalMinWidth}px` }}>

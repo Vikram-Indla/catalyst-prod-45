@@ -8,6 +8,7 @@ import { GripVertical } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import type { RoadmapDemand } from '../types/roadmap';
+import { useRoadmapTheme } from '../lib/useRoadmapTheme';
 import { catalystTokens } from '../lib/design-tokens';
 
 interface RoadmapListRowProps {
@@ -20,7 +21,10 @@ interface RoadmapListRowProps {
 }
 
 // Status badge styling - visible and branded
-const getStatusStyle = (status: string | null): { bg: string; text: string; border: string } => {
+const getStatusStyle = (status: string | null, isDark: boolean): { bg: string; text: string; border: string } => {
+  const textSecondary = isDark ? catalystTokens.dark.text.secondary : catalystTokens.light.text.secondary;
+  const textMuted = isDark ? catalystTokens.dark.text.muted : catalystTokens.light.text.muted;
+  
   const styles: Record<string, { bg: string; text: string; border: string }> = {
     new_request: {
       bg: 'rgba(198, 156, 109, 0.15)',
@@ -34,7 +38,7 @@ const getStatusStyle = (status: string | null): { bg: string; text: string; bord
     },
     draft: {
       bg: catalystTokens.secondary.grey.bg,
-      text: catalystTokens.light.text.secondary,
+      text: textSecondary,
       border: 'rgba(200, 204, 208, 0.3)',
     },
     submitted: {
@@ -69,7 +73,7 @@ const getStatusStyle = (status: string | null): { bg: string; text: string; bord
     },
     cancelled: {
       bg: catalystTokens.secondary.grey.bg,
-      text: catalystTokens.light.text.muted,
+      text: textMuted,
       border: 'rgba(200, 204, 208, 0.3)',
     },
   };
@@ -77,13 +81,15 @@ const getStatusStyle = (status: string | null): { bg: string; text: string; bord
 };
 
 // Health indicator styling
-const getHealthStyle = (health: string | null): { color: string; label: string } => {
+const getHealthStyle = (health: string | null, isDark: boolean): { color: string; label: string } => {
+  const textMuted = isDark ? catalystTokens.dark.text.muted : catalystTokens.light.text.muted;
+  
   const styles: Record<string, { color: string; label: string }> = {
     on_track: { color: catalystTokens.status.success.text, label: 'On Track' },
     at_risk: { color: catalystTokens.status.warning.text, label: 'At Risk' },
     off_track: { color: catalystTokens.status.danger.text, label: 'Off Track' },
   };
-  return styles[health || ''] || { color: catalystTokens.light.text.muted, label: '' };
+  return styles[health || ''] || { color: textMuted, label: '' };
 };
 
 export function RoadmapListRow({
@@ -94,9 +100,10 @@ export function RoadmapListRow({
   onClick,
   isDragging,
 }: RoadmapListRowProps) {
+  const { tokens, brand, isDark } = useRoadmapTheme();
   const productColor = item.product?.color || catalystTokens.secondary.grey.base;
-  const statusStyle = getStatusStyle(item.process_step);
-  const healthStyle = getHealthStyle(item.health);
+  const statusStyle = getStatusStyle(item.process_step, isDark);
+  const healthStyle = getHealthStyle(item.health, isDark);
   
   return (
     <div
@@ -112,17 +119,17 @@ export function RoadmapListRow({
       )}
       style={{
         backgroundColor: isSelected 
-          ? catalystTokens.light.surface.active 
+          ? tokens.surface.active 
           : isDragging 
-            ? catalystTokens.light.surface.hover
+            ? tokens.surface.hover
             : 'transparent',
-        borderColor: catalystTokens.light.border.subtle,
-        outline: isFocused ? `2px solid ${catalystTokens.brand.primary}` : 'none',
+        borderColor: tokens.border.subtle,
+        outline: isFocused ? `2px solid ${brand.primary}` : 'none',
         outlineOffset: '-2px',
       }}
       onMouseEnter={(e) => {
         if (!isSelected && !isDragging) {
-          (e.currentTarget as HTMLElement).style.backgroundColor = catalystTokens.light.surface.active;
+          (e.currentTarget as HTMLElement).style.backgroundColor = tokens.surface.active;
         }
       }}
       onMouseLeave={(e) => {
@@ -133,7 +140,7 @@ export function RoadmapListRow({
     >
       {/* Drag handle */}
       <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 cursor-grab active:cursor-grabbing transition-opacity">
-        <GripVertical className="w-4 h-4" style={{ color: catalystTokens.light.text.muted }} />
+        <GripVertical className="w-4 h-4" style={{ color: tokens.text.muted }} />
       </div>
 
       {/* Product color indicator */}
@@ -148,13 +155,13 @@ export function RoadmapListRow({
         <div className="flex items-center gap-2 mb-1">
           <span 
             className="text-xs font-mono flex-shrink-0"
-            style={{ color: catalystTokens.light.text.muted }}
+            style={{ color: tokens.text.muted }}
           >
             {item.request_key}
           </span>
           <span 
             className="text-sm font-semibold truncate leading-tight"
-            style={{ color: catalystTokens.light.text.primary }}
+            style={{ color: tokens.text.primary }}
           >
             {item.title}
           </span>
@@ -171,7 +178,7 @@ export function RoadmapListRow({
               />
               <span 
                 className="text-xs truncate max-w-[100px]"
-                style={{ color: catalystTokens.light.text.secondary }}
+                style={{ color: tokens.text.secondary }}
               >
                 {item.product.name}
               </span>
@@ -184,7 +191,7 @@ export function RoadmapListRow({
               <Progress value={item.progress} className="w-12 h-1.5" />
               <span 
                 className="text-[10px] font-medium"
-                style={{ color: catalystTokens.light.text.muted }}
+                style={{ color: tokens.text.muted }}
               >
                 {item.progress}%
               </span>
