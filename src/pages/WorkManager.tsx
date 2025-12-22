@@ -237,6 +237,15 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
     ));
   };
 
+  // Clear column - move all tasks to Backlog
+  const handleClearColumn = (status: TaskStatus) => {
+    setTaskData(prev => prev.map(t =>
+      t.status === status
+        ? { ...t, status: 'Backlog' as TaskStatus, columnPosition: 0, updatedAt: new Date().toISOString().split('T')[0] }
+        : t
+    ));
+  };
+
   // Create new team handler - now a no-op since teams come from DB
   // This could be wired to the actual create team mutation if needed
   const handleCreateTeam = (_teamInput: Omit<Team, 'id'>) => {
@@ -501,6 +510,7 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
             onOpenTask={handleOpenTask}
             onMoveTask={handleMoveTask}
             onAddTask={() => setIsNewTaskDialogOpen(true)}
+            onClearColumn={handleClearColumn}
           />
         )}
         {activeTab === 'tasks' && (

@@ -36,11 +36,11 @@ export const teams: Team[] = [
 
 // Default Kanban columns
 export const defaultColumns: KanbanColumn[] = [
-  { id: 'col-backlog', name: 'Backlog', status: 'Backlog', wipLimit: undefined },
-  { id: 'col-planned', name: 'Planned', status: 'Planned', wipLimit: undefined },
-  { id: 'col-inprogress', name: 'In Progress', status: 'In Progress', wipLimit: 5 },
-  { id: 'col-waiting', name: 'Waiting', status: 'Waiting', wipLimit: 4 },
-  { id: 'col-done', name: 'Done', status: 'Done', wipLimit: undefined },
+  { id: 'col-backlog', name: 'Backlog', status: 'Backlog' },
+  { id: 'col-planned', name: 'Planned', status: 'Planned' },
+  { id: 'col-inprogress', name: 'In Progress', status: 'In Progress' },
+  { id: 'col-waiting', name: 'Waiting', status: 'Waiting' },
+  { id: 'col-done', name: 'Done', status: 'Done' },
 ];
 
 // Tasks (24 total)

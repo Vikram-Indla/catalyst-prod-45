@@ -77,7 +77,6 @@ export interface BoardColumn {
   name: string;
   status: TaskStatus;
   position: number;
-  wipLimit?: number;
 }
 
 export interface TaskActivity {
@@ -127,7 +126,6 @@ export interface KanbanColumn {
   id: string;
   name: string;
   status: TaskStatus;
-  wipLimit?: number;
   color?: string;
 }
 
