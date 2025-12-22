@@ -9,7 +9,7 @@ import { RoadmapListRow } from './RoadmapListRow';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { RoadmapDemand, RoadmapGroup } from '../types/roadmap';
 import { ChevronDown, ChevronRight } from 'lucide-react';
-import { catalystTokens } from '../lib/design-tokens';
+import { useRoadmapTheme } from '../lib/useRoadmapTheme';
 
 interface RoadmapListPanelProps {
   items: RoadmapDemand[];
@@ -30,6 +30,8 @@ export function RoadmapListPanel({
   onToggleGroup,
   listWidth = 380,
 }: RoadmapListPanelProps) {
+  const { tokens } = useRoadmapTheme();
+  
   // If groups are provided, render grouped view (no DnD for now)
   if (groups && groups.length > 0) {
     return (
@@ -37,27 +39,27 @@ export function RoadmapListPanel({
         className="flex-shrink-0 flex flex-col"
         style={{ 
           width: listWidth,
-          backgroundColor: catalystTokens.light.surface.card,
-          borderRight: `1px solid ${catalystTokens.light.border.default}`,
+          backgroundColor: tokens.surface.card,
+          borderRight: `1px solid ${tokens.border.default}`,
         }}
       >
         {/* Header */}
         <div 
           className="flex items-center justify-between px-4 py-3"
           style={{
-            borderBottom: `1px solid ${catalystTokens.light.border.default}`,
-            backgroundColor: catalystTokens.light.surface.card,
+            borderBottom: `1px solid ${tokens.border.default}`,
+            backgroundColor: tokens.surface.card,
           }}
         >
           <span 
             className="text-xs font-semibold uppercase tracking-wider"
-            style={{ color: catalystTokens.light.text.muted }}
+            style={{ color: tokens.text.muted }}
           >
             Demands
           </span>
           <span 
             className="text-xs font-medium"
-            style={{ color: catalystTokens.light.text.secondary }}
+            style={{ color: tokens.text.secondary }}
           >
             {items.length} items
           </span>
@@ -68,24 +70,24 @@ export function RoadmapListPanel({
             {groups.map((group) => (
               <div 
                 key={group.key} 
-                style={{ borderBottom: `1px solid ${catalystTokens.light.border.subtle}` }}
+                style={{ borderBottom: `1px solid ${tokens.border.subtle}` }}
               >
                 {/* Group header */}
                 <button
                   onClick={() => onToggleGroup?.(group.key)}
                   className="w-full flex items-center gap-2 px-4 py-2.5 transition-colors"
-                  style={{ backgroundColor: catalystTokens.light.surface.hover }}
+                  style={{ backgroundColor: tokens.surface.hover }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.backgroundColor = catalystTokens.light.surface.active;
+                    (e.currentTarget as HTMLElement).style.backgroundColor = tokens.surface.active;
                   }}
                   onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.backgroundColor = catalystTokens.light.surface.hover;
+                    (e.currentTarget as HTMLElement).style.backgroundColor = tokens.surface.hover;
                   }}
                 >
                   {group.isExpanded ? (
-                    <ChevronDown className="w-4 h-4" style={{ color: catalystTokens.light.text.muted }} />
+                    <ChevronDown className="w-4 h-4" style={{ color: tokens.text.muted }} />
                   ) : (
-                    <ChevronRight className="w-4 h-4" style={{ color: catalystTokens.light.text.muted }} />
+                    <ChevronRight className="w-4 h-4" style={{ color: tokens.text.muted }} />
                   )}
                   {group.color && (
                     <div 
@@ -95,13 +97,13 @@ export function RoadmapListPanel({
                   )}
                   <span 
                     className="text-sm font-semibold"
-                    style={{ color: catalystTokens.light.text.primary }}
+                    style={{ color: tokens.text.primary }}
                   >
                     {group.label}
                   </span>
                   <span 
                     className="text-xs font-medium ml-auto"
-                    style={{ color: catalystTokens.light.text.muted }}
+                    style={{ color: tokens.text.muted }}
                   >
                     {group.items.length}
                   </span>
@@ -139,27 +141,27 @@ export function RoadmapListPanel({
       className="flex-shrink-0 flex flex-col"
       style={{ 
         width: listWidth,
-        backgroundColor: catalystTokens.light.surface.card,
-        borderRight: `1px solid ${catalystTokens.light.border.default}`,
+        backgroundColor: tokens.surface.card,
+        borderRight: `1px solid ${tokens.border.default}`,
       }}
     >
       {/* Header */}
       <div 
         className="flex items-center justify-between px-4 py-3"
         style={{
-          borderBottom: `1px solid ${catalystTokens.light.border.default}`,
-          backgroundColor: catalystTokens.light.surface.card,
+          borderBottom: `1px solid ${tokens.border.default}`,
+          backgroundColor: tokens.surface.card,
         }}
       >
         <span 
           className="text-xs font-semibold uppercase tracking-wider"
-          style={{ color: catalystTokens.light.text.muted }}
+          style={{ color: tokens.text.muted }}
         >
           Demands
         </span>
         <span 
           className="text-xs font-medium"
-          style={{ color: catalystTokens.light.text.secondary }}
+          style={{ color: tokens.text.secondary }}
         >
           {items.length} items
         </span>
@@ -174,7 +176,7 @@ export function RoadmapListPanel({
               role="table"
               style={{
                 backgroundColor: snapshot.isDraggingOver 
-                  ? catalystTokens.light.surface.active 
+                  ? tokens.surface.active 
                   : 'transparent',
               }}
             >

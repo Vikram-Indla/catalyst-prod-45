@@ -6,7 +6,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import type { TimelinePeriod, TimelineZoom } from '../types/roadmap';
-import { catalystTokens } from '../lib/design-tokens';
+import { useRoadmapTheme } from '../lib/useRoadmapTheme';
 
 interface RoadmapTimelineHeaderProps {
   periods: TimelinePeriod[];
@@ -14,6 +14,8 @@ interface RoadmapTimelineHeaderProps {
 }
 
 export function RoadmapTimelineHeader({ periods, zoom }: RoadmapTimelineHeaderProps) {
+  const { tokens, isDark } = useRoadmapTheme();
+  
   // Calculate min-width based on zoom level
   const periodMinWidth = zoom === 'month' ? 120 : zoom === 'quarter' ? 200 : 280;
 
@@ -21,8 +23,8 @@ export function RoadmapTimelineHeader({ periods, zoom }: RoadmapTimelineHeaderPr
     <div 
       className="flex sticky top-0 z-10"
       style={{
-        backgroundColor: catalystTokens.light.surface.card,
-        borderBottom: `1px solid ${catalystTokens.light.border.default}`,
+        backgroundColor: tokens.surface.card,
+        borderBottom: `1px solid ${tokens.border.default}`,
       }}
     >
       {periods.map((period, index) => (
@@ -33,25 +35,25 @@ export function RoadmapTimelineHeader({ periods, zoom }: RoadmapTimelineHeaderPr
             minWidth: `${periodMinWidth}px`,
             width: `${100 / periods.length}%`,
             backgroundColor: period.isCurrent 
-              ? 'rgba(198, 156, 109, 0.08)' 
+              ? (isDark ? 'rgba(198, 156, 109, 0.15)' : 'rgba(198, 156, 109, 0.08)')
               : index % 2 === 0 
-                ? catalystTokens.light.surface.bg 
-                : catalystTokens.light.surface.card,
+                ? tokens.surface.bg 
+                : tokens.surface.card,
             borderRight: index < periods.length - 1 
-              ? `1px solid ${catalystTokens.light.border.default}` 
+              ? `1px solid ${tokens.border.default}` 
               : 'none',
           }}
         >
           <div 
             className="text-sm font-semibold truncate"
-            style={{ color: catalystTokens.light.text.primary }}
+            style={{ color: tokens.text.primary }}
           >
             {period.label}
           </div>
           {period.sublabel && (
             <div 
               className="text-xs truncate"
-              style={{ color: catalystTokens.light.text.muted }}
+              style={{ color: tokens.text.muted }}
             >
               {period.sublabel}
             </div>
