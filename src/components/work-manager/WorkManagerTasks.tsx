@@ -126,10 +126,10 @@ export function WorkManagerTasks({ tasks, onOpenTask }: WorkManagerTasksProps) {
 
   return (
     <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
-      <div className="overflow-x-auto">
+      <div className="overflow-auto max-h-[calc(100vh-220px)]">
         <table className="w-full">
-          <thead>
-            <tr className="border-b border-border bg-muted/50">
+          <thead className="sticky top-0 z-10">
+            <tr className="border-b border-border bg-muted">
               <SortableHeader field="key" label="ID" className="w-[100px]" />
               <SortableHeader field="title" label="Title" />
               <SortableHeader field="team" label="Team" className="w-[160px]" />
