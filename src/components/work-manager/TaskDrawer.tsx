@@ -284,10 +284,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                       <SelectValue>
                         {assignee && (
                           <div className="flex items-center gap-2.5">
-                            <div className={cn(
-                              'w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0',
-                              assignee.avatarColor || 'bg-[#5c7c5c]'
-                            )}>
+                            <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 bg-white/10 dark:bg-white/10 text-gray-700 dark:text-white">
                               {assignee.initials}
                             </div>
                             <span className="font-medium truncate">{assignee.name}</span>
@@ -299,10 +296,7 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                       {teamMembers.map(u => (
                         <SelectItem key={u.id} value={u.id} className="py-2">
                           <div className="flex items-center gap-3">
-                            <div className={cn(
-                              'w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold text-white shrink-0',
-                              u.avatarColor || 'bg-[#5c7c5c]'
-                            )}>
+                            <div className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 bg-white/10 dark:bg-white/10 text-gray-700 dark:text-white">
                               {u.initials}
                             </div>
                             <div>
@@ -319,10 +313,10 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                   </Select>
                 </FieldRow>
 
-                {/* Reporter */}
+                {/* Reporter - monochrome avatar */}
                 <FieldRow label="Reporter">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-7 h-7 rounded-full bg-[#5c7c5c] flex items-center justify-center text-[10px] font-bold text-white">
+                    <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold bg-white/10 dark:bg-white/10 text-gray-700 dark:text-white">
                       VA
                     </div>
                     <span className="text-[13px] font-medium text-gray-900 dark:text-gray-100">Vikram (You)</span>

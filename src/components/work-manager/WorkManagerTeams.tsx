@@ -1,5 +1,5 @@
 // src/components/work-manager/WorkManagerTeams.tsx
-// Teams Management View - Premium Enterprise Grade
+// Teams Management View - Dark Mode Optimized
 
 import { useMemo, useState } from 'react';
 import { Plus, MoreHorizontal, Users, AlertTriangle, ChevronRight } from 'lucide-react';
@@ -9,23 +9,11 @@ import { NewTeamDialog } from './NewTeamDialog';
 import { getUserById } from '@/lib/work-manager-data';
 import type { TaskExtended, Team, User } from './types';
 
-// Avatar colors for each user
-const avatarColors: Record<string, string> = {
-  'u1': '#5c7c5c', // Sarah Ahmed - olive
-  'u2': '#8b7355', // Mohammed Al-Rashid - bronze
-  'u3': '#c69c6d', // Layla Hassan - gold
-  'u4': '#2563eb', // Omar Khalid - blue
-  'u5': '#16a34a', // Fatima Al-Saud - green
-  'u6': '#ea580c', // Ahmed Mansour - orange
-  'u7': '#dc2626', // Nadia Qureshi - red
-  'u8': '#ca8a04', // Khalid Ibrahim - amber
-};
-
-// Team accent colors
+// Team accent colors - kept but with opacity in dark mode
 const teamColors: Record<string, string> = {
-  'investment': '#5c7c5c',   // Olive
-  'portfolio': '#8b7355',    // Bronze
-  'compliance': '#c69c6d',   // Gold
+  'investment': '#5c7c5c',
+  'portfolio': '#8b7355',
+  'compliance': '#c69c6d',
 };
 
 interface WorkManagerTeamsProps {
@@ -69,8 +57,8 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-[18px] font-semibold text-gray-900 dark:text-gray-100">Teams</h2>
-          <p className="text-[13px] text-gray-500 dark:text-gray-400 mt-1">
+          <h2 className="text-[18px] font-semibold text-foreground">Teams</h2>
+          <p className="text-[13px] text-muted-foreground mt-1">
             Manage your work teams and members • {teams.length} teams • {users.length} members
           </p>
         </div>
@@ -94,9 +82,9 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
               key={team.id}
               className="bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group flex flex-col"
             >
-              {/* Color accent bar at top */}
+              {/* Color accent bar at top - slightly muted in dark */}
               <div 
-                className="h-1.5 w-full"
+                className="h-1.5 w-full opacity-80 dark:opacity-60"
                 style={{ backgroundColor: teamColor }}
               />
               
@@ -122,7 +110,7 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
                   </button>
                 </div>
                 
-                {/* Members section */}
+                {/* Members section - monochrome avatars */}
                 <div className="mt-4 pt-4 border-t border-border">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 text-[11px] font-medium text-muted-foreground uppercase tracking-wide">
@@ -130,18 +118,17 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
                       {team.memberIds.length} Members
                     </div>
                     
-                    {/* Avatar stack */}
+                    {/* Avatar stack - monochrome */}
                     <div className="flex -space-x-2">
                       {team.memberIds.slice(0, 5).map((memberId, index) => {
                         const member = getUserById(memberId);
                         if (!member) return null;
-                        const color = avatarColors[memberId] || '#5c7c5c';
                         
                         return (
                           <div
                             key={memberId}
-                            className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-semibold text-white border-2 border-card ring-0 hover:ring-2 hover:ring-offset-1 transition-all duration-200"
-                            style={{ backgroundColor: color, zIndex: 5 - index }}
+                            className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-semibold border-2 border-card bg-white/10 dark:bg-white/10 text-gray-700 dark:text-white"
+                            style={{ zIndex: 5 - index }}
                             title={member.name}
                           >
                             {member.initials}
@@ -159,59 +146,52 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
                   </div>
                 </div>
                 
-                {/* Stats section - PREMIUM DESIGN */}
+                {/* Stats section - neutral backgrounds, colored text only */}
                 <div className="mt-4 pt-4 border-t border-border">
                   <div className="grid grid-cols-3 gap-3">
                     {/* Open */}
-                    <div className="p-3 rounded-lg bg-muted/50 text-center">
+                    <div className="p-3 rounded-lg bg-white/5 dark:bg-white/5 text-center">
                       <div className="text-xl font-bold text-foreground">{stats.open}</div>
                       <div className="text-[10px] uppercase tracking-wide text-muted-foreground mt-0.5">Open</div>
                     </div>
                     
-                    {/* Overdue */}
-                    <div className={cn(
-                      "p-3 rounded-lg text-center",
-                      stats.overdue > 0 ? 'bg-red-50 dark:bg-red-900/20' : 'bg-muted/50'
-                    )}>
+                    {/* Overdue - text color only */}
+                    <div className="p-3 rounded-lg bg-white/5 dark:bg-white/5 text-center">
                       <div className={cn(
                         "text-xl font-bold",
-                        stats.overdue > 0 ? 'text-red-600 dark:text-red-400' : 'text-foreground'
+                        stats.overdue > 0 ? 'text-red-400' : 'text-foreground'
                       )}>
                         {stats.overdue}
                       </div>
                       <div className={cn(
                         "text-[10px] uppercase tracking-wide mt-0.5",
-                        stats.overdue > 0 ? 'text-red-600 dark:text-red-400' : 'text-muted-foreground'
+                        stats.overdue > 0 ? 'text-red-400' : 'text-muted-foreground'
                       )}>
                         Overdue
                       </div>
                     </div>
                     
-                    {/* Done */}
-                    <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/20 text-center">
-                      <div className="text-xl font-bold text-green-600 dark:text-green-400">{stats.done}</div>
-                      <div className="text-[10px] uppercase tracking-wide text-green-600 dark:text-green-400 mt-0.5">Done</div>
+                    {/* Done - text color only */}
+                    <div className="p-3 rounded-lg bg-white/5 dark:bg-white/5 text-center">
+                      <div className="text-xl font-bold text-green-400">{stats.done}</div>
+                      <div className="text-[10px] uppercase tracking-wide text-green-400 mt-0.5">Done</div>
                     </div>
                   </div>
                 </div>
                 
-                {/* Warning badges - only show if there are warnings */}
+                {/* Warning badges - text only, no backgrounds */}
                 {(stats.overdue > 0 || stats.blocked > 0) && (
-                  <div className="mt-4 pt-4 border-t border-border flex flex-wrap gap-2">
+                  <div className="mt-4 pt-4 border-t border-border flex flex-wrap gap-3">
                     {stats.overdue > 0 && (
-                      <div className="inline-flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-red-50 to-red-100 dark:from-red-950 dark:to-red-900 text-red-700 dark:text-red-300 rounded-lg text-[11px] font-semibold border border-red-200 dark:border-red-800 shadow-sm hover:scale-105 transition-transform cursor-pointer">
-                        <div className="relative">
-                          <div className="w-2 h-2 rounded-full bg-red-500" />
-                          <div className="absolute inset-0 w-2 h-2 rounded-full bg-red-500 animate-ping opacity-75" />
-                        </div>
-                        <span>{stats.overdue} overdue</span>
-                      </div>
+                      <span className="text-red-400 text-[11px] font-medium">
+                        {stats.overdue} overdue
+                      </span>
                     )}
                     {stats.blocked > 0 && (
-                      <div className="inline-flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-amber-50 to-amber-100 dark:from-amber-950 dark:to-amber-900 text-amber-700 dark:text-amber-300 rounded-lg text-[11px] font-semibold border border-amber-200 dark:border-amber-800 shadow-sm hover:scale-105 transition-transform cursor-pointer">
-                        <AlertTriangle className="w-3.5 h-3.5" />
-                        <span>{stats.blocked} blocked</span>
-                      </div>
+                      <span className="inline-flex items-center gap-1 text-amber-400 text-[11px] font-medium">
+                        <AlertTriangle className="w-3 h-3" />
+                        {stats.blocked} blocked
+                      </span>
                     )}
                   </div>
                 )}
@@ -265,7 +245,6 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
             {users.map((user, index) => {
               const userTeam = userTeamMap.get(user.id);
               const userStats = getUserStats(user.id);
-              const color = avatarColors[user.id] || '#5c7c5c';
               const teamColor = userTeam ? teamColors[userTeam.id] : undefined;
 
               return (
@@ -277,12 +256,11 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
                   )}
                   onClick={() => console.log('Navigate to tasks for', user.name)}
                 >
-                  {/* Member Cell - Avatar + Name + Email */}
+                  {/* Member Cell - monochrome avatar */}
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
                       <div
-                        className="w-10 h-10 rounded-full flex items-center justify-center text-[12px] font-bold text-white shadow-sm shrink-0"
-                        style={{ backgroundColor: color }}
+                        className="w-10 h-10 rounded-full flex items-center justify-center text-[12px] font-bold shrink-0 bg-white/10 dark:bg-white/10 text-gray-700 dark:text-white"
                         title={user.name}
                       >
                         {user.initials}
@@ -304,7 +282,7 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
                     {userTeam ? (
                       <div className="flex items-center gap-2">
                         <div 
-                          className="w-2.5 h-2.5 rounded-full shrink-0"
+                          className="w-2.5 h-2.5 rounded-full shrink-0 opacity-80"
                           style={{ backgroundColor: teamColor }}
                         />
                         <span className="text-[13px] text-foreground">{userTeam.name}</span>
@@ -314,17 +292,16 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
                     )}
                   </td>
                   
-                  {/* Workload Cell - Visual indicators */}
+                  {/* Workload Cell - minimal colors */}
                   <td className="px-5 py-4">
                     <div className="flex items-center justify-end gap-3">
                       <div className="flex items-center gap-2">
                         {userStats.overdue > 0 && (
-                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-[11px] font-medium rounded-md">
-                            <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
+                          <span className="text-red-400 text-[11px] font-medium">
                             {userStats.overdue} overdue
                           </span>
                         )}
-                        <span className="inline-flex items-center px-2 py-1 bg-muted text-foreground text-[11px] font-medium rounded-md">
+                        <span className="text-[11px] text-muted-foreground">
                           {userStats.open} open
                         </span>
                       </div>

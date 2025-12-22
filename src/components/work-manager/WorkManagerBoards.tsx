@@ -90,15 +90,15 @@ function BoardColumn({ column, tasks, onOpenTask, onAddTask }: BoardColumnProps)
       {/* Column Header */}
       <div className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center gap-2">
-          {/* Green dot indicator for Done column */}
+          {/* Muted checkmark for Done column */}
           {column.status === 'Done' && (
-            <CheckCircle2 className="w-4 h-4 text-green-500" />
+            <CheckCircle2 className="w-4 h-4 text-green-500/70" />
           )}
           <span className={cn(
             "text-[13px] font-semibold",
-            column.status === 'Done' ? 'text-green-700 dark:text-green-400' : 'text-gray-900 dark:text-gray-100'
+            column.status === 'Done' ? 'text-green-600/80 dark:text-green-400/80' : 'text-gray-900 dark:text-gray-100'
           )}>{column.name}</span>
-          <span className="px-2 py-0.5 bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-[11px] font-medium rounded-full">
+          <span className="px-2 py-0.5 bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-gray-300 text-[11px] font-medium rounded-full">
             {tasks.length}
           </span>
         </div>
