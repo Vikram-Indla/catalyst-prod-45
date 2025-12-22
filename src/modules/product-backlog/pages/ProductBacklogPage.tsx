@@ -343,7 +343,13 @@ export default function ProductBacklogPage() {
           <RequestListPanel
             requests={sortedRequests}
             selectedRequestId={selectedRequest?._dbId || null}
-            onSelectRequest={(req) => setSelectedRequest(req)}
+            onSelectRequest={(req) => {
+              setSelectedRequest(req);
+              // Open drawer when selecting a request
+              if (req) {
+                setDrawerRequestId(req._dbId);
+              }
+            }}
             searchQuery={listSearchQuery}
             onSearchChange={setListSearchQuery}
             activeFilter={activeFilter}
@@ -370,7 +376,6 @@ export default function ProductBacklogPage() {
             onLink={() => {
               if (selectedRequest) {
                 setDrawerRequestId(selectedRequest._dbId);
-                toast.info('Opening drawer to manage links');
               }
             }}
           />
