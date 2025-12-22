@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, Wallet, TrendingUp, Users, X } from 'lucide-react';
+import { ChevronDown, Wallet, TrendingUp, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { UserPicker } from '@/components/ui/user-picker';
@@ -42,12 +42,6 @@ const DELIVERY_MODEL_OPTIONS = [
   'Internal Build, Vendor Advisory',
 ];
 
-const CAPACITY_STATUS_OPTIONS = [
-  'Not Assessed',
-  'Capacity Available',
-  'Capacity Constrained',
-  'Requires Additional Headcount / Vendor',
-];
 
 interface BudgetViewTabProps {
   data: Partial<BusinessRequest> & Record<string, any>;
@@ -155,59 +149,13 @@ function BudgetTypeChips({
   );
 }
 
-// Effort Split Bar
-function EffortSplitBar({
-  internalPct,
-  vendorPct,
-}: {
-  internalPct: number;
-  vendorPct: number;
-}) {
-  const total = internalPct + vendorPct;
-  const showWarning = total !== 100 && total > 0;
-
-  return (
-    <div className="space-y-2">
-      <div className="flex h-4 w-full overflow-hidden rounded-full bg-muted">
-        <div 
-          className="bg-brand-primary transition-all duration-300"
-          style={{ width: `${Math.min(internalPct, 100)}%` }}
-        />
-        <div 
-          className="bg-blue-500 transition-all duration-300"
-          style={{ width: `${Math.min(vendorPct, 100 - internalPct)}%` }}
-        />
-      </div>
-      <div className="flex justify-between text-xs text-muted-foreground">
-        <span className="flex items-center gap-1">
-          <span className="w-2 h-2 rounded-full bg-brand-primary" />
-          Internal: {internalPct}%
-        </span>
-        <span className="flex items-center gap-1">
-          <span className="w-2 h-2 rounded-full bg-blue-500" />
-          Vendor: {vendorPct}%
-        </span>
-      </div>
-      {showWarning && (
-        <p className="text-xs text-destructive">
-          Internal + Vendor Effort must equal 100%.
-        </p>
-      )}
-    </div>
-  );
-}
-
 export function BudgetViewTab({ data, onChange }: BudgetViewTabProps) {
   const [fundingOpen, setFundingOpen] = useState(true);
   const [contractOpen, setContractOpen] = useState(true);
-  const [capacityOpen, setCapacityOpen] = useState(true);
 
   // Get computed values for summary cards
   const fundingStatus = data.funding_status || 'Not Budgeted';
   const approvedBudget = data.approved_budget_sar || 0;
-  const capacityStatus = data.capacity_status || 'Not Assessed';
-  const internalPct = data.internal_effort_pct || 0;
-  const vendorPct = data.vendor_effort_pct || 0;
   const budgetType = data.budget_type || [];
 
   // Get status color classes - using semantic tokens for dark mode support
@@ -221,15 +169,6 @@ export function BudgetViewTab({ data, onChange }: BudgetViewTabProps) {
     return { background: 'var(--surface-1, hsl(var(--card)))', borderColor: 'var(--border-default, hsl(var(--border)))' };
   };
 
-  const getCapacityStatusStyle = () => {
-    if (capacityStatus === 'Capacity Available') {
-      return { background: 'var(--status-success-bg)', borderColor: 'var(--status-success-border, rgba(125, 163, 125, 0.3))' };
-    }
-    if (capacityStatus === 'Capacity Constrained' || capacityStatus === 'Requires Additional Headcount / Vendor') {
-      return { background: 'var(--status-warning-bg)', borderColor: 'var(--status-warning-border, rgba(212, 168, 85, 0.3))' };
-    }
-    return { background: 'var(--surface-1, hsl(var(--card)))', borderColor: 'var(--border-default, hsl(var(--border)))' };
-  };
 
   return (
     <div className="flex flex-col h-full space-y-4" style={{ background: 'var(--surface-bg, hsl(var(--background)))' }}>
@@ -264,17 +203,6 @@ export function BudgetViewTab({ data, onChange }: BudgetViewTabProps) {
           </p>
         </div>
 
-        {/* Capacity Status Card */}
-        <div className="rounded-lg border p-4" style={getCapacityStatusStyle()}>
-          <div className="flex items-center gap-2 mb-2">
-            <Users className="h-4 w-4 text-brand-primary" />
-            <span className="text-xs font-medium" style={{ color: 'var(--text-2, hsl(var(--muted-foreground)))' }}>Capacity Status</span>
-          </div>
-          <p className="text-lg font-semibold" style={{ color: 'var(--text-1, hsl(var(--foreground)))' }}>{capacityStatus}</p>
-          <p className="text-xs mt-1" style={{ color: 'var(--text-2, hsl(var(--muted-foreground)))' }}>
-            {internalPct}% Internal / {vendorPct}% Vendor
-          </p>
-        </div>
       </div>
 
       {/* Section 1: Funding & Budget */}
@@ -521,108 +449,6 @@ export function BudgetViewTab({ data, onChange }: BudgetViewTabProps) {
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
-              </div>
-            </div>
-          </CollapsibleContent>
-        </div>
-      </Collapsible>
-
-      {/* Section 3: Funding & Capacity Notes */}
-      <Collapsible open={capacityOpen} onOpenChange={setCapacityOpen}>
-        <div className="border border-border rounded-xl overflow-hidden shadow-sm" style={{ background: 'var(--surface-1, hsl(var(--card)))' }}>
-          <CollapsibleTrigger className="w-full flex items-center justify-between p-4 hover:bg-muted/30 transition-colors">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-brand-primary">
-              Funding & Capacity Notes
-            </h3>
-            <ChevronDown className={cn(
-              "h-4 w-4 text-muted-foreground transition-transform",
-              !capacityOpen && "-rotate-90"
-            )} />
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <div className="px-4 pb-4 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Capacity Status */}
-                <div className="md:col-span-2">
-                  <Label className="text-xs font-medium">Capacity Status</Label>
-                  <Select
-                    value={data.capacity_status || ''}
-                    onValueChange={(value) => onChange('capacity_status', value)}
-                  >
-                    <SelectTrigger className="mt-1 h-9 text-sm">
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CAPACITY_STATUS_OPTIONS.map((opt) => (
-                        <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Internal Effort % */}
-                <div>
-                  <Label className="text-xs font-medium">% Internal Effort</Label>
-                  <Input
-                    type="number"
-                    min={0}
-                    max={100}
-                    value={data.internal_effort_pct || ''}
-                    onChange={(e) => onChange('internal_effort_pct', e.target.value ? Number(e.target.value) : 0)}
-                    placeholder="0"
-                    className="mt-1 h-9 text-sm"
-                  />
-                </div>
-
-                {/* Vendor Effort % */}
-                <div>
-                  <Label className="text-xs font-medium">% Vendor Effort</Label>
-                  <Input
-                    type="number"
-                    min={0}
-                    max={100}
-                    value={data.vendor_effort_pct || ''}
-                    onChange={(e) => onChange('vendor_effort_pct', e.target.value ? Number(e.target.value) : 0)}
-                    placeholder="0"
-                    className="mt-1 h-9 text-sm"
-                  />
-                </div>
-
-                {/* Effort Split Bar */}
-                <div className="md:col-span-2">
-                  <EffortSplitBar
-                    internalPct={data.internal_effort_pct || 0}
-                    vendorPct={data.vendor_effort_pct || 0}
-                  />
-                </div>
-
-                {/* Funding Assumptions */}
-                <div className="md:col-span-2">
-                  <Label className="text-xs font-medium">Funding Assumptions / Constraints</Label>
-                  <Textarea
-                    value={data.funding_assumptions || ''}
-                    onChange={(e) => onChange('funding_assumptions', e.target.value)}
-                    placeholder="Document any budget dependencies, constraints, or approval conditions."
-                    className="mt-1 min-h-[80px] text-sm"
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Document any budget dependencies, constraints, or approval conditions.
-                  </p>
-                </div>
-
-                {/* Capacity Risks */}
-                <div className="md:col-span-2">
-                  <Label className="text-xs font-medium">Capacity Risks / Dependencies</Label>
-                  <Textarea
-                    value={data.capacity_risks || ''}
-                    onChange={(e) => onChange('capacity_risks', e.target.value)}
-                    placeholder="Document capacity constraints, team dependencies, or backup plans."
-                    className="mt-1 min-h-[80px] text-sm"
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Document capacity constraints, team dependencies, or backup plans.
-                  </p>
                 </div>
               </div>
             </div>
