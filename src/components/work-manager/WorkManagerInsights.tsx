@@ -1,7 +1,7 @@
 // src/components/work-manager/WorkManagerInsights.tsx
 // Weekly Insights View
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { CheckCircle, Clock, AlertTriangle, XCircle, FileText, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -15,6 +15,8 @@ import { users, teams, getUserById, getTeamById } from '@/lib/work-manager-data'
 import type { TaskExtended } from './types';
 import { cn } from '@/lib/utils';
 import { ManagerFollowUpNotes } from './ManagerFollowUpNotes';
+import { jsPDF } from 'jspdf';
+import { toast } from 'sonner';
 
 interface WorkManagerInsightsProps {
   tasks: TaskExtended[];
@@ -36,6 +38,123 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
 
   const formatDateRange = () => {
     return `${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+  };
+
+  // Export PDF function
+  const handleExportPdf = (insights: any, teamData: any) => {
+    try {
+      const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.getWidth();
+      let yPos = 20;
+
+      // Title
+      doc.setFontSize(18);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Work Manager - Weekly Insights', pageWidth / 2, yPos, { align: 'center' });
+      yPos += 10;
+
+      // Date range
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'normal');
+      doc.text(formatDateRange(), pageWidth / 2, yPos, { align: 'center' });
+      yPos += 15;
+
+      if (viewMode === 'individual') {
+        const user = getUserById(selectedUserId);
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text(`Individual Report: ${user?.name || 'Unknown'}`, 20, yPos);
+        yPos += 12;
+
+        // Summary stats
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Completed: ${insights.summary.completed}`, 20, yPos);
+        yPos += 7;
+        doc.text(`In Progress: ${insights.summary.inProgress}`, 20, yPos);
+        yPos += 7;
+        doc.text(`Overdue: ${insights.summary.overdue}`, 20, yPos);
+        yPos += 7;
+        doc.text(`Blocked: ${insights.summary.blocked}`, 20, yPos);
+        yPos += 15;
+
+        // Completed tasks
+        if (insights.achieved.length > 0) {
+          doc.setFontSize(12);
+          doc.setFont('helvetica', 'bold');
+          doc.text('Completed This Week:', 20, yPos);
+          yPos += 8;
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(10);
+          insights.achieved.slice(0, 10).forEach((task: TaskExtended) => {
+            if (yPos > 270) { doc.addPage(); yPos = 20; }
+            doc.text(`• ${task.title}`, 25, yPos);
+            yPos += 6;
+          });
+          yPos += 5;
+        }
+
+        // In progress tasks
+        if (insights.inProgress.length > 0) {
+          if (yPos > 250) { doc.addPage(); yPos = 20; }
+          doc.setFontSize(12);
+          doc.setFont('helvetica', 'bold');
+          doc.text('In Progress:', 20, yPos);
+          yPos += 8;
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(10);
+          insights.inProgress.slice(0, 10).forEach((task: TaskExtended) => {
+            if (yPos > 270) { doc.addPage(); yPos = 20; }
+            doc.text(`• ${task.title}`, 25, yPos);
+            yPos += 6;
+          });
+        }
+      } else {
+        const team = getTeamById(selectedTeamId);
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text(`Team Report: ${team?.name || 'Unknown'}`, 20, yPos);
+        yPos += 12;
+
+        // Team summary
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Total Tasks: ${teamData.totalTasks}`, 20, yPos);
+        yPos += 7;
+        doc.text(`Completed: ${teamData.completed}`, 20, yPos);
+        yPos += 7;
+        doc.text(`Overdue: ${teamData.overdue}`, 20, yPos);
+        yPos += 7;
+        doc.text(`Blocked: ${teamData.blocked}`, 20, yPos);
+        yPos += 15;
+
+        // Member breakdown
+        if (teamData.memberStats.length > 0) {
+          doc.setFontSize(12);
+          doc.setFont('helvetica', 'bold');
+          doc.text('Team Members:', 20, yPos);
+          yPos += 8;
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(10);
+          teamData.memberStats.forEach((member: any) => {
+            if (yPos > 270) { doc.addPage(); yPos = 20; }
+            doc.text(`• ${member.name}: ${member.completed} done, ${member.inProgress} active, ${member.overdue} overdue`, 25, yPos);
+            yPos += 6;
+          });
+        }
+      }
+
+      // Save PDF
+      const filename = viewMode === 'individual' 
+        ? `insights-${getUserById(selectedUserId)?.name?.replace(/\s+/g, '-').toLowerCase() || 'report'}-${today.toISOString().split('T')[0]}.pdf`
+        : `insights-${getTeamById(selectedTeamId)?.name?.replace(/\s+/g, '-').toLowerCase() || 'team'}-${today.toISOString().split('T')[0]}.pdf`;
+      
+      doc.save(filename);
+      toast.success('PDF exported successfully');
+    } catch (error) {
+      console.error('PDF export error:', error);
+      toast.error('Failed to export PDF');
+    }
   };
 
   // Compute individual insights
@@ -151,7 +270,12 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
             </button>
           </div>
           
-          <Button variant="outline" size="sm" className="gap-2 shadow-xs hover:shadow-sm transition-shadow">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="gap-2 shadow-xs hover:shadow-sm transition-shadow"
+            onClick={() => handleExportPdf(individualInsights, teamInsights)}
+          >
             <Download className="w-4 h-4" />
             Export PDF
           </Button>
