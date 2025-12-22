@@ -67,6 +67,7 @@ interface RequestDetailPanelProps {
   onOpenDrawer: () => void;
   onAttachment: () => void;
   onLink: () => void;
+  onScore: () => void;
 }
 
 // Status options
@@ -202,6 +203,7 @@ export function RequestDetailPanel({
   onOpenDrawer,
   onAttachment,
   onLink,
+  onScore,
 }: RequestDetailPanelProps) {
   // Fetch attachment count
   const { data: attachmentCount = 0 } = useQuery({
@@ -553,7 +555,7 @@ export function RequestDetailPanel({
           <Link2 className="w-3.5 h-3.5" />
           Link
         </Button>
-        <Button variant="outline" size="sm" className="gap-1.5" onClick={onOpenDrawer}>
+        <Button variant="outline" size="sm" className="gap-1.5" onClick={onScore}>
           <Star className="w-3.5 h-3.5" />
           Score
         </Button>

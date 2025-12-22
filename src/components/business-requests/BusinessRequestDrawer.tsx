@@ -155,6 +155,7 @@ interface BusinessRequestDrawerProps {
   onClose: () => void;
   requestId: string | null;
   onRequestChange?: (newRequestId: string) => void;
+  initialTab?: string;
 }
 
 // Fallback tabs if config is not loaded
@@ -169,7 +170,7 @@ const FALLBACK_TABS = [
   { value: 'audit-history', label: 'Audit History' },
 ];
 
-export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestChange }: BusinessRequestDrawerProps) {
+export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestChange, initialTab }: BusinessRequestDrawerProps) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { data: request, isLoading } = useBusinessRequest(requestId);
@@ -256,11 +257,12 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
   }, [onClose, navigate]);
 
   // Reset to default tab when drawer opens
+  // Reset to initial tab when drawer opens
   useEffect(() => {
     if (isOpen) {
-      setActiveTab('demand-details');
+      setActiveTab(initialTab || 'demand-details');
     }
-  }, [isOpen]);
+  }, [isOpen, initialTab]);
 
   // Sync form data when request changes
   useEffect(() => {
