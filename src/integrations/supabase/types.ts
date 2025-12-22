@@ -637,6 +637,7 @@ export type Database = {
           department_id: string | null
           dependencies: string | null
           description: string | null
+          ea_review_required: boolean | null
           end_date: string | null
           environment_dependency: string | null
           estimated_cost: number | null
@@ -736,6 +737,7 @@ export type Database = {
           department_id?: string | null
           dependencies?: string | null
           description?: string | null
+          ea_review_required?: boolean | null
           end_date?: string | null
           environment_dependency?: string | null
           estimated_cost?: number | null
@@ -835,6 +837,7 @@ export type Database = {
           department_id?: string | null
           dependencies?: string | null
           description?: string | null
+          ea_review_required?: boolean | null
           end_date?: string | null
           environment_dependency?: string | null
           estimated_cost?: number | null
