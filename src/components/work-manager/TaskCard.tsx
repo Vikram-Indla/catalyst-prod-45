@@ -1,5 +1,5 @@
 // src/components/work-manager/TaskCard.tsx
-// Premium Enterprise-Grade Kanban Task Card Component
+// Premium Enterprise-Grade Kanban Task Card - Dark Mode Optimized
 
 import { 
   Calendar, 
@@ -15,18 +15,6 @@ import { getUserById } from '@/lib/work-manager-data';
 import type { TaskExtended } from './types';
 import { cn } from '@/lib/utils';
 
-// Avatar color mapping for consistent colors
-const avatarColors: Record<string, string> = {
-  'u1': '#5c7c5c', // Sarah Ahmed - olive
-  'u2': '#8b7355', // Mohammed Al-Rashid - bronze
-  'u3': '#c69c6d', // Layla Hassan - gold
-  'u4': '#2563eb', // Omar Khalid - blue
-  'u5': '#16a34a', // Fatima Al-Saud - green
-  'u6': '#ea580c', // Ahmed Mansour - orange
-  'u7': '#dc2626', // Nadia Qureshi - red
-  'u8': '#ca8a04', // Khalid Ibrahim - amber
-};
-
 interface TaskCardProps {
   task: TaskExtended;
   onClick: () => void;
@@ -36,7 +24,6 @@ interface TaskCardProps {
 export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
   const assignee = getUserById(task.assigneeId);
   const isDone = task.status === 'Done';
-  const avatarColor = avatarColors[task.assigneeId] || '#5c7c5c';
   
   // Format due date display
   const formatDueDate = (date: string) => {
@@ -50,50 +37,28 @@ export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
-  // Get priority badge classes - Low is warmer/lighter to differentiate from General
-  const getPriorityClasses = (priority: string) => {
+  // Priority dot colors only - no background badges
+  const getPriorityDotColor = (priority: string) => {
     switch (priority) {
-      case 'Critical': return 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400';
-      case 'High': return 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-400';
-      case 'Medium': return 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400';
-      case 'Low': return 'bg-stone-100 text-stone-500 dark:bg-stone-800 dark:text-stone-400 border border-stone-200 dark:border-stone-700';
-      default: return 'bg-gray-100 text-gray-500';
+      case 'Critical': return 'bg-red-500';
+      case 'High': return 'bg-orange-500';
+      case 'Medium': return 'bg-amber-500';
+      case 'Low': return 'bg-gray-400';
+      default: return 'bg-gray-400';
     }
   };
 
-  // Get type badge classes and icon - Project uses brand-primary olive, General uses cooler slate with border
-  const getTypeConfig = (type: string) => {
+  // Type icon config - outlined style, no filled backgrounds
+  const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'Project': return { 
-        classes: 'bg-[#5c7c5c] text-white', 
-        icon: Folder 
-      };
-      case 'Task': return { 
-        classes: 'bg-blue-500 text-white dark:bg-blue-600', 
-        icon: CheckSquare 
-      };
-      case 'General': return { 
-        classes: 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-600', 
-        icon: FileText 
-      };
-      default: return { 
-        classes: 'bg-gray-100 text-gray-500', 
-        icon: FileText 
-      };
+      case 'Project': return Folder;
+      case 'Task': return CheckSquare;
+      case 'General': return FileText;
+      default: return FileText;
     }
   };
 
-  // Get due date chip classes
-  const getDueDateClasses = (bucket: string) => {
-    switch (bucket) {
-      case 'overdue': return 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400';
-      case 'today': return 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400';
-      default: return 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400';
-    }
-  };
-
-  const typeConfig = getTypeConfig(task.type);
-  const TypeIcon = typeConfig.icon;
+  const TypeIcon = getTypeIcon(task.type);
 
   return (
     <div
@@ -108,12 +73,12 @@ export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
         'shadow-sm',
         isDragging && 'shadow-xl cursor-grabbing',
         !isDragging && 'cursor-grab',
-        // Blocked styling
-        task.blocked && 'border-l-4 border-l-red-500 bg-red-50/50 dark:bg-red-950/20',
-        // Done styling - muted appearance with green tint
-        isDone && !task.blocked && 'border-l-4 border-l-green-500 opacity-60 bg-green-50/50 dark:bg-green-950/20',
+        // Blocked styling - red border only, no background tint
+        task.blocked && 'border-l-2 border-l-red-500',
+        // Done styling - just opacity, no green tint
+        isDone && !task.blocked && 'opacity-50',
         // Default border
-        !task.blocked && !isDone && 'border-gray-200 dark:border-gray-700'
+        !task.blocked && 'border-gray-200 dark:border-gray-700'
       )}
     >
       {/* Drag Handle - visible on hover */}
@@ -121,10 +86,10 @@ export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
         <GripVertical className="w-4 h-4 text-gray-400" />
       </div>
 
-      {/* Done Checkmark */}
+      {/* Done Checkmark - muted */}
       {isDone && (
         <div className="absolute top-2 right-2">
-          <CheckCircle className="w-4 h-4 text-green-500" />
+          <CheckCircle className="w-4 h-4 text-green-500/70" />
         </div>
       )}
 
@@ -133,7 +98,7 @@ export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
         <span className="font-mono text-[11px] text-gray-500 dark:text-gray-400">{task.key}</span>
         {task.blocked && (
           <span 
-            className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400 text-[10px] font-semibold uppercase rounded"
+            className="inline-flex items-center gap-1 px-1.5 py-0.5 text-red-500 dark:text-red-400 text-[10px] font-semibold uppercase border border-red-500/30 rounded bg-transparent"
             title={task.blockedReason || 'Task is blocked'}
           >
             <AlertTriangle className="w-3 h-3" />
@@ -152,17 +117,23 @@ export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
         {task.title}
       </h4>
 
-      {/* Meta: Type, Priority, Linked Item */}
-      <div className="flex flex-wrap items-center gap-1.5 mb-3 pl-4">
-        <span className={cn('inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-medium rounded', typeConfig.classes)}>
+      {/* Meta: Type (icon + text), Priority (dot + text), Linked Item (muted) */}
+      <div className="flex flex-wrap items-center gap-2 mb-3 pl-4">
+        {/* Type - icon + text only, outlined in dark mode */}
+        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 text-[11px] font-medium text-muted-foreground border border-border rounded bg-transparent">
           <TypeIcon className="w-3 h-3" />
           {task.type}
         </span>
-        <span className={cn('px-2 py-0.5 text-[11px] font-medium rounded', getPriorityClasses(task.priority))}>
-          {task.priority}
-        </span>
+        
+        {/* Priority - dot + text only */}
+        <div className="flex items-center gap-1.5">
+          <div className={cn('w-2 h-2 rounded-full', getPriorityDotColor(task.priority))} />
+          <span className="text-[11px] text-muted-foreground">{task.priority}</span>
+        </div>
+        
+        {/* Linked Item - muted, no gold */}
         {task.linkedItem && (
-          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-[#d4b896]/30 text-[#5c7c5c] dark:text-[#d4b896] text-[11px] font-mono rounded hover:bg-[#d4b896]/50 transition-colors">
+          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-white/5 dark:bg-white/5 text-muted-foreground text-[11px] font-mono rounded border border-white/10 dark:border-white/10">
             <Link2 className="w-3 h-3" />
             {task.linkedItem.key}
           </span>
@@ -174,14 +145,16 @@ export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
         <div className="flex items-center gap-2">
           {/* Show completed date for done tasks, otherwise due date */}
           {isDone && task.completedAt ? (
-            <span className="inline-flex items-center gap-1 text-[11px] text-green-600 dark:text-green-400">
+            <span className="inline-flex items-center gap-1 text-[11px] text-green-500/70 dark:text-green-400/70">
               <CheckCircle className="w-3 h-3" />
               Completed {formatCompletedDate(task.completedAt)}
             </span>
           ) : task.dueDate ? (
             <span className={cn(
-              'inline-flex items-center gap-1 px-1.5 py-0.5 text-[11px] rounded',
-              getDueDateClasses(task.dueBucket)
+              'inline-flex items-center gap-1 text-[11px]',
+              task.dueBucket === 'overdue' && 'text-red-400',
+              task.dueBucket === 'today' && 'text-amber-400',
+              task.dueBucket !== 'overdue' && task.dueBucket !== 'today' && 'text-muted-foreground'
             )}>
               <Calendar className="w-3 h-3" />
               {task.dueBucket === 'overdue' && `${task.daysOverdue}d overdue`}
@@ -200,10 +173,9 @@ export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
           )}
         </div>
         
-        {/* Assignee Avatar - Always visible */}
+        {/* Assignee Avatar - Monochrome in dark mode */}
         <div 
-          className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-semibold text-white shrink-0 ring-2 ring-white dark:ring-gray-800"
-          style={{ backgroundColor: avatarColor }}
+          className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-semibold shrink-0 ring-2 ring-white dark:ring-gray-800 bg-white/10 dark:bg-white/10 text-gray-700 dark:text-white"
           title={assignee?.name || 'Unassigned'}
         >
           {assignee?.initials || '??'}

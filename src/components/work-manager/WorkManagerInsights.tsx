@@ -168,10 +168,7 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
                 {users.map(u => (
                   <SelectItem key={u.id} value={u.id}>
                     <div className="flex items-center gap-2">
-                      <div className={cn(
-                        'w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-semibold text-white',
-                        u.avatarColor || 'bg-brand-primary'
-                      )}>
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-semibold bg-white/10 dark:bg-white/10 text-gray-700 dark:text-white">
                         {u.initials}
                       </div>
                       {u.name}
@@ -380,16 +377,16 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
                   <tr key={member.userId} className="border-b border-border-subtle">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-full bg-brand-primary flex items-center justify-center text-[11px] font-semibold text-white">
+                        <div className="w-7 h-7 rounded-full bg-white/10 dark:bg-white/10 flex items-center justify-center text-[11px] font-semibold text-gray-700 dark:text-white">
                           {member.initials}
                         </div>
                         <span className="text-[13px] text-text-primary">{member.name}</span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-center text-[13px] text-status-success font-medium">{member.completed}</td>
-                    <td className="px-4 py-3 text-center text-[13px] text-status-warning font-medium">{member.inProgress}</td>
-                    <td className="px-4 py-3 text-center text-[13px] text-status-danger font-medium">{member.overdue || '—'}</td>
-                    <td className="px-4 py-3 text-center text-[13px] text-status-danger font-medium">{member.blocked || '—'}</td>
+                    <td className="px-4 py-3 text-center text-[13px] text-green-400 font-medium">{member.completed}</td>
+                    <td className="px-4 py-3 text-center text-[13px] text-amber-400 font-medium">{member.inProgress}</td>
+                    <td className="px-4 py-3 text-center text-[13px] text-red-400 font-medium">{member.overdue || '—'}</td>
+                    <td className="px-4 py-3 text-center text-[13px] text-red-400 font-medium">{member.blocked || '—'}</td>
                   </tr>
                 ))}
               </tbody>
