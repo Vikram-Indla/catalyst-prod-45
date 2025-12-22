@@ -49,6 +49,7 @@ import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useVisibleDrawerTabs } from '@/hooks/useDrawerTabConfigs';
+import { useBusinessDrawerRoleTabs } from '@/hooks/useBusinessDrawerRoleTabs';
 import { EnterpriseStatusControl } from './drawer';
 import { EAReviewTab } from './drawer-tabs/EAReviewTab';
 import { cn } from '@/lib/utils';
@@ -176,9 +177,9 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
   const deleteMutation = useDeleteBusinessRequest();
   const duplicateMutation = useDuplicateBusinessRequest();
   
-  // Fetch visible tabs from configuration
-  const { visibleTabs, isLoading: tabsLoading } = useVisibleDrawerTabs();
-  const VIEW_TABS = visibleTabs.length > 0 ? visibleTabs : FALLBACK_TABS;
+  // Fetch visible tabs based on user role
+  const { visibleTabs: roleBasedTabs, isLoading: roleTabsLoading } = useBusinessDrawerRoleTabs();
+  const VIEW_TABS = roleBasedTabs.length > 0 ? roleBasedTabs : FALLBACK_TABS;
   
   const [activeTab, setActiveTab] = useState('demand-details');
   const [formData, setFormData] = useState<Partial<BusinessRequest> & Record<string, any>>({});
