@@ -12,7 +12,8 @@ import {
   Plus,
   Search,
   Filter,
-  ChevronDown
+  ChevronDown,
+  X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,6 +24,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 import { WorkManagerBoards } from '@/components/work-manager/WorkManagerBoards';
 import { WorkManagerTasks } from '@/components/work-manager/WorkManagerTasks';
 import { WorkManagerInsights } from '@/components/work-manager/WorkManagerInsights';
@@ -262,17 +270,162 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Filter Button */}
-            <Button variant="outline" size="sm" className="gap-2 text-[13px] bg-white dark:bg-gray-900">
-              <Filter className="w-4 h-4" />
-              Filters
-              {activeFilterCount > 0 && (
-                <span className="ml-1 px-1.5 py-0.5 bg-[#5c7c5c] text-white text-[10px] font-semibold rounded-full">
-                  {activeFilterCount}
-                </span>
-              )}
-              <ChevronDown className="w-3 h-3" />
-            </Button>
+            {/* Filter Popover */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-2 text-[13px] bg-white dark:bg-gray-900">
+                  <Filter className="w-4 h-4" />
+                  Filters
+                  {activeFilterCount > 0 && (
+                    <span className="ml-1 px-1.5 py-0.5 bg-[#5c7c5c] text-white text-[10px] font-semibold rounded-full">
+                      {activeFilterCount}
+                    </span>
+                  )}
+                  <ChevronDown className="w-3 h-3" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80 p-4" align="end">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-semibold text-[14px]">Filters</h4>
+                    {activeFilterCount > 0 && (
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-7 text-[12px] text-muted-foreground hover:text-foreground"
+                        onClick={() => setFilters({
+                          search: filters.search,
+                          teamId: null,
+                          assigneeId: null,
+                          status: null,
+                          priority: null,
+                          type: null,
+                          dueBucket: null,
+                          showBlocked: null,
+                        })}
+                      >
+                        <X className="w-3 h-3 mr-1" />
+                        Clear all
+                      </Button>
+                    )}
+                  </div>
+                  
+                  {/* Status Filter */}
+                  <div className="space-y-2">
+                    <Label className="text-[12px] font-medium text-muted-foreground uppercase tracking-wide">Status</Label>
+                    <Select
+                      value={filters.status || 'all'}
+                      onValueChange={(v) => setFilters(prev => ({ ...prev, status: v === 'all' ? null : v as TaskStatus }))}
+                    >
+                      <SelectTrigger className="h-9 text-[13px]">
+                        <SelectValue placeholder="All Statuses" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Statuses</SelectItem>
+                        <SelectItem value="Backlog">Backlog</SelectItem>
+                        <SelectItem value="Planned">Planned</SelectItem>
+                        <SelectItem value="In Progress">In Progress</SelectItem>
+                        <SelectItem value="Waiting">Waiting</SelectItem>
+                        <SelectItem value="Done">Done</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  {/* Priority Filter */}
+                  <div className="space-y-2">
+                    <Label className="text-[12px] font-medium text-muted-foreground uppercase tracking-wide">Priority</Label>
+                    <Select
+                      value={filters.priority || 'all'}
+                      onValueChange={(v) => setFilters(prev => ({ ...prev, priority: v === 'all' ? null : v as 'Critical' | 'High' | 'Medium' | 'Low' }))}
+                    >
+                      <SelectTrigger className="h-9 text-[13px]">
+                        <SelectValue placeholder="All Priorities" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Priorities</SelectItem>
+                        <SelectItem value="Critical">Critical</SelectItem>
+                        <SelectItem value="High">High</SelectItem>
+                        <SelectItem value="Medium">Medium</SelectItem>
+                        <SelectItem value="Low">Low</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  {/* Type Filter */}
+                  <div className="space-y-2">
+                    <Label className="text-[12px] font-medium text-muted-foreground uppercase tracking-wide">Type</Label>
+                    <Select
+                      value={filters.type || 'all'}
+                      onValueChange={(v) => setFilters(prev => ({ ...prev, type: v === 'all' ? null : v as 'Project' | 'Task' | 'General' }))}
+                    >
+                      <SelectTrigger className="h-9 text-[13px]">
+                        <SelectValue placeholder="All Types" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Types</SelectItem>
+                        <SelectItem value="Project">Project</SelectItem>
+                        <SelectItem value="Task">Task</SelectItem>
+                        <SelectItem value="General">General</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  {/* Assignee Filter */}
+                  <div className="space-y-2">
+                    <Label className="text-[12px] font-medium text-muted-foreground uppercase tracking-wide">Assignee</Label>
+                    <Select
+                      value={filters.assigneeId || 'all'}
+                      onValueChange={(v) => setFilters(prev => ({ ...prev, assigneeId: v === 'all' ? null : v }))}
+                    >
+                      <SelectTrigger className="h-9 text-[13px]">
+                        <SelectValue placeholder="All Assignees" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Assignees</SelectItem>
+                        {users.map(user => (
+                          <SelectItem key={user.id} value={user.id}>{user.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  {/* Due Date Filter */}
+                  <div className="space-y-2">
+                    <Label className="text-[12px] font-medium text-muted-foreground uppercase tracking-wide">Due Date</Label>
+                    <Select
+                      value={filters.dueBucket || 'all'}
+                      onValueChange={(v) => setFilters(prev => ({ ...prev, dueBucket: v === 'all' ? null : v as any }))}
+                    >
+                      <SelectTrigger className="h-9 text-[13px]">
+                        <SelectValue placeholder="All Due Dates" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Due Dates</SelectItem>
+                        <SelectItem value="overdue">Overdue</SelectItem>
+                        <SelectItem value="today">Due Today</SelectItem>
+                        <SelectItem value="next7">Next 7 Days</SelectItem>
+                        <SelectItem value="future">Future</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  {/* Blocked Toggle */}
+                  <div className="flex items-center space-x-2 pt-2 border-t">
+                    <Checkbox 
+                      id="show-blocked"
+                      checked={filters.showBlocked === true}
+                      onCheckedChange={(checked) => setFilters(prev => ({ 
+                        ...prev, 
+                        showBlocked: checked === true ? true : null 
+                      }))}
+                    />
+                    <Label htmlFor="show-blocked" className="text-[13px] cursor-pointer">
+                      Show only blocked tasks
+                    </Label>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
       )}
