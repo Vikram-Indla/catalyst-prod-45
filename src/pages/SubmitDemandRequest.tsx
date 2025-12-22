@@ -625,7 +625,12 @@ export default function SubmitDemandRequest() {
       </main>
       
       {/* Confirmation Modal */}
-      <Dialog open={showConfirmation} onOpenChange={setShowConfirmation}>
+      <Dialog open={showConfirmation} onOpenChange={(open) => {
+        setShowConfirmation(open);
+        if (!open) {
+          navigate('/auth');
+        }
+      }}>
         <DialogContent className="sm:max-w-[480px]">
           <div className="text-center py-4">
             {/* Success Icon */}
