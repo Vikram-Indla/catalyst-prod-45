@@ -13,7 +13,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
+import { BrandedCheckbox } from '@/components/ui/branded-checkbox';
+import { cn } from '@/lib/utils';
 import type { Team, User } from './types';
 
 interface NewTeamDialogProps {
@@ -85,13 +86,30 @@ export function NewTeamDialog({ open, onOpenChange, users, onCreateTeam }: NewTe
           </div>
 
           <div className="space-y-2">
-            <Label>Members</Label>
-            <div className="max-h-[220px] overflow-auto rounded-md border border-border p-3 space-y-2">
+            <Label>
+              Members{memberIds.length > 0 && (
+                <span className="text-muted-foreground font-normal ml-1">
+                  ({memberIds.length} selected)
+                </span>
+              )}
+            </Label>
+            <div className="max-h-[220px] overflow-auto rounded-md border border-border">
               {sortedUsers.map((u) => {
                 const checked = memberIds.includes(u.id);
                 return (
-                  <label key={u.id} className="flex items-center gap-3 text-sm cursor-pointer">
-                    <Checkbox checked={checked} onCheckedChange={() => toggleMember(u.id)} />
+                  <label
+                    key={u.id}
+                    className={cn(
+                      "flex items-center gap-3 px-3 py-2.5 text-sm cursor-pointer transition-colors",
+                      checked 
+                        ? "bg-[#C69C6D]/10 border-l-2 border-l-[#C69C6D]" 
+                        : "border-l-2 border-l-transparent hover:bg-muted/50"
+                    )}
+                  >
+                    <BrandedCheckbox 
+                      checked={checked} 
+                      onChange={() => toggleMember(u.id)} 
+                    />
                     <span className="font-medium">{u.name}</span>
                     <span className="text-muted-foreground">{u.role}</span>
                   </label>
