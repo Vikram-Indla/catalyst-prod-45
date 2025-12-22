@@ -127,7 +127,7 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
                         return (
                           <div
                             key={memberId}
-                            className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-semibold border-2 border-card bg-white/10 dark:bg-white/10 text-gray-700 dark:text-white"
+                            className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold border-2 border-card bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-white"
                             style={{ zIndex: 5 - index }}
                             title={member.name}
                           >
@@ -174,7 +174,7 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
                     {/* Done - text color only */}
                     <div className="p-3 rounded-lg bg-white/5 dark:bg-white/5 text-center">
                       <div className="text-xl font-bold text-green-400">{stats.done}</div>
-                      <div className="text-[10px] uppercase tracking-wide text-green-400 mt-0.5">Done</div>
+                      <div className="text-[10px] uppercase tracking-wide text-muted-foreground mt-0.5">Done</div>
                     </div>
                   </div>
                 </div>
@@ -183,13 +183,12 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
                 {(stats.overdue > 0 || stats.blocked > 0) && (
                   <div className="mt-4 pt-4 border-t border-border flex flex-wrap gap-3">
                     {stats.overdue > 0 && (
-                      <span className="text-red-400 text-[11px] font-medium">
+                      <span className="text-red-400 text-[11px]">
                         {stats.overdue} overdue
                       </span>
                     )}
                     {stats.blocked > 0 && (
-                      <span className="inline-flex items-center gap-1 text-amber-400 text-[11px] font-medium">
-                        <AlertTriangle className="w-3 h-3" />
+                      <span className="text-amber-400 text-[11px]">
                         {stats.blocked} blocked
                       </span>
                     )}
@@ -260,7 +259,7 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
                       <div
-                        className="w-10 h-10 rounded-full flex items-center justify-center text-[12px] font-bold shrink-0 bg-white/10 dark:bg-white/10 text-gray-700 dark:text-white"
+                        className="w-10 h-10 rounded-full flex items-center justify-center text-[12px] font-bold shrink-0 bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-white"
                         title={user.name}
                       >
                         {user.initials}
