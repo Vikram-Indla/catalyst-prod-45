@@ -30,7 +30,8 @@ import { WorkManagerTeams } from '@/components/work-manager/WorkManagerTeams';
 import { WorkManagerSettings } from '@/components/work-manager/WorkManagerSettings';
 import { TaskDrawer } from '@/components/work-manager/TaskDrawer';
 import { NewTaskDialog } from '@/components/work-manager/NewTaskDialog';
-import { teams, tasks, computeTaskExtended } from '@/lib/work-manager-data';
+import { teams as initialTeams, users, tasks, computeTaskExtended } from '@/lib/work-manager-data';
+import type { TaskStatus, Team } from '@/components/work-manager/types';
 import type { TaskFilters, TaskDrawerState, TaskExtended, Task } from '@/components/work-manager/types';
 
 interface WorkManagerProps {
@@ -79,6 +80,9 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
 
   // New task dialog state
   const [isNewTaskDialogOpen, setIsNewTaskDialogOpen] = useState(false);
+
+  // Teams state
+  const [teamsData, setTeamsData] = useState<Team[]>(initialTeams);
 
   // Task data with computed fields
   const [taskData, setTaskData] = useState(tasks);
@@ -145,6 +149,24 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
     setTaskData(prev => [...prev, newTask]);
   };
 
+  // Move task handler for drag-and-drop
+  const handleMoveTask = (args: { taskId: string; fromStatus: TaskStatus; toStatus: TaskStatus; toIndex: number }) => {
+    setTaskData(prev => prev.map(t =>
+      t.id === args.taskId
+        ? { ...t, status: args.toStatus, columnPosition: args.toIndex, updatedAt: new Date().toISOString().split('T')[0] }
+        : t
+    ));
+  };
+
+  // Create new team handler
+  const handleCreateTeam = (teamInput: Omit<Team, 'id'>) => {
+    const newTeam: Team = {
+      ...teamInput,
+      id: `team-${Date.now()}`,
+    };
+    setTeamsData(prev => [...prev, newTeam]);
+  };
+
   // Get selected task for drawer
   const selectedTask = drawer.taskId 
     ? extendedTasks.find(t => t.id === drawer.taskId) 
@@ -205,7 +227,7 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Teams</SelectItem>
-                {teams.map(team => (
+                {teamsData.map(team => (
                   <SelectItem key={team.id} value={team.id}>{team.name}</SelectItem>
                 ))}
               </SelectContent>
@@ -241,7 +263,7 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
           <WorkManagerBoards 
             tasks={filteredTasks} 
             onOpenTask={handleOpenTask}
-            onUpdateTask={handleUpdateTask}
+            onMoveTask={handleMoveTask}
           />
         )}
         {activeTab === 'tasks' && (
@@ -254,7 +276,12 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
           <WorkManagerInsights tasks={extendedTasks} />
         )}
         {activeTab === 'teams' && (
-          <WorkManagerTeams tasks={extendedTasks} />
+          <WorkManagerTeams 
+            tasks={extendedTasks}
+            teams={teamsData}
+            users={users}
+            onCreateTeam={handleCreateTeam}
+          />
         )}
         {activeTab === 'settings' && (
           <WorkManagerSettings />
@@ -279,6 +306,8 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
       <NewTaskDialog
         open={isNewTaskDialogOpen}
         onOpenChange={setIsNewTaskDialogOpen}
+        teams={teamsData}
+        users={users}
         onCreateTask={handleCreateTask}
       />
     </div>
