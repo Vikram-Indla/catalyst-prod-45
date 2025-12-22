@@ -1,9 +1,19 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useToast } from '@/hooks/use-toast';
+import {
+  createLink,
+  createLinks,
+  getLinksForItem,
+  searchWorkItems,
+  deleteLink as deleteLinkService,
+  CreateLinkInput
+} from '@/services/linkService';
+import { WorkItemType } from '@/types/views';
 
-export type LinkType = 'blocks' | 'is_blocked_by' | 'relates_to' | 'duplicates' | 'is_duplicated_by' | 'parent_of' | 'child_of';
-export type WorkItemType = 'epic' | 'feature' | 'story';
+export type { WorkItemType } from '@/types/views';
+export type LinkType = 'blocks' | 'is_blocked_by' | 'blocked_by' | 'relates_to' | 'duplicates' | 'is_duplicated_by' | 'parent_of' | 'child_of';
 
 export interface WorkItemLink {
   id: string;
@@ -23,6 +33,7 @@ export interface WorkItemLink {
 export const LINK_TYPE_LABELS: Record<string, string> = {
   blocks: 'Blocks',
   is_blocked_by: 'Is blocked by',
+  blocked_by: 'Blocked by',
   relates_to: 'Relates to',
   duplicates: 'Duplicates',
   is_duplicated_by: 'Is duplicated by',
@@ -33,6 +44,7 @@ export const LINK_TYPE_LABELS: Record<string, string> = {
 export const INVERSE_LINK_TYPES: Record<string, string> = {
   blocks: 'is_blocked_by',
   is_blocked_by: 'blocks',
+  blocked_by: 'blocks',
   duplicates: 'is_duplicated_by',
   is_duplicated_by: 'duplicates',
   parent_of: 'child_of',
@@ -40,6 +52,124 @@ export const INVERSE_LINK_TYPES: Record<string, string> = {
   relates_to: 'relates_to',
 };
 
+// Query keys
+export const linkKeys = {
+  all: ['links'] as const,
+  forItem: (type: WorkItemType, id: string) => 
+    [...linkKeys.all, 'item', type, id] as const,
+  search: (query: string, projectId: string, type?: WorkItemType | 'all') => 
+    [...linkKeys.all, 'search', query, projectId, type] as const,
+};
+
+// -----------------------------------------------------
+// Get Links for Item (new hook)
+// -----------------------------------------------------
+export function useLinksForItem(itemType: WorkItemType, itemId: string) {
+  return useQuery({
+    queryKey: linkKeys.forItem(itemType, itemId),
+    queryFn: () => getLinksForItem(itemType, itemId),
+    enabled: !!itemId,
+  });
+}
+
+// -----------------------------------------------------
+// Search Work Items (new hook)
+// -----------------------------------------------------
+export function useSearchWorkItems(
+  query: string,
+  projectId: string,
+  typeFilter?: WorkItemType | 'all'
+) {
+  return useQuery({
+    queryKey: linkKeys.search(query, projectId, typeFilter),
+    queryFn: () => searchWorkItems(query, projectId, typeFilter),
+    enabled: query.length >= 2 && !!projectId,
+  });
+}
+
+// -----------------------------------------------------
+// Create Link Mutation (new hook)
+// -----------------------------------------------------
+export function useCreateLink() {
+  const queryClient = useQueryClient();
+  const { toast: toastHook } = useToast();
+
+  return useMutation({
+    mutationFn: (input: CreateLinkInput) => createLink(input),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ 
+        queryKey: linkKeys.forItem(variables.source_type, variables.source_id) 
+      });
+      toastHook({
+        title: 'Link Created',
+        description: 'Work item linked successfully.',
+      });
+    },
+    onError: (error: Error) => {
+      toastHook({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
+  });
+}
+
+// -----------------------------------------------------
+// Create Multiple Links Mutation (new hook)
+// -----------------------------------------------------
+export function useCreateLinks() {
+  const queryClient = useQueryClient();
+  const { toast: toastHook } = useToast();
+
+  return useMutation({
+    mutationFn: (inputs: CreateLinkInput[]) => createLinks(inputs),
+    onSuccess: (results) => {
+      queryClient.invalidateQueries({ queryKey: linkKeys.all });
+      toastHook({
+        title: 'Links Created',
+        description: `${results.length} link(s) created successfully.`,
+      });
+    },
+    onError: (error: Error) => {
+      toastHook({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
+  });
+}
+
+// -----------------------------------------------------
+// Delete Link Mutation (new hook)
+// -----------------------------------------------------
+export function useDeleteLink() {
+  const queryClient = useQueryClient();
+  const { toast: toastHook } = useToast();
+
+  return useMutation({
+    mutationFn: (linkId: string) => deleteLinkService(linkId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: linkKeys.all });
+      toastHook({
+        title: 'Link Removed',
+        description: 'The link has been removed.',
+      });
+    },
+    onError: (error: Error) => {
+      toastHook({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
+  });
+}
+
+// -----------------------------------------------------
+// Original hook - kept for backwards compatibility
+// -----------------------------------------------------
 export function useWorkItemLinks(workItemType: WorkItemType, workItemId: string) {
   const queryClient = useQueryClient();
 
@@ -111,7 +241,7 @@ export function useWorkItemLinks(workItemType: WorkItemType, workItemId: string)
   });
 
   // Create a link
-  const createLink = useMutation({
+  const createLinkMutation = useMutation({
     mutationFn: async (params: {
       targetType: WorkItemType;
       targetId: string;
@@ -140,7 +270,7 @@ export function useWorkItemLinks(workItemType: WorkItemType, workItemId: string)
   });
 
   // Delete a link
-  const deleteLink = useMutation({
+  const deleteLinkMutation = useMutation({
     mutationFn: async (linkId: string) => {
       const { error } = await supabase
         .from('work_item_links')
@@ -160,9 +290,9 @@ export function useWorkItemLinks(workItemType: WorkItemType, workItemId: string)
   return {
     links,
     isLoading,
-    createLink: createLink.mutate,
-    deleteLink: deleteLink.mutate,
-    isCreating: createLink.isPending,
-    isDeleting: deleteLink.isPending,
+    createLink: createLinkMutation.mutate,
+    deleteLink: deleteLinkMutation.mutate,
+    isCreating: createLinkMutation.isPending,
+    isDeleting: deleteLinkMutation.isPending,
   };
 }
