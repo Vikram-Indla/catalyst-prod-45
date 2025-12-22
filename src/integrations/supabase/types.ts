@@ -676,6 +676,8 @@ export type Database = {
           primary_vendor_name: string | null
           priority_tier: string | null
           process_step: string | null
+          product_id: string | null
+          progress: number | null
           project_manager_user_id: string | null
           proposed_solution: string | null
           qa_remarks: string | null
@@ -773,6 +775,8 @@ export type Database = {
           primary_vendor_name?: string | null
           priority_tier?: string | null
           process_step?: string | null
+          product_id?: string | null
+          progress?: number | null
           project_manager_user_id?: string | null
           proposed_solution?: string | null
           qa_remarks?: string | null
@@ -870,6 +874,8 @@ export type Database = {
           primary_vendor_name?: string | null
           priority_tier?: string | null
           process_step?: string | null
+          product_id?: string | null
+          progress?: number | null
           project_manager_user_id?: string | null
           proposed_solution?: string | null
           qa_remarks?: string | null
@@ -906,6 +912,13 @@ export type Database = {
             columns: ["department_id"]
             isOneToOne: false
             referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "business_requests_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
             referencedColumns: ["id"]
           },
         ]
@@ -9440,6 +9453,53 @@ export type Database = {
           },
         ]
       }
+      products: {
+        Row: {
+          code: string
+          color: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          owner_id: string | null
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          code: string
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          owner_id?: string | null
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          code?: string
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          owner_id?: string | null
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           approval_status:
@@ -10478,6 +10538,50 @@ export type Database = {
             columns: ["work_item_id"]
             isOneToOne: false
             referencedRelation: "features"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      roadmap_views: {
+        Row: {
+          created_at: string | null
+          filters: Json | null
+          grouping: string | null
+          id: string
+          is_default: boolean | null
+          is_shared: boolean | null
+          name: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          filters?: Json | null
+          grouping?: string | null
+          id?: string
+          is_default?: boolean | null
+          is_shared?: boolean | null
+          name: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          filters?: Json | null
+          grouping?: string | null
+          id?: string
+          is_default?: boolean | null
+          is_shared?: boolean | null
+          name?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "roadmap_views_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
