@@ -50,7 +50,6 @@ import { EpicBudgetViewTab } from './drawer-tabs/EpicBudgetViewTab';
 import { EpicRisksViewTab } from './drawer-tabs/EpicRisksViewTab';
 import { EpicLinksViewTab } from './drawer-tabs/EpicLinksViewTab';
 import { EpicFeaturesViewTab } from './drawer-tabs/EpicFeaturesViewTab';
-import { EpicDiscussionsViewTab } from './drawer-tabs/EpicDiscussionsViewTab';
 import { EpicAuditHistoryTab } from './drawer-tabs/EpicAuditHistoryTab';
 import { EpicDependenciesTab } from './drawer-tabs/EpicDependenciesTab';
 import { EpicStatusModal } from './EpicStatusModal';
@@ -76,7 +75,6 @@ const EPIC_TABS = [
   { value: 'dependencies', label: 'Dependencies' },
   { value: 'links', label: 'Links' },
   { value: 'features', label: 'Features' },
-  { value: 'discussions', label: 'Discussions' },
   { value: 'audit-history', label: 'Audit History' },
 ];
 
@@ -527,9 +525,6 @@ export function EpicDrawer({ isOpen, onClose, epicId, onEpicChange }: EpicDrawer
               </TabsContent>
               <TabsContent value="features" className="m-0 focus-visible:outline-none">
                 {epicId && <EpicFeaturesViewTab epicId={epicId} />}
-              </TabsContent>
-              <TabsContent value="discussions" className="m-0 focus-visible:outline-none h-[500px]">
-                {epicId && <EpicDiscussionsViewTab epicId={epicId} />}
               </TabsContent>
               <TabsContent value="audit-history" className="m-0 focus-visible:outline-none flex-1 flex flex-col min-h-0">
                 {epicId && <EpicAuditHistoryTab epicId={epicId} />}

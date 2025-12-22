@@ -63,7 +63,6 @@ import { TechnicalScoreViewTab } from './drawer-tabs/TechnicalScoreViewTab';
 import { EpicRisksViewTab } from './drawer-tabs/EpicRisksViewTab';
 import { EpicLinksViewTab } from './drawer-tabs/EpicLinksViewTab';
 import { EpicFeaturesViewTab } from './drawer-tabs/EpicFeaturesViewTab';
-import { EpicDiscussionsViewTab } from './drawer-tabs/EpicDiscussionsViewTab';
 import { EpicAuditHistoryTab } from './drawer-tabs/EpicAuditHistoryTab';
 
 // Status workflow modal
@@ -164,7 +163,6 @@ const EPIC_TABS = [
   { value: 'risks', label: 'Risks' },
   { value: 'links', label: 'Links' },
   { value: 'features', label: 'Features' },
-  { value: 'discussions', label: 'Discussions' },
   { value: 'audit-history', label: 'Audit History' },
 ];
 
@@ -598,9 +596,6 @@ export function EpicDetailsPanel({ epic: initialEpic, open, onClose }: EpicDetai
               </TabsContent>
               <TabsContent value="features" className="m-0 focus-visible:outline-none">
                 {epic?.id && <EpicFeaturesViewTab epicId={epic.id} />}
-              </TabsContent>
-              <TabsContent value="discussions" className="m-0 focus-visible:outline-none h-[500px]">
-                {epic?.id && <EpicDiscussionsViewTab epicId={epic.id} />}
               </TabsContent>
               <TabsContent value="audit-history" className="m-0 focus-visible:outline-none flex-1 flex flex-col min-h-0">
                 {epic?.id && <EpicAuditHistoryTab epicId={epic.id} />}

@@ -33,7 +33,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { STORY_STATUS_LABELS } from '@/types/story.types';
 import type { StoryWithRelations } from '@/types/story.types';
-import { StoryDiscussions } from './StoryDiscussions';
+
 import { StoryActivityLog } from './StoryActivityLog';
 import { StoryLinks } from './StoryLinks';
 import { SubtasksList } from './SubtasksList';
@@ -159,10 +159,6 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
                   <Bell className="h-4 w-4 mr-2" />
                   Subscribe
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setActiveTab('discussions')}>
-                  <MessageSquare className="h-4 w-4 mr-2" />
-                  Discussions
-                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setActiveTab('history')}>
                   <History className="h-4 w-4 mr-2" />
                   Audit Log
@@ -198,7 +194,6 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
               
               <TabsTrigger value="links" className="executive-drawer-tab">Links</TabsTrigger>
               <TabsTrigger value="attachments" className="executive-drawer-tab">Attachments</TabsTrigger>
-              <TabsTrigger value="discussions" className="executive-drawer-tab">Discussions</TabsTrigger>
               <TabsTrigger value="history" className="executive-drawer-tab">History</TabsTrigger>
             </TabsList>
           </div>
@@ -486,10 +481,6 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
 
             <TabsContent value="attachments" className="m-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)] focus-visible:outline-none">
               <StoryAttachments storyId={story.id} />
-            </TabsContent>
-
-            <TabsContent value="discussions" className="m-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)] focus-visible:outline-none">
-              <StoryDiscussions storyId={story.id} />
             </TabsContent>
 
             <TabsContent value="history" className="m-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)] focus-visible:outline-none">

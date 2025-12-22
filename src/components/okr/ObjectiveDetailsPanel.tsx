@@ -184,11 +184,10 @@ export function ObjectiveDetailsPanel({ objectiveId }: ObjectiveDetailsPanelProp
 
       {/* Tabs */}
       <Tabs defaultValue="key-results" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="key-results">Key Results</TabsTrigger>
           <TabsTrigger value="aligned-work">Aligned Work</TabsTrigger>
           <TabsTrigger value="details">Details</TabsTrigger>
-          <TabsTrigger value="discussions">Discussions</TabsTrigger>
         </TabsList>
 
         <TabsContent value="key-results" className="space-y-4">
@@ -225,12 +224,6 @@ export function ObjectiveDetailsPanel({ objectiveId }: ObjectiveDetailsPanelProp
           </div>
         </TabsContent>
 
-        <TabsContent value="discussions" className="space-y-4">
-          <div className="text-sm text-muted-foreground">
-            {/* TODO(JK): Implement discussions/comments section */}
-            Discussions will be displayed here.
-          </div>
-        </TabsContent>
       </Tabs>
     </div>
   );

@@ -10,7 +10,6 @@ import { AlignedWorkTab } from "./AlignedWorkTab";
 import { ChildObjectivesTab } from "./ChildObjectivesTab";
 import { LinkedItemsTab } from "./LinkedItemsTab";
 import { ObjectiveDetailsTab } from "./ObjectiveDetailsTab";
-import { DiscussionsTab } from "./DiscussionsTab";
 import { AuditLogTab } from "./AuditLogTab";
 import { useObjective, useUpdateObjective, useDeleteObjective } from "@/hooks/useObjectives";
 import { Star, Share2, Copy, Trash2 } from "lucide-react";
@@ -203,13 +202,12 @@ export function ObjectiveDetailsPanelNew({ objectiveId, open, onClose }: Objecti
           />
 
           <Tabs defaultValue="key-results" className="w-full">
-            <TabsList className="grid w-full grid-cols-7">
+            <TabsList className="grid w-full grid-cols-6">
               <TabsTrigger value="key-results">Key Results</TabsTrigger>
               <TabsTrigger value="aligned-work">Work</TabsTrigger>
               <TabsTrigger value="children">Children</TabsTrigger>
               <TabsTrigger value="links">Links</TabsTrigger>
               <TabsTrigger value="details">Details</TabsTrigger>
-              <TabsTrigger value="discussions">Discussions</TabsTrigger>
               <TabsTrigger value="audit">Audit Log</TabsTrigger>
             </TabsList>
 
@@ -231,10 +229,6 @@ export function ObjectiveDetailsPanelNew({ objectiveId, open, onClose }: Objecti
 
             <TabsContent value="details">
               <ObjectiveDetailsTab objective={objective} />
-            </TabsContent>
-
-            <TabsContent value="discussions">
-              <DiscussionsTab objectiveId={objectiveId} />
             </TabsContent>
 
             <TabsContent value="audit">
