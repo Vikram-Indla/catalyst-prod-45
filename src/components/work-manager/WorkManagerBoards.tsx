@@ -3,11 +3,18 @@
 
 import { useMemo } from 'react';
 import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
-import { MoreHorizontal, CheckCircle2 } from 'lucide-react';
+import { MoreHorizontal, CheckCircle2, Plus, Settings, Eye, EyeOff, Trash2 } from 'lucide-react';
 import { TaskCard } from './TaskCard';
 import { defaultColumns } from '@/lib/work-manager-data';
 import type { TaskExtended, KanbanColumn, TaskStatus } from './types';
 import { cn } from '@/lib/utils';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface WorkManagerBoardsProps {
   tasks: TaskExtended[];
@@ -102,9 +109,39 @@ function BoardColumn({ column, tasks, onOpenTask }: BoardColumnProps) {
               WIP: {tasks.length}/{column.wipLimit}
             </span>
           )}
-          <button className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors" type="button">
-            <MoreHorizontal className="w-4 h-4 text-gray-500" />
-          </button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button 
+                className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors" 
+                type="button"
+              >
+                <MoreHorizontal className="w-4 h-4 text-gray-500" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem className="gap-2 cursor-pointer">
+                <Plus className="w-4 h-4" />
+                Add task
+              </DropdownMenuItem>
+              <DropdownMenuItem className="gap-2 cursor-pointer">
+                <Settings className="w-4 h-4" />
+                Edit column
+              </DropdownMenuItem>
+              <DropdownMenuItem className="gap-2 cursor-pointer">
+                <Eye className="w-4 h-4" />
+                Set WIP limit
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="gap-2 cursor-pointer">
+                <EyeOff className="w-4 h-4" />
+                Hide column
+              </DropdownMenuItem>
+              <DropdownMenuItem className="gap-2 cursor-pointer text-red-600 focus:text-red-600">
+                <Trash2 className="w-4 h-4" />
+                Clear column
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
