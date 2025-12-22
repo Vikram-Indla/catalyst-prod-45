@@ -60,7 +60,7 @@ export function OkrProgressCell({ baseline, status, compact = false }: OkrProgre
   
   // Only show dash if actual is null/undefined (not just 0)
   if (actual == null) {
-    return <span className="text-sm text-muted-foreground text-right block">—</span>;
+    return <span className="text-sm text-muted-foreground/60 text-right block">—</span>;
   }
 
   const barColor = getProgressBarColor();
