@@ -6,6 +6,7 @@ import { useCreateBusinessRequest } from '@/hooks/useBusinessRequests';
 import { toast } from 'sonner';
 import { DemandDetailsTab } from './create-tabs/DemandDetailsTab';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
 
 interface CreateBusinessRequestModalProps {
   isOpen: boolean;
@@ -32,10 +33,65 @@ const getInitialFormData = (): Record<string, any> => ({
   health: 'green',
 });
 
+// Helper to upload attachments to storage and save to business_request_links
+async function uploadAttachments(requestId: string, attachments: File[]) {
+  if (!attachments || attachments.length === 0) return;
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('full_name')
+    .eq('id', user.id)
+    .single();
+
+  for (const file of attachments) {
+    const fileName = `${requestId}/${Date.now()}-${file.name}`;
+    
+    // Upload to storage
+    const { error: uploadError } = await supabase.storage
+      .from('attachments')
+      .upload(fileName, file);
+    
+    if (uploadError) {
+      console.error('Failed to upload attachment:', uploadError);
+      continue;
+    }
+
+    // Get public URL
+    const { data: { publicUrl } } = supabase.storage
+      .from('attachments')
+      .getPublicUrl(fileName);
+
+    // Save reference to business_request_links
+    const { error: insertError } = await supabase
+      .from('business_request_links')
+      .insert({
+        business_request_id: requestId,
+        title: file.name,
+        url: publicUrl,
+        link_type: 'documentation',
+        kind: 'document',
+        file_name: file.name,
+        file_path: fileName,
+        file_size: file.size,
+        mime_type: file.type,
+        uploaded_by: user.id,
+        added_by_name: profile?.full_name || user.email || 'Unknown'
+      });
+    
+    if (insertError) {
+      console.error('Failed to save attachment reference:', insertError);
+    }
+  }
+}
+
 export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRequestModalProps) {
   const createMutation = useCreateBusinessRequest();
   const [formData, setFormData] = useState<Record<string, any>>(getInitialFormData());
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleFieldChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -81,15 +137,30 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
       business_owner_id: formData.business_owner_id,
     };
 
-    await createMutation.mutateAsync(requestData as any);
-    setShowSuccessMessage(true);
-    
-    // Hide success message and close after 2 seconds
-    setTimeout(() => {
-      setShowSuccessMessage(false);
-      setFormData(getInitialFormData());
-      onClose();
-    }, 2500);
+    try {
+      // Create the business request
+      const createdRequest = await createMutation.mutateAsync(requestData as any);
+      
+      // Upload attachments if any
+      const attachments: File[] = formData.attachments || [];
+      if (attachments.length > 0 && createdRequest?.id) {
+        setIsUploading(true);
+        await uploadAttachments(createdRequest.id, attachments);
+        setIsUploading(false);
+      }
+      
+      setShowSuccessMessage(true);
+      
+      // Hide success message and close after 2 seconds
+      setTimeout(() => {
+        setShowSuccessMessage(false);
+        setFormData(getInitialFormData());
+        onClose();
+      }, 2500);
+    } catch (error) {
+      console.error('Failed to create request:', error);
+      setIsUploading(false);
+    }
   };
 
   const handleClose = () => {
@@ -182,7 +253,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
           </Button>
           <Button 
             onClick={handleSave}
-            disabled={createMutation.isPending || showSuccessMessage}
+            disabled={createMutation.isPending || showSuccessMessage || isUploading}
             className={cn(
               "px-5 py-2.5",
               "text-[13px] font-medium",
@@ -197,7 +268,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
             )}
           >
             <Save className="w-4 h-4" />
-            {createMutation.isPending ? 'Saving...' : 'Save Request'}
+            {createMutation.isPending ? 'Saving...' : isUploading ? 'Uploading...' : 'Save Request'}
           </Button>
         </div>
       </DialogContent>
