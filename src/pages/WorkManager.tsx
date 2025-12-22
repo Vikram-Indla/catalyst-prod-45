@@ -1,5 +1,5 @@
-// src/pages/Planner.tsx
-// Main Planner Page with Tab Navigation
+// src/pages/WorkManager.tsx
+// Main Work Manager Page with Tab Navigation
 
 import { useState, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -38,14 +38,6 @@ interface WorkManagerProps {
   tab?: 'boards' | 'tasks' | 'insights' | 'teams' | 'settings';
 }
 
-const tabs = [
-  { id: 'boards', label: 'Boards', icon: LayoutGrid },
-  { id: 'tasks', label: 'Tasks', icon: List },
-  { id: 'insights', label: 'Insights', icon: BarChart3 },
-  { id: 'teams', label: 'Teams', icon: Users },
-  { id: 'settings', label: 'Settings', icon: Settings },
-] as const;
-
 export function WorkManager({ tab: initialTab }: WorkManagerProps) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -53,8 +45,9 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
   // Determine active tab from URL or prop
   const activeTab = useMemo(() => {
     const pathTab = location.pathname.split('/').pop();
-    if (pathTab && tabs.some(t => t.id === pathTab)) {
-      return pathTab as typeof tabs[number]['id'];
+    const validTabs = ['boards', 'tasks', 'insights', 'teams', 'settings'];
+    if (pathTab && validTabs.includes(pathTab)) {
+      return pathTab as 'boards' | 'tasks' | 'insights' | 'teams' | 'settings';
     }
     return initialTab || 'boards';
   }, [location.pathname, initialTab]);
@@ -91,6 +84,19 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
     [taskData]
   );
 
+  // Count active filters
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (filters.teamId) count++;
+    if (filters.assigneeId) count++;
+    if (filters.status) count++;
+    if (filters.priority) count++;
+    if (filters.type) count++;
+    if (filters.dueBucket) count++;
+    if (filters.showBlocked !== null) count++;
+    return count;
+  }, [filters]);
+
   // Filtered tasks
   const filteredTasks = useMemo(() => {
     return extendedTasks.filter(task => {
@@ -117,10 +123,6 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
 
   // Open task drawer
   const handleOpenTask = (taskId: string) => {
-    console.log('[WorkManager] Opening task drawer for:', taskId);
-    console.log('[WorkManager] Available task IDs:', extendedTasks.map(t => t.id));
-    const foundTask = extendedTasks.find(t => t.id === taskId);
-    console.log('[WorkManager] Found task:', foundTask?.title);
     setDrawer({ isOpen: true, taskId, activeTab: 'overview' });
   };
 
@@ -176,17 +178,26 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
     ? extendedTasks.find(t => t.id === drawer.taskId) 
     : null;
 
+  // Tabs configuration with task counts
+  const tabs = [
+    { id: 'boards', label: `Boards (${extendedTasks.length})`, icon: LayoutGrid },
+    { id: 'tasks', label: 'Tasks', icon: List },
+    { id: 'insights', label: 'Insights', icon: BarChart3 },
+    { id: 'teams', label: 'Teams', icon: Users },
+    { id: 'settings', label: 'Settings', icon: Settings },
+  ] as const;
+
   return (
     <div className="flex flex-col h-full">
       {/* Page Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-border-default bg-surface-card">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
         <div>
-          <h1 className="text-[20px] font-semibold text-text-primary">Planner</h1>
-          <p className="text-[13px] text-text-muted mt-1">Personal task management and team coordination</p>
+          <h1 className="text-[20px] font-semibold text-gray-900 dark:text-gray-100">Work Manager</h1>
+          <p className="text-[13px] text-gray-500 dark:text-gray-400 mt-1">Personal task management and team coordination</p>
         </div>
         <Button 
           onClick={() => setIsNewTaskDialogOpen(true)}
-          className="bg-brand-primary hover:bg-brand-primary-hover text-white gap-2"
+          className="bg-[#5c7c5c] hover:bg-[#4a6a4a] text-white gap-2 shadow-sm hover:shadow-md transition-all duration-200"
         >
           <Plus className="w-4 h-4" />
           New Task
@@ -194,7 +205,7 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
       </div>
 
       {/* Tab Navigation */}
-      <div className="flex items-center gap-1 px-6 py-2 border-b border-border-default bg-surface-card">
+      <div className="flex items-center gap-1 px-6 py-2 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -203,10 +214,10 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
               key={tab.id}
               onClick={() => handleTabChange(tab.id)}
               className={`
-                flex items-center gap-2 px-4 py-2 rounded-md text-[13px] font-medium transition-colors
+                flex items-center gap-2 px-4 py-2 rounded-md text-[13px] font-medium transition-all duration-200
                 ${isActive 
-                  ? 'bg-brand-primary text-white' 
-                  : 'text-text-secondary hover:bg-surface-muted'
+                  ? 'bg-[#5c7c5c] text-white shadow-sm' 
+                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
                 }
               `}
             >
@@ -219,14 +230,14 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
 
       {/* Toolbar - Show for boards and tasks views */}
       {(activeTab === 'boards' || activeTab === 'tasks') && (
-        <div className="flex items-center justify-between px-6 py-3 bg-surface-bg border-b border-border-subtle">
+        <div className="flex items-center justify-between px-6 py-3 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-3">
             {/* Team Selector */}
             <Select
               value={filters.teamId || 'all'}
               onValueChange={(v) => setFilters(prev => ({ ...prev, teamId: v === 'all' ? null : v }))}
             >
-              <SelectTrigger className="w-[180px] h-9 text-[13px]">
+              <SelectTrigger className="w-[180px] h-9 text-[13px] bg-white dark:bg-gray-900">
                 <SelectValue placeholder="All Teams" />
               </SelectTrigger>
               <SelectContent>
@@ -239,22 +250,27 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
 
             {/* Search */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <Input
                 type="text"
                 placeholder="Search tasks..."
                 value={filters.search}
                 onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                className="pl-9 w-[240px] h-9 text-[13px]"
+                className="pl-9 w-[280px] h-9 text-[13px] border border-gray-300 dark:border-gray-600 shadow-sm bg-white dark:bg-gray-900 focus:ring-2 focus:ring-[#5c7c5c]/20 focus:border-[#5c7c5c] transition-all duration-200"
               />
             </div>
           </div>
 
           <div className="flex items-center gap-2">
             {/* Filter Button */}
-            <Button variant="outline" size="sm" className="gap-2 text-[13px]">
+            <Button variant="outline" size="sm" className="gap-2 text-[13px] bg-white dark:bg-gray-900">
               <Filter className="w-4 h-4" />
               Filters
+              {activeFilterCount > 0 && (
+                <span className="ml-1 px-1.5 py-0.5 bg-[#5c7c5c] text-white text-[10px] font-semibold rounded-full">
+                  {activeFilterCount}
+                </span>
+              )}
               <ChevronDown className="w-3 h-3" />
             </Button>
           </div>
@@ -262,7 +278,7 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
       )}
 
       {/* Tab Content */}
-      <div className="flex-1 overflow-auto p-6 bg-surface-bg">
+      <div className="flex-1 overflow-auto p-6 bg-gray-100 dark:bg-gray-900">
         {activeTab === 'boards' && (
           <WorkManagerBoards 
             tasks={filteredTasks} 

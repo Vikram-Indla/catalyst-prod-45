@@ -1,5 +1,5 @@
 // src/components/work-manager/WorkManagerBoards.tsx
-// Kanban Board View (Drag & Drop)
+// Kanban Board View (Drag & Drop) - Enterprise Grade
 
 import { useMemo } from 'react';
 import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
@@ -7,6 +7,7 @@ import { MoreHorizontal } from 'lucide-react';
 import { TaskCard } from './TaskCard';
 import { defaultColumns } from '@/lib/work-manager-data';
 import type { TaskExtended, KanbanColumn, TaskStatus } from './types';
+import { cn } from '@/lib/utils';
 
 interface WorkManagerBoardsProps {
   tasks: TaskExtended[];
@@ -49,7 +50,7 @@ export function WorkManagerBoards({ tasks, onOpenTask, onMoveTask }: WorkManager
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
-      <div className="flex gap-4 overflow-x-auto pb-4">
+      <div className="flex gap-4 overflow-x-auto pb-4 snap-x">
         {defaultColumns.map((column) => (
           <BoardColumn
             key={column.id}
@@ -73,23 +74,29 @@ function BoardColumn({ column, tasks, onOpenTask }: BoardColumnProps) {
   const isOverWip = column.wipLimit && tasks.length > column.wipLimit;
 
   return (
-    <div className="flex-shrink-0 w-[300px] bg-surface-muted rounded-lg flex flex-col max-h-[calc(100vh-280px)]">
+    <div className="flex-shrink-0 w-[300px] min-w-[280px] bg-gray-50 dark:bg-neutral-900 rounded-lg flex flex-col max-h-[calc(100vh-240px)] border border-gray-200 dark:border-gray-800">
       {/* Column Header */}
-      <div className="flex items-center justify-between p-3 border-b border-border-default">
+      <div className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center gap-2">
-          <span className="text-[13px] font-semibold text-text-primary">{column.name}</span>
-          <span className="px-2 py-0.5 bg-surface-hover text-text-muted text-[11px] font-medium rounded-full">
+          <span className="text-[13px] font-semibold text-gray-900 dark:text-gray-100">{column.name}</span>
+          <span className="px-2 py-0.5 bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-[11px] font-medium rounded-full">
             {tasks.length}
           </span>
         </div>
         <div className="flex items-center gap-2">
           {column.wipLimit && (
-            <span className={`text-[11px] ${isOverWip ? 'text-status-danger font-semibold' : 'text-text-muted'}`}>
+            <span 
+              className={cn(
+                'text-[11px]',
+                isOverWip ? 'text-red-600 font-semibold' : 'text-gray-500'
+              )}
+              title="Work in progress limit"
+            >
               WIP: {tasks.length}/{column.wipLimit}
             </span>
           )}
-          <button className="p-1 rounded hover:bg-surface-hover" type="button">
-            <MoreHorizontal className="w-4 h-4 text-text-muted" />
+          <button className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors" type="button">
+            <MoreHorizontal className="w-4 h-4 text-gray-500" />
           </button>
         </div>
       </div>
@@ -100,23 +107,34 @@ function BoardColumn({ column, tasks, onOpenTask }: BoardColumnProps) {
           <div
             ref={dropProvided.innerRef}
             {...dropProvided.droppableProps}
-            className={
-              `flex-1 overflow-y-auto p-3 space-y-2 ` +
-              (dropSnapshot.isDraggingOver ? 'bg-surface-hover/60' : '')
-            }
+            className={cn(
+              'flex-1 overflow-y-auto p-3 space-y-2 scroll-smooth',
+              dropSnapshot.isDraggingOver && 'bg-[#5c7c5c]/10'
+            )}
           >
             {tasks.length === 0 ? (
-              <div className="text-center py-8 text-[12px] text-text-muted">No tasks in this column</div>
+              <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center">
+                <p className="text-[12px] font-medium text-gray-500 dark:text-gray-400">No tasks</p>
+                <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">Drop tasks here</p>
+              </div>
             ) : (
               tasks.map((task, index) => (
                 <Draggable key={task.id} draggableId={task.id} index={index}>
-                  {(dragProvided) => (
+                  {(dragProvided, dragSnapshot) => (
                     <div
                       ref={dragProvided.innerRef}
                       {...dragProvided.draggableProps}
                       {...dragProvided.dragHandleProps}
+                      className={cn(
+                        'transition-transform duration-200',
+                        dragSnapshot.isDragging && 'rotate-2 scale-105'
+                      )}
                     >
-                      <TaskCard task={task} onClick={() => onOpenTask(task.id)} />
+                      <TaskCard 
+                        task={task} 
+                        onClick={() => onOpenTask(task.id)}
+                        isDragging={dragSnapshot.isDragging}
+                      />
                     </div>
                   )}
                 </Draggable>

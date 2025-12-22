@@ -15,16 +15,16 @@ const addDays = (d: Date, days: number): Date => {
   return result;
 };
 
-// Users (8 total)
+// Users (8 total) - with distinct avatar colors
 export const users: User[] = [
-  { id: 'u1', name: 'Sarah Ahmed', initials: 'SA', email: 'sarah.ahmed@catalyst.sa', role: 'Senior Investment Analyst', avatarColor: 'bg-brand-primary' },
-  { id: 'u2', name: 'Mohammed Al-Rashid', initials: 'MR', email: 'mohammed.r@catalyst.sa', role: 'Investment Manager', avatarColor: 'bg-brand-secondary' },
-  { id: 'u3', name: 'Layla Hassan', initials: 'LH', email: 'layla.h@catalyst.sa', role: 'Strategy Consultant', avatarColor: 'bg-brand-accent' },
-  { id: 'u4', name: 'Omar Khalid', initials: 'OK', email: 'omar.k@catalyst.sa', role: 'Portfolio Analyst', avatarColor: 'bg-status-info' },
-  { id: 'u5', name: 'Fatima Al-Saud', initials: 'FS', email: 'fatima.s@catalyst.sa', role: 'Operations Lead', avatarColor: 'bg-status-success' },
-  { id: 'u6', name: 'Ahmed Mansour', initials: 'AM', email: 'ahmed.m@catalyst.sa', role: 'Operations Analyst', avatarColor: 'bg-priority-high' },
-  { id: 'u7', name: 'Nadia Qureshi', initials: 'NQ', email: 'nadia.q@catalyst.sa', role: 'Compliance Officer', avatarColor: 'bg-status-danger' },
-  { id: 'u8', name: 'Khalid Ibrahim', initials: 'KI', email: 'khalid.i@catalyst.sa', role: 'Risk Analyst', avatarColor: 'bg-status-warning' },
+  { id: 'u1', name: 'Sarah Ahmed', initials: 'SA', email: 'sarah.ahmed@catalyst.sa', role: 'Senior Investment Analyst', avatarColor: '#5c7c5c' },
+  { id: 'u2', name: 'Mohammed Al-Rashid', initials: 'MR', email: 'mohammed.r@catalyst.sa', role: 'Investment Manager', avatarColor: '#8b7355' },
+  { id: 'u3', name: 'Layla Hassan', initials: 'LH', email: 'layla.h@catalyst.sa', role: 'Strategy Consultant', avatarColor: '#c69c6d' },
+  { id: 'u4', name: 'Omar Khalid', initials: 'OK', email: 'omar.k@catalyst.sa', role: 'Portfolio Analyst', avatarColor: '#2563eb' },
+  { id: 'u5', name: 'Fatima Al-Saud', initials: 'FS', email: 'fatima.s@catalyst.sa', role: 'Operations Lead', avatarColor: '#16a34a' },
+  { id: 'u6', name: 'Ahmed Mansour', initials: 'AM', email: 'ahmed.m@catalyst.sa', role: 'Operations Analyst', avatarColor: '#ea580c' },
+  { id: 'u7', name: 'Nadia Qureshi', initials: 'NQ', email: 'nadia.q@catalyst.sa', role: 'Compliance Officer', avatarColor: '#dc2626' },
+  { id: 'u8', name: 'Khalid Ibrahim', initials: 'KI', email: 'khalid.i@catalyst.sa', role: 'Risk Analyst', avatarColor: '#ca8a04' },
 ];
 
 // Teams (3 total)
