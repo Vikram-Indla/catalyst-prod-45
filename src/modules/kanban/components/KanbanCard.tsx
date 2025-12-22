@@ -21,7 +21,7 @@ interface KanbanCardProps {
 }
 
 /**
- * Priority styles using design system tokens
+ * Priority styles using design system tokens per Catalyst Governance
  */
 const PRIORITY_STYLES: Record<string, {
   bg: string;
@@ -42,21 +42,21 @@ const PRIORITY_STYLES: Record<string, {
     border: 'border-gray-200 dark:border-gray-700',
   },
   Medium: {
-    bg: 'bg-amber-50 dark:bg-amber-900/30',
+    bg: 'bg-status-warning-bg',
     text: 'text-amber-700 dark:text-amber-300',
-    dot: 'bg-amber-500 dark:bg-amber-400',
+    dot: 'bg-status-warning',
     border: 'border-amber-200 dark:border-amber-700',
   },
   High: {
-    bg: 'bg-orange-50 dark:bg-orange-900/30',
+    bg: 'bg-orange-100 dark:bg-orange-900/30',
     text: 'text-orange-700 dark:text-orange-300',
     dot: 'bg-orange-500 dark:bg-orange-400',
     border: 'border-orange-200 dark:border-orange-700',
   },
   Critical: {
-    bg: 'bg-red-50 dark:bg-red-900/30',
+    bg: 'bg-status-danger-bg',
     text: 'text-red-700 dark:text-red-300',
-    dot: 'bg-red-500 dark:bg-red-400',
+    dot: 'bg-status-danger',
     border: 'border-red-200 dark:border-red-700',
   },
 };
@@ -251,12 +251,12 @@ export function KanbanCard({ ticket, onClick, compactMode, teamMembers = [] }: K
           <RankBadge rank={ticket.rank} />
         </div>
 
-        {/* Title */}
+        {/* Title - hover uses secondary-olive from Catalyst palette */}
         <h4 className="
           text-[14px] font-medium 
           text-gray-900 dark:text-gray-100
           mb-3 leading-snug line-clamp-2
-          group-hover:text-olive-600 dark:group-hover:text-olive-400
+          group-hover:text-secondary-olive dark:group-hover:text-green-300
           transition-colors
         ">
           {ticket.summary}
