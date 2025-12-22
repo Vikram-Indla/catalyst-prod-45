@@ -109,10 +109,7 @@ export function WorkManagerTasks({ tasks, onOpenTask }: WorkManagerTasksProps) {
     switch (status) {
       case 'Done': return 'text-green-400';
       case 'In Progress': return 'text-amber-400';
-      case 'Waiting': return 'text-purple-400';
-      case 'Planned': return 'text-muted-foreground';
-      case 'Backlog': return 'text-muted-foreground';
-      default: return 'text-muted-foreground';
+      default: return 'text-gray-400';
     }
   };
 
@@ -182,7 +179,7 @@ export function WorkManagerTasks({ tasks, onOpenTask }: WorkManagerTasksProps) {
                   <td className="px-4 py-3">
                     {assignee ? (
                       <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 bg-white/10 dark:bg-white/10 text-gray-700 dark:text-white">
+                        <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-white">
                           {assignee.initials}
                         </div>
                         <span className="text-[13px] text-foreground">{assignee.name}</span>
@@ -215,11 +212,11 @@ export function WorkManagerTasks({ tasks, onOpenTask }: WorkManagerTasksProps) {
                     </span>
                   </td>
                   
-                  {/* Priority - dot + text */}
+                  {/* Priority - dot + gray text */}
                   <td className="px-4 py-3">
-                    <div className="flex items-center gap-1.5">
-                      <div className={cn('w-2 h-2 rounded-full', getPriorityDotColor(task.priority))} />
-                      <span className="text-[12px] text-muted-foreground">{task.priority}</span>
+                    <div className="flex items-center gap-2">
+                      <div className={cn('w-2 h-2 rounded-full shrink-0', getPriorityDotColor(task.priority))} />
+                      <span className="text-[12px] text-gray-400">{task.priority}</span>
                     </div>
                   </td>
                   
