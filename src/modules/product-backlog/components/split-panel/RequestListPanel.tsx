@@ -133,7 +133,16 @@ export function RequestListPanel({
           </div>
         ) : requests.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-32 text-sm" style={{ color: 'var(--text-3)' }}>
-            <p>No requests found</p>
+            <p>No requests match the current filter</p>
+            {activeFilter !== 'all' && (
+              <button 
+                onClick={() => onFilterChange('all')}
+                className="mt-2 text-xs underline"
+                style={{ color: 'hsl(var(--secondary-olive))' }}
+              >
+                Clear filter
+              </button>
+            )}
           </div>
         ) : (
           requests.map((request) => {

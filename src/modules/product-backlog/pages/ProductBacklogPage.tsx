@@ -353,6 +353,18 @@ export default function ProductBacklogPage() {
             onClone={handleClone}
             onDelete={() => setDeleteDialogOpen(true)}
             onOpenDrawer={() => selectedRequest && setDrawerRequestId(selectedRequest._dbId)}
+            onAttachment={() => {
+              if (selectedRequest) {
+                setDrawerRequestId(selectedRequest._dbId);
+                toast.info('Opening drawer to manage attachments');
+              }
+            }}
+            onLink={() => {
+              if (selectedRequest) {
+                setDrawerRequestId(selectedRequest._dbId);
+                toast.info('Opening drawer to manage links');
+              }
+            }}
           />
         </div>
       </div>
