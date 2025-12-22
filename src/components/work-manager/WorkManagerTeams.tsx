@@ -92,7 +92,7 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
           return (
             <div
               key={team.id}
-              className="group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col"
+              className="bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group flex flex-col"
             >
               {/* Color accent bar at top */}
               <div 
@@ -103,37 +103,35 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
               {/* Card content */}
               <div className="p-5 flex-1 flex flex-col">
                 {/* Header */}
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <h3 className="text-[15px] font-semibold text-gray-900 dark:text-gray-100 group-hover:text-[#5c7c5c] transition-colors">
+                <div className="flex items-start justify-between mb-1">
+                  <div>
+                    <h3 className="font-semibold text-[15px] text-foreground group-hover:text-[#5c7c5c] transition-colors">
                       {team.name}
                     </h3>
                     {team.description && (
-                      <p className="text-[12px] text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
+                      <p className="text-[12px] text-muted-foreground mt-1 line-clamp-2">
                         {team.description}
                       </p>
                     )}
                   </div>
                   <button 
-                    className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 opacity-0 group-hover:opacity-100 transition-all duration-200" 
+                    className="p-1.5 rounded-lg hover:bg-muted opacity-0 group-hover:opacity-100 transition-opacity" 
                     type="button"
                   >
-                    <MoreHorizontal className="w-4 h-4 text-gray-500" />
+                    <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
                   </button>
                 </div>
                 
                 {/* Members section */}
-                <div className="mb-4">
+                <div className="mt-4 pt-4 border-t border-border">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Users className="w-4 h-4 text-gray-400" />
-                      <span className="text-[11px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                        {team.memberIds.length} Members
-                      </span>
+                    <div className="flex items-center gap-2 text-[11px] font-medium text-muted-foreground uppercase tracking-wide">
+                      <Users className="w-4 h-4" />
+                      {team.memberIds.length} Members
                     </div>
                     
                     {/* Avatar stack */}
-                    <div className="flex items-center -space-x-2">
+                    <div className="flex -space-x-2">
                       {team.memberIds.slice(0, 5).map((memberId, index) => {
                         const member = getUserById(memberId);
                         if (!member) return null;
@@ -142,7 +140,7 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
                         return (
                           <div
                             key={memberId}
-                            className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-semibold text-white border-2 border-white dark:border-gray-800 ring-0 hover:ring-2 hover:ring-offset-1 transition-all duration-200"
+                            className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-semibold text-white border-2 border-card ring-0 hover:ring-2 hover:ring-offset-1 transition-all duration-200"
                             style={{ backgroundColor: color, zIndex: 5 - index }}
                             title={member.name}
                           >
@@ -153,7 +151,7 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
                       
                       {/* Show +N if more than 5 members */}
                       {team.memberIds.length > 5 && (
-                        <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-[10px] font-semibold text-gray-600 dark:text-gray-300 border-2 border-white dark:border-gray-800">
+                        <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-[10px] font-semibold text-muted-foreground border-2 border-card">
                           +{team.memberIds.length - 5}
                         </div>
                       )}
@@ -161,57 +159,56 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
                   </div>
                 </div>
                 
-                {/* Stats section */}
-                <div className="grid grid-cols-3 gap-3 mb-4">
-                  <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 text-center">
-                    <span className="block text-[18px] font-bold text-gray-900 dark:text-gray-100">
-                      {stats.open}
-                    </span>
-                    <span className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                      Open
-                    </span>
-                  </div>
-                  <div className={cn(
-                    "rounded-lg p-3 text-center",
-                    stats.overdue > 0 ? 'bg-red-50 dark:bg-red-900/20' : 'bg-gray-50 dark:bg-gray-700/50'
-                  )}>
-                    <span className={cn(
-                      "block text-[18px] font-bold",
-                      stats.overdue > 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-gray-100'
+                {/* Stats section - PREMIUM DESIGN */}
+                <div className="mt-4 pt-4 border-t border-border">
+                  <div className="grid grid-cols-3 gap-3">
+                    {/* Open */}
+                    <div className="p-3 rounded-lg bg-muted/50 text-center">
+                      <div className="text-xl font-bold text-foreground">{stats.open}</div>
+                      <div className="text-[10px] uppercase tracking-wide text-muted-foreground mt-0.5">Open</div>
+                    </div>
+                    
+                    {/* Overdue */}
+                    <div className={cn(
+                      "p-3 rounded-lg text-center",
+                      stats.overdue > 0 ? 'bg-red-50 dark:bg-red-900/20' : 'bg-muted/50'
                     )}>
-                      {stats.overdue}
-                    </span>
-                    <span className={cn(
-                      "text-[10px] uppercase tracking-wide",
-                      stats.overdue > 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-500 dark:text-gray-400'
-                    )}>
-                      Overdue
-                    </span>
-                  </div>
-                  <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-3 text-center">
-                    <span className="block text-[18px] font-bold text-green-600 dark:text-green-400">
-                      {stats.done}
-                    </span>
-                    <span className="text-[10px] text-green-600 dark:text-green-400 uppercase tracking-wide">
-                      Done
-                    </span>
+                      <div className={cn(
+                        "text-xl font-bold",
+                        stats.overdue > 0 ? 'text-red-600 dark:text-red-400' : 'text-foreground'
+                      )}>
+                        {stats.overdue}
+                      </div>
+                      <div className={cn(
+                        "text-[10px] uppercase tracking-wide mt-0.5",
+                        stats.overdue > 0 ? 'text-red-600 dark:text-red-400' : 'text-muted-foreground'
+                      )}>
+                        Overdue
+                      </div>
+                    </div>
+                    
+                    {/* Done */}
+                    <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/20 text-center">
+                      <div className="text-xl font-bold text-green-600 dark:text-green-400">{stats.done}</div>
+                      <div className="text-[10px] uppercase tracking-wide text-green-600 dark:text-green-400 mt-0.5">Done</div>
+                    </div>
                   </div>
                 </div>
                 
-                {/* Warning badges - only show when needed */}
+                {/* Warning badges - only show if there are warnings */}
                 {(stats.overdue > 0 || stats.blocked > 0) && (
-                  <div className="flex flex-wrap gap-2 pt-3 border-t border-gray-100 dark:border-gray-700">
+                  <div className="mt-4 pt-4 border-t border-border flex flex-wrap gap-2">
                     {stats.overdue > 0 && (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-[11px] font-medium rounded-full">
-                        <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-lg text-[11px] font-medium">
+                        <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
                         {stats.overdue} overdue
-                      </span>
+                      </div>
                     )}
                     {stats.blocked > 0 && (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[11px] font-medium rounded-full">
+                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-lg text-[11px] font-medium">
                         <AlertTriangle className="w-3 h-3" />
                         {stats.blocked} blocked
-                      </span>
+                      </div>
                     )}
                   </div>
                 )}
@@ -224,28 +221,28 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
       {/* Section Divider */}
       <div className="relative py-4">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-gray-200 dark:border-gray-700" />
+          <div className="w-full border-t border-border" />
         </div>
         <div className="relative flex justify-center">
-          <span className="bg-gray-100 dark:bg-gray-900 px-4 text-[12px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+          <span className="bg-background px-4 text-[12px] font-medium text-muted-foreground uppercase tracking-wide">
             Member Directory
           </span>
         </div>
       </div>
 
       {/* All Members Section */}
-      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm">
-        <div className="px-5 py-4 border-b border-gray-200 dark:border-gray-700">
-          <h3 className="text-[14px] font-semibold text-gray-900 dark:text-gray-100">All Team Members</h3>
-          <p className="text-[12px] text-gray-500 dark:text-gray-400 mt-0.5">Click a row to view their tasks</p>
+      <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
+        <div className="px-5 py-4 border-b border-border">
+          <h3 className="text-[14px] font-semibold text-foreground">All Team Members</h3>
+          <p className="text-[12px] text-muted-foreground mt-0.5">Click a row to view their tasks</p>
         </div>
         <table className="w-full">
           <thead>
-            <tr className="bg-gray-50 dark:bg-gray-700/50">
-              <th className="text-left px-5 py-3 text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Member</th>
-              <th className="text-left px-5 py-3 text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Role</th>
-              <th className="text-left px-5 py-3 text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Team</th>
-              <th className="text-left px-5 py-3 text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Workload</th>
+            <tr className="bg-muted/50">
+              <th className="text-left px-5 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Member</th>
+              <th className="text-left px-5 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Role</th>
+              <th className="text-left px-5 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Team</th>
+              <th className="text-left px-5 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Workload</th>
             </tr>
           </thead>
           <tbody>
@@ -258,7 +255,7 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
               return (
                 <tr 
                   key={user.id} 
-                  className="group border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors"
+                  className="group border-b border-border/50 hover:bg-muted/50 cursor-pointer transition-colors"
                 >
                   {/* Member Cell - Avatar + Name + Email */}
                   <td className="px-5 py-4">
@@ -271,14 +268,14 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
                         {user.initials}
                       </div>
                       <div>
-                        <div className="text-[13px] font-medium text-gray-900 dark:text-gray-100">{user.name}</div>
-                        <div className="text-[11px] text-gray-500 dark:text-gray-400">{user.email}</div>
+                        <div className="text-[13px] font-medium text-foreground">{user.name}</div>
+                        <div className="text-[11px] text-muted-foreground">{user.email}</div>
                       </div>
                     </div>
                   </td>
                   
                   {/* Role Cell */}
-                  <td className="px-5 py-4 text-[13px] text-gray-600 dark:text-gray-300">{user.role}</td>
+                  <td className="px-5 py-4 text-[13px] text-muted-foreground">{user.role}</td>
                   
                   {/* Team Cell - With color indicator */}
                   <td className="px-5 py-4">
@@ -288,10 +285,10 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
                           className="w-2.5 h-2.5 rounded-full shrink-0"
                           style={{ backgroundColor: teamColor }}
                         />
-                        <span className="text-[13px] text-gray-600 dark:text-gray-300">{userTeam.name}</span>
+                        <span className="text-[13px] text-muted-foreground">{userTeam.name}</span>
                       </div>
                     ) : (
-                      <span className="text-[13px] text-gray-400">—</span>
+                      <span className="text-[13px] text-muted-foreground">—</span>
                     )}
                   </td>
                   
@@ -304,11 +301,11 @@ export function WorkManagerTeams({ tasks, teams, users, onCreateTeam }: WorkMana
                             {userStats.overdue} overdue
                           </span>
                         )}
-                        <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-[11px] font-medium rounded-full">
+                        <span className="px-2 py-0.5 bg-muted text-muted-foreground text-[11px] font-medium rounded-full">
                           {userStats.open} open
                         </span>
                       </div>
-                      <ChevronRight className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                   </td>
                 </tr>
