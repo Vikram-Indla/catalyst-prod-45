@@ -43,7 +43,7 @@ export const DEFAULT_COLUMNS: TableColumn[] = [
   { key: 'checkbox', label: '', width: 44, sortable: false },
   { key: 'rank', label: 'Rank', width: 70, sortable: true },
   { key: 'id', label: 'ID', width: 100, sortable: true },
-  { key: 'title', label: 'Title', minWidth: 220, sortable: true },
+  { key: 'title', label: 'Summary', minWidth: 220, sortable: true },
   { key: 'status', label: 'Status', width: 130, sortable: true },
   { key: 'priority', label: 'Priority', width: 100, sortable: true },
   { key: 'score', label: 'Score', width: 80, sortable: true },
