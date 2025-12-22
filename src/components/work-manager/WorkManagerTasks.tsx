@@ -215,7 +215,7 @@ export function WorkManagerTasks({ tasks, onOpenTask }: WorkManagerTasksProps) {
                   {/* Priority - dot + gray text */}
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <div className={cn('w-2 h-2 rounded-full shrink-0', getPriorityDotColor(task.priority))} />
+                      <div className={cn('w-1.5 h-1.5 rounded-full shrink-0', getPriorityDotColor(task.priority))} />
                       <span className="text-[12px] text-gray-400">{task.priority}</span>
                     </div>
                   </td>
