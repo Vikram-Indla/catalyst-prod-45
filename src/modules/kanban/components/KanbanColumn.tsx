@@ -24,6 +24,7 @@ interface KanbanColumnProps {
   onToggleCollapse: () => void;
   inSwimlane?: boolean;
   teamMembers?: TeamMember[];
+  onAddRequest?: () => void;
 }
 
 /**
@@ -81,7 +82,8 @@ export function KanbanColumn({
   collapsed, 
   onToggleCollapse, 
   inSwimlane = false,
-  teamMembers = []
+  teamMembers = [],
+  onAddRequest
 }: KanbanColumnProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const [isHeaderHovered, setIsHeaderHovered] = useState(false);
@@ -254,21 +256,26 @@ export function KanbanColumn({
       </div>
 
       {/* Add Item Button */}
-      <div className="p-2 border-t border-gray-200 dark:border-gray-700">
-        <button className="
-          w-full py-2 
-          text-[13px] 
-          text-gray-500 dark:text-gray-400
-          hover:text-gray-700 dark:hover:text-gray-200
-          hover:bg-white dark:hover:bg-gray-800
-          rounded-lg 
-          transition-colors 
-          flex items-center justify-center gap-1.5
-        ">
-          <Plus className="w-4 h-4" />
-          Add Request
-        </button>
-      </div>
+      {onAddRequest && (
+        <div className="p-2 border-t border-gray-200 dark:border-gray-700">
+          <button 
+            onClick={onAddRequest}
+            className="
+              w-full py-2 
+              text-[13px] 
+              text-gray-500 dark:text-gray-400
+              hover:text-gray-700 dark:hover:text-gray-200
+              hover:bg-white dark:hover:bg-gray-800
+              rounded-lg 
+              transition-colors 
+              flex items-center justify-center gap-1.5
+            "
+          >
+            <Plus className="w-4 h-4" />
+            Add Request
+          </button>
+        </div>
+      )}
     </div>
   );
 }
