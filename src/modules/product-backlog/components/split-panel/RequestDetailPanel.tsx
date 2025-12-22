@@ -53,6 +53,8 @@ interface RequestDetailPanelProps {
   onClone: () => void;
   onDelete: () => void;
   onOpenDrawer: () => void;
+  onAttachment: () => void;
+  onLink: () => void;
 }
 
 // Status options
@@ -97,6 +99,8 @@ export function RequestDetailPanel({
   onClone,
   onDelete,
   onOpenDrawer,
+  onAttachment,
+  onLink,
 }: RequestDetailPanelProps) {
   if (!request) {
     return (
@@ -404,7 +408,7 @@ export function RequestDetailPanel({
             <Edit className="w-3.5 h-3.5" />
             Edit Details
           </Button>
-          <Button variant="outline" size="sm" className="gap-1.5">
+          <Button variant="outline" size="sm" className="gap-1.5" onClick={onAttachment}>
             <Paperclip className="w-3.5 h-3.5" />
             Attachment
           </Button>
@@ -412,7 +416,7 @@ export function RequestDetailPanel({
             <Copy className="w-3.5 h-3.5" />
             Clone
           </Button>
-          <Button variant="outline" size="sm" className="gap-1.5">
+          <Button variant="outline" size="sm" className="gap-1.5" onClick={onLink}>
             <Link2 className="w-3.5 h-3.5" />
             Link
           </Button>
