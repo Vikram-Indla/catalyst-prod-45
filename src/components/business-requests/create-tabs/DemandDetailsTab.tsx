@@ -233,12 +233,10 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    disabled
                     className={cn(
-                      "w-full justify-start text-left font-normal mt-1.5 opacity-60 cursor-not-allowed",
+                      "w-full justify-start text-left font-normal mt-1.5",
                       !data.impl_start_date && "text-muted-foreground"
                     )}
-                    title="Available when status is Approved or later"
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {data.impl_start_date ? format(new Date(data.impl_start_date), 'dd/MM/yyyy') : 'dd/mm/yyyy'}
