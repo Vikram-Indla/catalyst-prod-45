@@ -311,8 +311,8 @@ function BoardColumn({
 
   return (
     <div className="flex-shrink-0 w-[300px] min-w-[280px] bg-gradient-to-b from-stone-50 to-stone-100/50 dark:from-neutral-900 dark:to-neutral-900/80 rounded-xl flex flex-col max-h-[calc(100vh-240px)] border border-stone-200/60 dark:border-gray-800 shadow-inner-sm">
-      {/* Column Header */}
-      <div className="flex items-center justify-between p-3 border-b border-stone-200/60 dark:border-gray-700 bg-gradient-to-b from-white/50 to-transparent dark:from-gray-800/30">
+      {/* Column Header - with bottom gradient fade */}
+      <div className="flex items-center justify-between p-3 border-b border-stone-200/60 dark:border-gray-700 bg-gradient-to-b from-white/60 to-stone-50/30 dark:from-gray-800/30">
         <div className="flex items-center gap-2">
           {column.color && (
             <div 

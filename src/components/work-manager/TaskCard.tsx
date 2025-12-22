@@ -72,10 +72,12 @@ export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
         // Base styles - Premium card treatment
         'relative group bg-white rounded-xl p-4 cursor-pointer',
         'border border-stone-100',
-        'shadow-card',
-        // Premium hover effects
+        // Deeper premium shadows
+        'shadow-[0_2px_8px_rgba(0,0,0,0.06),0_1px_3px_rgba(0,0,0,0.04)]',
+        // Premium hover effects with deeper shadow
         'transition-all duration-200 ease-out',
-        'hover:shadow-elevated hover:border-stone-200 hover:-translate-y-0.5',
+        'hover:shadow-[0_8px_24px_rgba(0,0,0,0.1),0_4px_8px_rgba(0,0,0,0.06)]',
+        'hover:border-stone-200 hover:-translate-y-0.5',
         'focus:ring-2 focus:ring-olive-500/20 focus:outline-none focus:border-olive-300',
         // Dragging state
         isDragging && 'shadow-hover cursor-grabbing rotate-1 scale-[1.02]',
@@ -145,9 +147,9 @@ export function TaskCard({ task, onClick, isDragging = false }: TaskCardProps) {
           <span className="text-[11px] text-stone-500">{task.priority}</span>
         </div>
         
-        {/* Linked Item - Champagne tint */}
+        {/* Linked Item - Champagne tint with hover state */}
         {task.linkedItem && (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-bronze-50 text-bronze-600 text-[11px] font-mono rounded border border-bronze-200 hover:bg-bronze-100 transition-colors cursor-pointer">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-bronze-50 text-bronze-600 text-[11px] font-mono rounded border border-bronze-200 hover:bg-[#d4b896]/40 transition-colors cursor-pointer">
             <Link2 className="w-3 h-3" />
             {task.linkedItem.key}
           </span>
