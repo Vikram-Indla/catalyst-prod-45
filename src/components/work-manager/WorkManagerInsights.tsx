@@ -2,9 +2,8 @@
 // Weekly Insights View
 
 import { useState, useMemo } from 'react';
-import { CheckCircle, Clock, AlertTriangle, XCircle, FileText, Download, ChevronDown } from 'lucide-react';
+import { CheckCircle, Clock, AlertTriangle, XCircle, FileText, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -15,6 +14,7 @@ import {
 import { users, teams, getUserById, getTeamById } from '@/lib/work-manager-data';
 import type { TaskExtended } from './types';
 import { cn } from '@/lib/utils';
+import { ManagerFollowUpNotes } from './ManagerFollowUpNotes';
 
 interface WorkManagerInsightsProps {
   tasks: TaskExtended[];
@@ -26,7 +26,6 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
   const [viewMode, setViewMode] = useState<ViewMode>('individual');
   const [selectedUserId, setSelectedUserId] = useState(users[0]?.id || '');
   const [selectedTeamId, setSelectedTeamId] = useState(teams[0]?.id || '');
-  const [followUpNotes, setFollowUpNotes] = useState('');
 
   // Get current week range
   const today = new Date();
@@ -317,17 +316,12 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
             </div>
 
             {/* Manager Follow-up Notes */}
-            <div className="bg-surface-card border border-border-default rounded-lg p-4">
-              <h3 className="text-[12px] font-semibold text-text-primary uppercase tracking-wide mb-3">
-                Manager Follow-up Notes
-              </h3>
-              <Textarea
-                value={followUpNotes}
-                onChange={(e) => setFollowUpNotes(e.target.value)}
-                placeholder="Add notes for follow-up..."
-                className="text-[13px] min-h-[100px]"
-              />
-            </div>
+            <ManagerFollowUpNotes
+              userId={selectedUserId}
+              teamId={selectedUser ? teams.find(t => t.memberIds.includes(selectedUserId))?.id || null : null}
+              weekStart={weekStart}
+              memberName={selectedUser?.name}
+            />
           </div>
         </div>
       ) : (

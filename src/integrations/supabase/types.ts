@@ -7634,6 +7634,104 @@ export type Database = {
         }
         Relationships: []
       }
+      manager_follow_up_history: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          field_changed: string | null
+          follow_up_id: string
+          id: string
+          new_value: string | null
+          old_value: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          field_changed?: string | null
+          follow_up_id: string
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          field_changed?: string | null
+          follow_up_id?: string
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "manager_follow_up_history_follow_up_id_fkey"
+            columns: ["follow_up_id"]
+            isOneToOne: false
+            referencedRelation: "manager_follow_ups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      manager_follow_ups: {
+        Row: {
+          completed_at: string | null
+          completed_by: string | null
+          content: string
+          created_at: string
+          created_by: string
+          id: string
+          is_completed: boolean
+          team_id: string | null
+          team_member_id: string
+          updated_at: string
+          week_start: string
+        }
+        Insert: {
+          completed_at?: string | null
+          completed_by?: string | null
+          content: string
+          created_at?: string
+          created_by: string
+          id?: string
+          is_completed?: boolean
+          team_id?: string | null
+          team_member_id: string
+          updated_at?: string
+          week_start: string
+        }
+        Update: {
+          completed_at?: string | null
+          completed_by?: string | null
+          content?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          is_completed?: boolean
+          team_id?: string | null
+          team_member_id?: string
+          updated_at?: string
+          week_start?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "manager_follow_ups_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "manager_follow_ups_team_member_id_fkey"
+            columns: ["team_member_id"]
+            isOneToOne: false
+            referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       milestone_categories: {
         Row: {
           created_at: string | null
