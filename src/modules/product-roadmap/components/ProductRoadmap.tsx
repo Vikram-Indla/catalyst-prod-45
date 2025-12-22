@@ -1,8 +1,10 @@
 /**
  * Main Product Roadmap Component
+ * Integrates drag & drop and keyboard navigation
  */
 
 import React, { useState, useCallback, useMemo } from 'react';
+import { DragDropContext } from '@hello-pangea/dnd';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { RoadmapToolbar } from './RoadmapToolbar';
 import { RoadmapListPanel } from './RoadmapListPanel';
@@ -11,10 +13,13 @@ import { RoadmapLoadingSkeleton } from './RoadmapLoadingSkeleton';
 import { RoadmapEmptyState } from './RoadmapEmptyState';
 import { useRoadmapDemands, useReorderDemands, useUpdateDemandDates } from '../hooks/useRoadmapDemands';
 import { useRoadmapFilters } from '../hooks/useRoadmapFilters';
+import { useRoadmapDragDrop } from '../hooks/useRoadmapDragDrop';
+import { useRoadmapKeyboard } from '../hooks/useRoadmapKeyboard';
 import { groupDemands } from '../utils/grouping';
 import type { TimelineConfig, GroupingField, TimelineZoom, RoadmapGroup } from '../types/roadmap';
-import { EMPTY_FILTERS, DEFAULT_TIMELINE_CONFIG } from '../types/roadmap';
+import { DEFAULT_TIMELINE_CONFIG } from '../types/roadmap';
 import { addMonths, subMonths } from 'date-fns';
+import { toast } from 'sonner';
 
 export function ProductRoadmap() {
   // Filter state
@@ -29,7 +34,6 @@ export function ProductRoadmap() {
   
   // Selection state
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
-  const [focusedIndex, setFocusedIndex] = useState(-1);
   
   // Dialog states (placeholders for now)
   const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
@@ -51,10 +55,79 @@ export function ProductRoadmap() {
   }, [items, grouping, expandedGroups]);
 
   // Handlers
-  const handleItemClick = useCallback((id: string) => {
+  const handleReorder = useCallback((updates: { id: string; rank: number }[]) => {
+    reorderMutation.mutate(updates);
+  }, [reorderMutation]);
+
+  const handleDateChange = useCallback((id: string, start: string | null, end: string | null) => {
+    updateDatesMutation.mutate({ id, start_date: start, end_date: end });
+  }, [updateDatesMutation]);
+
+  // Drag and drop
+  const { handleDragEnd } = useRoadmapDragDrop({
+    items,
+    onReorder: handleReorder,
+    onDateChange: handleDateChange,
+  });
+
+  // Keyboard navigation handlers
+  const handleOpenDrawer = useCallback((id: string) => {
     setSelectedItemId(id);
     // TODO: Open drawer
+    toast.info('Drawer opening for: ' + id);
   }, []);
+
+  const handleEdit = useCallback((id: string) => {
+    setSelectedItemId(id);
+    // TODO: Open edit mode
+    toast.info('Edit mode for: ' + id);
+  }, []);
+
+  const handleDelete = useCallback((id: string) => {
+    // TODO: Show confirmation dialog
+    toast.info('Delete confirmation for: ' + id);
+  }, []);
+
+  const handleMove = useCallback((id: string, direction: 'up' | 'down') => {
+    const currentIndex = items.findIndex(item => item.id === id);
+    if (currentIndex === -1) return;
+
+    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    if (newIndex < 0 || newIndex >= items.length) return;
+
+    const reordered = [...items];
+    [reordered[currentIndex], reordered[newIndex]] = [reordered[newIndex], reordered[currentIndex]];
+    
+    const updates = reordered.map((item, index) => ({
+      id: item.id,
+      rank: index + 1,
+    }));
+    handleReorder(updates);
+  }, [items, handleReorder]);
+
+  const handleCreateNew = useCallback(() => {
+    setIsCreateDialogOpen(true);
+  }, []);
+
+  // Keyboard navigation
+  const { focusedIndex, setFocusedIndex } = useRoadmapKeyboard({
+    items,
+    onSelect: setSelectedItemId,
+    onOpenDrawer: handleOpenDrawer,
+    onEdit: handleEdit,
+    onDelete: handleDelete,
+    onMove: handleMove,
+    onCreateNew: handleCreateNew,
+    enabled: !isLoading && items.length > 0,
+  });
+
+  const handleItemClick = useCallback((id: string) => {
+    setSelectedItemId(id);
+    const index = items.findIndex(item => item.id === id);
+    if (index !== -1) {
+      setFocusedIndex(index);
+    }
+  }, [items, setFocusedIndex]);
 
   const handleToggleGroup = useCallback((key: string) => {
     setExpandedGroups(prev => {
@@ -91,10 +164,6 @@ export function ProductRoadmap() {
     setTimelineConfig(prev => ({ ...prev, zoom }));
   }, []);
 
-  const handleDateChange = useCallback((id: string, start: string | null, end: string | null) => {
-    updateDatesMutation.mutate({ id, start_date: start, end_date: end });
-  }, [updateDatesMutation]);
-
   if (isLoading) {
     return <RoadmapLoadingSkeleton />;
   }
@@ -112,50 +181,52 @@ export function ProductRoadmap() {
 
   return (
     <TooltipProvider>
-      <div className="flex flex-col h-full bg-background" data-roadmap-container>
-        {/* Toolbar */}
-        <RoadmapToolbar
-          filters={filters}
-          onFiltersChange={setFilters}
-          grouping={grouping}
-          onGroupingChange={setGrouping}
-          zoom={timelineConfig.zoom}
-          onZoomChange={handleZoomChange}
-          onNavigate={handleNavigate}
-          onOpenFilterDialog={() => setIsFilterDialogOpen(true)}
-          onOpenCreateDialog={() => setIsCreateDialogOpen(true)}
-          onOpenExportDialog={() => setIsExportDialogOpen(true)}
-          itemCount={items.length}
-          activeFilterCount={activeFilterCount}
-        />
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <div className="flex flex-col h-full bg-background" data-roadmap-container>
+          {/* Toolbar */}
+          <RoadmapToolbar
+            filters={filters}
+            onFiltersChange={setFilters}
+            grouping={grouping}
+            onGroupingChange={setGrouping}
+            zoom={timelineConfig.zoom}
+            onZoomChange={handleZoomChange}
+            onNavigate={handleNavigate}
+            onOpenFilterDialog={() => setIsFilterDialogOpen(true)}
+            onOpenCreateDialog={() => setIsCreateDialogOpen(true)}
+            onOpenExportDialog={() => setIsExportDialogOpen(true)}
+            itemCount={items.length}
+            activeFilterCount={activeFilterCount}
+          />
 
-        {/* Main content */}
-        {items.length === 0 ? (
-          <RoadmapEmptyState onCreateClick={() => setIsCreateDialogOpen(true)} />
-        ) : (
-          <div className="flex flex-1 overflow-hidden">
-            {/* List panel */}
-            <RoadmapListPanel
-              items={items}
-              groups={groups}
-              focusedIndex={focusedIndex}
-              selectedItemId={selectedItemId}
-              onItemClick={handleItemClick}
-              onToggleGroup={handleToggleGroup}
-            />
+          {/* Main content */}
+          {items.length === 0 ? (
+            <RoadmapEmptyState onCreateClick={() => setIsCreateDialogOpen(true)} />
+          ) : (
+            <div className="flex flex-1 overflow-hidden">
+              {/* List panel */}
+              <RoadmapListPanel
+                items={items}
+                groups={groups}
+                focusedIndex={focusedIndex}
+                selectedItemId={selectedItemId}
+                onItemClick={handleItemClick}
+                onToggleGroup={handleToggleGroup}
+              />
 
-            {/* Timeline panel */}
-            <RoadmapTimelinePanel
-              items={items}
-              groups={groups}
-              config={timelineConfig}
-              selectedItemId={selectedItemId}
-              onItemClick={handleItemClick}
-              onDateChange={handleDateChange}
-            />
-          </div>
-        )}
-      </div>
+              {/* Timeline panel */}
+              <RoadmapTimelinePanel
+                items={items}
+                groups={groups}
+                config={timelineConfig}
+                selectedItemId={selectedItemId}
+                onItemClick={handleItemClick}
+                onDateChange={handleDateChange}
+              />
+            </div>
+          )}
+        </div>
+      </DragDropContext>
     </TooltipProvider>
   );
 }

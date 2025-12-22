@@ -18,3 +18,5 @@ export {
   useSetDefaultView,
 } from './useRoadmapViews';
 export { useRoadmapFilters, type RoadmapFiltersHook } from './useRoadmapFilters';
+export { useRoadmapDragDrop, reorder } from './useRoadmapDragDrop';
+export { useRoadmapKeyboard, keyboardShortcuts } from './useRoadmapKeyboard';
