@@ -355,7 +355,7 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
             {/* Achieved This Week */}
             <div className="bg-surface-card border border-border-default rounded-lg p-4">
               <h3 className="text-[12px] font-semibold text-foreground uppercase tracking-wide mb-3 flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-green-500/60" />
+                <CheckCircle className="w-4 h-4 text-green-700 dark:text-green-500" />
                 Achieved This Week
               </h3>
               {individualInsights.achieved.length > 0 ? (
@@ -376,7 +376,7 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
             {/* In Progress */}
             <div className="bg-surface-card border border-border-default rounded-lg p-4">
               <h3 className="text-[12px] font-semibold text-foreground uppercase tracking-wide mb-3 flex items-center gap-2">
-                <Clock className="w-4 h-4 text-amber-500/60" />
+                <Clock className="w-4 h-4 text-amber-700 dark:text-amber-500" />
                 In Progress
               </h3>
               {individualInsights.inProgress.length > 0 ? (
@@ -397,7 +397,7 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
             {/* Not Achieved / Overdue */}
             <div className="bg-surface-card border border-border-default rounded-lg p-4">
               <h3 className="text-[12px] font-semibold text-foreground uppercase tracking-wide mb-3 flex items-center gap-2">
-                <XCircle className="w-4 h-4 text-red-500/60" />
+                <XCircle className="w-4 h-4 text-red-700 dark:text-red-500" />
                 Not Achieved / Overdue
               </h3>
               {individualInsights.notAchieved.length > 0 ? (
@@ -407,7 +407,7 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
                       <span className="w-1.5 h-1.5 rounded-full bg-gray-500 shrink-0" />
                       {task.title}
                       <span className="font-mono text-[11px] text-muted-foreground">({task.key})</span>
-                      <span className="text-[11px] text-red-400">{task.daysOverdue}d overdue</span>
+                      <span className="text-[11px] text-red-700 dark:text-red-400 font-medium">{task.daysOverdue}d overdue</span>
                     </li>
                   ))}
                 </ul>
@@ -419,7 +419,7 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
             {/* Blockers */}
             <div className="bg-surface-card border border-border-default rounded-lg p-4">
               <h3 className="text-[12px] font-semibold text-foreground uppercase tracking-wide mb-3 flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-amber-500/60" />
+                <AlertTriangle className="w-4 h-4 text-amber-700 dark:text-amber-500" />
                 Blockers
               </h3>
               {individualInsights.blockers.length > 0 ? (
@@ -434,7 +434,7 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
                       <p className="text-[12px] text-muted-foreground ml-4 mt-1 italic">
                         {reason}
                       </p>
-                      <p className="text-[11px] text-amber-400 ml-4">
+                      <p className="text-[11px] text-red-700 dark:text-red-400 font-medium ml-4">
                         ({daysSinceBlocked} days blocked)
                       </p>
                     </li>
@@ -527,8 +527,8 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
                       </td>
                       <td className="px-4 py-3 text-center text-[13px] text-foreground font-medium">{member.completed}</td>
                       <td className="px-4 py-3 text-center text-[13px] text-foreground font-medium">{member.inProgress}</td>
-                      <td className="px-4 py-3 text-center text-[13px] font-medium">{member.overdue > 0 ? <span className="text-red-400">{member.overdue}</span> : <span className="text-muted-foreground">—</span>}</td>
-                      <td className="px-4 py-3 text-center text-[13px] font-medium">{member.blocked > 0 ? <span className="text-amber-400">{member.blocked}</span> : <span className="text-muted-foreground">—</span>}</td>
+                      <td className="px-4 py-3 text-center text-[13px] font-medium">{member.overdue > 0 ? <span className="text-red-700 dark:text-red-400">{member.overdue}</span> : <span className="text-muted-foreground">—</span>}</td>
+                      <td className="px-4 py-3 text-center text-[13px] font-medium">{member.blocked > 0 ? <span className="text-red-700 dark:text-red-400">{member.blocked}</span> : <span className="text-muted-foreground">—</span>}</td>
                     </tr>
                   );
                 })}
