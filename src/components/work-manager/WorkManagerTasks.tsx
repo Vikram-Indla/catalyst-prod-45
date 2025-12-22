@@ -179,7 +179,7 @@ export function WorkManagerTasks({ tasks, onOpenTask }: WorkManagerTasksProps) {
                   <td className="px-4 py-3">
                     {assignee ? (
                       <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-white">
+                        <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 bg-stone-200 dark:bg-stone-700 text-stone-600 dark:text-stone-300">
                           {assignee.initials}
                         </div>
                         <span className="text-[13px] text-foreground">{assignee.name}</span>
@@ -241,7 +241,7 @@ export function WorkManagerTasks({ tasks, onOpenTask }: WorkManagerTasksProps) {
                   {/* Blocked - minimal text */}
                   <td className="px-4 py-3">
                     {task.blocked ? (
-                      <span className="text-red-400 text-[11px] font-medium">Yes</span>
+                      <span className="text-red-500 text-[11px] font-medium">Yes</span>
                     ) : null}
                   </td>
                 </tr>
