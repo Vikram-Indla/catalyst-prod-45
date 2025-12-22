@@ -333,30 +333,21 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
             )}
           </div>
 
-          {/* Summary Stats - Premium cards with semantic colors */}
-          <div className="grid grid-cols-5 gap-4">
-            {[
-              { label: 'Total Tasks', value: individualInsights.summary.total, icon: FileText, bgColor: 'bg-stone-50', borderColor: 'border-stone-100', textColor: 'text-stone-900' },
-              { label: 'Completed', value: individualInsights.summary.completed, icon: CheckCircle, bgColor: 'bg-gradient-to-br from-green-50 to-emerald-50', borderColor: 'border-green-100', textColor: 'text-green-600' },
-              { label: 'In Progress', value: individualInsights.summary.inProgress, icon: Clock, bgColor: 'bg-gradient-to-br from-amber-50 to-orange-50', borderColor: 'border-amber-100', textColor: 'text-amber-600' },
-              { label: 'Overdue', value: individualInsights.summary.overdue, icon: XCircle, bgColor: 'bg-gradient-to-br from-red-50 to-rose-50', borderColor: 'border-red-100', textColor: 'text-red-600' },
-              { label: 'Blocked', value: individualInsights.summary.blocked, icon: AlertTriangle, bgColor: 'bg-gradient-to-br from-red-50 to-rose-50', borderColor: 'border-red-100', textColor: 'text-red-600' },
-            ].map((stat) => {
-              const Icon = stat.icon;
-              return (
-                <div key={stat.label} className={cn(
-                  'rounded-xl p-4 border shadow-card hover:shadow-elevated transition-shadow',
-                  stat.bgColor,
-                  stat.borderColor
-                )}>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Icon className={cn('w-4 h-4', stat.textColor)} />
-                    <span className="text-[11px] font-semibold text-stone-500 uppercase tracking-wider">{stat.label}</span>
-                  </div>
-                  <span className={cn('text-3xl font-bold tracking-tight', stat.textColor)}>{stat.value}</span>
+          {/* Summary Stats - Clean minimal cards */}
+          <div className="bg-surface-card border border-border-default rounded-xl p-6 shadow-card">
+            <div className="grid grid-cols-4 gap-8">
+              {[
+                { label: 'TOTAL TASKS', value: individualInsights.summary.total, textColor: 'text-stone-900 dark:text-stone-100' },
+                { label: 'COMPLETED', value: individualInsights.summary.completed, textColor: 'text-green-600' },
+                { label: 'OVERDUE', value: individualInsights.summary.overdue, textColor: 'text-red-600' },
+                { label: 'BLOCKED', value: individualInsights.summary.blocked, textColor: 'text-red-600' },
+              ].map((stat) => (
+                <div key={stat.label}>
+                  <span className="text-[11px] font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wider">{stat.label}</span>
+                  <div className={cn('text-3xl font-bold tracking-tight mt-1', stat.textColor)}>{stat.value}</div>
                 </div>
-              );
-            })}
+              ))}
+            </div>
           </div>
 
           {/* Sections */}
