@@ -61,6 +61,9 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
   const { user } = useAuth();
   const [targetDateLocked, setTargetDateLocked] = useState(false);
   const [lockedByUser, setLockedByUser] = useState<string | null>(null);
+  const [businessAskDateOpen, setBusinessAskDateOpen] = useState(false);
+  const [kickoffDateOpen, setKickoffDateOpen] = useState(false);
+  const [targetDateOpen, setTargetDateOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const currentUser = 'Current User';
 
@@ -216,7 +219,7 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
           <div className="grid grid-cols-3 gap-4">
             <div>
               <Label className="text-sm font-medium">Business Ask Date</Label>
-              <Popover>
+              <Popover open={businessAskDateOpen} onOpenChange={setBusinessAskDateOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
@@ -233,7 +236,10 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
                   <Calendar
                     mode="single"
                     selected={data.start_date ? new Date(data.start_date) : undefined}
-                    onSelect={(date) => onChange('start_date', date ? format(date, 'yyyy-MM-dd') : null)}
+                    onSelect={(date) => {
+                      onChange('start_date', date ? format(date, 'yyyy-MM-dd') : null);
+                      setBusinessAskDateOpen(false);
+                    }}
                     initialFocus
                     className="pointer-events-auto"
                   />
@@ -243,7 +249,7 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
 
             <div>
               <Label className="text-sm font-medium">Kickoff Date</Label>
-              <Popover>
+              <Popover open={kickoffDateOpen} onOpenChange={setKickoffDateOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
@@ -260,7 +266,10 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
                   <Calendar
                     mode="single"
                     selected={data.impl_start_date ? new Date(data.impl_start_date) : undefined}
-                    onSelect={(date) => onChange('impl_start_date', date ? format(date, 'yyyy-MM-dd') : null)}
+                    onSelect={(date) => {
+                      onChange('impl_start_date', date ? format(date, 'yyyy-MM-dd') : null);
+                      setKickoffDateOpen(false);
+                    }}
                     initialFocus
                     className="pointer-events-auto"
                   />
@@ -271,7 +280,7 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
             <div>
               <Label className="text-sm font-medium">Target Completion Date</Label>
               <div className="flex gap-2 mt-1.5">
-                <Popover>
+                <Popover open={targetDateOpen} onOpenChange={setTargetDateOpen}>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
@@ -290,7 +299,10 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
                     <Calendar
                       mode="single"
                       selected={data.end_date ? new Date(data.end_date) : undefined}
-                      onSelect={(date) => onChange('end_date', date ? format(date, 'yyyy-MM-dd') : null)}
+                      onSelect={(date) => {
+                        onChange('end_date', date ? format(date, 'yyyy-MM-dd') : null);
+                        setTargetDateOpen(false);
+                      }}
                       initialFocus
                       className="pointer-events-auto"
                     />

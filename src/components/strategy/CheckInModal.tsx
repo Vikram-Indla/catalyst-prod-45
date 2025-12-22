@@ -39,6 +39,7 @@ export function CheckInModal({ open, onClose, keyResult, checkins, onUpdate, onD
   const [date, setDate] = useState<Date>(new Date());
   const [value, setValue] = useState<string>(keyResult.current_value?.toString() || '');
   const [note, setNote] = useState('');
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
 
   const score = keyResult.goal_value && keyResult.baseline_value !== null
     ? Math.max(0, Math.min(1, ((keyResult.current_value || 0) - keyResult.baseline_value) / (keyResult.goal_value - keyResult.baseline_value)))
@@ -79,7 +80,7 @@ export function CheckInModal({ open, onClose, keyResult, checkins, onUpdate, onD
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>Date</Label>
-                <Popover>
+                <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
@@ -96,8 +97,12 @@ export function CheckInModal({ open, onClose, keyResult, checkins, onUpdate, onD
                     <Calendar
                       mode="single"
                       selected={date}
-                      onSelect={(d) => d && setDate(d)}
+                      onSelect={(d) => {
+                        if (d) setDate(d);
+                        setDatePickerOpen(false);
+                      }}
                       initialFocus
+                      className="pointer-events-auto"
                     />
                   </PopoverContent>
                 </Popover>
