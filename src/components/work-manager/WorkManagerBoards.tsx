@@ -310,22 +310,22 @@ function BoardColumn({
   };
 
   return (
-    <div className="flex-shrink-0 w-[300px] min-w-[280px] bg-gray-50 dark:bg-neutral-900 rounded-lg flex flex-col max-h-[calc(100vh-240px)] border border-gray-200 dark:border-gray-800">
+    <div className="flex-shrink-0 w-[300px] min-w-[280px] bg-gradient-to-b from-stone-50 to-stone-100/50 dark:from-neutral-900 dark:to-neutral-900/80 rounded-xl flex flex-col max-h-[calc(100vh-240px)] border border-stone-200/60 dark:border-gray-800 shadow-inner-sm">
       {/* Column Header */}
-      <div className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-700">
+      <div className="flex items-center justify-between p-3 border-b border-stone-200/60 dark:border-gray-700 bg-gradient-to-b from-white/50 to-transparent dark:from-gray-800/30">
         <div className="flex items-center gap-2">
           {column.color && (
             <div 
-              className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+              className="w-2.5 h-2.5 rounded-full flex-shrink-0 shadow-sm"
               style={{ backgroundColor: column.color }}
             />
           )}
           {getGroupIcon()}
           <span className={cn(
-            "text-[13px] font-semibold",
-            column.id === 'Done' ? 'text-green-600/70 dark:text-green-400/70' : 'text-gray-900 dark:text-gray-100'
+            "text-[13px] font-semibold tracking-tight",
+            column.id === 'Done' ? 'text-green-600/80 dark:text-green-400/70' : 'text-stone-800 dark:text-gray-100'
           )}>{column.name}</span>
-          <span className="px-2 py-0.5 bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-gray-300 text-[11px] font-medium rounded-full">
+          <span className="px-2 py-0.5 bg-stone-200/80 dark:bg-white/10 text-stone-600 dark:text-gray-300 text-[11px] font-semibold rounded-full">
             {tasks.length}
           </span>
         </div>
@@ -333,13 +333,13 @@ function BoardColumn({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button 
-                className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors" 
+                className="p-1.5 rounded-md hover:bg-stone-200/80 dark:hover:bg-gray-700 transition-colors" 
                 type="button"
               >
-                <MoreHorizontal className="w-4 h-4 text-gray-500" />
+                <MoreHorizontal className="w-4 h-4 text-stone-500" />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48 bg-popover">
+            <DropdownMenuContent align="end" className="w-48 bg-popover shadow-elevated">
               {groupBy === 'status' && (
                 <>
                   <DropdownMenuItem
@@ -394,14 +394,17 @@ function BoardColumn({
             ref={dropProvided.innerRef}
             {...dropProvided.droppableProps}
             className={cn(
-              'flex-1 overflow-y-auto p-3 space-y-2 scroll-smooth',
-              dropSnapshot.isDraggingOver && isDragEnabled && 'bg-[#5c7c5c]/10'
+              'flex-1 overflow-y-auto p-3 space-y-3 scroll-smooth',
+              dropSnapshot.isDraggingOver && isDragEnabled && 'bg-olive-500/10 ring-2 ring-inset ring-olive-500/20'
             )}
           >
             {tasks.length === 0 ? (
-              <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center">
-                <p className="text-[12px] font-medium text-gray-500 dark:text-gray-400">No tasks</p>
-                <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">
+              <div className="border-2 border-dashed border-stone-300 dark:border-gray-600 rounded-xl p-8 text-center bg-stone-50/50 dark:bg-gray-800/30">
+                <div className="w-12 h-12 rounded-full bg-stone-100 dark:bg-gray-700 flex items-center justify-center mx-auto mb-3">
+                  <CheckCircle2 className="w-6 h-6 text-stone-400 dark:text-gray-500" />
+                </div>
+                <p className="text-[12px] font-medium text-stone-500 dark:text-gray-400">No tasks</p>
+                <p className="text-[11px] text-stone-400 dark:text-gray-500 mt-1">
                   {isDragEnabled ? 'Drop tasks here' : 'No items in this group'}
                 </p>
               </div>
@@ -414,8 +417,8 @@ function BoardColumn({
                       {...dragProvided.draggableProps}
                       {...dragProvided.dragHandleProps}
                       className={cn(
-                        'transition-transform duration-200',
-                        dragSnapshot.isDragging && 'rotate-2 scale-105'
+                        'transition-all duration-200',
+                        dragSnapshot.isDragging && 'rotate-1 scale-[1.02]'
                       )}
                     >
                       <TaskCard 

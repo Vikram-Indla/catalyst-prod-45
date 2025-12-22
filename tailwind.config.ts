@@ -98,7 +98,7 @@ export default {
           950: "#0a0a0a",
         },
         
-        /* Brand colors */
+        /* Brand colors - Catalyst Golden Hour */
         gold: {
           DEFAULT: "#c69c6d",
           50: "#fdf8f3",
@@ -112,9 +112,40 @@ export default {
           800: "#7d5a38",
           900: "#664a30",
           950: "#382618",
-          /* WCAG-compliant link colors */
           link: "hsl(var(--gold-link))",
           "link-hover": "hsl(var(--gold-link-hover))",
+        },
+        
+        /* Olive - Primary brand */
+        olive: {
+          DEFAULT: "#5c7c5c",
+          50: "#f4f7f4",
+          100: "#e6ece6",
+          200: "#cdd9cd",
+          300: "#a8bea8",
+          400: "#7d9c7d",
+          500: "#5c7c5c",
+          600: "#4a6a4a",
+          700: "#3d563d",
+          800: "#334533",
+          900: "#2b392b",
+          950: "#151d15",
+        },
+        
+        /* Bronze - Secondary brand */
+        bronze: {
+          DEFAULT: "#8b7355",
+          50: "#f9f7f4",
+          100: "#f0ebe3",
+          200: "#e0d5c7",
+          300: "#ccb9a3",
+          400: "#b69a7a",
+          500: "#8b7355",
+          600: "#7a6349",
+          700: "#65503d",
+          800: "#534235",
+          900: "#46382e",
+          950: "#251d17",
         },
 
         /* Shadcn semantic colors */
@@ -162,18 +193,29 @@ export default {
           ring: "hsl(var(--sidebar-ring))",
         },
         
-        /* Brand primary alias (for bg-brand-primary usage) */
-        brand: {
-          primary: {
-            DEFAULT: "#c69c6d",
-            hover: "#b8894d",
-            pale: "rgba(198, 156, 109, 0.08)",
-            border: "rgba(198, 156, 109, 0.3)",
-          },
-          dark: "#1a1a1a",
+        /* Surface colors for cards/containers */
+        surface: {
+          card: "var(--surface-card)",
+          muted: "var(--surface-muted)",
+          subtle: "var(--surface-subtle)",
+          hover: "var(--surface-hover)",
         },
         
-        /* Status colors - for bg-status-danger, text-status-success, etc. */
+        /* Brand primary alias */
+        brand: {
+          primary: {
+            DEFAULT: "#5c7c5c",
+            hover: "#4a6a4a",
+            pale: "rgba(92, 124, 92, 0.08)",
+            border: "rgba(92, 124, 92, 0.2)",
+          },
+          olive: "#5c7c5c",
+          bronze: "#8b7355",
+          gold: "#c69c6d",
+          champagne: "#d4b896",
+        },
+        
+        /* Status colors */
         status: {
           success: {
             DEFAULT: "var(--status-success)",
@@ -191,11 +233,20 @@ export default {
             border: "var(--status-danger-border)",
           },
         },
+        
+        /* Text colors from CSS vars */
+        text: {
+          primary: "var(--text-primary)",
+          secondary: "var(--text-secondary)",
+          tertiary: "var(--text-tertiary)",
+          muted: "var(--text-muted)",
+        },
       },
       
       fontFamily: {
         sans: ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
         mono: ["SF Mono", "Monaco", "Consolas", "monospace"],
+        display: ["Inter", "-apple-system", "sans-serif"],
       },
       
       fontSize: {
@@ -212,17 +263,26 @@ export default {
       },
       
       borderRadius: {
-        lg: "8px",
-        md: "6px",
         sm: "4px",
+        md: "6px",
+        lg: "8px",
         xl: "12px",
+        "2xl": "16px",
       },
       
       boxShadow: {
-        sm: "0 1px 2px rgba(0,0,0,0.05)",
-        DEFAULT: "0 1px 3px rgba(0,0,0,0.08)",
+        xs: "var(--shadow-xs)",
+        sm: "var(--shadow-sm)",
+        card: "var(--shadow-card)",
+        DEFAULT: "var(--shadow-card)",
+        elevated: "var(--shadow-elevated)",
+        hover: "var(--shadow-hover)",
+        brand: "var(--shadow-brand)",
         md: "0 4px 6px rgba(0,0,0,0.07)",
         lg: "0 10px 15px rgba(0,0,0,0.1)",
+        /* Inner shadow for recessed containers */
+        "inner-sm": "inset 0 1px 2px rgba(0,0,0,0.03)",
+        "inner-md": "inset 0 2px 4px rgba(0,0,0,0.05)",
       },
       
       keyframes: {
@@ -234,11 +294,26 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "fade-in": {
+          "0%": { opacity: "0", transform: "translateY(4px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "scale-in": {
+          "0%": { opacity: "0", transform: "scale(0.98)" },
+          "100%": { opacity: "1", transform: "scale(1)" },
+        },
+        "slide-up": {
+          "0%": { opacity: "0", transform: "translateY(8px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
       },
       
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "fade-in": "fade-in 0.3s ease-out",
+        "scale-in": "scale-in 0.2s ease-out",
+        "slide-up": "slide-up 0.3s ease-out",
       },
     },
   },

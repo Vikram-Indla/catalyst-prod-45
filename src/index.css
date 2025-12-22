@@ -3,15 +3,16 @@
 @tailwind utilities;
 
 /* ════════════════════════════════════════════════════════════════════════════
-   CATALYST V3 — PURE ONYX DESIGN SYSTEM
+   CATALYST V4 — PREMIUM ENTERPRISE DESIGN SYSTEM
+   CIO-Grade Polish with Depth, Layering & Brand Integration
    ════════════════════════════════════════════════════════════════════════════ */
 
 @layer base {
   :root {
     /* ═══════════════════════════════════════════════════════════════
-       LIGHT MODE — Cream backgrounds, dark text
+       LIGHT MODE — Warm Stone backgrounds, Premium depth
        ═══════════════════════════════════════════════════════════════ */
-    --background: 40 23% 97%;           /* #faf7f1 cream */
+    --background: 40 20% 98%;           /* #fafaf9 warm stone-50 */
     --foreground: 0 0% 4%;              /* #0a0a0a near-black */
     
     --card: 0 0% 100%;                  /* #ffffff */
@@ -20,126 +21,148 @@
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 4%;
     
-    --primary: 32 40% 60%;              /* #c69c6d gold */
+    --primary: 120 26% 42%;             /* #5c7c5c olive - PRIMARY BRAND */
     --primary-foreground: 0 0% 100%;    /* white */
     
-    --secondary: 0 0% 96%;              /* #f5f5f5 */
+    --secondary: 40 20% 97%;            /* warm off-white */
     --secondary-foreground: 0 0% 9%;    /* #171717 */
     
-    --muted: 0 0% 96%;                  /* #f5f5f5 */
-    --muted-foreground: 0 0% 25%;       /* #404040 - darker for better contrast */
+    --muted: 40 15% 96%;                /* warm muted */
+    --muted-foreground: 0 0% 35%;       /* #595959 - better contrast */
     
-    --accent: 32 40% 60%;               /* gold */
+    --accent: 32 40% 60%;               /* #c69c6d gold accent */
     --accent-foreground: 0 0% 100%;
     
     --destructive: 0 72% 51%;           /* red */
     --destructive-foreground: 0 0% 100%;
     
-    --border: 0 0% 90%;                 /* #e5e5e5 */
-    --input: 0 0% 83%;                  /* #d4d4d4 */
-    --ring: 0 0% 83%;                  /* grey - neutral focus ring */
+    --border: 0 0% 91%;                 /* #e8e8e8 - softer */
+    --input: 0 0% 85%;                  /* #d9d9d9 */
+    --ring: 120 26% 42%;                /* olive focus ring */
     
-    --radius: 6px;
+    --radius: 8px;
     
     /* Sidebar */
-    --sidebar-background: 0 0% 97%;     /* #f7f7f7 */
+    --sidebar-background: 0 0% 99%;     /* #fcfcfc */
     --sidebar-foreground: 0 0% 9%;      /* #171717 */
-    --sidebar-primary: 32 40% 60%;      /* gold */
+    --sidebar-primary: 120 26% 42%;     /* olive */
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 32 40% 60%;       /* gold for active */
+    --sidebar-accent: 120 26% 42%;      /* olive for active */
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 0 0% 90%;
-    --sidebar-ring: 32 40% 60%;
+    --sidebar-border: 0 0% 93%;
+    --sidebar-ring: 120 26% 42%;
     
-    /* Custom tokens */
+    /* ═══════════════════════════════════════════════════════════════
+       BRAND PALETTE — Catalyst Golden Hour
+       ═══════════════════════════════════════════════════════════════ */
+    --brand-olive: #5c7c5c;
+    --brand-olive-dark: #4a6a4a;
+    --brand-olive-light: #6b8b6b;
+    --brand-bronze: #8b7355;
+    --brand-gold: #c69c6d;
+    --brand-champagne: #d4b896;
+    
+    /* Custom semantic tokens */
     --text-primary: #0a0a0a;
     --text-secondary: #171717;
     --text-tertiary: #404040;
-    --text-muted: #525252;
-    --bg-cream: #faf7f1;
+    --text-muted: #6b7280;
+    --bg-cream: #fafaf9;
     --bg-card: #ffffff;
-    --bg-sidebar: #f7f7f7;
+    --bg-sidebar: #fcfcfc;
     --accent-gold: #c69c6d;
     --accent-gold-hover: #b8894d;
     
+    /* ═══════════════════════════════════════════════════════════════
+       PREMIUM SHADOWS — Layered depth system
+       ═══════════════════════════════════════════════════════════════ */
+    --shadow-xs: 0 1px 2px rgba(0,0,0,0.03);
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
+    --shadow-card: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+    --shadow-elevated: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+    --shadow-hover: 0 8px 24px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.05);
+    --shadow-brand: 0 4px 12px rgba(92,124,92,0.15);
+    
     /* Legacy variable mappings for existing components */
-    --bg: #faf7f1;
-    --bg-workspace: #faf7f1;
-    --surface-1: #f7f7f7;
+    --bg: #fafaf9;
+    --bg-workspace: #fafaf9;
+    --surface-1: #f8f8f7;
     --surface-2: #ffffff;
     --surface-3: #fafafa;
     --text-1: #0a0a0a;
     --text-2: #404040;
     --text-3: #525252;
     --text-4: #737373;
-    --text-secondary-strong: 0 0% 30%;  /* #4d4d4d - darker than muted, readable */
+    --text-secondary-strong: 0 0% 30%;
     --icon-default: #525252;
-    --divider: #e5e5e5;
-    --border-color: #d4d4d4;
+    --divider: #e8e8e8;
+    --border-color: #e5e5e5;
     --nav-bg: #ffffff;
-    --nav-hover-bg: rgba(0, 0, 0, 0.04);
-    --nav-active-bg: rgba(198, 156, 109, 0.12);
-    --brand-active: #c69c6d;
-    --brand-gold: #c69c6d;
-    --brand-primary: #c69c6d;
+    --nav-hover-bg: rgba(0, 0, 0, 0.03);
+    --nav-active-bg: rgba(92, 124, 92, 0.1);
+    --brand-active: #5c7c5c;
+    --brand-primary: #5c7c5c;
     --card-bg: #ffffff;
-    --card-border: #e5e5e5;
-    --card-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    --card-border: #f0f0f0;
+    --card-shadow: var(--shadow-card);
     --table-row-bg: #ffffff;
     --table-row-hover: rgba(0, 0, 0, 0.02);
-    --selection-row-bg: rgba(198, 156, 109, 0.08);
-    --selection-bar-accent: #c69c6d;
+    --selection-row-bg: rgba(92, 124, 92, 0.06);
+    --selection-bar-accent: #5c7c5c;
     
     /* Status/Semantic colors - Light Mode */
-    --status-success: #22c55e;
-    --status-success-light: #4ade80;
-    --status-success-bg: rgba(34, 197, 94, 0.1);
-    --status-success-bg-hover: rgba(34, 197, 94, 0.15);
-    --status-success-border: rgba(34, 197, 94, 0.3);
+    --status-success: #16a34a;
+    --status-success-light: #22c55e;
+    --status-success-bg: rgba(22, 163, 74, 0.08);
+    --status-success-bg-hover: rgba(22, 163, 74, 0.12);
+    --status-success-border: rgba(22, 163, 74, 0.2);
     
-    --status-warning: #f59e0b;
-    --status-warning-bg: rgba(245, 158, 11, 0.1);
-    --status-warning-border: rgba(245, 158, 11, 0.3);
+    --status-warning: #d97706;
+    --status-warning-bg: rgba(217, 119, 6, 0.08);
+    --status-warning-border: rgba(217, 119, 6, 0.2);
     
-    --status-info: #c69c6d;
-    --status-info-bg: rgba(198, 156, 109, 0.1);
-    --status-info-border: rgba(198, 156, 109, 0.3);
+    --status-info: #5c7c5c;
+    --status-info-bg: rgba(92, 124, 92, 0.08);
+    --status-info-border: rgba(92, 124, 92, 0.2);
     
     --status-muted: #6b7280;
-    --status-muted-bg: rgba(107, 114, 128, 0.1);
-    --status-muted-border: rgba(107, 114, 128, 0.3);
+    --status-muted-bg: rgba(107, 114, 128, 0.08);
+    --status-muted-border: rgba(107, 114, 128, 0.2);
     
     /* Secondary brand colors */
     --secondary-green: 120 26% 42%;
     --secondary-bronze: 30 24% 44%;
     --secondary-champagne: 34 40% 71%;
-    --secondary-green-bg: rgba(92, 124, 92, 0.15);
-    --secondary-bronze-bg: rgba(139, 115, 85, 0.15);
+    --secondary-green-bg: rgba(92, 124, 92, 0.1);
+    --secondary-bronze-bg: rgba(139, 115, 85, 0.1);
     
     /* Strategy Room tokens - borders */
-    --border-default: #d4d4d4;
-    --border-subtle: #e5e5e5;
+    --border-default: #e8e8e8;
+    --border-subtle: #f0f0f0;
     
     /* Strategy Room tokens - surfaces */
     --surface-bg: #ffffff;
-    --surface-subtle: #fafafa;
-    --surface-hover: #f5f5f5;
-    --surface-active: rgba(198, 156, 109, 0.12);
+    --surface-subtle: #fafaf9;
+    --surface-hover: #f5f5f4;
+    --surface-active: rgba(92, 124, 92, 0.1);
+    --surface-card: #ffffff;
+    --surface-muted: #f8f8f7;
     
     /* Strategy Room tokens - progress */
-    --progress-bg: #e5e5e5;
+    --progress-bg: #e8e8e8;
     
     /* Strategy Room tokens - brand backgrounds */
-    --brand-gold-bg: rgba(198, 156, 109, 0.15);
+    --brand-gold-bg: rgba(198, 156, 109, 0.1);
+    --brand-olive-bg: rgba(92, 124, 92, 0.08);
     
-    /* Status danger (missing) */
-    --status-danger: #ef4444;
-    --status-danger-bg: rgba(239, 68, 68, 0.1);
-    --status-danger-border: rgba(239, 68, 68, 0.3);
+    /* Status danger */
+    --status-danger: #dc2626;
+    --status-danger-bg: rgba(220, 38, 38, 0.08);
+    --status-danger-border: rgba(220, 38, 38, 0.2);
     
     /* Gold link colors - Light mode (WCAG AA compliant) */
-    --gold-link: 30 33% 49%;             /* #a67c52 - darker for contrast */
-    --gold-link-hover: 40 75% 32%;       /* #8b6914 - even darker */
+    --gold-link: 30 33% 49%;
+    --gold-link-hover: 40 75% 32%;
   }
   
   [data-theme="dark"],
