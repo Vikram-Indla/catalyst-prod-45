@@ -170,20 +170,20 @@ function TableRow({
 
   const children = getChildren();
 
-  // Get type configuration with icon and label
+  // Get type configuration with icon and label - subtle styling
   const getTypeConfig = () => {
     if (item.type === 'objective') {
       return { 
         label: 'Objective', 
         Icon: Target,
-        className: 'bg-brand-primary/10 text-brand-primary border-brand-primary/20'
+        className: 'bg-transparent text-muted-foreground border-border/50 dark:border-white/10'
       };
     }
     if (item.type === 'keyResult') {
       return { 
         label: 'Key Result', 
         Icon: Diamond,
-        className: 'bg-secondary-green/10 text-secondary-green border-secondary-green/20'
+        className: 'bg-transparent text-muted-foreground border-border/50 dark:border-white/10'
       };
     }
     if (item.type === 'workItem') {
@@ -195,10 +195,10 @@ function TableRow({
       return { 
         label, 
         Icon: Hexagon,
-        className: 'bg-secondary-bronze/10 text-secondary-bronze border-secondary-bronze/20'
+        className: 'bg-transparent text-muted-foreground border-border/50 dark:border-white/10'
       };
     }
-    return { label: '—', Icon: null, className: 'bg-muted text-muted-foreground' };
+    return { label: '—', Icon: null, className: 'bg-transparent text-muted-foreground border-border/50' };
   };
 
   const typeConfig = getTypeConfig();
@@ -276,7 +276,7 @@ function TableRow({
       case 'theme':
         return (
           <td key={colKey} className="py-3 px-4" style={{ width: COLUMN_CONFIG[colKey].width }}>
-            <span className="text-sm text-muted-foreground truncate">{themeName || '—'}</span>
+            <span className="text-sm text-muted-foreground truncate">{themeName || <span className="text-muted-foreground/50">—</span>}</span>
           </td>
         );
 
@@ -284,7 +284,7 @@ function TableRow({
         return (
           <td key={colKey} className="py-3 px-4" style={{ width: COLUMN_CONFIG[colKey].width }}>
             <span className="text-sm text-muted-foreground truncate">
-              {(item as any).ownerName || '—'}
+              {(item as any).ownerName || <span className="text-muted-foreground/50">—</span>}
             </span>
           </td>
         );
@@ -300,7 +300,7 @@ function TableRow({
         return (
           <td key={colKey} className="py-3 px-4" style={{ width: COLUMN_CONFIG[colKey].width }}>
             {baseline.actual === null ? (
-              <span className="text-sm text-muted-foreground">—</span>
+              <span className="text-sm text-muted-foreground/50">—</span>
             ) : (
               <OkrProgressCell baseline={baseline} status={item.status} compact />
             )}
