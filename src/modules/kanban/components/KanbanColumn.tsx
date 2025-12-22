@@ -120,8 +120,8 @@ export function KanbanColumn({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div 
-              className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-              style={{ backgroundColor: columnConfig?.color || 'var(--text-3)' }} 
+              className="w-2 h-2 rounded-full flex-shrink-0"
+              style={{ backgroundColor: tickets.length > 0 ? (columnConfig?.color || 'var(--text-3)') : 'rgb(156, 163, 175)' }} 
             />
             <span 
               className="text-xs font-medium"
@@ -175,31 +175,24 @@ export function KanbanColumn({
         ))}
         {tickets.length === 0 && (
           <div 
-            className="flex flex-col items-center gap-1.5 pt-6 pb-4 px-3"
+            className="flex flex-col items-center justify-center py-8 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-lg mx-1"
           >
             <svg 
-              width="20" 
-              height="20" 
+              width="28" 
+              height="28" 
               viewBox="0 0 24 24" 
               fill="none" 
               stroke="currentColor" 
               strokeWidth="1.5"
-              style={{ color: 'var(--text-muted)', opacity: 0.5 }}
+              className="text-gray-300 dark:text-gray-600 mb-2"
             >
-              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-              <line x1="9" y1="9" x2="15" y2="15"/>
-              <line x1="15" y1="9" x2="9" y2="15"/>
+              <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/>
+              <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
             </svg>
-            <span 
-              className="text-[11px]"
-              style={{ color: 'var(--text-muted)' }}
-            >
+            <span className="text-[12px] text-gray-400 dark:text-gray-500">
               No items
             </span>
-            <span 
-              className="text-[10px]"
-              style={{ color: 'var(--text-muted)', opacity: 0.7 }}
-            >
+            <span className="text-[11px] text-gray-400 dark:text-gray-600">
               Drag items here
             </span>
           </div>
