@@ -4,13 +4,14 @@
  * Admin/Program Manager: See all teams + "All Teams" view
  * Regular users: Only see teams they're members of
  */
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Users, Lock, LayoutGrid } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useAccessibleTeams, useCanViewAllTeams } from '@/hooks/useAccessibleTeams';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
+import { teams as mockTeams } from '@/lib/work-manager-data';
 
 interface PlannerSelectorDropdownProps {
   onClose: () => void;
@@ -25,6 +26,10 @@ const teamTypeColors: Record<string, string> = {
   'PORTFOLIO': '#6366f1',
   'SOLUTION': '#0d9488',
   'PROCESS_FLOW': '#9333ea',
+  // Mock team colors
+  'olive': '#5c7c5c',
+  'bronze': '#8b7355',
+  'gold': '#c69c6d',
 };
 
 export const PlannerSelectorDropdown = React.memo(function PlannerSelectorDropdown({ 
@@ -35,8 +40,33 @@ export const PlannerSelectorDropdown = React.memo(function PlannerSelectorDropdo
   const { canViewAllTeams, isLoading: isRoleLoading } = useCanViewAllTeams();
   const [search, setSearch] = useState('');
 
+  // Use mock teams as fallback when no database teams exist
+  const displayTeams = useMemo(() => {
+    if (accessibleTeams.length > 0) {
+      return accessibleTeams.map(team => ({
+        id: team.id,
+        name: team.name,
+        short_name: team.short_name,
+        team_type: team.team_type,
+        description: team.description,
+        project_name: team.project_name,
+        color: team.color || teamTypeColors[team.team_type] || '#5c7c5c',
+      }));
+    }
+    // Fall back to mock data for demo purposes
+    return mockTeams.map(team => ({
+      id: team.id,
+      name: team.name,
+      short_name: team.id.toUpperCase().slice(0, 3),
+      team_type: 'AGILE',
+      description: team.description,
+      project_name: undefined,
+      color: teamTypeColors[team.color || ''] || '#5c7c5c',
+    }));
+  }, [accessibleTeams]);
+
   // Filter teams by search
-  const filteredTeams = accessibleTeams.filter(team => 
+  const filteredTeams = displayTeams.filter(team => 
     team.name.toLowerCase().includes(search.toLowerCase()) ||
     team.short_name?.toLowerCase().includes(search.toLowerCase())
   );
@@ -106,7 +136,6 @@ export const PlannerSelectorDropdown = React.memo(function PlannerSelectorDropdo
               </div>
             ) : (
               filteredTeams.map((team) => {
-                const teamColor = teamTypeColors[team.team_type] || '#5c7c5c';
                 return (
                   <button
                     key={team.id}
@@ -116,7 +145,7 @@ export const PlannerSelectorDropdown = React.memo(function PlannerSelectorDropdo
                     {/* Team color indicator */}
                     <div 
                       className="w-2 h-2 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: teamColor }}
+                      style={{ backgroundColor: team.color }}
                     />
                     <Users className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                     <div className="flex-1 min-w-0">
