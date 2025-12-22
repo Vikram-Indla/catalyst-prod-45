@@ -1896,6 +1896,372 @@ export type Database = {
           },
         ]
       }
+      defect_attachments: {
+        Row: {
+          capture_type: string
+          created_at: string | null
+          defect_id: string
+          duration_seconds: number | null
+          file_name: string
+          file_size: number
+          file_type: string
+          file_url: string
+          id: string
+          thumbnail_url: string | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          capture_type: string
+          created_at?: string | null
+          defect_id: string
+          duration_seconds?: number | null
+          file_name: string
+          file_size: number
+          file_type: string
+          file_url: string
+          id?: string
+          thumbnail_url?: string | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          capture_type?: string
+          created_at?: string | null
+          defect_id?: string
+          duration_seconds?: number | null
+          file_name?: string
+          file_size?: number
+          file_type?: string
+          file_url?: string
+          id?: string
+          thumbnail_url?: string | null
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "defect_attachments_defect_id_fkey"
+            columns: ["defect_id"]
+            isOneToOne: false
+            referencedRelation: "defects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "defect_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      defect_audit_log: {
+        Row: {
+          acted_at: string | null
+          action: string
+          actor_id: string | null
+          defect_id: string
+          field_name: string | null
+          id: string
+          new_value: string | null
+          old_value: string | null
+        }
+        Insert: {
+          acted_at?: string | null
+          action: string
+          actor_id?: string | null
+          defect_id: string
+          field_name?: string | null
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+        }
+        Update: {
+          acted_at?: string | null
+          action?: string
+          actor_id?: string | null
+          defect_id?: string
+          field_name?: string | null
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "defect_audit_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "defect_audit_log_defect_id_fkey"
+            columns: ["defect_id"]
+            isOneToOne: false
+            referencedRelation: "defects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      defect_comments: {
+        Row: {
+          author_id: string | null
+          content: string
+          created_at: string | null
+          defect_id: string
+          id: string
+          is_internal: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          author_id?: string | null
+          content: string
+          created_at?: string | null
+          defect_id: string
+          id?: string
+          is_internal?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          author_id?: string | null
+          content?: string
+          created_at?: string | null
+          defect_id?: string
+          id?: string
+          is_internal?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "defect_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "defect_comments_defect_id_fkey"
+            columns: ["defect_id"]
+            isOneToOne: false
+            referencedRelation: "defects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      defect_id_sequences: {
+        Row: {
+          last_sequence: number
+          updated_at: string | null
+          year: number
+        }
+        Insert: {
+          last_sequence?: number
+          updated_at?: string | null
+          year: number
+        }
+        Update: {
+          last_sequence?: number
+          updated_at?: string | null
+          year?: number
+        }
+        Relationships: []
+      }
+      defect_work_item_links: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          defect_id: string
+          id: string
+          linked_item_id: string
+          linked_item_type: string
+          relationship_type: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          defect_id: string
+          id?: string
+          linked_item_id: string
+          linked_item_type: string
+          relationship_type: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          defect_id?: string
+          id?: string
+          linked_item_id?: string
+          linked_item_type?: string
+          relationship_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "defect_work_item_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "defect_work_item_links_defect_id_fkey"
+            columns: ["defect_id"]
+            isOneToOne: false
+            referencedRelation: "defects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      defects: {
+        Row: {
+          actual_result: string
+          assignee_id: string | null
+          created_at: string | null
+          defect_id: string
+          description: string | null
+          due_date: string | null
+          duplicate_of_id: string | null
+          environment: string | null
+          environment_details: Json | null
+          expected_result: string
+          id: string
+          linked_feature_id: string | null
+          linked_story_id: string | null
+          preconditions: string | null
+          priority: string
+          project_id: string | null
+          reporter_id: string | null
+          resolution: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          root_cause: string | null
+          severity: string
+          sla_target_hours: number | null
+          steps_to_reproduce: Json | null
+          tags: string[] | null
+          target_release_id: string | null
+          title: string
+          updated_at: string | null
+          workflow_status: string
+        }
+        Insert: {
+          actual_result: string
+          assignee_id?: string | null
+          created_at?: string | null
+          defect_id: string
+          description?: string | null
+          due_date?: string | null
+          duplicate_of_id?: string | null
+          environment?: string | null
+          environment_details?: Json | null
+          expected_result: string
+          id?: string
+          linked_feature_id?: string | null
+          linked_story_id?: string | null
+          preconditions?: string | null
+          priority: string
+          project_id?: string | null
+          reporter_id?: string | null
+          resolution?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          root_cause?: string | null
+          severity: string
+          sla_target_hours?: number | null
+          steps_to_reproduce?: Json | null
+          tags?: string[] | null
+          target_release_id?: string | null
+          title: string
+          updated_at?: string | null
+          workflow_status?: string
+        }
+        Update: {
+          actual_result?: string
+          assignee_id?: string | null
+          created_at?: string | null
+          defect_id?: string
+          description?: string | null
+          due_date?: string | null
+          duplicate_of_id?: string | null
+          environment?: string | null
+          environment_details?: Json | null
+          expected_result?: string
+          id?: string
+          linked_feature_id?: string | null
+          linked_story_id?: string | null
+          preconditions?: string | null
+          priority?: string
+          project_id?: string | null
+          reporter_id?: string | null
+          resolution?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          root_cause?: string | null
+          severity?: string
+          sla_target_hours?: number | null
+          steps_to_reproduce?: Json | null
+          tags?: string[] | null
+          target_release_id?: string | null
+          title?: string
+          updated_at?: string | null
+          workflow_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "defects_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "defects_duplicate_of_id_fkey"
+            columns: ["duplicate_of_id"]
+            isOneToOne: false
+            referencedRelation: "defects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "defects_linked_feature_id_fkey"
+            columns: ["linked_feature_id"]
+            isOneToOne: false
+            referencedRelation: "features"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "defects_linked_story_id_fkey"
+            columns: ["linked_story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "defects_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "defects_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "defects_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "defects_target_release_id_fkey"
+            columns: ["target_release_id"]
+            isOneToOne: false
+            referencedRelation: "releases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       demand_field_configs: {
         Row: {
           business_line_id: string | null
@@ -15295,6 +15661,7 @@ export type Database = {
       derive_quarter_from_date: { Args: { p_date: string }; Returns: string }
       extract_kb_tiptap_text: { Args: { content: Json }; Returns: string }
       generate_change_number: { Args: never; Returns: string }
+      generate_next_defect_id: { Args: never; Returns: string }
       generate_next_epic_key: {
         Args: { p_program_id: string }
         Returns: string
