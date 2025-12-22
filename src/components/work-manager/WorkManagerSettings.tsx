@@ -32,7 +32,6 @@ interface BoardColumn {
   id: string;
   name: string;
   status: string;
-  wipLimit?: number;
 }
 
 interface RecurrenceTemplate {
@@ -57,7 +56,7 @@ export function WorkManagerSettings() {
   // Column dialog state
   const [isColumnDialogOpen, setIsColumnDialogOpen] = useState(false);
   const [editingColumn, setEditingColumn] = useState<BoardColumn | null>(null);
-  const [columnForm, setColumnForm] = useState({ name: '', status: 'Backlog', wipLimit: '' });
+  const [columnForm, setColumnForm] = useState({ name: '', status: 'Backlog' });
 
   // Delete confirmation state
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -114,13 +113,13 @@ export function WorkManagerSettings() {
   // Column handlers
   const handleOpenAddColumn = () => {
     setEditingColumn(null);
-    setColumnForm({ name: '', status: 'Backlog', wipLimit: '' });
+    setColumnForm({ name: '', status: 'Backlog' });
     setIsColumnDialogOpen(true);
   };
 
   const handleOpenEditColumn = (column: BoardColumn) => {
     setEditingColumn(column);
-    setColumnForm({ name: column.name, status: column.status, wipLimit: column.wipLimit?.toString() || '' });
+    setColumnForm({ name: column.name, status: column.status });
     setIsColumnDialogOpen(true);
   };
 
@@ -133,7 +132,7 @@ export function WorkManagerSettings() {
     if (editingColumn) {
       setColumns(prev => prev.map(col =>
         col.id === editingColumn.id
-          ? { ...col, name: columnForm.name.trim(), status: columnForm.status, wipLimit: columnForm.wipLimit ? parseInt(columnForm.wipLimit) : undefined }
+          ? { ...col, name: columnForm.name.trim(), status: columnForm.status }
           : col
       ));
       toast.success(`Column "${columnForm.name}" updated`);
@@ -142,7 +141,6 @@ export function WorkManagerSettings() {
         id: `col-${Date.now()}`,
         name: columnForm.name.trim(),
         status: columnForm.status,
-        wipLimit: columnForm.wipLimit ? parseInt(columnForm.wipLimit) : undefined,
       };
       setColumns(prev => [...prev, newColumn]);
       toast.success(`Column "${columnForm.name}" added`);
@@ -273,7 +271,7 @@ export function WorkManagerSettings() {
                   <th className="w-10"></th>
                   <th className="text-left px-4 py-3 text-[11px] font-semibold text-text-muted uppercase tracking-wide">Column Name</th>
                   <th className="text-left px-4 py-3 text-[11px] font-semibold text-text-muted uppercase tracking-wide">Status Mapping</th>
-                  <th className="text-center px-4 py-3 text-[11px] font-semibold text-text-muted uppercase tracking-wide">WIP Limit</th>
+                  
                   <th className="text-center px-4 py-3 text-[11px] font-semibold text-text-muted uppercase tracking-wide">Position</th>
                   <th className="text-right px-4 py-3 text-[11px] font-semibold text-text-muted uppercase tracking-wide">Actions</th>
                 </tr>
@@ -289,9 +287,6 @@ export function WorkManagerSettings() {
                       <span className={cn('px-2 py-0.5 text-[11px] font-medium rounded', getStatusBadgeClass(column.status))}>
                         {column.status}
                       </span>
-                    </td>
-                    <td className="px-4 py-3 text-center text-[13px] text-text-secondary">
-                      {column.wipLimit || '—'}
                     </td>
                     <td className="px-4 py-3 text-center text-[13px] text-text-muted">
                       {index + 1}
@@ -480,18 +475,6 @@ export function WorkManagerSettings() {
                   ))}
                 </SelectContent>
               </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="col-wip">WIP Limit (optional)</Label>
-              <Input
-                id="col-wip"
-                type="number"
-                min="1"
-                value={columnForm.wipLimit}
-                onChange={(e) => setColumnForm(prev => ({ ...prev, wipLimit: e.target.value }))}
-                placeholder="No limit"
-              />
             </div>
           </div>
 
