@@ -448,7 +448,7 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
                 <SelectTrigger className="mt-1.5">
                   <SelectValue placeholder="Select platform..." />
                 </SelectTrigger>
-                <SelectContent className="bg-popover border shadow-lg z-50">
+                <SelectContent className="bg-popover border shadow-lg z-[200]">
                   <SelectItem value="Senaei Platform">Senaei Platform</SelectItem>
                   <SelectItem value="MIM Platform">MIM Platform</SelectItem>
                   <SelectItem value="Enterprise Platform">Enterprise Platform</SelectItem>
@@ -465,7 +465,7 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
                 <SelectTrigger className="mt-1.5">
                   <SelectValue placeholder="Select quarter..." />
                 </SelectTrigger>
-                <SelectContent className="bg-popover border shadow-lg z-50">
+                <SelectContent className="bg-popover border shadow-lg z-[200]">
                   <SelectItem value="Q4-2025">Q4 2025</SelectItem>
                   <SelectItem value="Q1-2026">Q1 2026</SelectItem>
                   <SelectItem value="Q2-2026">Q2 2026</SelectItem>
