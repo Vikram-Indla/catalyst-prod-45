@@ -117,6 +117,10 @@ export function WorkManager({ tab: initialTab }: WorkManagerProps) {
 
   // Open task drawer
   const handleOpenTask = (taskId: string) => {
+    console.log('[WorkManager] Opening task drawer for:', taskId);
+    console.log('[WorkManager] Available task IDs:', extendedTasks.map(t => t.id));
+    const foundTask = extendedTasks.find(t => t.id === taskId);
+    console.log('[WorkManager] Found task:', foundTask?.title);
     setDrawer({ isOpen: true, taskId, activeTab: 'overview' });
   };
 

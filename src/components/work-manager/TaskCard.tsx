@@ -50,9 +50,14 @@ export function TaskCard({ task, onClick }: TaskCardProps) {
     }
   };
 
+  const handleClick = () => {
+    console.log('[TaskCard] Clicked task:', task.id, task.key, task.title);
+    onClick();
+  };
+
   return (
     <div
-      onClick={onClick}
+      onClick={handleClick}
       className={cn(
         'bg-surface-card border border-border-default rounded-md p-3 cursor-pointer transition-all hover:shadow-md hover:border-brand-primary',
         task.blocked && 'border-l-[3px] border-l-status-danger'
