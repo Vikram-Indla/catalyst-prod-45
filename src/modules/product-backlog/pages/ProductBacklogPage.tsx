@@ -72,11 +72,18 @@ export default function ProductBacklogPage() {
   const { data: businessRequests = [], isLoading } = useBusinessRequests(searchQuery);
   const [selectedRequest, setSelectedRequest] = useState<RequestItem | null>(null);
   const [drawerRequestId, setDrawerRequestId] = useState<string | null>(null);
+  const [drawerInitialTab, setDrawerInitialTab] = useState<string | undefined>(undefined);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [filtersDialogOpen, setFiltersDialogOpen] = useState(false);
   const [filters, setFilters] = useState<ProductBacklogFilters>({});
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [attachmentModalOpen, setAttachmentModalOpen] = useState(false);
+
+  // Helper to open drawer with specific tab
+  const openDrawerWithTab = (requestId: string, tab?: string) => {
+    setDrawerRequestId(requestId);
+    setDrawerInitialTab(tab);
+  };
 
   // Transform business requests to match table format
   const tableData: RequestItem[] = useMemo(() => {
@@ -345,10 +352,7 @@ export default function ProductBacklogPage() {
             selectedRequestId={selectedRequest?._dbId || null}
             onSelectRequest={(req) => {
               setSelectedRequest(req);
-              // Open drawer when selecting a request
-              if (req) {
-                setDrawerRequestId(req._dbId);
-              }
+              // Don't open drawer on ticket click - only select it for detail panel
             }}
             searchQuery={listSearchQuery}
             onSearchChange={setListSearchQuery}
@@ -364,10 +368,10 @@ export default function ProductBacklogPage() {
           <RequestDetailPanel
             request={selectedRequest}
             onUpdateField={handleFieldUpdate}
-            onEdit={() => selectedRequest && setDrawerRequestId(selectedRequest._dbId)}
+            onEdit={() => selectedRequest && openDrawerWithTab(selectedRequest._dbId)}
             onClone={handleClone}
             onDelete={() => setDeleteDialogOpen(true)}
-            onOpenDrawer={() => selectedRequest && setDrawerRequestId(selectedRequest._dbId)}
+            onOpenDrawer={() => selectedRequest && openDrawerWithTab(selectedRequest._dbId)}
             onAttachment={() => {
               if (selectedRequest) {
                 setAttachmentModalOpen(true);
@@ -375,7 +379,12 @@ export default function ProductBacklogPage() {
             }}
             onLink={() => {
               if (selectedRequest) {
-                setDrawerRequestId(selectedRequest._dbId);
+                openDrawerWithTab(selectedRequest._dbId, 'links');
+              }
+            }}
+            onScore={() => {
+              if (selectedRequest) {
+                openDrawerWithTab(selectedRequest._dbId, 'business-score');
               }
             }}
           />
@@ -403,8 +412,12 @@ export default function ProductBacklogPage() {
       {/* Business Request Drawer */}
       <BusinessRequestDrawer
         isOpen={!!drawerRequestId}
-        onClose={() => setDrawerRequestId(null)}
+        onClose={() => {
+          setDrawerRequestId(null);
+          setDrawerInitialTab(undefined);
+        }}
         requestId={drawerRequestId}
+        initialTab={drawerInitialTab}
         onRequestChange={() => queryClient.invalidateQueries({ queryKey: ['business-requests'] })}
       />
 
