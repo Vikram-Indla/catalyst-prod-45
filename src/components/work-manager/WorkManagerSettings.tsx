@@ -2,18 +2,95 @@
 // Settings & Configuration View
 
 import { useState } from 'react';
-import { Plus, Edit2, Trash2, GripVertical } from 'lucide-react';
+import { Plus, Edit2, Trash2, GripVertical, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { defaultColumns } from '@/lib/work-manager-data';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 type SettingsTab = 'columns' | 'recurrence' | 'notifications' | 'integrations';
 
+interface BoardColumn {
+  id: string;
+  name: string;
+  status: string;
+  wipLimit?: number;
+}
+
+interface RecurrenceTemplate {
+  id: string;
+  name: string;
+  frequency: string;
+  nextRun: string;
+  active: boolean;
+}
+
+interface Integration {
+  name: string;
+  description: string;
+  connected: boolean;
+  icon: string;
+}
+
 export function WorkManagerSettings() {
   const [activeTab, setActiveTab] = useState<SettingsTab>('columns');
-  const [columns, setColumns] = useState(defaultColumns);
+  const [columns, setColumns] = useState<BoardColumn[]>(defaultColumns);
+
+  // Column dialog state
+  const [isColumnDialogOpen, setIsColumnDialogOpen] = useState(false);
+  const [editingColumn, setEditingColumn] = useState<BoardColumn | null>(null);
+  const [columnForm, setColumnForm] = useState({ name: '', status: 'Backlog', wipLimit: '' });
+
+  // Delete confirmation state
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [deletingColumn, setDeletingColumn] = useState<BoardColumn | null>(null);
+
+  // Recurrence template state
+  const [templates, setTemplates] = useState<RecurrenceTemplate[]>([
+    { id: 't1', name: 'Weekly Trade Settlement', frequency: 'Weekly (Friday)', nextRun: 'Dec 27, 2024', active: true },
+    { id: 't2', name: 'Monthly Portfolio Review', frequency: 'Monthly (1st)', nextRun: 'Jan 1, 2025', active: true },
+  ]);
+  const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
+  const [editingTemplate, setEditingTemplate] = useState<RecurrenceTemplate | null>(null);
+  const [templateForm, setTemplateForm] = useState({ name: '', frequency: 'Weekly' });
+
+  // Integrations state
+  const [integrations, setIntegrations] = useState<Integration[]>([
+    { name: 'Epics', description: 'Link tasks to strategic Epics', connected: true, icon: '📋' },
+    { name: 'Features', description: 'Connect tasks to Feature work items', connected: true, icon: '✨' },
+    { name: 'Stories', description: 'Associate tasks with User Stories', connected: true, icon: '📝' },
+    { name: 'Business Requests', description: 'Track tasks against Business Requests', connected: true, icon: '📨' },
+    { name: 'OKRs', description: 'Align tasks with Objectives and Key Results', connected: false, icon: '🎯' },
+    { name: 'Calendar', description: 'Sync due dates with calendar', connected: false, icon: '📅' },
+  ]);
+
+  // Notification preferences state
+  const [notifications, setNotifications] = useState([
+    { id: 'n1', label: 'Task assigned to me', description: 'Get notified when a task is assigned to you', checked: true },
+    { id: 'n2', label: 'Task due soon', description: 'Reminder when a task is due within 24 hours', checked: true },
+    { id: 'n3', label: 'Task overdue', description: 'Alert when a task passes its due date', checked: true },
+    { id: 'n4', label: 'Task blocked', description: 'Notify when a task you own becomes blocked', checked: true },
+    { id: 'n5', label: 'Weekly digest', description: 'Summary of your weekly progress every Monday', checked: false },
+    { id: 'n6', label: 'Team updates', description: 'Updates about team task changes', checked: false },
+  ]);
 
   const tabs = [
     { id: 'columns', label: 'Board Columns' },
@@ -21,6 +98,8 @@ export function WorkManagerSettings() {
     { id: 'notifications', label: 'Notifications' },
     { id: 'integrations', label: 'Integrations' },
   ] as const;
+
+  const statusOptions = ['Backlog', 'Planned', 'In Progress', 'Waiting', 'Done'];
 
   // Get status badge class
   const getStatusBadgeClass = (status: string) => {
@@ -30,6 +109,121 @@ export function WorkManagerSettings() {
       case 'Planned': return 'bg-status-info-bg text-status-info';
       default: return 'bg-surface-muted text-text-secondary';
     }
+  };
+
+  // Column handlers
+  const handleOpenAddColumn = () => {
+    setEditingColumn(null);
+    setColumnForm({ name: '', status: 'Backlog', wipLimit: '' });
+    setIsColumnDialogOpen(true);
+  };
+
+  const handleOpenEditColumn = (column: BoardColumn) => {
+    setEditingColumn(column);
+    setColumnForm({ name: column.name, status: column.status, wipLimit: column.wipLimit?.toString() || '' });
+    setIsColumnDialogOpen(true);
+  };
+
+  const handleSaveColumn = () => {
+    if (!columnForm.name.trim()) {
+      toast.error('Column name is required');
+      return;
+    }
+
+    if (editingColumn) {
+      setColumns(prev => prev.map(col =>
+        col.id === editingColumn.id
+          ? { ...col, name: columnForm.name.trim(), status: columnForm.status, wipLimit: columnForm.wipLimit ? parseInt(columnForm.wipLimit) : undefined }
+          : col
+      ));
+      toast.success(`Column "${columnForm.name}" updated`);
+    } else {
+      const newColumn: BoardColumn = {
+        id: `col-${Date.now()}`,
+        name: columnForm.name.trim(),
+        status: columnForm.status,
+        wipLimit: columnForm.wipLimit ? parseInt(columnForm.wipLimit) : undefined,
+      };
+      setColumns(prev => [...prev, newColumn]);
+      toast.success(`Column "${columnForm.name}" added`);
+    }
+    setIsColumnDialogOpen(false);
+  };
+
+  const handleOpenDeleteColumn = (column: BoardColumn) => {
+    setDeletingColumn(column);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDeleteColumn = () => {
+    if (deletingColumn) {
+      setColumns(prev => prev.filter(col => col.id !== deletingColumn.id));
+      toast.success(`Column "${deletingColumn.name}" deleted`);
+    }
+    setIsDeleteDialogOpen(false);
+    setDeletingColumn(null);
+  };
+
+  // Template handlers
+  const handleOpenAddTemplate = () => {
+    setEditingTemplate(null);
+    setTemplateForm({ name: '', frequency: 'Weekly' });
+    setIsTemplateDialogOpen(true);
+  };
+
+  const handleOpenEditTemplate = (template: RecurrenceTemplate) => {
+    setEditingTemplate(template);
+    setTemplateForm({ name: template.name, frequency: template.frequency.split(' ')[0] });
+    setIsTemplateDialogOpen(true);
+  };
+
+  const handleSaveTemplate = () => {
+    if (!templateForm.name.trim()) {
+      toast.error('Template name is required');
+      return;
+    }
+
+    if (editingTemplate) {
+      setTemplates(prev => prev.map(t =>
+        t.id === editingTemplate.id
+          ? { ...t, name: templateForm.name.trim(), frequency: `${templateForm.frequency} (Friday)` }
+          : t
+      ));
+      toast.success(`Template "${templateForm.name}" updated`);
+    } else {
+      const newTemplate: RecurrenceTemplate = {
+        id: `t-${Date.now()}`,
+        name: templateForm.name.trim(),
+        frequency: `${templateForm.frequency} (Friday)`,
+        nextRun: 'Dec 27, 2024',
+        active: true,
+      };
+      setTemplates(prev => [...prev, newTemplate]);
+      toast.success(`Template "${templateForm.name}" created`);
+    }
+    setIsTemplateDialogOpen(false);
+  };
+
+  const handleToggleTemplate = (templateId: string) => {
+    setTemplates(prev => prev.map(t =>
+      t.id === templateId ? { ...t, active: !t.active } : t
+    ));
+  };
+
+  // Notification handler
+  const handleToggleNotification = (notificationId: string) => {
+    setNotifications(prev => prev.map(n =>
+      n.id === notificationId ? { ...n, checked: !n.checked } : n
+    ));
+    toast.success('Notification preference updated');
+  };
+
+  // Integration handler
+  const handleConnectIntegration = (integrationName: string) => {
+    setIntegrations(prev => prev.map(i =>
+      i.name === integrationName ? { ...i, connected: true } : i
+    ));
+    toast.success(`${integrationName} connected successfully`);
   };
 
   return (
@@ -66,7 +260,7 @@ export function WorkManagerSettings() {
               <h3 className="text-[14px] font-semibold text-text-primary">Default Board Columns</h3>
               <p className="text-[12px] text-text-muted mt-1">Configure the default columns and WIP limits for new boards</p>
             </div>
-            <Button variant="outline" size="sm" className="gap-2">
+            <Button variant="outline" size="sm" className="gap-2" onClick={handleOpenAddColumn}>
               <Plus className="w-4 h-4" />
               Add Column
             </Button>
@@ -104,10 +298,18 @@ export function WorkManagerSettings() {
                     </td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <button className="p-1.5 rounded hover:bg-surface-hover">
+                        <button
+                          onClick={() => handleOpenEditColumn(column)}
+                          className="p-1.5 rounded hover:bg-surface-hover"
+                          title="Edit column"
+                        >
                           <Edit2 className="w-4 h-4 text-text-muted" />
                         </button>
-                        <button className="p-1.5 rounded hover:bg-surface-hover">
+                        <button
+                          onClick={() => handleOpenDeleteColumn(column)}
+                          className="p-1.5 rounded hover:bg-surface-hover hover:text-red-500"
+                          title="Delete column"
+                        >
                           <Trash2 className="w-4 h-4 text-text-muted" />
                         </button>
                       </div>
@@ -131,7 +333,7 @@ export function WorkManagerSettings() {
               <h3 className="text-[14px] font-semibold text-text-primary">Recurrence Templates</h3>
               <p className="text-[12px] text-text-muted mt-1">Manage templates for recurring tasks</p>
             </div>
-            <Button variant="outline" size="sm" className="gap-2">
+            <Button variant="outline" size="sm" className="gap-2" onClick={handleOpenAddTemplate}>
               <Plus className="w-4 h-4" />
               New Template
             </Button>
@@ -149,28 +351,24 @@ export function WorkManagerSettings() {
                 </tr>
               </thead>
               <tbody>
-                <tr className="border-b border-border-subtle">
-                  <td className="px-4 py-3 text-[13px] font-medium text-text-primary">Weekly Trade Settlement</td>
-                  <td className="px-4 py-3 text-[13px] text-text-secondary">Weekly (Friday)</td>
-                  <td className="px-4 py-3 text-[13px] text-text-muted">Dec 27, 2024</td>
-                  <td className="px-4 py-3 text-center">
-                    <Switch defaultChecked />
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <Button variant="ghost" size="sm">Edit</Button>
-                  </td>
-                </tr>
-                <tr className="border-b border-border-subtle">
-                  <td className="px-4 py-3 text-[13px] font-medium text-text-primary">Monthly Portfolio Review</td>
-                  <td className="px-4 py-3 text-[13px] text-text-secondary">Monthly (1st)</td>
-                  <td className="px-4 py-3 text-[13px] text-text-muted">Jan 1, 2025</td>
-                  <td className="px-4 py-3 text-center">
-                    <Switch defaultChecked />
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <Button variant="ghost" size="sm">Edit</Button>
-                  </td>
-                </tr>
+                {templates.map((template) => (
+                  <tr key={template.id} className="border-b border-border-subtle">
+                    <td className="px-4 py-3 text-[13px] font-medium text-text-primary">{template.name}</td>
+                    <td className="px-4 py-3 text-[13px] text-text-secondary">{template.frequency}</td>
+                    <td className="px-4 py-3 text-[13px] text-text-muted">{template.nextRun}</td>
+                    <td className="px-4 py-3 text-center">
+                      <Switch
+                        checked={template.active}
+                        onCheckedChange={() => handleToggleTemplate(template.id)}
+                      />
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <Button variant="ghost" size="sm" onClick={() => handleOpenEditTemplate(template)}>
+                        Edit
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -185,20 +383,16 @@ export function WorkManagerSettings() {
           </div>
 
           <div className="bg-surface-card border border-border-default rounded-lg divide-y divide-border-subtle">
-            {[
-              { label: 'Task assigned to me', description: 'Get notified when a task is assigned to you', defaultChecked: true },
-              { label: 'Task due soon', description: 'Reminder when a task is due within 24 hours', defaultChecked: true },
-              { label: 'Task overdue', description: 'Alert when a task passes its due date', defaultChecked: true },
-              { label: 'Task blocked', description: 'Notify when a task you own becomes blocked', defaultChecked: true },
-              { label: 'Weekly digest', description: 'Summary of your weekly progress every Monday', defaultChecked: false },
-              { label: 'Team updates', description: 'Updates about team task changes', defaultChecked: false },
-            ].map((notification, index) => (
-              <div key={index} className="flex items-center justify-between p-4">
+            {notifications.map((notification) => (
+              <div key={notification.id} className="flex items-center justify-between p-4">
                 <div>
                   <span className="text-[13px] font-medium text-text-primary">{notification.label}</span>
                   <p className="text-[12px] text-text-muted mt-0.5">{notification.description}</p>
                 </div>
-                <Switch defaultChecked={notification.defaultChecked} />
+                <Switch
+                  checked={notification.checked}
+                  onCheckedChange={() => handleToggleNotification(notification.id)}
+                />
               </div>
             ))}
           </div>
@@ -213,16 +407,9 @@ export function WorkManagerSettings() {
           </div>
 
           <div className="grid gap-4">
-            {[
-              { name: 'Epics', description: 'Link tasks to strategic Epics', connected: true, icon: '📋' },
-              { name: 'Features', description: 'Connect tasks to Feature work items', connected: true, icon: '✨' },
-              { name: 'Stories', description: 'Associate tasks with User Stories', connected: true, icon: '📝' },
-              { name: 'Business Requests', description: 'Track tasks against Business Requests', connected: true, icon: '📨' },
-              { name: 'OKRs', description: 'Align tasks with Objectives and Key Results', connected: false, icon: '🎯' },
-              { name: 'Calendar', description: 'Sync due dates with calendar', connected: false, icon: '📅' },
-            ].map((integration) => (
-              <div 
-                key={integration.name} 
+            {integrations.map((integration) => (
+              <div
+                key={integration.name}
                 className="flex items-center justify-between p-4 bg-surface-card border border-border-default rounded-lg"
               >
                 <div className="flex items-center gap-4">
@@ -240,7 +427,13 @@ export function WorkManagerSettings() {
                       Connected
                     </span>
                   ) : (
-                    <Button variant="outline" size="sm">Connect</Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleConnectIntegration(integration.name)}
+                    >
+                      Connect
+                    </Button>
                   )}
                 </div>
               </div>
@@ -248,6 +441,143 @@ export function WorkManagerSettings() {
           </div>
         </div>
       )}
+
+      {/* Add/Edit Column Dialog */}
+      <Dialog open={isColumnDialogOpen} onOpenChange={setIsColumnDialogOpen}>
+        <DialogContent className="sm:max-w-[420px]">
+          <DialogHeader>
+            <DialogTitle>{editingColumn ? 'Edit Column' : 'Add Column'}</DialogTitle>
+            <DialogDescription>
+              {editingColumn ? 'Update the column settings' : 'Create a new board column'}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="col-name">Column Name *</Label>
+              <Input
+                id="col-name"
+                value={columnForm.name}
+                onChange={(e) => setColumnForm(prev => ({ ...prev, name: e.target.value }))}
+                placeholder="e.g., In Review"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="col-status">Status Mapping</Label>
+              <Select
+                value={columnForm.status}
+                onValueChange={(value) => setColumnForm(prev => ({ ...prev, status: value }))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {statusOptions.map((status) => (
+                    <SelectItem key={status} value={status}>
+                      {status}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="col-wip">WIP Limit (optional)</Label>
+              <Input
+                id="col-wip"
+                type="number"
+                min="1"
+                value={columnForm.wipLimit}
+                onChange={(e) => setColumnForm(prev => ({ ...prev, wipLimit: e.target.value }))}
+                placeholder="No limit"
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsColumnDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveColumn}>
+              {editingColumn ? 'Save Changes' : 'Add Column'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Column Confirmation Dialog */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle>Delete Column</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete "{deletingColumn?.name}"? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleConfirmDeleteColumn}>
+              Delete Column
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add/Edit Template Dialog */}
+      <Dialog open={isTemplateDialogOpen} onOpenChange={setIsTemplateDialogOpen}>
+        <DialogContent className="sm:max-w-[420px]">
+          <DialogHeader>
+            <DialogTitle>{editingTemplate ? 'Edit Template' : 'New Template'}</DialogTitle>
+            <DialogDescription>
+              {editingTemplate ? 'Update the recurrence template' : 'Create a new recurrence template'}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="tpl-name">Template Name *</Label>
+              <Input
+                id="tpl-name"
+                value={templateForm.name}
+                onChange={(e) => setTemplateForm(prev => ({ ...prev, name: e.target.value }))}
+                placeholder="e.g., Weekly Status Report"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="tpl-freq">Frequency</Label>
+              <Select
+                value={templateForm.frequency}
+                onValueChange={(value) => setTemplateForm(prev => ({ ...prev, frequency: value }))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Daily">Daily</SelectItem>
+                  <SelectItem value="Weekly">Weekly</SelectItem>
+                  <SelectItem value="Bi-Weekly">Bi-Weekly</SelectItem>
+                  <SelectItem value="Monthly">Monthly</SelectItem>
+                  <SelectItem value="Quarterly">Quarterly</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsTemplateDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveTemplate}>
+              {editingTemplate ? 'Save Changes' : 'Create Template'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
