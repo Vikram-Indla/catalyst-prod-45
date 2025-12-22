@@ -282,6 +282,8 @@
     --surface-subtle: #262626;
     --surface-hover: #333333;
     --surface-active: rgba(212, 168, 85, 0.15);
+    --surface-card: #171717;
+    --surface-muted: #262626;
     
     /* Strategy Room tokens - progress */
     --progress-bg: #404040;
