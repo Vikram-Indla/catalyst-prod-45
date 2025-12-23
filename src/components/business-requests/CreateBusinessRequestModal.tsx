@@ -128,6 +128,8 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
       start_date: formData.start_date,
       end_date: formData.end_date,
       impl_start_date: formData.impl_start_date,
+      // Keep in sync with views that read impl_target_end_date
+      impl_target_end_date: formData.end_date,
       delivery_platform: formData.delivery_platform || null,
       planned_quarter: formData.planned_quarter ? [formData.planned_quarter] : null,
       department: formData.department,
