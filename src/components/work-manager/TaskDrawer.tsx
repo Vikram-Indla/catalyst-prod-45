@@ -36,7 +36,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { getUserById, getTeamById, users } from '@/lib/work-manager-data';
+import { getUserById, getTeamById } from '@/lib/work-manager-data';
+import { useTeamMembers } from '@/hooks/useTeamMembers';
 import type { TaskExtended, TaskStatus, Priority, TaskType, RecurrenceType } from './types';
 import { cn } from '@/lib/utils';
 
@@ -91,6 +92,9 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
   const [isSaving, setIsSaving] = useState(false);
   const [commentText, setCommentText] = useState('');
 
+  // Fetch team members from database
+  const { data: teamMembersData = [] } = useTeamMembers(task?.teamId);
+
   useEffect(() => {
     if (task) {
       setLocalTask({
@@ -110,7 +114,27 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
 
   const assignee = getUserById(task.assigneeId);
   const team = getTeamById(task.teamId);
-  const teamMembers = team ? users.filter(u => team.memberIds.includes(u.id)) : [];
+  
+  // Transform team members to the format expected by the component
+  const teamMembers = teamMembersData.map((member) => {
+    const profile = member.profiles as { id: string; full_name: string | null; email: string | null } | null;
+    const name = profile?.full_name || profile?.email || 'Unknown';
+    const initials = name
+      .split(' ')
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+
+    return {
+      id: member.user_id,
+      name,
+      initials,
+      email: profile?.email || '',
+      role: member.role || 'Member',
+      avatarColor: undefined as string | undefined,
+    };
+  });
   const currentStatus = localTask.status || task.status;
   const currentPriority = localTask.priority || task.priority;
   const currentType = localTask.type || task.type;
