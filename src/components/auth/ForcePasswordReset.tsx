@@ -59,24 +59,25 @@ export function ForcePasswordReset({ onSuccess, userId }: ForcePasswordResetProp
     setIsLoading(true);
 
     try {
-      // Update password using Supabase Auth
-      const { error: updateError } = await supabase.auth.updateUser({
-        password: newPassword,
-      });
-
-      if (updateError) {
-        throw updateError;
+      // Get current session for authorization
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session?.access_token) {
+        throw new Error('No active session. Please log in again.');
       }
 
-      // Update the must_change_password flag in the profile
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .update({ must_change_password: false })
-        .eq('id', userId);
+      // Use edge function to update password with admin privileges
+      const { data, error: invokeError } = await supabase.functions.invoke('user-update-password', {
+        body: { newPassword },
+      });
 
-      if (profileError) {
-        console.error('Error updating profile:', profileError);
-        // Don't fail - password was changed successfully
+      if (invokeError) {
+        console.error('Edge function error:', invokeError);
+        throw new Error('Failed to update password. Please try again.');
+      }
+
+      if (!data?.success) {
+        throw new Error(data?.error || 'Failed to update password. Please try again.');
       }
 
       toast({
