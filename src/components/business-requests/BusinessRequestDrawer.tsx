@@ -494,7 +494,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
 
   // Get drawer width classes based on expanded state - full screen when expanded
   const drawerWidthClass = isExpanded 
-    ? 'w-screen h-screen' 
+    ? 'fixed inset-0 w-screen h-screen max-w-none' 
     : 'w-screen sm:w-[65vw] sm:max-w-[980px]';
 
   if (!isOpen) return null;
@@ -827,10 +827,10 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                 DRAWER BODY
                 ═══════════════════════════════════════════════════════════ */}
             <div 
-              className="flex-1 min-h-0 overflow-y-auto"
+              className="flex-1 min-h-0 overflow-y-auto flex flex-col"
               style={{ background: 'var(--surface-subtle, hsl(var(--muted)/0.3))' }}
             >
-              <TabsContent value="demand-details" className="m-0 focus-visible:outline-none p-5 pb-8">
+              <TabsContent value="demand-details" className="m-0 focus-visible:outline-none p-5 pb-8 flex-1 flex flex-col min-h-0">
                 <DemandDetailsViewTab data={formData} onChange={handleFieldChange} />
               </TabsContent>
               
