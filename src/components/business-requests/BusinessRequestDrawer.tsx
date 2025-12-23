@@ -50,9 +50,10 @@ import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useVisibleDrawerTabs } from '@/hooks/useDrawerTabConfigs';
 import { useBusinessDrawerRoleTabs } from '@/hooks/useBusinessDrawerRoleTabs';
-import { EnterpriseStatusControl, WorkflowFooter, getNextWorkflowAction } from './drawer';
+import { EnterpriseStatusControl, WorkflowFooter, getNextWorkflowAction, StatusDropdown } from './drawer';
 import { EAReviewTab } from './drawer-tabs/EAReviewTab';
 import { cn } from '@/lib/utils';
+import { Loader2 } from 'lucide-react';
 
 // Fields to track for audit logging (human-readable names)
 const AUDIT_FIELD_LABELS: Record<string, string> = {
@@ -194,7 +195,22 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
         .eq('kind', 'risk');
       return count || 0;
     },
-    enabled: !!requestId
+    enabled: !!requestId,
+    staleTime: 30000,
+  });
+  
+  const { data: milestonesCount = 0 } = useQuery({
+    queryKey: ['business-request-milestones-count', requestId],
+    queryFn: async () => {
+      if (!requestId) return 0;
+      const { count } = await supabase
+        .from('milestones')
+        .select('id', { count: 'exact', head: true })
+        .eq('business_request_id', requestId);
+      return count || 0;
+    },
+    enabled: !!requestId,
+    staleTime: 30000,
   });
   
   const { data: linksCount = 0 } = useQuery({
@@ -207,7 +223,8 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
         .eq('business_request_id', requestId);
       return count || 0;
     },
-    enabled: !!requestId
+    enabled: !!requestId,
+    staleTime: 30000,
   });
   
   const { data: auditCount = 0 } = useQuery({
@@ -220,7 +237,8 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
         .eq('business_request_id', requestId);
       return count || 0;
     },
-    enabled: !!requestId
+    enabled: !!requestId,
+    staleTime: 60000,
   });
   
   const [activeTab, setActiveTab] = useState('demand-details');
@@ -570,38 +588,14 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
 
                 {/* Status Badge + Rank Badge Row */}
                 <div className="flex items-center gap-2.5">
-                  {/* Status Badge */}
-                  <div 
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wide"
-                    style={{
-                      background: formData.process_step === 'new_request' 
-                        ? 'hsl(var(--secondary-olive) / 0.12)' 
-                        : formData.process_step === 'approved' 
-                          ? 'hsl(142 76% 36% / 0.12)'
-                          : 'hsl(var(--secondary-bronze) / 0.12)',
-                      color: formData.process_step === 'new_request'
-                        ? 'hsl(var(--secondary-olive))'
-                        : formData.process_step === 'approved'
-                          ? 'hsl(142 76% 36%)'
-                          : 'hsl(var(--secondary-bronze))',
-                      border: `1px solid ${formData.process_step === 'new_request'
-                        ? 'hsl(var(--secondary-olive) / 0.25)'
-                        : formData.process_step === 'approved'
-                          ? 'hsl(142 76% 36% / 0.25)'
-                          : 'hsl(var(--secondary-bronze) / 0.25)'}`
-                    }}
-                  >
-                    <span className="w-1.5 h-1.5 rounded-full" style={{ 
-                      background: formData.process_step === 'new_request'
-                        ? 'hsl(var(--secondary-olive))'
-                        : formData.process_step === 'approved'
-                          ? 'hsl(142 76% 36%)'
-                          : 'hsl(var(--secondary-bronze))'
-                    }} />
-                    {(formData.process_step || 'new_request').replace(/_/g, ' ').toUpperCase()}
-                  </div>
+                  {/* Status Dropdown - CLICKABLE */}
+                  <StatusDropdown
+                    currentStep={formData.process_step}
+                    onChange={(step) => handleFieldChange('process_step', step)}
+                    isLoading={updateMutation.isPending}
+                  />
 
-                  {/* Rank Badge */}
+                  {/* Rank Badge - shows "Rank #4" format */}
                   {formData.rank && (
                     <div 
                       className="inline-flex items-center px-2 py-1 rounded text-[12px] font-semibold"
@@ -610,7 +604,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                         color: 'var(--text-primary, hsl(var(--foreground)))'
                       }}
                     >
-                      #{formData.rank}
+                      Rank #{formData.rank}
                     </div>
                   )}
                 </div>
@@ -619,13 +613,13 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
               {/* Right Side: Action Buttons */}
               <div className="flex items-center gap-1.5 shrink-0">
                 
-                {/* Save Button */}
+                {/* Save Button - shows loading spinner */}
                 <Button
                   size="sm"
                   disabled={!hasChanges || updateMutation.isPending}
                   onClick={handleSave}
                   className={cn(
-                    "h-8 px-4 text-[13px] font-medium text-white",
+                    "h-8 px-4 text-[13px] font-medium text-white min-w-[70px]",
                     hasChanges 
                       ? "bg-secondary-olive hover:bg-secondary-olive/85" 
                       : "bg-secondary-olive/50 cursor-not-allowed opacity-60"
@@ -634,7 +628,14 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                     boxShadow: hasChanges ? '0 2px 4px rgba(92, 124, 92, 0.25)' : 'none'
                   }}
                 >
-                  Save
+                  {updateMutation.isPending ? (
+                    <>
+                      <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    'Save'
+                  )}
                 </Button>
 
                 {/* More Options */}
@@ -726,21 +727,33 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                         ? { type: 'complete' as const, value: '✓' }
                         : null;
                     case 'business-score':
-                      return formData.business_score 
-                        ? { type: 'score' as const, value: (formData.business_score / 100).toFixed(1) }
-                        : null;
+                      // ALWAYS show a value - show "0" if null
+                      const score = formData.business_score;
+                      return { 
+                        type: 'score' as const, 
+                        value: score ? (score / 100).toFixed(1) : '0' 
+                      };
                     case 'ea-review':
-                      return formData.ea_status === 'approved' 
-                        ? { type: 'complete' as const, value: 'Approved' }
-                        : { type: 'pending' as const, value: 'Pending' };
+                      // Check ea_review_required flag first - show N/A if not required
+                      if (formData.ea_review_required === false) {
+                        return { type: 'na' as const, value: 'N/A' };
+                      }
+                      if (formData.ea_status === 'approved') {
+                        return { type: 'complete' as const, value: '✓' };
+                      }
+                      return { type: 'pending' as const, value: 'Pending' };
                     case 'budget':
-                      return formData.estimated_cost 
-                        ? { type: 'complete' as const }
-                        : { type: 'empty' as const, value: 'Empty' };
+                      // Show "0" if null, not "Empty"
+                      return { 
+                        type: 'count' as const, 
+                        value: formData.estimated_cost 
+                          ? new Intl.NumberFormat('en-SA', { notation: 'compact' }).format(formData.estimated_cost)
+                          : '0'
+                      };
                     case 'risks':
                       return { type: 'count' as const, value: String(risksCount) };
                     case 'milestones':
-                      return { type: 'count' as const, value: '0' };
+                      return { type: 'count' as const, value: String(milestonesCount) };
                     case 'links':
                       return { type: 'count' as const, value: String(linksCount) };
                     case 'audit-history':
@@ -779,7 +792,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                               ? 'hsl(35 92% 50%)'
                               : status.type === 'score'
                                 ? 'hsl(var(--secondary-bronze))'
-                                : status.type === 'empty'
+                                : status.type === 'na'
                                   ? 'hsl(var(--muted-foreground))'
                                   : status.type === 'count' && parseInt(status.value || '0') > 0
                                     ? 'hsl(var(--secondary-olive))'
@@ -792,7 +805,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                             {status.value}
                           </span>
                         )}
-                        {status.type === 'empty' && (
+                        {status.type === 'na' && (
                           <span className="inline-flex items-center gap-1">
                             <span className="w-1.5 h-1.5 rounded-full" style={{ background: 'hsl(var(--muted-foreground))' }} />
                             {status.value}

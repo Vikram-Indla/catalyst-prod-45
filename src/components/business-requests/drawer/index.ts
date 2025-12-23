@@ -9,6 +9,7 @@ export { CIOPanel } from './CIOPanel';
 export { ExecutiveSummaryPanel } from './ExecutiveSummaryPanel';
 export { SummaryStrip, DemandSummaryStrip, RisksSummaryStrip, MilestonesSummaryStrip, LinksSummaryStrip, BudgetSummaryStrip } from './SummaryStrip';
 export { EnterpriseStatusControl } from './EnterpriseStatusControl';
+export { StatusDropdown, DRAWER_PROCESS_STEPS, getProcessStepConfig } from './StatusDropdown';
 export { 
   EnterpriseDrawerShell, 
   DrawerSection, 
