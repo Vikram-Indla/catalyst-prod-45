@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { RichTextEditor } from '../RichTextEditor';
 import { UserPicker } from '@/components/ui/user-picker';
+import { AssigneeUserPicker } from '../AssigneeUserPicker';
 import { DepartmentSelect } from '../DepartmentSelect';
 import { BusinessOwnerSelect } from '../BusinessOwnerSelect';
 import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings, getOwnerIdForDepartment } from '@/hooks/useDepartmentsAndOwners';
@@ -310,9 +311,9 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
 
             <div>
               <CompactLabel required>Assignee</CompactLabel>
-              <UserPicker
+              <AssigneeUserPicker
                 value={data.assignee || null}
-                onChange={(value) => onChange('assignee', value as string | null)}
+                onChange={(value) => onChange('assignee', value)}
                 placeholder="Select assignee..."
               />
             </div>

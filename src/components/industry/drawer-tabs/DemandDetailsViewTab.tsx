@@ -349,14 +349,19 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange }: DemandDe
             const quarterValue = Array.isArray(rawValue) ? rawValue[0] : rawValue;
             const normalizedValue = normalizeQuarter(quarterValue);
             
+            // Find matching option (case-insensitive, handles format variations)
+            const matchedOption = QUARTER_OPTIONS.find(opt => 
+              opt.toLowerCase().replace(/\s+/g, '') === normalizedValue.toLowerCase().replace(/\s+/g, '')
+            );
+            
             return (
               <Select 
-                value={normalizedValue || undefined}
+                value={matchedOption || ''}
                 onValueChange={(value) => handleChange('planned_quarter', [value])}
               >
                 <SelectTrigger className="w-full h-10">
                   <SelectValue placeholder="Select quarter">
-                    {normalizedValue || null}
+                    {matchedOption || (normalizedValue ? normalizedValue : null)}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent className="z-[500]">
