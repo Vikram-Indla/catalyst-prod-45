@@ -229,25 +229,29 @@ export function RequestDetailPanel({
   });
 
   // Handle department change - auto-set business owner from mapping
+  // Batch related updates to avoid multiple "Updated successfully" toasts
   const handleDepartmentChange = (departmentId: string) => {
     // Find department by ID or name
     const dept = departments.find(d => d.id === departmentId || d.name === departmentId);
     const deptId = dept?.id || departmentId;
     const deptName = dept?.name || departmentId;
-    
-    // Update department
-    onUpdateField('department', deptName);
-    onUpdateField('departmentId', deptId);
-    
+
+    const updates: Record<string, any> = {
+      department: deptName,
+      departmentId: deptId,
+    };
+
     // Auto-set business owner from mapping
     const ownerId = getOwnerIdForDepartment(deptId, departmentOwnerMappings);
     if (ownerId) {
       const owner = businessOwners.find(o => o.id === ownerId);
       if (owner) {
-        onUpdateField('businessOwner', owner.name);
-        onUpdateField('businessOwnerId', owner.id);
+        updates.businessOwner = owner.name;
+        updates.businessOwnerId = owner.id;
       }
     }
+
+    onUpdateField('_batch', updates);
   };
 
   if (!request) {
