@@ -239,7 +239,6 @@ export default function ProductBacklogPage() {
       // Update local state with all fields
       setSelectedRequest(prev => prev ? { ...prev, ...localUpdates } : null);
       queryClient.invalidateQueries({ queryKey: ['business-requests'] });
-      toast.success('Updated successfully');
       return;
     }
 
@@ -259,7 +258,6 @@ export default function ProductBacklogPage() {
     // Update local state
     setSelectedRequest(prev => prev ? { ...prev, [field]: value } : null);
     queryClient.invalidateQueries({ queryKey: ['business-requests'] });
-    toast.success('Updated successfully');
   };
 
   // Handle clone
