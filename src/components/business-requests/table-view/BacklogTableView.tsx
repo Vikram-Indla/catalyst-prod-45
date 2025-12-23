@@ -15,7 +15,8 @@ import {
   IdCell, 
   StatusCell,
   ScoreCell,
-  OwnerCell, 
+  OwnerCell,
+  AssigneeCell,
   PriorityCell, 
   QuarterCell, 
   DateCell, 
@@ -163,6 +164,31 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
     }
   }, [sortedData, queryClient]);
 
+  // Handle assignee update
+  const handleAssigneeUpdate = useCallback(async (requestId: string, assignee: string | null) => {
+    // Optimistic update
+    queryClient.setQueryData(['business-requests'], (old: any) => {
+      if (!old) return old;
+      return old.map((item: any) => 
+        item.id === requestId ? { ...item, assignee } : item
+      );
+    });
+
+    try {
+      const { error } = await supabase
+        .from('business_requests')
+        .update({ assignee })
+        .eq('id', requestId);
+      
+      if (error) throw error;
+      toast.success(assignee ? `Assigned to ${assignee}` : 'Unassigned');
+    } catch (error) {
+      console.error('Failed to update assignee:', error);
+      toast.error('Failed to update assignee');
+      queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+    }
+  }, [queryClient]);
+
   // Filter columns based on visibility
   const displayColumns = useMemo(() => {
     return DEFAULT_COLUMNS.filter(c => visibleColumns.has(c.key));
@@ -211,7 +237,13 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
       case 'reporter':
         return <OwnerCell name={row.requestor_name || row.requestor || null} />;
       case 'assignee':
-        return <OwnerCell name={row.assignee || null} />;
+        return (
+          <AssigneeCell 
+            name={row.assignee || null} 
+            requestId={row.id}
+            onSave={handleAssigneeUpdate}
+          />
+        );
       case 'business_owner':
         return <OwnerCell name={row.business_owner || null} />;
       case 'delivery_platform':
