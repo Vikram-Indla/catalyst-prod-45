@@ -837,7 +837,12 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
               style={{ background: 'var(--surface-subtle, hsl(var(--muted)/0.3))' }}
             >
               <TabsContent value="demand-details" className="mt-0 p-5 pb-8 focus-visible:outline-none">
-                <DemandDetailsViewTab data={formData} onChange={handleFieldChange} />
+                <DemandDetailsViewTab 
+                  data={formData} 
+                  onChange={handleFieldChange} 
+                  onDirtyChange={handleDirtyChange}
+                  requestId={requestId}
+                />
               </TabsContent>
               
               <TabsContent value="business-score" className="mt-0 focus-visible:outline-none">
